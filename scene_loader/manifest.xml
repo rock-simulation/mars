@@ -1,0 +1,11 @@
+<package>
+    <description brief="mars_scene_loader">
+       Plugin to load and save MARS scene files.
+    </description>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars_utils" />
+    <depend package="simulation/mars_interfaces" />
+
+    <depend package="external/minizip" />
+</package>

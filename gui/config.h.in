@@ -1,0 +1,10 @@
+/*
+ * This file is used to export cmake variables into c/c++.
+ */
+
+#ifndef MARS_GUI_CONFIG_H
+#define MARS_GUI_CONFIG_H
+
+#define MARS_GUI_DEFAULT_RESOURCES_PATH "@CMAKE_INSTALL_PREFIX@/share/mars_gui/resources"
+
+#endif

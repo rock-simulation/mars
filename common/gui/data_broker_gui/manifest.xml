@@ -1,0 +1,9 @@
+<package>
+    <description brief="data_broker_gui">
+	The library provides a propertybrowser widget to set all registered data broker elements.
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/main_gui" />
+    <depend package="simulation/data_broker" />
+    <depend package="simulation/cfg_manager" />
+</package>

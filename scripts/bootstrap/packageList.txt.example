@@ -1,0 +1,30 @@
+# use "mars.sh bootstrap" for the external libraries
+# afterwards use "mars.sh install" for the mars libraries
+
+external/yaml-cpp
+external/eigen
+#external/opencv
+
+external/minizip 
+
+mars/external/ode_mars
+
+mars/common/utils
+mars/common/lib_manager
+mars/common/cfg_manager
+mars/common/data_broker
+
+mars/common/gui/main_gui
+mars/common/gui/cfg_manager_gui
+mars/common/gui/data_broker_gui
+mars/common/gui/log_console
+
+mars/interfaces
+mars/gui
+mars/graphics
+mars/sim
+mars/app
+mars/scene_loader
+
+#mars/plugins/connexion_plugin
+mars/plugins/constraint_plugin

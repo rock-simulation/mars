@@ -1,0 +1,10 @@
+# A constraints file must start with a root element ConstraintDefs
+# It should contain a list with a mapping element containing three elements:
+#  1) name: The Name of the constraint
+#  2) type: should always be string
+#  3) value: The constraint itself encoded as a string
+
+ConstraintDefs:
+  - name: length
+    type: string
+    value: "NODE#NewNode0.sizeX#NewNode1.posX#1#NewNode0.posX#.5"

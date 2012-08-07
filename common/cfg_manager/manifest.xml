@@ -1,0 +1,7 @@
+<package>
+    <description brief="cfg_manager">
+      A small library to read, write, and share software parameter using yaml configuration files.
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="external/yaml-cpp" />
+</package>

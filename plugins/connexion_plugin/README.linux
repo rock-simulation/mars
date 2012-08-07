@@ -1,0 +1,34 @@
+F.A.Q.
+=======
+Q: Why doesn't the Plugin work?
+A: The current implementation works by reading from the /dev/input/eventX
+   associated with the 3dConnexion device. For security reasons users
+   should not have read access to these device. Therefor most Linux
+   distributions will by default not grant users read permissions to
+   these files. This means this plugin won't work by default on most
+   Linux systems.
+   
+Q: Is there a workaround?
+A: Yes. Grant yourself read permissions on the correct device file.
+   Mostly you can figure our which is the correct file by looking at 
+   the links in /dev/input/by-id/ like this:
+
+     ls -l /dev/input/by-id/usb-3Dconnection*
+
+   This will show you the correct /dev/input/eventX file. You can 
+   grant yourself read permissions with the following command:
+
+     sudo chmod a+r /dev/input/eventX
+
+   where X is the correct number you just figured out.
+   Note that these permissions will be reset on reboot or if you remove 
+   the device.
+
+Q: Is there a more permanent workaround?
+A: Probably. But I won't recommend it since you usually don't have read 
+   permissions for a reason.
+
+Q: Isn't there a propper solution?
+A: I guess the most promising approach is to go though X11 or use a 
+   installed driver.
+   Please send patches to: ric-mars@dfki.de

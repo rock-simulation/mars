@@ -1,0 +1,12 @@
+<package>
+    <description brief="mars_app">
+       DFKI Robot simulator application loader
+    </description>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/main_gui" />
+    <depend package="simulation/mars_interfaces" />
+    <depend package="simulation/mars_utils" />
+
+    <rosdep name="qt4" />
+</package>

@@ -1,0 +1,7 @@
+<package>
+    <description brief="main_gui">
+      The library provides a small core for a modular gui implementation.
+   </description>
+   <depend package="simulation/lib_manager" />
+   <depend package="simulation/cfg_manager" />
+</package>

@@ -1,0 +1,12 @@
+<package>
+    <description brief="mars_graphics">
+       This library provides a 3d visualization through simple interfaces.
+    </description>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/cfg_manager" />
+    <depend package="simulation/mars_utils" />
+    <depend package="simulation/mars_interfaces" />
+    <depend package="opencv" />
+    <rosdep name="osg" />
+</package>

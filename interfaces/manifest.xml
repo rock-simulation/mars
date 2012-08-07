@@ -1,0 +1,6 @@
+<package>
+    <description brief="mars_interfaces">
+       This library is the base library for the MARS prject and includes the general defines, structs and classes.
+    </description>
+    <depend package="simulation/mars_utils" />
+</package>

@@ -1,0 +1,11 @@
+<package>
+    <description brief="mars_sim">
+       DFKI Robot simulator
+    </description>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars_utils" />
+    <depend package="simulation/mars_interfaces" />
+
+    <depend package="external/ode" />
+</package>

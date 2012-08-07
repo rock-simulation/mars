@@ -1,0 +1,13 @@
+<package>
+    <description brief="mars_gui">
+       DFKI Robot simulator GUI
+    </description>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/main_gui" />
+    <depend package="simulation/mars_interfaces" />
+    <depend package="simulation/mars_utils" />
+
+    <depend package="opencv" />
+    <rosdep name="qt4" />
+</package>

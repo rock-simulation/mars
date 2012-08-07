@@ -1,0 +1,47 @@
+---
+Graphics:
+  -
+    name: brightness
+    type: double
+    value: 1
+  -
+    name: draw normals
+    type: bool
+    value: false
+  -
+    name: marsShader
+    type: bool
+    value: true
+  -
+    name: make movie
+    type: bool
+    value: false
+  -
+    name: num multisamples
+    type: int
+    saveOnClose: true
+    value: 0
+  -
+    name: window1Height
+    type: int
+    saveOnClose: true
+    value: 568
+  -
+    name: window1Left
+    type: int
+    saveOnClose: true
+    value: 101
+  -
+    name: window1Top
+    type: int
+    saveOnClose: true
+    value: 135
+  -
+    name: window1Width
+    type: int
+    saveOnClose: true
+    value: 920
+
+  - name: resources_path
+    type: string
+    value: @CMAKE_INSTALL_PREFIX@/share/mars/graphics/resources

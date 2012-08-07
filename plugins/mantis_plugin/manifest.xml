@@ -1,0 +1,11 @@
+<package>
+    <description brief="mantis_plugin">
+      A MARS plugin to test mantis configurations.
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/data_broker" />
+    <depend package="simulation/mars_interfaces" />
+    <depend package="simulation/main_gui" />
+
+    <rosdep name="qt" />
+</package>

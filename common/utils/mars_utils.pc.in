@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@
+exec_prefix=@CMAKE_INSTALL_PREFIX@
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: @PROJECT_NAME@
+Description: @PROJECT_DESCRIPTION@
+Version: @PROJECT_VERSION@
+Libs: -L${libdir} -l@PROJECT_NAME@
+Requires.private: eigen3
+
+Cflags: -I${includedir} -I@EIGEN_INCLUDE_DIRS@ @MARS_CORE_EIGEN_DEFINITIONS@

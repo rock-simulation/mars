@@ -1,0 +1,26 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource>
+<file>./images/background.png</file>
+<file>./images/Ball-and-socket.jpg</file>
+<file>./images/blender.png</file>
+<file>./images/connexion.png</file>
+<file>./images/Hinge.jpg</file>
+<file>./images/Hinge2.jpg</file>
+<file>./images/mars_icon.ico</file>
+<file>./images/new_scene.png</file>
+<file>./images/open_scene.png</file>
+<file>./images/pause_button.png</file>
+<file>./images/play_button.png</file>
+<file>./images/preferences.png</file>
+<file>./images/reset.png</file>
+<file>./images/save_scene.png</file>
+<file>./images/Slider.jpeg</file>
+<file>./images/step_button.png</file>
+<file>./images/terminal.png</file>
+<file>./images/Universal.jpg</file>
+<file>./styles/branch-closed.png</file>
+<file>./styles/branch-open.png</file>
+<file>./styles/marsbackground.jpeg</file>
+<file>./styles/marsbutton.jpeg</file>
+</qresource>
+</RCC>

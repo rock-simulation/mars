@@ -1,0 +1,61 @@
+#This is the main config file for MARS written in YAML
+---
+MainGUI:
+
+  - name: windowTop
+    type: int
+    value: 40
+    saveOnClose: true
+
+  - name: windowLeft
+    type: int
+    value: 40
+    saveOnClose: true
+
+  - name: windowWidth
+    type: int
+    value: 640
+    saveOnClose: true
+
+  - name: windowHeight
+    type: int
+    value: 480
+    saveOnClose: true
+
+Graphics:
+
+  - name: window1Top
+    type: int
+    value: 40
+    saveOnClose: true
+
+  - name: window1Left
+    type: int
+    value: 700
+    saveOnClose: true
+
+  - name: window1Width
+    type: int
+    value: 720
+    saveOnClose: true
+
+  - name: window1Height
+    type: int
+    value: 405
+    saveOnClose: true
+    
+Config:
+
+  - name: loadLastSave
+    type: bool
+    value: true
+
+Preferences:
+
+  - name: config_path
+    type: string
+    value: @CMAKE_INSTALL_PREFIX@/configuration/mars-default
+
+  - name: resources_path
+    type: string
+    value: @CMAKE_INSTALL_PREFIX@/share

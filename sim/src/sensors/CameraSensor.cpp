@@ -1,0 +1,310 @@
+/*
+ *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *
+ *  This file is part of the MARS simulation framework.
+ *
+ *  MARS is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3
+ *  of the License, or (at your option) any later version.
+ *
+ *  MARS is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with MARS.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include "CameraSensor.h"
+
+#include <mars/data_broker/DataBrokerInterface.h>
+#include <mars/utils/mathUtils.h>
+#include <mars/interfaces/sim/LoadSceneInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+
+#include <stdint.h>
+#include <cstring>
+#include <cstdlib>
+
+
+namespace mars {
+  namespace sim {
+
+    using namespace utils;
+    using namespace interfaces;
+
+    BaseSensor* CameraSensor::instanciate(ControlCenter *control, BaseConfig *config ){
+      CameraConfigStruct *cfg = dynamic_cast<CameraConfigStruct*>(config);
+      assert(cfg);
+      return new CameraSensor(control,*cfg);
+    }
+
+
+    CameraSensor::CameraSensor(ControlCenter *control, CameraConfigStruct config) :
+      BaseNodeSensor(config.id,config.name),
+      SensorInterface(control),
+      config(config),
+      depthCamera(id,name,config.width,config.height,1,true),
+      imageCamera(id,name,config.width,config.height,4,false)
+    {
+      this->attached_node = config.attached_node;
+      std::vector<unsigned long>::iterator iter;
+      dbPosIndices[0] = -1;
+
+      control->nodes->addNodeSensor(this);
+      std::string groupName, dataName;
+      this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
+
+      bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
+      assert(erg);
+      if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
+      }
+
+      if(control->graphics) {
+        unsigned int cam_id=0;
+
+        //New
+        interfaces::hudElementStruct hudCam;
+        hudCam.type            = HUD_ELEMENT_TEXTURE;
+        hudCam.width           = 420;
+        hudCam.height          = 280;
+        hudCam.texture_width   = 420;
+        hudCam.texture_height  = 280;
+        hudCam.view_width      = 420;
+        hudCam.view_height     = 280;
+        hudCam.posx            = 40 + (hudCam.width * config.hud_pos); // aligned in a row
+        hudCam.posy            = 30;
+        hudCam.border_color[0] = 0.0;
+        hudCam.border_color[1] = 0.58824;
+        hudCam.border_color[2] = 0.0;
+        hudCam.border_color[3] = 1.0;
+        hudCam.border_width    = 5.0;
+
+        if(config.show_cam)
+          cam_id = control->graphics->addHUDElement(&hudCam);
+
+        cam_window_id = control->graphics->new3DWindow(0, true,0,0,name);
+        if(config.show_cam)
+          control->graphics->setHUDElementTextureRTT(cam_id, cam_window_id,false);
+
+        gw = control->graphics->get3DWindow(cam_window_id);
+        gw->setGrabFrames(false);
+        if(gw) {
+          gc = gw->getCameraInterface();
+          control->graphics->addGraphicsUpdateInterface(this);
+          //gc->setFrustumFromRad(150.0/180.0*M_PI,90.0/180.0*M_PI,0.5,100);
+        }
+      }
+    }
+
+    CameraSensor::~CameraSensor(void){
+      control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                   "mars_sim/simTimer");
+    }
+
+    void CameraSensor::getCameraInfo(cameraStruct* cs)
+    {
+      if( gc )
+        gc->getCameraInfo( cs );
+      else
+        std::cerr << "could not get camera info." << std::endl;
+    }
+
+    // this function is a hack currently, it uses sReal* as byte buffer
+    // NOTE: never use the cameraSensor in a controller list!!!!
+    int CameraSensor::getSensorData(sReal** data) const {
+#warning "Work hiere"
+#if 0
+      if(gw) {
+        // get image
+        int width, height;
+        if(s_cfg.depthImage) {
+          // if there is a depth image, we would like to
+          // to also get the normal image data.
+          //
+          // what is a problem, is that in order to have it
+          // in the same block of memory, we need to copy
+          // the individual results
+
+          // get the image and depth data
+          void *t1 = 0;
+          gw->getImageData(&t1, width, height);
+          size_t image_size = width * height * sizeof( uint8_t ) * 4;
+
+          float *t2 = 0;
+          gw->getRTTDepthData(&t2, width, height);
+          size_t depth_size = width * height * sizeof( float );
+
+          // get a new block of memory which will contain
+          // both data
+          size_t data_size = image_size + depth_size;
+          uint8_t *res_mem = (uint8_t*)malloc( data_size );
+          *data = (sReal*)res_mem;
+
+          memcpy( res_mem, t1, image_size );
+          memcpy( res_mem + image_size, t2, depth_size );
+
+          free( t1 );
+          free( t2 );
+
+          return data_size;
+        }
+        else {
+          gw->getImageData((void**)data, width, height);
+          return width*height*4;
+        }
+      }
+#endif
+      return 0;
+    }
+
+    void CameraSensor::preGraphicsUpdate(void) {
+      if(gc) {
+        gc->updateViewportQuat(position.x(), position.y(), position.z(),
+                               orientation.x(), orientation.y(), orientation.z(), orientation.w());
+      }
+    }
+
+    void CameraSensor::receiveData(const data_broker::DataInfo &info,
+                                   const data_broker::DataPackage &package,
+                                   int callbackParam) {
+      CPP_UNUSED(info);
+      if(dbPosIndices[0] == -1) {
+        dbPosIndices[0] = package.getIndexByName("position/x");
+        dbPosIndices[1] = package.getIndexByName("position/y");
+        dbPosIndices[2] = package.getIndexByName("position/z");
+        dbRotIndices[0] = package.getIndexByName("rotation/x");
+        dbRotIndices[1] = package.getIndexByName("rotation/y");
+        dbRotIndices[2] = package.getIndexByName("rotation/z");
+        dbRotIndices[3] = package.getIndexByName("rotation/w");
+      }
+      package.get(dbPosIndices[0], &position.x());
+      package.get(dbPosIndices[1], &position.y());
+      package.get(dbPosIndices[2], &position.z());
+      package.get(dbRotIndices[0], &orientation.x());
+      package.get(dbRotIndices[1], &orientation.y());
+      package.get(dbRotIndices[2], &orientation.z());
+      package.get(dbRotIndices[3], &orientation.w());
+      position += (orientation * config.pos_offset);
+      orientation= orientation * config.ori_offset ;
+    }
+
+
+    BaseConfig* CameraSensor::parseConfig(ControlCenter *control,
+                                          ConfigMap *config) {
+
+      CameraConfigStruct *cfg = new CameraConfigStruct();
+
+      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
+      unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+      if(mapIndex) {
+        attachedNodeID = control->loadCenter->loadScene->getMappedID(attachedNodeID,
+                                                                     interfaces::MAP_TYPE_NODE,
+                                                                     mapIndex);
+      }
+      cfg->attached_node = attachedNodeID;
+
+      ConfigMap::iterator it;
+      ConfigMap::iterator it2;
+
+      if((it = config->find("rate")) != config->end())
+        cfg->updateRate = it->second[0].getULong();
+      else cfg->updateRate = 0;
+
+      if((it = config->find("width")) != config->end())
+        cfg->width = it->second[0].getULong();
+
+      if((it = config->find("height")) != config->end())
+        cfg->height = it->second[0].getULong();
+
+      if((it = config->find("show_cam")) != config->end()){
+        cfg->show_cam =  it->second[0].getBool();
+      }else{
+        cfg->show_cam = false;
+      }
+
+      if(cfg->show_cam) {
+        if((it2 = it->second[0].children.find("hud_idx")) !=
+           it->second[0].children.end())
+          cfg->hud_pos = it2->second[0].getInt();
+      }
+
+      if((it = config->find("position_offset")) != config->end()) {
+        cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
+        cfg->pos_offset[1] = it->second[0].children["y"][0].getDouble();
+        cfg->pos_offset[2] = it->second[0].children["z"][0].getDouble();
+        LOG_DEBUG("camera position_offset: %g %g %g", cfg->pos_offset[0],
+                  cfg->pos_offset[1], cfg->pos_offset[2]);
+      }
+      if((it = config->find("orientation_offset")) != config->end()) {
+        if((it2 = it->second[0].children.find("yaw")) !=
+           it->second[0].children.end()) {
+          Vector euler;
+          euler.x() = it->second[0].children["roll"][0].getDouble();
+          euler.y() = it->second[0].children["pitch"][0].getDouble();
+          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          cfg->ori_offset = eulerToQuaternion(euler);
+        }
+        else {
+          cfg->ori_offset.x() = it->second[0].children["x"][0].getDouble();
+          cfg->ori_offset.y() = it->second[0].children["y"][0].getDouble();
+          cfg->ori_offset.z() = it->second[0].children["z"][0].getDouble();
+          cfg->ori_offset.w() = it->second[0].children["w"][0].getDouble();
+        }
+      }
+
+      return cfg;
+    }
+
+    ConfigMap CameraSensor::createConfig() const {
+
+      std::vector<unsigned long>::const_iterator it;
+      ConfigMap cfg;
+      ConfigMap *tmpCfg;
+
+      cfg["name"][0] = ConfigItem(config.name);
+      cfg["id"][0] = ConfigItem(config.id);
+      cfg["type"][0] = ConfigItem(std::string("CameraSensor"));
+
+      cfg["attached_node"][0] = ConfigItem(config.attached_node);
+
+      cfg["width"][0] = ConfigItem(config.width);
+      cfg["height"][0] = ConfigItem(config.height);
+
+      if(config.show_cam) {
+        cfg["show_cam"][0] = ConfigItem(true);
+        cfg["show_cam"][0].children["hud_idx"][0] = ConfigItem(config.hud_pos);
+      }
+
+      cfg["position_offset"][0] = ConfigItem(std::string());
+      tmpCfg = &(cfg["position_offset"][0].children);
+
+      (*tmpCfg)["x"][0] = ConfigItem(config.pos_offset[0]);
+      (*tmpCfg)["y"][0] = ConfigItem(config.pos_offset[1]);
+      (*tmpCfg)["z"][0] = ConfigItem(config.pos_offset[2]);
+
+
+      Quaternion q = eulerToQuaternion(Vector(90,0,-90));
+      q.x() *= -1;
+      q.y() *= -1;
+      q.z() *= -1;
+      q = config.ori_offset * q;
+
+      cfg["orientation_offset"][0] = ConfigItem(std::string());
+      tmpCfg = &(cfg["orientation_offset"][0].children);
+      (*tmpCfg)["x"][0] = ConfigItem(q.x());
+      (*tmpCfg)["y"][0] = ConfigItem(q.y());
+      (*tmpCfg)["z"][0] = ConfigItem(q.z());
+      (*tmpCfg)["w"][0] = ConfigItem(q.w());
+
+      return cfg;
+    }
+
+  } // end of namespace sim
+} // end of namespace mars
