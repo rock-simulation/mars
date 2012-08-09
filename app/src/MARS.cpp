@@ -75,7 +75,7 @@ namespace mars {
 
     MARS::MARS() : libManager(new lib_manager::LibManager()),
                    configDir("."), marsGui(NULL) {
-
+      graphicsTimer = NULL;
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
@@ -163,7 +163,6 @@ namespace mars {
 
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
-      mars::app::GraphicsTimer *graphicsTimer = NULL;
 
       graphicsTimer = new mars::app::GraphicsTimer(marsGraphics, control->sim);
       graphicsTimer->run();

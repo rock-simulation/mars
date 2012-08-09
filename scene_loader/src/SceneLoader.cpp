@@ -49,7 +49,14 @@ namespace mars {
         control->loadCenter->loadScene = this;
       }
     }
-    
+
+    SceneLoader::~SceneLoader() {
+      if(control) {
+        control->loadCenter->loadScene = NULL;
+        libManager->unloadLibrary("mars_sim");
+      }
+    }
+
     bool SceneLoader::loadFile(std::string filename, std::string tmpPath,
                                std::string robotname) {
       Load loadObject(filename, control, tmpPath,

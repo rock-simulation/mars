@@ -51,7 +51,7 @@ namespace mars {
       
     public:
       SceneLoader(lib_manager::LibManager *theManager);
-      ~SceneLoader() {}
+      ~SceneLoader();
 
 
       // LibInterface methods
