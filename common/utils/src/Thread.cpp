@@ -22,14 +22,21 @@
 
 #include "misc.h"
 
+#include <pthread.h>
 
 namespace mars {
   namespace utils {
 
+    struct PthreadThreadWrapper {
+      pthread_t t;
+    };
+
     Mutex Thread::threadListMutex;
     std::list<Thread*> Thread::threads;
   
-    Thread::Thread() {
+    Thread::Thread() 
+      : myThread(new PthreadThreadWrapper) {
+
       running = false;
       finished = false;
       // set default stackSize
@@ -51,7 +58,8 @@ namespace mars {
           break;
         }
       }
-      threadListMutex.unlock();    
+      threadListMutex.unlock();
+      delete myThread;
     }
 
     void Thread::setStackSize(std::size_t stackSize) {
@@ -77,7 +85,7 @@ namespace mars {
       pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, NULL);
       pthread_attr_setdetachstate(&threadAttributes, PTHREAD_CREATE_JOINABLE);
       pthread_attr_setstacksize(&threadAttributes, myStackSize);
-      int rc = pthread_create(&myThread, &threadAttributes, 
+      int rc = pthread_create(&myThread->t, &threadAttributes, 
                               &Thread::runHelper, static_cast<void*>(this));
       pthread_attr_destroy(&threadAttributes);
       if(rc) {
@@ -106,7 +114,7 @@ namespace mars {
     }
   
     void Thread::cancel(bool block) {
-      pthread_cancel(myThread);
+      pthread_cancel(myThread->t);
       if(block) {
         while(this->isRunning()) {
           wait(1);
@@ -120,11 +128,14 @@ namespace mars {
 
     bool Thread::wait() {
       void *status;
-      int rc = pthread_join(myThread, &status);
+      int rc = pthread_join(myThread->t, &status);
       if(rc) {
         // TODO: Handle Error!
       }
       return true;
+    }
+    bool Thread::join() {
+      return wait();
     }
 
     bool Thread::wait(unsigned long timeoutMilliseconds) {
@@ -152,7 +163,7 @@ namespace mars {
       pthread_t thisThreadID = pthread_self();
 
       for(it = threads.begin(); it != threads.end(); ++it) {
-        if(pthread_equal(thisThreadID, (*it)->myThread) == 0) {
+        if(pthread_equal(thisThreadID, (*it)->myThread->t) == 0) {
           return *it;
         }
       }

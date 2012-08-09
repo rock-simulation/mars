@@ -26,7 +26,6 @@
 #ifndef MARS_UTILS_THREAD_H
 #define MARS_UTILS_THREAD_H
 
-#include <pthread.h>
 #include <cstddef> // for std::size_t
 #include <list>
 
@@ -34,6 +33,8 @@
 
 namespace mars {
   namespace utils {
+
+    struct PthreadThreadWrapper;
 
     class Thread {
     public:
@@ -71,6 +72,7 @@ namespace mars {
        * \see wait(unsigned long), cancel()
        */
       bool wait();
+      bool join();
 
       /**
        * \brief puts the Thread to sleep for a specified amount of time.
@@ -113,7 +115,8 @@ namespace mars {
       static void* runHelper(void *context);
       static void cleanupHandler(void *context);
 
-      pthread_t myThread;
+      PthreadThreadWrapper *myThread;
+
       std::size_t myStackSize;
       bool running;
       bool finished;

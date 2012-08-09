@@ -21,10 +21,10 @@
 #ifndef MARS_UTILS_READWRITELOCK_H
 #define MARS_UTILS_READWRITELOCK_H
 
-#include <pthread.h>
-
 namespace mars {
   namespace utils {
+
+    struct PthreadReadWriteLockWrapper;
 
     class ReadWriteLock {
     public:
@@ -41,7 +41,8 @@ namespace mars {
       ReadWriteLock(const ReadWriteLock &);
       ReadWriteLock &operator=(const ReadWriteLock &);
 
-      pthread_rwlock_t myReadWriteLock;
+      PthreadReadWriteLockWrapper *myReadWriteLock;
+
     }; // end of class ReadWriteLock
 
   } // end of namespace utils

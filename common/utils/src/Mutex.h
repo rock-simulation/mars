@@ -21,11 +21,12 @@
 #ifndef MARS_UTILS_MUTEX_H
 #define MARS_UTILS_MUTEX_H
 
-#include <pthread.h>
-
 
 namespace mars {
   namespace utils {
+
+    class WaitCondition;
+    struct PthreadMutexWrapper;
 
     enum MutexType {
       MUTEX_TYPE_NORMAL,
@@ -81,8 +82,12 @@ namespace mars {
       Mutex(const Mutex &);
       Mutex &operator=(const Mutex &);
 
-      pthread_mutex_t myMutex;
+      void* getHandle();
+
+      PthreadMutexWrapper *myMutex;
       MutexType mutexType;
+
+      friend class WaitCondition;
 
     }; // end of class Mutex
   

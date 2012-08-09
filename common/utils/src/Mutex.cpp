@@ -22,11 +22,19 @@
 
 #include <errno.h>
 
+#include <pthread.h>
+
+
 namespace mars {
   namespace utils {
 
+    struct PthreadMutexWrapper {
+      pthread_mutex_t m;
+    };
+
     Mutex::Mutex(const MutexType &mutexType_) 
-      : mutexType(mutexType_){
+      : myMutex(new PthreadMutexWrapper),
+        mutexType(mutexType_) {
       pthread_mutexattr_t mutexAttributes;
       pthread_mutexattr_init(&mutexAttributes);
       switch(mutexType) {
@@ -41,16 +49,17 @@ namespace mars {
         pthread_mutexattr_settype(&mutexAttributes, PTHREAD_MUTEX_ERRORCHECK);
         break;
       }
-      pthread_mutex_init(&myMutex, &mutexAttributes);
+      pthread_mutex_init(&myMutex->m, &mutexAttributes);
       pthread_mutexattr_destroy(&mutexAttributes);
     }
 
     Mutex::~Mutex() {
-      pthread_mutex_destroy(&myMutex);
+      pthread_mutex_destroy(&myMutex->m);
+      delete myMutex;
     }
   
     MutexError Mutex::lock() {
-      int rc = pthread_mutex_lock(&myMutex);
+      int rc = pthread_mutex_lock(&myMutex->m);
       switch(rc) {
       case 0:
         return MUTEX_ERROR_NO_ERROR;
@@ -66,7 +75,7 @@ namespace mars {
     }
 
     MutexError Mutex::unlock() {
-      int rc = pthread_mutex_unlock(&myMutex);
+      int rc = pthread_mutex_unlock(&myMutex->m);
       switch(rc) {
       case 0:
         return MUTEX_ERROR_NO_ERROR;
@@ -82,7 +91,7 @@ namespace mars {
     }
 
     MutexError Mutex::tryLock() {
-      int rc = pthread_mutex_trylock(&myMutex);
+      int rc = pthread_mutex_trylock(&myMutex->m);
       switch(rc) {
       case 0:
         return MUTEX_ERROR_NO_ERROR;
@@ -95,6 +104,10 @@ namespace mars {
       default:
         return MUTEX_ERROR_UNKNOWN;
       }
+    }
+
+    void* Mutex::getHandle() {
+      return &myMutex->m;
     }
 
   } // end of namespace utils

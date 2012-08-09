@@ -28,6 +28,7 @@ set(SOURCES
     src/ReadWriteLock.cpp
     src/ReadWriteLocker.cpp
     src/Thread.cpp
+    src/WaitCondition.cpp
     src/mathUtils.cpp
     src/misc.cpp
 )
@@ -42,6 +43,7 @@ set(HEADERS
     src/ReadWriteLocker.h
     src/Thread.h
     src/Vector.h
+    src/WaitCondition.h
     src/mathUtils.h
     src/misc.h
 )

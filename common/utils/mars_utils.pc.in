@@ -7,6 +7,6 @@ Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@PROJECT_NAME@
-Requires.private: eigen3
+Requires: eigen3
 
 Cflags: -I${includedir} -I@EIGEN_INCLUDE_DIRS@ @MARS_CORE_EIGEN_DEFINITIONS@
