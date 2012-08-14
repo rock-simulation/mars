@@ -56,6 +56,7 @@ namespace mars {
         : DataItemAccessorBase() {
         this->itemName = itemName;
         this->var = var;
+        this->id = -1;
       }
       inline bool getValue(const DataPackage &package) {
         return package.get(id, var);
