@@ -46,6 +46,8 @@ namespace mars {
   
   namespace interfaces {
 
+    struct core_objects_exchange;
+
     /**
      * \brief "MotorManagerInterface" declares the interfaces for all motor 
      * operations that are used for the communication between the simulation modules.

@@ -79,7 +79,7 @@ namespace mars {
 
     // PUBLIC
 
-    bool CFGManager::loadConfigFromStream(istream &in) {
+    bool CFGManager::loadConfigFromStream(istream &in, const char *group) {
       if(!in.good()) {
         return false;
       }
@@ -87,17 +87,19 @@ namespace mars {
         YAML::Parser parser(in);
         YAML::Node doc;
         YAML::Iterator it;
-        string group = "";
+        string currentGroup = "";
 
         while(parser.GetNextDocument(doc)) {
           //cout << "Found document" << endl;
 
           for(it = doc.begin(); it != doc.end(); ++it) {
-            it.first() >> group;
+            it.first() >> currentGroup;
             //cout << "Found group: " << group << endl;
+            if(group && (currentGroup != group))
+              continue;
 
             const YAML::Node &paramNodes = it.second();
-            readGroup(group, paramNodes);
+            readGroup(currentGroup, paramNodes);
           } // for
 
         } // while
@@ -111,10 +113,14 @@ namespace mars {
 
 
     bool CFGManager::loadConfig(const char *filename) {
+      return loadConfig(filename, NULL);
+    }
+
+    bool CFGManager::loadConfig(const char *filename, const char *group) {
       if( fileExists(filename) ) {
         cout << "found config file: " << filename << endl;
         ifstream fin(filename);
-        bool ret = loadConfigFromStream(fin);
+        bool ret = loadConfigFromStream(fin, group);
         fin.close();
         return ret;
       } else {
@@ -126,7 +132,7 @@ namespace mars {
 
     bool CFGManager::loadConfigFromString(const std::string &configString) {
       istringstream in(configString);
-      return loadConfigFromStream(in);
+      return loadConfigFromStream(in, NULL);
     }
 
 

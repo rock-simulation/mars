@@ -61,6 +61,8 @@ namespace mars {
                                      const cfgParamType &_paramType) = 0;
 
       virtual bool loadConfig(const char *filename) = 0;
+      virtual bool loadConfig(const char *filename, const char *group) = 0;
+
       virtual bool loadConfigFromString(const std::string &configString) = 0;
 
       virtual void writeConfig(const char *filename, const char *group,

@@ -69,8 +69,9 @@ namespace mars {
       { return "cfg_manager"; }
 
       // CFGInterface methods
-      virtual bool loadConfigFromStream(std::istream &in);
+      virtual bool loadConfigFromStream(std::istream &in, const char *group);
       virtual bool loadConfig(const char *filename);
+      virtual bool loadConfig(const char *filename, const char *group);
       virtual bool loadConfigFromString(const std::string &configString);
 
       virtual void writeConfig(const char *filename, const char *group = NULL,
