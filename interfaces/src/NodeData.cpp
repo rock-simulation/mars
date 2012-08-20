@@ -292,6 +292,7 @@ namespace mars {
       SET_VALUE("groupid", groupID);
       SET_VALUE("index", index);
       SET_OBJECT("position", pos, vector);
+      SET_OBJECT("pivot", pivot, vector);
       SET_OBJECT("rotation", rot, quaternion);
       SET_OBJECT("extend", ext, vector);
       SET_VALUE("relativeid", relative_id);

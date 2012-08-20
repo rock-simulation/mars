@@ -72,7 +72,7 @@ namespace mars {
       file.append("/image_process_");
       num.setNum(++file_count);
       file.append(num);
-      file.append(".mp4");
+      file.append(".avi");
 
       while(processing) {
         listMutex.lock();
@@ -89,7 +89,7 @@ namespace mars {
             writer = cvCreateVideoWriter(qPrintable(file),
                                          //-1, framerate,
                                          CV_FOURCC('X', 'V', 'I', 'D'), framerate,
-                                         //CV_FOURCC('D', 'I', 'V', 'X'), framerate,
+                                         //CV_FOURCC('M', 'J', 'P', 'G'), framerate,
                                          cvSize(width, height), 1); 
             cvImage = cvCreateImageHeader(cvSize(width, height), IPL_DEPTH_8U, 3);
             data = (uchar*)malloc(width*height*3);

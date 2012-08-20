@@ -36,6 +36,11 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
+set(USE_MARS_VBO 0)
+if(USE_MARS_VBO)
+    ADD_DEFINITIONS(-DUSE_MARS_VBO)
+endif()
+
 
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -87,6 +92,7 @@ set(HEADERS
            src/3d_objects/SphereDrawObject.h
            src/3d_objects/TerrainDrawObject.h
            src/3d_objects/VertexBufferTerrain.h
+           src/3d_objects/MarsVBOGeom.h
            src/3d_objects/MultiResHeightMapRenderer.h
            src/2d_objects/HUDElement.h
            src/2d_objects/HUDNode.h
@@ -137,6 +143,7 @@ set(SOURCES
            src/3d_objects/SphereDrawObject.cpp
            src/3d_objects/TerrainDrawObject.cpp
            src/3d_objects/VertexBufferTerrain.cpp
+           src/3d_objects/MarsVBOGeom.cpp
            src/3d_objects/MultiResHeightMapRenderer.cpp
            src/2d_objects/HUDNode.cpp
            src/2d_objects/HUDLabel.cpp

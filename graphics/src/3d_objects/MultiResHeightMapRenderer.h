@@ -68,6 +68,7 @@ namespace mars {
     ~MultiResHeightMapRenderer();
 
     void initialize();
+    void highInitialize();
     void render();
     void collideSphere(double xPos, double yPos, double zPos, double radius);
     void setHeight(unsigned int gridX, unsigned int gridY, double height);
@@ -79,14 +80,13 @@ namespace mars {
     void cutHole(int x, int y);
     //        void addCell(int x, int y);
     void fillCell(SubTile *tile);
-    void unfillCell();
     void copyLast(int indicesOffsetPos, int verticesOffsetPos);
     void adaptSubTile(SubTile* tile, double xPos, double yPos,
                       double zPos, double radius);
     double intersectReplacementSphere(double x, double y, double z,
                                       double radius,
                                       double vx, double vy, double vz);
-    void initPlane();
+    bool initPlane(bool highRes);
     void recalcSteps();
 
   private:
@@ -94,7 +94,7 @@ namespace mars {
     void prepare();
 
     GLuint *vboIds;
-    bool isInitialized;
+    bool isInitialized, highIsInitialized;
     double targetWidth, targetHeight;
     int width, height;
     double scaleX, scaleY, scaleZ;
@@ -102,7 +102,13 @@ namespace mars {
 
     VertexData *vertices;
     GLuint *indices;
-    int numVertices, numIndices, indicesToDraw;
+    VertexData *highVertices;
+    GLuint *highIndices;
+
+    int numVertices, numIndices;
+    int highNumVertices, highNumIndices;
+    int indicesToDraw, highIndicesToDraw;
+
     double stepX, stepY;
     double highStepX, highStepY;
     int highWidth, highHeight;
@@ -112,6 +118,7 @@ namespace mars {
     bool dirty;
     double offset[3];
     double minX, minY, minZ, maxX, maxY, maxZ;
+    bool wireframe, solid, highWireframe, highSolid;
 
     std::map<int, SubTile*> subTiles;
     std::list<SubTile*> listSubTiles;
@@ -128,6 +135,7 @@ namespace mars {
     void fillOriginal(int x, int y);
     double getHeight(int x, int y, SubTile *tile);
     void drawSubTile(SubTile *tile);
+    void render(bool highRes);
 
   }; // class MultiResHeightMapRenderer
   

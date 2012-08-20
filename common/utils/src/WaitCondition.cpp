@@ -22,6 +22,7 @@
 #include "Mutex.h"
 
 #include <pthread.h>
+#include <errno.h>
 
 namespace mars {
   namespace utils {

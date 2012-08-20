@@ -27,6 +27,7 @@
 
 #include "LoadDrawObject.h"
 #include "gui_helper_functions.h"
+#include "MarsVBOGeom.h"
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
@@ -34,7 +35,6 @@
 
 #include <iostream>
 #include <cstdio>
-
 
 namespace mars {
   namespace graphics {
@@ -97,6 +97,10 @@ namespace mars {
       std::vector<osg::Vec3> normals;
       std::vector<osg::Vec2> texcoords;
 
+      std::vector<osg::Vec3> vertices2;
+      std::vector<osg::Vec3> normals2;
+      std::vector<osg::Vec2> texcoords2;
+
       osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
       osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
       osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
@@ -142,8 +146,13 @@ namespace mars {
             //fprintf(stderr, " %d/%d/%d", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) osgTexcoords->push_back(texcoords[iData[1]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
             osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
 
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
@@ -152,8 +161,13 @@ namespace mars {
             //fprintf(stderr, " %d/%d/%d", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) osgTexcoords->push_back(texcoords[iData[1]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
             osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
 
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
@@ -162,23 +176,36 @@ namespace mars {
             //fprintf(stderr, " %d/%d/%d\n", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) osgTexcoords->push_back(texcoords[iData[1]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
             osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
           }
         }
         foo = r+foo-o;
         if(r==256) memcpy(buffer, buffer+o, foo);
       }
 
+#ifdef USE_MARS_VBO
+      MarsVBOGeom *geometry = new MarsVBOGeom();
+      geometry->setVertexArray(vertices2);
+      geometry->setNormalArray(normals2);
+      if(osgTexcoords->size() > 0)
+        geometry->setTexCoordArray(texcoords2);
+#else
       osg::Geometry* geometry = new osg::Geometry;
       geometry->setVertexArray(osgVertices.get());
-      geometry->setNormalArray(osgNormals);
+      geometry->setNormalArray(osgNormals.get());
       geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
       if(osgTexcoords->size() > 0)
-        geometry->setTexCoordArray(0, osgTexcoords);
+        geometry->setTexCoordArray(0, osgTexcoords.get());
 
       osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
       geometry->addPrimitiveSet(drawArrays);
+#endif
       geode->addDrawable(geometry);
       geode->setName("bobj");
 

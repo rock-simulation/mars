@@ -37,7 +37,6 @@ namespace mars {
 
       using namespace mars::utils;
       using namespace mars::interfaces;
-      using namespace mars::sim;
 
       __classname__::__classname__(lib_manager::LibManager *theManager)
         : MarsPluginTemplate(theManager, "__classname__") {
@@ -54,6 +53,11 @@ namespace mars {
           control->dataBroker->registerTimedReceiver(this, groupName, dataName, "mars_sim/simTimer", 10, 0);
         */
 
+        /* get or create cfg_param
+           example = control->cfg->getOrCreateProperty("plugin", "example",
+           0.0, this);
+        */
+
         // Create a nonphysical box:
 
         // Create a camera fixed on the box:
@@ -63,7 +67,6 @@ namespace mars {
       }
 
       void __classname__::reset() {
-    
       }
 
       __classname__::~__classname__() {
@@ -81,6 +84,13 @@ namespace mars {
         // package.get("force1/x", force);
       }
   
+      void __classname__::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
+
+        if(_property.paramId == example.paramId) {
+          example.dValue = _property.dValue;
+        }
+      }
+
     } // end of namespace __namespace__
   } // end of namespace plugins
 } // end of namespace mars

@@ -36,6 +36,7 @@
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
+#include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <string>
 
@@ -49,7 +50,8 @@ namespace mars {
     namespace __namespace__ {
 
       class __classname__: public mars::interfaces::MarsPluginTemplate, 
-                         public mars::data_broker::ReceiverInterface {
+        public mars::data_broker::ReceiverInterface,
+        public mars::cfg_manager::CFGClient {
 
       public:
         __classname__(mars::lib_manager::LibManager *theManager);
@@ -70,10 +72,13 @@ namespace mars {
         virtual void receiveData(const data_broker::DataInfo &info,
                                  const data_broker::DataPackage &package,
                                  int callbackParam);
+        // CFGClient methods
+        virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
         
         // __classname__ methods
         
       private:
+        cfg_manager::cfgPropertyStruct example;
         
       }; // end of class definition __classname__
       

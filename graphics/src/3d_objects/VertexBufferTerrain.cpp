@@ -33,12 +33,19 @@
 #include <windows.h>
 #endif
 
+//#define DEBUG_TIME
+
+#ifdef DEBUG_TIME
+#include <mars/utils/misc.h>
+#endif
+
 namespace mars {
   namespace graphics {
 
     VertexBufferTerrain::VertexBufferTerrain() {
 
       setSupportsDisplayList(false);
+      setUseDisplayList(false);
 
       mrhmr = new MultiResHeightMapRenderer(1, 1, 1, 1, 1.0, 1.0, 1, 1.0, 1.0);
       width = height = scale = 1.0;
@@ -53,10 +60,13 @@ namespace mars {
                                             1.0, 1.0, 1.0, ts->texScale,
                                             ts->texScale);
       double maxHeight = 0.0;
+      double offset;
 
       for(int i=0; i<ts->height; ++i)
         for(int j=0; j<ts->width; ++j) {
-          mrhmr->setHeight(i, j, ts->scale*ts->pixelData[i*ts->width+j]);
+          if(i==0 || j==0 || i==ts->height-1 || j==ts->width-1) offset = -0.1;
+          else offset = 0.0;
+          mrhmr->setHeight(j, i, offset+ts->scale*ts->pixelData[i*ts->width+j]);
           if(ts->pixelData[i*ts->width+j]*ts->scale > maxHeight) {
             maxHeight = ts->pixelData[i*ts->width+j]*ts->scale;
           }
@@ -72,7 +82,25 @@ namespace mars {
     }
 
     void VertexBufferTerrain::drawImplementation(osg::RenderInfo& renderInfo) const{
+#ifdef DEBUG_TIME
+    long drawTime = utils::getTime();
+#endif
+      osg::State& state = *renderInfo.getState();
+      state.disableAllVertexArrays();
+      osg::ArrayDispatchers& arrayDispatchers = state.getArrayDispatchers();
+
+      arrayDispatchers.reset();
+      //arrayDispatchers.dispatch(osg::Geometry::BIND_OVERALL,0);
+
+      state.lazyDisablingOfVertexAttributes();
+      state.applyDisablingOfVertexAttributes();
+
       mrhmr->render();
+#ifdef DEBUG_TIME
+      drawTime = utils::getTimeDiff(drawTime);
+      if(drawTime > 1)
+        fprintf(stderr, "MultiResHeightMapRenderer: drawTime: %ld\n", drawTime);
+#endif
     }
 
     void VertexBufferTerrain::collideSphere(double xPos, double yPos,

@@ -85,7 +85,7 @@ namespace mars {
     MARS::~MARS() {
       //! close simulation
       //fprintf(stderr, "\n want to exit\n");
-      fprintf(stderr, "\n want to exit\n");
+      //fprintf(stderr, "\n want to exit\n");
       exit_main(0);
 
       if(graphicsTimer) delete graphicsTimer;

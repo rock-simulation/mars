@@ -32,11 +32,6 @@
 #include <cmath>
 #include <string.h>
 
-//#define DEBUG_TIME
-
-#ifdef DEBUG_TIME
-#include <mars/base/utils.h>
-#endif
 
 namespace mars {
 
@@ -59,12 +54,12 @@ namespace mars {
                                                        double scaleZ,
                                                        double texScaleX,
                                                        double texScaleY)
-    : vboIds(new GLuint[2]), isInitialized(false), targetWidth(visualW),
-      targetHeight(visualH), width(gridW), height(gridH), scaleX(scaleX),
-      scaleY(scaleY), scaleZ(scaleZ), texScaleX(texScaleX),
+    : vboIds(new GLuint[4]), isInitialized(false), highIsInitialized(false),
+      targetWidth(visualW), targetHeight(visualH), width(gridW), height(gridH),
+      scaleX(scaleX), scaleY(scaleY), scaleZ(scaleZ), texScaleX(texScaleX),
       texScaleY(texScaleY) {
 
-    maxNumSubTiles = 32;
+    maxNumSubTiles = 100;
     heightData = NULL;
     numSubTiles = 0;
     prepare();
@@ -73,6 +68,10 @@ namespace mars {
       offset[i] = 0.;
 
     dirty = true;
+    wireframe = false;
+    highWireframe = true;
+    solid = true;
+    highSolid = false;
   }
 
   MultiResHeightMapRenderer::~MultiResHeightMapRenderer() {
@@ -93,14 +92,29 @@ namespace mars {
 #endif
 
     // Generate 2 VBOs
-    //glEnable(GL_DEPTH_TEST);
-    //glDisable(GL_CULL_FACE);
     glGenBuffers(2, vboIds);
-
+    if(!vboIds[0] || !vboIds[1]) {
+      fprintf(stderr, "MultiResHeightMapRenderer::initialize error while generating buffers\n");
+    }
     isInitialized = true;
 
     // Initializes cube geometry and transfers it to VBOs
-    initPlane();
+    isInitialized = initPlane(false);
+  }
+
+  void MultiResHeightMapRenderer::highInitialize() {
+    if(!isInitialized) return;
+
+    // Generate 2 VBOs
+    glGenBuffers(2, vboIds+2);
+    if(!vboIds[2] || !vboIds[3]) {
+      fprintf(stderr, "MultiResHeightMapRenderer::highInitialize error while generating buffers\n");
+    }
+
+    highIsInitialized = true;
+
+    // Initializes cube geometry and transfers it to VBOs
+    highIsInitialized = initPlane(true);
   }
 
   void MultiResHeightMapRenderer::prepare() {
@@ -112,24 +126,41 @@ namespace mars {
     for(int i = 0; i < height; ++i)
       for(int j = 0; j < width; ++j)
         heightData[i][j] = -1;
-    numVertices = (width*height + maxNumSubTiles*(highWidth+1)*(highHeight+1));
-    numIndices = (width-1)*(height-1)*6+maxNumSubTiles*highWidth*highHeight*6;
+    numVertices = width*height;
+    highNumVertices = maxNumSubTiles*(highWidth+1)*(highHeight+1);
+    numIndices = (width-1)*(height-1)*6;
+    highNumIndices = maxNumSubTiles*highWidth*highHeight*6;
     indicesToDraw = (width-1)*(height-1)*6;
-    newIndicesPos = (height-1)*(width-1)*6;
-    newVerticesPos = height*width;
+    highIndicesToDraw = 0;
+    newIndicesPos = 0;//(height-1)*(width-1)*6;
+    newVerticesPos = 0;//height*width;
   }
 
   void MultiResHeightMapRenderer::clear() {
 
-    free (vertices);
-    vertices = NULL;
-    free (indices);
-    indices = NULL;
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-    glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, NULL, GL_STATIC_DRAW);
-    glDeleteBuffers(2, vboIds);
+    if(isInitialized) {
+      free (vertices);
+      vertices = NULL;
+      free (indices);
+      indices = NULL;
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
+      glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+      glDeleteBuffers(2, vboIds);
+    }
+
+    if(highIsInitialized) {
+      free (highVertices);
+      highVertices = NULL;
+      free (highIndices);
+      highIndices = NULL;
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
+      glBufferData(GL_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, NULL, GL_DYNAMIC_DRAW);
+      glDeleteBuffers(2, vboIds+2);
+    }
 
     while(!listSubTiles.empty()) {
       SubTile *toRemove = listSubTiles.front();
@@ -163,7 +194,7 @@ namespace mars {
 
     highWidth = highHeight = 1;
     double radius = 0.05;
-    double desiredStep = radius / 10;
+    double desiredStep = radius * 0.2;
 
     while(highStepX > desiredStep) {
       highStepX *= 0.5;
@@ -179,17 +210,8 @@ namespace mars {
   }
 
   void MultiResHeightMapRenderer::render() {
-    //GLboolean culling;
 
     if(!isInitialized) initialize();
-
-#ifdef DEBUG_TIME
-    long drawTime = base::getTime();
-#endif
-
-    //glGetBooleanv(GL_CULL_FACE, &culling);
-    //if(culling)
-    //glDisable(GL_CULL_FACE);
 
     if(dirty) {
       glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
@@ -222,87 +244,44 @@ namespace mars {
                      handlePrint.z, handlePrint.r);
     }
 
-    glPushMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glTranslatef(offset[0], offset[1], offset[2]);
+    render(false);
 
-    glPointSize(5);
-    glColor3f(1, 0, 0);
-
-    // Tell OpenGL which VBOs to use
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
-
-    // do same as vertex array except pointer
-    // activate vertex coords array
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-
-    glVertexPointer(3, GL_FLOAT, sizeof(VertexData), 0); // last param is offset, not ptr
-    glNormalPointer(GL_FLOAT, sizeof(VertexData), (GLvoid*)( (char*)NULL + 3*sizeof(GLfloat))); // last param is offset, not ptr
-
-    glEnableVertexAttribArray(7);
-    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
-                          (GLvoid*)( (char*)NULL + 6*sizeof(GLfloat)));
-
-    glClientActiveTextureARB(GL_TEXTURE0_ARB);
-    glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
-                      (GLvoid*)( (char*)NULL + 10*sizeof(GLfloat)));
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    /*
-      glClientActiveTextureARB(GL_TEXTURE1_ARB);
-      glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
-      (GLvoid*)( (char*)NULL + 10*sizeof(GLfloat)));
-    */
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    //mat_diffuse[0] = 0.0;
-    //mat_diffuse[1] = 1.0;
-    //glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-    //glColor3f(0, 1, 0);
-
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    glDrawElements(GL_TRIANGLES, indicesToDraw, GL_UNSIGNED_INT, 0);
-
-    GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
-
-    glLineWidth(2.0);
-
-    // draw 6 quads using offset of index array
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glDrawElements(GL_TRIANGLES, indicesToDraw, GL_UNSIGNED_INT, 0);
-    glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-    
-    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
-    glDisableClientState(GL_NORMAL_ARRAY);
-
-    glClientActiveTextureARB(GL_TEXTURE0_ARB);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    //glClientActiveTextureARB(GL_TEXTURE1_ARB);
-    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-
-    glDisableVertexAttribArray(7);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    //if(culling)
-    //glEnable(GL_CULL_FACE);
-    glPopMatrix();
-
-#ifdef DEBUG_TIME
-    fprintf(stderr, "MultiResHeightMapRenderer: drawTime: %ld\n",
-            base::getTimeDiff(drawTime));
-#endif
+    if(highIsInitialized && highIndicesToDraw) {
+      render(true);
+    }
   }
 
-  void MultiResHeightMapRenderer::initPlane() {
+  bool MultiResHeightMapRenderer::initPlane(bool highRes) {
+
+    VertexData* vertices;
+    GLuint *indices;
+    int numVertices, numIndices;
+    int vboId;
+    int height, width;
+
+    if(highRes) {
+      numVertices = highNumVertices;
+      numIndices = highNumIndices;
+      vboId = 2;
+      height = highHeight;
+      width = highWidth;
+    }
+    else {
+      numVertices = this->numVertices;
+      numIndices = this->numIndices;
+      vboId = 0;
+      height = this->height;
+      width = this->width;
+    }
+    fprintf(stderr, "MultiResHeightMapRenderer::initPlane %d %d %d %d %d %d\n",
+            numVertices, numIndices,
+            this->numVertices, this->numIndices,
+            highNumVertices, highNumIndices);
 
     vertices = (VertexData*)malloc(numVertices*sizeof(VertexData));
     if(!vertices) {
-      return;
+      fprintf(stderr, "MultiResHeightMapRenderer::initPlane error while allocating memory for vertices %lu\n", numVertices);
+      return false;
     }
     for(int y=0; y<height; ++y) {
       for(int x=0; x<width; ++x) {
@@ -312,16 +291,21 @@ namespace mars {
         vertices[index].position[2] = heightData[y][x] * scaleZ;
         vertices[index].texCoord[0] = x * stepX * scaleX*texScaleX;
         vertices[index].texCoord[1] = y * stepY * scaleY*texScaleY;
-        getNormal(x, y, width, height, stepX, stepY, heightData,
-                  vertices[index].normal,
-                  vertices[index].tangent, true);
+
+        vertices[index].normal[0] = 0.0;
+        vertices[index].normal[1] = 0.0;
+        vertices[index].normal[2] = 1.0;
+        vertices[index].tangent[0] = 0.0;
+        vertices[index].tangent[1] = 1.0;
+        vertices[index].tangent[2] = 0.0;
       }
     }
 
     indices = (GLuint*)calloc(numIndices, sizeof(GLuint));
     if(!indices) {
+      fprintf(stderr, "MultiResHeightMapRenderer::initPlane error while allocating memory for indices %lu\n", numIndices);
       free(vertices);
-      return;
+      return false;
     }
     for(int y=0; y<height-1; ++y) {
       for(int x=0; x<width-1; ++x) {
@@ -335,13 +319,24 @@ namespace mars {
       }
     }
 
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(VertexData), vertices, GL_DYNAMIC_DRAW);
-    //        glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(VertexData), vertices, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, vboIds[vboId]);
+    glBufferData(GL_ARRAY_BUFFER, numVertices * sizeof(VertexData), vertices,
+                 GL_DYNAMIC_DRAW);
 
     // Transfer index data to VBO 1
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), indices, GL_DYNAMIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[vboId+1]);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(GLuint), indices,
+                 GL_DYNAMIC_DRAW);
+
+    if(highRes) {
+      highVertices = vertices;
+      highIndices = indices;
+    }
+    else {
+      this->vertices = vertices;
+      this->indices = indices;
+    }
+    return true;
   }
 
 
@@ -491,8 +486,10 @@ namespace mars {
   }
 
   void MultiResHeightMapRenderer::fillCell(SubTile *tile) {
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
+
+    // use highResBuffer
+    glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
     VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
                                                     GL_WRITE_ONLY);
 
@@ -520,10 +517,12 @@ namespace mars {
       for(int l=0; l<highHeight+1; l++) {
         for(int j=0; j<highWidth+1; j++) {
           index = x2 + l*(highWidth+1) + j;
+          
           getNormal(j, l, highWidth, highHeight, highStepX, highStepY,
                     tile->heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
+          
         }
       }
     }
@@ -545,7 +544,7 @@ namespace mars {
         }
       }
     }
-    indicesToDraw += highHeight*highWidth*6;
+    highIndicesToDraw += highHeight*highWidth*6;
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -554,12 +553,9 @@ namespace mars {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
-  void MultiResHeightMapRenderer::unfillCell() {
-    indicesToDraw -= highHeight*highWidth*6;
-  }
-
   void MultiResHeightMapRenderer::collideSphere(double xPos, double yPos,
                                                 double zPos, double radius) {
+
     FootPrint newFootPrint = {xPos, yPos, zPos, radius};
     footPrints.push_back(newFootPrint);
   }
@@ -570,11 +566,15 @@ namespace mars {
     if(!isInitialized) {
       return;
     }
+
     // first check if we are within the current heightmap
     if((xPos < 0 || yPos < 0) ||
        (xPos > targetWidth || yPos > targetHeight)) {
       return;
     }
+
+    if(!highIsInitialized) highInitialize();
+    if(!highIsInitialized) return;
 
     std::list<SubTile*> toProcess;
     std::list<SubTile*>::iterator iter;
@@ -596,7 +596,7 @@ namespace mars {
       SubTile *toRemove = listSubTiles.front();
       listSubTiles.pop_front();
       numSubTiles--;
-      indicesToDraw -= highHeight*highWidth*6;
+      highIndicesToDraw -= highHeight*highWidth*6;
       copyLast(toRemove->indicesArrayOffset, toRemove->verticesArrayOffset);
       subTiles.erase(toRemove->mapIndex);
       fillOriginal(toRemove->x, toRemove->y);
@@ -620,7 +620,7 @@ namespace mars {
             SubTile *toRemove = listSubTiles.front();
             listSubTiles.pop_front();
             numSubTiles--;
-            indicesToDraw -= highHeight*highWidth*6;
+            highIndicesToDraw -= highHeight*highWidth*6;
             newIndicesPos = toRemove->indicesArrayOffset;
             newVerticesPos = toRemove->verticesArrayOffset;
             subTiles.erase(toRemove->mapIndex);
@@ -663,24 +663,28 @@ namespace mars {
     }
 
     std::list<SubTile*>::iterator listIter;
+    bool found;
     for(iter=toProcess.begin(); iter!=toProcess.end(); ++iter) {
+      found = false;
       for(listIter=listSubTiles.begin(); listIter!=listSubTiles.end();
           ++listIter) {
         if(*listIter == *iter) {
           listSubTiles.erase(listIter);
           listSubTiles.push_back(*iter);
+          found = true;
           break;
         }
       }
       //fprintf(stderr, "adapt Subtile\n");
-      adaptSubTile(*iter, xPos, yPos, zPos, radius);
+      if(found)
+        adaptSubTile(*iter, xPos, yPos, zPos, radius);
     }
   }
 
   void MultiResHeightMapRenderer::copyLast(int indicesOffsetPos,
                                            int verticesOffsetPos) {
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
+    glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
     VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
                                                     GL_WRITE_ONLY);
 
@@ -801,9 +805,13 @@ namespace mars {
     }
 
     if(adapt) {
-      glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
       VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
                                                       GL_WRITE_ONLY);
+      if(!vertices) {
+        fprintf(stderr, "MultiResHeightMapRenderer::adaptSubtile glMapBuffer returned 0\n");
+        return;
+      }
       VertexData* v;
       int index;
       for(int y=y1; y<y2; ++y) {
@@ -811,10 +819,12 @@ namespace mars {
           index = tile->verticesArrayOffset+y*(highWidth+1)+x;
           v = vertices+index;
           v->position[2] = tile->heightData[y][x] * scaleZ;
+          
           getNormal(x, y, highWidth, highHeight, highStepX, highStepY,
                     tile->heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
+          
         }
       }
       glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -836,6 +846,8 @@ namespace mars {
   void MultiResHeightMapRenderer::setHeight(unsigned int gridX,
                                             unsigned int gridY,
                                             double height) {
+    assert(gridX < width);
+    assert(gridY < this->height);
     if(height < minZ)
       minZ = height;
     if(height > maxZ)
@@ -964,10 +976,12 @@ namespace mars {
   }
 
   void MultiResHeightMapRenderer::normalize(float *v) {
-    double length = sqrt(v[0]*v[0]+ v[1]*v[1]+ v[2]*v[2]);
-    v[0] /= length;
-    v[1] /= length;
-    v[2] /= length;
+    float a = v[0],b = v[1],c = v[2];
+    //    float length = 1.0f/sqrtf(v[0]*v[0]+ v[1]*v[1]+ v[2]*v[2]);
+    float length = 1.0f/sqrtf(a*a+b*b+c*c);
+    *(v++) *= length;
+    *(v++) *= length;
+    *v *= length;
   }
 
   double MultiResHeightMapRenderer::getHeight(int x, int y, SubTile *tile) {
@@ -978,7 +992,7 @@ namespace mars {
   }
 
   void MultiResHeightMapRenderer::drawSubTile(SubTile *tile) {
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
+    glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
     VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
                                                     GL_WRITE_ONLY);
     VertexData* v;
@@ -997,6 +1011,74 @@ namespace mars {
     }
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+  }
+
+
+  void MultiResHeightMapRenderer::render(bool highRes) {
+
+    int indicesToDraw;
+
+    // Tell OpenGL which VBOs to use
+    if(highRes) {
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
+      indicesToDraw = highIndicesToDraw;
+    }
+    else {
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
+      indicesToDraw = this->indicesToDraw;
+    }
+
+    // do same as vertex array except pointer
+    // activate vertex coords array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_NORMAL_ARRAY);
+
+    // last param is offset, not ptr
+    glVertexPointer(3, GL_FLOAT, sizeof(VertexData), 0);
+    // last param is offset, not ptr
+    glNormalPointer(GL_FLOAT, sizeof(VertexData),
+                    (GLvoid*)( (char*)NULL + 3*sizeof(GLfloat)));
+
+    glEnableVertexAttribArray(7);
+    glVertexAttribPointer(7, 4, GL_FLOAT, GL_FALSE, sizeof(VertexData),
+                          (GLvoid*)( (char*)NULL + 6*sizeof(GLfloat)));
+
+    glClientActiveTextureARB(GL_TEXTURE0);
+    glTexCoordPointer(2, GL_FLOAT, sizeof(VertexData),
+                      (GLvoid*)( (char*)NULL + 10*sizeof(GLfloat)));
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    if((!highRes && solid) || (highRes && highSolid)) {
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+      glDrawElements(GL_TRIANGLES, indicesToDraw, GL_UNSIGNED_INT, 0);
+    }
+
+    //GLfloat mat_diffuse[] = { 1.0, 0.0, 0.0, 1.0 };
+    //glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_diffuse);
+
+    if((!highRes && wireframe)  || (highRes && highWireframe)) {
+      glLineWidth(2.0);
+
+      glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+      glDrawElements(GL_TRIANGLES, indicesToDraw, GL_UNSIGNED_INT, 0);
+      glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    }
+
+    glDisableClientState(GL_VERTEX_ARRAY);            // deactivate vertex array
+    glDisableClientState(GL_NORMAL_ARRAY);
+
+    //glClientActiveTextureARB(GL_TEXTURE0);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    //glClientActiveTextureARB(GL_TEXTURE1);
+    //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glDisableVertexAttribArray(7);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
 } // namespace mars

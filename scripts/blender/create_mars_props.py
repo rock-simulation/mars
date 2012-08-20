@@ -32,16 +32,21 @@ def getChildren(parent):
 print("new run")
 
 def handleProps(obj):
+    print("handle: "+obj.name)
     obj.select = False
     obj.data.name = obj.name
-    if setDefault(obj, "type", "body") == "body":
+    defaultType = "body"
+    if obj.name.find("joint") > -1:
+        defaultType = "joint"
+
+    if setDefault(obj, "type", defaultType) == "body":
         obj["id"] = getNextBodyID()
 
         if obj.parent:
             children = getChildren(obj.parent)
             setGroup = False
             for da in children:
-                if da["type"] == "joint":
+                if "type" in da and da["type"] == "joint":
                     if da["node2"] == obj.name:
                         obj["group"] = getNextGroupID()
                         setGroup = True
