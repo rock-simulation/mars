@@ -35,6 +35,7 @@
 #include <mars/interfaces/gui/MarsGuiInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/Thread.h>
+#include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <QDir>
 
@@ -73,13 +74,15 @@ namespace mars {
       MARS::control->sim->handleError(1);
     }
 
-    MARS::MARS() : libManager(new lib_manager::LibManager()),
-                   configDir("."), marsGui(NULL) {
+    MARS::MARS() : configDir("."),
+                   libManager(new lib_manager::LibManager()),
+                   marsGui(NULL) {
       graphicsTimer = NULL;
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
+      coreConfigFile = configDir+"/core_libs.txt";
     }
 
     MARS::~MARS() {
@@ -118,17 +121,26 @@ namespace mars {
         fprintf(stderr, "Current locale conflicts with mars\n");
         exit(1);
       }
-      fprintf(stderr, " [OK]\n");
+      //fprintf(stderr, " [OK]\n");
     
       // load the simulation core_libs:
-      libManager->loadConfigFile(configDir+"/core_libs.txt");
+      libManager->loadConfigFile(coreConfigFile);
+
+      mars::cfg_manager::CFGManagerInterface *cfg;
+      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+      if(cfg) {
+        cfg_manager::cfgPropertyStruct configPath;
+        cfg->getOrCreateProperty("Config", "config_path", configDir);
+        configPath.sValue = configDir;
+        cfg->setProperty(configPath);
+      }
 
       // then get the simulation
       mars::interfaces::SimulatorInterface *marsSim;
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(!marsSim) {
         fprintf(stderr, "\nmain: error while casting simulation lib\n\n");
-        exit(1);
+        exit(2);
       }
       control = marsSim->getControlCenter();
       // then read the simulation arguments

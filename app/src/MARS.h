@@ -62,10 +62,11 @@ namespace mars {
       inline lib_manager::LibManager* getLibManager() {return libManager;}
 
       static interfaces::ControlCenter *control;
+      std::string configDir;
+      std::string coreConfigFile;
 
     private:
       lib_manager::LibManager *libManager;
-      std::string configDir;
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;
 
