@@ -63,16 +63,16 @@ namespace mars {
           normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
         */
         vertices->push_back(osg::Vec3(x2, y2, 0.0f));
-        texcoords->push_back(osg::Vec2(0.0f, 0.0f));
+        texcoords->push_back(osg::Vec2(x2, y2));
         normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
         vertices->push_back(osg::Vec3(x1, y2, 0.0f));
-        texcoords->push_back(osg::Vec2(extent_.z(), 0.0f));
+        texcoords->push_back(osg::Vec2(x1, y2));
         normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
         vertices->push_back(osg::Vec3(x1, y1, 0.0f));
-        texcoords->push_back(osg::Vec2(extent_.z(), extent_.z()));
+        texcoords->push_back(osg::Vec2(x1, y1));
         normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
         vertices->push_back(osg::Vec3(x2, y1, 0.0f));
-        texcoords->push_back(osg::Vec2(0.0f, extent_.z()));
+        texcoords->push_back(osg::Vec2(x2, y1));
         normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
 
       }
