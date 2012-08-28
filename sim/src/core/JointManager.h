@@ -79,6 +79,8 @@ namespace mars {
       virtual unsigned long getID(const std::string &joint_name) const;
       virtual bool getDataBrokerNames(unsigned long id, std::string *groupName,
                                       std::string *dataName) const;
+      virtual void setOfflineValue(unsigned long id, interfaces::sReal value);
+
     private:
       unsigned long next_joint_id;
       std::map<unsigned long, SimJoint*> simJoints;

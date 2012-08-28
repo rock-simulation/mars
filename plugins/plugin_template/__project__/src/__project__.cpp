@@ -64,6 +64,8 @@ namespace mars {
 
         // Create a HUD texture element:
 
+        //gui->addGenericMenuAction("../__classname__/entry", 1, this);
+
       }
 
       void __classname__::reset() {

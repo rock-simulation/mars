@@ -986,6 +986,41 @@ namespace mars {
       updateDynamicNodes(0, false);
     }
 
+    void NodeManager::positionNode(NodeId id, Vector pos,
+                                   unsigned long excludeJointId) {
+      std::vector<int> gids;
+      NodeMap::iterator iter = simNodes.find(id);
+      if(iter == simNodes.end()) {
+        iMutex.unlock();
+        LOG_ERROR("NodeManager::rotateNode: node id not found!");
+        return;
+      }
+
+      SimNode *editedNode = iter->second;
+      Vector offset = pos - editedNode->getPosition();
+      editedNode->setPosition(pos, true);
+
+      std::vector<SimJoint*> joints = control->joints->getSimJoints();
+      std::vector<SimJoint*>::iterator jter;
+      for(jter=joints.begin(); jter!=joints.end(); ++jter) {
+        if((*jter)->getIndex() == excludeJointId) {
+          joints.erase(jter);
+          break;
+        }
+      }
+
+      if(editedNode->getGroupID())
+        gids.push_back(editedNode->getGroupID());
+
+      NodeMap nodes = simNodes;
+      nodes.erase(nodes.find(editedNode->getID()));
+
+      moveNodeRecursive(id, offset, &joints, &gids, &nodes);
+
+      update_all_nodes = true;
+      updateDynamicNodes(0, false);
+    }
+
     void NodeManager::rotateNodeRecursive(NodeId id,
                                           const Vector &rotation_point,
                                           const Quaternion &rotation,

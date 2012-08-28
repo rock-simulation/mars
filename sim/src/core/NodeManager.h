@@ -146,8 +146,11 @@ namespace mars {
       virtual void setIsMovable(interfaces::NodeId id, bool isMovable);
       virtual void lock() {iMutex.lock();}
       virtual void unlock() {iMutex.unlock();}
-      virtual void rotateNode(interfaces::NodeId id, utils::Vector pivot, utils::Quaternion q,
+      virtual void rotateNode(interfaces::NodeId id, utils::Vector pivot,
+                              utils::Quaternion q,
                               unsigned long excludeJointId);
+      virtual void positionNode(interfaces::NodeId id, utils::Vector pos,
+                                unsigned long excludeJointId);
 
     private:
       interfaces::NodeId next_node_id;

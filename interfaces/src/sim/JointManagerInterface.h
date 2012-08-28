@@ -191,6 +191,8 @@ namespace mars {
        */ 
       virtual bool getDataBrokerNames(unsigned long id, std::string *groupName,
                                       std::string *dataName) const = 0;
+
+      virtual void setOfflineValue(unsigned long id, sReal value) = 0;
     };
 
   } // end of namespace interfaces

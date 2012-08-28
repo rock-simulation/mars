@@ -57,13 +57,15 @@ def handleProps(obj):
             obj["group"] = getNextGroupID()
 
         if "mass" not in obj and "density" not in obj:
-            setDefault(obj, "density", 100.0)
+            setDefault(obj, "mass", 0.1)
 
-    else:
+
+    elif obj["type"] == "joint":
         obj["id"] = getNextJointID()
         setDefault(obj, "node2", "air")
         setDefault(obj, "jointType", "hinge")
         setDefault(obj, "anchor", "node2")
+        setDefault(obj, "controllerIndex", 0)
         children = getChildren(obj.parent)
         if len(children) == 2:
             if children[0] != obj:

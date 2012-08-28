@@ -15,6 +15,14 @@ nextMaterialID = 1
 def veckey3d(v):
     return round(v.x, 6), round(v.y, 6), round(v.z, 6)
 
+def getID(name):
+    for obj in bpy.data.objects:
+        if obj.name == name:
+            if "id" in obj:
+                return obj["id"]
+            else :
+                return 0
+    return 0
 
 def exportBobj(outname, obj):
     totverts = totuvco = totno = 1
@@ -106,7 +114,6 @@ def exportBobj(outname, obj):
                         for vi, v in f_v:
                             da = struct.pack('iii', v.index + totverts, totuvco + uv_face_mapping[f_index][vi], globalNormals[veckey3d(v.normal)])
                             out.write(da)  # vert, uv, normal
-
                     else:  # No smoothing, face normals
                         no = globalNormals[veckey3d(f.normal)]
                         for vi, v in f_v:
@@ -129,6 +136,7 @@ def exportBobj(outname, obj):
 
 objList = []
 jointList = []
+sensorList = []
 
 def getChildren(parent):
     children = []
@@ -141,12 +149,15 @@ def getChildren(parent):
 def fillList(obj):
     global objList
     global jointList
+    global sensorList
 
     if "type" in obj:
         if obj["type"] == "body":
             objList.append(obj)
-        else:
+        elif obj["type"] == "joint":
             jointList.append(obj)
+        elif obj["type"] == "sensor":
+            sensorList.append(obj)
     obj.select = False
 
     children = getChildren(obj)
@@ -163,7 +174,7 @@ out = open(path+filename+".scene", "w")
 out.write("""<?xml version="1.0"?>
 <!DOCTYPE dfkiMarsSceneFile PUBLIC '-//DFKI/RIC/MARS SceneFile 1.0//EN' ''>
 <SceneFile>
-  <version>0.1</version>
+  <version>0.2</version>
   <nodelist>
 """)
 
@@ -195,7 +206,28 @@ def writeNode(obj):
     size[1] = abs(2.0*(bBox[0][1] - center[1]))
     size[2] = abs(2.0*(bBox[0][2] - center[2]))
 
-    center = obj.location
+    sizeScaleX = 1.0
+    sizeScaleY = 1.0
+    sizeScaleZ = 1.0
+
+    if "sizeScaleX" in obj:
+        sizeScaleX = obj["sizeScaleX"]
+    if "sizeScaleY" in obj:
+        sizeScaleY = obj["sizeScaleY"]
+    if "sizeScaleZ" in obj:
+        sizeScaleZ = obj["sizeScaleZ"]
+
+    physicMode = "box"
+    radius = 0.0
+    if "physicMode" in obj:
+        physicMode = obj["physicMode"]
+        if "radius" in obj:
+            radius = obj["radius"]
+
+    pivot = center
+    center = obj.location.copy()
+    center += obj.matrix_world.to_quaternion() * mathutils.Vector((pivot[0], pivot[1], pivot[2]))
+
 #mesh = obj.data
     #for vertex in mesh.vertices:
     #    vertex.co[0] -= center[0]
@@ -214,8 +246,12 @@ def writeNode(obj):
         parent = obj.parent
         parentIQ = parent.matrix_world.to_quaternion()
         parentIQ.invert()
-        parentPos = parent.matrix_world * mathutils.Vector((0.0, 0.0, 0.0))
-        childPos = obj.matrix_world * mathutils.Vector((0.0, 0.0, 0.0))
+        bBox = parent.bound_box
+        pivot2 = calcCenter(bBox)
+        v = mathutils.Vector((pivot2[0], pivot2[1], pivot2[2]))
+        #v = parent.matrix_world.to_quaternion() * v
+        parentPos = parent.matrix_world * v
+        childPos = obj.matrix_world * mathutils.Vector((pivot[0], pivot[1], pivot[2]))
         childPos = childPos - parentPos
         center = parentIQ * childPos
         parentRot = parent.matrix_world.to_quaternion()
@@ -232,7 +268,7 @@ def writeNode(obj):
     out.write('      <filename>'+obj_name+'.bobj</filename>\n')
     out.write('      <index>'+str(obj["id"])+'</index>\n')
     out.write('      <groupid>'+str(obj["group"])+'</groupid>\n')
-    out.write('      <physicmode>2</physicmode>\n')
+    out.write('      <physicmode>'+physicMode+'</physicmode>\n')
     if parentID:
         out.write('      <relativeid>'+str(parentID)+'</relativeid>\n')
     out.write('      <'+posString+'>\n')
@@ -248,22 +284,26 @@ def writeNode(obj):
     out.write('      </'+rotString+'>\n')
     out.write('      <movable>true</movable>\n')
     out.write('      <extend>\n')
-    out.write('        <x>'+str(0.9*size[0])+'</x>\n')
-    out.write('        <y>'+str(0.9*size[1])+'</y>\n')
-    out.write('        <z>'+str(0.9*size[2])+'</z>\n')
+    if radius > 0.0 :
+        out.write('        <x>'+str(radius)+'</x>\n')
+    else :
+        out.write('        <x>'+str(sizeScaleX*size[0])+'</x>\n')
+    out.write('        <y>'+str(sizeScaleY*size[1])+'</y>\n')
+    out.write('        <z>'+str(sizeScaleZ*size[2])+'</z>\n')
     out.write('      </extend>\n')
     out.write('      <material_id>'+str(matID)+'</material_id>\n')
     if "mass" in obj:
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
+        out.write('      <density>0.0</density>\n')
     elif "density" in obj:
         out.write('      <density>'+str(obj["density"])+'</density>\n')
     else:
-        out.write('      <density>100</density>\n')
-#    out.write('      <pivot>\n')
-#    out.write('        <x>'+str(center[0])+'</x>\n')
-#    out.write('        <y>'+str(center[1])+'</y>\n')
-#    out.write('        <z>'+str(center[2])+'</z>\n')
-#    out.write('      </pivot>\n')
+        out.write('      <density>500</density>\n')
+    out.write('      <pivot>\n')
+    out.write('        <x>'+str(pivot[0])+'</x>\n')
+    out.write('        <y>'+str(pivot[1])+'</y>\n')
+    out.write('        <z>'+str(pivot[2])+'</z>\n')
+    out.write('      </pivot>\n')
 
     out.write('      <visualsize>\n')
     out.write('        <x>'+str(size[0])+'</x>\n')
@@ -277,27 +317,35 @@ def writeNode(obj):
 def writeJoint(joint):
 
     #bBox = joint.bound_box
-    pos1 = mathutils.Vector((0.0, 0.0, 0.0))
-    pos2 = mathutils.Vector((0.0, 0.0, 1.0))
-    center = joint.matrix_world * pos1
-    pos2 = joint.matrix_world * pos2
-    axis = pos2-center
+    pos = mathutils.Vector((0.0, 0.0, 1.0))
+    axis = joint.matrix_world.to_quaternion() * pos
+    center = joint.matrix_world * mathutils.Vector((0.0, 0.0, 0.0))
     node2ID = 0
     node2 = None
     if joint["node2"] in bpy.data.objects:
         node2 = bpy.data.objects[joint["node2"]]
         node2ID = node2["id"]
 
-    offsetAngle = 0.0
-    if node2:
+    invert = 1
+    if "invertAxis" in joint and joint["invertAxis"] == 1:
+        invert = -1
+
+    jointOffset = 0.0
+    if "jointOffset" in joint:
+        jointOffset = joint["jointOffset"]
+    elif node2:
         joint.rotation_mode = 'QUATERNION'
         v1 = joint.rotation_quaternion * mathutils.Vector((1.0, 0.0, 0.0))
         v2 = node2.rotation_quaternion * mathutils.Vector((1.0, 0.0, 0.0))
-        offsetAngle = v1.angle(v2, 0.0)
-        if v1.cross(v2)[2] > 0:
-            offsetAngle *= -1
+        jointOffset = v1.angle(v2, 0.0)
+        q = joint.rotation_quaternion.copy()
+        q.invert()
+        axis_ = q * v1.cross(v2)
+        if axis_[2] > 0:
+            jointOffset *= -1
 
-    jointType = {"hinge": 1, "fixed": 6}[joint["jointType"]]
+    #jointType = {"hinge": 1, "fixed": 6, "slider": 3}[joint["jointType"]]
+    jointType = joint["jointType"]
     anchorPos = {"custom": 4, "node1": 1, "node2": 2, "center": 3}[joint["anchor"]]
 
     #calcCenter(bBox)
@@ -314,28 +362,78 @@ def writeJoint(joint):
     out.write('        <z>'+str(center[2])+'</z>\n')
     out.write('      </anchor>\n')
     out.write('      <axis1>\n')
-    out.write('        <x>'+str(axis[0])+'</x>\n')
-    out.write('        <y>'+str(axis[1])+'</y>\n')
-    out.write('        <z>'+str(axis[2])+'</z>\n')
+    out.write('        <x>'+str(invert*axis[0])+'</x>\n')
+    out.write('        <y>'+str(invert*axis[1])+'</y>\n')
+    out.write('        <z>'+str(invert*axis[2])+'</z>\n')
     out.write('      </axis1>\n')
-    out.write('      <angle1_offset>'+str(offsetAngle)+'</angle1_offset>\n')
+    if "lowStop" in joint:
+        out.write('      <lowStopAxis1>'+str(joint["lowStop"])+'</lowStopAxis1>\n')
+    if "highStop" in joint:
+        out.write('      <highStopAxis1>'+str(joint["highStop"])+'</highStopAxis1>\n')
+    if "springConst" in joint:
+        out.write('      <spring_const_constraint_axis1>'+str(joint["springConst"])+'</spring_const_constraint_axis1>\n')
+
+    out.write('      <angle1_offset>'+str(invert*jointOffset)+'</angle1_offset>\n')
     out.write('    </joint>\n')
-    return offsetAngle
+    return jointOffset*invert
 
 def writeMotor(joint, motorValue):
     out.write('    <motor name="'+joint.name+'">\n')
     out.write('      <index>'+str(joint["id"])+'</index>\n')
     out.write('      <jointIndex>'+str(joint["id"])+'</jointIndex>\n')
     out.write('      <axis>1</axis>\n')
-    out.write('      <maximumVelocity>6.14</maximumVelocity>\n')
-    out.write('      <motorMaxForce>200.0</motorMaxForce>\n')
+    out.write('      <maximumVelocity>9.14</maximumVelocity>\n')
+    out.write('      <motorMaxForce>38.0</motorMaxForce>\n')
     out.write('      <type>1</type>\n')
-    out.write('      <p>6</p>\n')
+    out.write('      <p>12</p>\n')
     out.write('      <d>3</d>\n')
     out.write('      <max_val>6.28</max_val>\n')
     out.write('      <min_val>-6.28</min_val>\n')
     out.write('      <value>'+str(motorValue)+'</value>\n')
     out.write('    </motor>\n')
+
+def writeSensor(sensor):
+    sensorType = "unknown"
+    rate = 10.0
+    if "sensorType" in sensor:
+        sensorType = sensor["sensorType"]
+    if "rate" in sensor:
+        rate = sensor["rate"]
+
+
+    idList = {}
+    global myMotorList
+    global objList
+
+    if "listMotors" in sensor:
+        idList = myMotorList
+    elif "listNodes" in sensor:
+        i = 0
+        for obj in objList:
+            idList[i] = obj["id"]
+            i += 1
+
+    for key, value in sensor.items():
+        if key[:5] == "index":
+            index = getID(value)
+            #print("found id "+str(index)+" for "+value)
+            if index != 0:
+                idList[int(key[5:])] = index
+
+    out.write('    <sensor name="'+sensor.name+'" type="'+str(sensorType)+'">\n')
+    out.write('      <index>'+str(sensor["id"])+'</index>\n')
+    out.write('      <rate>'+str(rate)+'</rate>\n')
+    for value in idList.values():
+        out.write('      <id>'+str(value)+'</id>\n')
+
+    if sensorType == "Joint6DOF":
+        nodeID = getID(sensor["nodeID"]);
+        jointID = getID(sensor["jointID"]);
+        out.write('      <nodeID>'+str(nodeID)+'</nodeID>\n')
+        out.write('      <jointID>'+str(jointID)+'</jointID>\n')
+
+    out.write('    </sensor>\n')
+
 
 def writeMaterial(material):
     out.write('    <material>\n')
@@ -373,20 +471,17 @@ for material in bpy.data.materials:
 
 for node in objList:
     writeNode(node)
-
 out.write('  </nodelist>\n')
+
 out.write('  <jointlist>\n')
-
 motorValue = []
-
 for joint in jointList:
     motorOffset = writeJoint(joint)
     if joint["jointType"] == "hinge":
         motorValue.append(motorOffset)
-
 out.write('  </jointlist>\n')
-out.write('  <motorlist>\n')
 
+out.write('  <motorlist>\n')
 i = 0
 for joint in jointList:
     if joint["jointType"] == "hinge":
@@ -394,6 +489,37 @@ for joint in jointList:
         i += 1
 
 out.write('  </motorlist>\n')
+
+haveController = 0
+myMotorList = {}
+for joint in jointList:
+    if joint["controllerIndex"] > 0:
+        haveController = 1
+        myMotorList[joint["controllerIndex"]] = str(joint["id"])
+
+mySensorList = {}
+for sensor in sensorList:
+    if sensor["id"] > 0:
+        haveController = 1
+        mySensorList[sensor["id"]] = str(sensor["id"])
+
+
+out.write('  <sensorlist>\n')
+for sensor in sensorList:
+    writeSensor(sensor)
+out.write('  </sensorlist>\n')
+
+if haveController == 1:
+    out.write('  <controllerlist>\n')
+    out.write('    <controller>\n')
+    out.write('      <rate>40</rate>\n')
+    for value in mySensorList.values():
+        out.write('      <sensorid>'+value+'</sensorid>\n')
+    for value in myMotorList.values():
+        out.write('      <motorid>'+value+'</motorid>\n')
+    out.write('    </controller>\n')
+
+out.write('  </controllerlist>\n')
 
 out.write('  <materiallist>\n')
 
@@ -431,17 +557,17 @@ for obj in objList:
     location = obj.location.copy()
     rotation = obj.rotation_quaternion.copy()
     parent = obj.parent
-    obj.location = [0.0, 0.0, 0.0]
-    obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
+    #obj.location = [0.0, 0.0, 0.0]
+    #obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
     obj.parent = None
     out_name = path+obj.name + ".bobj"
-    exportBobj(out_name, obj)
+    #exportBobj(out_name, obj)
     #bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z', axis_up='Y', use_selection=True, use_normals=True)
     #export_obj.write( out_name, [value[1]], EXPORT_NORMALS=True )
     os.system("zip "+filename+".scn "+obj.name+".bobj")
     #os.system("zip "+filename+".scn "+obj.name+".mtl")
-    obj.location = location
-    obj.rotation_quaternion = rotation
+    #obj.location = location
+    #obj.rotation_quaternion = rotation
     obj.parent = parent
     obj.select = False
 

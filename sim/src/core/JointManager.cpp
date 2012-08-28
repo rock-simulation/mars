@@ -50,7 +50,7 @@ namespace mars {
 
     /**
      *\brief Initialization of a new JointManager
-     * 
+     *
      * pre:
      *     - a pointer to a ControlCenter is needed
      * post:
@@ -69,7 +69,7 @@ namespace mars {
       NodeInterface *i_node1 = 0;
       NodeInterface *i_node2 = 0;
       Vector an;
-  
+
       if (!reload) {
         iMutex.lock();
         simJointsReload[jointS->index] = *jointS;
@@ -201,7 +201,7 @@ namespace mars {
       map<unsigned long, SimJoint*>::iterator iter;
       iMutex.lock();
 
-      for (iter = simJoints.begin(); iter != simJoints.end(); iter++) 
+      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
         if((iter->second->getNodeIndex1() == id1 && iter->second->getNodeIndex2() == id2) ||
            (iter->second->getNodeIndex1() == id2 && iter->second->getNodeIndex2() == id1)) {
           iMutex.unlock();
@@ -216,16 +216,16 @@ namespace mars {
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
       if (iter != simJoints.end())
         return iter->second;
-      else 
+      else
         return NULL;
     }
-  
-  
+
+
     std::vector<SimJoint*> JointManager::getSimJoints(void) {
       vector<SimJoint*> v_simJoints;
       map<unsigned long, SimJoint*>::iterator iter;
       MutexLocker locker(&iMutex);
-      for (iter = simJoints.begin(); iter != simJoints.end(); iter++) 
+      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
         v_simJoints.push_back(iter->second);
       return v_simJoints;
     }
@@ -286,8 +286,8 @@ namespace mars {
         iter->second.axis1 = axis;
     }
 
-  
-    void JointManager::scaleReloadJoints(sReal x_factor, sReal y_factor, sReal z_factor) 
+
+    void JointManager::scaleReloadJoints(sReal x_factor, sReal y_factor, sReal z_factor)
     {
       map<unsigned long, JointData>::iterator iter;
       MutexLocker locker(&iMutex);
@@ -306,7 +306,7 @@ namespace mars {
         iter->second->setTorque(torque);
     }
 
-  
+
     void JointManager::changeStepSize(void) {
       map<unsigned long, SimJoint*>::iterator iter;
       MutexLocker locker(&iMutex);
@@ -322,7 +322,7 @@ namespace mars {
         iter->second.anchor = anchor;
     }
 
-  
+
     void JointManager::setSDParams(unsigned long id, JointData *sJoint) {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
@@ -338,7 +338,7 @@ namespace mars {
         iter->second->setVelocity(velocity);
     }
 
-  
+
     void JointManager::setVelocity2(unsigned long id, sReal velocity) {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
@@ -356,16 +356,16 @@ namespace mars {
           iter->second->setForceLimit(max_force);
         else
           iter->second->setForceLimit2(max_force);
-      }  
+      }
     }
-  
+
 
     unsigned long JointManager::getID(const std::string& joint_name) const {
       map<unsigned long, SimJoint*>::const_iterator iter;
       MutexLocker locker(&iMutex);
       for(iter = simJoints.begin(); iter != simJoints.end(); iter++) {
         JointData joint = iter->second->getSJoint();
-        if (joint.name == joint_name) 
+        if (joint.name == joint_name)
           return joint.index;
       }
       return 0;
@@ -375,10 +375,18 @@ namespace mars {
                                           std::string *dataName) const {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
-      if(iter == simJoints.end()) 
+      if(iter == simJoints.end())
         return false;
       iter->second->getDataBrokerNames(groupName, dataName);
       return true;
+    }
+
+    void JointManager::setOfflineValue(unsigned long id, sReal value) {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return;
+      iter->second->setOfflineValue(value);
     }
 
   } // end of namespace sim
