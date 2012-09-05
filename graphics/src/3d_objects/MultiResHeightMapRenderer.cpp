@@ -111,8 +111,6 @@ namespace mars {
       fprintf(stderr, "MultiResHeightMapRenderer::highInitialize error while generating buffers\n");
     }
 
-    highIsInitialized = true;
-
     // Initializes cube geometry and transfers it to VBOs
     highIsInitialized = initPlane(true);
   }
@@ -273,10 +271,6 @@ namespace mars {
       height = this->height;
       width = this->width;
     }
-    fprintf(stderr, "MultiResHeightMapRenderer::initPlane %d %d %d %d %d %d\n",
-            numVertices, numIndices,
-            this->numVertices, this->numIndices,
-            highNumVertices, highNumIndices);
 
     vertices = (VertexData*)malloc(numVertices*sizeof(VertexData));
     if(!vertices) {
@@ -517,12 +511,10 @@ namespace mars {
       for(int l=0; l<highHeight+1; l++) {
         for(int j=0; j<highWidth+1; j++) {
           index = x2 + l*(highWidth+1) + j;
-          
           getNormal(j, l, highWidth, highHeight, highStepX, highStepY,
                     tile->heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
-          
         }
       }
     }
@@ -555,7 +547,6 @@ namespace mars {
 
   void MultiResHeightMapRenderer::collideSphere(double xPos, double yPos,
                                                 double zPos, double radius) {
-
     FootPrint newFootPrint = {xPos, yPos, zPos, radius};
     footPrints.push_back(newFootPrint);
   }
@@ -880,89 +871,78 @@ namespace mars {
     if(skipBorder) {
       if(x < mx-2 && x > 1) {
         vz1 = height_data[y][x+1] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step*2.0;
       }
       else if(x==0) {
         vz1 = height_data[y][x+2] - height_data[y][x+1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else if(x==1) {
         vz1 = height_data[y][x+1] - height_data[y][x];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else if(x==mx-1) {
         vz1 = height_data[y][x-1] - height_data[y][x-2];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else {
         vz1 = height_data[y][x] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
 
       if(y > 1 && y < my-2) {
         vz2 = height_data[y+1][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step*2.0;
       }
       else if(y==0) {
         vz2 = height_data[y+2][x] - height_data[y+1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else if(y==1) {
         vz2 = height_data[y+1][x] - height_data[y][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else if(y==my-1) {
         vz2 = height_data[y-1][x] - height_data[y-2][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else {
         vz2 = height_data[y][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
     }
     else {
       if(x != 0 && x != mx-1) {
         vz1 = height_data[y][x+1] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step*2.0;
       }
       else if(x==0) {
         vz1 = height_data[y][x+1] - height_data[y][x];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else {
         vz1 = height_data[y][x] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
 
       if(y != 0 && y != my-1) {
         vz2 = height_data[y+1][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step*2.0;
       }
       else if(y==0) {
         vz2 = height_data[y+1][x] - height_data[y][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else {
         vz2 = height_data[y][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
     }
+
+    vz1 *= scaleZ;
+    vx1 *= scaleX;
+    vz2 *= scaleZ;
+    vy2 *= scaleY;
 
     normal[0] = -vz1*vy2;
     normal[1] = -vz2*vx1;
@@ -1079,6 +1059,14 @@ namespace mars {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+
+  void MultiResHeightMapRenderer::setDrawSolid(bool drawSolid) {
+    solid = highSolid = drawSolid;
+  }
+
+  void MultiResHeightMapRenderer::setDrawWireframe(bool drawWireframe) {
+    wireframe = highWireframe = drawWireframe;
   }
 
 } // namespace mars
