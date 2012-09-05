@@ -150,6 +150,7 @@ namespace mars {
 
       virtual interfaces::ControlCenter* getControlCenter(void) const;
       virtual void addPlugin(const interfaces::pluginStruct& plugin);
+      virtual void removePlugin(interfaces::PluginInterface *pl);
 
       virtual int checkCollisions(void);
       virtual void sendDataToPlugin(int plugin_index, void* data);

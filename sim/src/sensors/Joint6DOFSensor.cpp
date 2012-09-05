@@ -199,7 +199,7 @@ namespace mars {
     ConfigMap Joint6DOFSensor::createConfig() const {
       ConfigMap cfg;
       cfg["name"][0] = ConfigItem(config.name);
-      cfg["id"][0] = ConfigItem(config.id);
+      cfg["index"][0] = ConfigItem(config.id);
       cfg["type"][0] = ConfigItem(std::string("Joint6DOF"));
       cfg["rate"][0] = ConfigItem(config.updateRate);
       cfg["nodeID"][0] = ConfigItem(config.nodeID);

@@ -88,7 +88,7 @@ namespace mars {
           pos = posnode.pos;
           rot = utils::quaternionTosRotation(posnode.rot);
           if (node.name == "") { // terrain
-            primitive_type = 6;
+            primitive_type = interfaces::NODE_TYPE_TERRAIN;
             topLevelNode->setPropertyName("Terrain");
             node_name->setValue("Terrain");
           } else if (node.filename == "PRIMITIVE")
@@ -125,8 +125,8 @@ namespace mars {
       attr.insert(pair<QString, QVariant>(QString("minimum"), 0));
   
       // General
-      enumNames << "Box" << "Sphere" << "Cylinder" << "Capsule" <<
-        "Infinite Plane" << "Terrain";
+      enumNames << "Mesh" << "Box" << "Sphere" << "Capsule" << "Cylinder"
+                << "Infinite Plane" << "Terrain";
       general = 
         pDialog->addGenericProperty("../"+nodeName+"/General",
                                     QtVariantPropertyManager::groupTypeId(),
@@ -148,7 +148,7 @@ namespace mars {
       image->setAttribute(QString("directory"), QString("."));
       // Physics
       enumNames.clear();
-      enumNames << "Mesh" << "Box" << "Sphere" << "Capsule" << "Cylinder";
+      enumNames << "Mesh" << "Box" << "Sphere" << "Capsule" << "Cylinder" << "Plane" << "Terrain";
       physics = 
         pDialog->addGenericProperty("../"+nodeName+"/Physics",
                                     QVariant::Bool, !(node.noPhysical));
@@ -338,6 +338,7 @@ namespace mars {
         geometry->removeSubProperty(length);
         geometry->removeSubProperty(height);
         topLevelNode->addSubProperty(ode);
+        physics_model->setValue(interfaces::NODE_TYPE_PLANE-1);
         break;
 
       case interfaces::NODE_TYPE_BOX:
@@ -422,7 +423,7 @@ namespace mars {
       if (mode == NodeTree::EditMode)
         return 1;
 
-      if (node_type->value().toInt() != 5) { // not terrain
+      if (node_type->value().toInt() != interfaces::NODE_TYPE_TERRAIN-1) { // not terrain
         if ((control->nodes->addNode(&node)) == 0) {
           QMessageBox::information( pDialog, "Error",
                                     "Primitive Creation Failed!",

@@ -123,6 +123,9 @@ namespace mars {
       /** \todo write docs */
       virtual void addPlugin(const pluginStruct& plugin) = 0;
       /** \todo write docs */
+      virtual void removePlugin(PluginInterface *pl) = 0;
+
+      /** \todo write docs */
       virtual int checkCollisions(void) = 0;
       /** \todo write docs */
       virtual void sendDataToPlugin(int plugin_index, void* data) = 0;

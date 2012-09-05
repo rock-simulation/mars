@@ -37,6 +37,8 @@ namespace mars {
                                    const std::string &zipFile,
                                    bool overwrite) {
       return ZIPIT_UNKNOWN_ERROR;
+      this->unZipHandle = NULL;
+      this->zipHandle = NULL;
     }
 
 
@@ -46,6 +48,8 @@ namespace mars {
       this->zipHandle = NULL;
     }
     Zipit::~Zipit() {
+      if(zipHandle) closeZipHandle();
+      if(unZipHandle) closeUnZipHandle();
     }
 
     int Zipit::openZipHandle() {
@@ -58,8 +62,10 @@ namespace mars {
     }
 
     int Zipit::closeZipHandle() {
-      if (zipClose(zipHandle, "")==0)
+      if (zipClose(zipHandle, "")==0) {
+        zipHandle = NULL;
         return 0;
+      }
       else {
         zipError(ZIPIT_NO_CLOSE_HANDLE);
         return 1;
@@ -76,8 +82,10 @@ namespace mars {
     }
 
     int Zipit::closeUnZipHandle() {
-      if (unzClose(unZipHandle)==0)
+      if (unzClose(unZipHandle)==0) {
+        unZipHandle = NULL;
         return 0;
+      }
       else {
         zipError(ZIPIT_NO_CLOSE_HANDLE);
         return 1;
@@ -168,9 +176,13 @@ namespace mars {
     int Zipit::getFromZip(const vector<string> &allFileNamesToRead,
                           const vector<string> &v_whereToStore) {
       int errorNumberZip;
-      if (openUnZipHandle()==1) {
-        LOG_ERROR("unable to open filehandle");
-        return ZIPIT_NO_OPEN_HANDLE;
+      bool closeAfterwards = false;
+      if(unZipHandle == NULL) {
+        closeAfterwards = true;
+        if (openUnZipHandle()==1) {
+          LOG_ERROR("unable to open filehandle");
+          return ZIPIT_NO_OPEN_HANDLE;
+        }
       }
 
       for (unsigned int i=0; i<allFileNamesToRead.size(); i++) {
@@ -227,7 +239,7 @@ namespace mars {
           }
         }
       }
-      //closeUnZipHandle();
+      if(closeAfterwards) closeUnZipHandle();
       return ZIPIT_SUCCESS;
     }
 

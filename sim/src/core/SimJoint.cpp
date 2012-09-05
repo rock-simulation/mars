@@ -405,9 +405,17 @@ namespace mars {
 
         Vector pivot = snode1->getPosition()+snode1->getRotation()*node1ToAnchor;
         Vector axis = snode1->getRotation()*axis1InNode1;
-        Quaternion q = angleAxisToQuaternion(-value, axis);
 
-        control->nodes->rotateNode(snode2->getID(), pivot, q, sJoint.index);
+        if(sJoint.type == JOINT_TYPE_HINGE) {
+          Quaternion q = angleAxisToQuaternion(-value, axis);
+          control->nodes->rotateNode(snode2->getID(), pivot, q, sJoint.index);
+        }
+        else if(sJoint.type == JOINT_TYPE_SLIDER) {
+          Vector pos2 = snode2->getPosition();
+          axis *= value / axis.norm();
+          pos2 += axis;
+          control->nodes->positionNode(snode2->getID(), pos2, sJoint.index);
+        }
       }
     }
 

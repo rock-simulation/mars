@@ -369,6 +369,7 @@ namespace mars {
             //fprintf(stderr, " %g", terrain->pixelData[count-1]);
           }
         }
+        cvReleaseImage(&img);
       }
 
 #else

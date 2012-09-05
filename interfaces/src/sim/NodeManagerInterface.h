@@ -761,9 +761,12 @@ namespace mars {
       virtual void setIsMovable(NodeId id, bool isMovable) = 0;
       virtual void lock() = 0;
       virtual void unlock() = 0;
-      virtual void rotateNode(NodeId id, utils::Vector pivot, utils::Quaternion q,
+      virtual void rotateNode(NodeId id, utils::Vector pivot,
+                              utils::Quaternion q,
                               unsigned long excludeJointId) = 0;
 
+      virtual void positionNode(NodeId id, utils::Vector pos,
+                                unsigned long excludeJointId) = 0;
     };
 
   } // end of namespace interfaces

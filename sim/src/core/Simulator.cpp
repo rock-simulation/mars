@@ -914,6 +914,38 @@ namespace mars {
       pluginLocker.unlock();
     }
 
+    void Simulator::removePlugin(PluginInterface *pl) {
+      std::vector<pluginStruct>::iterator p_iter;
+
+      pluginLocker.lockForWrite();
+
+      for(p_iter=activePlugins.begin(); p_iter!=activePlugins.end();
+          p_iter++) {
+        if((*p_iter).p_interface == pl) {
+          activePlugins.erase(p_iter);
+          break;
+        }
+      }
+
+      for(p_iter=guiPlugins.begin(); p_iter!=guiPlugins.end();
+          p_iter++) {
+        if((*p_iter).p_interface == pl) {
+          guiPlugins.erase(p_iter);
+          break;
+        }
+      }
+
+      for(p_iter=allPlugins.begin(); p_iter!=allPlugins.end();
+          p_iter++) {
+        if((*p_iter).p_interface == pl) {
+          allPlugins.erase(p_iter);
+          break;
+        }
+      }
+
+      pluginLocker.unlock();
+    }
+
     int Simulator::checkCollisions(void) {
       return physics->checkCollisions();
     }

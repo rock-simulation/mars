@@ -33,6 +33,8 @@
   #warning "__classname__.h"
 #endif
 
+// set define if you want to extend the gui
+//#define PLUGIN_WITH_MARS_GUI
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
@@ -49,14 +51,17 @@ namespace mars {
   namespace plugins {
     namespace __namespace__ {
 
-      class __classname__: public mars::interfaces::MarsPluginTemplate, 
+      // inherit from MarsPluginTemplateGUI for extending the gui
+      class __classname__: public mars::interfaces::MarsPluginTemplate,
         public mars::data_broker::ReceiverInterface,
+        // for gui
+        // pulic mars::main_gui::MenuInterface,
         public mars::cfg_manager::CFGClient {
 
       public:
         __classname__(mars::lib_manager::LibManager *theManager);
         ~__classname__();
-        
+
         // LibInterface methods
         int getLibVersion() const
         { return 1; }
@@ -67,21 +72,24 @@ namespace mars {
         void init();
         void reset();
         void update(mars::interfaces::sReal time_ms);
-        
+
         // DataBrokerReceiver methods
         virtual void receiveData(const data_broker::DataInfo &info,
                                  const data_broker::DataPackage &package,
                                  int callbackParam);
         // CFGClient methods
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
-        
+
+        // MenuInterface methods
+        //void menuAction(int action, bool checked = false);
+
         // __classname__ methods
-        
+
       private:
         cfg_manager::cfgPropertyStruct example;
-        
+
       }; // end of class definition __classname__
-      
+
     } // end of namespace __namespace__
   } // end of namespace plugins
 } // end of namespace mars

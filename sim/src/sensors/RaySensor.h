@@ -53,6 +53,7 @@ namespace mars {
         opening_width=0.5*M_PI;
         opening_height=0.5*M_PI;
         attached_node = 0;
+        maxDistance = 100.0;
       }
 
       unsigned long attached_node;
@@ -62,6 +63,7 @@ namespace mars {
       utils::Quaternion ori_offset;
       double opening_width;
       double opening_height;
+      double maxDistance;
     };
 
     class RaySensor : 
@@ -85,6 +87,8 @@ namespace mars {
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                                  utils::ConfigMap *config);
       virtual utils::ConfigMap createConfig() const;
+
+      const RayConfig& getConfig() const;
 
     private:
       RayConfig config;

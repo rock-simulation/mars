@@ -56,7 +56,7 @@ namespace mars {
       SensorInterface(control), config(config) {
 
       orientation.setIdentity();
-      maxDistance = 100;
+      maxDistance = config.maxDistance;
       this->attached_node = config.attached_node;
 
       std::string groupName, dataName;
@@ -76,7 +76,8 @@ namespace mars {
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate)) {
       }
 
-
+      position = control->nodes->getPosition(attached_node);
+      orientation = control->nodes->getRotation(attached_node);
 
       //Drawing Stuff
       draw.ptr_draw = (DrawInterface*)this;
@@ -104,8 +105,8 @@ namespace mars {
       for(i=0; i<rad_steps; i++){
         tmp = Vector(cos(rad_start+i*stepX),
                      sin(rad_start+i*stepX), 0);
-        tmp = (orientation * tmp);
         directions.push_back(tmp);
+        tmp = (orientation * tmp);
         item.start = position;
         item.end = (orientation * tmp);
         item.end *= data[i];
@@ -195,9 +196,11 @@ namespace mars {
 
       ConfigMap::iterator it;
       if((it = config->find("width")) != config->end())
-        cfg->width = it->second[0].getULong();
+        cfg->width = it->second[0].getInt();
       if((it = config->find("opening_width")) != config->end())
-        cfg->opening_width = it->second[0].getULong();
+        cfg->opening_width = it->second[0].getDouble();
+      if((it = config->find("max_distance")) != config->end())
+        cfg->maxDistance = it->second[0].getDouble();
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -225,6 +228,9 @@ namespace mars {
       cfg["id"][0] = ConfigItem(config.id);
       cfg["type"][0] = ConfigItem("RaySensor");
       cfg["attached_node"][0] = ConfigItem(config.attached_node);
+      cfg["width"][0] = ConfigItem(config.width);
+      cfg["opening_width"][0] = ConfigItem(config.opening_width);
+      cfg["max_distance"][0] = ConfigItem(config.maxDistance);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);
@@ -232,6 +238,10 @@ namespace mars {
         cfg["rows"][0] = ConfigItem(config.rows);
       */
       return cfg;
+    }
+
+    const RayConfig& RaySensor::getConfig() const {
+      return config;
     }
 
   } // end of namespace sim
