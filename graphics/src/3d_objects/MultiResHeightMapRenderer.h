@@ -74,6 +74,8 @@ namespace mars {
     void setHeight(unsigned int gridX, unsigned int gridY, double height);
     double getHeight(unsigned int gridX, unsigned int gridY);
     void setOffset(double x, double y, double z);
+    void setDrawSolid(bool drawSolid);
+    void setDrawWireframe(bool drawWireframe);
 
   protected:
     void clear();

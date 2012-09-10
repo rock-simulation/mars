@@ -30,7 +30,7 @@
 #include <cstdlib>
 #include <cassert>
 #include <cmath>
-#include <string.h>
+#include <cstring>
 
 
 namespace mars {
@@ -96,9 +96,7 @@ namespace mars {
     if(!vboIds[0] || !vboIds[1]) {
       fprintf(stderr, "MultiResHeightMapRenderer::initialize error while generating buffers\n");
     }
-    isInitialized = true;
-
-    // Initializes cube geometry and transfers it to VBOs
+    // Initializes geometry and transfers it to VBOs
     isInitialized = initPlane(false);
   }
 
@@ -110,30 +108,28 @@ namespace mars {
     if(!vboIds[2] || !vboIds[3]) {
       fprintf(stderr, "MultiResHeightMapRenderer::highInitialize error while generating buffers\n");
     }
-
-    highIsInitialized = true;
-
     // Initializes cube geometry and transfers it to VBOs
     highIsInitialized = initPlane(true);
   }
 
+
   void MultiResHeightMapRenderer::prepare() {
     recalcSteps();
-    heightData = new double*[height];
-    for(int i = 0; i < height; ++i) {
-      heightData[i] = new double[width];
+    heightData = new double*[getLowResVertexCntY()];
+    for(int y = 0; y < getLowResVertexCntY(); ++y) {
+      heightData[y] = new double[getLowResVertexCntX()];
+      for(int x = 0; x < getLowResVertexCntX(); ++x) {
+        heightData[y][x] = -1;
+      }
     }
-    for(int i = 0; i < height; ++i)
-      for(int j = 0; j < width; ++j)
-        heightData[i][j] = -1;
-    numVertices = width*height;
-    highNumVertices = maxNumSubTiles*(highWidth+1)*(highHeight+1);
-    numIndices = (width-1)*(height-1)*6;
-    highNumIndices = maxNumSubTiles*highWidth*highHeight*6;
-    indicesToDraw = (width-1)*(height-1)*6;
+    numVertices = getLowResVertexCntX()*getLowResVertexCntY();
+    highNumVertices = maxNumSubTiles*getHighResVertexCntX()*getHighResVertexCntY();
+    numIndices = getLowResCellCntX()*getLowResCellCntY()*6;
+    highNumIndices = maxNumSubTiles*getHighResCellCntX()*getHighResCellCntY()*6;
+    indicesToDraw = getLowResCellCntX()*getLowResCellCntY()*6;
     highIndicesToDraw = 0;
-    newIndicesPos = 0;//(height-1)*(width-1)*6;
-    newVerticesPos = 0;//height*width;
+    newIndicesPos = 0;//(getLowResCellCntY())*(getLowResCellCntX())*6;
+    newVerticesPos = 0;//getLowResVertexCntY()*getLowResVertexCntX();
   }
 
   void MultiResHeightMapRenderer::clear() {
@@ -169,18 +165,18 @@ namespace mars {
       //copyLast(toRemove->indicesArrayOffset, toRemove->verticesArrayOffset);
       subTiles.erase(toRemove->mapIndex);
       if(toRemove->heightData) {
-        for(int i = 0; i < highHeight+1; ++i) {
+        for(int i = 0; i < getHighResVertexCntY(); ++i) {
           delete toRemove->heightData[i];
         }
         delete toRemove->heightData;
       }
       delete toRemove;
       --numSubTiles;
-      newIndicesPos -= highWidth * highHeight * 6;
-      newVerticesPos -= (highWidth+1) * (highHeight+1);
+      newIndicesPos -= getHighResCellCntX() * getHighResCellCntY() * 6;
+      newVerticesPos -= getHighResVertexCntX() * getHighResVertexCntY();
     }
     if(heightData) {
-      for(int i = 0; i < height; ++i) {
+      for(int i = 0; i < getLowResVertexCntY(); ++i) {
         delete[] heightData[i];
       }
       delete[] heightData;
@@ -189,8 +185,8 @@ namespace mars {
   }
 
   void MultiResHeightMapRenderer::recalcSteps() {
-    highStepX = stepX = targetWidth / double(width-1);
-    highStepY = stepY = targetHeight / double(height-1);
+    highStepX = stepX = targetWidth / double(getLowResCellCntX());
+    highStepY = stepY = targetHeight / double(getLowResCellCntY());
 
     highWidth = highHeight = 1;
     double radius = 0.05;
@@ -218,15 +214,16 @@ namespace mars {
       VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
                                                       GL_WRITE_ONLY);
       int index;
-      for(int y=0; y<height; ++y) {
-        for(int x=0; x<width; ++x) {
-          index = y*width + x;
+      for(int y = 0; y < getLowResVertexCntY(); ++y) {
+        for(int x = 0; x < getLowResVertexCntX(); ++x) {
+          index = y*getLowResVertexCntX() + x;
           vertices[index].position[0] = x * stepX * scaleX;
           vertices[index].position[1] = y * stepY * scaleY;
           vertices[index].position[2] = heightData[y][x] * scaleZ;
           vertices[index].texCoord[0] = x * stepX * scaleX*texScaleX;
           vertices[index].texCoord[1] = y * stepY * scaleY*texScaleY;
-          getNormal(x, y, width, height, stepX, stepY, heightData,
+          getNormal(x, y, getLowResVertexCntX(), getLowResVertexCntY(),
+                    stepX, stepY, heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
         }
@@ -263,28 +260,24 @@ namespace mars {
       numVertices = highNumVertices;
       numIndices = highNumIndices;
       vboId = 2;
-      height = highHeight;
-      width = highWidth;
+      height = getHighResVertexCntY();
+      width = getHighResVertexCntX();
     }
     else {
       numVertices = this->numVertices;
       numIndices = this->numIndices;
       vboId = 0;
-      height = this->height;
-      width = this->width;
+      height = getLowResVertexCntY();
+      width = getLowResVertexCntX();
     }
-    fprintf(stderr, "MultiResHeightMapRenderer::initPlane %d %d %d %d %d %d\n",
-            numVertices, numIndices,
-            this->numVertices, this->numIndices,
-            highNumVertices, highNumIndices);
 
     vertices = (VertexData*)malloc(numVertices*sizeof(VertexData));
     if(!vertices) {
       fprintf(stderr, "MultiResHeightMapRenderer::initPlane error while allocating memory for vertices %lu\n", numVertices);
       return false;
     }
-    for(int y=0; y<height; ++y) {
-      for(int x=0; x<width; ++x) {
+    for(int y = 0; y < height; ++y) {
+      for(int x = 0; x < width; ++x) {
         int index = y*width+x;
         vertices[index].position[0] = x * stepX * scaleX;
         vertices[index].position[1] = y * stepY * scaleY;
@@ -309,13 +302,14 @@ namespace mars {
     }
     for(int y=0; y<height-1; ++y) {
       for(int x=0; x<width-1; ++x) {
-        indices[y*(width-1)*6+x*6+0] = (y+1) * width + x;
-        indices[y*(width-1)*6+x*6+1] = y * width + x;
-        indices[y*(width-1)*6+x*6+2] = (y+1) * width + x+1;
+        int indexOffset = y*(width-1)*6+x*6;
+        indices[indexOffset+0] = (y+1) * width + x;
+        indices[indexOffset+1] =  y    * width + x;
+        indices[indexOffset+2] = (y+1) * width + x+1;
 
-        indices[y*(width-1)*6+x*6+3] = (y+1) * width + x+1;
-        indices[y*(width-1)*6+x*6+4] = y * width + x;
-        indices[y*(width-1)*6+x*6+5] = y * width + x+1;
+        indices[indexOffset+3] = (y+1) * width + x+1;
+        indices[indexOffset+4] =  y    * width + x;
+        indices[indexOffset+5] =  y    * width + x+1;
       }
     }
 
@@ -346,7 +340,7 @@ namespace mars {
                                            GL_WRITE_ONLY);
     if(indices) {
       for(int i = 0; i < 6; ++i)
-        indices[y*(width-1)*6+x*6+i] = 0;
+        indices[y*getLowResCellCntX()*6+x*6+i] = 0;
     }
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -357,13 +351,14 @@ namespace mars {
     GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
                                            GL_WRITE_ONLY);
     if(indices) {
-      indices[y*(width-1)*6+x*6+0] = (y+1) * width + x;
-      indices[y*(width-1)*6+x*6+1] = y * width + x;
-      indices[y*(width-1)*6+x*6+2] = (y+1) * width + x+1;
+      int indexOffset = y*getLowResCellCntX()*6+x*6;
+      indices[indexOffset+0] = (y+1) * getLowResVertexCntX() + x;
+      indices[indexOffset+1] =  y    * getLowResVertexCntX() + x;
+      indices[indexOffset+2] = (y+1) * getLowResVertexCntX() + x+1;
 
-      indices[y*(width-1)*6+x*6+3] = (y+1) * width + x+1;
-      indices[y*(width-1)*6+x*6+4] = y * width + x;
-      indices[y*(width-1)*6+x*6+5] = y * width + x+1;
+      indices[indexOffset+3] = (y+1) * getLowResVertexCntX() + x+1;
+      indices[indexOffset+4] =  y    * getLowResVertexCntX() + x;
+      indices[indexOffset+5] =  y    * getLowResVertexCntX() + x+1;
     }
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -372,77 +367,77 @@ namespace mars {
     std::map<int, SubTile*>::iterator it;
     double val;
     if(y > 0) {
-      it = subTiles.find((y-1)*(width-1)+x);
+      it = subTiles.find((y-1)*(getLowResCellCntX())+x);
       if(it != subTiles.end()) {
-        for(int x1=0; x1<highWidth+1; ++x1) {
-          val = getHeight(x1, highHeight, it->second);
-          it->second->heightData[highHeight][x1] = val;
+        for(int x1 = 0; x1 < getHighResVertexCntX(); ++x1) {
+          val = getHeight(x1, getHighResCellCntY(), it->second);
+          it->second->heightData[getHighResCellCntY()][x1] = val;
         }
         drawSubTile(it->second);
       }
     }
 
     if(y > 0 && x > 0) {
-      it = subTiles.find((y-1)*(width-1)+x-1);
+      it = subTiles.find((y-1)*getLowResCellCntX()+x-1);
       if(it != subTiles.end()) {
-        val = getHeight(highWidth, highHeight, it->second);
-        it->second->heightData[highHeight][highWidth] = val;
+        val = getHeight(getHighResCellCntX(), getHighResCellCntY(), it->second);
+        it->second->heightData[getHighResCellCntY()][getHighResCellCntX()] = val;
         drawSubTile(it->second);
       }
     }
 
     if(x > 0) {
-      it = subTiles.find(y*(width-1)+x-1);
+      it = subTiles.find(y*getLowResCellCntX()+x-1);
       if(it != subTiles.end()) {
-        for(int y1=0; y1<highHeight+1; ++y1) {
-          val = getHeight(highWidth, y1, it->second);
-          it->second->heightData[y1][highWidth] = val;
+        for(int y1 = 0; y1 < getHighResVertexCntY(); ++y1) {
+          val = getHeight(getHighResCellCntX(), y1, it->second);
+          it->second->heightData[y1][getHighResCellCntX()] = val;
         }
         drawSubTile(it->second);
       }
     }
 
-    if(y < height-1) {
-      it = subTiles.find((y+1)*(width-1)+x);
+    if(y < getLowResCellCntY()) {
+      it = subTiles.find((y+1)*(getLowResCellCntX())+x);
       if(it != subTiles.end()) {
-        for(int x1=0; x1<highWidth+1; ++x1) {
+        for(int x1 = 0; x1 < getHighResVertexCntX(); ++x1) {
           it->second->heightData[0][x1] = getHeight(x1, 0, it->second);
         }
         drawSubTile(it->second);
       }
     }
 
-    if(y < height-1 && x < width-1) {
-      it = subTiles.find((y+1)*(width-1)+x+1);
+    if(y < getLowResCellCntY() && x < getLowResCellCntX()) {
+      it = subTiles.find((y+1)*(getLowResCellCntX())+x+1);
       if(it != subTiles.end()) {
         it->second->heightData[0][0] = getHeight(0, 0, it->second);
         drawSubTile(it->second);
       }
     }
 
-    if(x < width-1) {
-      it = subTiles.find((y)*(width-1)+x+1);
+    if(x < getLowResCellCntX()) {
+      it = subTiles.find((y)*(getLowResCellCntX())+x+1);
       if(it != subTiles.end()) {
-        for(int y1=0; y1<highHeight+1; ++y1)
+        for(int y1 = 0; y1 < getHighResVertexCntY(); ++y1)
           it->second->heightData[y1][0] = getHeight(0, y1, it->second);
         drawSubTile(it->second);
       }
     }
 
-    if(y > 0 && x < width-1) {
-      it = subTiles.find((y-1)*(width-1)+x+1);
+    if(y > 0 && x < getLowResCellCntX()) {
+      it = subTiles.find((y-1)*(getLowResCellCntX())+x+1);
       if(it != subTiles.end()) {
-        val = getHeight(0, highHeight, it->second);
-        it->second->heightData[highHeight][0] = val;
+        val = getHeight(0, getHighResCellCntY(), it->second);
+        it->second->heightData[getHighResCellCntY()][0] = val;
         drawSubTile(it->second);
       }
     }
 
-    if(y < height-1 && x > 0) {
-      it = subTiles.find((y+1)*(width-1)+x-1);
+    if(y < getLowResCellCntY() && x > 0) {
+      it = subTiles.find((y+1)*(getLowResCellCntX())+x-1);
       if(it != subTiles.end()) {
-        val = getHeight(highWidth, 0, it->second);
-        it->second->heightData[0][highWidth] = val;
+        val = getHeight(getHighResCellCntX(), 0, it->second);
+        it->second->heightData[0][getHighResCellCntX()] = val;
         drawSubTile(it->second);
       }
     }
@@ -455,13 +450,13 @@ namespace mars {
     GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
     GL_WRITE_ONLY);
     if(indices) {
-    indices[y*(width-1)*6+x*6+0] = y * width + x;
-    indices[y*(width-1)*6+x*6+1] = (y+1) * width + x;
-    indices[y*(width-1)*6+x*6+2] = (y+1) * width + x+1;
+    indices[y*(getLowResCellCntX())*6+x*6+0] = y * getLowResVertexCntX() + x;
+    indices[y*(getLowResCellCntX())*6+x*6+1] = (y+1) * getLowResVertexCntX() + x;
+    indices[y*(getLowResCellCntX())*6+x*6+2] = (y+1) * getLowResVertexCntX()+ x+1;
 
-    indices[y*(width-1)*6+x*6+3] = y * width + x;
-    indices[y*(width-1)*6+x*6+4] = (y+1) * width + x+1;
-    indices[y*(width-1)*6+x*6+5] = y * width + x+1;
+    indices[y*(getLowResCellCntX())*6+x*6+3] = y * getLowResVertexCntX() + x;
+    indices[y*(getLowResCellCntX())*6+x*6+4] = (y+1) * getLowResVertexCntX() + x+1;
+    indices[y*(getLowResCellCntX())*6+x*6+5] = y * getLowResVertexCntX() + x+1;
     }
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -473,7 +468,7 @@ namespace mars {
     double dx = (x - gridX*stepX) / stepX;
     double dy = (y - gridY*stepY) / stepY;
     double cornerHeights[4];
-    assert((gridY < height-1) && (gridX < width-1));
+    assert((gridY < getLowResCellCntY()) && (gridX < getLowResCellCntX()));
     cornerHeights[0] = heightData[gridY][gridX];
     cornerHeights[1] = heightData[gridY+1][gridX];
     cornerHeights[2] = heightData[gridY][gridX+1];
@@ -500,13 +495,13 @@ namespace mars {
       int x2 = tile->verticesArrayOffset;
       int index;
 
-      for(int l=0; l<highHeight+1; l++) {
-        for(int j=0; j<highWidth+1; j++) {
-          index = x2 + l*(highWidth+1) + j;
-          double x = tile->x*stepX + j*highStepX;
-          double y = tile->y*stepY + l*highStepY;
+      for(int iy = 0; iy < getHighResVertexCntY(); ++iy) {
+        for(int ix = 0; ix < getHighResVertexCntX(); ++ix) {
+          index = x2 + iy*getHighResVertexCntX() + ix;
+          double x = tile->x*stepX + ix*highStepX;
+          double y = tile->y*stepY + iy*highStepY;
           double z = interpolateCell(tile->x, tile->y, x, y);
-          tile->heightData[l][j] = z;
+          tile->heightData[iy][ix] = z;
           vertices[index].position[0] = x * scaleX;
           vertices[index].position[1] = y * scaleY;
           vertices[index].position[2] = z * scaleZ;
@@ -514,15 +509,15 @@ namespace mars {
           vertices[index].texCoord[1] = y * scaleY*texScaleY;
         }
       }
-      for(int l=0; l<highHeight+1; l++) {
-        for(int j=0; j<highWidth+1; j++) {
-          index = x2 + l*(highWidth+1) + j;
-          
-          getNormal(j, l, highWidth, highHeight, highStepX, highStepY,
+      // calculate normals in a separate loop because the calculation depends on the neighbours
+      for(int iy = 0; iy < getHighResVertexCntY(); ++iy) {
+        for(int ix = 0; ix < getHighResVertexCntX(); ++ix) {
+          index = x2 + iy*getHighResVertexCntX() + ix;
+          getNormal(ix, iy, getHighResCellCntX(), getHighResCellCntY(),
+                    highStepX, highStepY,
                     tile->heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
-          
         }
       }
     }
@@ -531,20 +526,20 @@ namespace mars {
       int offset = tile->indicesArrayOffset;
       int x2 = tile->verticesArrayOffset;
 
-      for(int l=0; l<highHeight; l++) {
-        for(int j=0; j<highWidth; j++) {
+      for(int iy = 0; iy < getHighResCellCntY(); ++iy) {
+        for(int ix = 0; ix < getHighResCellCntX(); ++ix) {
+          int indexOffset = offset+iy*getHighResCellCntX()*6+ix*6;
+          indices[indexOffset+0] = x2+((iy+1)*getHighResVertexCntX())+ix;
+          indices[indexOffset+1] = x2+( iy   *getHighResVertexCntX())+ix;
+          indices[indexOffset+2] = x2+((iy+1)*getHighResVertexCntX())+ix+1;
 
-          indices[offset+l*highWidth*6+j*6] = x2+(l+1)*(highWidth+1)+j;
-          indices[offset+l*highWidth*6+j*6+1] = x2+l*(highWidth+1)+j;
-          indices[offset+l*highWidth*6+j*6+2] = x2+(l+1)*(highWidth+1)+j+1;
-
-          indices[offset+l*highWidth*6+j*6+3] = x2+(l+1)*(highWidth+1)+j+1;
-          indices[offset+l*highWidth*6+j*6+4] = x2+l*(highWidth+1)+j;
-          indices[offset+l*highWidth*6+j*6+5] = x2+l*(highWidth+1)+j+1;
+          indices[indexOffset+3] = x2+((iy+1)*getHighResVertexCntX())+ix+1;
+          indices[indexOffset+4] = x2+( iy   *getHighResVertexCntX())+ix;
+          indices[indexOffset+5] = x2+( iy   *getHighResVertexCntX())+ix+1;
         }
       }
     }
-    highIndicesToDraw += highHeight*highWidth*6;
+    highIndicesToDraw += getHighResCellCntY()*getHighResCellCntX()*6;
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
     glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -555,7 +550,6 @@ namespace mars {
 
   void MultiResHeightMapRenderer::collideSphere(double xPos, double yPos,
                                                 double zPos, double radius) {
-
     FootPrint newFootPrint = {xPos, yPos, zPos, radius};
     footPrints.push_back(newFootPrint);
   }
@@ -586,8 +580,8 @@ namespace mars {
 
     if(y1 < 0) y1 = 0;
     if(x1 < 0) x1 = 0;
-    if(y2 > width) y2 = width; // ToDo: check bounds correctnes
-    if(x2 > width) x2 = width;
+    if(y2 > getLowResCellCntY()) y2 = getLowResCellCntY();
+    if(x2 > getLowResCellCntX()) x2 = getLowResCellCntX();
 
     std::map<int, SubTile*>::iterator it;
 
@@ -596,21 +590,21 @@ namespace mars {
       SubTile *toRemove = listSubTiles.front();
       listSubTiles.pop_front();
       numSubTiles--;
-      highIndicesToDraw -= highHeight*highWidth*6;
+      highIndicesToDraw -= getHighResCellCntY()*getHighResCellCntX()*6;
       copyLast(toRemove->indicesArrayOffset, toRemove->verticesArrayOffset);
       subTiles.erase(toRemove->mapIndex);
       fillOriginal(toRemove->x, toRemove->y);
 
       // free memory
-      for(int l=0; l<highHeight+1; ++l)
+      for(int l = 0; l < getHighResVertexCntY(); ++l)
         delete[] toRemove->heightData[l];
       delete[] toRemove->heightData;
       delete toRemove;
     }
 
-    for(int i = y1; i < y2; ++i) {
-      for(int j = x1; j < x2; ++j) {
-        it = subTiles.find(i*(width-1)+j);
+    for(int iy = y1; iy < y2; ++iy) {
+      for(int ix = x1; ix < x2; ++ix) {
+        it = subTiles.find(iy*(getLowResCellCntX())+ix);
         if(it != subTiles.end()) {
           toProcess.push_back(it->second);
           //fprintf(stderr, "have Subtile\n");
@@ -620,40 +614,40 @@ namespace mars {
             SubTile *toRemove = listSubTiles.front();
             listSubTiles.pop_front();
             numSubTiles--;
-            highIndicesToDraw -= highHeight*highWidth*6;
+            highIndicesToDraw -= getHighResCellCntY()*getHighResCellCntX()*6;
             newIndicesPos = toRemove->indicesArrayOffset;
             newVerticesPos = toRemove->verticesArrayOffset;
             subTiles.erase(toRemove->mapIndex);
             fillOriginal(toRemove->x, toRemove->y);
 
             // free memory
-            for(int l=0; l<highHeight+1; ++l)
+            for(int l = 0; l < getHighResVertexCntY(); ++l)
               delete[] toRemove->heightData[l];
             delete[] toRemove->heightData;
             delete toRemove;
           }
-          cutHole(j, i);
+          cutHole(ix, iy);
           SubTile *newSubTile = new SubTile;
-          newSubTile->x = j;
-          newSubTile->y = i;
-          newSubTile->xPos = j*stepX;
-          newSubTile->yPos = i*stepY;
+          newSubTile->x = ix;
+          newSubTile->y = iy;
+          newSubTile->xPos = ix*stepX;
+          newSubTile->yPos = iy*stepY;
           newSubTile->indicesArrayOffset = newIndicesPos;
           newSubTile->verticesArrayOffset = newVerticesPos;
-          newIndicesPos += highWidth*highHeight*6;
-          newVerticesPos += (highWidth+1)*(highHeight+1);
-          newSubTile->heightData = new double*[highHeight+1];
-          for(int l=0; l<highHeight+1; ++l) {
-            newSubTile->heightData[l] = new double[highWidth+1];
+          newIndicesPos += getHighResCellCntX()*getHighResCellCntY()*6;
+          newVerticesPos += getHighResVertexCntX()*getHighResVertexCntY();
+          newSubTile->heightData = new double*[getHighResVertexCntY()];
+          for(int l = 0; l < getHighResVertexCntY(); ++l) {
+            newSubTile->heightData[l] = new double[getHighResVertexCntX()];
           }
-          for(int n=0; n< (highHeight+1); ++n)
-            for(int m=0; m<(highWidth+1); ++m)
+          for(int n = 0; n < getHighResVertexCntY(); ++n)
+            for(int m = 0; m < getHighResVertexCntX(); ++m)
               // TODO: Should we interpolate here?
-              newSubTile->heightData[n][m] = heightData[i][j];
+              newSubTile->heightData[n][m] = heightData[iy][ix];
 
           fillCell(newSubTile);
 
-          newSubTile->mapIndex = i*(width-1)+j;
+          newSubTile->mapIndex = iy*(getLowResCellCntX())+ix;
           subTiles[newSubTile->mapIndex] = newSubTile;
           listSubTiles.push_back(newSubTile);
           toProcess.push_back(newSubTile);
@@ -697,15 +691,15 @@ namespace mars {
       int offset = verticesOffsetPos;
       int offset2 = lastSubTile->verticesArrayOffset;
 
-      //            memcpy(vertices+offset, vertices+offset2, (highHeight+1)*(highWidth+1));
-      memcpy(vertices+offset, vertices+offset2, (highHeight+1)*(highWidth+1)*sizeof(VertexData));
+      //            memcpy(vertices+offset, vertices+offset2, getHighResVertexCntY()*getHighResVertexCntX());
+      memcpy(vertices+offset, vertices+offset2, getHighResVertexCntY()*getHighResVertexCntX()*sizeof(VertexData));
     }
     if(indices) {
       int offset = indicesOffsetPos;
       int offset2 = lastSubTile->indicesArrayOffset;
 
-      //            memcpy(indices+offset, indices+offset2, highHeight*highWidth*6);
-      memcpy(indices+offset, indices+offset2, highHeight*highWidth*6*sizeof(GLuint));
+      //            memcpy(indices+offset, indices+offset2, getHighResCellCntY()*getHighResCellCntX()*6);
+      memcpy(indices+offset, indices+offset2, getHighResCellCntY()*getHighResCellCntX()*6*sizeof(GLuint));
     }
 
     glUnmapBuffer(GL_ARRAY_BUFFER);
@@ -732,8 +726,8 @@ namespace mars {
     int y2 = ceil((yPos - tile->yPos + radius) / highStepY)+2;
     if(x1 < 0) x1 = 0;
     if(y1 < 0) y1 = 0;
-    if(x2 > highWidth+1) x2 = highWidth+1;
-    if(y2 > highHeight+1) y2 = highHeight+1;
+    if(x2 > getHighResVertexCntX()) x2 = getHighResVertexCntX();
+    if(y2 > getHighResVertexCntY()) y2 = getHighResVertexCntY();
     double r2 = radius*radius;
     bool adapt = false;
     double vx, vy, vz;
@@ -769,12 +763,12 @@ namespace mars {
           tile->heightData[y][x-1] = tile->heightData[y][x]+highStepX*interpolation;
           }
 
-          if(y < highHeight && (tile->heightData[y][x] <
+          if(y < getHighResCellCntY() && (tile->heightData[y][x] <
           tile->heightData[y+1][x]-highStepY*interpolation)) {
           tile->heightData[y+1][x] = tile->heightData[y][x]+highStepY*interpolation;
           }
 
-          if(x < highWidth && (tile->heightData[y][x] <
+          if(x < getHighResCellCntX() && (tile->heightData[y][x] <
           tile->heightData[y][x+1]-highStepX*interpolation)) {
           tile->heightData[y][x+1] = tile->heightData[y][x]+highStepX*interpolation;
           }
@@ -785,17 +779,17 @@ namespace mars {
           tile->heightData[y-1][x-1] = tile->heightData[y][x]+(highStepY+highStepX)*interpolation*0.5;
           }
 
-          if((y > 0) && (x < highWidth) &&
+          if((y > 0) && (x < getHighResCellCntX()) &&
           (tile->heightData[y][x] < tile->heightData[y-1][x+1]-(highStepY+highStepX)*interpolation*0.5)) {
           tile->heightData[y-1][x+1] = tile->heightData[y][x]+(highStepY+highStepX)*interpolation*0.5;
           }
 
-          if((y < highHeight) && (x > 0) &&
+          if((y < getHighResCellCntY()) && (x > 0) &&
           (tile->heightData[y][x] < tile->heightData[y+1][x-1]-(highStepY+highStepX)*interpolation*0.5)) {
           tile->heightData[y+1][x-1] = tile->heightData[y][x]+(highStepY+highStepX)*interpolation*0.5;
           }
 
-          if((y < highHeight) && (x < highWidth) &&
+          if((y < getHighResCellCntY()) && (x < getHighResCellCntX()) &&
           (tile->heightData[y][x] < tile->heightData[y+1][x+1]-(highStepY+highStepX)*interpolation*0.5)) {
           tile->heightData[y+1][x+1] = tile->heightData[y][x]+(highStepY+highStepX)*interpolation*0.5;
           }
@@ -816,11 +810,12 @@ namespace mars {
       int index;
       for(int y=y1; y<y2; ++y) {
         for(int x=x1; x<x2; ++x) {
-          index = tile->verticesArrayOffset+y*(highWidth+1)+x;
+          index = tile->verticesArrayOffset+y*getHighResVertexCntX()+x;
           v = vertices+index;
           v->position[2] = tile->heightData[y][x] * scaleZ;
           
-          getNormal(x, y, highWidth, highHeight, highStepX, highStepY,
+          getNormal(x, y, getHighResCellCntX(), getHighResCellCntY(),
+                    highStepX, highStepY,
                     tile->heightData,
                     vertices[index].normal,
                     vertices[index].tangent, true);
@@ -846,8 +841,8 @@ namespace mars {
   void MultiResHeightMapRenderer::setHeight(unsigned int gridX,
                                             unsigned int gridY,
                                             double height) {
-    assert(gridX < width);
-    assert(gridY < this->height);
+    assert(gridX < (unsigned int)getLowResVertexCntX());
+    assert(gridY < (unsigned int)this->getLowResVertexCntY());
     if(height < minZ)
       minZ = height;
     if(height > maxZ)
@@ -880,89 +875,78 @@ namespace mars {
     if(skipBorder) {
       if(x < mx-2 && x > 1) {
         vz1 = height_data[y][x+1] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step*2.0;
       }
       else if(x==0) {
         vz1 = height_data[y][x+2] - height_data[y][x+1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else if(x==1) {
         vz1 = height_data[y][x+1] - height_data[y][x];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else if(x==mx-1) {
         vz1 = height_data[y][x-1] - height_data[y][x-2];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else {
         vz1 = height_data[y][x] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
 
       if(y > 1 && y < my-2) {
         vz2 = height_data[y+1][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step*2.0;
       }
       else if(y==0) {
         vz2 = height_data[y+2][x] - height_data[y+1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else if(y==1) {
         vz2 = height_data[y+1][x] - height_data[y][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else if(y==my-1) {
         vz2 = height_data[y-1][x] - height_data[y-2][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else {
         vz2 = height_data[y][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
     }
     else {
       if(x != 0 && x != mx-1) {
         vz1 = height_data[y][x+1] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step*2.0;
       }
       else if(x==0) {
         vz1 = height_data[y][x+1] - height_data[y][x];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
       else {
         vz1 = height_data[y][x] - height_data[y][x-1];
-        vz1 *= scaleZ;
         vx1 = x_step;
       }
 
       if(y != 0 && y != my-1) {
         vz2 = height_data[y+1][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step*2.0;
       }
       else if(y==0) {
         vz2 = height_data[y+1][x] - height_data[y][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
       else {
         vz2 = height_data[y][x] - height_data[y-1][x];
-        vz2 *= scaleZ;
         vy2 = y_step;
       }
     }
+
+    vz1 *= scaleZ;
+    vx1 *= scaleX;
+    vz2 *= scaleZ;
+    vy2 *= scaleY;
 
     normal[0] = -vz1*vy2;
     normal[1] = -vz2*vx1;
@@ -998,12 +982,12 @@ namespace mars {
     VertexData* v;
     int index;
 
-    for(int y=0; y<highHeight+1; ++y) {
-      for(int x=0; x<highWidth+1; ++x) {
-        index = tile->verticesArrayOffset+y*(highWidth+1)+x;
+    for(int y = 0; y < getHighResVertexCntY(); ++y) {
+      for(int x = 0; x < getHighResVertexCntX(); ++x) {
+        index = tile->verticesArrayOffset+y*getHighResVertexCntX()+x;
         v = vertices+index;
         v->position[2] = tile->heightData[y][x] * scaleZ;
-        getNormal(x, y, highWidth, highHeight, highStepX, highStepY,
+        getNormal(x, y, getHighResCellCntX(), getHighResCellCntY(), highStepX, highStepY,
                   tile->heightData,
                   vertices[index].normal,
                   vertices[index].tangent, true);
@@ -1079,6 +1063,14 @@ namespace mars {
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  }
+
+  void MultiResHeightMapRenderer::setDrawSolid(bool drawSolid) {
+    solid = highSolid = drawSolid;
+  }
+
+  void MultiResHeightMapRenderer::setDrawWireframe(bool drawWireframe) {
+    wireframe = highWireframe = drawWireframe;
   }
 
 } // namespace mars
