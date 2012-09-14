@@ -1,3 +1,4 @@
+cd bu
 /*
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
@@ -1068,7 +1069,7 @@ namespace mars {
       dJointAttach(jointId, body1, body2);
       dJointSetFixed(jointId);
       // used for the integration study of the SpaceClimber
-      dJointSetFixedParam(jointId, dParamCFM, cfm1);//0.0002);
+      //dJointSetFixedParam(jointId, dParamCFM, cfm1);//0.0002);
       //dJointSetFixedParam(jointId, dParamERP, erp1);//0.0002);
       //dJointSetFixedParam(jointId, dParamCFM, 0.001);
     }
