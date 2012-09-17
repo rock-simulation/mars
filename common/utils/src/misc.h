@@ -108,6 +108,26 @@ namespace mars {
 #endif
     }
 
+    /**
+     * \brief basic pattern matching function
+     * \param pattern The pattern that should be found in \a str.
+     * \param str The string in which to search for the \a pattern.
+     * \returns \c true if pattern is found in str. \c false otherwise
+     *
+     * The pattern may contain the wildcard "*" (asterisk) to mean zero or more
+     * of any character. Other wildcards are currently not supported.
+     * Examples:
+     *   - matchPattern("foo", "foo") -> true
+     *   - matchPattern("foo", "fo") -> false
+     *   - matchPattern("foo*", "foo") -> true
+     *   - matchPattern("foo*", "foobar") -> true
+     *   - matchPattern("foo*", "what is foo") -> false
+     *   - matchPattern("*wh*is*foo*", "what is foo") -> true
+     *
+     * \note Escaping wildcards is currently not supported.
+     */
+    bool matchPattern(const std::string &pattern, const std::string &str);
+
     void handleFilenamePrefix(std::string *file, const std::string &prefix);
 
     void removeFilenamePrefix(std::string *file);

@@ -30,19 +30,18 @@
 
 #include <cstdio>
 #include <cmath>
+#include <vector>
 #include <sstream>
 #include <iostream>
 #include <cassert>
 
 #ifdef WIN32
 #include <dirent.h>
-#define MODUS
 #else
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
-#define MODUS ,0711
 #endif
 
 namespace mars {
@@ -50,73 +49,42 @@ namespace mars {
 
     using namespace std;
 
-#if 0
-    void getAbsFromRel(const nodeStruct &node1, nodeStruct* node2){
-      Vector t, t2, source;
-      Quaternion q;
-      q.setIdentity();
-      
-      t = node1.rot * node2->relative_pos;
-      node2->pos = node1.pos + t;
-      node2->rot = node1.rot * node2->relative_rot;
-    }
+    bool matchPattern(const std::string &pattern, const std::string &str) {
+      size_t pos1 = 0, pos2 = 0;
 
-    /* keep this in sync with the JointTypes struct. */
-    static const char* sJointTypeStrings[NUMBER_OF_JOINT_TYPES] = {
-      "undefined",
-      "hinge",
-      "hinge2",
-      "slider",
-      "ball",
-      "universal",
-      "fixed",
-      "istruct-spine"
-    };
-    
-    const char* getJointTypeString(JointType type)
-    {
-      if (type >= NUMBER_OF_JOINT_TYPES)
-        {
-          std::cerr << "getJointTypeString(JointType id): invalid joint type id " << (int)type << std::endl;
-          //throw exception here?
-          
-          return NULL;
+      // chop up pattern
+      std::vector<std::string> patternList;
+      while(1) {
+        pos2 = pattern.find("*", pos1);
+        if(pos2 == pattern.npos) {
+          if(pos1 != pattern.length())
+            patternList.push_back(pattern.substr(pos1));
+          break;
         }
-      return sJointTypeStrings[type];
+        patternList.push_back(pattern.substr(pos1, pos2 - pos1));
+        pos1 = pos2 + 1;
+      }
+
+      // no wildcards. do direct test
+      if(patternList.empty())
+        return pattern == str;
+
+      // special case the first pattern because it must match at pos == 0
+      std::vector<std::string>::iterator patternListIt = patternList.begin();
+      int result = str.compare(0, patternListIt->length(), *patternListIt);
+      if(result != 0)
+        return false;
+      pos1 = patternListIt->length();
+      ++patternListIt;
+      // do the matching
+      for(/*nothing*/; patternListIt != patternList.end(); ++patternListIt) {
+        pos1 = str.find(*patternListIt, pos1);
+        if(pos1 == str.npos)
+          return false;
+        pos1 += patternListIt->length();
+      }
+      return true;
     }
-    
-    JointType getJointType(const std::string& text)
-    {
-      assert(sizeof(sJointTypeStrings) / sizeof(char*) == NUMBER_OF_JOINT_TYPES);
-      
-      //keep this in sync with the correct ids (from mars_core/src/MARSDefs.h)
-      for (int i = 0; i < NUMBER_OF_JOINT_TYPES; ++i)
-        {
-          if (text == sJointTypeStrings[i])
-            {
-              return (JointType)i;
-            }
-        }
-      
-      //this type string might also be the type-id encoded in a decimal string.
-      std::istringstream iss(text);
-      int numberFromString;
-      if ( !(iss >> numberFromString).fail() )
-        {
-          //conversion to integer was ok but is this a valid type id?
-          if (numberFromString > 0 && numberFromString < NUMBER_OF_JOINT_TYPES)
-            {
-              //yes, it is.
-              return (JointType)numberFromString;
-            }
-        }
-      
-      //string not found and conversion to integer not successful.
-      std::cerr << __FILE__": Could not get joint type from string \""
-                << text << "\"." << std::endl;
-      return JOINT_TYPE_UNDEFINED;
-    }
-#endif
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix) {
       std::string tmp = prefix;
@@ -158,15 +126,14 @@ namespace mars {
     }
 
     std::string getCurrentWorkingDir() {
-      char buffer[512];
-      getcwd(buffer, 512);
-      std::string currentDirectory(buffer);
-      if(buffer == NULL) {
+      const int BUFFER_SIZE = 512;
+      char buffer[BUFFER_SIZE];
+      if(!getcwd(buffer, BUFFER_SIZE)) {
         std::cerr << "misc:: error while getting current working dir"
                   << std::endl;
         return "";
       }
-      return currentDirectory;
+      return std::string(buffer);
     }
 
     std::string getPathOfFile(const std::string &filename) {
@@ -183,14 +150,18 @@ namespace mars {
       std::string s_tmpString = dir;
       DIR *p_Directory;
 
-      p_Directory= opendir(dir.c_str());
-      if (p_Directory!=NULL) {
+      p_Directory = opendir(dir.c_str());
+      if(p_Directory != NULL) {
         closedir(p_Directory);
         return 1;
       }
 
-      int result=mkdir(dir.c_str()MODUS );
-      if(result==-1) {
+#ifdef WIN32
+      int result = mkdir(dir.c_str());
+#else
+      int result = mkdir(dir.c_str(), 0755);
+#endif
+      if(result == -1) {
         fprintf(stderr, "misc:: could not create dir: %s\n", dir.c_str());
         return 0;
       }
