@@ -168,7 +168,8 @@ namespace mars {
 
     private:
       bool exit_sim;
-      bool allow_draw, sync_graphics;
+      bool allow_draw;
+      bool sync_graphics;
       int cameraMenuCheckedIndex;
       Status simulationStatus;
 
@@ -180,7 +181,7 @@ namespace mars {
       char single_step, was_running;
       bool kill_sim;
       bool show_time;
-      interfaces::sReal sync_threads;
+      interfaces::sReal sync_time;
       bool my_real_time;
       bool fast_step;
       bool erased_active;
@@ -212,6 +213,7 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgGX, cfgGY, cfgGZ;
       cfg_manager::cfgPropertyStruct cfgWorldErp, cfgWorldCfm;
       cfg_manager::cfgPropertyStruct cfgVisRep;
+      cfg_manager::cfgPropertyStruct cfgSyncTime;
 
       cfg_manager::cfgPropertyStruct configPath;
 

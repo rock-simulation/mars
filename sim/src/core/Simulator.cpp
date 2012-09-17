@@ -88,7 +88,7 @@ namespace mars {
       // a bool to enable an output of the calculation time
       show_time = 0;
       // to synchronise drawing and pysics
-      sync_threads = 0;
+      sync_time = 40;
       sync_count = 0;
       load_option = OPEN_INITIAL;
       reloadSim = false;
@@ -266,7 +266,7 @@ namespace mars {
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
         if (isSimRunning() || single_step) {
-          if (!sync_threads || (sync_threads && sync_count)) {
+          if (!sync_graphics || (sync_graphics && sync_count)) {
             if(my_real_time) {
               myRealTime();
             } else if(physics_mutex_count > 0) {
@@ -341,9 +341,9 @@ namespace mars {
               }
             }
             pluginLocker.unlock();
-            if (sync_threads) {
+            if (sync_graphics) {
               calc_time += calc_ms;
-              if (calc_time >= sync_threads) {
+              if (calc_time >= sync_time) {
                 sync_count = 0;
                 if(control->graphics)
                   this->allowDraw();
@@ -462,7 +462,7 @@ namespace mars {
 
 
     bool Simulator::isSimRunning() const {
-      return (simulationStatus != STOPPED);
+      return (simulationStatus != STOPPED || single_step);
     }
 
     bool Simulator::sceneChanged() const {
@@ -893,9 +893,9 @@ namespace mars {
 
     void Simulator::setGravity(const Vector &gravity) {
 
-      control->cfg->setPropertyValue("Physics", "Gravity x", "value", gravity.x());
-      control->cfg->setPropertyValue("Physics", "Gravity y", "value", gravity.y());
-      control->cfg->setPropertyValue("Physics", "Gravity z", "value", gravity.z());
+      control->cfg->setPropertyValue("Simulator", "Gravity x", "value", gravity.x());
+      control->cfg->setPropertyValue("Simulator", "Gravity y", "value", gravity.y());
+      control->cfg->setPropertyValue("Simulator", "Gravity z", "value", gravity.z());
     }
 
 
@@ -1011,8 +1011,12 @@ namespace mars {
       }
 
       if(_property.paramId == cfgSyncGui.paramId) {
-        sync_threads = _property.bValue;
-        this->setSyncThreads(sync_threads);
+        this->setSyncThreads(_property.bValue);
+        return;
+      }
+
+      if(_property.paramId == cfgSyncTime.paramId) {
+        sync_time = _property.dValue;
         return;
       }
 
@@ -1071,6 +1075,9 @@ namespace mars {
 
       cfgSyncGui = control->cfg->getOrCreateProperty("Simulator", "sync gui",
                                                        false, this);
+
+      cfgSyncTime = control->cfg->getOrCreateProperty("Simulator", "sync time",
+                                                       40.0, this);
 
       cfgDrawContact = control->cfg->getOrCreateProperty("Simulator", "draw contacts",
                                                          false, this);
