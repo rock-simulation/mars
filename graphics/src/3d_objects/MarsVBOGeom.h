@@ -21,6 +21,8 @@
 #ifndef MarsVBOGeom_H
 #define MarsVBOGeom_H
 
+#ifdef USE_MARS_VBO
+
 // prohibit MSVC to create the "min" and "max" macros
 #define NOMINMAX
 
@@ -111,6 +113,7 @@ namespace mars {
   } // namespace graphics
 } // namespace mars
 
+#endif // USE_MARS_VBO
 
 #endif /* MarsVBOGeom_H */
 

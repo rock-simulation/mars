@@ -355,11 +355,12 @@ namespace mars {
 
         CvScalar s;
         int count = 0;
+        double imageMaxValue = pow(2, image->depth);
         for(int x=0; x<terrain->width; x++) {
           for(int y=terrain->height-1; y>=0; y--) {
 
             s=cvGet2D(img,x,y);
-            terrain->pixelData[count++] = ((double)s.val[0])/255.0;
+            terrain->pixelData[count++] = ((double)s.val[0])/imageMaxValue;
             if(y==0 || y == terrain->height-1 ||
                x==0 || x == terrain->width-1)
               terrain->pixelData[count-1] -= 0.002;
