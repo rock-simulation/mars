@@ -355,7 +355,7 @@ namespace mars {
 
         CvScalar s;
         int count = 0;
-        double imageMaxValue = pow(2, image->depth);
+        double imageMaxValue = pow(2., image->depth);
         for(int x=0; x<terrain->width; x++) {
           for(int y=terrain->height-1; y>=0; y--) {
 

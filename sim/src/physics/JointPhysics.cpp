@@ -1,4 +1,3 @@
-cd bu
 /*
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
