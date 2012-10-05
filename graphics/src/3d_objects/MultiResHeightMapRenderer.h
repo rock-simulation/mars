@@ -77,6 +77,23 @@ namespace mars {
     void setDrawSolid(bool drawSolid);
     void setDrawWireframe(bool drawWireframe);
 
+    inline int getLowResVertexCntX() const
+    { return width; }
+    inline int getLowResVertexCntY() const
+    { return height; }
+    inline int getLowResCellCntX() const
+    { return getLowResVertexCntX()-1; }
+    inline int getLowResCellCntY() const
+    { return getLowResVertexCntY()-1; }
+    inline int getHighResVertexCntX() const
+    { return getHighResCellCntX()+1; }
+    inline int getHighResVertexCntY() const
+    { return getHighResCellCntY()+1; }
+    inline int getHighResCellCntX() const
+    { return highWidth; }
+    inline int getHighResCellCntY() const
+    { return highHeight; }
+
   protected:
     void clear();
     void cutHole(int x, int y);
