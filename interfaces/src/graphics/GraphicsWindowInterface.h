@@ -33,6 +33,7 @@
 #endif
 
 #include "GraphicsCameraInterface.h"
+#include "GraphicsEventInterface.h"
 #include <mars/utils/Color.h>
 
 namespace osg{
@@ -57,6 +58,7 @@ namespace mars {
       virtual void getImageData(void **data, int &width, int &height, bool depthImage=false) = 0;
       virtual void getRTTDepthData(float **data, int &width, int &height) = 0;
       virtual osg::Group* getScene() = 0;
+      virtual void addGraphicsEventHandler(GraphicsEventInterface *graphicsEventHandler) = 0;
     }; // end of class GraphicsWindowInterface
 
   } // end of namespace interfaces

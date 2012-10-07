@@ -41,7 +41,7 @@ GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer;
 #include <GL/glext.h>
 #include <map>
 #include <list>
-
+#include <stdio.h>
 #include <osg/Drawable>
 
 namespace mars {

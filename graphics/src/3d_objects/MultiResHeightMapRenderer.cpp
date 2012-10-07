@@ -31,7 +31,7 @@
 #include <cassert>
 #include <cmath>
 #include <cstring>
-
+#include <stdio.h>
 
 namespace mars {
 

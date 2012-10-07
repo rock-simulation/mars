@@ -35,13 +35,14 @@ namespace mars {
     public:
       virtual ~GraphicsEventInterface() {}
       virtual void emitKeyUpEvent(int key, unsigned int modKey,
-                                  unsigned long win_id) = 0;
-      virtual void emitQuitEvent(unsigned long win_id) = 0;
-      virtual void emitSetAppActive(unsigned long win_id = 0) = 0;
-      virtual void emitNodeSelectionChange(unsigned long win_id, int mode) = 0;
+                                  unsigned long win_id) {}
+      virtual void emitQuitEvent(unsigned long win_id) {}
+      virtual void emitSetAppActive(unsigned long win_id = 0) {}
+      virtual void emitNodeSelectionChange(unsigned long win_id, int mode) {}
       virtual void emitGeometryChange(unsigned long win_id,
                                       int left, int top,
-                                      int width, int height) = 0;
+                                      int width, int height) {}
+      virtual void emitPickEvent(int x, int y) {}
     }; // end of class GraphicsEventInterface
 
   } // end of namespace interfaces
