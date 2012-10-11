@@ -85,7 +85,7 @@ namespace mars {
        */
       QtVariantProperty* addGenericProperty(const std::string &path,
                                             int type,
-                                            const QVariant &value = NULL,
+                                            const QVariant &value,
                                             std::map<QString, QVariant> *attributes = NULL,
                                             QStringList *options = NULL);
 
@@ -101,7 +101,7 @@ namespace mars {
        */
       QtVariantProperty* addTabbedProperty(const std::string &path,
                                            int type,
-                                           const QVariant &value = NULL,
+                                           const QVariant &value,
                                            std::map<QString, QVariant> *attributes = NULL,
                                            QStringList *options = NULL);
 
@@ -243,7 +243,7 @@ namespace mars {
        */
       void customizeItem(QtVariantProperty *item,
                          int type,
-                         const QVariant &value = NULL,
+                         const QVariant &value,
                          std::map<QString, QVariant> *attributes = NULL,
                          QStringList *options = NULL);
 
