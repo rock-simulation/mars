@@ -30,6 +30,7 @@ endif()
 
 pkg_check_modules(PKGCONFIG REQUIRED
                   lib_manager
+                  mars_utils
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -70,7 +71,7 @@ set(HEADERS
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
                       -lpthread
 )
 

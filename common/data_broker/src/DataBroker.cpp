@@ -45,22 +45,18 @@
 #include "ProducerInterface.h"
 #include "ReceiverInterface.h"
 
+#include <mars/utils/MutexLocker.h>
+#include <mars/utils/misc.h>
 #include <cerrno>
 #include <cstdio>
 #include <cstdarg>
 
-#ifdef WIN32
-  #include <sys/timeb.h>
-  #include <windows.h>
-#else
-  #include <sys/time.h>
-  #include <unistd.h>
-#endif
 
 
 namespace mars {
-
   namespace data_broker {
+    
+    using namespace mars::utils;
 
     // Helper struct
     /// \cond HIDDEN_SYMBOLS
@@ -71,31 +67,6 @@ namespace mars {
       const ReceiverInterface *producer;
     };
     /// \endcond
-
-    static inline long getTime() {
-#ifdef WIN32
-      struct timeb timer;
-      ftime(&timer);
-      return (long)(timer.time*1000 + timer.millitm);
-#else
-      struct timeval timer;
-      gettimeofday(&timer, NULL);
-      return ((long)(timer.tv_sec))*1000 + ((long)(timer.tv_usec))/1000;
-#endif
-    }
-
-    static inline long getTimeDiff(long start) {
-      return getTime() - start;
-    }
-
-    static inline void msleep(unsigned int milliseconds) {
-#ifdef _WIN32
-      ::Sleep(milliseconds);
-#else
-      static const unsigned int milliToMicro = 1000;
-      ::usleep(milliseconds * milliToMicro);
-#endif
-    }
 
 
     // C-function to be called by pthreads to start the thread
@@ -560,8 +531,8 @@ namespace mars {
       for(pendingIt = pendingTimedRegistrations.begin();
           pendingIt != pendingTimedRegistrations.end(); /* do nothing */) {
         if((pendingIt->timerName == timerName) &&
-           match(groupName, pendingIt->groupName) &&
-           match(dataName, pendingIt->dataName)) {
+           matchPattern(groupName, pendingIt->groupName) &&
+           matchPattern(dataName, pendingIt->dataName)) {
           pendingIt = pendingTimedRegistrations.erase(pendingIt);
         } else {
           ++pendingIt;
@@ -660,8 +631,8 @@ namespace mars {
       for(pendingIt = pendingTimedProducers.begin();
           pendingIt != pendingTimedProducers.end(); /* do nothing */) {
         if((pendingIt->timerName == timerName) &&
-           match(groupName, pendingIt->groupName) &&
-           match(dataName, pendingIt->dataName)) {
+           matchPattern(groupName, pendingIt->groupName) &&
+           matchPattern(dataName, pendingIt->dataName)) {
           pendingIt = pendingTimedProducers.erase(pendingIt);
         } else {
           ++pendingIt;
@@ -804,8 +775,8 @@ namespace mars {
       for(pendingIt = pendingTriggeredRegistrations.begin();
           pendingIt != pendingTriggeredRegistrations.end(); /* do nothing */) {
         if((pendingIt->triggerName == triggerName) &&
-           match(groupName, pendingIt->groupName) &&
-           match(dataName, pendingIt->dataName)) {
+           matchPattern(groupName, pendingIt->groupName) &&
+           matchPattern(dataName, pendingIt->dataName)) {
           pendingIt = pendingTriggeredRegistrations.erase(pendingIt);
         } else {
           ++pendingIt;
@@ -872,8 +843,8 @@ namespace mars {
       for(pendingRegistrationIt = pendingSyncRegistrations.begin();
           pendingRegistrationIt != pendingSyncRegistrations.end(); /*nothing*/) {
         if((pendingRegistrationIt->receiver == receiver) &&
-           (match(groupName, pendingRegistrationIt->groupName)) &&
-           (match(dataName, pendingRegistrationIt->dataName))) {
+           (matchPattern(groupName, pendingRegistrationIt->groupName)) &&
+           (matchPattern(dataName, pendingRegistrationIt->dataName))) {
           pendingRegistrationIt = pendingSyncRegistrations.erase(pendingRegistrationIt);
         } else {
           ++pendingRegistrationIt;
@@ -940,8 +911,8 @@ namespace mars {
       for(pendingRegistrationIt = pendingAsyncRegistrations.begin();
           pendingRegistrationIt != pendingAsyncRegistrations.end(); /*nothing*/) {
         if((pendingRegistrationIt->receiver == receiver) &&
-           (match(groupName, pendingRegistrationIt->groupName)) &&
-           (match(dataName, pendingRegistrationIt->dataName))) {
+           (matchPattern(groupName, pendingRegistrationIt->groupName)) &&
+           (matchPattern(dataName, pendingRegistrationIt->dataName))) {
           pendingRegistrationIt = pendingAsyncRegistrations.erase(pendingRegistrationIt);
         } else {
           ++pendingRegistrationIt;
@@ -1283,8 +1254,8 @@ namespace mars {
       // pending async receivers
       for(registrationIt = pendingAsyncRegistrations.begin();
           registrationIt != pendingAsyncRegistrations.end(); ) {
-        if(match(registrationIt->groupName, newGroupName) &&
-           match(registrationIt->dataName, newDataName)) {
+        if(matchPattern(registrationIt->groupName, newGroupName) &&
+           matchPattern(registrationIt->dataName, newDataName)) {
           Receiver r = {registrationIt->receiver, registrationIt->callbackParam};
           newElement->asyncReceivers.push_back(r);
           // if the registration has wildcards keep it in the pending list...
@@ -1303,8 +1274,8 @@ namespace mars {
       // pending sync receivers
       for(registrationIt = pendingSyncRegistrations.begin();
           registrationIt != pendingSyncRegistrations.end(); ) {
-        if(match(registrationIt->groupName, newGroupName) &&
-           match(registrationIt->dataName, newDataName)) {
+        if(matchPattern(registrationIt->groupName, newGroupName) &&
+           matchPattern(registrationIt->dataName, newDataName)) {
           Receiver r = {registrationIt->receiver, registrationIt->callbackParam};
           newElement->syncReceivers.push_back(r);
           // if the registration has wildcards keep it in the pending list...
@@ -1324,8 +1295,8 @@ namespace mars {
       for(timedRegistrationIt = pendingTimedRegistrations.begin();
           timedRegistrationIt != pendingTimedRegistrations.end();/*do nothing*/){
         bool removeItem = false;
-        if(match(timedRegistrationIt->groupName, newGroupName) &&
-           match(timedRegistrationIt->dataName, newDataName)) {
+        if(matchPattern(timedRegistrationIt->groupName, newGroupName) &&
+           matchPattern(timedRegistrationIt->dataName, newDataName)) {
           timerIt = timers.find(timedRegistrationIt->timerName);
           if(timerIt != timers.end()) {
             TimedReceiver r = { timedRegistrationIt->receiver,
@@ -1353,8 +1324,8 @@ namespace mars {
           triggeredRegistrationIt != pendingTriggeredRegistrations.end();
           /*do nothing*/) {
         bool removeItem = false;
-        if(match(triggeredRegistrationIt->groupName, newGroupName) &&
-           match(triggeredRegistrationIt->dataName, newDataName)) {
+        if(matchPattern(triggeredRegistrationIt->groupName, newGroupName) &&
+           matchPattern(triggeredRegistrationIt->dataName, newDataName)) {
           triggerIt = triggers.find(triggeredRegistrationIt->triggerName);
           if(triggerIt != triggers.end()) {
             TriggeredReceiver r = { triggeredRegistrationIt->receiver,
@@ -1392,8 +1363,8 @@ namespace mars {
         // do wildcard matching on all elements
         for(elementIt = elementsByName.begin();
             elementIt != elementsByName.end(); ++elementIt) {
-          if(match(groupName, elementIt->first.first) &&
-             match(dataName, elementIt->first.second)) {
+          if(matchPattern(groupName, elementIt->first.first) &&
+             matchPattern(dataName, elementIt->first.second)) {
             elements->push_back(elementIt->second);
           }
         }
@@ -1502,46 +1473,7 @@ namespace mars {
       pthread_rwlock_unlock(&elementsLock);
     }
 
-
-    bool match(const std::string &pattern, const std::string &str) {
-      size_t pos1 = 0, pos2 = 0;
-
-      // chop up pattern
-      std::vector<std::string> patternList;
-      while(1) {
-        pos2 = pattern.find("*", pos1);
-        if(pos2 == pattern.npos) {
-          if(pos1 != pattern.length())
-            patternList.push_back(pattern.substr(pos1));
-          break;
-        }
-        patternList.push_back(pattern.substr(pos1, pos2 - pos1));
-        pos1 = pos2 + 1;
-      }
-
-      // no wildcards. do direct test
-      if(patternList.empty())
-        return pattern == str;
-
-      // special case the first pattern because it must match at pos == 0
-      std::vector<std::string>::iterator patternListIt = patternList.begin();
-      int result = str.compare(0, patternListIt->length(), *patternListIt);
-      if(result != 0)
-        return false;
-      pos1 = patternListIt->length();
-      ++patternListIt;
-      // do the matching
-      for(/*nothing*/; patternListIt != patternList.end(); ++patternListIt) {
-        pos1 = str.find(*patternListIt, pos1);
-        if(pos1 == str.npos)
-          return false;
-        pos1 += patternListIt->length();
-      }
-      return true;
-    }
-
   } // end of namespace data_broker
-
 } // end of namespace mars
 
 DESTROY_LIB(mars::data_broker::DataBroker);

@@ -31,6 +31,10 @@
 #include "DataInfo.h"
 
 #include <mars/lib_manager/LibManager.h>
+#include <mars/utils/Thread.h>
+#include <mars/utils/Mutex.h>
+#include <mars/utils/ReadWriteLock.h>
+#include <mars/utils/WaitCondition.h>
 
 #include <string>
 #include <vector>
@@ -51,25 +55,6 @@ namespace mars {
     inline bool hasWildcards(const std::string &str) {
       return (str.find("*") != str.npos);
     }
-    /**
-     * \brief basic pattern matching function
-     * \param pattern The pattern that should be found in \a str.
-     * \param str The string in which to search for the \a pattern.
-     * \returns \c true if pattern is found in str. \c false otherwise
-     *
-     * The pattern may contain the wildcard "*" (asterisk) to mean zero or more
-     * of any character. Other wildcards are currently not supported.
-     * Examples:
-     *   - match("foo", "foo") -> true
-     *   - match("foo", "fo") -> false
-     *   - match("foo*", "foo") -> true
-     *   - match("foo*", "foobar") -> true
-     *   - match("foo*", "what is foo") -> false
-     *   - match("*wh*is*foo*", "what is foo") -> true
-     *
-     * \note Escaping wildcards is currently not supported.
-     */
-    bool match(const std::string &pattern, const std::string &str);
 
     /// \cond HIDDEN_SYMBOLS  
     struct PendingRegistration {
