@@ -95,9 +95,8 @@ namespace mars {
       next_id(1), thread_running(false), stop_thread(false),
       realtimeThreadRunning(false) {
 
-
-      updatedElementsBackBuffer = new std::set<DataElement*>;
-      updatedElementsFrontBuffer = new std::set<DataElement*>;
+      updatedElementsBackBuffer = new LockableContainer<std::set<DataElement*> >;
+      updatedElementsFrontBuffer = new LockableContainer<std::set<DataElement*> >;
 
       DataElement *e;
       e = createDataElement("data_broker", "newStream", DATA_PACKAGE_READ_FLAG);
@@ -241,9 +240,7 @@ namespace mars {
                                              pendingIt->updatePeriod,
                                              timerIt->second.t,
                                              pendingIt->callbackParam};
-              pthread_rwlock_wrlock(&timerIt->second.lock);
-              timerIt->second.receivers.push_back(timedReceiver);
-              pthread_rwlock_unlock(&timerIt->second.lock);
+              timerIt->second.receivers.locked_push_back(timedReceiver);
               pendingIt = pendingTimedRegistrations.erase(pendingIt);
               advanceIterator = false;
             }
@@ -274,9 +271,7 @@ namespace mars {
                                            pendingProducerIt->updatePeriod,
                                            timerIt->second.t,
                                            pendingProducerIt->callbackParam};
-            pthread_rwlock_wrlock(&timerIt->second.lock);
-            timerIt->second.producers.push_back(timedProducer);
-            pthread_rwlock_unlock(&timerIt->second.lock);
+            timerIt->second.producers.locked_push_back(timedProducer);
             pendingProducerIt = pendingTimedProducers.erase(pendingProducerIt);
           } else {
             ++pendingProducerIt;
@@ -357,9 +352,7 @@ namespace mars {
           element->receiverLock->unlock();
           element->bufferLock->unlock();
 
-          pthread_mutex_lock(&updatedElementsLock);
-          updatedElementsBackBuffer->insert(element);
-          pthread_mutex_unlock(&updatedElementsLock);
+          updatedElementsBackBuffer->locked_insert(element);
 
           // defer synchronous callbacks until we do not hold any locks anymore
           if(!deferredCallback.receivers.empty())
@@ -451,9 +444,7 @@ namespace mars {
           DataElement *element = elementIt->second;
           TimedReceiver timedReceiver = {receiver, element, updatePeriod,
                                          timerIt->second.t, callbackParam};
-          pthread_rwlock_wrlock(&timerIt->second.lock);
-          timerIt->second.receivers.push_back(timedReceiver);
-          pthread_rwlock_unlock(&timerIt->second.lock);
+          timerIt->second.receivers.locked_push_back(timedReceiver);
           ok = true;
           if(timerName == "_REALTIME_") {
             lockRealtimeMutex();
@@ -479,9 +470,7 @@ namespace mars {
         tmp.timerName = timerName.c_str();
         tmp.updatePeriod = updatePeriod;
         tmp.callbackParam = callbackParam;
-        pthread_mutex_lock(&pendingRegistrationLock);
-        pendingTimedRegistrations.push_back(tmp);
-        pthread_mutex_unlock(&pendingRegistrationLock);
+        pendingTimedRegistrations.locked_push_back(tmp);
       }
       return ok;
     }
@@ -556,9 +545,7 @@ namespace mars {
         }
         TimedProducer timedProducer = {producer, element, updatePeriod,
                                        timerIt->second.t, callbackParam};
-        pthread_rwlock_wrlock(&timerIt->second.lock);
-        timerIt->second.producers.push_back(timedProducer);
-        pthread_rwlock_unlock(&timerIt->second.lock);
+        timerIt->second.producers.locked_push_back(timedProducer);
         elementsLock.unlock();
         ok = true;
         if(timerName == "_REALTIME_") {
@@ -579,9 +566,7 @@ namespace mars {
         tmp.timerName = timerName.c_str();
         tmp.updatePeriod = updatePeriod;
         tmp.callbackParam = callbackParam;
-        pthread_mutex_lock(&pendingRegistrationLock);
-        pendingTimedProducers.push_back(tmp);
-        pthread_mutex_unlock(&pendingRegistrationLock);
+        pendingTimedProducers.locked_push_back(tmp);
       }
       return ok;
     }
@@ -658,9 +643,7 @@ namespace mars {
             TriggeredReceiver triggeredReceiver = { pendingIt->receiver,
                                                     elementIt->second,
                                                     pendingIt->callbackParam };
-            pthread_rwlock_wrlock(&triggerIt->second.lock);
-            triggerIt->second.receivers.push_back(triggeredReceiver);
-            pthread_rwlock_unlock(&triggerIt->second.lock);
+            triggerIt->second.receivers.locked_push_back(triggeredReceiver);
             pendingIt = pendingTriggeredRegistrations.erase(pendingIt);
           } else {
             ++pendingIt;
@@ -717,9 +700,7 @@ namespace mars {
         if(elementIt != elementsByName.end()) {
           TriggeredReceiver triggeredReceiver = { receiver, elementIt->second,
                                                   callbackParam };
-          pthread_rwlock_wrlock(&triggerIt->second.lock);
-          triggerIt->second.receivers.push_back(triggeredReceiver);
-          pthread_rwlock_unlock(&triggerIt->second.lock);
+          triggerIt->second.receivers.locked_push_back(triggeredReceiver);
           ok = true;
         }
         elementsLock.unlock();
@@ -789,16 +770,12 @@ namespace mars {
           elementIt != elements.end(); ++elementIt){
         DataElement *element = *elementIt;
         Receiver r = { receiver, callbackParam };
-        pthread_rwlock_wrlock(&element->receiverLock);
-        element->syncReceivers.push_back(r);
-        pthread_rwlock_unlock(&element->receiverLock);
+        element->syncReceivers.locked_push_back(r);
       }
       if(wildcards || elements.empty()) {
         PendingRegistration tmp = { receiver, groupName.c_str(),
                                     dataName.c_str(), callbackParam };
-        pthread_mutex_lock(&pendingRegistrationLock);
-        pendingSyncRegistrations.push_back(tmp);
-        pthread_mutex_unlock(&pendingRegistrationLock);
+        pendingSyncRegistrations.locked_push_back(tmp);
       }
       elementsLock.unlock();
       return (wildcards || !elements.empty());
@@ -857,16 +834,12 @@ namespace mars {
           elementIt != elements.end(); ++elementIt){
         DataElement *element = *elementIt;
         Receiver r = { receiver, callbackParam };
-        pthread_rwlock_wrlock(&element->receiverLock);
-        element->asyncReceivers.push_back(r);
-        pthread_rwlock_unlock(&element->receiverLock);
+        element->asyncReceivers.locked_push_back(r);
       }
       if(wildcards || elements.empty()) {
         PendingRegistration tmp = { receiver, groupName.c_str(),
                                     dataName.c_str(), callbackParam };
-        pthread_mutex_lock(&pendingRegistrationLock);
-        pendingAsyncRegistrations.push_back(tmp);
-        pthread_mutex_unlock(&pendingRegistrationLock);
+        pendingAsyncRegistrations.locked_push_back(tmp);
       }
       elementsLock.unlock();
       return (wildcards || !elements.empty());
@@ -960,9 +933,7 @@ namespace mars {
         element->lastProducer = producer;
         element->bufferLock->unlock();
 
-        pthread_mutex_lock(&updatedElementsLock);
-        updatedElementsBackBuffer->insert(element);
-        pthread_mutex_unlock(&updatedElementsLock);
+        updatedElementsBackBuffer->locked_insert(element);
 
         element->receiverLock->lockForRead();
         // defer synchronous callbacks until we do not hold any locks anymore

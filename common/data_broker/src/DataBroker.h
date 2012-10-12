@@ -29,6 +29,7 @@
 #include "DataPackage.h"
 #include "DataItem.h"
 #include "DataInfo.h"
+#include "LockableContainer.h"
 
 #include <mars/lib_manager/LibManager.h>
 #include <mars/utils/Thread.h>
@@ -108,8 +109,8 @@ namespace mars {
 
     struct Timer {
       long t;
-      std::list<TimedProducer> producers;
-      std::list<TimedReceiver> receivers;
+      LockableContainer<std::list<TimedProducer> > producers;
+      LockableContainer<std::list<TimedReceiver> > receivers;
       mars::utils::ReadWriteLock *lock;
       unsigned long timerElementId;
     };
@@ -121,7 +122,7 @@ namespace mars {
     };
 
     struct Trigger {
-      std::list<TriggeredReceiver> receivers;
+      LockableContainer<std::list<TriggeredReceiver> > receivers;
       mars::utils::ReadWriteLock *lock;
     };
 
@@ -135,8 +136,8 @@ namespace mars {
       //    bool updated;
       DataPackage *backBuffer;
       DataPackage *frontBuffer;
-      std::list<Receiver> syncReceivers;
-      std::list<Receiver> asyncReceivers;
+      LockableContainer<std::list<Receiver> > syncReceivers;
+      LockableContainer<std::list<Receiver> > asyncReceivers;
       mars::utils::ReadWriteLock *bufferLock;
       mars::utils::ReadWriteLock *receiverLock;
       const ReceiverInterface *lastProducer;
@@ -293,8 +294,8 @@ namespace mars {
                              const std::string &dataName,
                              std::vector<DataElement*> *elements) const;
 
-      std::set<DataElement*> *updatedElementsBackBuffer;
-      std::set<DataElement*> *updatedElementsFrontBuffer;
+      LockableContainer<std::set<DataElement*> > *updatedElementsBackBuffer;
+      LockableContainer<std::set<DataElement*> > *updatedElementsFrontBuffer;
 
       unsigned long next_id;
       pthread_t theThread;
@@ -305,10 +306,10 @@ namespace mars {
       bool realtimeThreadRunning, stopRealtimeThread;
       bool startingRealtimeThread;
 
-      std::list<PendingRegistration> pendingAsyncRegistrations;
-      std::list<PendingRegistration> pendingSyncRegistrations;
-      std::list<PendingTimedProducer> pendingTimedProducers;
-      std::list<PendingTimedRegistration> pendingTimedRegistrations;
+      LockableContainer<std::list<PendingRegistration> > pendingAsyncRegistrations;
+      LockableContainer<std::list<PendingRegistration> > pendingSyncRegistrations;
+      LockableContainer<std::list<PendingTimedProducer> > pendingTimedProducers;
+      LockableContainer<std::list<PendingTimedRegistration> > pendingTimedRegistrations;
       std::list<PendingTriggeredRegistration> pendingTriggeredRegistrations;
       std::map<unsigned long, DataElement*> elementsById;
       std::map<std::string, Trigger> triggers;
