@@ -107,6 +107,11 @@ namespace mars {
        */
       virtual void run() = 0;
 
+      /**
+       * causes the current thread to sleep for \arg msec millisecond.
+       */
+      static void msleep(unsigned long msec);
+
     private:
       // disallow copying
       Thread(const Thread &);

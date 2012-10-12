@@ -141,7 +141,7 @@ namespace mars {
     bool Thread::wait(unsigned long timeoutMilliseconds) {
       long timeout = getTime() + timeoutMilliseconds;
       while(running && getTime() < timeout) {
-        msleep(1);
+        ::msleep(1);
       }
       return !running;
     }
@@ -168,6 +168,10 @@ namespace mars {
         }
       }
       return NULL;
+    }
+
+    void Thread::msleep(unsigned long msec) {
+      ::msleep(msec);
     }
 
   } // end of namespace utils
