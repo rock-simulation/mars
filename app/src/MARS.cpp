@@ -185,6 +185,10 @@ namespace mars {
       int c;
       int option_index = 0;
 
+      int i;
+      char** argv_copy = NULL;
+      unsigned int arg_len = 0;
+
       //remember how many arguments were already processed by getopt()
       const int old_opterr = opterr;
 
@@ -197,8 +201,19 @@ namespace mars {
         {0, 0, 0, 0}
       };
 
+      // copy the argument vector in order to prevent messing around with the order
+      // of the arguments by getopt
+      argv_copy = (char**) malloc(argc*sizeof(char*));
+      for (i = 0; i < argc; i++) {
+        arg_len = strlen(argv[i]);
+        argv_copy[i] = (char*) malloc((arg_len+1)*sizeof(char));
+        memcpy(argv_copy[i],argv[i],arg_len);
+        argv_copy[i][arg_len] = '\0';
+      }
+
+      // here just work with the copied argument vector ...
       while (1) {
-        c = getopt_long(argc, argv, "C:", long_options, &option_index);
+        c = getopt_long(argc, argv_copy, "C:", long_options, &option_index);
         if (c == -1)
           break;
         switch (c) {
@@ -208,6 +223,12 @@ namespace mars {
           break;
         }
       }
+
+      // clean up the copied argument vector
+      for (i = 0; i < argc; i++) {
+        free(argv_copy[i]);
+      }
+      free(argv_copy);
 
       //reset error message printing to original setting
       opterr = old_opterr;

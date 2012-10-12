@@ -88,6 +88,7 @@ namespace mars {
       void clearSelectionVectors(void);
 
       void setGraphicsEventHandler(interfaces::GraphicsEventInterface *graphicsEventHandler);
+      void addGraphicsEventHandler(interfaces::GraphicsEventInterface *graphicsEventHandler);
 
       virtual osgWidget::WindowManager* getOrCreateWindowManager();
       void setHUD(HUD *theHUD);
@@ -208,7 +209,7 @@ namespace mars {
       // the OpenGL/OSG camera
       GraphicsCamera* graphicsCamera;
       // handles some events
-      interfaces::GraphicsEventInterface *graphicsEventHandler;
+      std::vector<interfaces::GraphicsEventInterface *> graphicsEventHandler;
 
       // 2D display on top of the scene
       HUD *myHUD;

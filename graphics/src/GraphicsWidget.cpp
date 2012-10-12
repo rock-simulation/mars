@@ -75,7 +75,6 @@ namespace mars {
       myHUD = 0;
       hudCamera = 0;
       graphicsCamera = 0;
-      graphicsEventHandler = NULL;
 
       cameraEyeSeparation = 0.1;
       mouseX = mouseY = 0;
@@ -675,7 +674,7 @@ namespace mars {
                                                                   view,
                                                                   w,
                                                                   h,
-                                                                  MASK_2D,
+                                                                  CULL_LAYER,
                                                                   osgWidget::WindowManager::WM_PICK_DEBUG| osgWidget::WindowManager::WM_USE_PYTHON
                                                                   );
 
@@ -920,7 +919,11 @@ namespace mars {
     }
 
     void GraphicsWidget::setGraphicsEventHandler(GraphicsEventInterface* graphicsEventHandler) {
-      this->graphicsEventHandler = graphicsEventHandler;
+      this->graphicsEventHandler.push_back(graphicsEventHandler);
+    }
+
+    void GraphicsWidget::addGraphicsEventHandler(GraphicsEventInterface* graphicsEventHandler) {
+      this->graphicsEventHandler.push_back(graphicsEventHandler);
     }
 
     GraphicsCameraInterface* GraphicsWidget::getCameraInterface(void) const {
@@ -1025,8 +1028,8 @@ namespace mars {
       case osgGA::GUIEventAdapter::KEYDOWN :
         return handleKeyDownEvent(ea);
       case osgGA::GUIEventAdapter::KEYUP :
-        if (graphicsEventHandler) {
-          graphicsEventHandler->emitSetAppActive(widgetID);
+        if (graphicsEventHandler.size() > 0) {
+          graphicsEventHandler[0]->emitSetAppActive(widgetID);
         }
         sendKeyUpEvent(ea);
         return handleKeyUpEvent(ea);
@@ -1046,7 +1049,8 @@ namespace mars {
       case osgGA::GUIEventAdapter::FRAME :
         return false;
       case osgGA::GUIEventAdapter::QUIT_APPLICATION:
-        if (graphicsEventHandler) graphicsEventHandler->emitQuitEvent(widgetID);
+        if (graphicsEventHandler.size() > 0)
+	  graphicsEventHandler[0]->emitQuitEvent(widgetID);
         return true;
       case osgGA::GUIEventAdapter::CLOSE_WINDOW:
         return false;
@@ -1065,9 +1069,9 @@ namespace mars {
       if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
 
-      if(graphicsEventHandler) {
-        graphicsEventHandler->emitGeometryChange(widgetID,
-                                                 ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
+      if(graphicsEventHandler.size() > 0) {
+        graphicsEventHandler[0]->emitGeometryChange(widgetID,
+						    ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
       }
 
       return true;
@@ -1077,8 +1081,15 @@ namespace mars {
                                             osgGA::GUIActionAdapter& aa) {
       // *** Picking ***
 
+      if(!isMouseMoving) {
+	for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+	  graphicsEventHandler[i]->emitPickEvent(ea.getX(), ea.getY());
+	}
+      }
+
       isMouseButtonDown = false;
       isMouseMoving = false;
+
 
       if(pickmode == DISABLED) return false;
 
@@ -1091,11 +1102,11 @@ namespace mars {
       // Mouse didn't move
       if(mouseX==ea.getX() || mouseY==ea.getY()) {
         if(pick(mouseX, mouseY)) {
-          if(graphicsEventHandler) {
-            graphicsEventHandler->emitNodeSelectionChange(widgetID, (int)this->pickmode);
-            return true;
+          if(graphicsEventHandler.size() > 0) {
+            graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)this->pickmode);
+            return false;
           }
-          else if(!graphicsEventHandler) {
+          else if(graphicsEventHandler.size() == 0) {
             cerr << "Error: object pick processing not possible : ";
             cerr << "no event handler found." << endl;
             return false;
@@ -1242,7 +1253,7 @@ namespace mars {
     }
 
     void GraphicsWidget::sendKeyUpEvent(const osgGA::GUIEventAdapter &ea) {
-      if (graphicsEventHandler) {
+      if (graphicsEventHandler.size() > 0) {
         int key = ea.getKey();
         unsigned int modKey = ea.getModKeyMask();
         unsigned int mod = 0;
@@ -1267,7 +1278,7 @@ namespace mars {
         if (modKey & osgGA::GUIEventAdapter::MODKEY_META) {
           mod |= GuiEventInterface::MetaModifier;
         }
-        graphicsEventHandler->emitKeyUpEvent(key, mod, widgetID);
+        graphicsEventHandler[0]->emitKeyUpEvent(key, mod, widgetID);
       }
     }
 
