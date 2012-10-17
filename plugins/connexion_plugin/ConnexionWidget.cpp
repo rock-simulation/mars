@@ -210,10 +210,12 @@ namespace mars {
         char text[255];
         winIDCombo->clear();
         windowIDs.clear();
-        control->graphics->getList3DWindowIDs(&windowIDs);
-        for(unsigned int i=0; i<windowIDs.size(); i++) {
-          sprintf(text, "WinID: %lu", windowIDs[i]);
-          winIDCombo->addItem(QString(text));
+        if(control->graphics) {
+          control->graphics->getList3DWindowIDs(&windowIDs);
+          for(unsigned int i=0; i<windowIDs.size(); i++) {
+            sprintf(text, "WinID: %lu", windowIDs[i]);
+            winIDCombo->addItem(QString(text));
+          }
         }
 
         std::vector<interfaces::core_objects_exchange> objectList;
