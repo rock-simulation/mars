@@ -971,32 +971,40 @@ namespace mars {
           pos[1] = tpos[1];
           pos[2] = tpos[2];
         }
-        dGeomDestroy(nGeom);
+        // deferre destruction of geom until after the successful creation of 
+        // a new geom
+        dGeomID tmpGeomId = nGeom;
         // first we create a ode geometry for the node
+        bool success = false;
         switch(node->physicMode) {
         case NODE_TYPE_MESH:
-          createMesh(node);
+          success = createMesh(node);
           break;
         case NODE_TYPE_BOX:
-          createBox(node);
+          success = createBox(node);
           break;
         case NODE_TYPE_SPHERE:
-          createSphere(node);
+          success = createSphere(node);
           break;
         case NODE_TYPE_CAPSULE:
-          createCapsule(node);
+          success = createCapsule(node);
           break;
         case NODE_TYPE_CYLINDER:
-          createCylinder(node);
+          success = createCylinder(node);
           break;
         case NODE_TYPE_PLANE:
-          createPlane(node);
+          success = createPlane(node);
           break;
         default:
           // no correct type is spezified, so no physically node will be created
-          return 0;
+          success = false;
           break;
         }
+        if(!success) {
+          fprintf(stderr, "creation of body geometry failed.\n");
+          return 0;
+        }
+        dGeomDestroy(tmpGeomId);
         // now the geom is rebuild and we have to reconnect it to the body
         // and reset the mass of the body
         if(nBody) {

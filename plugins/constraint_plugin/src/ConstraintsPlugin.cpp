@@ -205,15 +205,17 @@ namespace mars {
         double factor, initialValue;
         size_t pos1 = 0;
 
+        // create new Property to control the constraint
+        cfg_manager::cfgPropertyStruct newProp;
+        newProp = control->cfg->getOrCreateProperty("Constraints", paramName, 
+                                                    (double)0.);
         // first entry is the initial nodeName.nodeAttr
         result = parseIdentifier(s, &pos1, &nodeId, &attr, NULL);
         if(result != PARSE_SUCCESS)
           return;
         initialValue = getNodeAttribute(nodeId, attr);
-        // create new Property to control the constraint
-        cfg_manager::cfgPropertyStruct newProp;
-        newProp = control->cfg->getOrCreateProperty("Constraints", paramName, 
-                                                    initialValue);
+        control->cfg->setPropertyValue("Constraints", paramName, "value",
+                                       initialValue);
         // add constraint for initial Node with factor 1
         BaseConstraint *c = new NodeConstraint(control, nodeId, attr,
                                                1, initialValue);
