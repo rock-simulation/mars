@@ -7,7 +7,7 @@ external/eigen
 
 external/minizip 
 
-mars/external/ode_mars
+external/ode_mars
 
 mars/common/utils
 mars/common/lib_manager
