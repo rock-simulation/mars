@@ -304,6 +304,33 @@ function fetch_ode_mars() {
 
 
 # ======================
+# minizip fetch function
+# ======================
+
+function fetch_minizip() {
+    setupConfig
+    printBold "fetching minizip ..."
+    pushd . > /dev/null 2>&1
+    mkdir -p ${MARS_DEV_ROOT}/external
+    cd ${MARS_DEV_ROOT}/external
+    if [ ! -e "unzip11.zip" ]; then
+        wget http://www.winimage.com/zLibDll/unzip11.zip
+        if [ -d "minizip" ]; then 
+            uninstall_package "external/minizip"
+            rm -rf minizip
+        fi
+    fi
+
+    if [ ! -d "minizip" ]; then 
+	unzip unzip11.zip -d minizip
+    fi
+    cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching minizip."
+}
+
+
+# ======================
 # opencv fetch function
 # ======================
 
@@ -367,6 +394,11 @@ function update_opencv {
 
 function update_ode_mars {
     # ode is not under revision control
+    return 0
+}
+
+function update_minizip {
+    # minizip is not under revision control
     return 0
 }
 
