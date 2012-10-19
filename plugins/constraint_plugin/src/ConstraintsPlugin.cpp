@@ -120,16 +120,14 @@ namespace mars {
         constraintInfo = control->cfg->getParamInfo("Constraints", 
                                                     constraintDefInfo.name);
         ConstraintsLookup::iterator it = constraints.find(constraintInfo.id);
-        if(it == constraints.end()) {
-          LOG_WARN("ConstraintsPlugin::cfgUpdateProperty: constraint not found");
-          return;
-        }
-        for(ConstraintsContainer::iterator it2 = it->second.begin();
+        if(it != constraints.end()) {
+          for(ConstraintsContainer::iterator it2 = it->second.begin();
             it2 != it->second.end(); ++it2) {
-          control->cfg->unregisterFromParam(constraintInfo.id, *it2);
-          delete (*it2);
+            control->cfg->unregisterFromParam(constraintInfo.id, *it2);
+            delete (*it2);
+          }
+          it->second.clear();
         }
-        it->second.clear();
         // recreate param
         std::string s;
         control->cfg->getPropertyValue(constraintDefInfo.id, "value", &s);
