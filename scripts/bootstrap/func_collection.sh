@@ -419,6 +419,15 @@ function patch_package {
 }
 
 
+function patch_minizip {
+    printBold "patching external/minizip ..."
+    setScriptDir
+    setupConfig
+    patch -N -p0 -d ${MARS_DEV_ROOT}/external -i ${MARS_SCRIPT_DIR}/patches/minizip.patch
+    patch -N -p0 -d ${MARS_DEV_ROOT}/external -i ${MARS_SCRIPT_DIR}/patches/minizip_unzip.patch
+    printBold "... done patching external/minizip."
+}
+
 function patch_opencv {
     printBold "patching external/OpenCV-2.3.0 ..."
     setScriptDir
