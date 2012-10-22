@@ -55,6 +55,7 @@ namespace mars {
       BasePolarIntersectionSensor(config.id,config.name,config.width,config.height,config.opening_width/config.width,config.opening_height/config.height),
       SensorInterface(control), config(config) {
 
+      updateRate = 0;
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       this->attached_node = config.attached_node;
@@ -143,6 +144,7 @@ namespace mars {
       CPP_UNUSED(callbackParam);
       long id;
       package.get(0, &id);
+
       if(positionIndices[0] == -1) {
         positionIndices[0] = package.getIndexByName("position/x");
         positionIndices[1] = package.getIndexByName("position/y");
