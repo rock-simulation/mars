@@ -23,6 +23,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/cfg_manager/CFGDefs.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/utils.h>
 
 namespace mars {
   namespace plugins {
@@ -54,22 +55,30 @@ namespace mars {
         double diff = (property.dValue - oldValue) * nodeFactor;
         interfaces::NodeData n;
         n = control->nodes->getFullNode(nodeId);
+        if(n.relative_id) {
+          interfaces::NodeData rel;
+            rel = control->nodes->getFullNode(n.relative_id);
+            interfaces::getRelFromAbs(rel, &n);
+        }
         switch(nodeAttribute) {
         case ATTRIBUTE_POSITION_X:
           {
             n.pos.x() += diff;
+            LOG_DEBUG("NodeContraint: edit node pos x");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS); 
             break;
           }
         case ATTRIBUTE_POSITION_Y:
           {
             n.pos.y() += diff;
+            LOG_DEBUG("NodeContraint: edit node pos y");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS); 
             break;
           }
         case ATTRIBUTE_POSITION_Z:
           {
             n.pos.z() += diff;
+            LOG_DEBUG("NodeContraint: edit node pos z");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS); 
             break;
           }

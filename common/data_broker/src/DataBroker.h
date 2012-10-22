@@ -29,6 +29,7 @@
 #include "DataPackage.h"
 #include "DataItem.h"
 #include "DataInfo.h"
+#include "LockableContainer.h"
 
 #include <mars/lib_manager/LibManager.h>
 #include <mars/utils/Thread.h>
@@ -108,9 +109,9 @@ namespace mars {
 
     struct Timer {
       long t;
-      std::list<TimedProducer> producers;
-      std::list<TimedReceiver> receivers;
-      pthread_rwlock_t lock;
+      LockableContainer<std::list<TimedProducer> > producers;
+      LockableContainer<std::list<TimedReceiver> > receivers;
+      mars::utils::ReadWriteLock *lock;
       unsigned long timerElementId;
     };
 
@@ -121,8 +122,8 @@ namespace mars {
     };
 
     struct Trigger {
-      std::list<TriggeredReceiver> receivers;
-      pthread_rwlock_t lock;
+      LockableContainer<std::list<TriggeredReceiver> > receivers;
+      mars::utils::ReadWriteLock *lock;
     };
 
     struct Receiver {
@@ -135,17 +136,18 @@ namespace mars {
       //    bool updated;
       DataPackage *backBuffer;
       DataPackage *frontBuffer;
-      std::list<Receiver> syncReceivers;
-      std::list<Receiver> asyncReceivers;
-      pthread_rwlock_t bufferLock;
-      pthread_rwlock_t receiverLock;
+      LockableContainer<std::list<Receiver> > syncReceivers;
+      LockableContainer<std::list<Receiver> > asyncReceivers;
+      mars::utils::ReadWriteLock *bufferLock;
+      mars::utils::ReadWriteLock *receiverLock;
       const ReceiverInterface *lastProducer;
       std::list<DataItemConnection> connections;
     };
     /// \endcond
 
     class DataBroker : public mars::lib_manager::LibInterface,
-                       public DataBrokerInterface {
+                       public DataBrokerInterface,
+                       public mars::utils::Thread {
 
     public:
       DataBroker(mars::lib_manager::LibManager *theManager);
@@ -254,10 +256,10 @@ namespace mars {
         startingRealtimeThread = false;
       }
       inline void lockRealtimeMutex() {
-        pthread_mutex_lock(&realtimeMutex);
+        realtimeMutex.lock();
       }
       inline void unlockRealtimeMutex() {
-        pthread_mutex_unlock(&realtimeMutex);
+        realtimeMutex.unlock();
       }
 
       virtual void pushMessage(MessageType messageType,
@@ -292,34 +294,34 @@ namespace mars {
                              const std::string &dataName,
                              std::vector<DataElement*> *elements) const;
 
-      std::set<DataElement*> *updatedElementsBackBuffer;
-      std::set<DataElement*> *updatedElementsFrontBuffer;
+      LockableContainer<std::set<DataElement*> > *updatedElementsBackBuffer;
+      LockableContainer<std::set<DataElement*> > *updatedElementsFrontBuffer;
 
       unsigned long next_id;
       pthread_t theThread;
       pthread_t realtimeThread;
-      pthread_mutex_t idMutex;
-      pthread_mutex_t realtimeMutex;
+      mars::utils::Mutex idMutex;
+      mars::utils::Mutex realtimeMutex;
       bool thread_running, stop_thread;
       bool realtimeThreadRunning, stopRealtimeThread;
       bool startingRealtimeThread;
 
-      std::list<PendingRegistration> pendingAsyncRegistrations;
-      std::list<PendingRegistration> pendingSyncRegistrations;
-      std::list<PendingTimedProducer> pendingTimedProducers;
-      std::list<PendingTimedRegistration> pendingTimedRegistrations;
+      LockableContainer<std::list<PendingRegistration> > pendingAsyncRegistrations;
+      LockableContainer<std::list<PendingRegistration> > pendingSyncRegistrations;
+      LockableContainer<std::list<PendingTimedProducer> > pendingTimedProducers;
+      LockableContainer<std::list<PendingTimedRegistration> > pendingTimedRegistrations;
       std::list<PendingTriggeredRegistration> pendingTriggeredRegistrations;
       std::map<unsigned long, DataElement*> elementsById;
       std::map<std::string, Trigger> triggers;
       std::map<std::pair<std::string, std::string>, DataElement*> elementsByName;
-      mutable pthread_rwlock_t elementsLock;
-      pthread_rwlock_t timersLock;
-      pthread_rwlock_t triggersLock;
-      pthread_mutex_t updatedElementsLock;
-      pthread_mutex_t pendingRegistrationLock;
+      mutable mars::utils::ReadWriteLock elementsLock;
+      mars::utils::ReadWriteLock timersLock;
+      mars::utils::ReadWriteLock triggersLock;
+      mars::utils::Mutex updatedElementsLock;
+      mars::utils::Mutex pendingRegistrationLock;
 
-      pthread_cond_t wakeupCondition;
-      pthread_mutex_t wakeupMutex;
+      mars::utils::WaitCondition wakeupCondition;
+      mars::utils::Mutex wakeupMutex;
       std::map<std::string, Timer> timers;
       unsigned long newStreamId;
       unsigned long pushMessageIds[__DB_MESSAGE_TYPE_COUNT];

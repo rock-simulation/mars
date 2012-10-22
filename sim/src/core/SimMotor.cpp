@@ -68,6 +68,11 @@ namespace mars {
       kY  = 100.0*(0.00014 / (2*M_PI/60));
       k   = 0.02;
 
+      kXY = 100.0*((0.00002) / ((9.81*0.07)*(2*M_PI/60)));
+      kX  = 0.00512 / (9.81*0.07);
+      kY  = 100.0*(0.00006 / (2*M_PI/60));
+      k   = 0.025;
+
       dbPackage.add("id", (long)sMotor.index);
       dbPackage.add("value", getValue());
       dbPackage.add("position", getActualPosition());

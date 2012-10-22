@@ -83,13 +83,14 @@ function setupConfig {
     if [[ x${MARS_DEV_ROOT} == x ]]; then
         if [[ ! -a ${configFile} ]]; then
             echo "You must set a root directory where all repositories will be checked out and all packages will be installed"
+            echo "On Windows you should use the mingw path and not the windows path and avoid trailing slashes (e.g. /c/dev/mars-git)"
             echo -n "Enter root directory: "
             read MARS_DEV_ROOT || return 1
             echo "MARS_DEV_ROOT=\"${MARS_DEV_ROOT}\"" > ${configFile}
             echo "You can specify the number of CORES you want to use when compiling packages."
             echo -n "Enter number of CORES: "
             read CORES || return 1
-            if ! [[ ${CORES} =~ ^[1-9][0-9]*$ ]]; then
+            if ! [[ ${CORES} =~ "^[1-9][0-9]*$" ]]; then
                 printBold "error parsing number of CORES using default (6)"
                 CORES=6
             fi
@@ -225,6 +226,8 @@ function fetch_package {
 
 function fetch_yaml_cpp() {
     setupConfig
+    printBold "fetching yaml-cpp ..."
+    pushd . > /dev/null 2>&1
     mkdir -p ${MARS_DEV_ROOT}/external
     cd ${MARS_DEV_ROOT}/external
     if [ ! -e "yaml-cpp-0.3.0.tar.gz" ]; then
@@ -239,6 +242,8 @@ function fetch_yaml_cpp() {
         #mv yaml-cpp-0.3.0 yaml-cpp
     fi
     cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching yaml-cpp."
 }
 
 
@@ -248,6 +253,8 @@ function fetch_yaml_cpp() {
 
 function fetch_eigen() {
     setupConfig
+    printBold "fetching eigen3 ..."
+    pushd . > /dev/null 2>&1
     mkdir -p ${MARS_DEV_ROOT}/external
     cd ${MARS_DEV_ROOT}/external
     if [ ! -e "3.0.6.tar.gz" ]; then
@@ -263,6 +270,63 @@ function fetch_eigen() {
         mv eigen-eigen-c76e08cca8eb eigen3
     fi
     cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching eigen3."
+}
+
+
+# ======================
+# ode fetch function
+# ======================
+
+function fetch_ode_mars() {
+    setupConfig
+    printBold "fetching ode ..."
+    pushd . > /dev/null 2>&1
+    mkdir -p ${MARS_DEV_ROOT}/external
+    cd ${MARS_DEV_ROOT}/external
+    if [ ! -e "ode-0.12.tar.gz" ]; then
+        wget http://sourceforge.net/projects/opende/files/ODE/0.12/ode-0.12.tar.gz
+        if [ -d "ode_mars" ]; then 
+            uninstall_package "external/ode_mars"
+            rm -rf ode_mars
+        fi
+    fi
+
+    if [ ! -d "ode_mars" ]; then 
+        tar -xzvf ode-0.12.tar.gz
+        mv ode-0.12 ode_mars
+    fi
+    cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching ode."
+}
+
+
+# ======================
+# minizip fetch function
+# ======================
+
+function fetch_minizip() {
+    setupConfig
+    printBold "fetching minizip ..."
+    pushd . > /dev/null 2>&1
+    mkdir -p ${MARS_DEV_ROOT}/external
+    cd ${MARS_DEV_ROOT}/external
+    if [ ! -e "unzip11.zip" ]; then
+        wget http://www.winimage.com/zLibDll/unzip11.zip
+        if [ -d "minizip" ]; then 
+            uninstall_package "external/minizip"
+            rm -rf minizip
+        fi
+    fi
+
+    if [ ! -d "minizip" ]; then 
+	unzip unzip11.zip -d minizip
+    fi
+    cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching minizip."
 }
 
 
@@ -272,6 +336,8 @@ function fetch_eigen() {
 
 function fetch_opencv() {
     setupConfig
+    pushd . > /dev/null 2>&1
+    printBold "fetching opencv ..."
     mkdir -p ${MARS_DEV_ROOT}/external
     cd ${MARS_DEV_ROOT}/external
     if $MSYS; then
@@ -285,6 +351,8 @@ function fetch_opencv() {
     #tar -xjvf OpenCV-2.3.1a.tar.bz2
     fi
     cd ..
+    popd > /dev/null 2>&1
+    printBold "... done fetching opencv."
 }
 
 
@@ -324,7 +392,17 @@ function update_opencv {
     return 0
 }
 
+function update_ode_mars {
+    # ode is not under revision control
+    return 0
+}
 
+function update_minizip {
+    # minizip is not under revision control
+    return 0
+}
+
+    
 #############################
 # patch functions
 #############################
@@ -354,7 +432,15 @@ function patch_eigen {
     patch_package external/eigen3
 }
 
-
+function patch_ode_mars {
+    printBold "patching external/ode_mars version 0.12 ..."
+    setScriptDir
+    setupConfig
+    patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-va_end.patch
+    patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-lambda.patch
+    patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-export_joint_internals.patch
+    printBold "... done patching external/ode_mars version 0.12."
+}
 
 
 ##############################
@@ -391,10 +477,10 @@ function install_package {
 function install_ode_mars {
     if [ ! -e ${MARS_DEV_ROOT}"/install/lib/pkgconfig/ode.pc" ]; then
       echo
-      printBold "building mars/external/ode_mars..."
+      printBold "building external/ode_mars..."
       echo
       pushd . > /dev/null 2>&1
-      cd ${MARS_DEV_ROOT}/mars/external/ode_mars
+      cd ${MARS_DEV_ROOT}/external/ode_mars
       export CFLAGS=-fPIC
       export CXXFLAGS=-fPIC
       ./configure --enable-double-precision --enable-release --prefix=$prefix --with-drawstuff=none --disable-demos
