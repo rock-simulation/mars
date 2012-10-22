@@ -69,9 +69,9 @@ namespace mars {
 
     dirty = true;
     wireframe = false;
-    highWireframe = true;
+    highWireframe = false;
     solid = true;
-    highSolid = false;
+    highSolid = true;
   }
 
   MultiResHeightMapRenderer::~MultiResHeightMapRenderer() {

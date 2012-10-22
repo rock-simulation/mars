@@ -49,6 +49,7 @@
 #include <mars/utils/misc.h>
 
 #include <cstdio>
+#include <cerrno>
 
 
 

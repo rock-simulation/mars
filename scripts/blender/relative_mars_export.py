@@ -3,6 +3,29 @@ import os, glob
 import mathutils
 import struct
 
+scn = bpy.context.scene
+
+# configuration
+filename = "example"
+path = "."
+exportMesh = True
+exportBobj = False
+
+
+
+if "filename" in scn.world:
+    filename = scn.world["filename"]
+
+if "path" in scn.world:
+    path = scn.world["path"]
+
+if "exportMesh" in scn.world:
+    exportMesh = scn.world["exportMesh"]
+
+if "exportBobj" in scn.world:
+    exportBobj = scn.world["exportBobj"]
+
+
 #import export_obj
 #myobj = __import__(Blender.Get("scriptsdir") + "/export_obj.py")
 
@@ -167,10 +190,7 @@ def fillList(obj):
 #editmode = Blender.Window.EditMode()
 #if editmode: Blender.Window.EditMode(0)
 
-filename = "crex"
-scn = bpy.context.scene
-path = "/Users/malter/Arbeit/scene/"
-out = open(path+filename+".scene", "w")
+out = open(path+"/"+filename+".scene", "w")
 out.write("""<?xml version="1.0"?>
 <!DOCTYPE dfkiMarsSceneFile PUBLIC '-//DFKI/RIC/MARS SceneFile 1.0//EN' ''>
 <SceneFile>
@@ -310,7 +330,11 @@ def writeNode(obj):
     out.write('        <y>'+str(size[1])+'</y>\n')
     out.write('        <z>'+str(size[2])+'</z>\n')
     out.write('      </visualsize>\n')
-    #out.write('      <coll_bitmask>0</coll_bitmask>\n')
+    if "coll_bitmask" in obj:
+        out.write('      <coll_bitmask>'+str(obj["coll_bitmask"])+
+                  '</coll_bitmask>\n')
+    else:
+        out.write('      <coll_bitmask>0</coll_bitmask>\n')
 
     out.write('    </node>\n')
 
@@ -372,6 +396,8 @@ def writeJoint(joint):
         out.write('      <highStopAxis1>'+str(joint["highStop"])+'</highStopAxis1>\n')
     if "springConst" in joint:
         out.write('      <spring_const_constraint_axis1>'+str(joint["springConst"])+'</spring_const_constraint_axis1>\n')
+    if "dampingConst" in joint:
+        out.write('      <damping_const_constraint_axis1>'+str(joint["dampingConst"])+'</damping_const_constraint_axis1>\n')
 
     out.write('      <angle1_offset>'+str(invert*jointOffset)+'</angle1_offset>\n')
     out.write('    </joint>\n')
@@ -382,13 +408,31 @@ def writeMotor(joint, motorValue):
     out.write('      <index>'+str(joint["id"])+'</index>\n')
     out.write('      <jointIndex>'+str(joint["id"])+'</jointIndex>\n')
     out.write('      <axis>1</axis>\n')
-    out.write('      <maximumVelocity>9.14</maximumVelocity>\n')
+    out.write('      <maximumVelocity>12.14</maximumVelocity>\n')
     out.write('      <motorMaxForce>38.0</motorMaxForce>\n')
     out.write('      <type>1</type>\n')
-    out.write('      <p>12</p>\n')
-    out.write('      <d>3</d>\n')
-    out.write('      <max_val>6.28</max_val>\n')
-    out.write('      <min_val>-6.28</min_val>\n')
+    if "p" in joint:
+        out.write('      <p>'+str(joint["p"])+'</p>\n')
+    else:
+        out.write('      <p>13</p>\n')
+    if "d" in joint:
+        out.write('      <d>'+str(joint["d"])+'</d>\n')
+    else:
+        out.write('      <d>0</d>\n')
+    if "i" in joint:
+        out.write('      <i>'+str(joint["i"])+'</i>\n')
+    else:
+        out.write('      <i>0.015</i>\n')
+    if "lowStop" in joint:
+        out.write('      <min_val>'+str(joint["lowStop"])+'</min_val>\n')
+    else:
+        out.write('      <min_val>-6.28</min_val>\n')
+
+    if "highStop" in joint:
+        out.write('      <max_val>'+str(joint["highStop"])+'</max_val>\n')
+    else:
+        out.write('      <max_val>6.28</max_val>\n')
+
     out.write('      <value>'+str(motorValue)+'</value>\n')
     out.write('    </motor>\n')
 
@@ -427,10 +471,20 @@ def writeSensor(sensor):
         out.write('      <id>'+str(value)+'</id>\n')
 
     if sensorType == "Joint6DOF":
-        nodeID = getID(sensor["nodeID"]);
-        jointID = getID(sensor["jointID"]);
+        nodeID = getID(sensor["nodeID"])
+        jointID = getID(sensor["jointID"])
         out.write('      <nodeID>'+str(nodeID)+'</nodeID>\n')
         out.write('      <jointID>'+str(jointID)+'</jointID>\n')
+
+    elif sensorType == "RaySensor":
+        nodeID = getID(sensor["attached_node"])
+        out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
+        out.write('      <width>'+str(sensor["width"])+'</width>\n')
+        out.write('      <opening_width>'+str(sensor["opening_width"])+
+                  '</opening_width>\n')
+        out.write('      <max_distance>'+str(sensor["max_distance"])+
+                  '</max_distance>\n')
+
 
     out.write('    </sensor>\n')
 
@@ -479,21 +533,27 @@ for joint in jointList:
     motorOffset = writeJoint(joint)
     if joint["jointType"] == "hinge":
         motorValue.append(motorOffset)
+    if joint["jointType"] == "slider":
+        motorValue.append(motorOffset)
 out.write('  </jointlist>\n')
 
 out.write('  <motorlist>\n')
 i = 0
 for joint in jointList:
-    if joint["jointType"] == "hinge":
-        writeMotor(joint, motorValue[i])
-        i += 1
+    if not "springConst" in joint:
+        if joint["jointType"] == "hinge":
+            writeMotor(joint, motorValue[i])
+            i += 1
+        if joint["jointType"] == "slider":
+            writeMotor(joint, motorValue[i])
+            i += 1
 
 out.write('  </motorlist>\n')
 
 haveController = 0
 myMotorList = {}
 for joint in jointList:
-    if joint["controllerIndex"] > 0:
+    if "controllerIndex" in joint and joint["controllerIndex"] > 0:
         haveController = 1
         myMotorList[joint["controllerIndex"]] = str(joint["id"])
 
@@ -518,8 +578,7 @@ if haveController == 1:
     for value in myMotorList.values():
         out.write('      <motorid>'+value+'</motorid>\n')
     out.write('    </controller>\n')
-
-out.write('  </controllerlist>\n')
+    out.write('  </controllerlist>\n')
 
 out.write('  <materiallist>\n')
 
@@ -560,11 +619,20 @@ for obj in objList:
     #obj.location = [0.0, 0.0, 0.0]
     #obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
     obj.parent = None
-    out_name = path+obj.name + ".bobj"
-    #exportBobj(out_name, obj)
-    #bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z', axis_up='Y', use_selection=True, use_normals=True)
-    #export_obj.write( out_name, [value[1]], EXPORT_NORMALS=True )
-    os.system("zip "+filename+".scn "+obj.name+".bobj")
+    if exportMesh:
+        if exportBobj:
+            out_name = path+"/"+obj.name + ".bobj"
+            exportBobj(out_name, obj)
+        else:
+            out_name = path+"/"+obj.name + ".obj"
+            bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z',
+                                     axis_up='Y', use_selection=True,
+                                     use_normals=True)
+    if exportBobj:
+        os.system("zip "+filename+".scn "+obj.name+".bobj")
+    else:
+        os.system("zip "+filename+".scn "+obj.name+".obj")
+
     #os.system("zip "+filename+".scn "+obj.name+".mtl")
     #obj.location = location
     #obj.rotation_quaternion = rotation

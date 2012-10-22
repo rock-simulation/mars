@@ -691,8 +691,8 @@ namespace mars {
     void SimNode::setRelativePosition(const NodeData &node) {
       MutexLocker locker(&iMutex);
       sNode.relative_id = node.relative_id;
-      sNode.pos = node.pos;
-      sNode.rot = node.rot;
+      //sNode.pos = node.pos;
+      //sNode.rot = node.rot;
     }
     void SimNode::applyForce(const Vector &force, const Vector &pos) {
       MutexLocker locker(&iMutex);

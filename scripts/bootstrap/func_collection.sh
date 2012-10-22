@@ -286,7 +286,7 @@ function fetch_ode_mars() {
     mkdir -p ${MARS_DEV_ROOT}/external
     cd ${MARS_DEV_ROOT}/external
     if [ ! -e "ode-0.12.tar.gz" ]; then
-        wget http://sourceforge.net/projects/opende/files/ODE/0.12/ode-0.12.tar.gz/download
+        wget http://sourceforge.net/projects/opende/files/ODE/0.12/ode-0.12.tar.gz
         if [ -d "ode_mars" ]; then 
             uninstall_package "external/ode_mars"
             rm -rf ode_mars
