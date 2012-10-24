@@ -76,7 +76,7 @@ namespace mars {
 
       // the material struct can also contain a static texture (texture file)
       virtual void setMaterial(const mars::interfaces::MaterialData &mStruct,
-                               bool useFog = false);
+                               bool useFog = false, bool useNoise = false);
       // can be used for dynamic textures
       virtual void setTexture(osg::Texture2D *texture);
       virtual void setBumpMap(const std::string &normalMap);
@@ -145,6 +145,7 @@ namespace mars {
       void setBrightness(float val);
       void setUseMARSShader(bool val) {useMARSShader = val;}
       void setUseFog(bool val);
+      void setUseNoise(bool val);
 
     protected:
       unsigned long id_;
@@ -152,7 +153,7 @@ namespace mars {
 
       std::string stateFilename_;
       bool selected_, selectable_;
-      bool useFog;
+      bool useFog, useNoise;
       bool getLight;
       float brightness_;
       osg::Program *lastProgram;

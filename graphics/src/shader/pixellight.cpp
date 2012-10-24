@@ -148,6 +148,7 @@ namespace mars {
     }
 
     PixelLightFrag::PixelLightFrag(vector<string> &args, bool useFog,
+                                   bool useNoise,
                                    vector<LightData*> &lightList)
       : ShaderFunc("plight", args)
     {
@@ -188,6 +189,7 @@ namespace mars {
 #endif
 
       this->useFog = useFog;
+      this->useNoise = useNoise;
       this->lightList = lightList;
     }
 
@@ -199,6 +201,11 @@ namespace mars {
 
       // NOTE(daniel): a little messed up in here...
       //    i will clean up when shadow stuff is ready...
+
+
+      s << "float rnd(float x, float y) {" << endl;
+      s << "return fract(sin(dot(vec2(x,y) ,vec2(12.9898,78.233))) * 43758.5453);" << endl;
+      s << "}" << endl << endl;
 
       s << "void " << name << "(vec4 base, vec3 n, out vec4 outcol)" << endl;
       s << "{" << endl;
@@ -285,6 +292,18 @@ namespace mars {
       s << "    outcol = brightness* ((ambient + diffuse)*base  + specular + gl_FrontMaterial.emission*base);" << endl;
       s << "    //outcol = ((gl_FrontLightModelProduct.sceneColor + ambient + diffuse) * vec4(1) + specular);" << endl;
       s << "    outcol.a = alpha*base.a;" << endl;
+      if(useNoise) {
+        s << "    vec3 vNoise, vNoise2;" << endl;
+        s << "    vNoise.x = 0.000001*floor(100000.0*positionVarying.x);" << endl;
+        s << "    vNoise.y = 0.000001*floor(100000.0*positionVarying.y);" << endl;
+        s << "    vNoise.z = 0.000001*floor(100000.0*positionVarying.z);" << endl;
+        s << "    vNoise2.x = rnd(vNoise.x, vNoise.y+vNoise.z);" << endl;
+        s << "    vNoise2.y = rnd(vNoise.y, vNoise.x-vNoise.z);" << endl;
+        s << "    vNoise2.z = rnd(vNoise.x+vNoise.y, vNoise.y-vNoise.x+vNoise.z);" << endl;
+        s << "    outcol.r += 0.1*rnd(vNoise2.x, vNoise2.y+vNoise2.z);" << endl;
+        s << "    outcol.g += 0.1*rnd(vNoise2.y, vNoise2.x-vNoise2.z);" << endl;
+        s << "    outcol.b += 0.1*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);" << endl;
+      }
       s << "    //outcol.rgb = vec3(gl_TexCoord[1],0);" << endl;
       s << "" << endl;
       if(useFog) {
