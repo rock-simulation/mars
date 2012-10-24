@@ -342,7 +342,7 @@ function fetch_opencv() {
     cd ${MARS_DEV_ROOT}/external
     if $MSYS; then
         if [ ! -e "OpenCV-2.3.0-win-src.zip" ]; then
-            wget http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3/OpenCV-2.3.0-win-src.zip/download
+            wget http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3/OpenCV-2.3.0-win-src.zip
         fi
         if [ ! -d "OpenCV-2.3.0" ]; then 
             unzip OpenCV-2.3.0-win-src.zip
@@ -527,7 +527,7 @@ function install_opencv {
     if ${MSYS}; then
         make install -j2 || MARS_SCRIPT_ERROR=1
     else
-        make install -j{CORES} || MARS_SCRIPT_ERROR=1
+        make install -j${CORES} || MARS_SCRIPT_ERROR=1
     fi
     popd > /dev/null 2>&1
     if [[ x${MARS_SCRIPT_ERROR} == "x1" ]]; then
@@ -636,3 +636,4 @@ function uninstall_package {
         printBold "...uninstalling ${package} done!"
     fi
 }
+
