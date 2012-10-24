@@ -300,9 +300,9 @@ namespace mars {
         s << "    vNoise2.x = rnd(vNoise.x, vNoise.y+vNoise.z);" << endl;
         s << "    vNoise2.y = rnd(vNoise.y, vNoise.x-vNoise.z);" << endl;
         s << "    vNoise2.z = rnd(vNoise.x+vNoise.y, vNoise.y-vNoise.x+vNoise.z);" << endl;
-        s << "    outcol.r += 0.1*rnd(vNoise2.x, vNoise2.y+vNoise2.z);" << endl;
-        s << "    outcol.g += 0.1*rnd(vNoise2.y, vNoise2.x-vNoise2.z);" << endl;
-        s << "    outcol.b += 0.1*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);" << endl;
+        s << "    outcol.r += 0.04*rnd(vNoise2.x, vNoise2.y+vNoise2.z);" << endl;
+        s << "    outcol.g += 0.04*rnd(vNoise2.y, vNoise2.x-vNoise2.z);" << endl;
+        s << "    outcol.b += 0.04*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);" << endl;
       }
       s << "    //outcol.rgb = vec3(gl_TexCoord[1],0);" << endl;
       s << "" << endl;
