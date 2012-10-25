@@ -48,6 +48,9 @@ namespace mars {
 
         return std::vector<T>::operator[](index);
       }
+      const T& operator[](size_t index) const {
+        return std::vector<T>::operator[](index);
+      }
 
       size_t append(const T &item) {
         push_back(item);
@@ -106,6 +109,10 @@ namespace mars {
 
       ConfigVector& operator[](const std::string &name) {
         return children[name];
+      }
+
+      inline ItemType getType() const {
+        return type;
       }
 
       inline bool testType(ItemType _type) {
@@ -181,6 +188,10 @@ namespace mars {
         return sValue.c_str();
       }
 
+      inline std::string getUnparsedString() const {
+        return sValue.c_str();
+      }
+
       inline int getBool() {
         if(type != UNDEFINED_TYPE && type != BOOL_TYPE) {
           throw std::runtime_error("ConfigItem parsing wrong type getBool");
@@ -220,6 +231,12 @@ namespace mars {
         sValue = value.c_str();
         parsed = true;
         type = STRING_TYPE;
+      }
+
+      inline void setUnparsedString(const std::string &value) {
+        sValue = value.c_str();
+        parsed = false;
+        type = UNDEFINED_TYPE;
       }
 
       inline std::string toString() const {
