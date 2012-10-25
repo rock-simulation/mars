@@ -69,7 +69,13 @@ namespace mars {
     // 1) they make the types nicer to use
     // 2) this enables us to use a ConfigMap inside the ConfigItem!
     typedef ConfigVectorTemplate<ConfigItem> ConfigVector;
-    typedef FIFOMap<std::string, ConfigVector> ConfigMap;
+
+    class ConfigMap : public FIFOMap<std::string, ConfigVector> {
+    public:
+      void toYamlFile(const std::string &filename) const;
+      static ConfigMap fromYamlFile(const std::string &filename);
+    };
+
     // todo: support vector and quaternion
     // a vector has three children (x, y, z) which can be parsed
 
@@ -325,7 +331,9 @@ namespace mars {
 
         return parsed = sscanf(sValue.c_str(), "%d", &iValue);
       }
+      
     }; // end of class ConfigItem
+
 
   } // end of namespace utils
 } // end of namespace mars
