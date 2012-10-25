@@ -177,9 +177,11 @@ namespace mars {
     }
 
     // the material struct can also contain a static texture (texture file)
-    void DrawObject::setMaterial(const MaterialData &mStruct, bool _useFog) {
+    void DrawObject::setMaterial(const MaterialData &mStruct, bool _useFog,
+                                 bool _useNoise) {
       //return;
       useFog = _useFog;
+      useNoise = _useNoise;
       getLight = mStruct.getLight;
 
       if(mStruct.brightness != 0.0) {
@@ -499,7 +501,8 @@ namespace mars {
         args.push_back("col");
         args.push_back("n");
         args.push_back("col");
-        PixelLightFrag *plightFrag = new PixelLightFrag(args, useFog, lightList);
+        PixelLightFrag *plightFrag = new PixelLightFrag(args, useFog,
+                                                        useNoise, lightList);
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.
         // TODO: check not needed if backfaces not processed.
@@ -603,6 +606,11 @@ namespace mars {
 
     void DrawObject::setUseFog(bool val) {
       useFog = val;
+      if(lastProgram) updateShader(lastLights, true);
+    }
+
+    void DrawObject::setUseNoise(bool val) {
+      useNoise = val;
       if(lastProgram) updateShader(lastLights, true);
     }
 

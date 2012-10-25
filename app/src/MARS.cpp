@@ -214,7 +214,12 @@ namespace mars {
 
       // here just work with the copied argument vector ...
       while (1) {
+
+#ifdef __linux__
+        c = getopt_long(argc, argv, "C:", long_options, &option_index);
+#else
         c = getopt_long(argc, argv_copy, "C:", long_options, &option_index);
+#endif
         if (c == -1)
           break;
         switch (c) {
@@ -236,6 +241,7 @@ namespace mars {
 
       //reset index to read arguments again in other libraries (mars_sim).
       optind = 1;
+      optarg = NULL;
 
       return;
     }

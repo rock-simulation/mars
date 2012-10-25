@@ -52,7 +52,7 @@ namespace mars {
       OSGNodeStruct(std::vector<mars::interfaces::LightData*> &lightList,
                     const mars::interfaces::NodeData &node,
                     bool isPreview, unsigned long id, bool useMARSShader,
-                    bool useFog);
+                    bool useFog, bool useNoise);
       /**
        * Edit this node, works only in the PREVIEW state.
        */

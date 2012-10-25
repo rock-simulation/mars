@@ -54,7 +54,7 @@ namespace mars {
     OSGNodeStruct::OSGNodeStruct(std::vector<LightData*> &lightList,
                                  const NodeData &node, bool isPreview,
                                  unsigned long id,
-                                 bool useMARSShader, bool useFog)
+                                 bool useMARSShader, bool useFog, bool useNoise)
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
       if (node.filename.compare("PRIMITIVE") == 0) {
         switch(NodeData::typeFromString(node.origName.c_str())) {
@@ -128,7 +128,7 @@ namespace mars {
         ms.transparency = 0.8;
       }
 
-      drawObject_->setMaterial(ms, useFog);
+      drawObject_->setMaterial(ms, useFog, useNoise);
 
       if(!isPreview) {
         drawObject_->updateShader(lightList, false, node.shaderSources);
