@@ -965,8 +965,8 @@ namespace mars {
 
       if(nGeom && theWorld && theWorld->existsWorld()) {
         if(composite) {
-          dGeomGetOffsetQuaternion(nGeom, rotation);
-          tpos = dGeomGetOffsetPosition(nGeom);
+          dGeomGetQuaternion(nGeom, rotation);
+          tpos = dGeomGetPosition(nGeom);
           pos[0] = tpos[0];
           pos[1] = tpos[1];
           pos[2] = tpos[2];
@@ -1015,8 +1015,8 @@ namespace mars {
           else {
             // if the geom is part of a composite object
             // we have to translate and rotate the geom mass
-            dGeomSetOffsetQuaternion(nGeom, rotation);
-            dGeomSetOffsetPosition(nGeom, pos[0], pos[1], pos[2]);
+            dGeomSetOffsetWorldQuaternion(nGeom, rotation);
+            dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
             theWorld->resetCompositeMass(nBody);
           }
         }
