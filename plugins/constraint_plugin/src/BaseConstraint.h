@@ -69,6 +69,7 @@ namespace mars {
         {}
         virtual ~BaseConstraint() {}
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct propertyStruct)=0;
+        virtual void reset() = 0;
 
       protected:
         interfaces::ControlCenter *control;

@@ -32,6 +32,7 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/utils.h>
 
 #include <QString>
 #include <QFileDialog>
@@ -128,7 +129,7 @@ namespace mars {
                                                 "YAML-Files (*.yml *.yaml)");
         if(!filename.isEmpty()) {
           utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename.toStdString());
-          for(int i = 0; i < config["MotorValues"].size(); ++i) {
+          for(unsigned int i = 0; i < config["MotorValues"].size(); ++i) {
             std::string name = config["MotorValues"][i]["name"][0].getString();
             double value = config["MotorValues"][i]["value"][0].getDouble();
             unsigned long id = control->motors->getID(name);
@@ -168,7 +169,6 @@ namespace mars {
         if(it != constraints.end()) {
           for(ConstraintsContainer::iterator it2 = it->second.begin();
             it2 != it->second.end(); ++it2) {
-            control->cfg->unregisterFromParam(constraintInfo.id, *it2);
             delete (*it2);
           }
           it->second.clear();
@@ -211,32 +211,37 @@ namespace mars {
 
       double ConstraintsPlugin::getNodeAttribute(interfaces::NodeId nodeId,
                                                  AttributeType attr) {
+        double attrValue;
+        interfaces::NodeData n;
+        n = control->nodes->getFullNode(nodeId);
+        if(n.relative_id) {
+          interfaces::NodeData rel;
+          rel = control->nodes->getFullNode(n.relative_id);
+          interfaces::getRelFromAbs(rel, &n);
+        }
         switch(attr) {
         case ATTRIBUTE_POSITION_X:
-          return control->nodes->getPosition(nodeId).x();
+          attrValue = n.pos.x();
+          break;
         case ATTRIBUTE_POSITION_Y:
-          return control->nodes->getPosition(nodeId).y();
+          attrValue = n.pos.y();
+          break;
         case ATTRIBUTE_POSITION_Z:
-          return control->nodes->getPosition(nodeId).z();
+          attrValue = n.pos.z();
+          break;
         case ATTRIBUTE_SIZE_X:
-          {
-            interfaces::NodeData n = control->nodes->getFullNode(nodeId);
-            return n.ext.x();
-          }
+          attrValue = n.ext.x();
+          break;
         case ATTRIBUTE_SIZE_Y:
-          {
-            interfaces::NodeData n = control->nodes->getFullNode(nodeId);
-            return n.ext.y();
-          }
+          attrValue = n.ext.y();
+          break;
         case ATTRIBUTE_SIZE_Z:
-          {
-            interfaces::NodeData n = control->nodes->getFullNode(nodeId);
-            return n.ext.z();
-          }
+          attrValue = n.ext.z();
+          break;
         default:
-          LOG_ERROR("ConstraintsPlugin: unsupported AttributeType: %d", attr);
-          return 0;
+          LOG_ERROR("NodeConstraint: attribute %d not supported.", attr);
         }
+        return attrValue;
       }
 
       void ConstraintsPlugin::parseNodeConstraints(const std::string &paramName, 
@@ -260,10 +265,10 @@ namespace mars {
         control->cfg->setPropertyValue("Constraints", paramName, "value",
                                        initialValue);
         // add constraint for initial Node with factor 1
-        BaseConstraint *c = new NodeConstraint(control, nodeId, attr,
+        BaseConstraint *c = new NodeConstraint(control, newProp.paramId,
+                                               nodeId, attr,
                                                1, initialValue);
         constraints[newProp.paramId].push_back(c);
-        control->cfg->registerToParam(newProp.paramId, c);
 
         while(result == PARSE_SUCCESS) {
           // next there is a list of NodeName.NodeAttr#factor
@@ -271,10 +276,9 @@ namespace mars {
           if((result != PARSE_SUCCESS) && (result != PARSE_SUCCESS_EOS)) {
             continue;
           }
-          BaseConstraint *c = new NodeConstraint(control, nodeId, attr, factor, 
+          BaseConstraint *c = new NodeConstraint(control, newProp.paramId, nodeId, attr, factor, 
                                                  initialValue);
           constraints[newProp.paramId].push_back(c);
-          control->cfg->registerToParam(newProp.paramId, c);
         }
       }
 
@@ -359,14 +363,19 @@ namespace mars {
           return;
         for(ConstraintsContainer::iterator it2 = it->second.begin();
             it2 != it->second.end(); ++it2) {
-          control->cfg->unregisterFromParam(id, *it2);
           delete (*it2);
         }
         it->second.clear();
       }
 
       void ConstraintsPlugin::reset() {
-    
+        ConstraintsLookup::iterator it;
+        ConstraintsContainer::iterator it2;
+        for(it = constraints.begin(); it != constraints.end(); ++it) {
+          for(it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
+            (*it2)->reset();
+          }
+        }
       }
 
       void ConstraintsPlugin::update(interfaces::sReal time_ms) {
