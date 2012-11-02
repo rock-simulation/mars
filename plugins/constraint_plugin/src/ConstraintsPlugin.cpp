@@ -31,9 +31,12 @@
 #include "NodeConstraint.h"
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
 
 #include <QString>
 #include <QFileDialog>
+
+#include <fstream>
 
 namespace mars {
   namespace plugins {
@@ -49,6 +52,8 @@ namespace mars {
         ACTION_SAVE_DEFS,
         ACTION_LOAD,
         ACTION_SAVE,
+        ACTION_LOAD_MOTORS,
+        ACTION_SAVE_MOTORS,
       };
 
       ConstraintsPlugin::ConstraintsPlugin(lib_manager::LibManager *theManager) :
@@ -71,6 +76,8 @@ namespace mars {
         gui->addGenericMenuAction("../Constraints/Save Constraint Definitions...", ACTION_SAVE_DEFS, this);
         gui->addGenericMenuAction("../Constraints/Load Constraints...", ACTION_LOAD, this);
         gui->addGenericMenuAction("../Constraints/Save Constraints...", ACTION_SAVE, this);
+        gui->addGenericMenuAction("../Constraints/Load Motor Values...", ACTION_LOAD_MOTORS, this);
+        gui->addGenericMenuAction("../Constraints/Save Motor Values...", ACTION_SAVE_MOTORS, this);
       }
 
       void ConstraintsPlugin::loadConstraintDefs() {
@@ -111,6 +118,44 @@ namespace mars {
         if(!filename.isEmpty())
           control->cfg->writeConfig(filename.toStdString().c_str(),
                                     "Constraints");
+      }
+
+      void ConstraintsPlugin::loadMotors() {
+        QString filename;
+        filename = QFileDialog::getOpenFileName(NULL,
+                                                "Open Motor Values File...",
+                                                QString(),
+                                                "YAML-Files (*.yml *.yaml)");
+        if(!filename.isEmpty()) {
+          utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename.toStdString());
+          for(int i = 0; i < config["MotorValues"].size(); ++i) {
+            std::string name = config["MotorValues"][i]["name"][0].getString();
+            double value = config["MotorValues"][i]["value"][0].getDouble();
+            unsigned long id = control->motors->getID(name);
+            control->motors->setMotorValue(id, value);
+          }
+	}
+      }
+
+      void ConstraintsPlugin::saveMotors() const {
+        QString filename;
+        filename = QFileDialog::getSaveFileName(NULL,
+                                                "Save Motor Values...",
+                                                QString(),
+                                                "YAML-Files (*.yml *.yaml)");
+        if(!filename.isEmpty()) {
+	  std::ofstream f(filename.toStdString().c_str());
+	  f << "MotorValues:" << std::endl;
+	  std::vector<mars::interfaces::core_objects_exchange> motorList;
+	  std::vector<mars::interfaces::core_objects_exchange>::iterator it;
+	  control->motors->getListMotors(&motorList);
+	  for(it = motorList.begin(); it != motorList.end(); ++it) {
+	    f << "  - name: " << it->name << std::endl;
+	    f << "    type: double" << std::endl;
+	    f << "    value: " << it->value << std::endl;
+	  }
+	  f.close();
+	}
       }
 
       void ConstraintsPlugin::cfgUpdateProperty(cfg_manager::cfgPropertyStruct property) {
@@ -342,6 +387,12 @@ namespace mars {
           break;
         case ACTION_SAVE:
           saveConstraints();
+          break;
+        case ACTION_LOAD_MOTORS:
+          loadMotors();
+          break;
+        case ACTION_SAVE_MOTORS:
+          saveMotors();
           break;
         default:
           LOG_WARN("received unknown menu action callback: %d", action);

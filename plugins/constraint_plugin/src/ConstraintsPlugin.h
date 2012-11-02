@@ -74,6 +74,8 @@ namespace mars {
         void saveConstraintDefs() const;
         void loadConstraints();
         void saveConstraints() const;
+        void loadMotors();
+        void saveMotors() const;
 
         void parseNodeConstraints(const std::string &paramName,
                                   const std::string &s);

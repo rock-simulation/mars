@@ -48,6 +48,9 @@ namespace mars {
 
         return std::vector<T>::operator[](index);
       }
+      const T& operator[](size_t index) const {
+        return std::vector<T>::operator[](index);
+      }
 
       size_t append(const T &item) {
         push_back(item);
@@ -66,7 +69,13 @@ namespace mars {
     // 1) they make the types nicer to use
     // 2) this enables us to use a ConfigMap inside the ConfigItem!
     typedef ConfigVectorTemplate<ConfigItem> ConfigVector;
-    typedef FIFOMap<std::string, ConfigVector> ConfigMap;
+
+    class ConfigMap : public FIFOMap<std::string, ConfigVector> {
+    public:
+      void toYamlFile(const std::string &filename) const;
+      static ConfigMap fromYamlFile(const std::string &filename);
+    };
+
     // todo: support vector and quaternion
     // a vector has three children (x, y, z) which can be parsed
 
@@ -106,6 +115,10 @@ namespace mars {
 
       ConfigVector& operator[](const std::string &name) {
         return children[name];
+      }
+
+      inline ItemType getType() const {
+        return type;
       }
 
       inline bool testType(ItemType _type) {
@@ -181,6 +194,10 @@ namespace mars {
         return sValue.c_str();
       }
 
+      inline std::string getUnparsedString() const {
+        return sValue.c_str();
+      }
+
       inline int getBool() {
         if(type != UNDEFINED_TYPE && type != BOOL_TYPE) {
           throw std::runtime_error("ConfigItem parsing wrong type getBool");
@@ -220,6 +237,12 @@ namespace mars {
         sValue = value.c_str();
         parsed = true;
         type = STRING_TYPE;
+      }
+
+      inline void setUnparsedString(const std::string &value) {
+        sValue = value.c_str();
+        parsed = false;
+        type = UNDEFINED_TYPE;
       }
 
       inline std::string toString() const {
@@ -308,7 +331,9 @@ namespace mars {
 
         return parsed = sscanf(sValue.c_str(), "%d", &iValue);
       }
+      
     }; // end of class ConfigItem
+
 
   } // end of namespace utils
 } // end of namespace mars
