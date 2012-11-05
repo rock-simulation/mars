@@ -494,8 +494,9 @@ function install_ode_mars {
       export CXXFLAGS=-fPIC
       ./configure --enable-double-precision --enable-release --prefix=$prefix --with-drawstuff=none --disable-demos
       if [ "${platform}" = "linux" ]; then
-          mv libtool libtool_old
-          ln -s /usr/bin/libtool libtool
+	  if [ x`which libtool` != x ]; then
+              mv libtool libtool_old
+	  fi
       fi
       make install -j${CORES} || MARS_SCRIPT_ERROR=1
       popd > /dev/null 2>&1
