@@ -96,8 +96,8 @@ namespace mars {
       next_id(1), thread_running(false), stop_thread(false),
       realtimeThreadRunning(false) {
 
-      updatedElementsBackBuffer = new LockableContainer<std::set<DataElement*> >;
-      updatedElementsFrontBuffer = new LockableContainer<std::set<DataElement*> >;
+      updatedElementsBackBuffer = new std::set<DataElement*>;
+      updatedElementsFrontBuffer = new std::set<DataElement*>;
 
       DataElement *e;
       e = createDataElement("data_broker", "newStream", DATA_PACKAGE_READ_FLAG);
@@ -353,7 +353,9 @@ namespace mars {
           element->receiverLock->unlock();
           element->bufferLock->unlock();
 
-          updatedElementsBackBuffer->locked_insert(element);
+          updatedElementsLock.lock();
+          updatedElementsBackBuffer->insert(element);
+          updatedElementsLock.unlock();
 
           // defer synchronous callbacks until we do not hold any locks anymore
           if(!deferredCallback.receivers.empty())
@@ -934,7 +936,9 @@ namespace mars {
         element->lastProducer = producer;
         element->bufferLock->unlock();
 
-        updatedElementsBackBuffer->locked_insert(element);
+        updatedElementsLock.lock();
+        updatedElementsBackBuffer->insert(element);
+        updatedElementsLock.unlock();
 
         element->receiverLock->lockForRead();
         // defer synchronous callbacks until we do not hold any locks anymore
