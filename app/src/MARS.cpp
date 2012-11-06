@@ -132,7 +132,8 @@ namespace mars {
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg_manager::cfgPropertyStruct configPath;
-        cfg->getOrCreateProperty("Config", "config_path", configDir);
+        configPath = cfg->getOrCreateProperty("Config", "config_path",
+                                              configDir);
         configPath.sValue = configDir;
         cfg->setProperty(configPath);
       }

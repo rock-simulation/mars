@@ -128,29 +128,6 @@ namespace mars {
       lib = libManager->getLibrary(std::string("cfg_manager"));
       if(lib) {
         if((control->cfg = dynamic_cast<cfg_manager::CFGManagerInterface*>(lib))) {
-
-          configPath = control->cfg->getOrCreateProperty("Config", "config_path",
-                                                         string("."));
-
-          string loadFile = configPath.sValue;
-          loadFile.append("/mars_Preferences.yaml");
-          control->cfg->loadConfig(loadFile.c_str());
-          loadFile = configPath.sValue;
-          loadFile.append("/mars_Simulator.yaml");
-          control->cfg->loadConfig(loadFile.c_str());
-
-          loadFile = configPath.sValue;
-          loadFile.append("/mars_Physics.yaml");
-          control->cfg->loadConfig(loadFile.c_str());
-
-          bool loadLastSave = false;
-          control->cfg->getPropertyValue("Config", "loadLastSave", "value",
-                                         &loadLastSave);
-          if (loadLastSave) {
-            loadFile = configPath.sValue;
-            loadFile.append("/mars_saveOnClose.yaml");
-            control->cfg->loadConfig(loadFile.c_str());
-          }
         }
       }
     }
@@ -199,6 +176,32 @@ namespace mars {
       // handle correctly the libraries managment
 
       lib_manager::LibInterface *lib;
+
+      if(control->cfg) {
+        configPath = control->cfg->getOrCreateProperty("Config", "config_path",
+                                                         string("."));
+
+        string loadFile = configPath.sValue;
+        loadFile.append("/mars_Preferences.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+        loadFile = configPath.sValue;
+        loadFile.append("/mars_Simulator.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+
+        loadFile = configPath.sValue;
+        loadFile.append("/mars_Physics.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+
+        bool loadLastSave = false;
+        control->cfg->getPropertyValue("Config", "loadLastSave", "value",
+                                       &loadLastSave);
+        if (loadLastSave) {
+          loadFile = configPath.sValue;
+          loadFile.append("/mars_saveOnClose.yaml");
+          control->cfg->loadConfig(loadFile.c_str());
+        }
+      }
+
       lib = libManager->getLibrary(std::string("mars_graphics"));
       if(lib) {
         control->graphics = dynamic_cast<interfaces::GraphicsManagerInterface*>(lib);

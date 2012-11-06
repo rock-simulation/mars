@@ -109,6 +109,23 @@ namespace mars {
 
       if(libManager == NULL) return;
 
+    }
+
+    GraphicsManager::~GraphicsManager() {
+      if(cfg) {
+        string saveFile = configPath.sValue;
+        saveFile.append("/mars_Graphics.yaml");
+        cfg->writeConfig(saveFile.c_str(), "Graphics");
+        libManager->unloadLibrary("cfg_manager");
+      }
+      fprintf(stderr, "\nDelete mars_graphics\n");
+    }
+
+#if USE_SM_SHADOW==1
+    // TODO: not use global! but until shadows handled nicely...
+    //osg::ref_ptr<osg::Camera> debugCam;
+#endif
+    void GraphicsManager::initializeOSG(void *data) {
       cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(!cfg) {
         fprintf(stderr, "\n******* mars_graphics: couldn't find cfg_manager");
@@ -274,23 +291,6 @@ namespace mars {
       grid = new GridPrimitive(osgWidget);
       showCoords();
 
-    }
-
-    GraphicsManager::~GraphicsManager() {
-      if(cfg) {
-        string saveFile = configPath.sValue;
-        saveFile.append("/mars_Graphics.yaml");
-        cfg->writeConfig(saveFile.c_str(), "Graphics");
-        libManager->unloadLibrary("cfg_manager");
-      }
-      fprintf(stderr, "\nDelete mars_graphics\n");
-    }
-
-#if USE_SM_SHADOW==1
-    // TODO: not use global! but until shadows handled nicely...
-    //osg::ref_ptr<osg::Camera> debugCam;
-#endif
-    void GraphicsManager::initializeOSG(void *data) {
       viewer = new GraphicsViewer((GuiEventInterface*)this);
       viewer->setKeyEventSetsDone(0);
 #ifdef SINGLE_THREADED
