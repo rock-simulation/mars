@@ -20,7 +20,7 @@
 
 #include "../ConnexionHID.h"
 
-#include <mars/base/MARSDefs.h>
+#include <mars/interfaces/MARSDefs.h>
 
 #include <linux/input.h>
 #include <dirent.h>
@@ -109,7 +109,7 @@ namespace mars {
         fd = -1;
       }
 
-      void getValue(mars::base::sReal *coordinates,
+      void getValue(mars::interfaces::sReal *coordinates,
                     struct connexionValues *rawValues) {
         /* If input events don't come in fast enough a certain DoF may not be 
          * updated during a frame. This results in choppy and ugly animation.

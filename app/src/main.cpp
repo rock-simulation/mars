@@ -55,6 +55,12 @@ namespace mars {
   } // end of namespace app
 } // end of namespace mars
 
+
+void qtExitHandler(int sig) {
+  qApp->quit();
+  mars::app::exit_main(sig);
+}
+
 /**
  * The main function, that starts the GUI and init the physical environment.
  *Convention that start the simulation
@@ -63,18 +69,18 @@ int main(int argc, char *argv[]) {
 
   //  Q_INIT_RESOURCE(resources);
 #ifndef WIN32
-  signal(SIGQUIT, mars::app::exit_main);
-  signal(SIGPIPE, mars::app::exit_main);
-  //signal(SIGKILL, exit_main);
+  signal(SIGQUIT, qtExitHandler);
+  signal(SIGPIPE, qtExitHandler);
+  //signal(SIGKILL, qtExitHandler);
 #else
-  signal(SIGFPE, mars::app::exit_main);
-  signal(SIGILL, mars::app::exit_main);
-  signal(SIGSEGV, mars::app::exit_main);
-  signal(SIGBREAK, mars::app::exit_main);
+  signal(SIGFPE, qtExitHandler);
+  signal(SIGILL, qtExitHandler);
+  signal(SIGSEGV, qtExitHandler);
+  signal(SIGBREAK, qtExitHandler);
 #endif
-  signal(SIGABRT, mars::app::handle_abort);
-  signal(SIGTERM, mars::app::exit_main);
-  signal(SIGINT, mars::app::exit_main);
+  signal(SIGABRT, qtExitHandler);
+  signal(SIGTERM, qtExitHandler);
+  signal(SIGINT, qtExitHandler);
 
 
   mars::app::MARS *simulation = new mars::app::MARS();

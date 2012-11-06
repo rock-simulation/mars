@@ -96,7 +96,7 @@ namespace mars {
       if(marsGui) libManager->unloadLibrary("mars_gui");
       if(control->graphics) libManager->unloadLibrary("mars_graphics");
       libManager->unloadLibrary("main_gui");
-      libManager->unloadLibrary("cfg");
+      libManager->unloadLibrary("cfg_manager");
 
       delete libManager;
 

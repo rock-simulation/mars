@@ -43,17 +43,24 @@ namespace mars {
       class NodeConstraint : public BaseConstraint {
       public:
         NodeConstraint(interfaces::ControlCenter *control,
+                       unsigned long paramId,
                        interfaces::NodeId nodeId, AttributeType attr,
                        double factor, double initialValue);
         ~NodeConstraint();
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct propertyStruct);
+        void reset();
     
       private:
-        double oldValue;
         interfaces::NodeId nodeId;
         AttributeType nodeAttribute;
         double nodeFactor;
+        double refValue;
         double initialValue;
+        unsigned long paramId;
+        double oldValue;
+
+        double getAttribute() const;
+        void setAttribute(double value);
       };
 
     } // end of namespace constraints_plugin

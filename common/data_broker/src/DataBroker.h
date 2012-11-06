@@ -294,8 +294,8 @@ namespace mars {
                              const std::string &dataName,
                              std::vector<DataElement*> *elements) const;
 
-      LockableContainer<std::set<DataElement*> > *updatedElementsBackBuffer;
-      LockableContainer<std::set<DataElement*> > *updatedElementsFrontBuffer;
+      std::set<DataElement*> *updatedElementsBackBuffer;
+      std::set<DataElement*> *updatedElementsFrontBuffer;
 
       unsigned long next_id;
       pthread_t theThread;
