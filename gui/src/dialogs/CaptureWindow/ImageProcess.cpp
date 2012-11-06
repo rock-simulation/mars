@@ -32,7 +32,7 @@ namespace mars {
       width = height = 0;
       writer = 0;
       this->framerate = framerate;
-      fprintf(stderr, "\ncreated ImagePorcess");
+      fprintf(stderr, "created ImagePorcess\n");
     }
 
     ImageProcess::~ImageProcess() {
@@ -49,7 +49,7 @@ namespace mars {
       processing = false;
       while(isRunning()) msleep(100);
 
-      fprintf(stderr, "\ndestroyed ImagePorcess");
+      fprintf(stderr, "destroyed ImagePorcess\n");
     }
 
     void ImageProcess::addImage(myImage image) {

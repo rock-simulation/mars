@@ -107,7 +107,6 @@ namespace mars {
         sensor_list.erase(iter);
       }
       if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
-      // fprintf(stderr, "\n node destroyed in physics");
     }
 
     dReal heightfield_callback(void* pUserData, int x, int z ) {
@@ -130,7 +129,7 @@ namespace mars {
     bool NodePhysics::createNode(NodeData* node) {
 #ifdef _VERIFY_WORLD_
       sRotation euler = node->rot.toEuler();
-      fprintf(stderr, "\nnode %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f",
+      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
               node->index, node->pos.x(), node->pos.y(),
               node->pos.z, euler.alpha, euler.beta, euler.gamma,
               node->mass, node->density);
@@ -857,10 +856,10 @@ namespace mars {
         dBodySetMass(nBody, &bodyMass);
       }
 #ifdef _DEBUG_MASS_
-      fprintf(stderr, "\n%mass id: %d %g", node->index, nMass.mass);
-      fprintf(stderr, "\n\t%g\t%g\t%g", nMass.I[0], nMass.I[1], nMass.I[2]);
-      fprintf(stderr, "\n\t%g\t%g\t%g", nMass.I[4], nMass.I[5], nMass.I[6]);
-      fprintf(stderr, "\n\t%g\t%g\t%g", nMass.I[8], nMass.I[9], nMass.I[10]);
+      fprintf(stderr, "%mass id: %d %g\n", node->index, nMass.mass);
+      fprintf(stderr, "\t%g\t%g\t%g\n", nMass.I[0], nMass.I[1], nMass.I[2]);
+      fprintf(stderr, "\t%g\t%g\t%g\n", nMass.I[4], nMass.I[5], nMass.I[6]);
+      fprintf(stderr, "\t%g\t%g\t%g\n", nMass.I[8], nMass.I[9], nMass.I[10]);
 #endif
     }
 
@@ -1170,10 +1169,8 @@ namespace mars {
       dReal force[3] = {0,0,0};
 
       if(nGeom) {
-        //fprintf(stderr, "\n geom: %d", (int)nGeom);
         for(iter = node_data.ground_feedbacks.begin();
             iter != node_data.ground_feedbacks.end(); iter++) {
-          //fprintf(stderr, "istwas");
           if(node_data.node1) {
             force[0] += (*iter)->f1[0];
             force[1] += (*iter)->f1[1];
@@ -1184,7 +1181,6 @@ namespace mars {
             force[1] += (*iter)->f2[1];
             force[2] += (*iter)->f2[2];
           }
-          //fprintf(stderr, "force: %g %g %g\n", force[0], force[1], force[2]);
         }
       }
       return dLENGTH(force);
@@ -1195,10 +1191,8 @@ namespace mars {
       dReal force[3] = {0,0,0};
 
       if(nGeom) {
-        //fprintf(stderr, "\n geom: %d", (int)nGeom);
         for(iter = node_data.ground_feedbacks.begin();
             iter != node_data.ground_feedbacks.end(); iter++) {
-          //fprintf(stderr, "istwas");
           if(node_data.node1) {
             force[0] += (*iter)->f1[0];
             force[1] += (*iter)->f1[1];
@@ -1209,7 +1203,6 @@ namespace mars {
             force[1] += (*iter)->f2[1];
             force[2] += (*iter)->f2[2];
           }
-          //fprintf(stderr, "force: %g %g %g\n", force[0], force[1], force[2]);
         }
       }
       return Vector(force[0], force[1], force[2]);
@@ -1268,7 +1261,6 @@ namespace mars {
       MutexLocker locker(&(theWorld->iMutex));
       node_data.c_params = c_params;
       if(nGeom) {
-        //fprintf(stderr, "\n collide bitmask: %d", c_params.coll_bitmask);
         dGeomSetCollideBits(nGeom, c_params.coll_bitmask);
         dGeomSetCategoryBits(nGeom, c_params.coll_bitmask);
       }
@@ -1490,7 +1482,6 @@ namespace mars {
               if(theWorld->handleCollision(elem.geom)) {
                 elem.gd->value += length;
                 done = true;
-                //fprintf(stderr, "\nhave collision");
               }
               if(!done) length = steps_size*steps;
             }

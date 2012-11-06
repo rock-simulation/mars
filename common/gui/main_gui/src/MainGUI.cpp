@@ -62,7 +62,7 @@ namespace mars {
 
 
     MainGUI::~MainGUI(void) {
-      fprintf(stderr, "\nDelete main_gui\n");
+      fprintf(stderr, "Delete main_gui\n");
     }
 
     void MainGUI::show(void) {

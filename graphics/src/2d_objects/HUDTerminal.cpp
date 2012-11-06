@@ -43,7 +43,6 @@ namespace mars {
       hudBox = new osg::Group;
       hudTerminalList = new osg::Group;
 
-      fprintf(stderr, "\n hudTerminal");
       row_index = 0;
       max_caracters = 10000;
       line_spacing = 1.0;
@@ -194,8 +193,6 @@ namespace mars {
       osg::ref_ptr<osg::PositionAttitudeTransform> transform;
       unsigned int max_row_index = (height - 10) / (font_size*line_spacing);
   
-      //fprintf(stderr, "\nmax_row_index: %f", max_row_index);
-
       while(text.length() > (unsigned int)max_caracters) {
         addText(text.substr(0, max_caracters), color);
         text = text.substr(max_caracters);

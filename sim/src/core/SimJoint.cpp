@@ -218,7 +218,6 @@ namespace mars {
         speed1 = my_interface->getVelocity();
         speed2 = my_interface->getVelocity2();
         motor_torque = my_interface->getMotorTorque();
-        //fprintf(stderr, "\nanchor: %f %f %f", anchor.x, anchor.y, anchor.z);
       }
     }
 
@@ -325,7 +324,6 @@ namespace mars {
 
       sJoint.angle1_offset = actualAngle1;
       sJoint.angle2_offset = actualAngle2;
-      //cout<<"\n reattache joint: "<<snode2->getName();
       if(sJoint.anchorPos == ANCHOR_NODE1) {
         pos = snode1->getPosition();
         setAnchor(pos);
@@ -333,7 +331,6 @@ namespace mars {
       else if(sJoint.anchorPos == ANCHOR_NODE2) {
         pos = snode2->getPosition();
         setAnchor(pos);
-        //cout<<"  "<<pos.z();
       }
       else if(sJoint.anchorPos == ANCHOR_CENTER) {
         pos = (snode1->getPosition() + snode2->getPosition()) / 2.;

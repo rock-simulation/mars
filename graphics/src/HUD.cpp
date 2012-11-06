@@ -44,7 +44,6 @@ namespace mars {
       scaleTransform = new osg::MatrixTransform;
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
       scaleTransform->addChild(hudTerminalList.get());
-      //fprintf(stderr, "\n hud hud hud");
       cull_mask = 0;
     }
 
@@ -71,7 +70,6 @@ namespace mars {
       //height = myWindow->getTraits()->height*sheight;
       width = (unsigned int)(1024);//*swidth);
       height = (unsigned int)(1024);//*ratio*sheight);
-      //fprintf(stderr, "\n width: %d, height: %d", width, height);
       hudCamera->setGraphicsContext(gw);
       //hudCamera->setInheritanceMask(0x0); // <-- this seems to be bad
       //hudCamera->setClearMask(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -134,8 +132,6 @@ namespace mars {
       */
       double scale_x = width / view_width;
       double scale_y = height / view_height;
-      //fprintf(stderr, "\n resize %d: %g %g %g %g", id,
-      //        width, height, scale_x, scale_y);
       scaleTransform->setMatrix(osg::Matrix::scale(scale_x, scale_y, 1.0));
 
       hudCamera->setViewport(0, 0, width, height);

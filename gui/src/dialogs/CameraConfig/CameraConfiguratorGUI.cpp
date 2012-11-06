@@ -257,7 +257,7 @@ namespace mars {
 
       boxmutex.lock();
 
-      if (frustum.size()) {
+      if (!frustum.empty()) {
         frt_left->setValue(frustum.at(0));
         frt_right->setValue(frustum.at(1));
         frt_top->setValue(frustum.at(2));
@@ -271,9 +271,6 @@ namespace mars {
         frt_bottom->setValue(0);
         frt_near->setValue(0);
         frt_far->setValue(0);
-      }
-      for(int i = 0; i < (int)frustum.size(); i++) {
-        fprintf(stderr, "Index#%i is %f\n", i, frustum.at(i));
       }
 
       boxmutex.unlock();
@@ -289,7 +286,6 @@ namespace mars {
       winIDCombo->setAttribute("enumNames", enumNames);
       // and push_back to list
       cameras.push_back(camera);
-      //fprintf(stderr, "\n%s\n", text);
       if(first_camera) {
         timerEvent(0);
         updateGUI();

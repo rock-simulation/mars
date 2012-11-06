@@ -56,7 +56,7 @@ namespace mars {
                                           std::string("../resources"));
         path = r_path.sValue;
       } else {
-        fprintf(stderr, "\n******* data_broker_gui: couldn't find cfg_manager");
+        fprintf(stderr, "******* data_broker_gui: couldn't find cfg_manager\n");
       }
 
       gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");      
@@ -80,7 +80,7 @@ namespace mars {
       if(cfg) libManager->unloadLibrary(std::string("cfg_manager"));
       if(gui) libManager->unloadLibrary(std::string("main_gui"));
       if(dataBroker) libManager->unloadLibrary(std::string("data_broker"));
-      fprintf(stderr, "\nDelete MainDataGui\n");
+      fprintf(stderr, "Delete MainDataGui\n");
     }
 
 

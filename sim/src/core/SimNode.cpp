@@ -112,8 +112,6 @@ namespace mars {
       // register as producer
       control->dataBroker->registerTimedProducer(this, groupName, dataName,
                                                  "mars_sim/simTimer", 0);
-
-      //fprintf(stderr, "NEW NODE: %s\n", dataName.c_str());
     }
 
     /**
@@ -145,7 +143,7 @@ namespace mars {
       if (sNode.c_params.friction_direction1) {
         delete (sNode.c_params.friction_direction1);
         sNode.c_params.friction_direction1 = 0;
-        fprintf(stderr, "\n killed friction direction1");
+        fprintf(stderr, "killed friction direction1\n");
       }
       if (sNode.terrain) {
         delete sNode.terrain;
@@ -542,7 +540,6 @@ namespace mars {
         //d = fabs(a_vel.length());
         d = fabs(a_vel.norm());
 
-        //fprintf(stderr, "\n damp: %g %g", sNode.angular_low, i_velocity[0]);
         // here we can handle damping
         if (sNode.linear_damping != 0) {
           damping = l_vel;
@@ -597,7 +594,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       obj->index = sNode.index;
       if(sNode.name.length() > 1000) {
-        fprintf(stderr, "\n to long name: %d", (int)sNode.name.length());
+        fprintf(stderr, "to long name: %d\n", (int)sNode.name.length());
         obj->name = "";
       }
       else

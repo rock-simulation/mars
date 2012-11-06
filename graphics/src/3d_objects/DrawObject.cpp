@@ -136,7 +136,6 @@ namespace mars {
       osg::ComputeBoundsVisitor cbbv;
       group_->accept(cbbv);
       osg::BoundingBox bb = cbbv.getBoundingBox();
-      //fprintf(stderr, "x: %g %g\n", bb.xMax(), bb.xMin());
       if(fabs(bb.xMax()) > fabs(bb.xMin())) {
         geometrySize_.x() = fabs(bb.xMax() - bb.xMin());
       } else {
@@ -167,8 +166,8 @@ namespace mars {
     void DrawObject::exportState(void) {
       if (id_) {
         FILE* stateFile = fopen(stateFilename_.data(), "a");
-        fprintf(stateFile,"\n%lu\t%11.6f\t%11.6f\t%11.6f", id_, position_.x(), position_.y(), position_.z());
-        fprintf(stateFile,"\t%11.6f\t%11.6f\t%11.6f\t%11.6f", quaternion_.x(), quaternion_.y(), quaternion_.z(), quaternion_.w());
+        fprintf(stateFile,"%lu\t%11.6f\t%11.6f\t%11.6f", id_, position_.x(), position_.y(), position_.z());
+        fprintf(stateFile,"\t%11.6f\t%11.6f\t%11.6f\t%11.6f\n", quaternion_.x(), quaternion_.y(), quaternion_.z(), quaternion_.w());
         fclose(stateFile);
       }
     }
@@ -200,7 +199,6 @@ namespace mars {
       // set the material
       state->setAttributeAndModes(material_.get(), osg::StateAttribute::ON);
     
-      //fprintf(stderr, "DrawObject: getLight %d\n", getLight);
       if(!getLight) {
         osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
         cull->setMode(osg::CullFace::BACK);

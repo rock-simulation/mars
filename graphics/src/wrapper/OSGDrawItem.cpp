@@ -645,8 +645,6 @@ namespace mars {
       string timesFont = fontPath;
       timesFont.append("/arial.ttf");
   
-      //fprintf(stderr, "\n Font path: %s\n", timesFont.c_str());
-
       osgText::Text* text = new  osgText::Text;
       geode->addDrawable( text);
       text->setFont(timesFont);

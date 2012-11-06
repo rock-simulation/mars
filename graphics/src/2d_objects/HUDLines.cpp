@@ -261,7 +261,6 @@ namespace mars {
 
         if(geode = dynamic_cast<osg::Geode*>(scaleTransform->getChild(0))) {
           if((drawable = geode->getDrawable(0))) {
-            //fprintf(stderr, "\nhere we are! 3");
             if((geometry = drawable->asGeometry())) {
               for(unsigned int i=0; i<(*_vertices).size()/3; ++i) {
                 v->push_back(osg::Vec3((*_vertices)[i*3],

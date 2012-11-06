@@ -84,7 +84,6 @@ namespace mars {
       updateDrawItems();
     
       this->rot = Quaternion();
-      printf("Konstruktor zuende\n");
 #endif
     }
 

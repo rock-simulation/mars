@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <mars/utils/Mutex.h>
+#include <mars/utils/MutexLocker.h>
 #include <cassert>
 
 namespace mars {
@@ -12,55 +13,57 @@ namespace mars {
     class LockableContainer : public T {
     private:
       mutable mars::utils::Mutex *myMutex;
-      mutable bool isLocked;
     public:
       LockableContainer()
-	: T(), myMutex(new mars::utils::Mutex), isLocked(false)
+        : T(), myMutex(new mars::utils::Mutex)
       {}
       ~LockableContainer()
       { delete myMutex; }
       LockableContainer(const LockableContainer &other)
-	: T(other), myMutex(new mars::utils::Mutex), isLocked(false)
-      {}
-      
+        : T(), myMutex(new mars::utils::Mutex)
+      {
+        other.lock();
+        T::operator=(other);
+        other.unlock();
+      }
+
       LockableContainer& operator=(const LockableContainer &other) {
-	if(&other == this)
-	  return *this;
-	assert(!other.isLocked);
-	this->lock();
-	other.lock();
-	T::operator=(other);
-	other.unlock();
-	this->unlock();
-	return *this;
+        if(&other == this)
+          return *this;
+        this->lock();
+        other.lock();
+        T::operator=(other);
+        other.unlock();
+        this->unlock();
+        return *this;
       }
 
       inline void lock() const {
-	isLocked = true;
-	myMutex->lock();
+        myMutex->lock();
       }
       inline void unlock() const {
-	myMutex->unlock();
-	isLocked = false;
+        myMutex->unlock();
       }
 
       void locked_insert(const typename T::value_type &x) {
-	lock();
-	this->insert(x);
-	unlock();
+        mars::utils::MutexLocker locker(myMutex);
+        this->insert(x);
       }
 
       void locked_push_back(const typename T::value_type &x) {
-	lock();
-	this->push_back(x);
-	unlock();
+        mars::utils::MutexLocker locker(myMutex);
+        this->push_back(x);
       }
 
       void locked_clear() {
-	lock();
-	this->clear();
-	unlock();
-      }      
+        mars::utils::MutexLocker locker(myMutex);
+        this->clear();
+      }
+
+      bool locked_empty() const {
+        mars::utils::MutexLocker locker(myMutex);
+        return this->empty();
+      }
 
     }; // end of class LockableContainer
 

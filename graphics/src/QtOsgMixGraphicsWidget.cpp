@@ -170,7 +170,6 @@ namespace mars {
         NSView* osgWindow = wdata->getCreatedNSView();
         if(osgWindow) {
           setCocoaView((void*)osgWindow);
-          //fprintf(stderr, "\nnsview: %d %d\n", osgWindow, wdata->createOnlyView());
           haveNSView = true;
           setGeometry(0, 0, 0, 0);
 

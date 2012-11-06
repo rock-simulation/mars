@@ -34,7 +34,10 @@ namespace mars {
 	if(doc.Type() == YAML::NodeType::Map) {
 	  return parseConfigMapFromYamlNode(doc);
 	} else {
-	  fprintf(stderr, "CFGManager::ConfigMapFromYaml currently only supports mapping types at the root level. please contact the developers if you need support for other types.");
+	  fprintf(stderr,
+                  "CFGManager::ConfigMapFromYaml currently only supports "
+                  "mapping types at the root level. please contact the "
+                  "developers if you need support for other types.\n");
 	  return ConfigMap();
 	}
       }
@@ -50,7 +53,9 @@ namespace mars {
       }
       std::ofstream f(filename.c_str());
       if(!f.good()) {
-        fprintf(stderr, "ERROR: CFGManager::dumpConfigMapToYaml failed! could not open output file \"%s\"\n", filename.c_str());
+        fprintf(stderr,
+                "ERROR: CFGManager::dumpConfigMapToYaml failed! "
+                "could not open output file \"%s\"\n", filename.c_str());
         return;
       }
       f << emitter.c_str() << endl;
@@ -107,7 +112,7 @@ namespace mars {
         } else if(it.second().Type() == YAML::NodeType::Null) {
           continue;
         } else {
-          fprintf(stderr, "Unknown YAML::NodeType: %d", it.second().Type());
+          fprintf(stderr, "Unknown YAML::NodeType: %d\n", it.second().Type());
           continue;
         }
       }

@@ -82,8 +82,6 @@ namespace mars {
       void getValue(mars::interfaces::sReal *coordinates,
                     struct connexionValues *rawValues) {
         valueMutex.lock();
-        //  fprintf(stderr, "idleFrameCount: %d %d %d\n", idleFrameCount[0], 
-        //          idleFrameCount[1], idleFrameCount[2]);
         for(int i = 0; i < 3; ++i) {
           ++idleFrameCount[i];
         }

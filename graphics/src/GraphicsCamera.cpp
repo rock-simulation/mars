@@ -79,7 +79,7 @@ namespace mars {
       FILE* hack_aperture = fopen("aperture.cfg", "r");
       if(hack_aperture) {
         fscanf(hack_aperture, "%lf\n", &f_aperture);
-        fprintf(stderr, "\naperture: %g", f_aperture);
+        fprintf(stderr, "HACK: aperture: %g\n", f_aperture);
         fclose(hack_aperture);
       }
       else f_aperture  = 0.74;
@@ -185,7 +185,6 @@ namespace mars {
         Vector cam_pos;
         Vector n;
         double s;
-        //fprintf(stderr, "\n pos: %g %g %g", node_pos.x, node_pos.y, node_pos.z);
 
         cam_pos.x() = l_settings->pos[0];
         cam_pos.y() = l_settings->pos[1];
@@ -311,7 +310,6 @@ namespace mars {
       mainCamera->setViewport(x, y, width, height);
       if (hudCamera) {
         hudCamera->setViewport(0, 0, width, height);
-        fprintf(stderr, "\n viewport changed");
       }
     }
 
@@ -323,16 +321,10 @@ namespace mars {
       s->rot.z() = q.z();
       s->rot.w() = q.w();
 
-      //fprintf(stderr, "\n x= %f y=%f  z=%f w=%f",
-      //s->rot.x ,s->rot.y, s->rot.z, s->rot.w);
-
-
       osg::Vec3d t=myCameraMatrix.getTrans();
       s->pos[0] = t.x();
       s->pos[1] = t.y();
       s->pos[2] = t.z();
-      //fprintf(stderr, "\n posx= %f posy=%f  posz=%f ",
-      //s->pos.x ,s->pos.y, s->pos.z);
 
       // get the intrinsic parameters of the camera
       double fovy, aspectRatio, Zn, Zf;
@@ -460,7 +452,6 @@ namespace mars {
         d_yr = ry;
         d_zr = rz;
       }
-      //fprintf(stderr, "\n update cam");
     }
 
     void GraphicsCamera::updateViewportQuat(double tx, double ty, double tz,
@@ -558,7 +549,6 @@ namespace mars {
     }
 
     void GraphicsCamera::context_setCamPredefLeft() {
-      fprintf(stderr, "\n we get to set cam left");
       updateViewport(180, 90, 0, 5, 0, 0, 1);
     }
 

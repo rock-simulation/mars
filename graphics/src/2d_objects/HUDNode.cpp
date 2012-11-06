@@ -38,7 +38,6 @@ namespace mars {
 
       double left, right, bottom, top, zNear, zFar, scale = 1;
       camera->getProjectionMatrixAsFrustum(left, right, bottom, top, zNear, zFar);
-      //fprintf(stderr, "\n %f %f %f %f %f", left, right, bottom, top, zNear);
       //if(zNear < 0.005) {
       scale = 0.1/zNear;
       left *= scale;
@@ -60,7 +59,6 @@ namespace mars {
     }
 
     void HUDNodeCallback::operator()(osg::Node *node, osg::NodeVisitor *nv) {
-      //fprintf(stderr, "\n we get a cullCallback");
       osg::ref_ptr<HUDDataType> HUDData =
         dynamic_cast<HUDDataType*> (node->getUserData());
       if(HUDData) {

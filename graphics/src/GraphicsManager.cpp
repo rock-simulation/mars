@@ -111,7 +111,7 @@ namespace mars {
 
       cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(!cfg) {
-        fprintf(stderr, "\n******* mars_graphics: couldn't find cfg_manager");
+        fprintf(stderr, "******* mars_graphics: couldn't find cfg_manager\n");
         return;
       }
 
@@ -283,7 +283,7 @@ namespace mars {
         cfg->writeConfig(saveFile.c_str(), "Graphics");
         libManager->unloadLibrary("cfg_manager");
       }
-      fprintf(stderr, "\nDelete mars_graphics\n");
+      fprintf(stderr, "Delete mars_graphics\n");
     }
 
 #if USE_SM_SHADOW==1
@@ -543,7 +543,6 @@ namespace mars {
       std::vector<GraphicsWidget*>::const_iterator iter;
 
       for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
-        printf("Name: %s, name2: %s\n",name.c_str(),(*iter)->getName().c_str());
         if((*iter)->getName().compare(name) == 0) {
           return (GraphicsWindowInterface*)(*iter);
         }
@@ -921,7 +920,8 @@ namespace mars {
       OSGLightStruct *osgLight = dynamic_cast<OSGLightStruct*>(myLights[i].lightSource.get());
       if(osgLight != NULL)
         osgLight->update(myLights[i].lStruct);
-      else fprintf(stderr, "GraphicsManager:: updateLight -> no Light %d", i);
+      else
+        fprintf(stderr, "GraphicsManager::updateLight -> no Light %u\n", i);
     }
 
     void GraphicsManager::getLights(vector<mars::interfaces::LightData*> *lightList) {

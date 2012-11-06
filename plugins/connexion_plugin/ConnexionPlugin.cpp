@@ -67,7 +67,6 @@ namespace mars {
         // add options to the menu
         if(gui) {
           std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
-          fprintf(stderr, "connexion_plugin: %s", tmp.c_str());
           gui->addGenericMenuAction("../Windows/Parameter", 1,
                                     this, 0,
                                     tmp, true);    
@@ -105,7 +104,7 @@ namespace mars {
       }
 
       ConnexionPlugin::~ConnexionPlugin(void) {
-        fprintf(stderr, "\nDelete ConnexionPlugin");
+        fprintf(stderr, "Delete ConnexionPlugin\n");
         run_thread = false;
 
         while (!thread_closed) {

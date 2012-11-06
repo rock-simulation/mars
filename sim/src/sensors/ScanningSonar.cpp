@@ -167,7 +167,6 @@ namespace mars {
           cam_id = control->graphics->addHUDElement(&hudCam);
 
         s.str(""); s << config.name << "_camera";
-        printf("Creating Camera: \"%s\"\n",s.str().c_str());
         cam_window_id = control->graphics->new3DWindow(0, true,0,0,s.str().c_str());
 
         gw = control->graphics->get3DWindow(cam_window_id);
@@ -201,13 +200,11 @@ namespace mars {
 
       double bearing = euler[0];
 
-      //printf("Bearing Debug: %f,%f,%f\n",euler[0],euler[1],euler[2]);
       if(raySensor){
         std::vector<double> res = raySensor->getSensorData();
         (*data) = new double[res.size()+1];
         memcpy((*data)+1,&res[0],sizeof(double)*res.size());
         (*data)[0] = bearing;
-        //printf("Sonar size: %lu\n",res.size()+1);
         return res.size()+1;
       }
 

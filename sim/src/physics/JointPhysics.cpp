@@ -79,7 +79,7 @@ namespace mars {
     bool JointPhysics::createJoint(JointData *jointS, const NodeInterface *node1,
                                    const NodeInterface *node2) {
 #ifdef _VERIFY_WORLD_
-      fprintf(stderr, "\n joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f",
+      fprintf(stderr, "joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f\n",
               jointS->index, jointS->nodeIndex1, jointS->nodeIndex2,
               jointS->anchor.x(), jointS->anchor.y(), jointS->anchor.z(),
               jointS->axis1.x(), jointS->axis1.y(), jointS->axis1.z());
@@ -389,12 +389,10 @@ namespace mars {
                           jointS->axis1.z());
   
       if(damping > 0.00000001) {
-        fprintf(stderr, "\n damping %g", damping);
         dJointSetSliderParam(jointId, dParamFMax, damping);
         dJointSetSliderParam(jointId, dParamVel, 0);
       }
       if(spring > 0.00000001) {
-        fprintf(stderr, "\n cfm1: %g \t erp1: %g", cfm1, erp1);
         dJointSetSliderParam(jointId, dParamLoStop, lo1);
         dJointSetSliderParam(jointId, dParamHiStop, hi1);
         dJointSetSliderParam(jointId, dParamStopCFM, cfm1);
@@ -409,7 +407,6 @@ namespace mars {
 
     void JointPhysics::createBall(JointData *jointS, dBodyID body1,
                                   dBodyID body2){
-      //fprintf(stderr, "damping: %g\n", damping);
       jointId= dJointCreateBall(theWorld->getWorld(),0);
       dJointAttach(jointId, body1, body2);
       dJointSetBallAnchor(jointId, jointS->anchor.x(), jointS->anchor.y(),
@@ -838,7 +835,6 @@ namespace mars {
         dJointSetUniversalAnchor(jointId, pos[0], pos[1], pos[2]);
         break;
       case JOINT_TYPE_FIXED:
-        fprintf(stderr, "reattache fixed joint\n");
         dJointDestroy(jointId);
         jointId = dJointCreateFixed(theWorld->getWorld(), 0);
         dJointAttach(jointId, body1, body2);
@@ -974,7 +970,6 @@ namespace mars {
 
           // the torque value is given by:
           torque = dLENGTH(tmp1) / dLENGTH(v1);
-          fprintf(stderr, "\ntorque: %ld %g %g %g", (long)jointId, torque, dLENGTH(tmp1), dLENGTH(v1));
           // then get the normal to v1 and the torque vector
           dCROSS(normal, =, v1, tmp1);
           // and scale the normal to represent the correct torque length
@@ -1126,7 +1121,6 @@ namespace mars {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
-        //fprintf(stderr, "\n torque: %g", torque);
         dJointAddHingeTorque(jointId, torque);
         break;
       case JOINT_TYPE_HINGE2:

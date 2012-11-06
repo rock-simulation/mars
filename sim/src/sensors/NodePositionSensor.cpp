@@ -71,7 +71,6 @@ namespace mars {
         num_char += 33;
         data += 33;
       }
-      //fprintf(stderr, "\node position: %s", tmp);
       return num_char;
     }
 

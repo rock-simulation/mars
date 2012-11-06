@@ -276,10 +276,6 @@ namespace mars {
         if(minz > vertices[i][2]) minz = vertices[i][2];
         if(maxz < vertices[i][2]) maxz = vertices[i][2];
       }
-      /*
-      fprintf(stderr, "bounds: %g %g %g %g %g %g\n", minx, miny,
-              minz, maxx, maxy, maxz);
-      */
       return osg::BoundingBox(minx, miny, minz, maxx, maxy, maxz);
     }
 

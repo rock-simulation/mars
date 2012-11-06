@@ -250,7 +250,6 @@ namespace mars {
                 break;
             
               case(osgGA::GUIEventAdapter::QUIT_APPLICATION):
-                //fprintf(stderr, "\nHere we get a Quit Event");
                 guiEventHandler->quitEvent(0);
                 if (_quitEventSetsDone) _done = true;
                 break;

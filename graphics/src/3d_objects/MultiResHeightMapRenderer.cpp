@@ -607,10 +607,8 @@ namespace mars {
         it = subTiles.find(iy*(getLowResCellCntX())+ix);
         if(it != subTiles.end()) {
           toProcess.push_back(it->second);
-          //fprintf(stderr, "have Subtile\n");
         } else {
           if(numSubTiles >= maxNumSubTiles) {
-            //fprintf(stderr, "remove Subtile\n");
             SubTile *toRemove = listSubTiles.front();
             listSubTiles.pop_front();
             numSubTiles--;
@@ -669,7 +667,6 @@ namespace mars {
           break;
         }
       }
-      //fprintf(stderr, "adapt Subtile\n");
       if(found)
         adaptSubTile(*iter, xPos, yPos, zPos, radius);
     }

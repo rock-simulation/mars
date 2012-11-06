@@ -55,7 +55,7 @@
 
 namespace mars {
   namespace data_broker {
-    
+
     using namespace mars::utils;
 
     // Helper struct
@@ -105,20 +105,20 @@ namespace mars {
 
       DataElement *fatalElement, *errorElement, *warningElement;
       DataElement *infoElement, *debugElement;
-      
-      fatalElement = createDataElement("_MESSAGES_", "fatal", 
+
+      fatalElement = createDataElement("_MESSAGES_", "fatal",
                                        DATA_PACKAGE_READ_FLAG);
       pushMessageIds[DB_MESSAGE_TYPE_FATAL] = fatalElement->info.dataId;
-      errorElement = createDataElement("_MESSAGES_", "error", 
+      errorElement = createDataElement("_MESSAGES_", "error",
                                        DATA_PACKAGE_READ_FLAG);
       pushMessageIds[DB_MESSAGE_TYPE_ERROR] = errorElement->info.dataId;
-      warningElement = createDataElement("_MESSAGES_", "warning", 
+      warningElement = createDataElement("_MESSAGES_", "warning",
                                          DATA_PACKAGE_READ_FLAG);
       pushMessageIds[DB_MESSAGE_TYPE_WARNING] = warningElement->info.dataId;
-      infoElement = createDataElement("_MESSAGES_", "info", 
+      infoElement = createDataElement("_MESSAGES_", "info",
                                       DATA_PACKAGE_READ_FLAG);
       pushMessageIds[DB_MESSAGE_TYPE_INFO] = infoElement->info.dataId;
-      debugElement = createDataElement("_MESSAGES_", "debug", 
+      debugElement = createDataElement("_MESSAGES_", "debug",
                                        DATA_PACKAGE_READ_FLAG);
       pushMessageIds[DB_MESSAGE_TYPE_DEBUG] = debugElement->info.dataId;
 
@@ -189,7 +189,7 @@ namespace mars {
       //      destroyLock(&idMutex);
       //      destroyLock(&updatedElementsLock);
       //      destroyLock(&pendingRegistrationLock);
-      fprintf(stderr, "\nDelete data_broker\n");
+      fprintf(stderr, "Delete data_broker\n");
     }
 
     void DataBroker::destroyLock(pthread_rwlock_t *rwlock) {
@@ -218,7 +218,7 @@ namespace mars {
         ok = true;
         std::map<std::pair<std::string, std::string>, DataElement*>::iterator elementIt;
 
-        DataElement *e = createDataElement("data_broker", "timers/" + timerName, 
+        DataElement *e = createDataElement("data_broker", "timers/" + timerName,
                                            DATA_PACKAGE_READ_FLAG);
         timers[timerName].timerElementId = e->info.dataId;
         elementsLock.lockForWrite();
@@ -281,11 +281,11 @@ namespace mars {
 
         pendingRegistrationLock.unlock();
       }
-      
+
       timersLock.unlock();
       return ok;
     }
-    
+
     bool DataBroker::stepTimer(const std::string &timerName, long step) {
       std::map<std::string, Timer>::iterator timerIt, endIt;
       std::list<DeferredCallback> deferredCallbacks;
@@ -294,7 +294,6 @@ namespace mars {
       DataItem currentItem;
 
       //bool ok = false;
-      //fprintf(stderr, "db::stepTimer\n");
       timersLock.lockForRead();
       timerIt = timers.find(timerName);
       // The use of an iterator should be thread-safe.
@@ -308,12 +307,6 @@ namespace mars {
       timerIt->second.lock->lockForWrite();
       timerIt->second.t += step;
       // call all producers
-      /*
-        fprintf(stderr, "db::stepTimer: producerSize: %d\n",
-        timerIt->second.producers.size());
-        fprintf(stderr, "db::stepTimer: receiverSize: %d\n",
-        timerIt->second.receivers.size());
-      */
       DeferredCallback deferredCallback;
       std::list<TimedProducer>::iterator producerIt;
       for(producerIt = timerIt->second.producers.begin();
@@ -341,7 +334,7 @@ namespace mars {
             deferredCallback.receivers = element->syncReceivers;
           }
           std::list<DataItemConnection>::iterator connectionIt;
-          for(connectionIt = element->connections.begin(); 
+          for(connectionIt = element->connections.begin();
               connectionIt != element->connections.end(); ++connectionIt) {
             long fromIdx = connectionIt->fromDataItemIndex;
             long toIdx = connectionIt->toDataItemIndex;
@@ -402,7 +395,7 @@ namespace mars {
       // connections
       std::set<DataElement*>::iterator toElementIt;
       fflush(stderr);
-      for(toElementIt = connectionActivatedElements.begin(); 
+      for(toElementIt = connectionActivatedElements.begin();
           toElementIt != connectionActivatedElements.end(); ++toElementIt) {
         DataElement *toElement = *toElementIt;
         //      std::swap(toElement->frontBuffer, toElement->backBuffer);
@@ -425,7 +418,7 @@ namespace mars {
 
       return true;
     }
-    
+
     bool DataBroker::registerTimedReceiver(ReceiverInterface *receiver,
                                            const std::string &groupName,
                                            const std::string &dataName,
@@ -435,7 +428,7 @@ namespace mars {
       std::map<std::string, Timer>::iterator timerIt, endIt;
       std::map<std::pair<std::string, std::string>, DataElement*>::iterator elementIt;
       bool ok = false;
-      
+
       timersLock.lockForRead();
       timerIt = timers.find(timerName);
       endIt = timers.end();
@@ -555,7 +548,7 @@ namespace mars {
           stopRealtimeThread = false;
           startingRealtimeThread = true;
           if(!realtimeThreadRunning) {
-            pthread_create(&realtimeThread, NULL, createRealtimeThread, 
+            pthread_create(&realtimeThread, NULL, createRealtimeThread,
                            (void*)this);
           }
         }
@@ -573,7 +566,7 @@ namespace mars {
       }
       return ok;
     }
-    
+
     bool DataBroker::unregisterTimedProducer(ProducerInterface *producer,
                                              const std::string &groupName,
                                              const std::string &dataName,
@@ -1149,7 +1142,7 @@ namespace mars {
       elementsLock.unlock();
       return id;
     }
-    
+
     const DataInfo DataBroker::getDataInfo(const std::string &groupName,
                                            const std::string &dataName) const {
       std::map<std::pair<std::string, std::string>, DataElement*>::const_iterator elementIt;
@@ -1343,17 +1336,15 @@ namespace mars {
                                       const std::string &toItemName) {
       std::map<std::pair<std::string, std::string>, DataElement*>::iterator elementIt;
       DataItemConnection connection;
-      fprintf(stderr, "connect DataItems...");
-      fflush(stderr);
       // TODO: should we special case wildcards?
       DataElement *element;
 
       // from element handling
       {
-        elementIt = elementsByName.find(std::make_pair(fromGroupName, 
+        elementIt = elementsByName.find(std::make_pair(fromGroupName,
                                                        fromDataName));
         if(elementIt == elementsByName.end()) {
-          pushError("could not find from Element: %s, %s\n", 
+          pushError("could not find from Element: %s, %s\n",
                     fromGroupName.c_str(),
                     fromDataName.c_str());
           return;
@@ -1362,13 +1353,13 @@ namespace mars {
         connection.fromElement = element;
         connection.fromDataItemIndex = element->frontBuffer->getIndexByName(fromItemName);
       }
-    
+
       // to element handling
       {
-        elementIt = elementsByName.find(std::make_pair(toGroupName, 
+        elementIt = elementsByName.find(std::make_pair(toGroupName,
                                                        toDataName));
         if(elementIt == elementsByName.end()) {
-          pushError("could not find to Element: %s, %s\n", 
+          pushError("could not find to Element: %s, %s\n",
                     toGroupName.c_str(),
                     toDataName.c_str());
           return;
@@ -1378,15 +1369,7 @@ namespace mars {
         connection.toDataItemIndex = element->frontBuffer->getIndexByName(toItemName);
       }
 
-      fprintf(stderr, "attaching from %s %s\n", 
-              connection.fromElement->info.groupName.c_str(),
-              connection.fromElement->info.dataName.c_str());
-      fprintf(stderr, "attaching to %s %s\n", 
-              connection.toElement->info.groupName.c_str(),
-              connection.toElement->info.dataName.c_str());
-            
       connection.fromElement->connections.push_back(connection);
-      fprintf(stderr, "done\n");
     }
 
     void DataBroker::disconnectDataItems(const std::string &fromGroupName,
@@ -1408,15 +1391,6 @@ namespace mars {
       for(it=elementsById.begin(); it!=elementsById.end(); ++it) {
         for(jt=it->second->connections.begin();
             jt!=it->second->connections.end(); ++jt) {
-          fprintf(stderr, "da da da \n");
-          fprintf(stderr, "searching: form %s %s %ld ---> %s %s %ld\n",
-                  jt->fromElement->info.groupName.c_str(),
-                  jt->fromElement->info.dataName.c_str(),
-                  jt->fromDataItemIndex,
-                  jt->toElement->info.groupName.c_str(),
-                  jt->toElement->info.dataName.c_str(),
-                  jt->toDataItemIndex);
-
           jt->toElement->bufferLock->lockForWrite();
           if(jt->toDataItemIndex >= (int)jt->toElement->frontBuffer->size()) {
             pushError("DataBroker::disconnectDataItems : connection index does not match!");
@@ -1442,4 +1416,3 @@ namespace mars {
 
 DESTROY_LIB(mars::data_broker::DataBroker);
 CREATE_LIB(mars::data_broker::DataBroker);
-  

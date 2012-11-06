@@ -85,7 +85,9 @@ namespace mars {
           break;
         }
         default:
-          fprintf(stderr,"Cannot find primitive type: %i(%s), at %s:%i\n",NodeData::typeFromString(node.origName.c_str()),node.origName.c_str(),__FILE__,__LINE__);
+          fprintf(stderr,"Cannot find primitive type: %i(%s), at %s:%i\n",
+                  NodeData::typeFromString(node.origName.c_str()),
+                  node.origName.c_str(), __FILE__, __LINE__);
           throw std::runtime_error("unknown primitive type");
         }
         drawObject_->setUseMARSShader(useMARSShader);

@@ -91,21 +91,12 @@ namespace mars {
                                  const data_broker::DataPackage &dataPackage,
                                  int callbackParam) {
       changeMutex.lock();
-      //fprintf(stderr, "DW: receive: %s %s \n", info.groupName.c_str(), info.dataName.c_str());
       if(callbackParam == CALLBACK_NEW_STREAM) {
         DataInfo newInfo;
         dataPackage.get("groupName", &newInfo.groupName);
         dataPackage.get("dataName", &newInfo.dataName);
         dataPackage.get("dataId", (long*)&newInfo.dataId);
         dataPackage.get("flags", (int*)&newInfo.flags);
-        /*
-          fprintf(stderr, "flags %s %s: %d %d %d\n", 
-          newInfo.groupName.c_str(),
-          newInfo.dataName.c_str(),
-          newInfo.flags, 
-          data_broker::DATA_PACKAGE_WRITE_FLAG, 
-          newInfo.flags & data_broker::DATA_PACKAGE_WRITE_FLAG);
-        */
         if(showAll || newInfo.flags & data_broker::DATA_PACKAGE_WRITE_FLAG) {
           addParam(newInfo);
           dataBroker->registerTimedReceiver(this, newInfo.groupName, 
@@ -217,7 +208,6 @@ namespace mars {
           for(unsigned int i = 0; i < it->second.guiElements.size(); ++i) {
             QtVariantProperty *guiElem = it->second.guiElements[i];
             item = &it->second.dataPackage[i];
-            //          fprintf(stderr, "%s %lg\n", item->name.c_str(), item->d);
             //item2 = &guiToWrapper[it->second.guiElements.front()]->dataPackage[i];
             switch(item->type) {
             case data_broker::DOUBLE_TYPE:

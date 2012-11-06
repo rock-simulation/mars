@@ -63,7 +63,6 @@ namespace mars {
         contact += *iter;
       }
       sprintf(data, " %9.3f", contact);
-      //fprintf(stderr, "\node ground contact: %s", tmp);
       return 10;
     }
 

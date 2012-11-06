@@ -73,7 +73,7 @@ namespace mars {
       cfgParamsById.clear();
       cfgParamsByString.clear();
       mutexCFGParams.unlock();
-      fprintf(stderr, "\nDelete cfg_manager\n");
+      fprintf(stderr, "Delete cfg_manager\n");
     }
 
 

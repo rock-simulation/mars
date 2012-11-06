@@ -78,7 +78,6 @@ namespace mars {
       dbPackage.add("position", getActualPosition());
       dbPackage.add("current", getCurrent());
       dbPackage.add("torque", getTorque());
-      //fprintf(stderr, "motor: %lg\n", getValue());
 
       dbIdIndex = dbPackage.getIndexByName("id");
       dbValueIndex = dbPackage.getIndexByName("value");
@@ -107,7 +106,6 @@ namespace mars {
     void SimMotor::produceData(const data_broker::DataInfo &info,
                                data_broker::DataPackage *dbPackage,
                                int callbackParam) {
-      //fprintf(stderr, "motor: %lg\n", getValue());
       dbPackage->set(dbIdIndex, (long)sMotor.index);
       dbPackage->set(dbValueIndex, getValue());
       dbPackage->set(dbPositionIndex, getActualPosition());
@@ -363,7 +361,6 @@ namespace mars {
       
             if(pwm > 100) pwm = 100;
             else if(pwm < -100) pwm = -100;
-            //if(pwm > 0.1) fprintf(stderr, "\n pwm: %g", pwm);
             if(sMotor.axis == 1)
               vel = myJoint->getVelocity();
             else
@@ -435,7 +432,6 @@ namespace mars {
               else
                 torque = (current)*sMotor.Km*sMotor.gear;
 
-              //fprintf(stderr , "\n%g\t%g\t%g", acc, sMotor.Jm, torque);
               //torque += torque>0.0?-fabs(acc*sMotor.Jm):fabs(acc*sMotor.Jm);
               //torque -= acc*sMotor.Jm;
               //myJoint->setTorque(torque);
@@ -445,8 +441,6 @@ namespace mars {
               //torque -= fmod(torque, 0.001);
               torque = torque>0.0?torque:0.000000000001;
               myJoint->setForceLimit(torque);//-fabs(acc)*sMotor.Jm);
-              //fprintf(stderr, "\n speed=%4.2f pwm=%4.2f current=%4.2f torque=%4.2f / %4.2f",
-              //        velocity, pwm, current, torque, fabs(acc)*sMotor.Jm);
             }
             else if(sMotor.axis == 2) {
               /// \bug not implemented for axis2
@@ -485,7 +479,6 @@ namespace mars {
         if(!control->sim->isSimRunning()) {
           myJoint->setOfflineValue(desired_position);
         }
-        //fprintf(stderr, "\n motor: %d, %g", sMotor.index, value);
         break;
       case MOTOR_TYPE_DC:
         actual_velocity = value;
@@ -498,7 +491,6 @@ namespace mars {
         break;
       case MOTOR_TYPE_PID_FORCE:
         desired_position = value;
-        //fprintf(stderr, "\n motor: %d, %g", sMotor.index, value);
         break;
       case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
@@ -541,8 +533,6 @@ namespace mars {
         sMotor.p = mP;
         sMotor.i = mI;
         sMotor.d = mD;
-		
-        //fprintf(stderr, "\n motor: %d, %g", sMotor.index, value);
         break;
       case MOTOR_TYPE_DC:
         //the information are not relevant for this type

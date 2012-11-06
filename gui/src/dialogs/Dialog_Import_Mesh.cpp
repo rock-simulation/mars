@@ -198,7 +198,7 @@ namespace mars {
       }
       osg::ref_ptr<osg::Node> osgReadNode;
       osgReadNode = osgDB::readNodeFile(filename.toStdString());
-      fprintf(stderr, "\nimport: %s", filename.toStdString().c_str());
+      fprintf(stderr, "import: %s\n", filename.toStdString().c_str());
       // only start if file has been read correctly
       if (osgReadNode == NULL) {
         initialized = false;
@@ -219,7 +219,7 @@ namespace mars {
           fprintf(stderr, "Dialog_Import_Mesh num child: %d\n", i);
           osg::ref_ptr<osg::Node> createdNode = osgGroupFromRead->getChild(i);
           // search for same names
-          fprintf(stderr, "\n createdNode->getName() = %s",
+          fprintf(stderr, " createdNode->getName() = %s\n",
                   createdNode->getName().c_str());
           bool found = false;
           for(unsigned int j=0; j<nameString.size();j++){

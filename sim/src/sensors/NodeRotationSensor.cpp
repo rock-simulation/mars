@@ -74,7 +74,6 @@ namespace mars {
         p += 21;
         num_char += 21;
       }
-      //fprintf(stderr, "\node rotation: %s", tmp);
       return num_char;
     }
 

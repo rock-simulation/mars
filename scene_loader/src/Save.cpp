@@ -186,7 +186,7 @@ namespace mars {
       }
 
       out <<"  <materiallist>\n";
-      std::cout<<"\nnum Matirials:"<<materials.size();
+      std::cout<<"num Matirials:"<<materials.size()<<std::endl;
       for(iter = materials.begin(); iter != materials.end(); iter++) {
         if(!generate(&((*iter).material), &out, &v_fullfilenames,
                      (*iter).material_id)) {
@@ -260,7 +260,6 @@ namespace mars {
         param.v_controllerList.push_back(control->controllers->getFullController(it->index));
       }
       control->graphics->getLights(&param.v_lightList);
-      fprintf(stderr, "\nget %d lights!", (int)param.v_lightList.size());
       if(save()==0){
         std::cout<<"error while saving return from save_Scene in simulator.cpp"
                  <<std::endl;

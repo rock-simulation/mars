@@ -71,16 +71,14 @@ namespace mars {
           // open it
           IOReturn tIOReturn = IOHIDManagerOpen(myIOHIDManagerRef,
                                                 kIOHIDOptionsTypeNone);
-          if(kIOReturnSuccess == tIOReturn) {
-            fprintf(stderr, "%s: IOHIDManager (%p) creaded and opened!",
-                    __PRETTY_FUNCTION__,
-                    (void *) myIOHIDManagerRef);
-          } else {
-            fprintf(stderr, "%s: Couldn't open IOHIDManager.", __PRETTY_FUNCTION__ );
+          if(kIOReturnSuccess != tIOReturn) {
+            fprintf(stderr, "%s: Couldn't open IOHIDManager.",
+                    __PRETTY_FUNCTION__);
             return 0;
           }
         } else {
-          fprintf( stderr, "%s: Couldn't create a IOHIDManager.", __PRETTY_FUNCTION__ );
+          fprintf(stderr, "%s: Couldn't create a IOHIDManager.",
+                  __PRETTY_FUNCTION__);
           return 0;
         }
   
@@ -122,11 +120,9 @@ namespace mars {
                                              CFSTR(kIOHIDProductIDKey), &result);
 
           if(!strcmp(target_product, product)) {
-            fprintf(stderr, "\tfound");
             break;
           }
           if(!strcmp(target_product2, product)) {
-            fprintf(stderr, "\tfound");
             break;
           }
         }

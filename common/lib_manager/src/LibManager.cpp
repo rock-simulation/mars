@@ -53,13 +53,11 @@ namespace mars {
       std::map<std::string, libStruct>::iterator it;
       bool finished = false;
 
-      //fprintf(stderr, "\nDelete LibManager %d\n", (int)libMap.size());
-
       while(!finished) {
         finished = true;
         for(it=libMap.begin(); it!=libMap.end(); ++it) {
           if(it->second.useCount == 0) {
-            fprintf(stderr, "\nLibManager: delete [%s] !", it->first.c_str() );
+            fprintf(stderr, "LibManager: delete [%s] !\n", it->first.c_str() );
             if(it->second.destroy) {
               it->second.destroy(it->second.libInterface);
             }
@@ -76,9 +74,9 @@ namespace mars {
                   it->first.c_str(), it->second.useCount);
         }
       } else {
-        fprintf(stderr, "LibManager: successfully deleted all libraries!");
+        fprintf(stderr, "LibManager: successfully deleted all libraries!\n");
       }
-      fprintf(stderr, "\nDelete lib_manager\n");
+      fprintf(stderr, "Delete lib_manager\n");
     }
 
     void LibManager::addLibrary(LibInterface *_lib) {
@@ -176,7 +174,7 @@ namespace mars {
 
     LibInterface* LibManager::getLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
-        fprintf(stderr, "LibManager: could not find \"%s\"", libName.c_str());
+        fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
         return 0;
       }
 
@@ -193,7 +191,7 @@ namespace mars {
       libStruct *theLib = &(libMap[libName]);
       theLib->useCount--;
       if(theLib->useCount <= 0) {
-        fprintf(stderr, "\nLibManager: unload delete [%s]", libName.c_str());
+        fprintf(stderr, "LibManager: unload delete [%s]\n", libName.c_str());
         if(theLib->destroy) {
           theLib->destroy(theLib->libInterface);
         }

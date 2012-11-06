@@ -64,7 +64,6 @@ namespace mars {
       (void)errnum;
       (void)msg;
       (void)ap;
-      //fprintf(stderr, "#");
       LOG_DEBUG(msg, ap);
       WorldPhysics::error = 1;
     }
@@ -498,7 +497,6 @@ namespace mars {
   
       // test if we have a ray sensor:
       if(geom_data1->ray_sensor) {
-        //fprintf(stderr, "ray");
         if(geom_data1->parent_geom == o2) {
           delete[] contact;
           return;
@@ -601,7 +599,7 @@ namespace mars {
         }
         else {
           // the calculation steps as mentioned above
-          fprintf(stderr, "\n the calculation for friction directen set for both nodes is not done yet.");
+          fprintf(stderr, "the calculation for friction directen set for both nodes is not done yet.\n");
         }
       }
 
@@ -660,8 +658,6 @@ namespace mars {
             item.end.y() = contact[i].geom.pos[1] + contact[i].geom.normal[1];
             item.end.z() = contact[i].geom.pos[2] + contact[i].geom.normal[2];
             draw_intern.push_back(item);
-            //fprintf(stderr, "\nnormal %d %g %g %g", i, contact[i].geom.normal[0],
-            //contact[i].geom.normal[1], contact[i].geom.normal[2]);
             if(geom_data1->c_params.friction_direction1 ||
                geom_data2->c_params.friction_direction1) {
               v[0] = contact[i].geom.normal[0];
@@ -673,12 +669,7 @@ namespace mars {
               contact[i].fdir1[1] -= v[1];
               contact[i].fdir1[2] -= v[2];
               dNormalize3(contact[0].fdir1);
-              //fprintf(stderr, "\npos: %g %g %g", contact[i].geom.pos[0],
-              //        contact[i].geom.pos[1], contact[i].geom.pos[2]);
-              //fprintf(stderr, "\nfdir: %g %g %g", contact[i].fdir1[0],
-              //        contact[i].fdir1[1], contact[i].fdir1[2]);
             }
-            //fprintf(stderr, " phy_depth: %g", contact[0].geom.depth);
             contact[0].geom.depth += (geom_data1->c_params.depth_correction +
                                       geom_data2->c_params.depth_correction);
         
@@ -698,7 +689,6 @@ namespace mars {
             //if(dGeomGetClass(o1) == dPlaneClass) {
             fb = 0;
             if(geom_data2->sense_contact_force) {
-              //fprintf(stderr, "\n contact geom2: %d", (int)o2);
               fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
               dJointSetFeedback(c, fb);
               contact_feedback_list.push_back(fb);
@@ -707,7 +697,6 @@ namespace mars {
             } 
             //else if(dGeomGetClass(o2) == dPlaneClass) {
             if(geom_data1->sense_contact_force) {
-              //fprintf(stderr, "\n contact geom1: %d", (int)o1);
               if(!fb) {
                 fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
                 dJointSetFeedback(c, fb);
@@ -723,9 +712,9 @@ namespace mars {
           drawLock.unlock();
         }
       }
-      //fprintf(stderr, "\n");
       delete[] contact;
     }
+
     /**
      * \brief This static function is used to project a normal function
      *   pointer to a method from a class

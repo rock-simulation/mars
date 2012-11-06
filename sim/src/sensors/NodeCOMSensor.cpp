@@ -55,7 +55,6 @@ namespace mars {
     int NodeCOMSensor::getAsciiData(char* data) const {
       Vector center = control->nodes->getCenterOfMass(config.ids);
       sprintf(data, " %6.2f %6.2f %6.2f", center.x(), center.y(), center.z());
-      //fprintf(stderr, "\node ground contact: %s", tmp);
       return 21;
     }
 

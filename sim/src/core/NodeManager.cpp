@@ -1056,7 +1056,6 @@ namespace mars {
       iMutex.lock();
       for(iter = simNodesReload.begin(); iter != simNodesReload.end(); iter++) {
         tmp = iter->second;
-        //fprintf(stderr, "\naddress: %d", (int)tmp.c_params.friction_direction1);
         if(tmp.c_params.friction_direction1) {
           friction = new Vector(0.0, 0.0, 0.0);
           *friction = *(tmp.c_params.friction_direction1);
@@ -1151,8 +1150,6 @@ namespace mars {
                                               iter->second->getPosition());
           control->graphics->setDrawObjectRot(iter->second->getGraphicsID2(),
                                               iter->second->getRotation());
-          //      fprintf(stderr, "snafu %20.8f\n", (float)iter->second->getVisualPosition().z);
-          //      fprintf(stderr, "snafu %20.8lf\n", iter->second->getVisualPosition().z);
         }
         for(iter = nodesToUpdate.begin(); iter != nodesToUpdate.end(); iter++) {
           control->graphics->setDrawObjectPos(iter->second->getGraphicsID(),

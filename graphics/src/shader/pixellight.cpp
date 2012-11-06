@@ -40,7 +40,6 @@ namespace mars {
       : ShaderFunc("plight", args)
     {
       stringstream s;
-      //fprintf(stderr, "\nlightList.size() = %u", lightList.size());
       s << "lightVec[" << max(1,lightList.size()) << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() } );
       s.str("");
@@ -68,7 +67,6 @@ namespace mars {
       s << "    float dist;" << endl;
       for(it = lightList.begin(); it != lightList.end(); ++it) {
         stringstream lightSource;
-        //fprintf(stderr, "\n light index: %u", (*it)->index);
         lightSource << "gl_LightSource[" << (*it)->index << "]";
 
         s << "    if(" << lightSource.str() << ".position.w < 0.001 ) {" << endl;

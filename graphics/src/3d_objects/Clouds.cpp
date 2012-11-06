@@ -105,7 +105,6 @@ namespace mars {
     /*
       void Clouds::move() {
       (tex_x<512.0) ? tex_x += 0.15 : tex_x = 0;
-      //fprintf(stderr, "\nmove clouds! %g", tex_x);
       texmat->setMatrix(osg::Matrix::translate(tex_x,1.0,1.0)*
       osg::Matrix::scale(0.5, 0.5, 1.0));
       }

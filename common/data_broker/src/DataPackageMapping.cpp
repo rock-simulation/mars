@@ -36,7 +36,6 @@ namespace mars {
           ret = (ret && (*it)->getIndex(package));
         }
         if(!ret) {
-          //fprintf(stderr, "DataGetter: Could not get all indices\n");
           return ret;
         }
         first = false;

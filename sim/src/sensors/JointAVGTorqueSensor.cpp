@@ -63,7 +63,6 @@ namespace mars {
       }
       torque /= doubleArray.size();
       sprintf(p, " %6.2f", torque);
-      //fprintf(stderr, "\njoint torque: %s", tmp);
       return 7;
 
     }

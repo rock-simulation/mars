@@ -124,7 +124,6 @@ namespace mars {
       winIDCombo->setAttribute("enumNames", enumNames);
       // and push_back to list
       cameras.push_back(camera);
-      //fprintf(stderr, "\n%s\n", text);
       if(first_camera) {
         timerEvent(0);
         updateGUI();

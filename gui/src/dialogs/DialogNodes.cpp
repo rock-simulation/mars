@@ -226,7 +226,6 @@ namespace mars {
     void DialogNodes::selectEvent(unsigned long int id, bool mode) {
       for (unsigned int i = 0; i < allNodes.size() ; i++)
         if (allNodes[i].index == id) {
-          fprintf(stderr, "%sselected %s\n", mode ? "" : "de", allNodes[i].name.c_str() );
           if (mode) {
             allDialogs[i]->setSelected(true);
             allDialogs[i]->focusIn();

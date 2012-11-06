@@ -63,7 +63,7 @@ namespace mars {
                                           std::string("../resources"));
         path = r_path.sValue;
       }
-      else fprintf(stderr, "\n******* cfg_manager_gui: couldn't find cfg_manager");
+      else fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");
   
       lib = libManager->getLibrary(std::string("main_gui"));
 
@@ -101,7 +101,7 @@ namespace mars {
 
       if(cfg) libManager->unloadLibrary(std::string("cfg_manager"));
       if(gui) libManager->unloadLibrary(std::string("main_gui"));
-      fprintf(stderr, "\nDelete cfg_manager_gui\n");
+      fprintf(stderr, "Delete cfg_manager_gui\n");
     }
 
 

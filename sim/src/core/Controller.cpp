@@ -272,8 +272,6 @@ namespace mars {
                 control->sim->addParamStruct(ps);*/
                 break;
               case COMMAND_NODE_CONTACT_MOTION1:
-                //fprintf(stderr, "\n motion: %d %g", command_id,
-                //*(sReal*)pt_stuff);
                 control->nodes->setContactParamMotion1(command_id,
                                                        *(sReal*)pt_stuff);
                 pt_stuff += sizeof(sReal);
@@ -421,13 +419,10 @@ namespace mars {
 #ifndef MATTHIAS_AUS
 
           int count = 0;
-          //fprintf(stderr, "\n da: %d", sensors.size());
           for(iter = sensors.begin();
               iter != sensors.end(); iter++) {
             count += (*iter)->getAsciiData(p+count);
           }
-          //fprintf(stderr, "\n count: %d", count);
-          //fprintf(stderr, "\n to monster (%d, %d):   %s......", PACKAGE_SIZE, count, data);
 
           if (send(conn, data, PACKAGE_SIZE, 0) == -1) {
             connected = false;
@@ -463,13 +458,11 @@ namespace mars {
             return;
           }
 #endif
-          //fprintf(stderr, "\nReceived:%s", data);
           if (data[0] == 's') {
             p = data+1;
             for (jter = motors.begin();
                  jter != motors.end(); jter++) {
               p += getSReal(p, &value);
-              //fprintf(stderr, "\ndata: x%s %g %ld", p, value, (*jter)->getIndex());
               value *= 0.01745329251994;
               (*jter)->setValue((sReal)value);
             }
@@ -509,7 +502,6 @@ namespace mars {
                   //assert(id=< motors.size());
                   p += getSReal(p, &value);
                   //value *= 0.01745329251994;
-                  //fprintf(stderr, "\nmotor: %d %g", id, (sReal)value);
                   motors[id]->setValue((sReal)value);
 
                   // p += getChar(p, &cmd);
@@ -531,7 +523,6 @@ namespace mars {
                   //assert(id=< motors.size());
                   p += getSReal(p, &value);
                   //value *= 0.01745329251994;
-                  //fprintf(stderr, "\nmotor_vel: %d %g", id, (sReal)value);
                   motors[id]->setMaximumVelocity((sReal)value);
 
                   // p += getChar(p, &cmd);
@@ -720,7 +711,6 @@ namespace mars {
                   motors[id]->setPID(mP, mI, mD);
 
                   getChar(p, &cmd);
-                  //fprintf(stderr, "\nmotor: %d %g", id, (sReal)value);
                   //command_id=(uint)value;
                 }
                 break;
@@ -760,8 +750,6 @@ namespace mars {
               } //\switch
               p += getChar(p, &cmd);
               if(cmd != 'f') getChar(p, &cmd);
-              //else fprintf(stderr, "\ncmd finished");
-              //fprintf(stderr, " %c", cmd);
               //p += getSReal(p, &value );
               //command_id=(uint)value;
             }//while not end of message
@@ -794,7 +782,6 @@ namespace mars {
             && data[d] != '\r' && d<BUFFER_SIZE) v[i++] = data[d++];
       sscanf(v, " %lf", value);
       if(std::isnan(*value)) {
-        fprintf(stderr, "dadada");
         *value = 0.0;
       }
       return d;
@@ -991,8 +978,6 @@ namespace mars {
         if (sock_state == 0) {
           LOG_ERROR("Controller: cannot connect");
         }
-        //else
-        //fprintf(stderr, ".");
         sock_state = 1;
         return 1;
       }

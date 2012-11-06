@@ -59,14 +59,14 @@ namespace mars {
       }
 #endif
       if (signal) {
-        fprintf(stderr, "I think we exit with an error!");
+        fprintf(stderr, "\nI think we exit with an error!\n");
         MARS::control->sim->exitMars();
         //Convention: print the signal type
       } else {
         MARS::control->sim->exitMars();
-        fprintf(stderr, "\n\n################################");
-        fprintf(stderr, "\n## everything closed fine ^-^ ##");
-        fprintf(stderr, "\n################################\n\n");
+        fprintf(stderr, "\n################################\n");
+        fprintf(stderr, "## everything closed fine ^-^ ##\n");
+        fprintf(stderr, "################################\n\n");
       }
     }
 
@@ -87,8 +87,6 @@ namespace mars {
 
     MARS::~MARS() {
       //! close simulation
-      //fprintf(stderr, "\n want to exit\n");
-      //fprintf(stderr, "\n want to exit\n");
       exit_main(0);
 
       if(graphicsTimer) delete graphicsTimer;
@@ -118,12 +116,12 @@ namespace mars {
       struct lconv *locale = localeconv();
       fprintf(stderr, "Active locale (LC_ALL): ");
       if( *(locale->decimal_point) != '.') {
-        fprintf(stderr, " [FAIL] n");
-        fprintf(stderr, "Current locale conflicts with mars\n");
+        fprintf(stderr, " [FAIL] Current locale conflicts with mars\n");
         exit(1);
+      } else {
+        fprintf(stderr, " [OK]\n");
       }
-      //fprintf(stderr, " [OK]\n");
-    
+
       // load the simulation core_libs:
       libManager->loadConfigFile(coreConfigFile);
 
@@ -140,7 +138,7 @@ namespace mars {
       mars::interfaces::SimulatorInterface *marsSim;
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(!marsSim) {
-        fprintf(stderr, "\nmain: error while casting simulation lib\n\n");
+        fprintf(stderr, "main: error while casting simulation lib\n\n");
         exit(2);
       }
       control = marsSim->getControlCenter();
@@ -224,8 +222,11 @@ namespace mars {
           break;
         switch (c) {
         case 'C':
-          if( QDir(QString(optarg)).exists() ) configDir = optarg;
-          else printf("\nThe given configuration Directory does not exists: %s", optarg);
+          if( QDir(QString(optarg)).exists() )
+            configDir = optarg;
+          else
+            printf("The given configuration Directory does not exists: %s\n",
+                   optarg);
           break;
         }
       }

@@ -110,8 +110,6 @@ namespace mars {
     }
 
     osg::BoundingBox VertexBufferTerrain::computeBound() const {
-      //fprintf(stderr, "error: not implemented yet!!");
-
       return osg::BoundingBox(0.0, 0.0, 0.0, width, height, scale);
     }
 

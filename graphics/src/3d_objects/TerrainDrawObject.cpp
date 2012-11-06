@@ -320,7 +320,6 @@ namespace mars {
           count++;
           x_off += num_x;
         }
-        //fprintf(stderr, "count: %d\n", count);
         count = 0;
         y_off += num_y;
       }
@@ -343,11 +342,9 @@ namespace mars {
       geom->setVertexAttribData(TANGENT_UNIT,
                                 osg::Geometry::ArrayData(tangents.get(),
                                                          osg::Geometry::BIND_PER_VERTEX ) );
-      //fprintf(stderr, "da da da \n");
     }
 
     void TerrainDrawObject::collideSphere(Vector pos, sReal radius) {
-      //fprintf(stderr, "Test\n");
       pos += pivot_ - position_;
 #ifdef USE_VERTEX_BUFFER
       vbt->collideSphere(pos.x(), pos.y(), pos.z(), radius);
@@ -361,11 +358,6 @@ namespace mars {
       }
 
       if(vSubTiles.size() > 1000) {
-        /*
-          if(vSubTiles.size() > 0) {
-          fprintf(stderr, "countSubTiles: %d\n", TerrainDrawObject::countSubTiles);
-          }
-        */
         std::vector<SubTile*> copy;
         int remove = 0;
         for(iter=vSubTiles.begin(); iter!=vSubTiles.end(); ++iter) {
@@ -461,9 +453,6 @@ namespace mars {
       double y_size = y_step;
       int x_count = round(x_size / x_res);
       int y_count = round(y_size / y_res);
-      //fprintf(stderr, "x_res %g  y_res %g \n", x_res, y_res);
-      //fprintf(stderr, "x_size %g  y_size %g \n", x_size, y_size);
-      //fprintf(stderr, "x_count %d  y_count %d \n", x_count, y_count);
       std::map<int, SubTile*>::iterator it;
       bool dirty = false;
 
@@ -770,10 +759,8 @@ namespace mars {
           px = j/num_x;
           py = i/num_y;
           py2 = i-(py*num_y);
-          //if(i==y1 && j==x1) fprintf(stderr, "da: %d %d %d\n", px, py, py2);
           pi = py*da*num_y + px*num_y + py2;
 
-          //fprintf(stderr, "index: %d\n", pi);
           if(i<y2 && j <x2) {
             iPSet.insert(pi);
             iVert.push_back(i*(info.width+1)+j);
@@ -782,7 +769,6 @@ namespace mars {
       }
 
       for(iter=iPSet.begin(); iter!=iPSet.end(); ++iter) {
-        //fprintf(stderr, "kill: %d\n", *iter);
         if((pSet = geom->getPrimitiveSet(*iter))) {
           primitiveSet = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
           for(int i=0; i<(int)pSet->getNumIndices()/6; ++i) {
@@ -791,7 +777,6 @@ namespace mars {
             for(jter=iVert.begin(); jter!=iVert.end(); ++jter) {
               if(id == *jter) {
                 found = true;
-                //fprintf(stderr, "  %d", *jter);
               }
             }
             if(!found) {
@@ -806,7 +791,6 @@ namespace mars {
           geom->removePrimitiveSet(*iter);
           geom->insertPrimitiveSet(*iter, primitiveSet.get());
         }
-        //fprintf(stderr, "\n");
       }
       //vertices->dirty();
       //normals->dirty();
@@ -1174,15 +1158,12 @@ namespace mars {
         drawable2 = geode2->getDrawable(0);
         if(!drawable2) return;
 
-        fprintf(stderr, "\nhas Drawable");
         geometry2 = drawable2->asGeometry();
         if(!geometry2) return;
   
-        fprintf(stderr, "\nhas Gometry");
         v2 = dynamic_cast<osg::Vec3Array*>(geometry2->getVertexArray());
         if(!v2) return;
 
-        fprintf(stderr, "\n and vertex array");
 
         if(!shadowNode) {
         osg::ref_ptr<osg::Geode> geode = new osg::Geode;

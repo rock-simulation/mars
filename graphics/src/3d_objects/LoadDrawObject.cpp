@@ -105,12 +105,9 @@ namespace mars {
       osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
       osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
 
-      //fprintf(stderr, "\n\n read:\n\n");
       while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
-        //fprintf(stderr, "%d\n", r);
         o = 0;
         while(o < r+foo-50 || (r<256 && o < r+foo)) {
-          //fprintf(stderr, "foo: %d, o: %d \n", foo, o);
           da = *(int*)(buffer+o);
           o += 4;
           if(da == 1) {
@@ -119,7 +116,6 @@ namespace mars {
               o+=4;
             }
             vertices.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
-            //fprintf(stderr, "v %.6f %.6f %.6f\n", fData[0], fData[1], fData[2]);
           }
           else if(da == 2) {
             for(i=0; i<2; i++) {
@@ -127,7 +123,6 @@ namespace mars {
               o+=4;
             }
             texcoords.push_back(osg::Vec2(fData[0], fData[1]));
-            //fprintf(stderr, "vt %.6f %.6f\n", fData[0], fData[1]);
           }
           else if(da == 3) {
             for(i=0; i<3; i++) {
@@ -135,15 +130,12 @@ namespace mars {
               o+=4;
             }
             normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
-            //fprintf(stderr, "vn %.6f %.6f %.6f\n", fData[0], fData[1], fData[2]);
           }
           else if(da == 4) {
-            //fprintf(stderr, "f");
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
             }
-            //fprintf(stderr, " %d/%d/%d", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
             vertices2.push_back(vertices[iData[0]-1]);
@@ -158,7 +150,6 @@ namespace mars {
               iData[i] = *(int*)(buffer+o);
               o+=4;
             }
-            //fprintf(stderr, " %d/%d/%d", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
             vertices2.push_back(vertices[iData[0]-1]);
@@ -173,7 +164,6 @@ namespace mars {
               iData[i] = *(int*)(buffer+o);
               o+=4;
             }
-            //fprintf(stderr, " %d/%d/%d\n", iData[0], iData[1], iData[2]);
             // add osg vertices etc.
             osgVertices->push_back(vertices[iData[0]-1]);
             vertices2.push_back(vertices[iData[0]-1]);
@@ -209,8 +199,6 @@ namespace mars {
       geode->addDrawable(geometry);
       geode->setName("bobj");
 
-      //fprintf(stderr, "\n\n finished %d %d %d\n\n",
-      //        osgVertices->size(), osgTexcoords->size(), osgNormals->size());
       fclose(input);
       osgUtil::Optimizer optimizer;
       optimizer.optimize( geode );

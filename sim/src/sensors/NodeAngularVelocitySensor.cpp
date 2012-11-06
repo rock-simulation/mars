@@ -64,7 +64,6 @@ namespace mars {
         p += num_char;
 
       }
-      //fprintf(stderr, "\node Velocity: %s", tmp);
       return num_char;
     }
 

@@ -94,8 +94,8 @@ namespace mars {
       default:
         break;
       }
-      if(it->first == id) return it->second;
-      //      fprintf(stderr, "\mapped id: %ld", tmp);
+      if(it->first == id)
+        return it->second;
       return 0;
     }
 

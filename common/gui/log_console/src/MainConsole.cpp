@@ -114,7 +114,7 @@ namespace mars {
       libManager->unloadLibrary("data_broker");
       libManager->unloadLibrary("main_gui");
       libManager->unloadLibrary("cfg_manager");
-      fprintf(stderr, "\nDelete log_console\n");
+      fprintf(stderr, "Delete log_console\n");
     }
 
     void MainConsole::menuAction(int action, bool checked) {
@@ -174,14 +174,14 @@ namespace mars {
           case data_broker::DB_MESSAGE_TYPE_FATAL:
           case data_broker::DB_MESSAGE_TYPE_ERROR:
 #ifndef WIN32
-            fprintf(stderr, "\n\033[1;31merror: %s\033[0m", message.c_str());
+            fprintf(stderr, "\033[1;31merror: %s\033[0m\n", message.c_str());
 #else
             fprintf(stderr, "error: %s\n", message.c_str());
 #endif
             break;
           case data_broker::DB_MESSAGE_TYPE_WARNING:
 #ifndef WIN32
-            fprintf(stderr, "\n\033[0;32mmessage: %s\033[0m", message.c_str());
+            fprintf(stderr, "\033[0;32mmessage: %s\033[0m\n", message.c_str());
 #else
             fprintf(stderr, "message: %s\n", message.c_str());
 #endif
@@ -189,7 +189,7 @@ namespace mars {
           case data_broker::DB_MESSAGE_TYPE_INFO:
           case data_broker::DB_MESSAGE_TYPE_DEBUG:
 #ifndef WIN32
-            fprintf(stderr, "\n\033[1;34mwarning: %s\033[0m", message.c_str());
+            fprintf(stderr, "\033[1;34mwarning: %s\033[0m\n", message.c_str());
 #else
             fprintf(stderr, "warning: %s\n", message.c_str());
 #endif

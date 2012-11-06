@@ -73,8 +73,6 @@ namespace mars {
 
           /* try to read the vendor and device ID */
           if(!ioctl(fd, EVIOCGID, &device_info)) {
-            fprintf(stderr, "DEBUG: vendor %04hx product %04hx version %04hx\n",
-                    device_info.vendor, device_info.product, device_info.version);
             if((device_info.vendor == LOGITECH_VENDOR_ID) && 
                (device_info.product == LOGITECH_SPACE_NAVIGATOR_DEVICE_ID)) {
               /* BINGO!!! this is it! */

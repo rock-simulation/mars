@@ -48,16 +48,13 @@ namespace mars {
 
     PostDrawCallback::~PostDrawCallback() {
       pthread_mutex_lock(imageMutex);
-      //fprintf(stderr, "\nPostDrawCallback: free image");
       delete image_id;
       delete imageMutex;
     }
 
     void PostDrawCallback::operator () (osg::RenderInfo& renderInfo) const{
       (void) renderInfo;
-      //fprintf(stderr, "get postDrawCallback\n");
       if(_grab) {
-        //fprintf(stderr, "do grabbing frame\n");
         pthread_mutex_lock(imageMutex);
         if(_save_grab)
           _image->readPixels(0, 0 , _width, _height, GL_RGBA,

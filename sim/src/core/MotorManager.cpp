@@ -85,9 +85,7 @@ namespace mars {
         iMutex.unlock();
       }
   
-      //fprintf(stderr, "newMotor1\n");
       SimMotor* newMotor = new SimMotor(control, *motorS);
-      //fprintf(stderr, "newMotor2\n");
       newMotor->attachJoint(control->joints->getSimJoint(motorS->jointIndex));
   
       if(motorS->jointIndex2)

@@ -131,7 +131,6 @@ namespace mars {
 
     void GuiHelper::clearStates(osg::ref_ptr<osg::Node> node) {
       osg::ref_ptr<osg::Group> group;
-      if(node->getStateSet() != 0) fprintf(stderr, "clear");
       if(node != 0) {
         node->getOrCreateStateSet()->clear();
         group = node->asGroup();
@@ -156,9 +155,8 @@ namespace mars {
       osg::Geode* geode;
       osg::Node* tmpNode;
       osg::ref_ptr<osg::Group> osgGroupFromRead = NULL;
-      if ((osgGroupFromRead = node->asGroup()) == 0) fprintf(stderr, "\nerror");
-
-      //osgDB::writeNodeFile(*osgGroupFromRead, "test.obj");
+      if ((osgGroupFromRead = node->asGroup()) == 0)
+        fprintf(stderr, "error\n");
 
       //get geometries of node
       int indexcounter = 0;
@@ -180,9 +178,6 @@ namespace mars {
           }
         }
       }
-
-      //fprintf(stderr, "\nindex count: %d\n", indexcounter);
-      //fprintf(stderr, "\nindex count: %d\n", geode->getNumDrawables());
 
       //store vertices in a mydVector3 structure
       mars::interfaces::mydVector3 *vertices = 0;
@@ -323,12 +318,10 @@ namespace mars {
 
       for(iter = GuiHelper::nodeFiles.begin();
           iter != GuiHelper::nodeFiles.end(); iter++) {
-        //fprintf(stderr, "scan nodeFiles...\n");
         if((*iter).fileName == fileName) return (*iter).node;
       }
       nodeFileStruct newNodeFile;
       newNodeFile.fileName = fileName;
-      //fprintf(stderr, "readNodeFile %s", fileName.c_str());
       newNodeFile.node = osgDB::readNodeFile(fileName);
       GuiHelper::nodeFiles.push_back(newNodeFile);
       return newNodeFile.node;
@@ -343,9 +336,7 @@ namespace mars {
       IplImage* img=0;
 
       img=cvLoadImage(terrain->srcname.data(), -1);
-      fprintf(stderr, "\n Hallo Welt! %s\n", terrain->srcname.data());
       if(img) {
-        fprintf(stderr, "\n loaded sucessfully");
         terrain->width = img->width;
         terrain->height = img->height;
         terrain->pixelData = (double*)calloc((terrain->width*
@@ -367,7 +358,6 @@ namespace mars {
             if(terrain->pixelData[count-1] <= 0.0)
               terrain->pixelData[count-1] = 0.001;
 
-            //fprintf(stderr, " %g", terrain->pixelData[count-1]);
           }
         }
         cvReleaseImage(&img);
@@ -379,7 +369,7 @@ namespace mars {
 
       std::string absolutePathIndicator = terrain->srcname.substr(0,1);
       if( absolutePathIndicator != "/") {
-        fprintf(stderr, "\nTerrain file needs to be provided by using an absolute path: currently given %s\n, thus exiting mars.", terrain->srcname.c_str());
+        fprintf(stderr, "Terrain file needs to be provided by using an absolute path: currently given \"%s\"\n", terrain->srcname.c_str());
         // exit(0);
       }
 #endif
@@ -394,8 +384,6 @@ namespace mars {
         terrain->pixelData = (double*)calloc((terrain->width*
                                               terrain->height),
                                              sizeof(double));
-        fprintf(stderr, "\n Mars GuiHelper::readPixelData: terrain source name: %s\n", terrain->srcname.data());
-        fprintf(stderr, "\n Mars GuiHelper::readPixelData: DataFormat: %d", image->valid());
         //image->setPixelFormat(GL_RGB);
         //image->setDataType(GL_UNSIGNED_SHORT);
         //osgDB::writeImageFile(*image, std::string("test.jpg"));
@@ -409,7 +397,6 @@ namespace mars {
             r = pixel[0];
             //g = pixel[1];
             //b = pixel[2];
-            //fprintf(stderr, "\n%g %g %g", r, g, b);
             //QColor converter(image.pixel(x, y));
             //converter.getRgb(&r, &g, &b);
             //convert to greyscale by common used scale
