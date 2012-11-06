@@ -137,11 +137,11 @@ namespace mars {
   
       if (control->cfg) {
         cfg_manager::cfgPropertyStruct r_path;
-        r_path = control->cfg->getOrCreateProperty("Preferences", "resources_path",
+        r_path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
                                                    std::string("."));
         resourcesPath = r_path.sValue;
       }
-      resourcesPath.append("/mars_gui/resources/images");
+      resourcesPath.append("/images");
     }
 
 

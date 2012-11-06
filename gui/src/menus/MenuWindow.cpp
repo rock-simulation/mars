@@ -71,12 +71,12 @@ namespace mars {
 
       if (control->cfg) {
         cfg_manager::cfgPropertyStruct r_path;
-        r_path = control->cfg->getOrCreateProperty("Preferences", "resources_path",
+        r_path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
                                                    std::string(MARS_GUI_DEFAULT_RESOURCES_PATH));
         path = r_path.sValue;
       }
 
-      path.append("/mars/gui/resources/images/blender.png");
+      path.append("/images/blender.png");
       mainGui->addGenericMenuAction("../Windows/Blender Export",
                                     GUI_ACTION_BLENDER_EXPORT,
                                     (main_gui::MenuInterface*)this, 

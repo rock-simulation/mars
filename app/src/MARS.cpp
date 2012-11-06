@@ -82,7 +82,6 @@ namespace mars {
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
-      coreConfigFile = configDir+"/core_libs.txt";
     }
 
     MARS::~MARS() {
@@ -109,6 +108,8 @@ namespace mars {
     void MARS::start(int argc, char **argv) {
       readArguments(argc, argv);
 
+      coreConfigFile = configDir+"/core_libs.txt";
+
       // then check locals
       setlocale(LC_ALL,"C");
 
@@ -129,7 +130,8 @@ namespace mars {
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg_manager::cfgPropertyStruct configPath;
-        cfg->getOrCreateProperty("Config", "config_path", configDir);
+        configPath = cfg->getOrCreateProperty("Config", "config_path",
+                                              configDir);
         configPath.sValue = configDir;
         cfg->setProperty(configPath);
       }
