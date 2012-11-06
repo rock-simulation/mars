@@ -529,8 +529,7 @@ namespace mars {
                  property == size_d || property == size_r || property == size_h)
           updateSize();
         else if (property == move_all) {
-          updateNode();
-          updatePos(); 
+          // todo: switch between relative and absolute positioning of nodes
         } else if (property == rot_alpha || property == rot_beta || 
                    property == rot_gamma)
           updateRot();
