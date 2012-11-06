@@ -122,6 +122,10 @@ namespace mars {
                                     const std::string &_name,
                                     const std::string &_propertyName,
                                     const std::string &rValue);
+      virtual bool setPropertyValue(const std::string &_group,
+                                    const std::string &_name,
+                                    const std::string &_propertyName,
+                                    const char *rValue);
 
       virtual cfgParamId getParamId(const std::string &_group,
                                     const std::string &_name) const;
@@ -160,6 +164,10 @@ namespace mars {
       virtual const cfgPropertyStruct getOrCreateProperty(const std::string &_group,
                                                           const std::string &_name,
                                                           const std::string &val,
+                                                          CFGClient *newClient = NULL);
+      virtual const cfgPropertyStruct getOrCreateProperty(const std::string &_group,
+                                                          const std::string &_name,
+                                                          const char *val,
                                                           CFGClient *newClient = NULL);
 
     private:

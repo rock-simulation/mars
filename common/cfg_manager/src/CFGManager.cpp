@@ -529,6 +529,14 @@ namespace mars {
       }
     }
 
+    bool CFGManager::setPropertyValue(const string &_group,
+                                      const string &_name,
+                                      const string &_propertyName,
+                                      const char *rValue) {
+      return setPropertyValue(_group, _name, _propertyName,
+                              std::string(rValue));
+    }
+
 
     cfgParamId CFGManager::getParamId(const string &_group,
                                       const string &_name) const {
@@ -923,6 +931,13 @@ namespace mars {
         registerToParam(newProp.paramId, newClient);
       }
       return newProp;
+    }
+
+    const cfgPropertyStruct CFGManager::getOrCreateProperty(const string &_group,
+                                                            const string &_name,
+                                                            const char *val,
+                                                            CFGClient *newClient) {
+      return getOrCreateProperty(_group, _name, std::string(val), newClient);
     }
 
   } // end of namespace cfg_manager
