@@ -496,6 +496,7 @@ function install_ode_mars {
       if [ "${platform}" = "linux" ]; then
 	  if [ x`which libtool` != x ]; then
               mv libtool libtool_old
+              ln -s `which libtool` libtool
 	  fi
       fi
       make install -j${CORES} || MARS_SCRIPT_ERROR=1
