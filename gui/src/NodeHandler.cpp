@@ -100,8 +100,13 @@ namespace mars {
         initialized = true;
   
         if (node.relative_id != 0) {
+          interfaces::NodeData parentNode;
+          parentNode = control->nodes->getFullNode(node.relative_id);
           relative_init = (int)getIndex(node.relative_id)+1;
+          // calculate relative position and rotation
+          getRelFromAbs(parentNode, &node);
           pos = node.pos;
+          rot = utils::quaternionTosRotation(node.rot);
         }
         else {
           relative_init = 0;
@@ -583,8 +588,8 @@ namespace mars {
         myRelNode = control->nodes->getFullNode(allNodes[relative_pos->
                                                          value().toInt()-1].index);
         node.pos = pos;
-        getAbsFromRel(myRelNode, &node);
         node.rot = qrot;
+        getAbsFromRel(myRelNode, &node);
       }
       actualName = node.name = node_name->value().toString().toStdString();
       nodeName = QString::number(myNodeIndex).toStdString() + ":" + actualName;  
@@ -727,7 +732,7 @@ namespace mars {
         node.pos = pos;
         myRelNode = control->nodes->getFullNode(allNodes[relative_pos->
                                                          value().toInt()-1].index);
-        getAbsFromRel(myRelNode, &node);
+        //getAbsFromRel(myRelNode, &node);
       }
       if (move_all->value().toBool())
         changes = changes | interfaces::EDIT_NODE_MOVE_ALL;
@@ -737,15 +742,25 @@ namespace mars {
 
 
     void NodeHandler::updateRot(){
+      utils::Vector pos;
       utils::sRotation rot;
+      int changes = interfaces::EDIT_NODE_ROT;
   
+      pos.x() = pos_x->value().toDouble();
+      pos.y() = pos_y->value().toDouble();
+      pos.z() = pos_z->value().toDouble();
       rot.alpha = rot_alpha->value().toDouble();
       rot.beta = rot_beta->value().toDouble();
       rot.gamma = rot_gamma->value().toDouble();
       //Quaternion qrot = Quaternion(rot);
       utils::Quaternion qrot = utils::eulerToQuaternion(rot);
+      node.pos = pos;
       node.rot = qrot;
-      int changes = interfaces::EDIT_NODE_ROT;
+
+      if (relative_pos->value().toInt() != 0) {
+        node.relative_id =allNodes[relative_pos->value().toInt()-1].index;
+      }
+
       if (move_all->value().toBool())
         changes = changes | interfaces::EDIT_NODE_MOVE_ALL;
   

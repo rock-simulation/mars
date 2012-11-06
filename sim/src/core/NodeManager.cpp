@@ -310,8 +310,6 @@ namespace mars {
       if(changes & EDIT_NODE_POS) {
         if(changes & EDIT_NODE_MOVE_ALL) {
           // first move the node an all nodes of the group
-          //if(nodeS->relative_id && !load_actual)
-          //setNodeStructPositionFromRelative(nodeS);
           offset = editedNode->setPosition(nodeS->pos, true);
           // then move recursive all nodes that are connected through
           // joints to the node
@@ -327,9 +325,6 @@ namespace mars {
             iMutex.unlock();
             setNodeStructPositionFromRelative(nodeS);
             iMutex.lock();
-            NodeData da = editedNode->getSNode();
-            da.pos = nodeS->pos;
-            editedNode->setRelativePosition(da);
           }
           Vector diff = nodeS->pos - editedNode->getPosition();
           editedNode->setPosition(nodeS->pos, false);
@@ -361,16 +356,10 @@ namespace mars {
         Quaternion q(Quaternion::Identity());
         if(changes & EDIT_NODE_MOVE_ALL) {
           // first move the node an all nodes of the group
-          rotation_point = nodeS->pos;
+          rotation_point = editedNode->getPosition();
           // the first node have to be rotated normal, not at a point
           // and should return the relative rotation it executes
-          if(nodeS->relative_id) {
-            setNodeStructPositionFromRelative(nodeS);
-            NodeData da = editedNode->getSNode();
-            da.rot = nodeS->rot;
-            editedNode->setRelativePosition(da);
-          }
-          q = editedNode->setRotation(nodeS->rot, 1);
+          q = editedNode->setRotation(nodeS->rot, true);
           // then rotate recursive all nodes that are connected through
           // joints to the node
           std::vector<SimJoint*> joints = control->joints->getSimJoints();
@@ -382,7 +371,6 @@ namespace mars {
           rotateNodeRecursive(nodeS->index, rotation_point, q, &joints,
                               &gids, &nodes);
         } else {
-          rotation_point = nodeS->pos;
           if(nodeS->relative_id) {
             iMutex.unlock();
             setNodeStructPositionFromRelative(nodeS);
@@ -391,6 +379,7 @@ namespace mars {
             da.rot = nodeS->rot;
             editedNode->setRelativePosition(da);
           }
+          rotation_point = editedNode->getPosition();
           //if(nodeS->relative_id && !load_actual)
           //setNodeStructPositionFromRelative(nodeS);
           q = editedNode->setRotation(nodeS->rot, 0);

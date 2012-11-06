@@ -522,13 +522,12 @@ namespace mars {
         tmp4[2] = brot[2];
         tmp4[3] = brot[3];
         if(composite && !move_group) {
-          dGeomGetOffsetQuaternion(nGeom, tmp3);
-          dQMultiply0(tmp2, brot, tmp3);
+          dGeomGetQuaternion(nGeom, tmp2);
           dGeomSetOffsetWorldQuaternion(nGeom, tmp);
         }
         else if (composite) {
+          dGeomGetQuaternion(nGeom, tmp2);
           dGeomGetOffsetQuaternion(nGeom, tmp3);
-          dQMultiply0(tmp2, brot, tmp3);
           tmp3[1] *= -1;
           tmp3[2] *= -1;
           tmp3[3] *= -1;
@@ -905,20 +904,30 @@ namespace mars {
       
           gpos = dGeomGetOffsetPosition(nGeom);
           npos.x() += (sReal)(gpos[0]);
-          npos.x() += (sReal)(gpos[1]);
-          npos.x() += (sReal)(gpos[2]);
+          npos.y() += (sReal)(gpos[1]);
+          npos.z() += (sReal)(gpos[2]);
           return npos;
         }
         else {
-          dGeomGetOffsetQuaternion(nGeom, tmp3);
-          dQMultiply0(tmp2, tmp2, tmp3);
+          dGeomGetQuaternion(nGeom, tmp3);
+          dQMultiply0(tmp2, tmp, tmp3);
+          dNormalize4(tmp2);
           dGeomSetOffsetWorldQuaternion(nGeom, tmp2);
-          bpos = dBodyGetPosition(nBody);
+
           gpos = dGeomGetPosition(nGeom);
-          npos.x() = (sReal)(bpos[0] + gpos[0]);
-          npos.y() = (sReal)(bpos[1] + gpos[1]);
-          npos.z() = (sReal)(bpos[2] + gpos[2]);
-          return npos;
+          npos.x() = (sReal)(gpos[0]);
+          npos.y() = (sReal)(gpos[1]);
+          npos.z() = (sReal)(gpos[2]);
+          pos[0] = gpos[0] - (dReal)rotation_point.x();
+          pos[1] = gpos[1] - (dReal)rotation_point.y();
+          pos[2] = gpos[2] - (dReal)rotation_point.z();
+          dQtoR(tmp, R);
+          dMULTIPLY0_331(new_pos, R, pos);
+          pos[0] = new_pos[0] + (dReal)rotation_point.x();
+          pos[1] = new_pos[1] + (dReal)rotation_point.y();
+          pos[2] = new_pos[2] + (dReal)rotation_point.z();
+          dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+         return npos;
         }
       }
       // the last two cases do in principle the same
