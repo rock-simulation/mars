@@ -44,6 +44,7 @@ namespace mars {
     /// \cond DEBUG
     class DataItemAccessorBase {
     public:
+      virtual ~DataItemAccessorBase() {}
       virtual bool getValue(const DataPackage &package) = 0;
       virtual bool setValue(DataPackage *package) const = 0;
       virtual bool createValue(DataPackage *package) = 0;
