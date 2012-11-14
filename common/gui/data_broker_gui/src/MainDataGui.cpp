@@ -21,7 +21,7 @@
 /**
  * \file MainDataGui.cpp
  * \author Malte Roemmermann
- * \brief 
+ * \brief
  **/
 
 #include "MainDataGui.h"
@@ -46,9 +46,9 @@ namespace mars {
     }
 
     void MainDataGui::setupGUI(std::string path) {
-      
+
       if(libManager == NULL) return;
-      
+
       cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg_manager::cfgPropertyStruct r_path;
@@ -59,21 +59,27 @@ namespace mars {
         fprintf(stderr, "******* data_broker_gui: couldn't find cfg_manager\n");
       }
 
-      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");      
+      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
       if (gui == NULL)
         return;
-      
+
       dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
 
-      path.append("/mars/data_broker_gui/resources/images/data_broker_symbol.png");
-      gui->addGenericMenuAction("../Windows/GuiDataBroker", 1,
-                                dynamic_cast<main_gui::MenuInterface*>(this),0,
-                                path, true);
-  
+      std::string path2 = path;
+      path2.append("/mars/data_broker_gui/resources/images/data_broker_symbol.png");
+      gui->addGenericMenuAction("../Windows/GuiDataBroker", 1, this, 0,
+                                path2, true);
+
+      path2 = path;
+      path2.append("/mars/data_broker_gui/resources/images/data_broker_connection_symbol.png");
+      gui->addGenericMenuAction("../Windows/DataBrokerConnections", 2, this, 0,
+                                path2, true);
+
       dataWidget = NULL;//new DataWidget(dataBroker);
+      dataConnWidget = NULL;
     }
 
-  
+
     MainDataGui::~MainDataGui() {
       if(libManager == NULL) return;
 
@@ -102,16 +108,18 @@ namespace mars {
           delete dataWidget;
           dataWidget = NULL;
         }
-        /*
-          if(dataWidget->isHidden()) {
-          gui->addDockWidget((void*)dataWidget->pDialog, 1);
-          dataWidget->show();
-          }
-          else {
-          dataWidget->hide();
-          gui->removeDockWidget((void*)dataWidget->pDialog, 1);
-          }
-        */
+        break;
+      case 2:
+        if(dataConnWidget == NULL) {
+          dataConnWidget = new DataConnWidget(dataBroker, cfg);
+          gui->addDockWidget((void*)dataConnWidget, 1);
+          dataConnWidget->show();
+        }
+        else {
+          gui->removeDockWidget((void*)dataConnWidget, 1);
+          delete dataConnWidget;
+          dataConnWidget = NULL;
+        }
         break;
       }
     }
@@ -126,4 +134,3 @@ namespace mars {
 
 DESTROY_LIB(mars::data_broker_gui::MainDataGui);
 CREATE_LIB(mars::data_broker_gui::MainDataGui);
-

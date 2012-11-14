@@ -32,6 +32,7 @@
 #endif
 
 #include "DataWidget.h"
+#include "DataConnWidget.h"
 #include <mars/lib_manager/LibInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
@@ -69,7 +70,7 @@ namespace mars {
       int getLibVersion() const
       { return 1; }
       const std::string getLibName() const
-      { return std::string("data_broker_widget"); }
+      { return std::string("data_broker_gui"); }
       
     private:
       mars::main_gui::GuiInterface* gui;
@@ -77,6 +78,7 @@ namespace mars {
       mars::data_broker::DataBrokerInterface *dataBroker;
       
       DataWidget* dataWidget;
+      DataConnWidget* dataConnWidget;
 
     protected slots:
       void timerEvent(QTimerEvent* event);

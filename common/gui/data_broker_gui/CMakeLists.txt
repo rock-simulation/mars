@@ -45,16 +45,19 @@ include_directories(src)
 set(SOURCES 
 	src/MainDataGui.cpp
 	src/DataWidget.cpp
+	src/DataConnWidget.cpp
 )
 
 set(HEADERS
 	src/MainDataGui.h
 	src/DataWidget.h
+	src/DataConnWidget.h
 )
 
 set (QT_MOC_HEADER
 	src/MainDataGui.h
 	src/DataWidget.h
+	src/DataConnWidget.h
 )
 
 qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
