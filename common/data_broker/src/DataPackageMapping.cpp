@@ -27,6 +27,10 @@ namespace mars {
     DataPackageMapping::DataPackageMapping()
       : first(true)
     {}
+
+    DataPackageMapping::~DataPackageMapping() {
+      clear();
+    }
     
     bool DataPackageMapping::readPackage(const DataPackage &package) {
       bool ret = true;
@@ -67,6 +71,10 @@ namespace mars {
     }
 
     void DataPackageMapping::clear() {
+      for(std::vector<DataItemAccessorBase*>::iterator it = accessors.begin();
+          it != accessors.end(); ++it) {
+        delete *it;
+      }
       accessors.clear();
       first = true;
     }

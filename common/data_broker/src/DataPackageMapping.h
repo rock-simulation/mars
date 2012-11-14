@@ -97,8 +97,13 @@ namespace mars {
      * the DataPackage and write them to the variables.
      */
     class DataPackageMapping {
+    private:
+      /* for now disallow copying. no special reason. just not implemented */
+      DataPackageMapping(const DataPackageMapping &dpm);
+      DataPackageMapping& operator=(const DataPackageMapping &dpm);
     public:
       DataPackageMapping();
+      ~DataPackageMapping();
 
       /**
        * \brief Add a mapping from a DataItem::name to a variable.
