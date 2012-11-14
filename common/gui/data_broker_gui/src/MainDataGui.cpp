@@ -100,11 +100,11 @@ namespace mars {
       case 1:
         if(dataWidget == NULL) {
           dataWidget = new DataWidget(dataBroker, cfg);
-          gui->addDockWidget((void*)dataWidget, 1);
+          gui->addDockWidget((void*)dataWidget, 0);
           dataWidget->show();
         }
         else {
-          gui->removeDockWidget((void*)dataWidget, 1);
+          gui->removeDockWidget((void*)dataWidget, 0);
           delete dataWidget;
           dataWidget = NULL;
         }
@@ -112,11 +112,11 @@ namespace mars {
       case 2:
         if(dataConnWidget == NULL) {
           dataConnWidget = new DataConnWidget(dataBroker, cfg);
-          gui->addDockWidget((void*)dataConnWidget, 1);
+          gui->addDockWidget((void*)dataConnWidget, 0);
           dataConnWidget->show();
         }
         else {
-          gui->removeDockWidget((void*)dataConnWidget, 1);
+          gui->removeDockWidget((void*)dataConnWidget, 0);
           delete dataConnWidget;
           dataConnWidget = NULL;
         }
