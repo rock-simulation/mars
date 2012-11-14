@@ -1,0 +1,9 @@
+<package>
+    <description brief="data_broker_plotter">
+	Plotting implementation for the data broker
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/gui_core" />
+    <depend package="simulation/data_broker" />
+    <depend package="simulation/cfg_dfki" />
+</package>
