@@ -64,7 +64,7 @@ namespace data_broker_plotter {
 
     // deleting plot windows existing
     for(itMap=plotWindows.begin(); itMap!=plotWindows.end(); ++itMap) {
-      gui->removeDockWidget((void*)itMap->second, 1);
+      gui->removeDockWidget((void*)itMap->second, 0);
       delete itMap->second;
     }
 
@@ -102,7 +102,7 @@ namespace data_broker_plotter {
         if(it == plotWindows.end()) {
           DataBrokerPlotter *dataBrokerPlotter;
           dataBrokerPlotter = new DataBrokerPlotter(this, dataBroker, cfg, name);
-          gui->addDockWidget((void*)dataBrokerPlotter, 1);
+          gui->addDockWidget((void*)dataBrokerPlotter, 0);
           dataBrokerPlotter->show();
           plotWindows[name] = dataBrokerPlotter;
         }
@@ -123,7 +123,7 @@ namespace data_broker_plotter {
         plotWindows.erase(itMap);
       }
 
-      gui->removeDockWidget((void*)(*it), 1);
+      gui->removeDockWidget((void*)(*it), 0);
       delete (*it);
     }
     toDelete.clear();
