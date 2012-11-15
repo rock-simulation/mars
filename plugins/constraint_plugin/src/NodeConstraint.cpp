@@ -35,7 +35,9 @@ namespace mars {
 
       NodeConstraint::NodeConstraint(interfaces::ControlCenter *controlCenter,
                                      unsigned long paramId,
-                                     interfaces::NodeId nodeId, AttributeType attr,
+                                     interfaces::NodeId nodeId,
+                                     AttributeType attr,
+                                     double offset,
                                      double factor, double refValue)
         : BaseConstraint(controlCenter),
           nodeId(nodeId),
@@ -43,7 +45,8 @@ namespace mars {
           nodeFactor(factor),
           refValue(refValue),
           paramId(paramId),
-          oldValue(refValue)
+          oldValue(refValue),
+          offset(offset)
       {
         this->initialValue = getAttribute();
         if(control->cfg) {
@@ -85,12 +88,15 @@ namespace mars {
           attr = n.ext.z();
           break;
         default:
-          LOG_ERROR("NodeConstraint: attribute %d not supported.", nodeAttribute);
+          LOG_ERROR("NodeConstraint: attribute %d not supported.",
+                    nodeAttribute);
+          break;
         }
-        return attr;
+        return attr + offset;
       }
 
       void NodeConstraint::setAttribute(double value) {
+        value = value - offset;
         interfaces::NodeData n = control->nodes->getFullNode(nodeId);
         if(n.relative_id) {
           interfaces::NodeData rel = control->nodes->getFullNode(n.relative_id);
