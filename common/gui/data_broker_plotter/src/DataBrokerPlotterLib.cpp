@@ -25,7 +25,7 @@ namespace data_broker_plotter {
 
     if(libManager == NULL) return;
 
-    cfg = libManager->getLibraryAs<CFGManagerInterface>(std::string("cfg_manager"));
+    cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
 
     if(cfg) {
       cfgPropertyStruct path;
@@ -34,16 +34,16 @@ namespace data_broker_plotter {
 
       path = cfg->getOrCreateProperty("Config", "config_path", string("."));
       configPath = path.sValue;
+    } else {
+      fprintf(stderr, "******* gui_cfg: couldn't find cfg_manager\n");
     }
-    else fprintf(stderr, "\n******* gui_cfg: couldn't find cfg_dfki");
 
-
-    gui = libManager->getLibraryAs<mars::main_gui::GuiInterface>(std::string("main_gui"));
+    gui = libManager->getLibraryAs<mars::main_gui::GuiInterface>("main_gui");
 
     if (gui == NULL)
       return;
 
-    dataBroker = libManager->getLibraryAs<mars::data_broker::DataBrokerInterface>(std::string("data_broker"));
+    dataBroker = libManager->getLibraryAs<mars::data_broker::DataBrokerInterface>("data_broker");
 
     //path.append("/data_broker_widget/resources/images/data_broker_symbol.png");
     std::string tmpString = configPath;
@@ -68,16 +68,13 @@ namespace data_broker_plotter {
       delete itMap->second;
     }
 
-    std::string tmpString = configPath;
-    tmpString.append("/");
-    tmpString.append("DataBrokerPlotter.yaml");
-    cfg->loadConfig(tmpString.c_str());
+    std::string tmpString = configPath + std::string("/DataBrokerPlotter.yaml");
     cfg->writeConfig(tmpString.c_str(), "DataBrokerPlotter");
 
     if(cfg) libManager->unloadLibrary(std::string("cfg_manager"));
     if(gui) libManager->unloadLibrary(std::string("main_gui"));
     if(dataBroker) libManager->unloadLibrary(std::string("data_broker"));
-    fprintf(stderr, "\nDelete DataBrokerPlotterLib\n");
+    fprintf(stderr, "Delete DataBrokerPlotterLib\n");
   }
 
 
