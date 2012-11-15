@@ -105,8 +105,8 @@ namespace mars {
       { return gitInfo; }
 
     protected:
-      const char *gitInfo;
       LibManager *libManager;
+      const char *gitInfo;
       friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
     };
 
