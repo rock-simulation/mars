@@ -501,7 +501,8 @@ namespace mars {
       sNode.material.emissionBack  = c;
       sNode.material.specularFront = c;
       sNode.material.specularBack  = c;
-      control->graphics->setDrawObjectMaterial(graphics_id,sNode.material);
+      if(control->graphics)
+        control->graphics->setDrawObjectMaterial(graphics_id,sNode.material);
     }
 
     /**

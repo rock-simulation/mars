@@ -1114,6 +1114,8 @@ namespace mars {
 
     void NodeManager::preGraphicsUpdate() {
       NodeMap::iterator iter;
+      if(!control->graphics)
+        return;
 
       iMutex.lock();
       if(update_all_nodes) {

@@ -108,28 +108,9 @@ namespace mars {
       control->sim = (SimulatorInterface*)this;
       control->cfg = 0;//defaultCFG;
 
-      lib_manager::LibInterface *lib;
-      lib = libManager->getLibrary("data_broker");
-      if(lib) {
-        control->dataBroker = dynamic_cast<data_broker::DataBrokerInterface*>(lib);
-        ControlCenter::theDataBroker = control->dataBroker;
-        // create streams
-        dbSimTimePackage.add("simTime", 0.);
-        dbSimTimeId = control->dataBroker->pushData("mars_sim", "simTime",
-                                                    dbSimTimePackage,
-                                                    NULL,
-                                                    data_broker::DATA_PACKAGE_READ_FLAG);
-        control->dataBroker->createTimer("mars_sim/simTimer");
-        control->dataBroker->createTrigger("mars_sim/physicsUpdate");
-      } else {
-        fprintf(stderr, "ERROR: could not get DataBroker!\n");
-      }
-
-      lib = libManager->getLibrary(std::string("cfg_manager"));
-      if(lib) {
-        if((control->cfg = dynamic_cast<cfg_manager::CFGManagerInterface*>(lib))) {
-        }
-      }
+      // load optional libs
+      checkOptionalDependency("data_broker");
+      checkOptionalDependency("cfg_manager");
     }
 
     Simulator::~Simulator() {
@@ -163,6 +144,52 @@ namespace mars {
       libManager->unloadLibrary("log_console");
     }
 
+    void Simulator::newLibLoaded(const std::string &libName) {
+      checkOptionalDependency(libName);
+    }
+
+    void Simulator::checkOptionalDependency(const string &libName) {
+      if(libName == "data_broker") {
+        control->dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
+        if(control->dataBroker) {
+          ControlCenter::theDataBroker = control->dataBroker;
+          // create streams
+          dbSimTimePackage.add("simTime", 0.);
+          dbSimTimeId = control->dataBroker->pushData("mars_sim", "simTime",
+                                                      dbSimTimePackage,
+                                                      NULL,
+                                                      data_broker::DATA_PACKAGE_READ_FLAG);
+          control->dataBroker->createTimer("mars_sim/simTimer");
+          control->dataBroker->createTrigger("mars_sim/physicsUpdate");
+        } else {
+          fprintf(stderr, "ERROR: could not get DataBroker!\n");
+        }
+      } else if(libName == "cfg_manager") {
+        control->cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
+      } else if(libName == "mars_graphics") {
+        control->graphics = libManager->getLibraryAs<interfaces::GraphicsManagerInterface>("mars_graphics");
+        if(control->graphics) {
+          control->loadCenter->loadMesh = control->graphics->getLoadMeshInterface();
+          control->loadCenter->loadHeightmap = control->graphics->getLoadHeightmapInterface();
+        }
+      } else if(libName == "log_console") {
+        LibInterface *lib = libManager->getLibrary("log_console");
+        if(!lib && control->dataBroker) {
+          fprintf(stderr, "Simulator: no console loaded. output to stdout!\n\n");
+          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "fatal",
+                                                    data_broker::DB_MESSAGE_TYPE_FATAL);
+          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "error",
+                                                    data_broker::DB_MESSAGE_TYPE_ERROR);
+          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "warning",
+                                                    data_broker::DB_MESSAGE_TYPE_WARNING);
+          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "info",
+                                                    data_broker::DB_MESSAGE_TYPE_INFO);
+          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "debug",
+                                                    data_broker::DB_MESSAGE_TYPE_DEBUG);
+        }
+      }
+    }
+
     /*
       void Simulator::produceData(const data_broker::DataInfo &info,
       data_broker::DataPackage *dbPackage,
@@ -172,10 +199,6 @@ namespace mars {
     */
 
     void Simulator::runSimulation() {
-
-      // handle correctly the libraries managment
-
-      lib_manager::LibInterface *lib;
 
       if(control->cfg) {
         configPath = control->cfg->getOrCreateProperty("Config", "config_path",
@@ -202,28 +225,8 @@ namespace mars {
         }
       }
 
-      lib = libManager->getLibrary(std::string("mars_graphics"));
-      if(lib) {
-        control->graphics = dynamic_cast<interfaces::GraphicsManagerInterface*>(lib);
-        control->loadCenter->loadMesh = control->graphics->getLoadMeshInterface();
-        control->loadCenter->loadHeightmap = control->graphics->getLoadHeightmapInterface();
-
-      }
-
-      lib = libManager->getLibrary(std::string("log_console"));
-      if(!lib) {
-        fprintf(stderr, "Simulator: no console loaded. output to stdout!\n\n");
-        control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "fatal",
-                                                  data_broker::DB_MESSAGE_TYPE_FATAL);
-        control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "error",
-                                                  data_broker::DB_MESSAGE_TYPE_ERROR);
-        control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "warning",
-                                                  data_broker::DB_MESSAGE_TYPE_WARNING);
-        control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "info",
-                                                  data_broker::DB_MESSAGE_TYPE_INFO);
-        control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "debug",
-                                                  data_broker::DB_MESSAGE_TYPE_DEBUG);
-      }
+      checkOptionalDependency("mars_graphics");
+      checkOptionalDependency("log_console");
 
       if(control->cfg) {
         initCfgParams();
@@ -297,10 +300,12 @@ namespace mars {
               time = getTime();
 
             dbSimTimePackage[0].d += calc_ms;
-            control->dataBroker->pushData(dbSimTimeId,
-                                          dbSimTimePackage);
-            control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
-            control->dataBroker->trigger("mars_sim/physicsUpdate");
+            if(control->dataBroker) {
+              control->dataBroker->pushData(dbSimTimeId,
+                                            dbSimTimePackage);
+              control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
+              control->dataBroker->trigger("mars_sim/physicsUpdate");
+            }
 
             if(show_time) {
               avg_log_time += getTimeDiff(time);
@@ -557,10 +562,15 @@ namespace mars {
             simulationStatus = RUNNING;
             arg_run = 0;
           }
-          if (arg_grid) arg_grid = 0, control->graphics->showGrid();
+          if (arg_grid) {
+            arg_grid = 0;
+            if(control->graphics)
+              control->graphics->showGrid();
+          }
           if (arg_ortho) {
             arg_ortho = 0;
-            control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
+            if(control->graphics)
+              control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
           }
         }
       }
@@ -891,10 +901,14 @@ namespace mars {
     }
 
     void Simulator::setGravity(const Vector &gravity) {
-
-      control->cfg->setPropertyValue("Simulator", "Gravity x", "value", gravity.x());
-      control->cfg->setPropertyValue("Simulator", "Gravity y", "value", gravity.y());
-      control->cfg->setPropertyValue("Simulator", "Gravity z", "value", gravity.z());
+      if(control->cfg) {
+        control->cfg->setPropertyValue("Simulator", "Gravity x", "value",
+                                       gravity.x());
+        control->cfg->setPropertyValue("Simulator", "Gravity y", "value",
+                                       gravity.y());
+        control->cfg->setPropertyValue("Simulator", "Gravity z", "value",
+                                       gravity.z());
+      }
     }
 
 
@@ -962,7 +976,8 @@ namespace mars {
 
 
     void Simulator::updateSim() {
-      control->graphics->update();
+      if(control->graphics)
+        control->graphics->update();
     }
 
 
@@ -972,10 +987,12 @@ namespace mars {
 
 
     void Simulator::exportScene(void) const {
-      string filename = "export.obj";
-      control->graphics->exportScene(filename);
-      filename = "export.osg";
-      control->graphics->exportScene(filename);
+      if(control->graphics) {
+        string filename = "export.obj";
+        control->graphics->exportScene(filename);
+        filename = "export.osg";
+        control->graphics->exportScene(filename);
+      }
     }
 
     /* will be removed soon
@@ -1060,6 +1077,8 @@ namespace mars {
     }
 
     void Simulator::initCfgParams(void) {
+      if(!control->cfg)
+        return;
       cfgCalcMs = control->cfg->getOrCreateProperty("Simulator", "calc_ms",
                                                     calc_ms, this);
       calc_ms = cfgCalcMs.dValue;

@@ -607,13 +607,18 @@ namespace mars {
                   */
                   if(id==1) {
                     // old id for calcms
-                    control->cfg->setPropertyValue("Simulator", "calc_ms",
-                                                   "value", value);
+                    if(control->cfg) {
+                      control->cfg->setPropertyValue("Simulator", "calc_ms",
+                                                     "value", value);
+                    }
                   }
                   else if(id==5) {
                     // old id for realtime calc
-                    control->cfg->setPropertyValue("Simulator", "realtime calc",
-                                                   "value", value);
+                    if(control->cfg) {
+                      control->cfg->setPropertyValue("Simulator",
+                                                     "realtime calc",
+                                                     "value", value);
+                    }
                   }
                   getChar(p, &cmd);
                 }
