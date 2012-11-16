@@ -37,13 +37,13 @@
 
 #include <map>
 #include <string>
+#include <list>
 
 
 namespace mars {
   namespace lib_manager {
 
     struct libStruct {
-      std::string name;
       LibInterface *libInterface;
       destroyLib *destroy;
       int useCount;
@@ -71,6 +71,7 @@ namespace mars {
         template <typename T> T* getLibraryAs(const std::string &libName);
         ErrorNumber unloadLibrary(const std::string &libPath);
         void loadConfigFile(const std::string &config_file);
+        void getAllLibraries(std::list<LibInterface*> *libList);
 
       private:
         std::map<std::string, libStruct> libMap;

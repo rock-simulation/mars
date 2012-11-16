@@ -28,18 +28,25 @@
 #include "LibManager.h"
 
 #ifndef WIN32
-  #include <dlfcn.h>
+#  include <dlfcn.h>
+#  define LibHandle void*
 #else
-  #include <windows.h>
+#  include <windows.h>
+#  define LibHandle HINSTANCE
 #endif
 
-#include <iostream>
 #include <cstdio>
 
 namespace mars {
   namespace lib_manager {
 
     using namespace std;
+
+    // forward declarations
+    static LibHandle intern_loadLib(const string &libPath);
+    template <typename T>
+    static T getFunc(LibHandle libHandle, const string &name);
+
 
     LibManager::LibManager() {
       errMessage[0] = "no error";
@@ -96,80 +103,49 @@ namespace mars {
 
     LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath, 
                                                     void *config) {
-      libStruct newLib;
-      string name;
+      fprintf(stderr, "lib_manager: load plugin: %s\n", libPath.c_str());
 
+      libStruct newLib;
       newLib.destroy = 0;
       newLib.libInterface = 0;
       newLib.useCount = 0;
 
-#ifdef WIN32
-      HINSTANCE pl;
-      size_t needed = ::mbstowcs(NULL, libPath.c_str(), libPath.length());
+      LibHandle pl = intern_loadLib(libPath);
 
-      // allocate
-      std::wstring output;
-      output.resize(needed);
-
-      // real call
-      ::mbstowcs(&output[0], libPath.c_str(), libPath.length());
-
-      // You asked for a pointer
-      //const wchar_t *pout = output.c_str();
-      cout << "lib_manager: load library: " << libPath << endl;
-      pl = LoadLibrary(libPath.c_str());
-
-      if(!pl) {
-        cout << "lib_manager: can not load library. Error code: " 
-             << GetLastError() << endl;
-      } else {
-        //dlerror();
-        createLib* tmp_con = (createLib*)GetProcAddress(pl, "create_c");
-        newLib.destroy = (destroyLib*)GetProcAddress(pl, "destroy_c");
-        if(!newLib.destroy) {
-          cout << "lib_manager: can not load library symbol" << endl;
-        } else {
-          newLib.libInterface = tmp_con(this);
-        }
-      }
-#else
-      cout << "lib_manager: load plugin: " << libPath << endl;
-      void *pl = dlopen(libPath.c_str(), RTLD_LAZY);
-      if(!pl) {
-        cout << "lib_manager: can not load library. Error code: " 
-             << dlerror() << endl;
-      } else {
-        dlerror();
-        createLib *tmp_con;
-        createLib2 *tmp_con2;
-
-        if(config != NULL) {
-          tmp_con2 = (createLib2*)dlsym(pl, "config_create_c");
-        } else {
-          tmp_con = (createLib*)dlsym(pl, "create_c");
-        }
-
-        newLib.destroy = (destroyLib*)dlsym(pl, "destroy_c");
-        if(dlerror()) {
-          cout << "lib_manager: can not load library symbol" << endl;
-        } else {
-          if(config != NULL) {
-            newLib.libInterface = tmp_con2(this, config);
-          } else{
-            newLib.libInterface = tmp_con(this);
+      if(pl) {
+        newLib.destroy = getFunc<destroyLib*>(pl, "destroy_c");
+        if(newLib.destroy) {
+          if(!config) {
+            createLib *tmp_con = getFunc<createLib*>(pl, "create_c");
+            if(tmp_con)
+              newLib.libInterface = tmp_con(this);
+          } else {
+            createLib2 *tmp_con2 = getFunc<createLib2*>(pl, "config_create_c");
+            if(tmp_con2)
+              newLib.libInterface = tmp_con2(this, config);
           }
         }
       }
-#endif
-      if(newLib.libInterface) {
-        name = newLib.libInterface->getLibName();
-        if(libMap.find(name) == libMap.end()) {
-          libMap[name] = newLib;
-          return LIBMGR_NO_ERROR;
-        } else newLib.destroy(newLib.libInterface);
+
+      if(!newLib.libInterface)
+        return LIBMGR_ERR_NOT_ABLE_TO_LOAD;
+
+      string name = newLib.libInterface->getLibName();
+
+      if(libMap.find(name) != libMap.end()) {
+        newLib.destroy(newLib.libInterface);
         return LIBMGR_ERR_LIBNAME_EXISTS;
       }
-      return LIBMGR_ERR_NOT_ABLE_TO_LOAD;
+
+      libMap[name] = newLib;
+      // notify all Libs of newly loaded lib
+      for(map<string, libStruct>::iterator it = libMap.begin();
+          it != libMap.end(); ++it) {
+        // not notify the new lib about itself
+        if(it->first != name)
+          it->second.libInterface->newLibLoaded(name);
+      }
+      return LIBMGR_NO_ERROR;
     }
 
     LibInterface* LibManager::getLibrary(const string &libName) {
@@ -226,6 +202,67 @@ namespace mars {
         }
         fclose(plugin_config);
       }
+    }
+
+
+    void LibManager::getAllLibraries(std::list<LibInterface*> *libList) {
+      std::map<std::string, libStruct>::iterator it;
+      for(it = libMap.begin(); it != libMap.end(); ++it) {
+        it->second.useCount++;
+        libList->push_back(it->second.libInterface);
+      }
+    }
+
+
+    ////////////////////
+    // Helper Functions
+    ////////////////////
+
+    static LibHandle intern_loadLib(const std::string &libPath) {
+      LibHandle libHandle;
+      string errorMsg;
+#ifdef WIN32
+      libHandle = LoadLibrary(libPath.c_str());
+      if(!libHandle) {
+        // retrive the error message
+        {
+          LPTSTR lpErrorText = NULL;
+          ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                          0, GetLastError(), 0, lpErrorText, MAX_PATH, 0);
+          errorMsg = lpErrorText;
+          ::LocalFree(lpErrorText);
+        }
+      }
+#else
+      libHandle = dlopen(libPath.c_str(), RTLD_LAZY);
+      if(!libHandle) {
+        errorMsg = dlerror();
+      }
+#endif
+      if(!libHandle) {
+        fprintf(stderr, "ERROR: lib_manager cannot load library:\n       %s\n",
+                errorMsg.c_str());
+      }
+      return libHandle;
+    }
+
+    template <typename T>
+    static T getFunc(LibHandle libHandle, const std::string &name) {
+      T func = NULL;
+      string err;
+#ifdef WIN32
+      func = reinterpret_cast<T>(GetProcAddress(libHandle, name.c_str()));
+#else
+      func = reinterpret_cast<T>(dlsym(libHandle, name.c_str()));
+      if(!func)
+        err = dlerror();
+#endif
+      if(!func) {
+        fprintf(stderr, 
+                "ERROR: lib_manager cannot load library symbol \"%s\"\n"
+                "       %s\n", name.c_str(), err.c_str());
+      }
+      return func;
     }
 
   } // end of namespace lib_manager
