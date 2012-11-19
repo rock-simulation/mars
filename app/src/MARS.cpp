@@ -90,11 +90,11 @@ namespace mars {
 
       if(graphicsTimer) delete graphicsTimer;
 
-      libManager->unloadLibrary("mars_sim");
-      if(marsGui) libManager->unloadLibrary("mars_gui");
-      if(control->graphics) libManager->unloadLibrary("mars_graphics");
-      libManager->unloadLibrary("main_gui");
-      libManager->unloadLibrary("cfg_manager");
+      libManager->releaseLibrary("mars_sim");
+      if(marsGui) libManager->releaseLibrary("mars_gui");
+      if(control->graphics) libManager->releaseLibrary("mars_graphics");
+      libManager->releaseLibrary("main_gui");
+      libManager->releaseLibrary("cfg_manager");
 
       delete libManager;
 

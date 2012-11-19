@@ -229,6 +229,13 @@ namespace mars {
         libList->push_back(it->second.libInterface);
       }
     }
+    
+    void LibManager::getAllLibraryNames(std::list<std::string> *libNameList) const {
+      std::map<std::string, libStruct>::const_iterator it;
+      for(it = libMap.begin(); it != libMap.end(); ++it) {
+        libNameList->push_back(it->first);
+      }
+    }
 
 
     ////////////////////

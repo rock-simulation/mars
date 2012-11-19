@@ -70,7 +70,7 @@ namespace mars {
           cfgParamRemoved(it->first);
         }
         constraints.clear();
-        libManager->unloadLibrary("main_gui");
+        libManager->releaseLibrary("main_gui");
       }
 
       void ConstraintsPlugin::init() {

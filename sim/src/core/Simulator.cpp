@@ -138,10 +138,10 @@ namespace mars {
         control->cfg->writeConfig(saveFile.c_str(), "Simulator");
       }
       // TODO: do we need to delete control?
-      libManager->unloadLibrary("mars_graphics");
-      libManager->unloadLibrary("cfg_manager");
-      libManager->unloadLibrary("data_broker");
-      libManager->unloadLibrary("log_console");
+      libManager->releaseLibrary("mars_graphics");
+      libManager->releaseLibrary("cfg_manager");
+      libManager->releaseLibrary("data_broker");
+      libManager->releaseLibrary("log_console");
     }
 
     void Simulator::newLibLoaded(const std::string &libName) {

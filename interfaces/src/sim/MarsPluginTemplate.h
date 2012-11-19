@@ -84,21 +84,17 @@ namespace mars {
         }
 
 #ifdef PLUGIN_WITH_MARS_GUI
-        gui = NULL;
-        lib = libManager->getLibrary("main_gui");
-        if(lib) {
-          gui = dynamic_cast<main_gui::GuiInterface*>(lib);
-        }
+        gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
 #endif
       }
 
 #ifdef PLUGIN_WITH_MARS_GUI
       ~MarsPluginTemplateGUI() {
-        if(mars) libManager->unloadLibrary("mars_sim");
-        if(gui) libManager->unloadLibrary("main_gui");
+        if(mars) libManager->releaseLibrary("mars_sim");
+        if(gui) libManager->releaseLibrary("main_gui");
 #else
         ~MarsPluginTemplate() {
-          if(mars) libManager->unloadLibrary("mars_sim");
+          if(mars) libManager->releaseLibrary("mars_sim");
 #endif
         }
 

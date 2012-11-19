@@ -49,12 +49,7 @@ namespace mars {
  
       if(libManager == NULL) return;
 
-      lib_manager::LibInterface *lib = libManager->getLibrary(std::string("cfg_manager"));
-
-      if(lib) {
-        cfg = dynamic_cast<CFGManagerInterface*>(lib);
-      }
-  
+      cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg->registerToCFG(dynamic_cast<CFGClient*>(this));
   
@@ -62,18 +57,10 @@ namespace mars {
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
                                           std::string("../resources"));
         path = r_path.sValue;
-      }
-      else fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");
+      } else
+        fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");
   
-      lib = libManager->getLibrary(std::string("main_gui"));
-
-      if(lib) {
-        //CFG *cfgLib = dynamic_cast<CFG*>(lib);
-        //if(cfgLib) {
-        gui = dynamic_cast<main_gui::GuiInterface*>(lib);
-        //}
-      }
-
+      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
       if (gui == NULL)
         return;
 
@@ -106,10 +93,10 @@ namespace mars {
         }
         registeredParams.clear();
         cfg->unregisterFromCFG(this);
-        libManager->unloadLibrary(std::string("cfg_manager"));
+        libManager->releaseLibrary("cfg_manager");
       }
       if(gui) {
-        libManager->unloadLibrary(std::string("main_gui"));
+        libManager->releaseLibrary("main_gui");
       }
       fprintf(stderr, "Delete cfg_manager_gui\n");
     }

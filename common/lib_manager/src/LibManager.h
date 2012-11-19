@@ -82,6 +82,7 @@ namespace mars {
         ErrorNumber unloadLibrary(const std::string &libPath);
         void loadConfigFile(const std::string &config_file);
         void getAllLibraries(std::list<LibInterface*> *libList);
+        void getAllLibraryNames(std::list<std::string> *libNameList) const;
 
       private:
         std::map<std::string, libStruct> libMap;
@@ -90,11 +91,14 @@ namespace mars {
 
     // template implementations
     template <typename T>
-      T* LibManager::acquireLibraryAs(const std::string &libName) {
+    T* LibManager::acquireLibraryAs(const std::string &libName) {
       T *lib = NULL;
-      LibInterface *libInterface = getLibrary(libName);
+      LibInterface *libInterface = acquireLibrary(libName);
       if(libInterface){
         lib = dynamic_cast<T*>(libInterface);
+        if(!lib) {
+          releaseLibrary(libName);
+        }
       }
       return lib;
     }
