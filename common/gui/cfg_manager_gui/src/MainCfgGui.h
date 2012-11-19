@@ -38,6 +38,7 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 #include <string>
+#include <list>
 
 #include <QMutex>
 #include <QTimerEvent>
@@ -84,6 +85,7 @@ namespace mars {
       void setupCFG(void);
       bool set_window_prop;
       bool ignore_next;
+      std::list<cfg_manager::cfgParamId> registeredParams;
 
     protected slots:
       void timerEvent(QTimerEvent* event);

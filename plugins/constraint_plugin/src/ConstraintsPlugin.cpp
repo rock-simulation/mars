@@ -251,7 +251,7 @@ namespace mars {
         interfaces::NodeId nodeId = 0;
         AttributeType attr = ATTRIBUTE_UNDEFINED;
         ParseResult result = PARSE_SUCCESS;
-        double factor, initialValue;
+        double factor, initialValue, offset;
         size_t pos1 = 0;
 
         // create new Property to control the constraint
@@ -259,25 +259,27 @@ namespace mars {
         newProp = control->cfg->getOrCreateProperty("Constraints", paramName, 
                                                     (double)0.);
         // first entry is the initial nodeName.nodeAttr
-        result = parseIdentifier(s, &pos1, &nodeId, &attr, NULL);
+        result = parseIdentifier(s, &pos1, &nodeId, &attr, &offset, NULL);
         if(result != PARSE_SUCCESS)
           return;
-        initialValue = getNodeAttribute(nodeId, attr);
+
+        initialValue = getNodeAttribute(nodeId, attr) + offset;
         control->cfg->setPropertyValue("Constraints", paramName, "value",
                                        initialValue);
         // add constraint for initial Node with factor 1
         BaseConstraint *c = new NodeConstraint(control, newProp.paramId,
                                                nodeId, attr,
-                                               1, initialValue);
+                                               offset, 1, initialValue);
         constraints[newProp.paramId].push_back(c);
 
         while(result == PARSE_SUCCESS) {
           // next there is a list of NodeName.NodeAttr#factor
-          result = parseIdentifier(s, &pos1, &nodeId, &attr, &factor);
+          result = parseIdentifier(s, &pos1, &nodeId, &attr, &offset, &factor);
           if((result != PARSE_SUCCESS) && (result != PARSE_SUCCESS_EOS)) {
             continue;
           }
-          BaseConstraint *c = new NodeConstraint(control, newProp.paramId, nodeId, attr, factor, 
+          BaseConstraint *c = new NodeConstraint(control, newProp.paramId,
+                                                 nodeId, attr, offset, factor,
                                                  initialValue);
           constraints[newProp.paramId].push_back(c);
         }
@@ -287,16 +289,33 @@ namespace mars {
                                                      size_t *pos,
                                                      interfaces::NodeId *nodeId,
                                                      AttributeType *attr,
+                                                     double *offset,
                                                      double *factor) {
         // expect the format "nodeName.nodeAttr#factor" where the factor is optional
         size_t startPos=*pos, splitPos, endPos;
         // find end of identifier
         endPos = s.find('#', startPos);
         // find the nodeAttribute. start from rear because nodeName may contain "."
-        splitPos = s.rfind('.', endPos);
+        splitPos = s.rfind("::", endPos);
         std::string nodeName = s.substr(startPos, splitPos - startPos);
-        std::string nodeAttr = s.substr(splitPos+1, endPos - splitPos - 1);
-    
+        std::string nodeAttr = s.substr(splitPos + 2, endPos - splitPos - 2);
+        startPos = splitPos + 1;
+        // look for an offset
+        splitPos = nodeAttr.find('[');
+        if(splitPos == std::string::npos) {
+          *offset = 0.;
+        } else {
+          size_t tmpEndPos = nodeAttr.find(']', splitPos);
+          if(tmpEndPos == std::string::npos) {
+            *offset = 0.;
+          } else {
+            std::string offsetStr = nodeAttr.substr(splitPos + 1,
+                                                    tmpEndPos - splitPos - 1);
+            *offset = strtod(offsetStr.c_str(), NULL);
+            nodeAttr = nodeAttr.substr(0, splitPos);
+          }
+        }
+
         if(factor) {
           if(endPos == std::string::npos) {
             *factor = 0;
@@ -304,7 +323,8 @@ namespace mars {
           } else {
             startPos = endPos + 1;
             endPos = s.find('#', startPos);
-            *factor = strtod(s.substr(startPos, endPos - startPos).c_str(), NULL);
+            *factor = strtod(s.substr(startPos, endPos - startPos).c_str(),
+                             NULL);
           }
         }
 

@@ -77,7 +77,9 @@ namespace mars {
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_sim");}
+      void newLibLoaded(const std::string &libName);
 
+      void checkOptionalDependency(const std::string &libName);
       void runSimulation();
   
       virtual void receiveData(const data_broker::DataInfo &info,

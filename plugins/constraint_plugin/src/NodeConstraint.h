@@ -45,7 +45,7 @@ namespace mars {
         NodeConstraint(interfaces::ControlCenter *control,
                        unsigned long paramId,
                        interfaces::NodeId nodeId, AttributeType attr,
-                       double factor, double initialValue);
+                       double offset, double factor, double initialValue);
         ~NodeConstraint();
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct propertyStruct);
         void reset();
@@ -58,6 +58,7 @@ namespace mars {
         double initialValue;
         unsigned long paramId;
         double oldValue;
+        double offset;
 
         double getAttribute() const;
         void setAttribute(double value);

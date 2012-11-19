@@ -99,8 +99,18 @@ namespace mars {
     MainCfgGui::~MainCfgGui() {
       if(libManager == NULL) return;
 
-      if(cfg) libManager->unloadLibrary(std::string("cfg_manager"));
-      if(gui) libManager->unloadLibrary(std::string("main_gui"));
+      if(cfg) {
+        std::list<cfg_manager::cfgParamId>::iterator it;
+        for(it = registeredParams.begin(); it != registeredParams.end(); ++it) {
+          cfg->unregisterFromParam(*it, this);
+        }
+        registeredParams.clear();
+        cfg->unregisterFromCFG(this);
+        libManager->unloadLibrary(std::string("cfg_manager"));
+      }
+      if(gui) {
+        libManager->unloadLibrary(std::string("main_gui"));
+      }
       fprintf(stderr, "Delete cfg_manager_gui\n");
     }
 
@@ -238,10 +248,12 @@ namespace mars {
       if(cfgWidget) cfgWidget->addParam(newParam);
       // register to get param updates
       cfg->registerToParam(_id, dynamic_cast<CFGClient*>(this));
+      registeredParams.push_back(_id);
     }
 
     void MainCfgGui::cfgParamRemoved(cfgParamId _id) {
       cfgWidget->removeParam(_id);
+      registeredParams.remove(_id);
     }
 
     void MainCfgGui::show() {

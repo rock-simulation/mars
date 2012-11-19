@@ -103,10 +103,11 @@ namespace mars {
       virtual const std::string getLibName() const = 0;
       const char* getGitInfo() const
       { return gitInfo; }
+      virtual void newLibLoaded(const std::string &libName) {}
 
     protected:
-      const char *gitInfo;
       LibManager *libManager;
+      const char *gitInfo;
       friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
     };
 

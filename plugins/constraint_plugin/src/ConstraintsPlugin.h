@@ -93,7 +93,9 @@ namespace mars {
     
       private:
         ParseResult parseIdentifier(const std::string &s, size_t *pos,
-                                    interfaces::NodeId *nodeId, AttributeType *attr,
+                                    interfaces::NodeId *nodeId,
+                                    AttributeType *attr,
+                                    double *offset,
                                     double *factor);
         void parseConstraintFromString(const std::string &name,
                                        const std::string &s);
