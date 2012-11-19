@@ -37,11 +37,11 @@
 
 #ifndef ROCK
 #include <mars/data_broker/DataBrokerInterface.h>
-#define LOG_FATAL(...) (mars::interfaces::ControlCenter::theDataBroker->pushFatal(__VA_ARGS__))
-#define LOG_ERROR(...) (mars::interfaces::ControlCenter::theDataBroker->pushError(__VA_ARGS__))
-#define LOG_WARN(...) (mars::interfaces::ControlCenter::theDataBroker->pushWarning(__VA_ARGS__))
-#define LOG_INFO(...) (mars::interfaces::ControlCenter::theDataBroker->pushInfo(__VA_ARGS__))
-#define LOG_DEBUG(...) (mars::interfaces::ControlCenter::theDataBroker->pushDebug(__VA_ARGS__))
+#define LOG_FATAL(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushFatal(__VA_ARGS__))
+#define LOG_ERROR(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushError(__VA_ARGS__))
+#define LOG_WARN(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushWarning(__VA_ARGS__))
+#define LOG_INFO(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushInfo(__VA_ARGS__))
+#define LOG_DEBUG(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushDebug(__VA_ARGS__))
 #endif
 
 

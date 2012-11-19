@@ -33,12 +33,12 @@ namespace mars {
     using namespace utils;
     using namespace interfaces;
 
-    SimMotor::SimMotor(ControlCenter *c, const MotorData &sMotor_) 
+    SimMotor::SimMotor(ControlCenter *c, const MotorData &sMotor_)
       : control(c) {
 
       //  setSMotor(sMotor_);
       sMotor.index = sMotor_.index;
-      sMotor.type = sMotor_.type; 
+      sMotor.type = sMotor_.type;
       sMotor.value = sMotor_.value;
       myJoint = 0;
       last_error = 0;
@@ -87,18 +87,22 @@ namespace mars {
 
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
-      dbPushId = control->dataBroker->pushData(groupName, dataName, 
-                                               dbPackage, NULL, 
-                                               data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer", 0);
+      if(control->dataBroker) {
+        dbPushId = control->dataBroker->pushData(groupName, dataName,
+                                                 dbPackage, NULL,
+                                                 data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     SimMotor::~SimMotor(void) {
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
-      control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer");
+      if(control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer");
+      }
       // if we have to delete something we can do it here
       if(myJoint) myJoint->unsetJointAsMotor(sMotor.axis);
     }
@@ -358,7 +362,7 @@ namespace mars {
             // D part of the motor
             pwm += ((er - last_error)/time) * sMotor.d;
             last_error = er;
-      
+
             if(pwm > 100) pwm = 100;
             else if(pwm < -100) pwm = -100;
             if(sMotor.axis == 1)
@@ -366,18 +370,18 @@ namespace mars {
             else
               vel = myJoint->getVelocity2();
             //damping = vel - velocity;
-      
+
             //velocity += (vel-last_velocity/2)/2;
             //last_velocity = vel;
             actual_velocity = vel;// -  fmod(vel, 0.0001);
-      
+
             //acc = ((velocity - last_velocity)*1000.0/time);
             //last_velocity = velocity;
             H = actual_velocity * sMotor.gear * sMotor.Km;
             current = (((sMotor.U/100)*pwm)-H-current*sMotor.Ra);
             //current = (((sMotor.U/100)*pwm)-H)/sMotor.Ra;
             current /= sMotor.Lm;
-      
+
             //last_current = (last_current + current*time/1000.0)/2;
             //i_current += last_current;
             acc = (current - last_current)/2;
@@ -413,14 +417,14 @@ namespace mars {
           case MOTOR_TYPE_UNDEFINED:
             break;
           }
-    
+
           if(sMotor.type == MOTOR_TYPE_PID_FORCE) {
             if(sMotor.axis == 1) {
               myJoint->setTorque(torque);
             }
             else if(sMotor.axis == 2) {
               myJoint->setTorque2(torque);
-            }      
+            }
           }
           else if(sMotor.type == MOTOR_TYPE_DC_MODEL ||
                   sMotor.type == MOTOR_TYPE_PID_MODEL) {
@@ -448,7 +452,7 @@ namespace mars {
               myJoint->setForceLimit2(fabs(torque));
               if(torque < 0) myJoint->setVelocity2(-1000);
               else myJoint->setVelocity2(1000);
-            }      
+            }
           }
           else {
             // calculate current
@@ -598,7 +602,7 @@ namespace mars {
       activated = false;
     }
 
-    void SimMotor::getDataBrokerNames(std::string *groupName, 
+    void SimMotor::getDataBrokerNames(std::string *groupName,
                                       std::string *dataName) const {
       char buffer[32];
       sprintf(buffer, "Motors/motor%05lu", sMotor.index);

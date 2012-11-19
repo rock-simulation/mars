@@ -31,11 +31,11 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
 #include <cstdio>
-
+/*
 #define printError(msg, ...) (LOG_ERROR(name + std::string(": ") + msg, ##__VA_ARGS__))
 #define printWarning(msg, ...) (LOG_WARN(name + std::string(": ") + msg, ##__VA_ARGS__))
 #define printMessage(msg, ...) (LOG_INFO(name + std::string(": ") + msg, ##__VA_ARGS__))
-
+*/
 namespace mars {
   namespace plugins {
     namespace connexion_plugin {
@@ -76,24 +76,24 @@ namespace mars {
 
         camReset();
         if (initConnexionHID(0)) {
-          printMessage("Device registered");
-          printMessage("running ...");
+          LOG_INFO(name+": Device registered");
+          LOG_INFO(name+"running ...");
           is_init = true;
         } else {
-          printError("not able to register Device.");
+          LOG_ERROR(name+"not able to register Device.");
           run_thread = false;
         }
 
-        printMessage("loaded");
+        LOG_INFO(name+"loaded");
         if (is_init) {
           run_thread = true;
-          printMessage("starting ...");
+          LOG_INFO(name+"starting ...");
           this->start();
         }
         else {
           run_thread = false;
           thread_closed = true;
-          printError("init not successful.");
+          LOG_ERROR(name+"init not successful.");
         }
 
         // set update to gui update
@@ -257,7 +257,7 @@ namespace mars {
 
           msleep(20);
         }
-        printMessage("... stopped");
+        LOG_INFO(name+"... stopped");
 
         thread_closed = true;
       }

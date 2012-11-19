@@ -107,6 +107,7 @@ namespace mars {
       control->loadCenter = new LoadCenter();
       control->sim = (SimulatorInterface*)this;
       control->cfg = 0;//defaultCFG;
+      dbSimTimePackage.add("simTime", 0.);
 
       // load optional libs
       checkOptionalDependency("data_broker");
@@ -154,7 +155,6 @@ namespace mars {
         if(control->dataBroker) {
           ControlCenter::theDataBroker = control->dataBroker;
           // create streams
-          dbSimTimePackage.add("simTime", 0.);
           dbSimTimeId = control->dataBroker->pushData("mars_sim", "simTime",
                                                       dbSimTimePackage,
                                                       NULL,
@@ -368,27 +368,27 @@ namespace mars {
     }
 
     bool Simulator::startStopTrigger() {
-      LOG_INFO("Simulator start/stop command.");
+      //LOG_INFO("Simulator start/stop command.");
 
       switch(simulationStatus) {
 
       case RUNNING:
         // Allow update process to finish -> transition from 2 -> 0 in main loop
         simulationStatus = STOPPING;
-        fprintf(stderr, "Simulator will be stopped\t");
-        fflush(stderr);
+        //fprintf(stderr, "Simulator will be stopped\t");
+        //fflush(stderr);
         break;
       case STOPPING:
-        fprintf(stderr, "WARNING: Simulator is stopping. Start/Stop Trigger ignored.\t");
-        fflush(stderr);
+        //fprintf(stderr, "WARNING: Simulator is stopping. Start/Stop Trigger ignored.\t");
+        //fflush(stderr);
         break;
       case STOPPED:
         simulationStatus = RUNNING;
-        fprintf(stderr, "Simulator has been started\t");
-        fflush(stderr);
+        //fprintf(stderr, "Simulator has been started\t");
+        //fflush(stderr);
         break;
       default: // UNKNOWN
-        fprintf(stderr, "Simulator has unknown status\n");
+        //fprintf(stderr, "Simulator has unknown status\n");
         throw std::exception();
       }
 
@@ -396,7 +396,7 @@ namespace mars {
       while(simulationStatus == STOPPING)
         msleep(10);
 
-      fprintf(stderr, " [OK]\n");
+      //fprintf(stderr, " [OK]\n");
 
       if(simulationStatus == STOPPED)
         return false;
