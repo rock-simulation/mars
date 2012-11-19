@@ -102,16 +102,18 @@ namespace mars {
       dbPackageMapping.add("contact", &ground_contact);
       dbPackageMapping.add("contactForce", &ground_contact_force);
 
+      if(control->dataBroker) {
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
       // initialize the dataBroker Package
       data_broker::DataPackage dbPackage;
       dbPackageMapping.writePackage(&dbPackage);
-      control->dataBroker->pushData(groupName, dataName, dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      // register as producer
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer", 0);
+        control->dataBroker->pushData(groupName, dataName, dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        // register as producer
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     /**
@@ -124,9 +126,10 @@ namespace mars {
       MutexLocker locker(&iMutex);
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
-      control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer");
-
+      if(control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer");
+      }
       if (my_interface) {
         delete my_interface;
         my_interface = 0;

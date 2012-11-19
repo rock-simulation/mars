@@ -36,7 +36,9 @@ namespace mars {
       filled = false;
       oldFocus = NULL;
 
-      control->graphics->addEventClient((interfaces::GraphicsEventClient*)this);
+      if(control->graphics) {
+        control->graphics->addEventClient((interfaces::GraphicsEventClient*)this);
+      }
 
       this->setWindowTitle(tr("Nodes"));
 
@@ -72,7 +74,9 @@ namespace mars {
     }
 
     DialogNodes::~DialogNodes() {
-      control->graphics->removeEventClient((GraphicsEventClient*)this);
+      if(control->graphics) {
+        control->graphics->removeEventClient((GraphicsEventClient*)this);
+      }
 
       for (unsigned int i = 0; i < newDialogs.size(); i++) 
         delete newDialogs[i];

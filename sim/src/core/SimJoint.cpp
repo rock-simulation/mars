@@ -37,7 +37,7 @@ namespace mars {
     using namespace utils;
     using namespace interfaces;
 
-    SimJoint::SimJoint(ControlCenter *c, const JointData &sJoint_) 
+    SimJoint::SimJoint(ControlCenter *c, const JointData &sJoint_)
       : control(c) {
 
       my_interface = 0;
@@ -48,18 +48,22 @@ namespace mars {
       dbPackageMapping.writePackage(&dbPackage);
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
-      control->dataBroker->pushData(groupName, dataName, 
-                                    dbPackage, NULL, 
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer", 0);
+      if(control->dataBroker) {
+        control->dataBroker->pushData(groupName, dataName,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     SimJoint::~SimJoint() {
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
-      control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer");
+      if(control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer");
+      }
       if(my_interface) delete my_interface;
     }
 
@@ -75,7 +79,7 @@ namespace mars {
       dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
       dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
       dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
-    
+
       dbPackageMapping.add("axis2/x", &axis2.x());
       dbPackageMapping.add("axis2/y", &axis2.y());
       dbPackageMapping.add("axis2/z", &axis2.z());
@@ -385,7 +389,7 @@ namespace mars {
       return motor_torque;
     }
 
-    void SimJoint::getDataBrokerNames(std::string *groupName, 
+    void SimJoint::getDataBrokerNames(std::string *groupName,
                                       std::string *dataName) const {
       char buffer[32];
 
