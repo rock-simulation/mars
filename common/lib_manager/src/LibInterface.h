@@ -58,9 +58,11 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #ifdef GIT_INFO
 #define EXPAND_STRING(x) #x
 #define MACRO_TO_STRING(x) EXPAND_STRING(x)
-#define GIT_INFO_STR MACRO_TO_STRING(GIT_INFO);
+#define GIT_INFO_REV_STR MACRO_TO_STRING(GIT_INFO_REV)
+#define GIT_INFO_SRC_STR MACRO_TO_STRING(GIT_INFO_SRC)
 #else
-#define GIT_INFO_STR "<no git info>";
+#define GIT_INFO_REV_STR "<no git info>"
+#define GIT_INFO_SRC_STR "<unknown>"
 #endif
 
 #define DESTROY_LIB(theClass)                                           \
@@ -72,7 +74,10 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #define CREATE_LIB(theClass)                                            \
   extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManager *theManager) { \
     theClass *instance = new theClass(theManager);                      \
-    instance->gitInfo = GIT_INFO_STR;                                   \
+    mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
+                                                 GIT_INFO_SRC_STR,      \
+                                                 GIT_INFO_REV_STR };    \
+    instance->moduleInfo = moduleInfo;                                  \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
@@ -81,12 +86,21 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
     configType *_config = dynamic_cast<configType*>(config);            \
     if(_config == NULL) return 0;                                       \
     theClass *instance = new theClass(theManager, _config);             \
-    instance->gitInfo = GIT_INFO_STR;                                   \
+    mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
+                                                 GIT_INFO_SRC_STR,      \
+                                                 GIT_INFO_REV_STR };    \
+    instance->moduleInfo = moduleInfo;                                  \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
 namespace mars {
   namespace lib_manager {
+
+    struct ModuleInfo {
+      std::string name;
+      std::string src;
+      std::string revision;
+    };
 
     /**
      * The interface to load libraries dynamically
@@ -95,19 +109,18 @@ namespace mars {
     class LibInterface {
     public:
       LibInterface(LibManager *theManager)
-        : libManager(theManager),
-          gitInfo("<git info becomes available after ctor>")
+        : libManager(theManager)
       {}
       virtual ~LibInterface(void) {}
       virtual int getLibVersion() const = 0;
       virtual const std::string getLibName() const = 0;
-      const char* getGitInfo() const
-      { return gitInfo; }
+      ModuleInfo getModuleInfo() const
+      { return moduleInfo; }
       virtual void newLibLoaded(const std::string &libName) {}
 
     protected:
       LibManager *libManager;
-      const char *gitInfo;
+      ModuleInfo moduleInfo;
       friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
     };
 
