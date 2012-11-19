@@ -1,10 +1,31 @@
 project(data_broker_plotter)
 set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "Plot implementation for the DataBroker by using QCustomPlot.")
+cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 
 set(CMAKE_CXX_FLAGS "-fPIC")
 #set(CMAKE_BUILD_TYPE Debug)
+
+execute_process(COMMAND git rev-parse HEAD 
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE git_hash
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND git diff-index --quiet HEAD 
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                RESULT_VARIABLE git_has_local_changes
+                OUTPUT_VARIABLE out
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(git_has_local_changes)
+  message(WARNING "git repository has local uncommitted changes!")
+  set(git_version "${git_hash} (with local changes)")
+else(git_has_local_changes)
+  set(git_version ${git_hash})
+endif(git_has_local_changes)
+add_definitions("-DGIT_INFO=${git_version}")
 
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})

@@ -6,6 +6,26 @@ set(PROJECT_DESCRIPTION "This Library contains several useful utilities like a M
 
 include(FindPkgConfig)
 
+execute_process(COMMAND git rev-parse HEAD 
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                RESULT_VARIABLE res
+                OUTPUT_VARIABLE git_hash
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND git diff-index --quiet HEAD 
+                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+                RESULT_VARIABLE git_has_local_changes
+                OUTPUT_VARIABLE out
+                ERROR_QUIET
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+if(git_has_local_changes)
+  message(WARNING "git repository has local uncommitted changes!")
+  set(git_version "${git_hash} (with local changes)")
+else(git_has_local_changes)
+  set(git_version ${git_hash})
+endif(git_has_local_changes)
+add_definitions("-DGIT_INFO=${git_version}")
+
 if(WIN32)
         # this fixes the error 998 from the LibManager
         SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import -Wall")
