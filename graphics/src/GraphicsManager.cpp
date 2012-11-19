@@ -116,7 +116,7 @@ namespace mars {
         string saveFile = configPath.sValue;
         saveFile.append("/mars_Graphics.yaml");
         cfg->writeConfig(saveFile.c_str(), "Graphics");
-        libManager->unloadLibrary("cfg_manager");
+        libManager->releaseLibrary("cfg_manager");
       }
       fprintf(stderr, "Delete mars_graphics\n");
     }

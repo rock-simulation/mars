@@ -83,9 +83,9 @@ namespace mars {
     MainDataGui::~MainDataGui() {
       if(libManager == NULL) return;
 
-      if(cfg) libManager->unloadLibrary(std::string("cfg_manager"));
-      if(gui) libManager->unloadLibrary(std::string("main_gui"));
-      if(dataBroker) libManager->unloadLibrary(std::string("data_broker"));
+      if(cfg) libManager->releaseLibrary("cfg_manager");
+      if(gui) libManager->releaseLibrary("main_gui");
+      if(dataBroker) libManager->releaseLibrary("data_broker");
       fprintf(stderr, "Delete MainDataGui\n");
     }
 

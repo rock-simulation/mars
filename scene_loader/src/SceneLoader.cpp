@@ -53,7 +53,7 @@ namespace mars {
     SceneLoader::~SceneLoader() {
       if(control) {
         control->loadCenter->loadScene = NULL;
-        libManager->unloadLibrary("mars_sim");
+        libManager->releaseLibrary("mars_sim");
       }
     }
 

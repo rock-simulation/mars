@@ -44,10 +44,7 @@ namespace mars {
       consoleWidget(NULL), cfg(NULL), set_window_prop(false) {
 
       setupGUI();
-      LibInterface *lib = theManager->getLibrary("data_broker");
-      if(lib) {
-        dataBroker = dynamic_cast<data_broker::DataBrokerInterface*>(lib);
-      }
+      dataBroker = theManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
       if(dataBroker) {
         dataBroker->registerSyncReceiver(this, "_MESSAGES_", "fatal", 
                                          data_broker::DB_MESSAGE_TYPE_FATAL);
@@ -68,13 +65,7 @@ namespace mars {
 
       std::string path;
 
-      lib_manager::LibInterface *lib;
-      lib = libManager->getLibrary(std::string("cfg_manager"));
-
-      if(lib) {
-        cfg = dynamic_cast<cfg_manager::CFGManagerInterface*>(lib);
-      }
-  
+      cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg_manager::cfgPropertyStruct r_path;
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
@@ -83,15 +74,7 @@ namespace mars {
       }
 
 
-      lib = libManager->getLibrary(std::string("main_gui"));
-    
-      if(lib) {
-        //CFG *cfgLib = dynamic_cast<CFG*>(lib);
-        //if(cfgLib) {
-        gui = dynamic_cast<main_gui::GuiInterface*>(lib);
-        //}
-      }
-    
+      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
       if(gui) {
         path.append("/mars/log_console/resources/images/terminal.png");
         gui->addGenericMenuAction("../Windows/Console", 1,
@@ -111,9 +94,9 @@ namespace mars {
     }
 
     MainConsole::~MainConsole() {
-      libManager->unloadLibrary("data_broker");
-      libManager->unloadLibrary("main_gui");
-      libManager->unloadLibrary("cfg_manager");
+      libManager->releaseLibrary("data_broker");
+      libManager->releaseLibrary("main_gui");
+      libManager->releaseLibrary("cfg_manager");
       fprintf(stderr, "Delete log_console\n");
     }
 

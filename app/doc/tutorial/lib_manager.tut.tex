@@ -73,11 +73,11 @@ DESTROY_LIB(myLibraryClass);
 CREATE_LIB(myLibraryClass);
 \end{lstlisting}
 
-In addition to the \emph{addLibrary} method, also \emph{loadLibrary}, \emph{unloadLibrary}, \emph{getLibrary} and \emph{loadConfigFile} methods are present.\\
+In addition to the \emph{addLibrary} method, also \emph{loadLibrary}, \emph{unloadLibrary}, \emph{getLibrary}, \emph{releaseLibrary} and \emph{loadConfigFile} methods are present.\\
 
 \emph{loadLibrary/unloadLibrary} takes a library path as an argument, loads/unloads it and returns an error code.\\
 
-\emph{getLibrary} returns a pointer to the \emph{LibInterface} instance of the library with name passed as an argument.\\
+\emph{getLibrary} returns a pointer to the \emph{LibInterface} instance of the library with name passed as an argument. After you are done using the Library you should call \emph{releaseLibrary} to notify the \emph{LibManager} that the Library may be unloaded.\\
 
 \emph{loadConfigFile} is passed the path of a text file containing the paths of all libraries that are to be managed by the \emph{LibManager}.\\
 For more information on the methods see the \emph{LibManager} documentation.

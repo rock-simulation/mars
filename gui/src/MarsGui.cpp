@@ -127,11 +127,11 @@ namespace mars {
 
         }
     
-        libManager->unloadLibrary("mars_sim");
+        libManager->releaseLibrary("mars_sim");
       }
   
       if(gui) {
-        libManager->unloadLibrary("main_gui");
+        libManager->releaseLibrary("main_gui");
       }
   
       fprintf(stderr, "Delete mars_gui\n");
@@ -149,11 +149,9 @@ namespace mars {
         }
       }
 
-      lib = libManager->getLibrary("main_gui");
-      if(lib) {
-        if(!(gui = dynamic_cast<main_gui::GuiInterface*>(lib))) {
-          fprintf(stderr, "No main_gui lib found!\n");
-        }
+      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
+      if(!gui) {
+        fprintf(stderr, "No main_gui lib found!\n");
       }
   
       resourcesPath.propertyType = cfg_manager::stringProperty;
