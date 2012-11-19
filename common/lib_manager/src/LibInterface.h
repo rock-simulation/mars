@@ -109,6 +109,7 @@ namespace mars {
       LibManager *libManager;
       const char *gitInfo;
       friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
+      friend mars::lib_manager::LibInterface* ::config_create_c(mars::lib_manager::LibManager *theManager, configType *config);
     };
 
     typedef void *destroyLib(LibInterface *sp);
