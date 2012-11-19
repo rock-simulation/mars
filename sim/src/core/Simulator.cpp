@@ -770,7 +770,6 @@ namespace mars {
           printf("-g             show 3d grid\n");
           printf("-o             ortho perspective as standard\n");
           printf("\n");
-          exit(0);
         }
       }
 
