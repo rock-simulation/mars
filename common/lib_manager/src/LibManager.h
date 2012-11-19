@@ -47,6 +47,7 @@ namespace mars {
       LibInterface *libInterface;
       destroyLib *destroy;
       int useCount;
+      bool wasUnloaded;
     };
 
     class LibManager {
@@ -66,21 +67,30 @@ namespace mars {
         ~LibManager();
 
         void addLibrary(LibInterface *_lib);
-        ErrorNumber loadLibrary(const std::string &libPath, void *config = NULL);
-        LibInterface* getLibrary(const std::string &libName);
-        template <typename T> T* getLibraryAs(const std::string &libName);
+        ErrorNumber loadLibrary(const std::string &libPath,
+                                void *config = NULL);
+
+        LibInterface* acquireLibrary(const std::string &libName);
+        template <typename T> T* acquireLibraryAs(const std::string &libName);
+        LibInterface* getLibrary(const std::string &libName)
+        { return acquireLibrary(libName); }
+        template <typename T> T* getLibraryAs(const std::string &libName)
+        { return acquireLibraryAs<T>(libName); }
+
+        ErrorNumber releaseLibrary(const std::string &libName);
+
         ErrorNumber unloadLibrary(const std::string &libPath);
         void loadConfigFile(const std::string &config_file);
         void getAllLibraries(std::list<LibInterface*> *libList);
 
       private:
         std::map<std::string, libStruct> libMap;
-
+        
     }; // class LibManager
 
     // template implementations
     template <typename T>
-      T* LibManager::getLibraryAs(const std::string &libName) {
+      T* LibManager::acquireLibraryAs(const std::string &libName) {
       T *lib = NULL;
       LibInterface *libInterface = getLibrary(libName);
       if(libInterface){

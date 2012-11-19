@@ -62,7 +62,7 @@ namespace mars {
 
       while(!finished) {
         finished = true;
-        for(it=libMap.begin(); it!=libMap.end(); ++it) {
+        for(it = libMap.begin(); it != libMap.end(); ++it) {
           if(it->second.useCount == 0) {
             fprintf(stderr, "LibManager: delete [%s] !\n", it->first.c_str() );
             if(it->second.destroy) {
@@ -75,9 +75,13 @@ namespace mars {
         }
       }
       if(libMap.size() > 0) {
-        for(it=libMap.begin(); it!=libMap.end(); ++it) {
+        for(it = libMap.begin(); it != libMap.end(); ++it) {
           fprintf(stderr, "LibManager: [%s] not deleted correctly! "
-                  "%d references remain.\n",
+                  "%d references remain.\n"
+                  "      NOTE: The semantics of the LibManager has changed. To correctly\n"
+                  "            dispose of a library acquired by a call to getLibrary(libName)\n"
+                  "            you should now call releaseLibrary(libName) instead\n"
+                  "            of unloadLibrary(libName).\n",
                   it->first.c_str(), it->second.useCount);
         }
       } else {
@@ -96,6 +100,7 @@ namespace mars {
       newLib.destroy = 0;
       newLib.libInterface = _lib;
       newLib.useCount = 1;
+      newLib.wasUnloaded = false;
       if(libMap.find(name) == libMap.end()) {
         libMap[name] = newLib;
       }
@@ -109,6 +114,7 @@ namespace mars {
       newLib.destroy = 0;
       newLib.libInterface = 0;
       newLib.useCount = 0;
+      newLib.wasUnloaded = false;
 
       LibHandle pl = intern_loadLib(libPath);
 
@@ -148,7 +154,7 @@ namespace mars {
       return LIBMGR_NO_ERROR;
     }
 
-    LibInterface* LibManager::getLibrary(const string &libName) {
+    LibInterface* LibManager::acquireLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
         fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
         return 0;
@@ -159,13 +165,25 @@ namespace mars {
       return theLib->libInterface;
     }
 
+    LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName) {
+      if(libMap.find(libName) == libMap.end()) {
+        return LIBMGR_ERR_NO_LIBRARY;
+      }
+      libStruct *theLib = &(libMap[libName]);
+      theLib->useCount--;
+      if(theLib->useCount <= 0 && theLib->wasUnloaded) {
+        unloadLibrary(libName);
+      }
+      return LIBMGR_NO_ERROR;
+    }
+
     LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
         return LIBMGR_ERR_NO_LIBRARY;
       }
 
       libStruct *theLib = &(libMap[libName]);
-      theLib->useCount--;
+      theLib->wasUnloaded = true;
       if(theLib->useCount <= 0) {
         fprintf(stderr, "LibManager: unload delete [%s]\n", libName.c_str());
         if(theLib->destroy) {
@@ -176,7 +194,6 @@ namespace mars {
       }
       return LIBMGR_ERR_LIB_IN_USE;
     }
-
 
     void LibManager::loadConfigFile(const std::string &config_file) {
       char plugin_chars[255];
