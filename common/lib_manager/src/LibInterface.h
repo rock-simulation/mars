@@ -89,7 +89,7 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
     mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
                                                  GIT_INFO_SRC_STR,      \
                                                  GIT_INFO_REV_STR };    \
-    instance->moduleInfo = moduleInfo;                                  \
+    //instance->moduleInfo = moduleInfo;                                \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
@@ -122,7 +122,6 @@ namespace mars {
       LibManager *libManager;
       ModuleInfo moduleInfo;
       friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
-      friend mars::lib_manager::LibInterface* ::config_create_c(mars::lib_manager::LibManager *theManager, configType *config);
     };
 
     typedef void *destroyLib(LibInterface *sp);
