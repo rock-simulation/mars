@@ -5,44 +5,11 @@ SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 cmake_minimum_required(VERSION 2.6)
 
 #set(CMAKE_BUILD_TYPE Debug)
+include(FindPkgConfig)
+include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-execute_process(COMMAND git rev-parse
-                WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-                RESULT_VARIABLE under_git_control
-                ERROR_QUIET)
-if(NOT under_git_control)
-  execute_process(COMMAND git rev-parse HEAD 
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    OUTPUT_VARIABLE git_hash
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND git diff-index --quiet HEAD 
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    RESULT_VARIABLE git_has_local_changes
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND git remote -v
-    WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-    OUTPUT_VARIABLE git_src
-    ERROR_QUIET
-    OUTPUT_STRIP_TRAILING_WHITESPACE)
-  string(REGEX REPLACE "origin	([^ ]*) \\(fetch\\).*" "\\1" git_src ${git_src})
-  if(git_has_local_changes)
-    message(WARNING "git repository has local uncommitted changes!")
-    set(git_revision "${git_hash} (with local changes)")
-  else(git_has_local_changes)
-    set(git_version ${git_hash})
-  endif(git_has_local_changes)
-  add_definitions("-DGIT_INFO" "-DGIT_INFO_REV=${git_revision}" "-DGIT_INFO_SRC=${git_src}")
-endif(NOT under_git_control)
-
-if(WIN32)
-    # this fixes the error 998 from the LibManager
-    SET(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
-    SET(CMAKE_MODULE_LINKER_FLAGS "-Wl,--enable-auto-import")
-else(WIN32)
-    SET(CMAKE_CXX_FLAGS "-fPIC")
-endif(WIN32)
+mars_defaults()
+define_module_info()
 
 MACRO(CMAKE_USE_FULL_RPATH install_rpath)
     SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -52,8 +19,6 @@ MACRO(CMAKE_USE_FULL_RPATH install_rpath)
 ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
-cmake_minimum_required(VERSION 2.6)
-include(FindPkgConfig)
 
 pkg_check_modules(LIB_MANAGER REQUIRED "lib_manager")
 include_directories(${LIB_MANAGER_INCLUDE_DIRS})

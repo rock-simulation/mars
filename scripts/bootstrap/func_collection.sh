@@ -124,6 +124,7 @@ function setup_env {
     export MSYS=${MSYS}
 
     setupConfig
+    setScriptDir
     prefix=${MARS_DEV_ROOT}/install
     prefix_bin=${prefix}/bin
     prefix_lib=${prefix}/lib
@@ -132,6 +133,9 @@ function setup_env {
     
     mkdir -p ${prefix_bin}
     cd ${MARS_DEV_ROOT}
+
+    mkdir -p ${prefix}/cmake
+    cp ${MARS_SCRIPT_DIR}/mars.cmake.in ${prefix}/cmake/mars.cmake
 
     if [ x`which cmake_debug` = "x" ]; then
 
