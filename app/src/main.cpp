@@ -84,11 +84,15 @@ int main(int argc, char *argv[]) {
 
 
   mars::app::MARS *simulation = new mars::app::MARS();
+  simulation->readArguments(argc, argv);
 
   // first setup qapp
   //QApplication *app = new QApplication(argc, argv);
-  mars::app::MyApp *app = new mars::app::MyApp(argc, argv);
-  app->setStyle(new QPlastiqueStyle);
+  mars::app::MyApp *app=NULL;
+  if(simulation->needQApp) {
+    mars::app::MyApp *app = new mars::app::MyApp(argc, argv);
+    app->setStyle(new QPlastiqueStyle);
+  }
 
   // for osx relase build:
   /*
@@ -102,7 +106,9 @@ int main(int argc, char *argv[]) {
 
   simulation->start(argc, argv);
 
-  int state = app->exec();
+  int state;
+  if(simulation->needQApp) state = app->exec();
+  else state = simulation->runWoQApp();
 
   delete simulation;
   return state;

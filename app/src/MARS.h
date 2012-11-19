@@ -58,19 +58,22 @@ namespace mars {
       MARS();
       ~MARS();
 
+      void readArguments(int argc, char **argv);
       void start(int argc, char **argv);
+      int runWoQApp();
       inline lib_manager::LibManager* getLibManager() {return libManager;}
 
       static interfaces::ControlCenter *control;
+      static bool quit;
       std::string configDir;
       std::string coreConfigFile;
+      bool needQApp;
 
     private:
       lib_manager::LibManager *libManager;
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;
 
-      void readArguments(int argc, char **argv);
 
     };
 

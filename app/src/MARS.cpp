@@ -35,6 +35,7 @@
 #include <mars/interfaces/gui/MarsGuiInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/Thread.h>
+#include <mars/utils/misc.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <QDir>
@@ -51,6 +52,7 @@ namespace mars {
   namespace app {
 
     mars::interfaces::ControlCenter* MARS::control = NULL;
+    bool MARS::quit = false;
 
     void exit_main(int signal) {
 #ifndef WIN32
@@ -58,6 +60,7 @@ namespace mars {
         return;
       }
 #endif
+      MARS::quit = true;
       if (signal) {
         fprintf(stderr, "\nI think we exit with an error!\n");
         MARS::control->sim->exitMars();
@@ -77,6 +80,7 @@ namespace mars {
     MARS::MARS() : configDir("."),
                    libManager(new lib_manager::LibManager()),
                    marsGui(NULL) {
+      needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
       // request a scheduler of 1ms
@@ -106,7 +110,6 @@ namespace mars {
     }
 
     void MARS::start(int argc, char **argv) {
-      readArguments(argc, argv);
 
       coreConfigFile = configDir+"/core_libs.txt";
 
@@ -199,6 +202,7 @@ namespace mars {
 
       static struct option long_options[] = {
         {"config_dir", required_argument, 0, 'C'},
+        {"noQApp",no_argument,0,'Q'},
         {0, 0, 0, 0}
       };
 
@@ -216,9 +220,9 @@ namespace mars {
       while (1) {
 
 #ifdef __linux__
-        c = getopt_long(argc, argv, "C:", long_options, &option_index);
+        c = getopt_long(argc, argv, "C:Q:", long_options, &option_index);
 #else
-        c = getopt_long(argc, argv_copy, "C:", long_options, &option_index);
+        c = getopt_long(argc, argv_copy, "C:Q:", long_options, &option_index);
 #endif
         if (c == -1)
           break;
@@ -229,6 +233,9 @@ namespace mars {
           else
             printf("The given configuration Directory does not exists: %s\n",
                    optarg);
+          break;
+        case 'Q':
+          needQApp = false;
           break;
         }
       }
@@ -247,6 +254,16 @@ namespace mars {
       optarg = NULL;
 
       return;
+    }
+
+    int MARS::runWoQApp() {
+      while(!quit) {
+        if(control->sim->getAllowDraw() || !control->sim->getSyncGraphics()) {
+          control->sim->finishedDraw();
+        }
+        //mars::utils::msleep(2);
+      }
+      return 0;
     }
 
   } // end of namespace app
