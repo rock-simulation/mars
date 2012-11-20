@@ -220,9 +220,9 @@ namespace mars {
       while (1) {
 
 #ifdef __linux__
-        c = getopt_long(argc, argv, "C:Q:", long_options, &option_index);
+        c = getopt_long(argc, argv, "C:Q", long_options, &option_index);
 #else
-        c = getopt_long(argc, argv_copy, "C:Q:", long_options, &option_index);
+        c = getopt_long(argc, argv_copy, "C:Q", long_options, &option_index);
 #endif
         if (c == -1)
           break;
