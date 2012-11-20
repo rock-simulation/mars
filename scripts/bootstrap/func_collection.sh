@@ -90,7 +90,7 @@ function setupConfig {
             echo "You can specify the number of CORES you want to use when compiling packages."
             echo -n "Enter number of CORES: "
             read CORES || return 1
-            if ! [[ ${CORES} =~ "^[1-9][0-9]*$" ]]; then
+            if ! [[ ${CORES} =~ ^[1-9][0-9]*$ ]]; then
                 printBold "error parsing number of CORES using default (6)"
                 CORES=6
             fi
