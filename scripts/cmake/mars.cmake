@@ -22,7 +22,7 @@ function(define_module_info)
       OUTPUT_VARIABLE git_src
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
-    string(REGEX REPLACE "origin	([^ ]*) \\(fetch\\).*" "\\1" git_src ${git_src})
+    string(REGEX REPLACE "	([^ ]*) \\(fetch\\).*" "\\1" git_src ${git_src})
     if(git_has_local_changes)
       message(WARNING "git repository has local uncommitted changes!")
       set(git_revision "${git_hash} (with local changes)")

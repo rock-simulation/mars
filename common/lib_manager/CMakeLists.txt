@@ -2,7 +2,7 @@ project(lib_manager)
 set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "This is the simulation plugin for the RIMRES Reipos modules")
 cmake_minimum_required(VERSION 2.6)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
+include(../../scripts/cmake/mars.cmake)
 
 mars_defaults()
 define_module_info()
@@ -40,6 +40,8 @@ install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/${PROJECT_NAME})
+
+INSTALL(DIRECTORY ../../scripts/cmake DESTINATION .)
 
 # Prepare and install necessary files to support finding of the library 
 # using pkg-config

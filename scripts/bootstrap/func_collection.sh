@@ -134,9 +134,6 @@ function setup_env {
     mkdir -p ${prefix_bin}
     cd ${MARS_DEV_ROOT}
 
-    mkdir -p ${prefix}/cmake
-    cp ${MARS_SCRIPT_DIR}/mars.cmake.in ${prefix}/cmake/mars.cmake
-
     if [ x`which cmake_debug` = "x" ]; then
 
         echo "#! /bin/sh" > env.sh
