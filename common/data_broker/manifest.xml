@@ -2,5 +2,6 @@
     <description brief="data_broker">
       A small library to manage data communication within a software framework.
    </description>
-    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/utils" />
 </package>
