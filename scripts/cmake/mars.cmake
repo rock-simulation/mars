@@ -34,7 +34,7 @@ function(define_module_info)
 endfunction(define_module_info)
 
 
-function(mars_defaults)
+macro(mars_defaults)
   if(WIN32)
     # this fixes the error 998 from the LibManager
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
@@ -46,7 +46,7 @@ function(mars_defaults)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
   endif()
-endfunction(mars_defaults)
+endmacro(mars_defaults)
 
 
 cmake_policy(POP)
