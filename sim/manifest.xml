@@ -3,9 +3,10 @@
        DFKI Robot simulator
     </description>
 
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/mars_utils" />
-    <depend package="simulation/mars_interfaces" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/cfg_manager" />
+    <depend package="simulation/mars/utils" />
+    <depend package="simulation/mars/interfaces" />
 
     <depend package="external/ode" />
 </package>

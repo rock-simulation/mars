@@ -2,11 +2,9 @@
     <description brief="constraints_plugin">
       Plugin to create constraints between Nodes.
    </description>
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/cfg_manager" />
-    <depend package="simulation/main_gui" />
-    <depend package="simulation/mars_utils" />
-    <depend package="simulation/mars_interfaces" />
-    <depend package="simulation/mars_sim" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/cfg_manager" />
+    <depend package="simulation/mars/main_gui" />
+    <depend package="simulation/mars/interfaces" />
     <rosdep name="qt4" />
 </package>
