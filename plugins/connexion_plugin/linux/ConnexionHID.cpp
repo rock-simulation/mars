@@ -120,8 +120,6 @@ namespace mars {
         size_t bytesRead;
         /* the events (up to 64 at once) */
         struct input_event events[64];
-        /* buffer */
-        static struct connexionValues valueBuffer;
         /* keep track of idle frames for each DoF for smoother animation. see above */
         static int idleFrameCount[6] = {0, 0, 0, 0, 0, 0};
         int idleThreshold = 3;
