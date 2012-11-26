@@ -255,7 +255,7 @@ namespace mars {
     void Zipit::zipError(ZipitError errorNumber) {
       if(errorNumber == ZIPIT_SUCCESS)
         return;
-      LOG_ERROR("an error occured");
+      LOG_ERROR("ZIPIT: an error occured");
       switch (errorNumber) {
       case ZIPIT_NO_OPEN_HANDLE:
         LOG_ERROR("unable to open a handle to the zip. maybe the zipfile does not "
@@ -298,6 +298,20 @@ namespace mars {
       case ZIPIT_UNABLE_TO_WRITE_IN_FILE:
         LOG_ERROR("unable to write in file");
         break;
+      case ZIPIT_UNABLE_TO_WRITE_FILE_IN_ZIP:
+        LOG_ERROR("unable to write file in zip");
+        break;
+      case ZIPIT_UNABLE_TO_CLOSE_FILE_IN_ZIP:
+        LOG_ERROR("unable to close file in zip");
+        break;
+      case ZIPIT_UNKNOWN_ERROR:
+        LOG_ERROR("unknown error \"%d\" occurred", errorNumber);
+        break;
+      case ZIPIT_SUCCESS:
+        // We should never get here because we should bail out
+        // early on success.  This is here to silence compiler
+        // warnings about unhandled switch-cases.
+        assert(!"We should never get here");
       }
     }
 

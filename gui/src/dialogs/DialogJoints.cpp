@@ -31,12 +31,12 @@ namespace mars {
 
     DialogJoints::DialogJoints(interfaces::ControlCenter* c,
                                main_gui::GuiInterface *gui,
-                               string imagePath_) :
-      main_gui::BaseWidget(0, c->cfg, "DialogJoints"),
-      pDialog(new main_gui::PropertyDialog(NULL)), mainGui(gui),
-      imagePath(imagePath_) {
-  
-      control = c;
+                               string imagePath_)
+      : main_gui::BaseWidget(0, c->cfg, "DialogJoints"),
+        pDialog(new main_gui::PropertyDialog(NULL)), mainGui(gui),
+        control(c),
+        imagePath(imagePath_) {
+
       filled = false;  
       oldFocus = NULL;
 

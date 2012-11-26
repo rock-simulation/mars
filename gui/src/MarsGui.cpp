@@ -140,13 +140,9 @@ namespace mars {
 
     void MarsGui::setupGui() {
       interfaces::SimulatorInterface *sim;
-
-      lib_manager::LibInterface *lib = libManager->getLibrary("mars_sim");
-
-      if(lib) {
-        if(sim = dynamic_cast<interfaces::SimulatorInterface*>(lib)) {
-          control = sim->getControlCenter();
-        }
+      sim =libManager->getLibraryAs<interfaces::SimulatorInterface>("mars_sim");
+      if(sim) {
+        control = sim->getControlCenter();
       }
 
       gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
@@ -197,7 +193,7 @@ namespace mars {
           string tmp = stateNamesProp.sValue;
       
           while (tmp != "") {
-            int pos = tmp.find("%%");
+            size_t pos = tmp.find("%%");
             if (pos == string::npos) break;
             dockNames.push_back(tmp.substr(0, pos));
             tmp.erase(0, pos+2);
@@ -206,7 +202,7 @@ namespace mars {
        
 
           vector<main_gui::dockState> states;
-          for (int i = 0; i < dockNames.size(); i++) {
+          for (size_t i = 0; i < dockNames.size(); i++) {
             dockArea = control->cfg->getOrCreateProperty("MarsGui", dockNames[i] + "/area", 1, 
                                                          dynamic_cast<cfg_manager::CFGClient*>(this));
             dockFloat = control->cfg->getOrCreateProperty("MarsGui", dockNames[i] + "/floating", false, 
@@ -235,7 +231,7 @@ namespace mars {
           }
 
           main_gui::MainGUI *mainGui;
-          if(mainGui = dynamic_cast<main_gui::MainGUI*>(gui)) {
+          if((mainGui = dynamic_cast<main_gui::MainGUI*>(gui))) {
             mainGui->mainWindow_p()->setWindowIcon(QIcon(":/images/mars_icon.ico"));
             mainGui->mainWindow_p()->setMinimumSize(0, 0);
 
@@ -288,7 +284,7 @@ namespace mars {
       }
       if(change_view && gui) {
         main_gui::MainGUI *mainGui;
-        if(mainGui = dynamic_cast<main_gui::MainGUI*>(gui)) {
+        if((mainGui = dynamic_cast<main_gui::MainGUI*>(gui))) {
           mainGui->mainWindow_p()->setGeometry(cfgW_left.iValue, cfgW_top.iValue,
                                                cfgW_width.iValue,
                                                cfgW_height.iValue);

@@ -244,7 +244,7 @@ namespace mars {
       objects->setValue(list);
       QStringList items = list.split(";");
       chosenOnes.clear();
-      for (unsigned int i = 0; i < items.size(); i++)
+      for (unsigned int i = 0; i < (unsigned int)items.size(); i++)
         for (unsigned int j = 0; j < myNodes.size(); j++)
           if (items[i] == QString::fromStdString(myNodes[j].name)) {
             chosenOnes.push_back(myNodes[j]);
@@ -257,7 +257,7 @@ namespace mars {
       objects->setValue(list);
       QStringList items = list.split(";");
       chosenOnes.clear();
-      for (unsigned int i = 0; i < items.size(); i++)
+      for (unsigned int i = 0; i < (unsigned int)items.size(); i++)
         for (unsigned int j = 0; j < myJoints.size(); j++)
           if (items[i] == QString::fromStdString(myJoints[j].name)) {
             chosenOnes.push_back(myJoints[j]);
@@ -270,7 +270,7 @@ namespace mars {
       objects->setValue(list);
       QStringList items = list.split(";");
       chosenOnes.clear();
-      for (unsigned int i = 0; i < items.size(); i++)
+      for (unsigned int i = 0; i < (unsigned int)items.size(); i++)
         for (unsigned int j = 0; j < myMotors.size(); j++)
           if (items[i] == QString::fromStdString(myMotors[j].name)) {
             chosenOnes.push_back(myMotors[j]);

@@ -185,8 +185,6 @@ namespace mars {
 
     void Dialog_Import_Mesh::fill()
     {				
-      utils::sRotation rot;
-      utils::Quaternion quat(1,0,0,0);
       std::vector<std::string> nameString;
       QStringList enumNames;
       filled = false;
@@ -211,8 +209,6 @@ namespace mars {
       // don't use Node if conversion failed
       osg::ref_ptr<osg::Group> osgGroupFromRead = NULL;
       if ((osgGroupFromRead = osgReadNode->asGroup()) != 0) {
-        int j =-1;
-    
         fprintf(stderr, "\n");
         // get childrens names
         for (unsigned int i = 0 ; i < osgGroupFromRead->getNumChildren(); i++){
@@ -289,10 +285,7 @@ namespace mars {
 
         dcm->setMaterial(&material);
 
-        rot.alpha=0.0; rot.beta=0.0;rot.gamma=0.0;    
-        //quat = Quaternion(rot);
-        quat = utils::Quaternion(1,0,0,0);
-        thisNode.rot = quat;
+        thisNode.rot = utils::Quaternion(1,0,0,0);
         thisNode.pos = pos;
         thisNode.name = nameString[j];
         thisNode.origName = nameString[j];

@@ -57,6 +57,9 @@ namespace mars {
       main_gui::PropertyDialog *pDialog;  
   
     private:
+      main_gui::GuiInterface *mainGui;
+      interfaces::ControlCenter* control;
+
       std::string imagePath;
 
       virtual void topLevelItemChanged(QtProperty* current);  // handles new focus
@@ -75,9 +78,6 @@ namespace mars {
       std::vector<QtProperty*> newJoints_p; // top level properties in preview mode
       std::vector<interfaces::core_objects_exchange> allJoints; // all simulation joints
   
-      interfaces::ControlCenter* control;
-      main_gui::GuiInterface *mainGui;
-
       void closeEvent(QCloseEvent* event);
 
     signals:

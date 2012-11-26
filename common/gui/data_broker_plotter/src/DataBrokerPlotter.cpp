@@ -10,8 +10,8 @@ namespace data_broker_plotter {
                                mars::cfg_manager::CFGManagerInterface *cfg,
                                std::string _name, QWidget *parent) : 
     mars::main_gui::BaseWidget(parent, cfg, _name),
-    mainLib(_mainLib), dataBroker(_dataBroker),
-    nextPlotId(1), name(_name) {
+    dataBroker(_dataBroker), mainLib(_mainLib),
+    name(_name), nextPlotId(1) {
   
     setStyleSheet("background-color:#eeeeee;");
 

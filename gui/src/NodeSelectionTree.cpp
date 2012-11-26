@@ -264,7 +264,7 @@ namespace mars {
       QList<QTreeWidgetItem*> selectedItems = treeWidget->selectedItems();
 
       if (node_selection_mode->value().toInt() == 1)   
-        for (unsigned int i = 0 ; i < selectedItems.size(); i++) 
+        for (unsigned int i = 0; i < (unsigned int)selectedItems.size(); i++) 
           selectRecursively(selectedItems[i], true);
   
       vector<unsigned long> selectedIds = selectedNodes();
@@ -287,7 +287,7 @@ namespace mars {
     {
       QList<QTreeWidgetItem*> selectedItems = treeWidget->selectedItems();
       vector<unsigned long> selectedIds;
-      for (unsigned int i = 0 ; i < selectedItems.size(); i++) {
+      for (unsigned int i = 0; i < (unsigned int)selectedItems.size(); i++) {
         int n = selectedItems[i]->text(0).indexOf(":");
         selectedIds.push_back(selectedItems[i]->text(0).left(n).toULong());
       }

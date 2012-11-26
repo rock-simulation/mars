@@ -75,10 +75,9 @@ namespace mars {
 
     private:
  
-      interfaces::ControlCenter *control;
       lib_manager::LibManager *libManager;
-
       main_gui::GuiInterface *mainGui;
+      interfaces::ControlCenter *control;
 
       void menu_exportScene();
       void menu_openPlugin();

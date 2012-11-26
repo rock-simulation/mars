@@ -40,8 +40,8 @@ namespace mars {
      */
     MenuFile::MenuFile(interfaces::ControlCenter *c,
                        main_gui::GuiInterface *gui, std::string resPath,
-                       lib_manager::LibManager *theManager) :
-      control(c), mainGui(gui), libManager(theManager) {
+                       lib_manager::LibManager *theManager)
+      : libManager(theManager), mainGui(gui), control(c) {
   
       std::string tmp1;
 

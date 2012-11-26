@@ -41,6 +41,8 @@ namespace mars {
 	  return ConfigMap();
 	}
       }
+      // if there is no valid document return a empty ConfigMap
+      return ConfigMap();
     }
 
 

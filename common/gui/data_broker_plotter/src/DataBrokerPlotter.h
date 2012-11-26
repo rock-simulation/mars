@@ -42,14 +42,14 @@ namespace data_broker_plotter {
   };
 
   class DataBrokerPlotter : public mars::main_gui::BaseWidget,
-    public mars::data_broker::ReceiverInterface {
-  Q_OBJECT
+                            public mars::data_broker::ReceiverInterface {
+    Q_OBJECT;
 
   public:
     DataBrokerPlotter(DataBrokerPlotterLib *_mainLib,
-                  mars::data_broker::DataBrokerInterface *_dataBroker,
-                  mars::cfg_manager::CFGManagerInterface *cfg,
-                  std::string _name, QWidget* parent = 0);
+                      mars::data_broker::DataBrokerInterface *_dataBroker,
+                      mars::cfg_manager::CFGManagerInterface *cfg,
+                      std::string _name, QWidget* parent = 0);
     ~DataBrokerPlotter();
 
     // DataBroker method
@@ -64,8 +64,9 @@ namespace data_broker_plotter {
     void hideEvent(QHideEvent *event);
 
   private:
-    QCustomPlot *qcPlot;
+    mars::data_broker::DataBrokerInterface *dataBroker;
     DataBrokerPlotterLib *mainLib;
+    QCustomPlot *qcPlot;
     QMutex dataLock;
     std::string name;
 
@@ -74,7 +75,6 @@ namespace data_broker_plotter {
     std::vector<Plot*> plots;
     std::map<mars::cfg_manager::cfgParamId, Plot*> cfgParamIdToPlot;
 
-    mars::data_broker::DataBrokerInterface *dataBroker;
     int nextPlotId;
 
     void createNewPlot();

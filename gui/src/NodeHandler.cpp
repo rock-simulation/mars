@@ -80,7 +80,7 @@ namespace mars {
           break;
         case NodeTree::EditMode:
           for (unsigned int i = 0; i < allNodes.size(); i++)
-            if (allNodes[i].index == myNodeIndex) {
+            if ((long)allNodes[i].index == myNodeIndex) {
               node = control->nodes->getFullNode(allNodes[i].index);
               break;
             }
@@ -316,7 +316,7 @@ namespace mars {
         previewOff();
         general->removeSubProperty(group_id);
         general->addSubProperty(image);
-        for (unsigned int i = 0; i < physics_props.size(); i++)  
+        for (unsigned int i = 0; i < (unsigned int)physics_props.size(); ++i)
           physics->removeSubProperty(physics_props[i]);
         physics->setValue(false);
         physics->setEnabled(false);
@@ -330,7 +330,7 @@ namespace mars {
       case interfaces::NODE_TYPE_PLANE:
         general->removeSubProperty(image);
         general->addSubProperty(group_id);  
-        for (unsigned int i = 0; i < physics_props.size(); i++)  
+        for (unsigned int i = 0; i < (unsigned int)physics_props.size(); ++i)
           physics->removeSubProperty(physics_props[i]);
         physics->setValue(true);
         physics->setEnabled(false);  
@@ -392,7 +392,7 @@ namespace mars {
         general->addSubProperty(group_id);
         physics->setEnabled(true);
         physics->setValue(!node.noPhysical);
-        for (unsigned int i = 0; i < physics_props.size(); i++)  
+        for (unsigned int i = 0; i < (unsigned int)physics_props.size(); ++i)
           if (node.noPhysical)
             physics->removeSubProperty(physics_props[i]);
           else
@@ -630,7 +630,7 @@ namespace mars {
       node.groupID = group_id->value().toInt();
       node.movable = movable->value().toBool();
       node.noPhysical = !(physics->value().toBool());
-      for (unsigned int i = 0; i < physics_props.size(); i++)  
+      for (unsigned int i = 0; i < (unsigned int)physics_props.size(); ++i)
         if (node.noPhysical)
           physics->removeSubProperty(physics_props[i]);
         else

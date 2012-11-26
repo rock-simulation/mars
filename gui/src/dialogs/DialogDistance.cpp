@@ -88,7 +88,7 @@ namespace mars {
       if (property == viewNodes) {
         if (value.toBool() == false) {
           QList<QListWidgetItem*> nodeItems = objectList->findItems("Node ", Qt::MatchStartsWith);
-          for (unsigned int i = 0; i < nodeItems.size(); i++) 
+          for (unsigned int i = 0; i < (unsigned int)nodeItems.size(); i++) 
             (void)objectList->takeItem(objectList->row(nodeItems[i]));
           selectedNodes.clear();
           selectObjects();
@@ -103,7 +103,7 @@ namespace mars {
       } else if (property == viewJoints) {
         if (value.toBool() == false) {
           QList<QListWidgetItem*> jointItems = objectList->findItems("Joint ", Qt::MatchStartsWith);
-          for (unsigned int i = 0; i < jointItems.size(); i++)
+          for (unsigned int i = 0; i < (unsigned int)jointItems.size(); i++)
             (void)objectList->takeItem(objectList->row(jointItems[i]));
           selectedJoints.clear();
           selectObjects();
@@ -145,7 +145,7 @@ namespace mars {
       selectedNodes.clear();
       selectedJoints.clear();
 
-      for (unsigned int i = 0 ; i < selectedItems.size(); i++) {
+      for (unsigned int i = 0 ; i < (unsigned int)selectedItems.size(); i++) {
         int m = selectedItems[i]->text().indexOf(" ");
         int n = selectedItems[i]->text().indexOf(":");
         unsigned long object_id = selectedItems[i]->text().mid(m, n-m).toULong();
