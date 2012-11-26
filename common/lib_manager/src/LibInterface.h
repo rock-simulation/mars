@@ -89,7 +89,7 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
     mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
                                                  GIT_INFO_SRC_STR,      \
                                                  GIT_INFO_REV_STR };    \
-    //instance->moduleInfo = moduleInfo;                                \
+    /*instance->moduleInfo = moduleInfo;*/                              \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
