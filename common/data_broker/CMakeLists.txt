@@ -29,10 +29,10 @@ include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CFLAGS_OTHER})  # flags without -I
 
-if(NOT ${CMAKE_C_SIZEOF_DATA_PTR} EQUAL 8)
-  set(DATA_BROKER_EIGEN_DEFINITIONS -DEIGEN_DONT_ALIGN=1)
-  add_definitions(${DATA_BROKER_EIGEN_DEFINITIONS})
-endif()
+#if(NOT ${CMAKE_C_SIZEOF_DATA_PTR} EQUAL 8)
+#  set(DATA_BROKER_EIGEN_DEFINITIONS -DEIGEN_DONT_ALIGN=1)
+#  add_definitions(${DATA_BROKER_EIGEN_DEFINITIONS})
+#endif()
 
 include_directories(
   src

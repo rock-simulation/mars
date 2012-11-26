@@ -22,13 +22,8 @@
 #ifndef MARS_UTILS_VECTOR_H
 #define MARS_UTILS_VECTOR_H
 
-
-#ifdef WIN32
-#  ifndef EIGEN_DONT_ALIGN
-#    define EIGEN_DONT_ALIGN
-#  endif
-#endif
 #include <Eigen/Core>
+
 
 /* define M_PI if it is not defined (M_PI is *not* part of any standard) */
 #ifndef M_PI
@@ -39,7 +34,7 @@
 namespace mars {
   namespace utils {
 
-    typedef Eigen::Vector3d Vector;
+    typedef Eigen::Matrix<double, 3, 1, Eigen::DontAlign> Vector;
 
   } // end of namespace utils
 } // end of namespace mars

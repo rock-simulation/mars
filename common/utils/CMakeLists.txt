@@ -18,11 +18,6 @@ include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
-if(NOT ${CMAKE_C_SIZEOF_DATA_PTR} EQUAL 8)
-  set(MARS_CORE_EIGEN_DEFINITIONS -DEIGEN_DONT_ALIGN=1)
-  add_definitions(${MARS_CORE_EIGEN_DEFINITIONS})
-endif()
-
 set(SOURCES 
     src/Color.cpp
     src/ConfigData.cpp
