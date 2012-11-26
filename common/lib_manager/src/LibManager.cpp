@@ -251,8 +251,10 @@ namespace mars {
         // retrive the error message
         {
           LPTSTR lpErrorText = NULL;
-          ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
-                          0, GetLastError(), 0, lpErrorText, MAX_PATH, 0);
+          ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+                          FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                          0, GetLastError(), 0,
+                          (LPTSTR)&lpErrorText, MAX_PATH, 0);
           errorMsg = lpErrorText;
           ::LocalFree(lpErrorText);
         }
