@@ -60,27 +60,29 @@ namespace mars {
   namespace graphics {
 
     HUDLines::HUDLines(osg::ref_ptr<osg::Group> group)
-  : parent(group),
-    scaleTransform(new osg::MatrixTransform),
-    cull_mask(0xffffffff),
-    pl(0), pt(0), pr(0), pb(0),
-    visible(true),
-    point_size(1.0),
-    render_order(10),
-    init(true)
+      : HUDElement(),
+        parent(group),
+        scaleTransform(new osg::MatrixTransform),
+        cull_mask(0xffffffff),
+        render_order(10),
+        visible(true),
+        init(true),
+        pl(0), pt(0), pr(0), pb(0),
+        point_size(1.0)
     {
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
       if(parent.get() != NULL) parent->addChild(scaleTransform);
     }
     HUDLines::HUDLines()
-  : parent(NULL),
-    scaleTransform(new osg::MatrixTransform),
-    cull_mask(0xffffffff),
-    pl(0), pt(0), pr(0), pb(0),
-    visible(true),
-    point_size(1.0),
-    render_order(10),
-    init(true)
+      : HUDElement(),
+        parent(NULL),
+        scaleTransform(new osg::MatrixTransform),
+        cull_mask(0xffffffff),
+        render_order(10),
+        visible(true),
+        init(true),
+        pl(0), pt(0), pr(0), pb(0),
+        point_size(1.0)
     {
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
     }
@@ -134,7 +136,7 @@ namespace mars {
 
         osg::Vec3Array* ver = new osg::Vec3Array((*_vertices).size()/3);
         ver->setDataVariance(osg::Object::DYNAMIC);
-        for(int i=0; i<_vertices->size()/3; ++i)
+        for(size_t i=0; i<_vertices->size()/3; ++i)
           (*ver)[i].set((*_vertices)[i*3],
                         (*_vertices)[(i*3)+1],
                         (*_vertices)[(i*3)+2]-1.0);
@@ -200,7 +202,7 @@ namespace mars {
     
           geom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS,0,4));
     
-          osg::StateSet* stateset = geom->getOrCreateStateSet();
+          //osg::StateSet* stateset = geom->getOrCreateStateSet();
           //stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
           //stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
           //stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
@@ -259,7 +261,7 @@ namespace mars {
         osg::Geometry* geometry;
         osg::ref_ptr<osg::Vec3Array> v(new osg::Vec3Array());
 
-        if(geode = dynamic_cast<osg::Geode*>(scaleTransform->getChild(0))) {
+        if((geode = dynamic_cast<osg::Geode*>(scaleTransform->getChild(0)))) {
           if((drawable = geode->getDrawable(0))) {
             if((geometry = drawable->asGeometry())) {
               for(unsigned int i=0; i<(*_vertices).size()/3; ++i) {

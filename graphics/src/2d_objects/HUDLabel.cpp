@@ -260,7 +260,7 @@ namespace mars {
       osg::BoundingBox bb;
       bb.expandBy(geode->getDrawable(0)->getBound());
       //float d = bb.zMin()-2.0;
-      float w = bb.xMax() - bb.xMin() + pl + pr;
+      //float w = bb.xMax() - bb.xMin() + pl + pr;
       //float h = bb.yMax() - bb.yMin() + pt + pb;
 	
       //double pos;
