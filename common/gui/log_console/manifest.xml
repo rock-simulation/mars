@@ -2,8 +2,8 @@
     <description brief="log_console">
 	An small error (message) console based on the lib_manager and the main_gui libraray.
    </description>
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/data_broker" />
-    <depend package="simulation/main_gui" />
-    <depend package="simulation/cfg_manager" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/data_broker" />
+    <depend package="simulation/mars/main_gui" />
+    <depend package="simulation/mars/cfg_manager" />
 </package>

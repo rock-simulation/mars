@@ -3,10 +3,11 @@
        DFKI Robot simulator GUI
     </description>
 
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/main_gui" />
-    <depend package="simulation/mars_interfaces" />
-    <depend package="simulation/mars_utils" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/data_broker" />
+    <depend package="simulation/mars/main_gui" />
+    <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/utils" />
 
     <depend package="opencv" />
     <rosdep name="qt4" />

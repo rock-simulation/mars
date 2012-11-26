@@ -2,7 +2,7 @@
     <description brief="cfg_manager_gui">
 	The library provides a propertybrowser widget to set all registered parameter of the cfg_manager lib.
    </description>
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/main_gui" />
-    <depend package="simulation/cfg_manager" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/main_gui" />
+    <depend package="simulation/mars/cfg_manager" />
 </package>
