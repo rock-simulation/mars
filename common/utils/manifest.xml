@@ -3,5 +3,5 @@
 	This Library contains several useful utilities like a Mutex and Thread class.
     </description>
     <depend package="eigen3" />
-    <depend package="yaml-cpp" />
+    <depend package="external/yaml-cpp" />
 </package>
