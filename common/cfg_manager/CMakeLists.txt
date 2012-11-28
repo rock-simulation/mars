@@ -9,14 +9,14 @@ include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 mars_defaults()
 define_module_info()
 
-pkg_check_modules(PKGCONFIG
+pkg_check_modules(DEPS REQUIRED
 	lib_manager
 	yaml-cpp
 	mars_utils
 )
-include_directories(${PKGCONFIG_INCLUDE_DIRS})
-link_directories(${PKGCONFIG_LIBRARY_DIRS})
-add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
+include_directories(${DEPS_INCLUDE_DIRS})
+link_directories(${DEPS_LIBRARY_DIRS})
+add_definitions(${DEPS_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 include_directories(
 	src
@@ -46,8 +46,11 @@ set(HEADERS
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
+
+MESSAGE("LIBS ${DEPS_LIBRARIES}")
+
 target_link_libraries(${PROJECT_NAME}
-                      ${PKGCONFIG_LIBRARIES}
+                      ${DEPS_LIBRARIES}
 )
 
 if(WIN32)

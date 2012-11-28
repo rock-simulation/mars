@@ -10,4 +10,4 @@ Libs: -L${libdir} -l@PROJECT_NAME@
 Requires: eigen3
 Requires.private: yaml-cpp
 
-Cflags: -I${includedir} -I@EIGEN_INCLUDE_DIRS@ @MARS_CORE_EIGEN_DEFINITIONS@
+Cflags: -I${includedir} @MARS_CORE_EIGEN_DEFINITIONS@
