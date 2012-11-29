@@ -27,12 +27,12 @@
 
 #include "LibManager.h"
 
-#ifndef WIN32
-#  include <dlfcn.h>
-#  define LibHandle void*
-#else
+#ifdef WIN32
 #  include <windows.h>
 #  define LibHandle HINSTANCE
+#else
+#  include <dlfcn.h>
+#  define LibHandle void*
 #endif
 
 #include <cstdio>
@@ -242,30 +242,31 @@ namespace mars {
     // Helper Functions
     ////////////////////
 
-    static LibHandle intern_loadLib(const std::string &libPath) {
-      LibHandle libHandle;
+    static std::string getErrorStr() {
       string errorMsg;
 #ifdef WIN32
+      LPTSTR lpErrorText = NULL;
+      ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
+                      FORMAT_MESSAGE_ALLOCATE_BUFFER,
+                      0, GetLastError(), 0,
+                      (LPTSTR)&lpErrorText, MAX_PATH, 0);
+      errorMsg = lpErrorText;
+      ::LocalFree(lpErrorText);
+#else
+      errorMsg = dlerror();
+#endif
+      return errorMsg;
+    }
+
+    static LibHandle intern_loadLib(const std::string &libPath) {
+      LibHandle libHandle;
+#ifdef WIN32
       libHandle = LoadLibrary(libPath.c_str());
-      if(!libHandle) {
-        // retrive the error message
-        {
-          LPTSTR lpErrorText = NULL;
-          ::FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM |
-                          FORMAT_MESSAGE_ALLOCATE_BUFFER,
-                          0, GetLastError(), 0,
-                          (LPTSTR)&lpErrorText, MAX_PATH, 0);
-          errorMsg = lpErrorText;
-          ::LocalFree(lpErrorText);
-        }
-      }
 #else
       libHandle = dlopen(libPath.c_str(), RTLD_LAZY);
-      if(!libHandle) {
-        errorMsg = dlerror();
-      }
 #endif
       if(!libHandle) {
+        string errorMsg = getErrorStr();
         fprintf(stderr, "ERROR: lib_manager cannot load library:\n       %s\n",
                 errorMsg.c_str());
       }
@@ -275,15 +276,13 @@ namespace mars {
     template <typename T>
     static T getFunc(LibHandle libHandle, const std::string &name) {
       T func = NULL;
-      string err;
 #ifdef WIN32
       func = reinterpret_cast<T>(GetProcAddress(libHandle, name.c_str()));
 #else
       func = reinterpret_cast<T>(dlsym(libHandle, name.c_str()));
-      if(!func)
-        err = dlerror();
 #endif
       if(!func) {
+        string err = getErrorStr();
         fprintf(stderr, 
                 "ERROR: lib_manager cannot load library symbol \"%s\"\n"
                 "       %s\n", name.c_str(), err.c_str());
