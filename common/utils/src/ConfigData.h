@@ -43,7 +43,7 @@ namespace mars {
       T& operator[](size_t index) {
 
         if(index == this->size()) {
-          push_back(T());
+          this->push_back(T());
         }
 
         return std::vector<T>::operator[](index);
