@@ -25,6 +25,12 @@
   #warning "Quaternion.h"
 #endif
 
+#ifdef WIN32
+#  ifndef EIGEN_DONT_ALIGN
+#    define EIGEN_DONT_ALIGN
+#  endif
+#endif
+
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 

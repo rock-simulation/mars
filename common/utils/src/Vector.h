@@ -22,6 +22,12 @@
 #ifndef MARS_UTILS_VECTOR_H
 #define MARS_UTILS_VECTOR_H
 
+#ifdef WIN32
+#  ifndef EIGEN_DONT_ALIGN
+#    define EIGEN_DONT_ALIGN
+#  endif
+#endif
+
 #include <Eigen/Core>
 
 
