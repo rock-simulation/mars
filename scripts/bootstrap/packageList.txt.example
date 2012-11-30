@@ -9,8 +9,8 @@ external/minizip
 
 external/ode_mars
 
-mars/common/utils
 mars/common/lib_manager
+mars/common/utils
 mars/common/cfg_manager
 mars/common/data_broker
 
