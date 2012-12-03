@@ -86,6 +86,8 @@ function setupConfig {
             echo "On Windows you should use the mingw path and not the windows path and avoid trailing slashes (e.g. /c/dev/mars-git)"
             echo -n "Enter root directory: "
             read MARS_DEV_ROOT || return 1
+            # expand ~ by using eval
+            eval MARS_DEV_ROOT=${MARS_DEV_ROOT}
             echo "MARS_DEV_ROOT=\"${MARS_DEV_ROOT}\"" > ${configFile}
             echo "You can specify the number of CORES you want to use when compiling packages."
             echo -n "Enter number of CORES: "
