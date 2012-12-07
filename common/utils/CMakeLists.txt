@@ -29,6 +29,7 @@ set(SOURCES
     src/WaitCondition.cpp
     src/mathUtils.cpp
     src/misc.cpp
+    src/Socket.cpp
 )
 set(HEADERS
     src/Color.h
@@ -44,6 +45,7 @@ set(HEADERS
     src/WaitCondition.h
     src/mathUtils.h
     src/misc.h
+    src/Socket.h
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
