@@ -90,8 +90,7 @@ namespace mars {
     }
 
     DataBroker::DataBroker(mars::lib_manager::LibManager *theManager) :
-      mars::lib_manager::LibInterface(theManager),
-      DataBrokerInterface(),
+      DataBrokerInterface(theManager),
       mars::utils::Thread(),
       next_id(1), thread_running(false), stop_thread(false),
       realtimeThreadRunning(false) {

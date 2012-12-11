@@ -74,11 +74,17 @@
 #include "DataPackage.h"
 #include "DataInfo.h"
 
+#include <mars/lib_manager/LibInterface.h>
+
 #include <cstdarg>
 #include <string>
 #include <vector>
 
 namespace mars {
+
+  namespace lib_manager {
+    class LibManager;
+  }
 
   namespace data_broker {
 
@@ -96,14 +102,22 @@ namespace mars {
     };
 
     /** \brief The interface every DataBroker should implement. */
-    class DataBrokerInterface {
+    class DataBrokerInterface : public mars::lib_manager::LibInterface {
 
     public:
       /**
        * \brief Contructor takes no arguments.
        */
-      DataBrokerInterface() {}
+      DataBrokerInterface(mars::lib_manager::LibManager *theManager)
+        : mars::lib_manager::LibInterface(theManager)
+      {}
       virtual ~DataBrokerInterface() {}
+
+      // LibInterface methods
+      virtual int getLibVersion() const
+      { return 1; }
+      virtual const std::string getLibName() const
+      { return "data_broker"; }
 
       /**
        * \brief create a new timer with the given name

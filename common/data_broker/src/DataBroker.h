@@ -31,7 +31,6 @@
 #include "DataInfo.h"
 #include "LockableContainer.h"
 
-#include <mars/lib_manager/LibManager.h>
 #include <mars/utils/Thread.h>
 #include <mars/utils/Mutex.h>
 #include <mars/utils/ReadWriteLock.h>
@@ -46,6 +45,10 @@
 #include <pthread.h>
 
 namespace mars {
+
+  namespace lib_manager {
+    class LibManager;
+  }
 
   namespace data_broker {
 
@@ -145,17 +148,12 @@ namespace mars {
     };
     /// \endcond
 
-    class DataBroker : public mars::lib_manager::LibInterface,
-                       public DataBrokerInterface,
+    class DataBroker : public DataBrokerInterface,
                        public mars::utils::Thread {
 
     public:
       DataBroker(mars::lib_manager::LibManager *theManager);
       virtual ~DataBroker();
-
-      // LibInterface methods
-      int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("data_broker");}
 
       bool createTimer(const std::string &timerName);
       /**
