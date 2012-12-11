@@ -32,6 +32,10 @@
   #warning "PluginInterface.h"
 #endif
 
+#include <mars/interfaces/MARSDefs.h> // for sReal
+
+#include <string>
+
 namespace mars {
   namespace interfaces {
 
