@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <vector>
 #include <cstdio>
+#include <iosfwd>
 
 #include "FIFOMap.h"
 
@@ -73,7 +74,9 @@ namespace mars {
     class ConfigMap : public FIFOMap<std::string, ConfigVector> {
     public:
       void toYamlFile(const std::string &filename) const;
+      static ConfigMap fromYamlStream(std::istream &in);
       static ConfigMap fromYamlFile(const std::string &filename);
+      static ConfigMap fromYamlString(const std::string &s);
     };
 
     // todo: support vector and quaternion

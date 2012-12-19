@@ -2,6 +2,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include <fstream>
+#include <sstream>
 
 
 namespace mars {
@@ -26,9 +27,8 @@ namespace mars {
 
 
 
-    ConfigMap ConfigMap::fromYamlFile(const string &filename) {
-      std::ifstream fin(filename.c_str());
-      YAML::Parser parser(fin);
+    ConfigMap ConfigMap::fromYamlStream(std::istream &in) {
+      YAML::Parser parser(in);
       YAML::Node doc, node;
       while(parser.GetNextDocument(doc)) {
 	if(doc.Type() == YAML::NodeType::Map) {
@@ -43,6 +43,16 @@ namespace mars {
       }
       // if there is no valid document return a empty ConfigMap
       return ConfigMap();
+    }
+
+    ConfigMap ConfigMap::fromYamlFile(const string &filename) {
+      std::ifstream fin(filename.c_str());
+      return fromYamlStream(fin);
+    }
+
+    ConfigMap ConfigMap::fromYamlString(const string &s) {
+      std::istringstream sin(s);
+      return fromYamlStream(sin);
     }
 
 
