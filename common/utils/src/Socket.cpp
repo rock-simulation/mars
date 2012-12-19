@@ -29,6 +29,9 @@
 #  include <sys/socket.h>
 #endif
 
+#ifndef __linux
+#  define MSG_NOSIGNAL 0
+#endif
 
 #ifdef WIN32
 #  ifndef WSAEAGAIN
@@ -55,24 +58,14 @@ namespace mars {
     /********************************
      * helper function implementation
      ********************************/
-    template<>
-    unsigned short ntoh<unsigned short>(const unsigned short &val)
+    unsigned short ntoh(const unsigned short &val)
     { return ::ntohs(val); }
-    template<>
-    unsigned long ntoh<unsigned long>(const unsigned long &val)
+    unsigned long ntoh(const unsigned long &val)
     { return ::ntohl(val); }
-    template<>
-    unsigned short hton<unsigned short>(const unsigned short &val)
+    unsigned short hton(const unsigned short &val)
     { return ::htons(val); }
-    template<>
-    unsigned long hton<unsigned long>(const unsigned long &val)
+    unsigned long hton(const unsigned long &val)
     { return ::htonl(val); }
-    template<typename T>
-    T ntoh(const T &val)
-    { assert(false); }
-    template<typename T>
-    T hton(const T &val)
-    { assert(false); }
 
     bool isBigEndian() {
       union {
@@ -286,9 +279,8 @@ namespace mars {
 
     void TCPConnection::setBlocking(bool blocking)
     {assert(false);}
-
     bool TCPConnection::isBlocking() const
-    {assert(false);}
+    { return true; }
 
     void TCPConnection::setTimeout(double timeout)
     { if(s) s->setTimeout(timeout); }
@@ -479,6 +471,13 @@ namespace mars {
       val = int(flags & SOCKET_FLAG_NODELAY);
       setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY,
                  (const char*)&val, sizeof(val));
+      setsockopt(sock_fd, IPPROTO_TCP, TCP_NODELAY,
+                 (const char*)&val, sizeof(val));
+#ifdef __APPLE__
+      // prevent send() from raising SIGPIPE
+      int set = 1;
+      setsockopt(sock_fd, SOL_SOCKET, SO_NOSIGPIPE, (void *)&set, sizeof(int));
+#endif
     }
 
     bool TCPBaseSocket::isConnected() const

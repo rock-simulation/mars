@@ -49,6 +49,7 @@ namespace mars {
       SOCKET_FLAG_NODELAY       = 0x08,
       SOCKET_FLAG_BROADCAST     = 0x10,
       SOCKET_FLAG_KEEPALIVE     = 0x20,
+      SOCKET_FLAG_NOSIGNAL      = 0x40,
     };
 
 
@@ -73,10 +74,10 @@ namespace mars {
     // helper functions
 
     bool isBigEndian();
-    template<typename T>
-    T ntoh(const T &val);
-    template<typename T>
-    T hton(const T &val);
+    unsigned short ntoh(const unsigned short &val);
+    unsigned long ntoh(const unsigned long &val);
+    unsigned short hton(const unsigned short &val);
+    unsigned long hton(const unsigned long &val);
 
 
     // class declarations
