@@ -150,7 +150,8 @@ namespace mars {
     SocketError TCPServer::acceptConnection(TCPConnection *c) const {
       if(c->s) {
         if(c->s->isConnected()) {
-          fprintf(stderr, "TCPServer: client already connected\n");
+          fprintf(stderr,
+                  "TCPServer::acceptConnection: client already connected\n");
           return SOCKET_ALREADY_CONNECTED;
         }
         delete c->s;
@@ -309,14 +310,17 @@ namespace mars {
      * TCPBaseSocket implementation
      ********************************/
 
-    TCPBaseSocket::TCPBaseSocket() : flags(0), sock_fd(INVALID_SOCKET) {
+    TCPBaseSocket::TCPBaseSocket()
+      : flags(SOCKET_FLAG_REUSEADDR)
+      , sock_fd(INVALID_SOCKET) {
+
       sock_timeout = -1;
 #ifdef WIN32
       WSADATA wsaData;
       WORD wVersionRequested = MAKEWORD(2, 2);
       int result = WSAStartup(wVersionRequested, &wsaData);
       if (result != 0) {
-        fprintf(stderr, "Fehler beim Initialisieren von Winsock: %d\n", result);
+        fprintf(stderr, "TCPBaseSocket::TCPBaseSocket: Fehler beim Initialisieren von Winsock: %d\n", result);
         return;
       }
 #endif
@@ -354,12 +358,12 @@ namespace mars {
     SocketError TCPBaseSocket::bind(const std::string &host,
                                     unsigned short port) {
       if(sock_fd == INVALID_SOCKET) {
-        fprintf(stderr, "errrrrr\n");
+        fprintf(stderr, "TCPBaseSocket::bind: invalid socket\n");
         return SOCKET_INVALID_SOCKET;
       }
       struct hostent *hp = gethostbyname( host.c_str() );
       if(hp == NULL) {
-        fprintf(stderr, "errrrrr 2\n");
+        fprintf(stderr, "TCPBaseSocket::bind: gethostbyname failed\n");
         return SOCKET_HOST_NOT_FOUND;
       }
 
@@ -370,7 +374,7 @@ namespace mars {
 
       if(::bind(sock_fd, (struct sockaddr*)&sa, sizeof(sa)) < 0) {
         close();
-        fprintf(stderr, "errrrrr 3\n");
+        fprintf(stderr, "TCPBaseSocket::bind: bind failed\n");
         return SOCKET_BIND_FAILED;
       }
       return SOCKET_SUCCESS;
@@ -386,7 +390,7 @@ namespace mars {
 
     TCPBaseSocket* TCPBaseSocket::accept() {
       if(sock_fd == INVALID_SOCKET) {
-        fprintf(stderr, "errroror 5 \n");
+        fprintf(stderr, "TCPBaseSocket::accept: invalid socket\n");
         return NULL;
       }
       long now = 0, deadline = 0;
@@ -432,13 +436,16 @@ namespace mars {
                              sizeof(servAddr));
       if(result != 0) {
         close();
+        fprintf(stderr, "TCPBaseSocket::connect: connect failed to %s:%hu\n",
+                host.c_str(), port);
         return SOCKET_CONNECTION_FAILED;
       }
       return SOCKET_SUCCESS;
     }
 
     size_t TCPBaseSocket::send(const char *data, size_t len) const {
-      return ::send(sock_fd, data, len, flags);
+      // MSG_NOSIGNAL prevents send from raising SIGPIPE on Linux
+      return ::send(sock_fd, data, len, flags | MSG_NOSIGNAL);
     }
 
     size_t TCPBaseSocket::recv(char *data, size_t maxLen) {
