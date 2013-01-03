@@ -44,7 +44,6 @@
   (errno == expected)
 #endif
 
-
 #include <cassert>
 #include <cstdio>
 #include <errno.h>
@@ -59,13 +58,13 @@ namespace mars {
      * helper function implementation
      ********************************/
     unsigned short ntoh(const unsigned short &val)
-    { return ::ntohs(val); }
+    { return ntohs(val); }
     unsigned long ntoh(const unsigned long &val)
-    { return ::ntohl(val); }
+    { return ntohl(val); }
     unsigned short hton(const unsigned short &val)
-    { return ::htons(val); }
+    { return htons(val); }
     unsigned long hton(const unsigned long &val)
-    { return ::htonl(val); }
+    { return htonl(val); }
 
     bool isBigEndian() {
       union {
