@@ -96,7 +96,7 @@ namespace mars {
       }
 
       void LibManagerGui::update() {
-        if(!widget)
+        if(!widget || !widget->isVisible())
           return;
         std::list<std::string> libNameList;
         libManager->getAllLibraryNames(&libNameList);
