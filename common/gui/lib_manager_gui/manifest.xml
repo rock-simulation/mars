@@ -1,0 +1,8 @@
+<package>
+    <description brief="lib_manager_gui">
+      GUI for the LibManager
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/main_gui" />
+    <depend package="simulation/cfg_manager" />
+</package>
