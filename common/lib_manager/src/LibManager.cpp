@@ -115,6 +115,7 @@ namespace mars {
       newLib.libInterface = 0;
       newLib.useCount = 0;
       newLib.wasUnloaded = false;
+      newLib.path = libPath;
 
       LibHandle pl = intern_loadLib(libPath);
 
@@ -235,6 +236,22 @@ namespace mars {
       for(it = libMap.begin(); it != libMap.end(); ++it) {
         libNameList->push_back(it->first);
       }
+    }
+
+    LibInfo LibManager::getLibraryInfo(const std::string &libName) const {
+      LibInfo info;
+      std::map<std::string, libStruct>::const_iterator it;
+      it = libMap.find(libName);
+      if(it != libMap.end()) {
+        ModuleInfo modInfo = it->second.libInterface->getModuleInfo();
+        info.name = libName;
+        info.path = it->second.path;
+        info.version = it->second.libInterface->getLibVersion();
+        info.src = modInfo.src;
+        info.revision = modInfo.revision;
+        info.references = it->second.useCount;
+      }
+      return info;
     }
 
 
