@@ -66,6 +66,7 @@ namespace mars {
         // LibManagerWidget methods
         void updateLibInfo(const lib_manager::LibInfo &info);
         void clear();
+        void setDefaultLibPath(const std::string &path);
 
       private slots:
         void onLoad();
@@ -82,7 +83,7 @@ namespace mars {
         QPushButton *loadButton;
         QPushButton *unloadButton;
         QPushButton *dumpButton;
-        std::map<std::string, int> libNameToRow;
+        QString defaultLibPath;
 
         friend class LibManagerGui; // needed for access to onLoad.
 

@@ -67,8 +67,23 @@ namespace mars {
         }
       }
 
+      void LibManagerWidget::setDefaultLibPath(const string &path) {
+        defaultLibPath = QString::fromStdString(path);
+      }
+
       void LibManagerWidget::onLoad() {
-        QString path = QFileDialog::getOpenFileName(this, "Load Library...");
+        QString filter;
+#ifdef WIN32
+        filter = "Shared Object (*.dll)";
+#else
+#  ifdef __APPLE__
+        filter = "Shared Object (*.dylib)";
+#  else
+        filter = "Shared Object (*.so)";
+#  endif
+#endif
+        QString path = QFileDialog::getOpenFileName(this, "Load Library...",
+                                                    defaultLibPath, filter);
         if(!path.isNull())
           emit load(path.toStdString());
       }
@@ -85,7 +100,7 @@ namespace mars {
 
       void LibManagerWidget::onDump() {
         QString path = QFileDialog::getSaveFileName(this, "Dump Info to...",
-                                                    "", "XML files (*.xml)");
+                                                    "", "All Files (*.*);;XML files (*.xml)");
         if(!path.isNull())
           emit dump(path.toStdString());
       }

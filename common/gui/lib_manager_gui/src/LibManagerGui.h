@@ -78,6 +78,7 @@ namespace mars {
         void setupGUI(std::string rPath);
 
       private slots:
+        void init();
         void load(std::string libPath);
         void unload(std::string libName);
         void dumpTo(std::string filepath);

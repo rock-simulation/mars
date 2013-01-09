@@ -33,6 +33,9 @@
 #include <cstdio>
 #include <cassert>
 
+#include <QFileInfo>
+#include <QDir>
+
 namespace mars {
   namespace plugins {
     namespace lib_manager_gui {
@@ -56,6 +59,9 @@ namespace mars {
         setupGUI("../resources/");
         connect(&timer, SIGNAL(timeout()), this, SLOT(update()));
         timer.start(1000);
+        // defer init because the LibManager fills the info object after
+        // the constructor returns.
+        QTimer::singleShot(1, this, SLOT(init()));
       }
 
       LibManagerGui::~LibManagerGui() {
@@ -68,6 +74,13 @@ namespace mars {
           libManager->releaseLibrary(gui->getLibName());
       }
 
+      void LibManagerGui::init() {
+        // get the default lib directory by looking at our own LibInfo
+        lib_manager::LibInfo info = libManager->getLibraryInfo(getLibName());
+        QDir libDir =QFileInfo(QString::fromStdString(info.path)).absoluteDir();
+        string libDirPath = libDir.absolutePath().toStdString();
+        widget->setDefaultLibPath(libDirPath);
+      }
 
       void LibManagerGui::load(std::string libPath) {
         libManager->loadLibrary(libPath);
