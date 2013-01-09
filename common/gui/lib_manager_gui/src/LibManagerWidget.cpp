@@ -69,7 +69,8 @@ namespace mars {
 
       void LibManagerWidget::onLoad() {
         QString path = QFileDialog::getOpenFileName(this, "Load Library...");
-        emit load(path.toStdString());
+        if(!path.isNull())
+          emit load(path.toStdString());
       }
 
       void LibManagerWidget::onUnload() {
@@ -85,7 +86,8 @@ namespace mars {
       void LibManagerWidget::onDump() {
         QString path = QFileDialog::getSaveFileName(this, "Dump Info to...",
                                                     "", "XML files (*.xml)");
-        emit dump(path.toStdString());
+        if(!path.isNull())
+          emit dump(path.toStdString());
       }
 
       void LibManagerWidget::updateLibInfo(const lib_manager::LibInfo &info) {
