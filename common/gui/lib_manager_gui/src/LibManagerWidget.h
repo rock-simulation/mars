@@ -84,6 +84,8 @@ namespace mars {
         QPushButton *dumpButton;
         std::map<std::string, int> libNameToRow;
 
+        friend class LibManagerGui; // needed for access to onLoad.
+
       }; // end of class definition LibManagerWidget
 
     } // end of namespace lib_manager_gui

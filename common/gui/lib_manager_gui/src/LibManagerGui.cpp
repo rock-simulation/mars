@@ -41,6 +41,11 @@ namespace mars {
       using cfg_manager::CFGManagerInterface;
       using main_gui::GuiInterface;
 
+      enum MenuCallback {
+        CALLBACK_INFO = 1,
+        CALLBACK_LOAD,
+      };
+
       LibManagerGui::LibManagerGui(lib_manager::LibManager *theManager)
         : mars::lib_manager::LibInterface(theManager)
         , mars::main_gui::MenuInterface()
@@ -123,7 +128,10 @@ namespace mars {
           return;
         }
 
-        gui->addGenericMenuAction("../LibManager/Info...", 1, this, 0);
+        gui->addGenericMenuAction("../File/Library Info...", CALLBACK_INFO,
+                                  this);
+        gui->addGenericMenuAction("../File/Load Library...", CALLBACK_LOAD,
+                                  this);
 
         widget = new LibManagerWidget(NULL, cfg);
         connect(widget, SIGNAL(load(std::string)),
@@ -135,7 +143,20 @@ namespace mars {
       }
 
       void LibManagerGui::menuAction(int action, bool checked) {
-        widget->show();
+        switch(action) {
+        case CALLBACK_INFO:
+          if(widget->isHidden()) {
+            gui->addDockWidget(widget, 1);
+            widget->show();
+          } else {
+            widget->hide();
+            gui->removeDockWidget(widget, 1);
+          }
+          break;
+        case CALLBACK_LOAD:
+          widget->onLoad();
+          break;
+        }
       }
 
       void LibManagerGui::newLibLoaded(const std::string &libName) {
