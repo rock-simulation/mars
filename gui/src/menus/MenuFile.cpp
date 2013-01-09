@@ -71,9 +71,6 @@ namespace mars {
       mainGui->addGenericMenuAction("../File/Export Scene", GUI_ACTION_EXPORT_SCENE, 
                                     (main_gui::MenuInterface*)this, 0);
 
-      mainGui->addGenericMenuAction("../File/Load Plugin", GUI_ACTION_OPEN_PLUGIN,
-                                    (main_gui::MenuInterface*)this, 0); 
-
     }
 
     MenuFile::~MenuFile() {
@@ -89,7 +86,6 @@ namespace mars {
       case GUI_ACTION_RESET_SCENE: menu_resetScene(); break;
       case GUI_ACTION_NEW_SCENE: menu_newScene(); break;
       case GUI_ACTION_EXPORT_SCENE: menu_exportScene(); break;
-      case GUI_ACTION_OPEN_PLUGIN: menu_openPlugin(); break;
       }
     }
 
@@ -138,49 +134,6 @@ namespace mars {
       }
       control->sim->loadScene(fileName.toStdString(), false);
       if(wasrunning) control->sim->startStopTrigger();
-    }
-
-    void MenuFile::menu_openPlugin() {
-      bool wasRunning = false;
-      if (control->sim->isSimRunning()) {
-        control->sim->startStopTrigger();
-        wasRunning = true;
-      }
-      QFileDialog *fd = new QFileDialog(0);
-      //fd->setWindowTitle(tr("Select plugin to load"));
-      fd->setDirectory(QString("."));
-      fd->setAcceptMode(QFileDialog::AcceptOpen);
-      fd->setFileMode(QFileDialog::ExistingFile);
-      //  fd->setFilter("Plugin Files (*.mars)");
-#ifdef WIN32
-      fd->setFilter("Shared Object (*.dll)");
-      fd->setDefaultSuffix("dll");
-#else
-#ifdef __APPLE__
-      fd->setFilter("Shared Object (*.dylib)");
-      fd->setDefaultSuffix("dylib");
-#else
-      fd->setFilter("Shared Object (*.so)");
-      fd->setDefaultSuffix("so");
-#endif
-#endif
-      fd->setViewMode(QFileDialog::Detail);
-      fd->setLabelText(QFileDialog::Accept, (QString)"Load Plugin");
-      fd->setLabelText(QFileDialog::Reject, (QString)"Cancel");
-      QStringList fileNames;
-      if (fd->exec()) {
-        fileNames = fd->selectedFiles();
-      }
-      if (!fileNames.isEmpty()) {
-        std::cout << "File Open: " << fileNames[0].toStdString() << std::endl;
-        libManager->loadLibrary(fileNames[0].toStdString());
-        delete fd;
-      } else {
-        if (wasRunning) {
-          control->sim->startStopTrigger();
-          delete fd;
-        }
-      }
     }
 
     /**
