@@ -115,6 +115,58 @@ diff -rupN torcs-1.3.4_clean/src/drivers/olethros/geometry.cpp torcs-1.3.4/src/d
  
  Vector::Vector(int N_, enum BoundsCheckingStatus check)
  {
+diff -rupN torcs-1.3.4_clean/src/libs/Makefile torcs-1.3.4/src/libs/Makefile
+--- torcs-1.3.4_clean/src/libs/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/Makefile	2013-01-10 17:36:38.000000000 +0100
+@@ -19,12 +19,12 @@
+ SHIPSUBDIRS	= tgf tgfclient raceengineclient learning musicplayer
+ 
+ EXPINCDIRS	= txml tgf tgfclient client confscreens racescreens robottools raceengineclient learning \
+-			  portability math musicplayer
++			  portability math #musicplayer
+ 
+ TOOLSUBDIRS	= txml
+ 
+ SUBDIRS		= confscreens racescreens robottools txml tgf tgfclient client raceengineclient learning \
+-			  portability math musicplayer
++			  portability math #musicplayer
+ 
+ PKGSUBDIRS	= $(SUBDIRS)
+ 
+diff -rupN torcs-1.3.4_clean/src/libs/client/entry.cpp torcs-1.3.4/src/libs/client/entry.cpp
+--- torcs-1.3.4_clean/src/libs/client/entry.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/client/entry.cpp	2013-01-10 17:43:14.000000000 +0100
+@@ -24,7 +24,7 @@
+ 
+ #include "mainmenu.h"
+ #include "splash.h"
+-#include <musicplayer/musicplayer.h>
++//#include <musicplayer/musicplayer.h>
+ 
+ /*
+  * Function
+@@ -53,5 +53,5 @@ TorcsEntry(void)
+ 
+ 	SplashScreen();
+ 	
+-	startMenuMusic();
++	//startMenuMusic();
+ }
+diff -rupN torcs-1.3.4_clean/src/libs/confscreens/soundconfig.cpp torcs-1.3.4/src/libs/confscreens/soundconfig.cpp
+--- torcs-1.3.4_clean/src/libs/confscreens/soundconfig.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/confscreens/soundconfig.cpp	2013-01-10 17:46:05.000000000 +0100
+@@ -133,9 +133,9 @@ static void saveSoundOption(void *)
+ 	GfParmReleaseHandle(paramHandle);
+ 	
+ 	if (curOptionMenuMusic == 1) {
+-		startMenuMusic();
++          //startMenuMusic();
+ 	} else {
+-		stopMenuMusic();
++          //stopMenuMusic();
+ 	}
+ 	
+ 	// Return to previous screen.
 diff -rupN torcs-1.3.4_clean/src/libs/learning/policy.cpp torcs-1.3.4/src/libs/learning/policy.cpp
 --- torcs-1.3.4_clean/src/libs/learning/policy.cpp	2013-01-09 14:10:36.000000000 +0100
 +++ torcs-1.3.4/src/libs/learning/policy.cpp	2013-01-09 15:41:06.000000000 +0100
@@ -127,6 +179,138 @@ diff -rupN torcs-1.3.4_clean/src/libs/learning/policy.cpp torcs-1.3.4/src/libs/l
  #endif // WIN32
  
  #undef POLICY_LOG
+diff -rupN torcs-1.3.4_clean/src/libs/musicplayer/.depend torcs-1.3.4/src/libs/musicplayer/.depend
+--- torcs-1.3.4_clean/src/libs/musicplayer/.depend	1970-01-01 01:00:00.000000000 +0100
++++ torcs-1.3.4/src/libs/musicplayer/.depend	2013-01-10 17:33:33.000000000 +0100
+@@ -0,0 +1,127 @@
++SoundStream.o: SoundStream.cpp SoundStream.h
++OggSoundStream.o: OggSoundStream.cpp OggSoundStream.h \
++  /opt/local/include/vorbis/vorbisfile.h /usr/include/stdio.h \
++  /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h \
++  /usr/include/sys/_posix_availability.h /usr/include/Availability.h \
++  /usr/include/AvailabilityInternal.h /usr/include/_types.h \
++  /usr/include/sys/_types.h /usr/include/machine/_types.h \
++  /usr/include/i386/_types.h /opt/local/include/vorbis/codec.h \
++  /opt/local/include/ogg/ogg.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stddef.h \
++  /opt/local/include/ogg/os_types.h /usr/include/inttypes.h \
++  /usr/include/stdint.h SoundStream.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/tgf.h \
++  /usr/include/sys/param.h /usr/include/sys/types.h \
++  /usr/include/sys/appleapiopts.h /usr/include/machine/types.h \
++  /usr/include/i386/types.h /usr/include/i386/_types.h \
++  /usr/include/machine/endian.h /usr/include/i386/endian.h \
++  /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h \
++  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/sys/_structs.h \
++  /usr/include/sys/syslimits.h /usr/include/machine/param.h \
++  /usr/include/i386/param.h /usr/include/i386/_param.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /usr/include/limits.h /usr/include/machine/limits.h \
++  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
++  /usr/include/sys/signal.h /usr/include/machine/signal.h \
++  /usr/include/i386/signal.h /usr/include/i386/_structs.h \
++  /usr/include/machine/_structs.h /usr/include/mach/i386/_structs.h \
++  /usr/include/assert.h /usr/include/stdlib.h /usr/include/sys/wait.h \
++  /usr/include/sys/resource.h /usr/include/alloca.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stdarg.h \
++  /usr/include/c++/4.2.1/cstring /usr/include/c++/4.2.1/bits/c++config.h \
++  /usr/include/c++/4.2.1/bits/os_defines.h /usr/include/unistd.h \
++  /usr/include/sys/unistd.h /usr/include/sys/select.h \
++  /usr/include/sys/_select.h /usr/include/c++/4.2.1/bits/cpu_defines.h \
++  /usr/include/c++/4.2.1/cstddef /usr/include/string.h \
++  /usr/include/strings.h /usr/include/math.h \
++  /usr/include/architecture/i386/math.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/osspec.h
++OpenALMusicPlayer.o: OpenALMusicPlayer.cpp /usr/include/stdio.h \
++  /usr/include/sys/cdefs.h /usr/include/sys/_symbol_aliasing.h \
++  /usr/include/sys/_posix_availability.h /usr/include/Availability.h \
++  /usr/include/AvailabilityInternal.h /usr/include/_types.h \
++  /usr/include/sys/_types.h /usr/include/machine/_types.h \
++  /usr/include/i386/_types.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/tgf.h \
++  /usr/include/sys/param.h /usr/include/sys/types.h \
++  /usr/include/sys/appleapiopts.h /usr/include/machine/types.h \
++  /usr/include/i386/types.h /usr/include/i386/_types.h \
++  /usr/include/machine/endian.h /usr/include/i386/endian.h \
++  /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h \
++  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/sys/_structs.h \
++  /usr/include/sys/syslimits.h /usr/include/machine/param.h \
++  /usr/include/i386/param.h /usr/include/i386/_param.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /usr/include/limits.h /usr/include/machine/limits.h \
++  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
++  /usr/include/sys/signal.h /usr/include/machine/signal.h \
++  /usr/include/i386/signal.h /usr/include/i386/_structs.h \
++  /usr/include/machine/_structs.h /usr/include/mach/i386/_structs.h \
++  /usr/include/assert.h /usr/include/stdlib.h /usr/include/sys/wait.h \
++  /usr/include/sys/resource.h /usr/include/alloca.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stdarg.h \
++  /usr/include/c++/4.2.1/cstring /usr/include/c++/4.2.1/bits/c++config.h \
++  /usr/include/c++/4.2.1/bits/os_defines.h /usr/include/unistd.h \
++  /usr/include/sys/unistd.h /usr/include/sys/select.h \
++  /usr/include/sys/_select.h /usr/include/c++/4.2.1/bits/cpu_defines.h \
++  /usr/include/c++/4.2.1/cstddef \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stddef.h \
++  /usr/include/string.h /usr/include/strings.h /usr/include/math.h \
++  /usr/include/architecture/i386/math.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/osspec.h \
++  OpenALMusicPlayer.h \
++  /System/Library/Frameworks/OpenAL.framework/Headers/al.h \
++  /System/Library/Frameworks/OpenAL.framework/Headers/alc.h SoundStream.h
++musicplayer.o: musicplayer.cpp musicplayer.h /opt/local/include/GL/glut.h \
++  /opt/local/include/GL/freeglut_std.h /opt/local/include/GL/gl.h \
++  /opt/local/include/GL/glext.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stddef.h \
++  /usr/include/inttypes.h /usr/include/sys/cdefs.h \
++  /usr/include/sys/_symbol_aliasing.h \
++  /usr/include/sys/_posix_availability.h /usr/include/_types.h \
++  /usr/include/sys/_types.h /usr/include/machine/_types.h \
++  /usr/include/i386/_types.h /usr/include/stdint.h \
++  /opt/local/include/GL/glu.h /usr/include/stdlib.h \
++  /usr/include/Availability.h /usr/include/AvailabilityInternal.h \
++  /usr/include/sys/wait.h /usr/include/sys/signal.h \
++  /usr/include/sys/appleapiopts.h /usr/include/machine/signal.h \
++  /usr/include/i386/signal.h /usr/include/i386/_structs.h \
++  /usr/include/sys/_structs.h /usr/include/machine/_structs.h \
++  /usr/include/mach/i386/_structs.h /usr/include/sys/resource.h \
++  /usr/include/machine/endian.h /usr/include/i386/endian.h \
++  /usr/include/sys/_endian.h /usr/include/libkern/_OSByteOrder.h \
++  /usr/include/libkern/i386/_OSByteOrder.h /usr/include/alloca.h \
++  /usr/include/machine/types.h /usr/include/i386/types.h \
++  /usr/include/i386/_types.h /usr/include/string.h /usr/include/strings.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/tgf.h \
++  /usr/include/stdio.h /usr/include/sys/param.h /usr/include/sys/types.h \
++  /usr/include/sys/syslimits.h /usr/include/machine/param.h \
++  /usr/include/i386/param.h /usr/include/i386/_param.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/limits.h \
++  /Developer/usr/llvm-gcc-4.2/lib/gcc/i686-apple-darwin11/4.2.1/include/syslimits.h \
++  /usr/include/limits.h /usr/include/machine/limits.h \
++  /usr/include/i386/limits.h /usr/include/i386/_limits.h \
++  /usr/include/assert.h \
++  /usr/llvm-gcc-4.2/bin/../lib/gcc/i686-apple-darwin11/4.2.1/include/stdarg.h \
++  /usr/include/c++/4.2.1/cstring /usr/include/c++/4.2.1/bits/c++config.h \
++  /usr/include/c++/4.2.1/bits/os_defines.h /usr/include/unistd.h \
++  /usr/include/sys/unistd.h /usr/include/sys/select.h \
++  /usr/include/sys/_select.h /usr/include/c++/4.2.1/bits/cpu_defines.h \
++  /usr/include/c++/4.2.1/cstddef /usr/include/math.h \
++  /usr/include/architecture/i386/math.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/osspec.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/export/include/portability.h \
++  /Users/malter/Arbeit/mars_dev/external/torcs-1.3.4/config.h \
++  OggSoundStream.h /opt/local/include/vorbis/vorbisfile.h \
++  /opt/local/include/vorbis/codec.h /opt/local/include/ogg/ogg.h \
++  /opt/local/include/ogg/os_types.h SoundStream.h OpenALMusicPlayer.h \
++  /System/Library/Frameworks/OpenAL.framework/Headers/al.h \
++  /System/Library/Frameworks/OpenAL.framework/Headers/alc.h
+Binary files torcs-1.3.4_clean/src/libs/musicplayer/OggSoundStream.o and torcs-1.3.4/src/libs/musicplayer/OggSoundStream.o differ
 diff -rupN torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.h torcs-1.3.4/src/libs/musicplayer/OpenALMusicPlayer.h
 --- torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.h	2013-01-09 14:10:36.000000000 +0100
 +++ torcs-1.3.4/src/libs/musicplayer/OpenALMusicPlayer.h	2013-01-09 15:44:59.000000000 +0100
@@ -151,6 +335,61 @@ diff -rupN torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.h torcs-1.3.
 -#endif // __OpenALMusicPlayer_h__
 \ No newline at end of file
 +#endif // __OpenALMusicPlayer_h__
+Binary files torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.o and torcs-1.3.4/src/libs/musicplayer/OpenALMusicPlayer.o differ
+Binary files torcs-1.3.4_clean/src/libs/musicplayer/SoundStream.o and torcs-1.3.4/src/libs/musicplayer/SoundStream.o differ
+Binary files torcs-1.3.4_clean/src/libs/musicplayer/libmusicplayer.so and torcs-1.3.4/src/libs/musicplayer/libmusicplayer.so differ
+Binary files torcs-1.3.4_clean/src/libs/musicplayer/musicplayer.o and torcs-1.3.4/src/libs/musicplayer/musicplayer.o differ
+diff -rupN torcs-1.3.4_clean/src/libs/raceengineclient/raceinit.cpp torcs-1.3.4/src/libs/raceengineclient/raceinit.cpp
+--- torcs-1.3.4_clean/src/libs/raceengineclient/raceinit.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/raceengineclient/raceinit.cpp	2013-01-10 17:44:41.000000000 +0100
+@@ -37,7 +37,7 @@
+ #include <string>
+ #include <map>
+ #include <portability.h>
+-#include <musicplayer/musicplayer.h>
++//#include <musicplayer/musicplayer.h>
+ 
+ #include "raceengine.h"
+ #include "racemain.h"
+@@ -823,7 +823,7 @@ ReRaceCleanup(void)
+ 	ReInfo->_reSimItf.shutdown();
+ 	if (ReInfo->_displayMode == RM_DISP_MODE_NORMAL) {
+ 		ReInfo->_reGraphicItf.shutdowncars();
+-		startMenuMusic();
++		//startMenuMusic();
+ 	}
+ 	ReStoreRaceResults(ReInfo->_reRaceName);
+ 	ReRaceCleanDrivers();
+diff -rupN torcs-1.3.4_clean/src/libs/raceengineclient/racemain.cpp torcs-1.3.4/src/libs/raceengineclient/racemain.cpp
+--- torcs-1.3.4_clean/src/libs/raceengineclient/racemain.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/raceengineclient/racemain.cpp	2013-01-10 17:45:01.000000000 +0100
+@@ -30,7 +30,7 @@
+ #include <robot.h>
+ #include <racescreens.h>
+ #include <exitmenu.h>
+-#include <musicplayer/musicplayer.h>
++//#include <musicplayer/musicplayer.h>
+ #include <portability.h>
+ 
+ #include "raceengine.h"
+@@ -81,7 +81,7 @@ AbortRaceHookActivate(void * /* dummy */
+ 	ReInfo->_reSimItf.shutdown();
+ 	if (ReInfo->_displayMode == RM_DISP_MODE_NORMAL) {
+ 		ReInfo->_reGraphicItf.shutdowncars();
+-		startMenuMusic();
++		//startMenuMusic();
+ 	}
+ 	ReInfo->_reGraphicItf.shutdowntrack();
+ 	ReRaceCleanDrivers();
+@@ -267,7 +267,7 @@ reRaceRealStart(void)
+ 
+ 		if (ReInfo->_displayMode == RM_DISP_MODE_NORMAL) {
+ 			/* RmLoadingScreenSetText("Loading Cars 3D Objects..."); */
+-			stopMenuMusic();
++			//stopMenuMusic();
+ 			ReInfo->_reGraphicItf.initcars(s);
+ 		}
+ 
 diff -rupN torcs-1.3.4_clean/src/libs/tgfclient/guifont.cpp torcs-1.3.4/src/libs/tgfclient/guifont.cpp
 --- torcs-1.3.4_clean/src/libs/tgfclient/guifont.cpp	2013-01-09 14:10:36.000000000 +0100
 +++ torcs-1.3.4/src/libs/tgfclient/guifont.cpp	2013-01-09 15:40:06.000000000 +0100
@@ -163,120 +402,40 @@ diff -rupN torcs-1.3.4_clean/src/libs/tgfclient/guifont.cpp torcs-1.3.4/src/libs
  #include <machine/endian.h>
  #elif defined(sun)
  #define BIG_ENDIAN 1234
-diff -rupN torcs-1.3.4_clean/src/linux/torcs torcs-1.3.4/src/linux/torcs
---- torcs-1.3.4_clean/src/linux/torcs	1970-01-01 01:00:00.000000000 +0100
-+++ torcs-1.3.4/src/linux/torcs	2013-01-09 15:39:05.000000000 +0100
-@@ -0,0 +1,99 @@
-+#! /bin/bash
-+# src/linux/torcs.  Generated from torcs.in by configure.
-+
-+##############################################################################
-+#
-+#    file                 : torcs.in
-+#    created              : Sat Sep 11 20:20:04 CEST 1999
-+#    copyright            : (C) 1999 by Eric Espie                         
-+#    email                : torcs@free.fr   
-+#    version              : $Id: torcs.in,v 1.5.2.4 2012/06/01 01:59:42 berniw Exp $                                  
-+#
-+##############################################################################
-+#
-+#   This program is free software; you can redistribute it and/or modify
-+#   it under the terms of the GNU General Public License as published by
-+#   the Free Software Foundation; either version 2 of the License, or
-+#   (at your option) any later version.
-+#
-+##############################################################################
-+
-+prefix=/usr/local
-+exec_prefix=${prefix}
-+
-+BINDIR=${exec_prefix}/bin
-+LIBDIR=${exec_prefix}/lib/torcs
-+DATAROOTDIR=${prefix}/share
-+DATADIR=$DATAROOTDIR/games/torcs
-+VARDIR=${prefix}/var/games/torcs
-+
-+LOCAL_CONF=$HOME/.torcs
-+
-+if [ -d $DATADIR ]
-+then
-+    if [ ! -d $LOCAL_CONF ]
-+    then
-+	rm -rf $LOCAL_CONF
-+	mkdir -p $LOCAL_CONF
-+	echo "$LOCAL_CONF created, copying/linking game data"
-+    fi
-+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$LIBDIR/lib
-+    cd $DATADIR
-+    if [ -f $LIBDIR/setup_linux.sh ]
-+    then
-+	/bin/bash $LIBDIR/setup_linux.sh $LOCAL_CONF
-+	if [ $? -ne 0 ]
-+	then
-+	    exit 1
-+	fi
-+    else
-+	echo "$LIBDIR/setup_linux.sh file does not exist, check your installation"
-+	exit 1
-+    fi
-+    case $1 in
-+	# List the library used
-+	-l) shift
-+	    ldd $LIBDIR/torcs-bin
-+	    ;;
-+
-+	# Run under GDB
-+	-d) shift
-+	    gdb  $LIBDIR/torcs-bin <<EOF
-+r -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
-+bt
-+EOF
-+	    ;;
-+
-+	-g) shift
-+	    valgrind --leak-check=yes --log-file=$LOCAL_CONF/valgrind.log $LIBDIR/torcs-bin -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
-+	    ;;
-+
-+	-e) shift
-+	    echo "cd $DATADIR"
-+	    echo "export LD_LIBRARY_PATH=$LIBDIR/lib:$LD_LIBRARY_PATH"
-+	    echo "gdb  $LIBDIR/torcs-bin"
-+	    echo "r -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*"
-+	    ;;
-+
-+	-h)
-+	    echo "usage: torcs [-l|-d|-g|-e] [-s] [-r]"
-+	    echo "   -l  list the dynamically linked libraries"
-+	    echo "   -d  run under gdb and print stack trace on exit"
-+		echo "   -g  run under valgrind (requires a debug build for useful results)"
-+	    echo "   -e  display the commands to issue when you want to run under gdb"
-+		echo "   -s  disable multitexturing, important for older graphics cards"
-+		echo "   -r  run race in command line mode, see FAQ for details"
-+		echo "   -k  suppress dlclose for modules (useful to get symbol information with valgrind)"
-+	    ;;
-+
-+	# Normal run
-+	*) $LIBDIR/torcs-bin -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
-+	    ;;
-+
-+    esac
-+    exit 0
-+fi
-+
-+echo "TORCS location not found"
-+	
-+	
-diff -rupN torcs-1.3.4_clean/src/modules/graphic/Makefile torcs-1.3.4/src/modules/graphic/Makefile
---- torcs-1.3.4_clean/src/modules/graphic/Makefile	2013-01-09 14:10:36.000000000 +0100
-+++ torcs-1.3.4/src/modules/graphic/Makefile	2013-01-09 15:49:00.000000000 +0100
-@@ -18,6 +18,7 @@
+diff -rupN torcs-1.3.4_clean/src/libs/tgfclient/screen.cpp torcs-1.3.4/src/libs/tgfclient/screen.cpp
+--- torcs-1.3.4_clean/src/libs/tgfclient/screen.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/tgfclient/screen.cpp	2013-01-10 17:45:24.000000000 +0100
+@@ -37,7 +37,7 @@
  
- #SUBDIRS		= $(shell find * -maxdepth 0 -type d -print | grep -v CVS)
+ #include <tgfclient.h>
+ #include <portability.h>
+-#include <musicplayer/musicplayer.h>
++//#include <musicplayer/musicplayer.h>
+ #include <portability.h>
  
-+## for lion
- SUBDIRS		= ssggraph
+ #include "gui.h"
+@@ -493,7 +493,7 @@ GfScrReinit(void * /* dummy */)
+ 	static const int CMDSIZE = 1024;
+ 	char cmd[CMDSIZE];
  
- SHIPSUBDIRS     = $(SUBDIRS)
+-	stopMenuMusic();
++	//stopMenuMusic();
+ 	
+ #ifndef WIN32
+     const char *arg[8];
+diff -rupN torcs-1.3.4_clean/src/linux/Makefile torcs-1.3.4/src/linux/Makefile
+--- torcs-1.3.4_clean/src/linux/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/linux/Makefile	2013-01-10 17:36:56.000000000 +0100
+@@ -34,8 +34,8 @@ SOLIBS  =  -lracescreens  \
+ 	   -ltxml	  \
+ 	   -lplibul	  \
+ 	   -lraceengine   \
+-	   -lmusicplayer  \
+ 	   -llearning
++#	   -lmusicplayer  \
+ 
+ EXPDIR  = include
+ 
 diff -rupN torcs-1.3.4_clean/src/modules/graphic/ssggraph/Makefile torcs-1.3.4/src/modules/graphic/ssggraph/Makefile
 --- torcs-1.3.4_clean/src/modules/graphic/ssggraph/Makefile	2013-01-09 14:10:36.000000000 +0100
 +++ torcs-1.3.4/src/modules/graphic/ssggraph/Makefile	2013-01-09 15:50:43.000000000 +0100
@@ -350,4 +509,28 @@ diff -rupN torcs-1.3.4_clean/src/modules/simu/simuv2/SOLID-2.0/src/C-api.cpp tor
 +#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
  #  include <sys/types.h>
  #endif
+ 
+diff -rupN torcs-1.3.4_clean/src/tools/texmapper/Makefile torcs-1.3.4/src/tools/texmapper/Makefile
+--- torcs-1.3.4_clean/src/tools/texmapper/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/tools/texmapper/Makefile	2013-01-10 17:37:35.000000000 +0100
+@@ -24,7 +24,7 @@ PROGRAM   	= texmapper-bin
+ 
+ SOURCES   	= maintexmapper.cpp ssgSaveAC.cpp
+ 
+-SOLIBS    	= -lplibssg -lplibsg -lplibul -ltgf -ltgfclient -lmusicplayer -ltxml -lpng
++SOLIBS    	= -lplibssg -lplibsg -lplibul -ltgf -ltgfclient -ltxml -lpng # -lmusicplayer
+ 
+ src_PKGFILES	= $(shell find * -maxdepth 0 -type f -print)
+ 
+diff -rupN torcs-1.3.4_clean/src/tools/trackgen/Makefile torcs-1.3.4/src/tools/trackgen/Makefile
+--- torcs-1.3.4_clean/src/tools/trackgen/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/tools/trackgen/Makefile	2013-01-10 17:37:53.000000000 +0100
+@@ -29,7 +29,7 @@ DATA         	= trackgen.xml
+ 
+ SOURCES      	= maintrackgen.cpp track.cpp easymesh.cpp ../../linux/linuxspec.cpp relief.cpp elevation.cpp objects.cpp ac3d.cpp util.cpp raceline.cpp
+ 
+-SOLIBS       	= -ltgf -ltgfclient -lmusicplayer -lplibssg -lplibsg -lplibul -lrobottools -ltxml
++SOLIBS       	= -ltgf -ltgfclient -lplibssg -lplibsg -lplibul -lrobottools -ltxml # -lmusicplayer
+ 
+ src_PKGFILES	= $(shell find * -maxdepth 0 -type f -print)
  
