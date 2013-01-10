@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -55,7 +55,7 @@ namespace mars {
       class __classname__: public mars::interfaces::MarsPluginTemplate,
         public mars::data_broker::ReceiverInterface,
         // for gui
-        // pulic mars::main_gui::MenuInterface,
+        // public mars::main_gui::MenuInterface,
         public mars::cfg_manager::CFGClient {
 
       public:

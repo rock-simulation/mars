@@ -15,6 +15,7 @@ mars/common/cfg_manager
 mars/common/data_broker
 
 mars/common/gui/main_gui
+mars/common/gui/lib_manager_gui
 mars/common/gui/cfg_manager_gui
 mars/common/gui/data_broker_gui
 mars/common/gui/log_console

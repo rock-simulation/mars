@@ -48,6 +48,16 @@ namespace mars {
       destroyLib *destroy;
       int useCount;
       bool wasUnloaded;
+      std::string path;
+    };
+
+    struct LibInfo {
+      std::string name;
+      std::string path;
+      int version;
+      std::string src;
+      std::string revision;
+      int references;
     };
 
     class LibManager {
@@ -83,6 +93,7 @@ namespace mars {
         void loadConfigFile(const std::string &config_file);
         void getAllLibraries(std::list<LibInterface*> *libList);
         void getAllLibraryNames(std::list<std::string> *libNameList) const;
+        LibInfo getLibraryInfo(const std::string &libName) const;
 
       private:
         std::map<std::string, libStruct> libMap;
