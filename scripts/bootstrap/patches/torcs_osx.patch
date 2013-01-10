@@ -1,0 +1,353 @@
+diff -rupN torcs-1.3.4_clean/configure torcs-1.3.4/configure
+--- torcs-1.3.4_clean/configure	2013-01-09 14:10:23.000000000 +0100
++++ torcs-1.3.4/configure	2013-01-09 15:38:51.000000000 +0100
+@@ -14,6 +14,10 @@
+ ## M4sh Initialization. ##
+ ## -------------------- ##
+ 
++## for lion
++CPPFLAGS="-I/opt/local/include -I$(PWD) -I/Users/malter/Arbeit/mars_dev/install/include";
++LDFLAGS="-L/opt/local/lib -L$(PWD) -undefined dynamic_lookup";
++
+ # Be more Bourne compatible
+ DUALCASE=1; export DUALCASE # for MKS sh
+ if test -n "${ZSH_VERSION+set}" && (emulate sh) >/dev/null 2>&1; then :
+@@ -5432,24 +5436,24 @@ CXXFLAGS="$CXXFLAGS $ADDCFLAGS"
+ ac_fn_cxx_check_header_mongrel "$LINENO" "GL/gl.h" "ac_cv_header_GL_gl_h" "$ac_includes_default"
+ if test "x$ac_cv_header_GL_gl_h" = xyes; then :
+ 
+-else
+-  as_fn_error $? "Can't find GL/gl.h. Look for Mesa devel packages for your distro." "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find GL/gl.h. Look for Mesa devel packages for your distro." "$LINENO" 5
+ fi
+ 
+ 
+ ac_fn_cxx_check_header_mongrel "$LINENO" "GL/glut.h" "ac_cv_header_GL_glut_h" "$ac_includes_default"
+ if test "x$ac_cv_header_GL_glut_h" = xyes; then :
+ 
+-else
+-  as_fn_error $? "Can't find GL/glut.h. freeglut can be found on http://freeglut.sourceforge.net/" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find GL/glut.h. freeglut can be found on http://freeglut.sourceforge.net/" "$LINENO" 5
+ fi
+ 
+ 
+ ac_fn_cxx_check_header_mongrel "$LINENO" "GL/glx.h" "ac_cv_header_GL_glx_h" "$ac_includes_default"
+ if test "x$ac_cv_header_GL_glx_h" = xyes; then :
+ 
+-else
+-  as_fn_error $? "Can't find GL/glx.h. Please check config.log and if you can't solve the problem send the file to torcs-users@lists.sourceforge.net with the subject \"torcs compilation problem\"" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find GL/glx.h. Please check config.log and if you can't solve the problem send the file to torcs-users@lists.sourceforge.net with the subject \"torcs compilation problem\"" "$LINENO" 5
+ fi
+ 
+ 
+@@ -5512,8 +5516,8 @@ fi
+ ac_fn_cxx_check_header_mongrel "$LINENO" "AL/al.h" "ac_cv_header_AL_al_h" "$ac_includes_default"
+ if test "x$ac_cv_header_AL_al_h" = xyes; then :
+ 
+-else
+-  as_fn_error $? "Can't find AL/al.h. OpenAL and FreeALUT can be found on http://www.openal.org/" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find AL/al.h. OpenAL and FreeALUT can be found on http://www.openal.org/" "$LINENO" 5
+ fi
+ 
+ 
+@@ -6099,8 +6103,8 @@ fi
+ $as_echo "$ac_cv_lib_openal_alEnable" >&6; }
+ if test "x$ac_cv_lib_openal_alEnable" = xyes; then :
+   LDFLAGS="$LDFLAGS -lopenal"
+-else
+-  as_fn_error $? "Can't find AL/al.h. OpenAL can be found on http://www.openal.org/" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find AL/al.h. OpenAL can be found on http://www.openal.org/" "$LINENO" 5
+ fi
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for alutLoadWAVFile in -lalut" >&5
+@@ -6609,8 +6613,8 @@ _ACEOF
+ 
+   LIBS="-lplibsl $LIBS"
+ 
+-else
+-  as_fn_error $? "Can't find libplibsl. PLIB can be found on http://plib.sourceforge.net/" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find libplibsl. PLIB can be found on http://plib.sourceforge.net/" "$LINENO" 5
+ fi
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lplibsm" >&5
+@@ -6650,8 +6654,8 @@ _ACEOF
+ 
+   LIBS="-lplibsm $LIBS"
+ 
+-else
+-  as_fn_error $? "Can't find libplibsm. PLIB can be found on http://plib.sourceforge.net/" "$LINENO" 5
++#else
++  #as_fn_error $? "Can't find libplibsm. PLIB can be found on http://plib.sourceforge.net/" "$LINENO" 5
+ fi
+ 
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lplibssg" >&5
+diff -rupN torcs-1.3.4_clean/src/drivers/olethros/driver.cpp torcs-1.3.4/src/drivers/olethros/driver.cpp
+--- torcs-1.3.4_clean/src/drivers/olethros/driver.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/drivers/olethros/driver.cpp	2013-01-09 18:09:14.000000000 +0100
+@@ -43,6 +43,10 @@
+ #define isnan _isnan
+ #endif
+ 
++#ifdef __APPLE__
++#define isnan std::isnan
++#endif
++
+ #undef TEST_PITSTOPS
+ 
+ #ifdef USE_OLETHROS_NAMESPACE
+diff -rupN torcs-1.3.4_clean/src/drivers/olethros/geometry.cpp torcs-1.3.4/src/drivers/olethros/geometry.cpp
+--- torcs-1.3.4_clean/src/drivers/olethros/geometry.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/drivers/olethros/geometry.cpp	2013-01-09 18:10:14.000000000 +0100
+@@ -29,6 +29,10 @@
+ #define isnan _isnan
+ #endif
+ 
++#ifdef __APPLE__
++#define isnan std::isnan
++#endif
++
+ 
+ Vector::Vector(int N_, enum BoundsCheckingStatus check)
+ {
+diff -rupN torcs-1.3.4_clean/src/libs/learning/policy.cpp torcs-1.3.4/src/libs/learning/policy.cpp
+--- torcs-1.3.4_clean/src/libs/learning/policy.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/learning/policy.cpp	2013-01-09 15:41:06.000000000 +0100
+@@ -18,6 +18,8 @@
+ #ifdef WIN32
+ #include <float.h>
+ #define isnan _isnan
++#elif defined(__APPLE__)
++#define isnan std::isnan
+ #endif // WIN32
+ 
+ #undef POLICY_LOG
+diff -rupN torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.h torcs-1.3.4/src/libs/musicplayer/OpenALMusicPlayer.h
+--- torcs-1.3.4_clean/src/libs/musicplayer/OpenALMusicPlayer.h	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/musicplayer/OpenALMusicPlayer.h	2013-01-09 15:44:59.000000000 +0100
+@@ -20,8 +20,13 @@
+  *                                                                         *
+  ***************************************************************************/
+ 
++#ifdef __APPLE__
++#include <OpenAL/al.h>
++#include <OpenAL/alc.h>
++#else
+ #include <AL/al.h>
+ #include <AL/alc.h>
++#endif
+ #include "SoundStream.h"
+ 
+ class OpenALMusicPlayer
+@@ -53,4 +58,4 @@ class OpenALMusicPlayer
+ 		bool ready;									// initialization sucessful
+ 		static const int BUFFERSIZE;
+ };
+-#endif // __OpenALMusicPlayer_h__
+\ No newline at end of file
++#endif // __OpenALMusicPlayer_h__
+diff -rupN torcs-1.3.4_clean/src/libs/tgfclient/guifont.cpp torcs-1.3.4/src/libs/tgfclient/guifont.cpp
+--- torcs-1.3.4_clean/src/libs/tgfclient/guifont.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/libs/tgfclient/guifont.cpp	2013-01-09 15:40:06.000000000 +0100
+@@ -24,7 +24,7 @@
+ 
+ #ifdef WIN32
+ #include <windows.h>
+-#elif defined(__FreeBSD__)
++#elif defined(__FreeBSD__) || defined(__APPLE__)
+ #include <machine/endian.h>
+ #elif defined(sun)
+ #define BIG_ENDIAN 1234
+diff -rupN torcs-1.3.4_clean/src/linux/torcs torcs-1.3.4/src/linux/torcs
+--- torcs-1.3.4_clean/src/linux/torcs	1970-01-01 01:00:00.000000000 +0100
++++ torcs-1.3.4/src/linux/torcs	2013-01-09 15:39:05.000000000 +0100
+@@ -0,0 +1,99 @@
++#! /bin/bash
++# src/linux/torcs.  Generated from torcs.in by configure.
++
++##############################################################################
++#
++#    file                 : torcs.in
++#    created              : Sat Sep 11 20:20:04 CEST 1999
++#    copyright            : (C) 1999 by Eric Espie                         
++#    email                : torcs@free.fr   
++#    version              : $Id: torcs.in,v 1.5.2.4 2012/06/01 01:59:42 berniw Exp $                                  
++#
++##############################################################################
++#
++#   This program is free software; you can redistribute it and/or modify
++#   it under the terms of the GNU General Public License as published by
++#   the Free Software Foundation; either version 2 of the License, or
++#   (at your option) any later version.
++#
++##############################################################################
++
++prefix=/usr/local
++exec_prefix=${prefix}
++
++BINDIR=${exec_prefix}/bin
++LIBDIR=${exec_prefix}/lib/torcs
++DATAROOTDIR=${prefix}/share
++DATADIR=$DATAROOTDIR/games/torcs
++VARDIR=${prefix}/var/games/torcs
++
++LOCAL_CONF=$HOME/.torcs
++
++if [ -d $DATADIR ]
++then
++    if [ ! -d $LOCAL_CONF ]
++    then
++	rm -rf $LOCAL_CONF
++	mkdir -p $LOCAL_CONF
++	echo "$LOCAL_CONF created, copying/linking game data"
++    fi
++    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$LIBDIR/lib
++    cd $DATADIR
++    if [ -f $LIBDIR/setup_linux.sh ]
++    then
++	/bin/bash $LIBDIR/setup_linux.sh $LOCAL_CONF
++	if [ $? -ne 0 ]
++	then
++	    exit 1
++	fi
++    else
++	echo "$LIBDIR/setup_linux.sh file does not exist, check your installation"
++	exit 1
++    fi
++    case $1 in
++	# List the library used
++	-l) shift
++	    ldd $LIBDIR/torcs-bin
++	    ;;
++
++	# Run under GDB
++	-d) shift
++	    gdb  $LIBDIR/torcs-bin <<EOF
++r -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
++bt
++EOF
++	    ;;
++
++	-g) shift
++	    valgrind --leak-check=yes --log-file=$LOCAL_CONF/valgrind.log $LIBDIR/torcs-bin -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
++	    ;;
++
++	-e) shift
++	    echo "cd $DATADIR"
++	    echo "export LD_LIBRARY_PATH=$LIBDIR/lib:$LD_LIBRARY_PATH"
++	    echo "gdb  $LIBDIR/torcs-bin"
++	    echo "r -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*"
++	    ;;
++
++	-h)
++	    echo "usage: torcs [-l|-d|-g|-e] [-s] [-r]"
++	    echo "   -l  list the dynamically linked libraries"
++	    echo "   -d  run under gdb and print stack trace on exit"
++		echo "   -g  run under valgrind (requires a debug build for useful results)"
++	    echo "   -e  display the commands to issue when you want to run under gdb"
++		echo "   -s  disable multitexturing, important for older graphics cards"
++		echo "   -r  run race in command line mode, see FAQ for details"
++		echo "   -k  suppress dlclose for modules (useful to get symbol information with valgrind)"
++	    ;;
++
++	# Normal run
++	*) $LIBDIR/torcs-bin -l $LOCAL_CONF -L $LIBDIR -D $DATADIR $*
++	    ;;
++
++    esac
++    exit 0
++fi
++
++echo "TORCS location not found"
++	
++	
+diff -rupN torcs-1.3.4_clean/src/modules/graphic/Makefile torcs-1.3.4/src/modules/graphic/Makefile
+--- torcs-1.3.4_clean/src/modules/graphic/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/modules/graphic/Makefile	2013-01-09 15:49:00.000000000 +0100
+@@ -18,6 +18,7 @@
+ 
+ #SUBDIRS		= $(shell find * -maxdepth 0 -type d -print | grep -v CVS)
+ 
++## for lion
+ SUBDIRS		= ssggraph
+ 
+ SHIPSUBDIRS     = $(SUBDIRS)
+diff -rupN torcs-1.3.4_clean/src/modules/graphic/ssggraph/Makefile torcs-1.3.4/src/modules/graphic/ssggraph/Makefile
+--- torcs-1.3.4_clean/src/modules/graphic/ssggraph/Makefile	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/modules/graphic/ssggraph/Makefile	2013-01-09 15:50:43.000000000 +0100
+@@ -18,13 +18,13 @@
+ 
+ SOURCES   = grmain.cpp grboard.cpp ssggraph.cpp grcam.cpp grcar.cpp grscreen.cpp\
+ 	grscene.cpp grutil.cpp grshadow.cpp grsmoke.cpp grskidmarks.cpp grloadac.cpp\
+-	grmultitexstate.cpp grvtxtable.cpp grtrackmap.cpp grtexture.cpp grcarlight.cpp CarSoundData.cpp TorcsSound.cpp PlibSoundInterface.cpp OpenalSoundInterface.cpp grsound.cpp SoundInterface.cpp
++	grmultitexstate.cpp grvtxtable.cpp grtrackmap.cpp grtexture.cpp grcarlight.cpp #CarSoundData.cpp TorcsSound.cpp PlibSoundInterface.cpp OpenalSoundInterface.cpp grsound.cpp SoundInterface.cpp
+ 
+ MODULE    = ssggraph.so
+ 
+ MODULEDIR = modules/graphic
+ 
+-LIBS      = -lplibsl -lplibsm -lplibsg -lplibssg -lplibul -lplibssgaux -lopenal
++LIBS      = -lplibsg -lplibssg -lplibul -lplibssgaux #-lopenal-lplibsl -lplibsm 
+ 
+ SHIPDIR   = config
+ 
+diff -rupN torcs-1.3.4_clean/src/modules/graphic/ssggraph/grmain.cpp torcs-1.3.4/src/modules/graphic/ssggraph/grmain.cpp
+--- torcs-1.3.4_clean/src/modules/graphic/ssggraph/grmain.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/modules/graphic/ssggraph/grmain.cpp	2013-01-09 15:52:39.000000000 +0100
+@@ -38,7 +38,7 @@
+ #include "grscreen.h"
+ #include "grcam.h"
+ #include "grscene.h"
+-#include "grsound.h"
++//#include "grsound.h"
+ #include "grboard.h"
+ #include "grutil.h"
+ #include "grtrackmap.h"
+@@ -324,9 +324,9 @@ refresh(tSituation *s)
+ 
+     TRACE_GL("refresh: start");
+ 
+-    START_PROFILE("grRefreshSound*");
+-    grRefreshSound(s, grScreens[0]->getCurCamera());
+-    STOP_PROFILE("grRefreshSound*");
++    //START_PROFILE("grRefreshSound*");
++    //grRefreshSound(s, grScreens[0]->getCurCamera());
++    //STOP_PROFILE("grRefreshSound*");
+ 
+     START_PROFILE("grDrawBackground/glClear");
+     glDepthFunc(GL_LEQUAL);
+@@ -405,7 +405,7 @@ initCars(tSituation *s)
+ 	TRACE_GL("initCars: end");
+ 
+ 	grInitSmoke(s->_ncars);
+-	grInitSound(s, s->_ncars);
++	//grInitSound(s, s->_ncars);
+ 
+ 	grAdaptScreenSize();
+ 
+@@ -418,7 +418,7 @@ shutdownCars(void)
+ 	int i;
+ 
+ 	GfOut("-- shutdownCars\n");
+-	grShutdownSound(grNbCars);
++	//grShutdownSound(grNbCars);
+ 	if (grNbCars) {
+ 		grShutdownBoardCar();
+ 		grShutdownSkidmarks();
+diff -rupN torcs-1.3.4_clean/src/modules/simu/simuv2/SOLID-2.0/src/C-api.cpp torcs-1.3.4/src/modules/simu/simuv2/SOLID-2.0/src/C-api.cpp
+--- torcs-1.3.4_clean/src/modules/simu/simuv2/SOLID-2.0/src/C-api.cpp	2013-01-09 14:10:36.000000000 +0100
++++ torcs-1.3.4/src/modules/simu/simuv2/SOLID-2.0/src/C-api.cpp	2013-01-09 15:46:13.000000000 +0100
+@@ -44,7 +44,7 @@
+ #include "Polyhedron.h"
+ #include "Response.h"
+ #include "RespTable.h"
+-#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
++#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+ #  include <sys/types.h>
+ #endif
+ 
