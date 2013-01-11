@@ -33,6 +33,7 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/utils.h>
+#include <mars/utils/mathUtils.h>
 
 #include <QString>
 #include <QFileDialog>
@@ -220,6 +221,7 @@ namespace mars {
           rel = control->nodes->getFullNode(n.relative_id);
           interfaces::getRelFromAbs(rel, &n);
         }
+        utils::sRotation rot = utils::quaternionTosRotation(n.rot);
         switch(attr) {
         case ATTRIBUTE_POSITION_X:
           attrValue = n.pos.x();
@@ -229,6 +231,15 @@ namespace mars {
           break;
         case ATTRIBUTE_POSITION_Z:
           attrValue = n.pos.z();
+          break;
+        case ATTRIBUTE_ROTATION_X:
+          attrValue = rot.alpha;
+          break;
+        case ATTRIBUTE_ROTATION_Y:
+          attrValue = rot.beta;
+          break;
+        case ATTRIBUTE_ROTATION_Z:
+          attrValue = rot.gamma;
           break;
         case ATTRIBUTE_SIZE_X:
           attrValue = n.ext.x();
@@ -358,14 +369,12 @@ namespace mars {
           return ATTRIBUTE_POSITION_Y;
         else if(s == "posZ")
           return ATTRIBUTE_POSITION_Z;
-        /*
-          else if(s == "rotX")
+        else if(s == "rotX")
           return ATTRIBUTE_ROTATION_X;
-          else if(s == "rotY")
+        else if(s == "rotY")
           return ATTRIBUTE_ROTATION_Y;
-          else if(s == "rotZ")
+        else if(s == "rotZ")
           return ATTRIBUTE_ROTATION_Z;
-        */
         else if(s == "sizeX")
           return ATTRIBUTE_SIZE_X;
         else if(s == "sizeY")
