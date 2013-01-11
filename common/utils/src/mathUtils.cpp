@@ -74,7 +74,7 @@ namespace mars {
       q.x() = (double) (c1c2*s3 - s1s2*c3);
       q.y() = (double) (c1*s2*c3 + s1*c2*s3);
       q.z() = (double) (s1*c2*c3 - c1*s2*s3);
-      return q;
+      return q.normalized();
 #else
       return
         Eigen::AngleAxisd(euler_v.x()/180.0*M_PI,
@@ -89,19 +89,20 @@ namespace mars {
     sRotation quaternionTosRotation(const Quaternion &value) {
 #if 1 
       sRotation euler;
-      double sqw = value.w()*value.w();    
-      double sqx = value.x()*value.x();    
-      double sqy = value.y()*value.y();    
-      double sqz = value.z()*value.z(); 
+      double sqw = value.w()*value.w();
+      double sqx = value.x()*value.x();
+      double sqy = value.y()*value.y();
+      double sqz = value.z()*value.z();
       // heading
-      euler.gamma = radToDeg(atan2(2.0*(value.x()*value.y()+value.z()*value.w()),
+      euler.gamma = radToDeg(atan2(2.*(value.x()*value.y()+value.z()*value.w()),
                                    (sqx - sqy - sqz + sqw)));
       // bank
-      euler.alpha = radToDeg(atan2(2.0*(value.y()*value.z()+value.x()*value.w()),
+      euler.alpha = radToDeg(atan2(2.*(value.y()*value.z()+value.x()*value.w()),
                                    (-sqx - sqy + sqz + sqw)));
       // attitude
-      euler.beta  = radToDeg(asin(-2.0 * (value.x()*value.z() - 
-                                          value.y()*value.w())));
+      double test = -2. * (value.x()*value.z() - value.y()*value.w());
+      test = (test > 1. ? 1. : (test < -1. ? -1. : test));
+      euler.beta  = radToDeg(asin(test));
       return euler;
 #else
       Vector yaw_roll_pitch = value.toRotationMatrix().eulerAngles(EULER_AXIS_1,
