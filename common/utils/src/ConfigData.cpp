@@ -133,8 +133,9 @@ namespace mars {
 
     static void dumpConfigItemToYaml(YAML::Emitter &emitter,
                                      const ConfigItem &item) {
-      if(!item.getUnparsedString().empty())
-        emitter << item.getUnparsedString();
+      std::string s = item.toString();
+      if(!s.empty())
+        emitter << s;
       if(item.children.size())
         dumpConfigMapToYaml(emitter, item.children);
     }
