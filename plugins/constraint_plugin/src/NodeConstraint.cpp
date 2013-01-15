@@ -25,6 +25,7 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/utils.h>
+#include <mars/utils/mathUtils.h>
 
 namespace mars {
   namespace plugins {
@@ -68,6 +69,7 @@ namespace mars {
           interfaces::NodeData rel = control->nodes->getFullNode(n.relative_id);
           interfaces::getRelFromAbs(rel, &n);
         }
+        utils::sRotation rot = utils::quaternionTosRotation(n.rot);
         switch(nodeAttribute) {
         case ATTRIBUTE_POSITION_X:
           attr = n.pos.x();
@@ -77,6 +79,15 @@ namespace mars {
           break;
         case ATTRIBUTE_POSITION_Z:
           attr = n.pos.z();
+          break;
+        case ATTRIBUTE_ROTATION_X:
+          attr = rot.alpha;
+          break;
+        case ATTRIBUTE_ROTATION_Y:
+          attr = rot.beta;
+          break;
+        case ATTRIBUTE_ROTATION_Z:
+          attr = rot.gamma;
           break;
         case ATTRIBUTE_SIZE_X:
           attr = n.ext.x();
@@ -96,12 +107,13 @@ namespace mars {
       }
 
       void NodeConstraint::setAttribute(double value) {
-        value = value - offset;
+        value -= offset;
         interfaces::NodeData n = control->nodes->getFullNode(nodeId);
         if(n.relative_id) {
           interfaces::NodeData rel = control->nodes->getFullNode(n.relative_id);
           interfaces::getRelFromAbs(rel, &n);
         }
+        utils::sRotation rot = utils::quaternionTosRotation(n.rot);
         switch(nodeAttribute) {
         case ATTRIBUTE_POSITION_X:
           {
@@ -122,6 +134,33 @@ namespace mars {
             n.pos.z() = value;
             LOG_DEBUG("NodeContraint: edit node pos z");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS);
+            break;
+          }
+        case ATTRIBUTE_ROTATION_X:
+          {
+            rot.alpha -= value;
+            rot.beta = rot.gamma = 0.;
+            utils::Quaternion tmp = utils::eulerToQuaternion(rot);
+            n.rot = (n.rot * tmp).normalized();
+            control->nodes->editNode(&n, interfaces::EDIT_NODE_ROT);
+            break;
+          }
+        case ATTRIBUTE_ROTATION_Y:
+          {
+            rot.beta -= value;
+            rot.alpha = rot.gamma = 0.;
+            utils::Quaternion tmp = utils::eulerToQuaternion(rot);
+            n.rot = (n.rot * tmp).normalized();
+            control->nodes->editNode(&n, interfaces::EDIT_NODE_ROT);
+            break;
+          }
+        case ATTRIBUTE_ROTATION_Z:
+          {
+            rot.gamma -= value;
+            rot.alpha = rot.beta = 0.;
+            utils::Quaternion tmp = utils::eulerToQuaternion(rot);
+            n.rot = (n.rot * tmp).normalized();
+            control->nodes->editNode(&n, interfaces::EDIT_NODE_ROT);
             break;
           }
         case ATTRIBUTE_SIZE_X:
