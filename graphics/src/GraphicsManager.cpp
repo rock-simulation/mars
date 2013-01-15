@@ -1237,6 +1237,15 @@ namespace mars {
       }
     }
 
+    void GraphicsManager::emitKeyDownEvent(int key, unsigned int modKey,
+                                           unsigned long win_id) {
+      std::vector<GuiEventInterface*>::iterator iter;
+
+      for (iter = guiHandlerList.begin(); iter != guiHandlerList.end(); ++iter) {
+        (*iter)->keyDownEvent(key, modKey, win_id);
+      }
+    }
+
     void GraphicsManager::emitKeyUpEvent(int key, unsigned int modKey,
                                          unsigned long win_id) {
       std::vector<GuiEventInterface*>::iterator iter;

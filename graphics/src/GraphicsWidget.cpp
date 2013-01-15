@@ -1027,6 +1027,7 @@ namespace mars {
       // wrap events to class methods
       switch (ea.getEventType()) {
       case osgGA::GUIEventAdapter::KEYDOWN :
+        sendKeyDownEvent(ea);
         return handleKeyDownEvent(ea);
       case osgGA::GUIEventAdapter::KEYUP :
         if (graphicsEventHandler.size() > 0) {
@@ -1279,7 +1280,43 @@ namespace mars {
         if (modKey & osgGA::GUIEventAdapter::MODKEY_META) {
           mod |= GuiEventInterface::MetaModifier;
         }
-        graphicsEventHandler[0]->emitKeyUpEvent(key, mod, widgetID);
+        std::vector<interfaces::GraphicsEventInterface *>::iterator it;
+        for(it=graphicsEventHandler.begin(); it!=graphicsEventHandler.end();
+            ++it)
+          (*it)->emitKeyUpEvent(key, mod, widgetID);
+      }
+    }
+
+    void GraphicsWidget::sendKeyDownEvent(const osgGA::GUIEventAdapter &ea) {
+      if (graphicsEventHandler.size() > 0) {
+        int key = ea.getKey();
+        unsigned int modKey = ea.getModKeyMask();
+        unsigned int mod = 0;
+
+        if (1 <= key && key <= 26) {
+          key += 64;
+        } else if (97 <= key && key <= 122) {
+          key -= 32;
+        } else if (key >= 0xFF00) {
+          translateKey(key, mod);
+        }
+
+        if (modKey & osgGA::GUIEventAdapter::MODKEY_SHIFT) {
+          mod |= GuiEventInterface::ShiftModifier;
+        }
+        if (modKey & osgGA::GUIEventAdapter::MODKEY_CTRL) {
+          mod |= GuiEventInterface::ControlModifier;
+        }
+        if (modKey & osgGA::GUIEventAdapter::MODKEY_ALT) {
+          mod |= GuiEventInterface::AltModifier;
+        }
+        if (modKey & osgGA::GUIEventAdapter::MODKEY_META) {
+          mod |= GuiEventInterface::MetaModifier;
+        }
+        std::vector<interfaces::GraphicsEventInterface *>::iterator it;
+        for(it=graphicsEventHandler.begin(); it!=graphicsEventHandler.end();
+            ++it)
+          (*it)->emitKeyDownEvent(key, mod, widgetID);
       }
     }
 

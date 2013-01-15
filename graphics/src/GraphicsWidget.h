@@ -274,6 +274,7 @@ namespace mars {
 
       bool handleResizeEvent(const osgGA::GUIEventAdapter &ea);
       bool handleReleaseEvent(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);
+      void sendKeyDownEvent(const osgGA::GUIEventAdapter &ea);
       void sendKeyUpEvent(const osgGA::GUIEventAdapter &ea);
       void translateKey(int &key, unsigned int &mod);
 

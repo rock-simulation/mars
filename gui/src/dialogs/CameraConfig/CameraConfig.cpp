@@ -65,6 +65,10 @@ namespace mars {
         q.setIdentity();
         utils::Vector p;
         dataMutex.lock();
+
+        unsigned long id = control->nodes->getDrawID(node_id);
+        node_pos = control->graphics->getDrawObjectPosition(id);
+        node_rot = control->graphics->getDrawObjectQuaternion(id);
         if(lock_rotation) {
           q = offset_rot;
           p = offset_pos;
@@ -138,7 +142,7 @@ namespace mars {
         update_ticks = 0;
       }
       dataMutex.unlock();
-      updateCamera();
+      //updateCamera();
     }
 
 

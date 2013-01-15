@@ -253,6 +253,7 @@ namespace mars {
       virtual void removeEventClient(interfaces::GraphicsEventClient* theClient);
       virtual void addGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler);
       virtual void removeGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler);
+      virtual void emitKeyDownEvent(int key, unsigned int modKey, unsigned long win_id);
       virtual void emitKeyUpEvent(int key, unsigned int modKey, unsigned long win_id);
       virtual void emitQuitEvent(unsigned long win_id);
       virtual void emitSetAppActive(unsigned long win_id);

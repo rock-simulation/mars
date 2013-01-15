@@ -34,6 +34,8 @@ namespace mars {
     class GraphicsEventInterface {
     public:
       virtual ~GraphicsEventInterface() {}
+      virtual void emitKeyDownEvent(int key, unsigned int modKey,
+                                    unsigned long win_id) {}
       virtual void emitKeyUpEvent(int key, unsigned int modKey,
                                   unsigned long win_id) {}
       virtual void emitQuitEvent(unsigned long win_id) {}

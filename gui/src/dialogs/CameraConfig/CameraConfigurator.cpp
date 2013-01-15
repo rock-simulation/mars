@@ -158,7 +158,6 @@ namespace mars {
     */
 
     void CameraConfigurator::preGraphicsUpdate(void) {
-      return;
       std::vector<CameraConfig*>::iterator iter;
 
       myMutex.lock();

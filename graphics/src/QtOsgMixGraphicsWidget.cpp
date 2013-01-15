@@ -327,9 +327,10 @@ namespace mars {
         QKeyEvent *ke = static_cast<QKeyEvent *>(event);
 
         if (ke->key() == Qt::Key_Tab || ke->key() == Qt::Key_Backtab) {
+          /*
           qDebug() << "QOSGWidget::eventFilter:  TAB Press on "
                    << qPrintable(objectName());
-
+          */
           // Empirically have found that it's not necessary to call
           // keyPressEvent on tab press ... my guess is that OSG ignores it.
           keyPressEvent( ke );
@@ -338,9 +339,10 @@ namespace mars {
           return false;
         }
         else {
+          /*
           qDebug() << "QOSGWidget::eventFilter:  KeyPress on "
                    << qPrintable(objectName());
-
+          */
           keyPressEvent( ke );
           // event handled, return true because parent does not have to see
           // this event
@@ -351,16 +353,19 @@ namespace mars {
         QKeyEvent *ke = static_cast<QKeyEvent *>(event);
 
         if (ke->key() == Qt::Key_Tab || ke->key() == Qt::Key_Backtab) {
+          /*
           qDebug() << "QOSGWidget::eventFilter:  TAB Release on "
                    << qPrintable(objectName());
-
+          */
           keyReleaseEvent( ke );
           // Return false so that the parent QWidget will process the tab..
           return false;
         }
         else {
+          /*
           qDebug() << "QOSGWidget::eventFilter:  KeyRelease on "
                    << qPrintable(objectName());
+          */
           keyReleaseEvent( ke );
           // event handled, return true because parent does not have to see
           // this event

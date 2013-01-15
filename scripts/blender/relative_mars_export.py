@@ -251,10 +251,13 @@ def writeNode(obj):
 
     physicMode = "box"
     radius = 0.0
+    height = 0.0
     if "physicMode" in obj:
         physicMode = obj["physicMode"]
-        if "radius" in obj:
-            radius = obj["radius"]
+    if "radius" in obj:
+        radius = obj["radius"]
+    if "height" in obj:
+        height = obj["height"]
 
     pivot = center
     center = obj.location.copy()
@@ -316,11 +319,16 @@ def writeNode(obj):
     out.write('      </'+rotString+'>\n')
     out.write('      <movable>true</movable>\n')
     out.write('      <extend>\n')
+
     if radius > 0.0 :
         out.write('        <x>'+str(radius)+'</x>\n')
     else :
         out.write('        <x>'+str(sizeScaleX*size[0])+'</x>\n')
-    out.write('        <y>'+str(sizeScaleY*size[1])+'</y>\n')
+    if height > 0.0 :
+        out.write('        <y>'+str(height)+'</y>\n')
+    else :
+        out.write('        <y>'+str(sizeScaleY*size[1])+'</y>\n')
+
     out.write('        <z>'+str(sizeScaleZ*size[2])+'</z>\n')
     out.write('      </extend>\n')
     out.write('      <material_id>'+str(matID)+'</material_id>\n')
@@ -402,6 +410,13 @@ def writeJoint(joint):
     out.write('        <y>'+str(invert*axis[1])+'</y>\n')
     out.write('        <z>'+str(invert*axis[2])+'</z>\n')
     out.write('      </axis1>\n')
+    if "axis2x" in joint:
+        out.write('      <axis2>\n')
+        out.write('        <x>'+str(joint["axis2x"])+'</x>\n')
+        out.write('        <y>'+str(joint["axis2y"])+'</y>\n')
+        out.write('        <z>'+str(joint["axis2z"])+'</z>\n')
+        out.write('      </axis2>\n')
+
     if "lowStop" in joint:
         out.write('      <lowStopAxis1>'+str(joint["lowStop"])+'</lowStopAxis1>\n')
     if "highStop" in joint:
@@ -419,7 +434,10 @@ def writeMotor(joint, motorValue):
     out.write('    <motor name="'+joint.name+'">\n')
     out.write('      <index>'+str(joint["id"])+'</index>\n')
     out.write('      <jointIndex>'+str(joint["id"])+'</jointIndex>\n')
-    out.write('      <axis>1</axis>\n')
+    if "motorAxis" in joint:
+        out.write('      <axis>'+str(joint["motorAxis"])+'</axis>\n')
+    else:
+        out.write('      <axis>1</axis>\n')
     out.write('      <maximumVelocity>12.14</maximumVelocity>\n')
     out.write('      <motorMaxForce>38.0</motorMaxForce>\n')
 
@@ -550,8 +568,11 @@ for joint in jointList:
     motorOffset = writeJoint(joint)
     if joint["jointType"] == "hinge":
         motorValue.append(motorOffset)
+    if joint["jointType"] == "hinge2":
+        motorValue.append(motorOffset)
     if joint["jointType"] == "slider":
         motorValue.append(motorOffset)
+
 out.write('  </jointlist>\n')
 
 out.write('  <motorlist>\n')
@@ -561,7 +582,10 @@ for joint in jointList:
         if joint["jointType"] == "hinge":
             writeMotor(joint, motorValue[i])
             i += 1
-        if joint["jointType"] == "slider":
+        elif joint["jointType"] == "hinge2":
+            writeMotor(joint, motorValue[i])
+            i += 1
+        elif joint["jointType"] == "slider":
             writeMotor(joint, motorValue[i])
             i += 1
 

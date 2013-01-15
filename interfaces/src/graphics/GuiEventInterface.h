@@ -91,6 +91,7 @@ namespace mars {
 
       virtual ~GuiEventInterface() {}
 
+      virtual void keyDownEvent(int key, unsigned int mod, unsigned long win_id) = 0;
       virtual void keyUpEvent(int key, unsigned int mod, unsigned long win_id) = 0;
       virtual void quitEvent(unsigned long win_id) = 0;
       virtual void setAppActive(unsigned long win_id = 0) = 0;
