@@ -10,7 +10,7 @@ filename = "example"
 path = "."
 exportMesh = True
 exportBobj = False
-
+defCollBitmask = 65535
 
 
 if "filename" in scn.world:
@@ -24,6 +24,9 @@ if "exportMesh" in scn.world:
 
 if "exportBobj" in scn.world:
     exportBobj = scn.world["exportBobj"]
+
+if "defCollBitmask" in scn.world:
+    defCollBitmask = scn.world["defCollBitmask"]
 
 
 #import export_obj
@@ -55,15 +58,24 @@ def exportBobj(outname, obj):
     globalNormals = {}
 
     if obj.select:
+
+        # ignore dupli children
+        if obj.parent and obj.parent.dupli_type in {'VERTS', 'FACES'}:
+            # XXX
+            print(obj.name, 'is a dupli child - ignoring')
+            return
+
         #obj.select = False
-        mesh = obj.data
+        mesh = obj.to_mesh(bpy.context.scene, True, 'PREVIEW')
+        #mesh.transform(obj.matrix_world)
+
         write_uv = False
         faceuv =len(mesh.uv_textures)
         if faceuv:
             uv_layer = mesh.uv_textures.active.data[:]
             write_uv = True
 
-        face_index_pairs = [(face, index) for index, face in enumerate(mesh.faces)]
+        face_index_pairs = [(face, index) for index, face in enumerate(mesh.tessfaces)]
 
         mesh.calc_normals()
 
@@ -334,7 +346,7 @@ def writeNode(obj):
         out.write('      <coll_bitmask>'+str(obj["coll_bitmask"])+
                   '</coll_bitmask>\n')
     else:
-        out.write('      <coll_bitmask>0</coll_bitmask>\n')
+        out.write('      <coll_bitmask>'+str(defCollBitmask)+'</coll_bitmask>\n')
 
     out.write('    </node>\n')
 
@@ -410,7 +422,11 @@ def writeMotor(joint, motorValue):
     out.write('      <axis>1</axis>\n')
     out.write('      <maximumVelocity>12.14</maximumVelocity>\n')
     out.write('      <motorMaxForce>38.0</motorMaxForce>\n')
-    out.write('      <type>1</type>\n')
+
+    if "motor_type" in joint:
+        out.write('      <type>'+str(joint["motor_type"])+'</type>\n')
+    else:
+        out.write('      <type>1</type>\n')
     if "p" in joint:
         out.write('      <p>'+str(joint["p"])+'</p>\n')
     else:
@@ -446,6 +462,7 @@ def writeSensor(sensor):
 
 
     idList = {}
+
     global myMotorList
     global objList
 
