@@ -229,13 +229,16 @@ namespace mars {
     class BasePolarIntersectionSensor : public BaseNodeSensor, 
                                         public BaseArraySensor<double> {
     public:
-      BasePolarIntersectionSensor(unsigned long id, std::string name, int cols, int rows, double stepX, double stepY, double maxDistance= std::numeric_limits<double>::infinity()):
+      BasePolarIntersectionSensor(unsigned long id, std::string name, int cols, int rows, double angleX, double angleY, double maxDistance= std::numeric_limits<double>::infinity()):
         BaseNodeSensor(id,name),
         BaseArraySensor<double>(cols,rows),
-        stepX(stepX),
-        stepY(stepY),
         maxDistance(maxDistance)
       {
+        if(cols == 1) stepX = 0;
+        else stepX = angleX / cols;
+        if(rows == 1) stepY = 0;
+        else stepY = angleY / rows;
+
         //Must Remain true for correct calculation in Physics
         calcOrientation = true;
 

@@ -6,27 +6,15 @@ import struct
 scn = bpy.context.scene
 
 # configuration
-filename = "example"
-path = "."
-exportMesh = True
-exportBobj = False
-defCollBitmask = 65535
+defValues = {"filename":"example", "path":".",
+             "exportMesh":True, "exportBobj":False,
+             "defCollBitmask":65535, "defP":13,
+             "defD":0, "defI":0.015,
+             "defMaxMotorForce":18, "defMaxMotorSpeed":12}
 
-
-if "filename" in scn.world:
-    filename = scn.world["filename"]
-
-if "path" in scn.world:
-    path = scn.world["path"]
-
-if "exportMesh" in scn.world:
-    exportMesh = scn.world["exportMesh"]
-
-if "exportBobj" in scn.world:
-    exportBobj = scn.world["exportBobj"]
-
-if "defCollBitmask" in scn.world:
-    defCollBitmask = scn.world["defCollBitmask"]
+for key in defValues:
+    if key in scn.world:
+        defValues[key] = scn.world[key]
 
 
 #import export_obj
@@ -202,7 +190,7 @@ def fillList(obj):
 #editmode = Blender.Window.EditMode()
 #if editmode: Blender.Window.EditMode(0)
 
-out = open(path+"/"+filename+".scene", "w")
+out = open(defValues["path"]+"/"+defValues["filename"]+".scene", "w")
 out.write("""<?xml version="1.0"?>
 <!DOCTYPE dfkiMarsSceneFile PUBLIC '-//DFKI/RIC/MARS SceneFile 1.0//EN' ''>
 <SceneFile>
@@ -354,7 +342,7 @@ def writeNode(obj):
         out.write('      <coll_bitmask>'+str(obj["coll_bitmask"])+
                   '</coll_bitmask>\n')
     else:
-        out.write('      <coll_bitmask>'+str(defCollBitmask)+'</coll_bitmask>\n')
+        out.write('      <coll_bitmask>'+str(defValues["defCollBitmask"])+'</coll_bitmask>\n')
 
     out.write('    </node>\n')
 
@@ -438,8 +426,9 @@ def writeMotor(joint, motorValue):
         out.write('      <axis>'+str(joint["motorAxis"])+'</axis>\n')
     else:
         out.write('      <axis>1</axis>\n')
-    out.write('      <maximumVelocity>12.14</maximumVelocity>\n')
-    out.write('      <motorMaxForce>38.0</motorMaxForce>\n')
+
+    out.write('      <maximumVelocity>'+str(defValues["defMaxMotorSpeed"])+'</maximumVelocity>\n')
+    out.write('      <motorMaxForce>'+str(defValues["defMaxMotorForce"])+'</motorMaxForce>\n')
 
     if "motor_type" in joint:
         out.write('      <type>'+str(joint["motor_type"])+'</type>\n')
@@ -448,15 +437,15 @@ def writeMotor(joint, motorValue):
     if "p" in joint:
         out.write('      <p>'+str(joint["p"])+'</p>\n')
     else:
-        out.write('      <p>13</p>\n')
+        out.write('      <p>'+str(defValues["defP"])+'</p>\n')
     if "d" in joint:
         out.write('      <d>'+str(joint["d"])+'</d>\n')
     else:
-        out.write('      <d>0</d>\n')
+        out.write('      <d>'+str(defValues["defD"])+'</d>\n')
     if "i" in joint:
         out.write('      <i>'+str(joint["i"])+'</i>\n')
     else:
-        out.write('      <i>0.015</i>\n')
+        out.write('      <i>'+str(defValues["defI"])+'</i>\n')
     if "lowStop" in joint:
         out.write('      <min_val>'+str(joint["lowStop"])+'</min_val>\n')
     else:
@@ -642,9 +631,9 @@ out.write('</SceneFile>\n')
 
 out.close()
 
-os.chdir(path)
-os.system("rm "+filename+".scn")
-os.system("zip "+filename+".scn "+filename+".scene")
+os.chdir(defValues["path"])
+os.system("rm "+defValues["filename"]+".scn")
+os.system("zip "+defValues["filename"]+".scn "+defValues["filename"]+".scene")
 
 
 for obj in objList:
@@ -660,21 +649,21 @@ for obj in objList:
     #obj.location = [0.0, 0.0, 0.0]
     #obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
     obj.parent = None
-    if exportMesh:
-        if exportBobj:
-            out_name = path+"/"+obj.name + ".bobj"
+    if defValues["exportMesh"]:
+        if defValues["exportBobj"]:
+            out_name = defValues["path"]+"/"+obj.name + ".bobj"
             exportBobj(out_name, obj)
         else:
-            out_name = path+"/"+obj.name + ".obj"
+            out_name = defValues["path"]+"/"+obj.name + ".obj"
             bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z',
                                      axis_up='Y', use_selection=True,
                                      use_normals=True)
-    if exportBobj:
-        os.system("zip "+filename+".scn "+obj.name+".bobj")
+    if defValues["exportBobj"]:
+        os.system("zip "+defValues["filename"]+".scn "+obj.name+".bobj")
     else:
-        os.system("zip "+filename+".scn "+obj.name+".obj")
+        os.system("zip "+defValues["filename"]+".scn "+obj.name+".obj")
 
-    #os.system("zip "+filename+".scn "+obj.name+".mtl")
+    #os.system("zip "+defValues["filename"]+".scn "+obj.name+".mtl")
     #obj.location = location
     #obj.rotation_quaternion = rotation
     obj.parent = parent

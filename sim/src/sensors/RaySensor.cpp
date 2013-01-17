@@ -52,7 +52,9 @@ namespace mars {
     }
 
     RaySensor::RaySensor(ControlCenter *control, RayConfig config): 
-      BasePolarIntersectionSensor(config.id,config.name,config.width,config.height,config.opening_width/config.width,config.opening_height/config.height),
+      BasePolarIntersectionSensor(config.id, config.name, config.width,
+                                  config.height, config.opening_width,
+                                  config.opening_height),
       SensorInterface(control), config(config) {
 
       updateRate = 0;
