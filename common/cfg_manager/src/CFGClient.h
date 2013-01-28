@@ -26,8 +26,8 @@
  * Version 0.1
  */
 
-#ifndef CFG_CLIENT_H
-#define CFG_CLIENT_H
+#ifndef MARS_CFG_CLIENT_H
+#define MARS_CFG_CLIENT_H
 
 #ifdef _PRINT_HEADER_
   #warning "CFGClient.h"
@@ -53,4 +53,4 @@ namespace mars {
   } // end namespace cfg_manager
 } // end namespace mars
 
-#endif /* CFG_CLIENT_H */
+#endif /* MARS_CFG_CLIENT_H */

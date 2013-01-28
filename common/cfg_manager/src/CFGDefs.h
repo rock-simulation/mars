@@ -26,8 +26,8 @@
  * Version 0.1
  */
 
-#ifndef CFG_DEFS_H
-#define CFG_DEFS_H
+#ifndef MARS_CFG_DEFS_H
+#define MARS_CFG_DEFS_H
 
 #ifdef _PRINT_HEADER_
 #warning "CFGDefs.h"
@@ -97,4 +97,4 @@ namespace mars {
   } // namespace cfg_manager
 } // namespace mars
 
-#endif /* CFG_DEFS_H */
+#endif /* MARS_CFG_DEFS_H */
