@@ -101,6 +101,8 @@ namespace mars {
       newLib.libInterface = _lib;
       newLib.useCount = 1;
       newLib.wasUnloaded = false;
+      _lib->setModuleInfoName(name);
+
       if(libMap.find(name) == libMap.end()) {
         libMap[name] = newLib;
       }
@@ -254,6 +256,28 @@ namespace mars {
       return info;
     }
 
+    void LibManager::dumpTo(const std::string &filepath) const {
+      std::list<std::string> libNames;
+      std::list<std::string>::const_iterator libNamesIt;
+      getAllLibraryNames(&libNames);
+      FILE *file = fopen(filepath.c_str(), "w");
+
+      fprintf(file, "  <modules>\n");
+      for(libNamesIt = libNames.begin();
+          libNamesIt != libNames.end(); ++libNamesIt) {
+        lib_manager::LibInfo info = getLibraryInfo(*libNamesIt);
+
+        fprintf(file,
+                "    <module>\n"
+                "      <name>%s</name>\n"
+                "      <src>%s</src>\n"
+                "      <revision>%s</revision>\n"
+                "    </module>\n",
+                info.name.c_str(), info.src.c_str(), info.revision.c_str());
+      }
+      fprintf(file, "  </modules>\n");
+      fclose(file);
+    }
 
     ////////////////////
     // Helper Functions
