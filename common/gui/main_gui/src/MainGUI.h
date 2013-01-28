@@ -124,6 +124,7 @@ namespace mars {
        * \see LibInterface::getLibName(void)
        */
       const std::string getLibName() const;
+      CREATE_MODULE_INFO();
 
 
     protected slots:

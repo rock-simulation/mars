@@ -84,6 +84,7 @@ namespace mars {
       // LibInterface methods
       int getLibVersion() const;
       const std::string getLibName() const;
+      CREATE_MODULE_INFO();
 
       // CFGClient
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);

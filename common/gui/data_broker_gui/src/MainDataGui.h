@@ -71,6 +71,7 @@ namespace mars {
       { return 1; }
       const std::string getLibName() const
       { return std::string("data_broker_gui"); }
+      CREATE_MODULE_INFO();
       
     private:
       mars::main_gui::GuiInterface* gui;

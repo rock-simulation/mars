@@ -78,6 +78,7 @@ namespace mars {
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_sim");}
       void newLibLoaded(const std::string &libName);
+      CREATE_MODULE_INFO();
 
       void checkOptionalDependency(const std::string &libName);
       void runSimulation();

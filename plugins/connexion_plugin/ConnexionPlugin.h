@@ -70,6 +70,7 @@ namespace mars {
         // LibInterface methods
         int getLibVersion() const {return 1;}
         const std::string getLibName() const {return std::string("ConnexionPlugin");}
+        CREATE_MODULE_INFO();
 
         void update(mars::interfaces::sReal time_ms) { (void) time_ms; }
         virtual void reset(void) {}

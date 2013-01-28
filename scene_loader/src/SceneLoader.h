@@ -57,6 +57,7 @@ namespace mars {
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_scene_loader");}
+      CREATE_MODULE_INFO();
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);

@@ -55,6 +55,7 @@ namespace mars {
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_gui");}
+      CREATE_MODULE_INFO();
 
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
 

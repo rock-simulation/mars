@@ -48,6 +48,7 @@ namespace data_broker_plotter {
     const std::string getLibName() const {
       return std::string("data_broker_plotter");
     }
+    CREATE_MODULE_INFO();
 
     // DataBroker method
     void receiveData(const mars::data_broker::DataInfo &info,

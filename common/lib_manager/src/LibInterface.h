@@ -74,7 +74,7 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #define CREATE_LIB(theClass)                                            \
   extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManager *theManager) { \
     theClass *instance = new theClass(theManager);                      \
-    instance->setModuleInfoName(instance->getLibName());                \
+    instance->createModuleInfo();                                       \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
@@ -83,9 +83,17 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
     configType *_config = dynamic_cast<configType*>(config);            \
     if(_config == NULL) return 0;                                       \
     theClass *instance = new theClass(theManager, _config);             \
-    instance->setModuleInfoName(instance->getLibName());                \
+    instance->createModuleInfo();                                       \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
+
+#define CREATE_MODULE_INFO()                                            \
+  void createModuleInfo() {                                             \
+    moduleInfo.name = getLibName();                                     \
+    moduleInfo.src = GIT_INFO_SRC_STR;                                  \
+    moduleInfo.revision = GIT_INFO_REV_STR;                             \
+  }
+
 
 namespace mars {
   namespace lib_manager {
@@ -103,20 +111,16 @@ namespace mars {
     class LibInterface {
     public:
       LibInterface(LibManager *theManager)
-        : libManager(theManager)
-      {
-        moduleInfo.src = GIT_INFO_SRC_STR;
-        moduleInfo.revision = GIT_INFO_REV_STR;
-      }
+        : libManager(theManager) {}
+
       virtual ~LibInterface(void) {}
       virtual int getLibVersion() const = 0;
       virtual const std::string getLibName() const = 0;
       ModuleInfo getModuleInfo() const
       { return moduleInfo; }
       virtual void newLibLoaded(const std::string &libName) {}
-      void setModuleInfoName(const std::string &libName) {
-        moduleInfo.name = libName;
-      }
+      virtual void createModuleInfo(void) {}
+
     protected:
       LibManager *libManager;
       ModuleInfo moduleInfo;

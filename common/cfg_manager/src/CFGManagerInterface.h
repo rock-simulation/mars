@@ -54,6 +54,7 @@ namespace mars {
       // LibInterface methods
       virtual int getLibVersion() const = 0;
       virtual const std::string getLibName() const = 0;
+      virtual void createModuleInfo() {}
 
       // CFGInterface methods
       virtual cfgParamId createParam(const std::string &_group,

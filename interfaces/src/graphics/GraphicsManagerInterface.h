@@ -68,6 +68,7 @@ namespace mars {
       { return 1; }
       const std::string getLibName() const
       { return std::string("mars_graphics"); }
+      virtual void createModuleInfo() {}
 
       /**\brief adds drawStruct items to the graphics scene */
       virtual void addDrawItems(drawStruct *draw) = 0;

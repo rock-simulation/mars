@@ -101,7 +101,7 @@ namespace mars {
       newLib.libInterface = _lib;
       newLib.useCount = 1;
       newLib.wasUnloaded = false;
-      _lib->setModuleInfoName(name);
+      _lib->createModuleInfo();
 
       if(libMap.find(name) == libMap.end()) {
         libMap[name] = newLib;
