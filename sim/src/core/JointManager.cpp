@@ -143,6 +143,10 @@ namespace mars {
         iter->second->setAnchor(jointS->anchor);
         iter->second->setAxis1(jointS->axis1);
         iter->second->setAxis2(jointS->axis2);
+        iter->second->setLowStop(jointS->lowStopAxis1);
+        iter->second->setHighStop(jointS->highStopAxis1);
+        iter->second->setLowStop2(jointS->lowStopAxis2);
+        iter->second->setHighStop2(jointS->highStopAxis2);
       }
     }
 
@@ -387,6 +391,63 @@ namespace mars {
       if(iter == simJoints.end())
         return;
       iter->second->setOfflineValue(value);
+    }
+
+    sReal JointManager::getLowStop(unsigned long id) const {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return 0.;
+      return iter->second->getLowStop();
+    }
+    sReal JointManager::getHighStop(unsigned long id) const {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return 0.;
+      return iter->second->getHighStop();
+    }
+    sReal JointManager::getLowStop2(unsigned long id) const {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return 0.;
+      return iter->second->getLowStop2();
+    }
+    sReal JointManager::getHighStop2(unsigned long id) const {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return 0.;
+      return iter->second->getHighStop2();
+    }
+    void JointManager::setLowStop(unsigned long id, sReal lowStop) {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return;
+      return iter->second->setLowStop(lowStop);
+    }
+    void JointManager::setHighStop(unsigned long id, sReal highStop) {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return;
+      return iter->second->setHighStop(highStop);
+    }
+    void JointManager::setLowStop2(unsigned long id, sReal lowStop2) {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return;
+      return iter->second->setLowStop2(lowStop2);
+    }
+    void JointManager::setHighStop2(unsigned long id, sReal highStop2) {
+      map<unsigned long, SimJoint*>::const_iterator iter;
+      iter = simJoints.find(id);
+      if(iter == simJoints.end())
+        return;
+      return iter->second->setHighStop2(highStop2);
     }
 
   } // end of namespace sim

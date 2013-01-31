@@ -249,6 +249,14 @@ namespace mars {
 
       void setSJoint(const interfaces::JointData &sJoint);
       void setOfflineValue(interfaces::sReal value);
+      interfaces::sReal getLowStop() const;
+      interfaces::sReal getHighStop() const;
+      interfaces::sReal getLowStop2() const;
+      interfaces::sReal getHighStop2() const;
+      void setLowStop(interfaces::sReal lowStop);
+      void setHighStop(interfaces::sReal highStop);
+      void setLowStop2(interfaces::sReal lowStop2);
+      void setHighStop2(interfaces::sReal highStop2);
 
     private:
 
@@ -259,6 +267,7 @@ namespace mars {
       long id;
       interfaces::sReal actualAngle1, actualAngle2;
       interfaces::sReal speed1, speed2;
+      interfaces::sReal lowStop1, lowStop2, highStop1, highStop2;
       utils::Vector anchor;
       utils::Vector axis1;
       utils::Vector axis2;

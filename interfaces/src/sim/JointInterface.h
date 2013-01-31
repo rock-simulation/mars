@@ -68,6 +68,14 @@ namespace mars {
       virtual void getJointLoad(utils::Vector *t) const = 0;
       virtual void changeStepSize(const JointData &jointS) = 0;
       virtual sReal getMotorTorque(void) const = 0;
+      virtual sReal getLowStop() const = 0;
+      virtual sReal getHighStop() const = 0;
+      virtual sReal getLowStop2() const = 0;
+      virtual sReal getHighStop2() const = 0;
+      virtual void setLowStop(sReal lowStop) = 0;
+      virtual void setHighStop(sReal lowStop) = 0;
+      virtual void setLowStop2(sReal lowStop) = 0;
+      virtual void setHighStop2(sReal lowStop) = 0;
     };
 
   } // end of namespace interfaces
