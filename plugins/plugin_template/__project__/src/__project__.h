@@ -67,6 +67,7 @@ namespace mars {
         { return 1; }
         const std::string getLibName() const
         { return std::string("__project__"); }
+        CREATE_MODULE_INFO();
 
         // MarsPlugin methods
         void init();

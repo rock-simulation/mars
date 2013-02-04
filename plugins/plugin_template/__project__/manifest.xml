@@ -2,8 +2,7 @@
     <description brief="__project__">
       __description__
    </description>
-    <depend package="simulation/lib_manager" />
-    <depend package="simulation/data_broker" />
-    <depend package="simulation/mars_utils" />
-    <depend package="simulation/mars_interfaces" />
+    <depend package="simulation/mars/lib_manager" />
+    <depend package="simulation/mars/data_broker" />
+    <depend package="simulation/mars/interfaces" />
 </package>

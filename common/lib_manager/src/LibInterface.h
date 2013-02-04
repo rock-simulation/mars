@@ -74,10 +74,7 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #define CREATE_LIB(theClass)                                            \
   extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManager *theManager) { \
     theClass *instance = new theClass(theManager);                      \
-    mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
-                                                 GIT_INFO_SRC_STR,      \
-                                                 GIT_INFO_REV_STR };    \
-    instance->moduleInfo = moduleInfo;                                  \
+    instance->createModuleInfo();                                       \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
 
@@ -86,12 +83,17 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
     configType *_config = dynamic_cast<configType*>(config);            \
     if(_config == NULL) return 0;                                       \
     theClass *instance = new theClass(theManager, _config);             \
-    mars::lib_manager::ModuleInfo moduleInfo = { instance->getLibName(), \
-                                                 GIT_INFO_SRC_STR,      \
-                                                 GIT_INFO_REV_STR };    \
-    /*instance->moduleInfo = moduleInfo;*/                              \
+    instance->createModuleInfo();                                       \
     return dynamic_cast<mars::lib_manager::LibInterface*>(instance);    \
   }
+
+#define CREATE_MODULE_INFO()                                            \
+  void createModuleInfo() {                                             \
+    moduleInfo.name = getLibName();                                     \
+    moduleInfo.src = GIT_INFO_SRC_STR;                                  \
+    moduleInfo.revision = GIT_INFO_REV_STR;                             \
+  }
+
 
 namespace mars {
   namespace lib_manager {
@@ -109,19 +111,19 @@ namespace mars {
     class LibInterface {
     public:
       LibInterface(LibManager *theManager)
-        : libManager(theManager)
-      {}
+        : libManager(theManager) {}
+
       virtual ~LibInterface(void) {}
       virtual int getLibVersion() const = 0;
       virtual const std::string getLibName() const = 0;
       ModuleInfo getModuleInfo() const
       { return moduleInfo; }
       virtual void newLibLoaded(const std::string &libName) {}
+      virtual void createModuleInfo(void) {}
 
     protected:
       LibManager *libManager;
       ModuleInfo moduleInfo;
-      friend mars::lib_manager::LibInterface* ::create_c(mars::lib_manager::LibManager *theManager);
     };
 
     typedef void *destroyLib(LibInterface *sp);

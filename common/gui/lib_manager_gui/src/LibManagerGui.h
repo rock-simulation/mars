@@ -70,6 +70,7 @@ namespace mars {
         const std::string getLibName() const
         { return std::string("lib_manager_gui"); }
         void newLibLoaded(const std::string &libName);
+        CREATE_MODULE_INFO();
 
         // MenuInterface methods
         void menuAction(int action, bool checked = false);

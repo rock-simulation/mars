@@ -94,6 +94,7 @@ namespace mars {
         void getAllLibraries(std::list<LibInterface*> *libList);
         void getAllLibraryNames(std::list<std::string> *libNameList) const;
         LibInfo getLibraryInfo(const std::string &libName) const;
+        void dumpTo(const std::string &filename) const;
 
       private:
         std::map<std::string, libStruct> libMap;

@@ -193,6 +193,19 @@ namespace mars {
                                       std::string *dataName) const = 0;
 
       virtual void setOfflineValue(unsigned long id, sReal value) = 0;
+
+      virtual interfaces::sReal getLowStop(unsigned long id) const = 0;
+      virtual interfaces::sReal getHighStop(unsigned long id) const = 0;
+      virtual interfaces::sReal getLowStop2(unsigned long id) const = 0;
+      virtual interfaces::sReal getHighStop2(unsigned long id) const = 0;
+      virtual void setLowStop(unsigned long id,
+                              interfaces::sReal lowStop) = 0;
+      virtual void setHighStop(unsigned long id,
+                               interfaces::sReal highStop) = 0;
+      virtual void setLowStop2(unsigned long id,
+                               interfaces::sReal lowStop2) = 0;
+      virtual void setHighStop2(unsigned long id,
+                                interfaces::sReal highStop2) = 0;
     };
 
   } // end of namespace interfaces

@@ -252,6 +252,10 @@ namespace mars {
       tmp.anchor = anchor;
       tmp.angle1_offset = actualAngle1;
       tmp.angle2_offset = actualAngle2;
+      tmp.lowStopAxis1 = lowStop1;
+      tmp.highStopAxis1 = highStop1;
+      tmp.lowStopAxis2 = lowStop2;
+      tmp.highStopAxis2 = highStop2;
       return tmp;
     }
 
@@ -419,6 +423,38 @@ namespace mars {
         }
       }
     }
+
+    sReal SimJoint::getLowStop() const
+    { return lowStop1; }
+      
+    sReal SimJoint::getHighStop() const
+    { return highStop1; }
+
+    sReal SimJoint::getLowStop2() const
+    { return lowStop2; }
+
+    sReal SimJoint::getHighStop2() const
+    { return highStop2; }
+
+    void SimJoint::setLowStop(sReal lowStop) {
+      this->lowStop1 = lowStop;
+      my_interface->setLowStop(lowStop);
+    }
+    void SimJoint::setHighStop(sReal highStop) {
+      this->highStop1 = highStop;
+      my_interface->setHighStop(highStop);
+    }
+
+    void SimJoint::setLowStop2(sReal lowStop2) {
+      this->lowStop2 = lowStop2;
+      my_interface->setLowStop2(lowStop2);
+    }
+
+    void SimJoint::setHighStop2(sReal highStop2) {
+      this->highStop2 = highStop2;
+      my_interface->setHighStop2(highStop2);
+    }
+
 
   } // end of namespace sim
 } // end of namespace mars

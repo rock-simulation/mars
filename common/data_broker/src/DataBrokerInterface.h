@@ -118,6 +118,7 @@ namespace mars {
       { return 1; }
       virtual const std::string getLibName() const
       { return "data_broker"; }
+      CREATE_MODULE_INFO();
 
       /**
        * \brief create a new timer with the given name

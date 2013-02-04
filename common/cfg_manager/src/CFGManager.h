@@ -67,6 +67,7 @@ namespace mars {
       { return 1; }
       virtual const std::string getLibName() const
       { return "cfg_manager"; }
+      CREATE_MODULE_INFO();
 
       // CFGInterface methods
       virtual bool loadConfigFromStream(std::istream &in, const char *group);

@@ -109,6 +109,9 @@ namespace mars {
     public:
       GraphicsManager(lib_manager::LibManager *theManager, void *QTWidget = 0);
       ~GraphicsManager();
+
+      CREATE_MODULE_INFO();
+
       virtual void initializeOSG(void *data);
 
       virtual void* getWindowManager(int id=1); // get osgWidget WindowManager*

@@ -91,26 +91,7 @@ namespace mars {
       }
 
       void LibManagerGui::dumpTo(std::string filepath) {
-        std::list<std::string> libNames;
-        std::list<std::string>::iterator libNamesIt;
-        libManager->getAllLibraryNames(&libNames);
-        FILE *file = fopen(filepath.c_str(), "w");
-
-        fprintf(file, "  <modules>\n");
-        for(libNamesIt = libNames.begin();
-            libNamesIt != libNames.end(); ++libNamesIt) {
-          lib_manager::LibInfo info = libManager->getLibraryInfo(*libNamesIt);
-
-          fprintf(file,
-                  "    <module>\n"
-                  "      <name>%s</name>\n"
-                  "      <src>%s</src>\n"
-                  "      <revision>%s</revision>\n"
-                  "    </module>\n",
-                  info.name.c_str(), info.src.c_str(), info.revision.c_str());
-        }
-        fprintf(file, "  </modules>\n");
-        fclose(file);
+        libManager->dumpTo(filepath);
       }
 
       void LibManagerGui::update() {
