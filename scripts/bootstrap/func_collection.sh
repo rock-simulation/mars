@@ -177,11 +177,6 @@ function setup_env {
             return 1
         fi
     fi
-    if [ ! -d "${prefix}/cmake" ]; then
-        cp -r "$MARS_SCRIPT_DIR/../cmake" "${prefix}/"
-    elif [ ! -f "${prefix}/cmake/mars.cmake" ]; then
-        cp "$MARS_SCRIPT_DIR/../cmake/mars.cmake" "${prefix}/cmake/"
-    fi
     popd > /dev/null 2>&1
 }
 
