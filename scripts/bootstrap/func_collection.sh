@@ -214,9 +214,15 @@ function fetch_package {
         mkdir -p ${MARS_DEV_ROOT}/${package%/*}
         cd ${MARS_DEV_ROOT}/${package%/*}
         if ${PUSH}; then
-            git clone git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git || MARS_SCRIPT_ERROR=1;
+            CLONE_ADDR="git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git"
         else
-            git clone git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git || MARS_SCRIPT_ERROR=1;
+            CLONE_ADDR="git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
+        fi
+        CLONE_ERROR=0
+        git clone ${CLONE_ADDR} || CLONE_ERROR=1;
+        if ${CLONE_ERROR}; then
+            printErr "Error: Could not clone package from \"${CLONE_ADDR}\"!"
+            MARS_SCRIPT_ERROR=1;
         fi
     fi
     popd > /dev/null 2>&1
