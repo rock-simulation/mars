@@ -159,11 +159,13 @@ namespace mars {
       NodeMap simNodes;
       NodeMap simNodesDyn;
       NodeMap nodesToUpdate;
-      std::map<interfaces::NodeId, interfaces::NodeData> simNodesReload;
+      std::list<interfaces::NodeData> simNodesReload;
 
       mutable utils::Mutex iMutex;
 
       interfaces::ControlCenter *control;
+
+      std::list<interfaces::NodeData>::iterator getReloadNode(interfaces::NodeId id);
 
       // interfaces::NodeInterface* getNodeInterface(NodeId node_id);
       struct Params; // see below.

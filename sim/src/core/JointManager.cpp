@@ -72,7 +72,7 @@ namespace mars {
 
       if (!reload) {
         iMutex.lock();
-        simJointsReload[jointS->index] = *jointS;
+        simJointsReload.push_back(*jointS);
         iMutex.unlock();
       }
 
@@ -243,10 +243,10 @@ namespace mars {
     }
 
     void JointManager::reloadJoints(void) {
-      map<unsigned long, JointData>::iterator iter;
+      list<JointData>::iterator iter;
       //MutexLocker locker(&iMutex);
       for(iter = simJointsReload.begin(); iter != simJointsReload.end(); iter++)
-        addJoint(&(iter->second), true);
+        addJoint(&(*iter), true);
     }
 
     void JointManager::updateJoints(sReal calc_ms) {
@@ -272,29 +272,37 @@ namespace mars {
       next_joint_id = 1;
     }
 
+    std::list<JointData>::iterator JointManager::getReloadJoint(unsigned long id) {
+      std::list<JointData>::iterator iter = simJointsReload.begin();
+      for(;iter!=simJointsReload.end(); ++iter) {
+        if(iter->index == id) break;
+      }
+      return iter;
+    }
+
     void JointManager::setReloadJointOffset(unsigned long id, sReal offset) {
       MutexLocker locker(&iMutex);
-      map<unsigned long, JointData>::iterator iter = simJointsReload.find(id);
+      list<JointData>::iterator iter = getReloadJoint(id);
       if (iter != simJointsReload.end())
-        iter->second.angle1_offset = offset;
+        iter->angle1_offset = offset;
     }
 
     void JointManager::setReloadJointAxis(unsigned long id, const Vector &axis) {
       MutexLocker locker(&iMutex);
-      map<unsigned long, JointData>::iterator iter = simJointsReload.find(id);
+      list<JointData>::iterator iter = getReloadJoint(id);
       if (iter != simJointsReload.end())
-        iter->second.axis1 = axis;
+        iter->axis1 = axis;
     }
 
 
     void JointManager::scaleReloadJoints(sReal x_factor, sReal y_factor, sReal z_factor)
     {
-      map<unsigned long, JointData>::iterator iter;
+      list<JointData>::iterator iter;
       MutexLocker locker(&iMutex);
       for(iter = simJointsReload.begin(); iter != simJointsReload.end(); iter++) {
-        iter->second.anchor.x() *= x_factor;
-        iter->second.anchor.y() *= y_factor;
-        iter->second.anchor.z() *= z_factor;
+        iter->anchor.x() *= x_factor;
+        iter->anchor.y() *= y_factor;
+        iter->anchor.z() *= z_factor;
       }
     }
 
@@ -317,9 +325,9 @@ namespace mars {
 
     void JointManager::setReloadAnchor(unsigned long id, const Vector &anchor) {
       MutexLocker locker(&iMutex);
-      map<unsigned long, JointData>::iterator iter = simJointsReload.find(id);
+      list<JointData>::iterator iter = getReloadJoint(id);
       if (iter != simJointsReload.end())
-        iter->second.anchor = anchor;
+        iter->anchor = anchor;
     }
 
 

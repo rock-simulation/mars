@@ -104,12 +104,14 @@ namespace mars {
 
       if (!reload) {
         iMutex.lock();
-        simNodesReload[nodeS->index] = *nodeS;
+        simNodesReload.push_back(*nodeS);
 
         if (nodeS->c_params.friction_direction1) {
           Vector *tmp = new Vector();
           *tmp = *(nodeS->c_params.friction_direction1);
-          simNodesReload.find(nodeS->index)->second.c_params.friction_direction1 = tmp;
+          if(simNodesReload.back().index == nodeS->index) {
+            simNodesReload.back().c_params.friction_direction1 = tmp;
+          }
         }
         iMutex.unlock();
       }
@@ -1037,13 +1039,13 @@ namespace mars {
      *\brief Reloads all nodes in the simulation.
      */
     void NodeManager::reloadNodes(void) {
-      std::map<NodeId, NodeData>::iterator iter;
+      std::list<NodeData>::iterator iter;
       NodeData tmp;
       Vector* friction;
 
       iMutex.lock();
       for(iter = simNodesReload.begin(); iter != simNodesReload.end(); iter++) {
-        tmp = iter->second;
+        tmp = *iter;
         if(tmp.c_params.friction_direction1) {
           friction = new Vector(0.0, 0.0, 0.0);
           *friction = *(tmp.c_params.friction_direction1);
@@ -1057,20 +1059,28 @@ namespace mars {
       updateDynamicNodes(0);
     }
 
+    std::list<NodeData>::iterator NodeManager::getReloadNode(NodeId id) {
+      std::list<NodeData>::iterator iter = simNodesReload.begin();
+      for(;iter!=simNodesReload.end(); ++iter) {
+        if(iter->index == id) break;
+      }
+      return iter;
+    }
+
     /**
      *\brief set the size for the node with the given id.
      */
     const Vector NodeManager::setReloadExtent(NodeId id, const Vector &ext) {
       Vector x(0.0,0.0,0.0);
       MutexLocker locker(&iMutex);
-      std::map<NodeId, NodeData>::iterator iter = simNodesReload.find(id);
+      std::list<NodeData>::iterator iter = getReloadNode(id);
       if (iter != simNodesReload.end()) {
-        if(iter->second.filename != "PRIMITIVE") {
-          x.x() = ext.x() / iter->second.ext.x();
-          x.y() = ext.y() / iter->second.ext.y();
-          x.z() = ext.z() / iter->second.ext.z();
+        if(iter->filename != "PRIMITIVE") {
+          x.x() = ext.x() / iter->ext.x();
+          x.y() = ext.y() / iter->ext.y();
+          x.z() = ext.z() / iter->ext.z();
         }
-        iter->second.ext = ext;
+        iter->ext = ext;
       }
       return x;
     }
@@ -1080,10 +1090,10 @@ namespace mars {
                                         sReal friction2) {
       MutexLocker locker(&iMutex);
 
-      std::map<NodeId, NodeData>::iterator iter = simNodesReload.find(id);
+      std::list<NodeData>::iterator iter = getReloadNode(id);
       if (iter != simNodesReload.end()) {
-        iter->second.c_params.friction1 = friction1;
-        iter->second.c_params.friction2 = friction2;
+        iter->c_params.friction1 = friction1;
+        iter->c_params.friction2 = friction2;
       }
     }
 
@@ -1093,9 +1103,9 @@ namespace mars {
      */
     void NodeManager::setReloadPosition(NodeId id, const Vector &pos) {
       MutexLocker locker(&iMutex);
-      std::map<NodeId, NodeData>::iterator iter = simNodesReload.find(id);
+      std::list<NodeData>::iterator iter = getReloadNode(id);
       if (iter != simNodesReload.end()) {
-        iter->second.pos = pos;
+        iter->pos = pos;
       }
     }
 
@@ -1184,9 +1194,9 @@ namespace mars {
      */
     void NodeManager::setReloadQuaternion(NodeId id, const Quaternion &q) {
       MutexLocker locker(&iMutex);
-      std::map<NodeId, NodeData>::iterator iter = simNodesReload.find(id);
+      std::list<NodeData>::iterator iter = getReloadNode(id);
       if (iter != simNodesReload.end()) {
-        iter->second.rot = q;
+        iter->rot = q;
       }
     }
 
@@ -1220,24 +1230,24 @@ namespace mars {
     /**
      *\brief Scales the nodes to reload.
      */
-    void NodeManager::scaleReloadNodes(sReal factor_x, sReal factor_y, sReal factor_z)
-    {
-      std::map<NodeId, NodeData>::iterator iter;
+    void NodeManager::scaleReloadNodes(sReal factor_x, sReal factor_y,
+                                       sReal factor_z) {
+      std::list<NodeData>::iterator iter;
 
       iMutex.lock();
       for(iter = simNodesReload.begin(); iter != simNodesReload.end(); iter++) {
-        iter->second.pos.x() *= factor_x;
-        iter->second.pos.y() *= factor_y;
-        iter->second.pos.z() *= factor_z;
-        iter->second.ext.x() *= factor_x;
-        iter->second.ext.y() *= factor_y;
-        iter->second.ext.z() *= factor_z;
-        iter->second.visual_offset_pos.x() *= factor_x;
-        iter->second.visual_offset_pos.y() *= factor_y;
-        iter->second.visual_offset_pos.z() *= factor_z;
-        iter->second.visual_size.x() *= factor_x;
-        iter->second.visual_size.y() *= factor_y;
-        iter->second.visual_size.z() *= factor_z;
+        iter->pos.x() *= factor_x;
+        iter->pos.y() *= factor_y;
+        iter->pos.z() *= factor_z;
+        iter->ext.x() *= factor_x;
+        iter->ext.y() *= factor_y;
+        iter->ext.z() *= factor_z;
+        iter->visual_offset_pos.x() *= factor_x;
+        iter->visual_offset_pos.y() *= factor_y;
+        iter->visual_offset_pos.z() *= factor_z;
+        iter->visual_size.x() *= factor_x;
+        iter->visual_size.y() *= factor_y;
+        iter->visual_size.z() *= factor_z;
 
       }
       iMutex.unlock();

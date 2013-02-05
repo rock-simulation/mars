@@ -84,10 +84,12 @@ namespace mars {
     private:
       unsigned long next_joint_id;
       std::map<unsigned long, SimJoint*> simJoints;
-      std::map<unsigned long, interfaces::JointData> simJointsReload;
+      std::list<interfaces::JointData> simJointsReload;
       interfaces::ControlCenter *control;
       mutable utils::Mutex iMutex;
       interfaces::JointManagerInterface* getJointInterface(unsigned long node_id);
+      std::list<interfaces::JointData>::iterator getReloadJoint(unsigned long id);
+
     };
 
   } // end of namespace sim

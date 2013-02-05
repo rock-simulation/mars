@@ -311,7 +311,7 @@ namespace mars {
       std::map<unsigned long, SimMotor*> simMotors;
 
       //! a containter for all motors that are reloaded after a reset of the simulation
-      std::map<unsigned long, interfaces::MotorData> simMotorsReload;
+      std::list<interfaces::MotorData> simMotorsReload;
 
       //! a pointer to the control center
       interfaces::ControlCenter *control;

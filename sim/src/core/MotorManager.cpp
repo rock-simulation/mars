@@ -81,7 +81,7 @@ namespace mars {
   
       if (!reload) {
         iMutex.lock();
-        simMotorsReload[motorS->index] =  *motorS;
+        simMotorsReload.push_back(*motorS);
         iMutex.unlock();
       }
   
@@ -399,11 +399,11 @@ namespace mars {
      * are added back to the simulation again with a \c reload value of \c true. 
      */
     void MotorManager::reloadMotors(void) {
-      map<unsigned long, MotorData>::iterator iter;
+      list<MotorData>::iterator iter;
       iMutex.lock();
       for(iter = simMotorsReload.begin(); iter != simMotorsReload.end(); iter++) {
         iMutex.unlock();
-        addMotor(&(iter->second), true);
+        addMotor(&(*iter), true);
         iMutex.lock();
       }
       iMutex.unlock();
