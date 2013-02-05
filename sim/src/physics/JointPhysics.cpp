@@ -33,6 +33,8 @@
 #include "JointPhysics.h"
 #include "NodePhysics.h"
 
+#include <cstdio>
+
 namespace mars {
   namespace sim {
 
@@ -1296,6 +1298,118 @@ namespace mars {
 
     sReal JointPhysics::getMotorTorque(void) const {
       return motor_torque;
+    }
+
+    interfaces::sReal JointPhysics::getLowStop() const {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        return dJointGetHingeParam(jointId, dParamLoStop);
+      case JOINT_TYPE_HINGE2:
+        return dJointGetHinge2Param(jointId, dParamLoStop);
+      case JOINT_TYPE_SLIDER:
+        return dJointGetSliderParam(jointId, dParamLoStop);
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: lowstop for type %d not implemented yet\n", joint_type);
+        return 0.;
+      }
+    }
+
+    interfaces::sReal JointPhysics::getHighStop() const {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        return dJointGetHingeParam(jointId, dParamHiStop);
+      case JOINT_TYPE_HINGE2:
+        return dJointGetHinge2Param(jointId, dParamHiStop);
+      case JOINT_TYPE_SLIDER:
+        return dJointGetSliderParam(jointId, dParamHiStop);
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        return 0.;
+      }
+    }
+
+    interfaces::sReal JointPhysics::getLowStop2() const {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE2:
+        return dJointGetHinge2Param(jointId, dParamLoStop2);
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: lowstop for type %d not implemented yet\n", joint_type);
+        return 0.;
+      }
+    }
+
+    interfaces::sReal JointPhysics::getHighStop2() const {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE2:
+        return dJointGetHinge2Param(jointId, dParamHiStop2);
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        return 0.;
+      }
+    }
+
+    void JointPhysics::setLowStop(interfaces::sReal lowStop) {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        dJointSetHingeParam(jointId, dParamLoStop, lowStop);
+        break;
+      case JOINT_TYPE_HINGE2:
+        dJointSetHinge2Param(jointId, dParamLoStop, lowStop);
+        break;
+      case JOINT_TYPE_SLIDER:
+        dJointSetSliderParam(jointId, dParamLoStop, lowStop);
+        break;
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        break;
+      }
+    }
+
+    void JointPhysics::setHighStop(interfaces::sReal highStop) {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        dJointSetHingeParam(jointId, dParamHiStop, highStop);
+        break;
+      case JOINT_TYPE_HINGE2:
+        dJointSetHinge2Param(jointId, dParamHiStop, highStop);
+        break;
+      case JOINT_TYPE_SLIDER:
+        dJointSetSliderParam(jointId, dParamHiStop, highStop);
+        break;
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        break;
+      }
+    }
+
+    void JointPhysics::setLowStop2(interfaces::sReal lowStop) {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE2:
+        dJointSetHinge2Param(jointId, dParamLoStop, lowStop);
+        break;
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        break;
+      }
+    }
+
+    void JointPhysics::setHighStop2(interfaces::sReal highStop) {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE2:
+        dJointSetHinge2Param(jointId, dParamHiStop2, highStop);
+        break;
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        break;
+      }
     }
 
   } // end of namespace sim

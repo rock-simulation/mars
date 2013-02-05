@@ -91,7 +91,7 @@ namespace mars {
       }
 
       void LibManagerGui::dumpTo(std::string filepath) {
-        libMangaer->dumpTo(filepath);
+        libManager->dumpTo(filepath);
       }
 
       void LibManagerGui::update() {

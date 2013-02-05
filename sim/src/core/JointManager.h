@@ -81,6 +81,15 @@ namespace mars {
                                       std::string *dataName) const;
       virtual void setOfflineValue(unsigned long id, interfaces::sReal value);
 
+      virtual interfaces::sReal getLowStop(unsigned long id) const;
+      virtual interfaces::sReal getHighStop(unsigned long id) const;
+      virtual interfaces::sReal getLowStop2(unsigned long id) const;
+      virtual interfaces::sReal getHighStop2(unsigned long id) const;
+      virtual void setLowStop(unsigned long id, interfaces::sReal lowStop);
+      virtual void setHighStop(unsigned long id, interfaces::sReal highStop);
+      virtual void setLowStop2(unsigned long id, interfaces::sReal lowStop2);
+      virtual void setHighStop2(unsigned long id, interfaces::sReal highStop2);
+
     private:
       unsigned long next_joint_id;
       std::map<unsigned long, SimJoint*> simJoints;

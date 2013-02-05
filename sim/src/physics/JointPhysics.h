@@ -78,6 +78,15 @@ namespace mars {
       virtual void getAxis2Torque(utils::Vector *t) const;
       virtual void changeStepSize(const interfaces::JointData &jointS);
       virtual interfaces::sReal getMotorTorque(void) const;
+      virtual interfaces::sReal getLowStop() const;
+      virtual interfaces::sReal getHighStop() const;
+      virtual interfaces::sReal getLowStop2() const;
+      virtual interfaces::sReal getHighStop2() const;
+      virtual void setLowStop(interfaces::sReal lowStop);
+      virtual void setHighStop(interfaces::sReal highStop);
+      virtual void setLowStop2(interfaces::sReal lowStop2);
+      virtual void setHighStop2(interfaces::sReal highStop2);
+
     private:
       WorldPhysics* theWorld;
       dJointID jointId, ball_motor;
