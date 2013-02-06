@@ -35,6 +35,7 @@
 
 #include <map>
 #include <vector>
+#include <string>
 
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
 #include <mars/cfg_manager/CFGDefs.h>
@@ -71,12 +72,12 @@ namespace mars {
         void init();
         void reset();
         void update(interfaces::sReal time_ms);
-        void loadConstraintDefs();
-        void saveConstraintDefs() const;
-        void loadConstraints();
-        void saveConstraints() const;
-        void loadMotors();
-        void saveMotors() const;
+        void loadConstraintDefs(const std::string &filename);
+        void saveConstraintDefs(const std::string &filename) const;
+        void loadConstraints(const std::string &filename);
+        void saveConstraints(const std::string &filename) const;
+        void loadMotors(const std::string &filename);
+        void saveMotors(const std::string &filename) const;
 
         void parseNodeConstraints(const std::string &paramName,
                                   const std::string &s);

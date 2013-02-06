@@ -16,9 +16,11 @@ set(HEADERS
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
+add_library(${PROJECT_NAME}_static STATIC ${SOURCES})
 
 if(UNIX)
   target_link_libraries(${PROJECT_NAME} dl)
+  target_link_libraries(${PROJECT_NAME}_static dl)
 endif(UNIX)
 
 if(WIN32)
@@ -37,6 +39,7 @@ set(_INSTALL_DESTINATIONS
 
 # Install the library into the lib folder
 install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
+install(TARGETS ${PROJECT_NAME}_static ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/${PROJECT_NAME})
