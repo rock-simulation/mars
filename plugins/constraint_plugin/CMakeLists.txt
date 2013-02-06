@@ -40,6 +40,8 @@ set(SOURCES
 
 set(HEADERS
 	src/ConstraintsPlugin.h
+	src/BaseConstraint.h
+	src/NodeConstraint.h
 )
 
 
@@ -72,7 +74,7 @@ set(_INSTALL_DESTINATIONS
 install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
-install(FILES ${HEADERS} DESTINATION include/mars/pluigns/${PROJECT_NAME})
+install(FILES ${HEADERS} DESTINATION include/mars/plugins/${PROJECT_NAME})
 
 # Prepare and install necessary files to support finding of the library 
 # using pkg-config

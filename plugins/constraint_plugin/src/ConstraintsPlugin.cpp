@@ -45,6 +45,7 @@ namespace mars {
     
     namespace constraints_plugin {
 
+      using std::string;
       using cfg_manager::cfgPropertyStruct;
       using cfg_manager::cfgParamInfo;
       using cfg_manager::cfgParamId;
@@ -71,66 +72,44 @@ namespace mars {
           cfgParamRemoved(it->first);
         }
         constraints.clear();
-        libManager->releaseLibrary("main_gui");
+        if(gui)
+          libManager->releaseLibrary("main_gui");
       }
 
       void ConstraintsPlugin::init() {
-        gui->addGenericMenuAction("../Constraints/Load Constraint Definitions...", ACTION_LOAD_DEFS, this);
-        gui->addGenericMenuAction("../Constraints/Save Constraint Definitions...", ACTION_SAVE_DEFS, this);
-        gui->addGenericMenuAction("../Constraints/Load Constraints...", ACTION_LOAD, this);
-        gui->addGenericMenuAction("../Constraints/Save Constraints...", ACTION_SAVE, this);
-        gui->addGenericMenuAction("../Constraints/Load Motor Values...", ACTION_LOAD_MOTORS, this);
-        gui->addGenericMenuAction("../Constraints/Save Motor Values...", ACTION_SAVE_MOTORS, this);
+        if(gui) {
+          gui->addGenericMenuAction("../Constraints/Load Constraint Definitions...", ACTION_LOAD_DEFS, this);
+          gui->addGenericMenuAction("../Constraints/Save Constraint Definitions...", ACTION_SAVE_DEFS, this);
+          gui->addGenericMenuAction("../Constraints/Load Constraints...", ACTION_LOAD, this);
+          gui->addGenericMenuAction("../Constraints/Save Constraints...", ACTION_SAVE, this);
+          gui->addGenericMenuAction("../Constraints/Load Motor Values...", ACTION_LOAD_MOTORS, this);
+          gui->addGenericMenuAction("../Constraints/Save Motor Values...", ACTION_SAVE_MOTORS, this);
+        }
       }
 
-      void ConstraintsPlugin::loadConstraintDefs() {
-        QString filename;
-        filename = QFileDialog::getOpenFileName(NULL,
-                                                "Open Constraint Defs...",
-                                                QString(),
-                                                "YAML-Files (*.yml *.yaml)");
-        if(!filename.isEmpty())
-          control->cfg->loadConfig(filename.toStdString().c_str());
+      void ConstraintsPlugin::loadConstraintDefs(const string &filename) {
+        if(!filename.empty())
+          control->cfg->loadConfig(filename.c_str());
       }
 
-      void ConstraintsPlugin::saveConstraintDefs() const {
-        QString filename;
-        filename = QFileDialog::getSaveFileName(NULL,
-                                                "Save Constraint Defs...");
-        if(!filename.isEmpty())
-          control->cfg->writeConfig(filename.toStdString().c_str(),
-                                    "ConstraintDefs");
+      void ConstraintsPlugin::saveConstraintDefs(const string &filename) const {
+        if(!filename.empty())
+          control->cfg->writeConfig(filename.c_str(), "ConstraintDefs");
       }
 
-      void ConstraintsPlugin::loadConstraints() {
-        QString filename;
-        filename = QFileDialog::getOpenFileName(NULL,
-                                                "Open Constraints...",
-                                                QString(),
-                                                "YAML-Files (*.yml *.yaml)");
-        if(!filename.isEmpty())
-          control->cfg->loadConfig(filename.toStdString().c_str());
+      void ConstraintsPlugin::loadConstraints(const string &filename) {
+        if(!filename.empty())
+          control->cfg->loadConfig(filename.c_str());
       }
 
-      void ConstraintsPlugin::saveConstraints() const {
-        QString filename;
-        filename = QFileDialog::getSaveFileName(NULL,
-                                                "Save Constraints...",
-                                                QString(),
-                                                "YAML-Files (*.yml *.yaml)");
-        if(!filename.isEmpty())
-          control->cfg->writeConfig(filename.toStdString().c_str(),
-                                    "Constraints");
+      void ConstraintsPlugin::saveConstraints(const string &filename) const {
+        if(!filename.empty())
+          control->cfg->writeConfig(filename.c_str(), "Constraints");
       }
 
-      void ConstraintsPlugin::loadMotors() {
-        QString filename;
-        filename = QFileDialog::getOpenFileName(NULL,
-                                                "Open Motor Values File...",
-                                                QString(),
-                                                "YAML-Files (*.yml *.yaml)");
-        if(!filename.isEmpty()) {
-          utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename.toStdString());
+      void ConstraintsPlugin::loadMotors(const string &filename) {
+        if(!filename.empty()) {
+          utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename);
           for(unsigned int i = 0; i < config["MotorValues"].size(); ++i) {
             std::string name = config["MotorValues"][i]["name"][0].getString();
             double value = config["MotorValues"][i]["value"][0].getDouble();
@@ -140,14 +119,9 @@ namespace mars {
 	}
       }
 
-      void ConstraintsPlugin::saveMotors() const {
-        QString filename;
-        filename = QFileDialog::getSaveFileName(NULL,
-                                                "Save Motor Values...",
-                                                QString(),
-                                                "YAML-Files (*.yml *.yaml)");
-        if(!filename.isEmpty()) {
-	  std::ofstream f(filename.toStdString().c_str());
+      void ConstraintsPlugin::saveMotors(const string &filename) const {
+        if(!filename.empty()) {
+	  std::ofstream f(filename.c_str());
 	  f << "MotorValues:" << std::endl;
 	  std::vector<mars::interfaces::core_objects_exchange> motorList;
 	  std::vector<mars::interfaces::core_objects_exchange>::iterator it;
@@ -414,24 +388,47 @@ namespace mars {
       }
 
       void ConstraintsPlugin::menuAction(int action, bool checked) {
+        QString filename;
         switch(action) {
         case ACTION_LOAD_DEFS:
-          loadConstraintDefs();
+          filename = QFileDialog::getOpenFileName(NULL,
+                                                  "Open Constraint Defs...",
+                                                  QString(),
+                                                  "YAML-Files (*.yml *.yaml)");
+          loadConstraintDefs(filename.toStdString());
           break;
         case ACTION_SAVE_DEFS:
-          saveConstraintDefs();
+          filename = QFileDialog::getSaveFileName(NULL,
+                                                  "Save Constraint Defs...");
+          saveConstraintDefs(filename.toStdString());
           break;
         case ACTION_LOAD:
-          loadConstraints();
+          filename = QFileDialog::getOpenFileName(NULL,
+                                                  "Open Constraints...",
+                                                  QString(),
+                                                  "YAML-Files (*.yml *.yaml)");
+          loadConstraints(filename.toStdString());
           break;
         case ACTION_SAVE:
-          saveConstraints();
+          filename = QFileDialog::getSaveFileName(NULL,
+                                                  "Save Constraints...",
+                                                  QString(),
+                                                  "YAML-Files (*.yml *.yaml)");
+          saveConstraints(filename.toStdString());
           break;
         case ACTION_LOAD_MOTORS:
-          loadMotors();
+          filename = QFileDialog::getOpenFileName(NULL,
+                                                  "Open Motor Values File...",
+                                                  QString(),
+                                                  "YAML-Files (*.yml *.yaml)");
+          loadMotors(filename.toStdString());
           break;
         case ACTION_SAVE_MOTORS:
-          saveMotors();
+          filename = QFileDialog::getSaveFileName(NULL,
+                                                  "Save Motor Values...",
+                                                  QString(),
+                                                  "YAML-Files (*.yml *.yaml)");
+          saveMotors(filename.toStdString());
           break;
         default:
           LOG_WARN("received unknown menu action callback: %d", action);

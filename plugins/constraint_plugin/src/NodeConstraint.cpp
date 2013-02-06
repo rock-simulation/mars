@@ -118,21 +118,18 @@ namespace mars {
         case ATTRIBUTE_POSITION_X:
           {
             n.pos.x() = value;
-            LOG_DEBUG("NodeContraint: edit node pos x");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS);
             break;
           }
         case ATTRIBUTE_POSITION_Y:
           {
             n.pos.y() = value;
-            LOG_DEBUG("NodeContraint: edit node pos y");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS);
             break;
           }
         case ATTRIBUTE_POSITION_Z:
           {
             n.pos.z() = value;
-            LOG_DEBUG("NodeContraint: edit node pos z");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_POS);
             break;
           }
@@ -178,7 +175,6 @@ namespace mars {
         case ATTRIBUTE_SIZE_Z:
           {
             n.ext.z() = value;
-            LOG_DEBUG("NodeContraint: edit node size z");
             control->nodes->editNode(&n, interfaces::EDIT_NODE_SIZE);
             break;
           }
