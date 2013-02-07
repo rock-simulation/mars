@@ -342,6 +342,10 @@ namespace mars {
         }
       }
 
+      if (!controller.sNodes.empty()) {
+        LOG_WARN("ControllerManager::addController: sNodes are not implemented yet and are currently ignored!");
+      }
+
       newController = new Controller(controller.rate, vmotor, vsensor, nodes,
                                      control, std_port);
       newController->setDylibPath(controller.dylib_path);
