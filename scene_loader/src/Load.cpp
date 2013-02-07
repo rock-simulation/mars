@@ -66,7 +66,7 @@ namespace mars {
 
       // need to unzip into a temporary directory
       std::string suffix = utils::getFilenameSuffix(mFileName);
-      if (suffix == "scn" || suffix == "zip") {
+      if (suffix == ".scn" || suffix == ".zip") {
         if(unzip(tmpPath, mFileName) == 0)
           return 0;
       }
@@ -84,7 +84,7 @@ namespace mars {
         fileNameIndex = loadScene->getMappedSceneByName(mFileName);
       }
 
-      parseScene(tmpPath, tmpPath + filename + "scene", fileNameIndex);
+      parseScene(tmpPath, tmpPath + filename + ".scene", fileNameIndex);
 
       return 1;
     }

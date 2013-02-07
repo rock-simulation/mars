@@ -70,10 +70,10 @@ namespace mars {
       control(c), s_tmpDirectory(tmpPath) {
 
       if(!utils::pathExists(s_tmpDirectory)) {
-        LOG_ERROR("Save:: given tmp dir \"%s\" does not exist! Use /tmp");
+        LOG_WARN("Save:: given tmp dir \"%s\" does not exist! Use /tmp",
+                  s_tmpDirectory.c_str());
         s_tmpDirectory = "/tmp";
       }
-      LOG_ERROR("Save: tmp: %s", tmpPath.c_str());
       s_filename = filename;
       utils::removeFilenamePrefix(&s_filename);
       utils::removeFilenameSuffix(&s_filename);
@@ -94,12 +94,11 @@ namespace mars {
       next_material_id = 1;
       s_zipfile=s_pathname;
       s_zipfile.append(s_filename);
-      s_zipfile.append("scn");
+      s_zipfile.append(".scn");
       s_scenename = s_tmpDirectory + "/";
       s_scenename += s_filename;
-      s_scenename.append("scene");
+      s_scenename.append(".scene");
 
-      LOG_ERROR("Save: tmp: %s", s_scenename.c_str());
       //if a file with the same name, allready exists, it is removed
       remove(s_scenename.c_str());
       LOG_DEBUG("Save: %s", s_scenename.c_str());
