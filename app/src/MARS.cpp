@@ -53,7 +53,6 @@ namespace mars {
 
     mars::interfaces::ControlCenter* MARS::control = NULL;
     bool MARS::quit = false;
-    bool secondTry = false;
 
     void exit_main(int signal) {
 #ifndef WIN32
@@ -64,13 +63,8 @@ namespace mars {
       MARS::quit = true;
       if (signal) {
         fprintf(stderr, "\nI think we exit with an error! Signal: %d\n", signal);
-        if(signal == SIGABRT && !secondTry) {
-          secondTry = true;
-          MARS::control->sim->exitMars();
-        }
-        else {
-          exit(-1);
-        }
+        MARS::control->sim->exitMars();
+        exit(-1);
         //MARS::control->sim->exitMars();
         //Convention: print the signal type
       } else {
