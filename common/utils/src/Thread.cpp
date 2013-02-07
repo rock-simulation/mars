@@ -163,7 +163,7 @@ namespace mars {
       pthread_t thisThreadID = pthread_self();
 
       for(it = threads.begin(); it != threads.end(); ++it) {
-        if(pthread_equal(thisThreadID, (*it)->myThread->t) == 0) {
+        if(pthread_equal(thisThreadID, (*it)->myThread->t)) {
           return *it;
         }
       }
