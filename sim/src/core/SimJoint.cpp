@@ -242,6 +242,10 @@ namespace mars {
       joint_load.x() = joint_load.y() = joint_load.z() = 0;
       speed1 = speed2 = 0;
       motor_torque = 0;
+      lowStop1 = sJoint.lowStopAxis1;
+      highStop1 = sJoint.highStopAxis1;
+      lowStop2 = sJoint.lowStopAxis2;
+      highStop2 = sJoint.highStopAxis2;
     }
 
     const JointData SimJoint::getSJoint(void) const {
