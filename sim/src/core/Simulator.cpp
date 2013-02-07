@@ -174,18 +174,23 @@ namespace mars {
         }
       } else if(libName == "log_console") {
         LibInterface *lib = libManager->getLibrary("log_console");
-        if(!lib && control->dataBroker) {
-          fprintf(stderr, "Simulator: no console loaded. output to stdout!\n\n");
-          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "fatal",
-                                                    data_broker::DB_MESSAGE_TYPE_FATAL);
-          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "error",
-                                                    data_broker::DB_MESSAGE_TYPE_ERROR);
-          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "warning",
-                                                    data_broker::DB_MESSAGE_TYPE_WARNING);
-          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "info",
-                                                    data_broker::DB_MESSAGE_TYPE_INFO);
-          control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "debug",
-                                                    data_broker::DB_MESSAGE_TYPE_DEBUG);
+        if(control->dataBroker) {
+          if(lib) {
+            LOG_DEBUG("Simulator: console loaded. stop output to stdout!");
+            control->dataBroker->unregisterSyncReceiver(this, "_MESSAGES_", "*");
+          } else {
+            control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "fatal",
+                                                      data_broker::DB_MESSAGE_TYPE_FATAL);
+            control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "error",
+                                                      data_broker::DB_MESSAGE_TYPE_ERROR);
+            control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "warning",
+                                                      data_broker::DB_MESSAGE_TYPE_WARNING);
+            control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "info",
+                                                      data_broker::DB_MESSAGE_TYPE_INFO);
+            control->dataBroker->registerSyncReceiver(this, "_MESSAGES_", "debug",
+                                                      data_broker::DB_MESSAGE_TYPE_DEBUG);
+            LOG_DEBUG("Simulator: no console loaded. output to stdout!");
+          }
         }
       }
     }

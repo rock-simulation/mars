@@ -112,7 +112,7 @@ namespace mars {
       size_t pos;
 
       if((pos = file->rfind('.')) != std::string::npos) {
-        *file= file->substr(0, pos+1);
+        *file= file->substr(0, pos);
       }
     }
 
@@ -120,7 +120,7 @@ namespace mars {
       size_t pos;
 
       if((pos = file.rfind('.')) != std::string::npos) {
-        return file.substr(pos+1);
+        return file.substr(pos);
       }
       return "";
     }

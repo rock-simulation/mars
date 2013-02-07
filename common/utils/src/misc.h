@@ -130,8 +130,21 @@ namespace mars {
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix);
 
+    /**
+     * given a filepath "bla/da/fnord/foobar.baz" this will remove everything
+     * before and including the last slash "/" resulting in "foobar.baz".
+     */
     void removeFilenamePrefix(std::string *file);
+
+    /**
+     * given a filename "foobar.baz" this will remove the extension
+     * (including the dot ".") resulting in "foobar".
+     */
     void removeFilenameSuffix(std::string *file);
+
+    /**
+     * given a filename "foobar.baz" this will return ".baz"
+     */
     std::string getFilenameSuffix(const std::string &file);
     std::string getPathOfFile(const std::string &filename);
 
