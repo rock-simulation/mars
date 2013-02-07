@@ -10,13 +10,13 @@ mars_defaults()
 define_module_info()
 
 
-pkg_check_modules(MARS_UTILS REQUIRED "mars_utils")
-include_directories(${MARS_UTILS_INCLUDE_DIRS})
-link_directories(${MARS_UTILS_LIBRARY_DIRS})
-
-pkg_check_modules(DATA_BROKER REQUIRED "data_broker")
-include_directories(${DATA_BROKER_INCLUDE_DIRS})
-link_directories(${DATA_BROKER_LIBRARY_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+        mars_utils
+        data_broker
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 include_directories(src)
 
@@ -59,8 +59,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(
         ${PROJECT_NAME}
-        ${MARS_UTILS_LIBRARIES}
-        ${DATA_BROKER_LIBRARIES}
+        ${PKGCONFIG_LIBRARIES}
 )
 
 

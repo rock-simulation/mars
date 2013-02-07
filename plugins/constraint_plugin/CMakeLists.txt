@@ -9,21 +9,15 @@ include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 mars_defaults()
 define_module_info()
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(CFG_MANAGER "cfg_manager")
-include_directories(${CFG_MANAGER_INCLUDE_DIRS})
-link_directories(${CFG_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(MAIN_GUI "main_gui")
-include_directories(${MAIN_GUI_INCLUDE_DIRS})
-link_directories(${MAIN_GUI_LIBRARY_DIRS})
-
-pkg_check_modules(MARS_BASE REQUIRED "mars_interfaces")
-include_directories(${MARS_BASE_INCLUDE_DIRS})
-link_directories(${MARS_BASE_LIBRARY_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+			    lib_manager
+                            cfg_manager
+                            main_gui
+			    mars_interfaces
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
@@ -49,10 +43,7 @@ set(HEADERS
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
-                      ${CFG_MANAGER_LIBRARIES}
-                      ${MAIN_GUI_LIBRARIES}
-                      ${MARS_BASE_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
                       ${QT_LIBRARIES}
 )
 
