@@ -814,7 +814,12 @@ namespace mars {
 
     void Simulator::exitMars(void) {
       kill_sim = 1;
-      while(this->isRunning()) msleep(1);
+      if(isCurrentThread()) {
+        return;
+      }
+      while(this->isRunning()) {
+        msleep(1);
+      }
     }
 
     void Simulator::connectNodes(unsigned long id1, unsigned long id2) {
