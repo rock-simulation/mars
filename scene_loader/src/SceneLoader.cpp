@@ -75,6 +75,7 @@ namespace mars {
       map<unsigned long, unsigned long>::const_iterator it;
 
       if(id==0) return 0;
+      if(maps.size() <= source) return 0;
       switch (indextype) {
       case interfaces::MAP_TYPE_NODE:
         it = maps[source].m_indexMap.find(id);
@@ -92,6 +93,7 @@ namespace mars {
         it = maps[source].m_indexMapControllers.find(id);
         break;
       default:
+        return 0;
         break;
       }
       if(it->first == id)
