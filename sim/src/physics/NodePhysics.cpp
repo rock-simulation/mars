@@ -914,9 +914,6 @@ namespace mars {
           dGeomSetOffsetWorldQuaternion(nGeom, tmp2);
 
           gpos = dGeomGetPosition(nGeom);
-          npos.x() = (sReal)(gpos[0]);
-          npos.y() = (sReal)(gpos[1]);
-          npos.z() = (sReal)(gpos[2]);
           pos[0] = gpos[0] - (dReal)rotation_point.x();
           pos[1] = gpos[1] - (dReal)rotation_point.y();
           pos[2] = gpos[2] - (dReal)rotation_point.z();
@@ -926,6 +923,9 @@ namespace mars {
           pos[1] = new_pos[1] + (dReal)rotation_point.y();
           pos[2] = new_pos[2] + (dReal)rotation_point.z();
           dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+          npos.x() = (sReal)(pos[0]);
+          npos.y() = (sReal)(pos[1]);
+          npos.z() = (sReal)(pos[2]);
          return npos;
         }
       }

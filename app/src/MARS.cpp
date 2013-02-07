@@ -63,7 +63,7 @@ namespace mars {
 #endif
       MARS::quit = true;
       if (signal) {
-        fprintf(stderr, "\nI think we exit with an error!\n");
+        fprintf(stderr, "\nI think we exit with an error! Signal: %d\n", signal);
         if(signal == SIGABRT && !secondTry) {
           secondTry = true;
           MARS::control->sim->exitMars();

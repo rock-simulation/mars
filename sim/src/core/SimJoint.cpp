@@ -344,8 +344,13 @@ namespace mars {
         pos = (snode1->getPosition() + snode2->getPosition()) / 2.;
         setAnchor(pos);
       }
-      else
-        if(my_interface) my_interface->reattacheJoint();
+      else if(my_interface) {
+        my_interface->reattacheJoint();
+        my_interface->getAnchor(&sJoint.anchor);
+      }
+
+      sJoint.axis1 = snode1->getRotation()*axis1InNode1;
+      if(my_interface) my_interface->setAxis(sJoint.axis1);
 
       node1ToAnchor = sJoint.anchor - snode1->getPosition();
       node1ToAnchor = snode1->getRotation().inverse()*node1ToAnchor;
