@@ -158,6 +158,11 @@ namespace mars {
       return myStackSize;
     }
 
+    bool Thread::isCurrentThread() const {
+      pthread_t currentThread = pthread_self();
+      return pthread_equal(currentThread, myThread->t);
+    }
+
     Thread* Thread::getCurrentThread() {
       std::list<Thread*>::iterator it;
       pthread_t thisThreadID = pthread_self();

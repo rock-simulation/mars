@@ -97,6 +97,7 @@ namespace mars {
       bool isFinished() const;
       void setStackSize(std::size_t stackSize);
       std::size_t getStackSize() const;
+      bool isCurrentThread() const;
       static Thread* getCurrentThread();
 
     protected:
