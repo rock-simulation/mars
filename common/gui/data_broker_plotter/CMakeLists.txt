@@ -15,24 +15,16 @@ link_directories(${QT_LIBRARY_DIR})
 add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
 remove_definitions(-DQT_DLL)
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(GUI_CORE "main_gui")
-include_directories(${GUI_CORE_INCLUDE_DIRS})
-link_directories(${GUI_CORE_LIBRARY_DIRS})
-
-pkg_check_modules(DATA_BROKER "data_broker")
-include_directories(${DATA_BROKER_INCLUDE_DIRS})
-link_directories(${DATA_BROKER_LIBRARY_DIRS})
-
-pkg_check_modules(CFG "cfg_manager")
-include_directories(${CFG_INCLUDE_DIRS})
-link_directories(${CFG_LIBRARY_DIRS})
-
-pkg_check_modules(EIGEN "eigen3")
-include_directories(${EIGEN_INCLUDE_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+        lib_manager
+        cfg_manager
+        data_broker
+        main_gui
+        eigen3
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 include_directories(src)
 include_directories( ${CMAKE_CURRENT_BINARY_DIR} )
@@ -70,10 +62,7 @@ cmake_minimum_required(VERSION 2.6)
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} ${SOURCES_UI_H} )
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
-                      ${GUI_CORE_LIBRARIES}
-                      ${DATA_BROKER_LIBRARIES}
-                      ${CFG_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
                       ${QT_LIBRARIES}
  )
 

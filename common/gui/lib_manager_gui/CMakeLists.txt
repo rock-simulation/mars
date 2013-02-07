@@ -16,17 +16,15 @@ add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHAR
 remove_definitions(-DQT_DLL)
 
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+        lib_manager
+        cfg_manager
+        main_gui
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
-pkg_check_modules(MAIN_GUI REQUIRED "main_gui")
-include_directories(${MAIN_GUI_INCLUDE_DIRS})
-link_directories(${MAIN_GUI_LIBRARY_DIRS})
-
-pkg_check_modules(CFG_MANAGER REQUIRED "cfg_manager")
-include_directories(${CFG_MANAGER_INCLUDE_DIRS})
-link_directories(${CFG_MANAGER_LIBRARY_DIRS})
 
 include_directories(
   src
@@ -53,9 +51,7 @@ qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC})
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
-                      ${MAIN_GUI_LIBRARIES}
-                      ${CFG_MANAGER_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
                       ${QT_LIBRARIES}
 )
 

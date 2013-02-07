@@ -24,21 +24,16 @@ find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
 INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
 
-pkg_check_modules(DATA_BROKER "data_broker")
-include_directories(${DATA_BROKER_INCLUDE_DIRS})
-link_directories(${DATA_BROKER_LIBRARY_DIRS})
-
-pkg_check_modules(CFG_MANAGER "cfg_manager")
-include_directories(${CFG_MANAGER_INCLUDE_DIRS})
-link_directories(${CFG_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(MAIN_GUI "main_gui")
-include_directories(${MAIN_GUI_INCLUDE_DIRS})
-link_directories(${MAIN_GUI_LIBRARY_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+        lib_manager
+        cfg_manager
+        data_broker
+        main_gui
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 link_directories(${QT_LIBRARY_DIR})
 
@@ -68,10 +63,7 @@ qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} )
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
-                      ${DATA_BROKER_LIBRARIES}
-                      ${CFG_MANAGER_LIBRARIES}
-                      ${MAIN_GUI_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
                       ${QT_LIBRARIES}
 )
 

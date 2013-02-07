@@ -9,17 +9,14 @@ mars_defaults()
 define_module_info()
 
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(DATA_BROKER "data_broker")
-include_directories(${DATA_BROKER_INCLUDE_DIRS})
-link_directories(${DATA_BROKER_LIBRARY_DIRS})
-
-pkg_check_modules(MARS_INTERFACES REQUIRED "mars_interfaces")
-include_directories(${MARS_INTERFACES_INCLUDE_DIRS})
-link_directories(${MARS_INTERFACES_LIBRARY_DIRS})
+pkg_check_modules(PKGCONFIG REQUIRED
+			    lib_manager
+			    data_broker
+			    mars_interfaces
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
 include_directories(
 	src
@@ -38,9 +35,7 @@ set(HEADERS
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
-                      ${LIB_MANAGER_LIBRARIES}
-                      ${DATA_BROKER_LIBRARIES}
-                      ${MARS_INTERFACES_LIBRARIES}
+                      ${PKGCONFIG_LIBRARIES}
 )
 
 if(WIN32)

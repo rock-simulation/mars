@@ -19,22 +19,16 @@ MACRO(CMAKE_USE_FULL_RPATH install_rpath)
 ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
+pkg_check_modules(PKGCONFIG REQUIRED
+			    lib_manager
+			    data_broker
+                            main_gui
+			    mars_interfaces
+)
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBRARY_DIRS})
+add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
-pkg_check_modules(LIB_MANAGER REQUIRED "lib_manager")
-include_directories(${LIB_MANAGER_INCLUDE_DIRS})
-link_directories(${LIB_MANAGER_LIBRARY_DIRS})
-
-pkg_check_modules(DATA_BROKER REQUIRED "data_broker")
-include_directories(${DATA_BROKER_INCLUDE_DIRS})
-link_directories(${DATA_BROKER_LIBRARY_DIRS})
-
-pkg_check_modules(MAIN_GUI REQUIRED "main_gui")
-include_directories(${MAIN_GUI_INCLUDE_DIRS})
-link_directories(${MAIN_GUI_LIBRARY_DIRS})
-
-pkg_check_modules(MARS_CORE REQUIRED "mars_interfaces")
-include_directories(${MARS_CORE_INCLUDE_DIRS})
-link_directories(${MARS_CORE_LIBRARY_DIRS})
 
 find_package(Qt4 REQUIRED)
 include(${QT_USE_FILE})
@@ -86,10 +80,7 @@ target_link_libraries(${PROJECT_NAME}
           ${QT_LIBRARIES}
           ${CARBON}
           ${IOKIT}
-          ${LIB_MANAGER_LIBRARIES}
-          ${MAIN_GUI_LIBRARIES}
-          ${MARS_CORE_LIBRARIES}
-          ${DATA_BROKER_LIBRARIES}
+          ${PKGCONFIG_LIBRARIES}
 )
 
 install(TARGETS ${PROJECT_NAME}
