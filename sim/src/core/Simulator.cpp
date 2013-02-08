@@ -278,95 +278,100 @@ namespace mars {
       while (!kill_sim) {
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
-        if (isSimRunning() || single_step) {
-          if (!sync_graphics || (sync_graphics && sync_count)) {
-            if(my_real_time) {
-              myRealTime();
-            } else if(physics_mutex_count > 0) {
-              // if not in realtime this thread would lock the physicsThread right
-              // after releasing it. If an other thread is trying to lock
-              // it (physics_mutex_count > 0) we sleep so it has a chance.
-              msleep(1);
-            }
-            physicsThreadLock();
-#ifdef DEBUG_TIME
-            long startTime = getTime();
-
-#endif
-            physics->stepTheWorld();
-#ifdef DEBUG_TIME
-            LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
-#endif
-
-            control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
-            control->joints->updateJoints(calc_ms);
-            control->motors->updateMotors(calc_ms);
-            control->controllers->updateControllers(calc_ms);
-
-            if(show_time)
-              time = getTime();
-
-            dbSimTimePackage[0].d += calc_ms;
-            if(control->dataBroker) {
-              control->dataBroker->pushData(dbSimTimeId,
-                                            dbSimTimePackage);
-              control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
-              control->dataBroker->trigger("mars_sim/physicsUpdate");
-            }
-
-            if(show_time) {
-              avg_log_time += getTimeDiff(time);
-              if(++count > 100) {
-                avg_log_time /= count;
-                count = 0;
-                fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
-                avg_log_time = 0.0;
-              }
-            }
-
-            pluginLocker.lockForRead();
-
-            // It is possible for plugins to call switchPluginUpdateMode during
-            // the update call and get removed from the activePlugins list there.
-            // We use erased_active to notify this loop about an erasure.
-            for(unsigned int i = 0; i < activePlugins.size();) {
-              erased_active = false;
-              if(show_time)
-                time = getTime();
-
-              activePlugins[i].p_interface->update(calc_ms);
-
-              if(!erased_active) {
-                if(show_time) {
-                  time = getTimeDiff(time);
-                  activePlugins[i].timer += time;
-                  activePlugins[i].t_count++;
-                  if(activePlugins[i].t_count > 20) {
-                    activePlugins[i].timer /= activePlugins[i].t_count;
-                    activePlugins[i].t_count = 0;
-                    fprintf(stderr, "debug_time: %s: %g\n",
-                            activePlugins[i].name.c_str(),
-                            activePlugins[i].timer);
-                    activePlugins[i].timer = 0.0;
-                  }
-                }
-                ++i;
-              }
-            }
-            pluginLocker.unlock();
-            if (sync_graphics) {
-              calc_time += calc_ms;
-              if (calc_time >= sync_time) {
-                sync_count = 0;
-                if(control->graphics)
-                  this->allowDraw();
-                calc_time = 0;
-              }
-            }
-            physicsThreadUnlock();
-          } else msleep(2);
+        if (!isSimRunning() && !single_step) {
+          msleep(20);
+          continue;
+        }
+        if (sync_graphics && !sync_count) {
+          msleep(2);
           single_step = 0;
-        } else msleep(20);
+          continue;
+        }
+        if(my_real_time) {
+          myRealTime();
+        } else if(physics_mutex_count > 0) {
+          // if not in realtime this thread would lock the physicsThread right
+          // after releasing it. If an other thread is trying to lock
+          // it (physics_mutex_count > 0) we sleep so it has a chance.
+          msleep(1);
+        }
+        physicsThreadLock();
+#ifdef DEBUG_TIME
+        long startTime = getTime();
+
+#endif
+        physics->stepTheWorld();
+#ifdef DEBUG_TIME
+        LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
+#endif
+
+        control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
+        control->joints->updateJoints(calc_ms);
+        control->motors->updateMotors(calc_ms);
+        control->controllers->updateControllers(calc_ms);
+
+        if(show_time)
+          time = getTime();
+
+        dbSimTimePackage[0].d += calc_ms;
+        if(control->dataBroker) {
+          control->dataBroker->pushData(dbSimTimeId,
+                                        dbSimTimePackage);
+          control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
+          control->dataBroker->trigger("mars_sim/physicsUpdate");
+        }
+
+        if(show_time) {
+          avg_log_time += getTimeDiff(time);
+          if(++count > 100) {
+            avg_log_time /= count;
+            count = 0;
+            fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
+            avg_log_time = 0.0;
+          }
+        }
+
+        pluginLocker.lockForRead();
+
+        // It is possible for plugins to call switchPluginUpdateMode during
+        // the update call and get removed from the activePlugins list there.
+        // We use erased_active to notify this loop about an erasure.
+        for(unsigned int i = 0; i < activePlugins.size();) {
+          erased_active = false;
+          if(show_time)
+            time = getTime();
+
+          activePlugins[i].p_interface->update(calc_ms);
+
+          if(!erased_active) {
+            if(show_time) {
+              time = getTimeDiff(time);
+              activePlugins[i].timer += time;
+              activePlugins[i].t_count++;
+              if(activePlugins[i].t_count > 20) {
+                activePlugins[i].timer /= activePlugins[i].t_count;
+                activePlugins[i].t_count = 0;
+                fprintf(stderr, "debug_time: %s: %g\n",
+                        activePlugins[i].name.c_str(),
+                        activePlugins[i].timer);
+                activePlugins[i].timer = 0.0;
+              }
+            }
+            ++i;
+          }
+        }
+        pluginLocker.unlock();
+        if (sync_graphics) {
+          calc_time += calc_ms;
+          if (calc_time >= sync_time) {
+            sync_count = 0;
+            if(control->graphics)
+              this->allowDraw();
+            calc_time = 0;
+          }
+        }
+        physicsThreadUnlock();
+        single_step = 0;
       }
       simulationStatus = STOPPED;
       // here everthing of the physical simulation can be closed
