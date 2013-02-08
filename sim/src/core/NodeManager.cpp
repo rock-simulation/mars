@@ -413,7 +413,7 @@ namespace mars {
       if ((changes & EDIT_NODE_SIZE) || (changes & EDIT_NODE_TYPE) || (changes & EDIT_NODE_CONTACT) ||
           (changes & EDIT_NODE_MASS) || (changes & EDIT_NODE_NAME) ||
           (changes & EDIT_NODE_GROUP) || (changes & EDIT_NODE_PHYSICS)) {
-        cout << "EDIT_NODE_SIZE !!!" << endl;
+        //cout << "EDIT_NODE_SIZE !!!" << endl;
         NodeData sNode = editedNode->getSNode();
         if(control->graphics) {
           Vector scale;

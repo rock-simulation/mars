@@ -298,7 +298,7 @@ namespace mars {
           offset.x() = pos.x() - (sReal)(npos[0]);
           offset.y() = pos.y() - (sReal)(npos[1]);
           offset.z() = pos.z() - (sReal)(npos[2]);
-          std::cout << " " << pos.z();
+          //std::cout << " " << pos.z();
           dGeomSetOffsetWorldPosition(nGeom, (dReal)pos.x(), (dReal)pos.y(),
                                       (dReal)pos.z());
           // here we have to recalculate the mass

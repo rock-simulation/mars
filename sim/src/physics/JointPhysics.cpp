@@ -503,7 +503,7 @@ namespace mars {
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
         dJointSetHingeAnchor(jointId, anchor.x(), anchor.y(), anchor.z());
-        std::cout << " " << anchor.z();
+        //std::cout << " " << anchor.z();
         break;
       case JOINT_TYPE_HINGE2:
         dJointSetHinge2Anchor(jointId, anchor.x(), anchor.y(), anchor.z());    
