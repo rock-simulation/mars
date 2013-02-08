@@ -42,6 +42,13 @@ namespace mars {
 
     class NodeInterface;
 
+    enum PhysicsError {
+      PHYSICS_NO_ERROR = 0,
+      PHYSICS_DEBUG,
+      PHYSICS_ERROR,
+      PHYSICS_UNKNOWN,
+    };
+
     class PhysicsInterface {
 
     public:

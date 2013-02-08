@@ -82,7 +82,6 @@ namespace mars {
       virtual bool getProperty(cfgPropertyStruct *_propertyS) const = 0;
 
       template <typename T>
-      
       bool getPropertyValue(const std::string &_group, const std::string &_name,
                             const std::string &_propertyName, T *rValue) const {
         return getPropertyValue(getParamId(_group, _name), _propertyName, rValue);

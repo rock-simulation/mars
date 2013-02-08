@@ -107,7 +107,7 @@ namespace mars {
       interfaces::sReal getCollisionDepth(dGeomID theGeom);
       mutable utils::Mutex iMutex;
 
-      static bool error;
+      static interfaces::PhysicsError error;
 
     private:
       utils::Mutex drawLock;
