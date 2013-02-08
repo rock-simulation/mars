@@ -41,6 +41,8 @@
 #include <signal.h>
 #include <getopt.h>
 #include <stdexcept>
+#include <algorithm>
+#include <cctype> // for tolower()
 
 #ifdef __linux__
 #include <time.h>
@@ -890,13 +892,17 @@ namespace mars {
       }
     }
 
-    void Simulator::handleError(int error) {
+    void Simulator::handleError(PhysicsError error) {
       std::vector<pluginStruct>::iterator p_iter;
 
-      if (error == 0) {
-        LOG_ERROR("Simulator Error in ODE (catch)?");
-      } else {
-        LOG_ERROR("Simulator Error in ODE?");
+      switch(error) {
+      case PHYSICS_NO_ERROR:
+      case PHYSICS_DEBUG:
+      case PHYSICS_ERROR:
+        break;
+      case PHYSICS_UNKNOWN:
+        LOG_WARN("looks like we caught a unknown exception from ODE.");
+        break;
       }
 
       for(p_iter=allPlugins.begin(); p_iter!=allPlugins.end();
@@ -906,7 +912,18 @@ namespace mars {
 
       control->controllers->handleError();
 
-      resetSim();
+      string onError;
+      control->cfg->getPropertyValue("Simulator", "onPhysicsError",
+                                     "value", &onError);
+      std::transform(onError.begin(), onError.end(),
+                     onError.begin(), ::tolower);
+      if("abort" == onError || "" == onError) {
+        abort();
+      } else if("reset" == onError) {
+        resetSim();
+      } else if("warn" == onError) {
+        // warning already happend in message handler
+      }
     }
 
     void Simulator::setGravity(const Vector &gravity) {
@@ -1126,6 +1143,8 @@ namespace mars {
 
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
+      control->cfg->getOrCreateProperty("Simulator", "onPhysicsError",
+                                        "abort", this);
       show_time = cfgDebugTime.bValue;
 
     }

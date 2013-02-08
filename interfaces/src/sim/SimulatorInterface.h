@@ -114,7 +114,7 @@ namespace mars {
       /** \todo write docs */
       virtual void switchPluginUpdateMode(int mode, PluginInterface *pl) = 0;
       /** \todo write docs */
-      virtual void handleError(int error) = 0;
+      virtual void handleError(PhysicsError error) = 0;
       /** \todo write docs */
       virtual void setGravity(const utils::Vector &gravity) = 0;
 

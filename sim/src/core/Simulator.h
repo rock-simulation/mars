@@ -148,7 +148,7 @@ namespace mars {
 
       virtual void singleStep(void);
       virtual void switchPluginUpdateMode(int mode, interfaces::PluginInterface *pl);
-      virtual void handleError(int error);
+      virtual void handleError(interfaces::PhysicsError error);
       virtual void setGravity(const utils::Vector &gravity);
 
       virtual interfaces::ControlCenter* getControlCenter(void) const;

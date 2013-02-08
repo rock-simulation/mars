@@ -51,28 +51,23 @@ namespace mars {
     using namespace utils;
     using namespace interfaces;
 
-    bool WorldPhysics::error = 0;
+    PhysicsError WorldPhysics::error = PHYSICS_NO_ERROR;
 
     void myMessageFunction(int errnum, const char *msg, va_list ap) {
-      errnum = errnum;
-      (void)msg;
-      (void)ap;
+      CPP_UNUSED(errnum);
       LOG_INFO(msg, ap);
     }
 
     void myDebugFunction(int errnum, const char *msg, va_list ap) {
-      (void)errnum;
-      (void)msg;
-      (void)ap;
+      CPP_UNUSED(errnum);
       LOG_DEBUG(msg, ap);
-      WorldPhysics::error = 1;
+      WorldPhysics::error = PHYSICS_DEBUG;
     }
 
     void myErrorFunction(int errnum, const char *msg, va_list ap) {
-      (void)errnum;
-      (void)msg;
-      (void)ap;
+      CPP_UNUSED(errnum);
       LOG_ERROR(msg, ap);
+      WorldPhysics::error = PHYSICS_ERROR;
     }
 
     /**
@@ -261,11 +256,11 @@ namespace mars {
           if(fast_step) dWorldQuickStep(world, step_size);
           else dWorldStep(world, step_size);
         } catch (...) {
-          control->sim->handleError(0);
+          control->sim->handleError(PHYSICS_UNKNOWN);
         }
 	if(WorldPhysics::error) {
-          control->sim->handleError(1);
-	  WorldPhysics::error = 0;
+          control->sim->handleError(WorldPhysics::error);
+          WorldPhysics::error = PHYSICS_NO_ERROR;
 	}
       }
     }

@@ -76,7 +76,7 @@ namespace mars {
     }
 
     void handle_abort(int signal) {
-      MARS::control->sim->handleError(1);
+      MARS::control->sim->handleError(interfaces::PHYSICS_DEBUG);
     }
 
     MARS::MARS() : configDir("."),
