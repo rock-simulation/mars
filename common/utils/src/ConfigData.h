@@ -42,13 +42,12 @@ namespace mars {
     public:
 
       T& operator[](size_t index) {
-
         if(index == this->size()) {
           this->push_back(T());
         }
-
         return std::vector<T>::operator[](index);
       }
+
       const T& operator[](size_t index) const {
         return std::vector<T>::operator[](index);
       }
@@ -73,7 +72,9 @@ namespace mars {
 
     class ConfigMap : public FIFOMap<std::string, ConfigVector> {
     public:
+      void toYamlStream(std::ostream &out) const;
       void toYamlFile(const std::string &filename) const;
+      std::string toYamlString() const;
       static ConfigMap fromYamlStream(std::istream &in);
       static ConfigMap fromYamlFile(const std::string &filename);
       static ConfigMap fromYamlString(const std::string &s);

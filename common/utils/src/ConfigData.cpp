@@ -56,24 +56,32 @@ namespace mars {
     }
 
 
-    void ConfigMap::toYamlFile(const std::string &filename) const {
+    void ConfigMap::toYamlStream(std::ostream &out) const {
       YAML::Emitter emitter;
       dumpConfigMapToYaml(emitter, *this);
       if(!emitter.good()) {
-        fprintf(stderr, "ERROR: CFGManager::dumpConfigMapToYaml failed!\n");
+        fprintf(stderr, "ERROR: ConfigMap::toYamlStream failed!\n");
         return;
       }
+      out << emitter.c_str() << endl;
+    }
+
+    void ConfigMap::toYamlFile(const std::string &filename) const {
       std::ofstream f(filename.c_str());
       if(!f.good()) {
         fprintf(stderr,
-                "ERROR: CFGManager::dumpConfigMapToYaml failed! "
-                "could not open output file \"%s\"\n", filename.c_str());
+                "ERROR: ConfigMap::toYamlFile failed! "
+                "Could not open output file \"%s\"\n", filename.c_str());
         return;
       }
-      f << emitter.c_str() << endl;
-      f.close();
+      toYamlStream(f);
     }
 
+    std::string ConfigMap::toYamlString() const {
+      std::ostringstream sout;
+      toYamlStream(sout);
+      return sout.str();
+    }
 
 
     /***************************
