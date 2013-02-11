@@ -37,6 +37,7 @@
 
 #include "NodePhysics.h"
 #include <mars/utils/MutexLocker.h>
+#include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/terrainStruct.h>
 
@@ -128,10 +129,10 @@ namespace mars {
      */
     bool NodePhysics::createNode(NodeData* node) {
 #ifdef _VERIFY_WORLD_
-      sRotation euler = node->rot.toEuler();
+      sRotation euler = utils::quaternionTosRotation(node->rot);
       fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
               node->index, node->pos.x(), node->pos.y(),
-              node->pos.z, euler.alpha, euler.beta, euler.gamma,
+              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
               node->mass, node->density);
 #endif
       MutexLocker locker(&(theWorld->iMutex));
@@ -969,6 +970,13 @@ namespace mars {
       dReal pos[3] = {0,0,0};
       dQuaternion rotation;
       const dReal *tpos;
+#ifdef _VERIFY_WORLD_
+      sRotation euler = utils::quaternionTosRotation(node->rot);
+      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
+              node->index, node->pos.x(), node->pos.y(),
+              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
+              node->mass, node->density);
+#endif
       MutexLocker locker(&(theWorld->iMutex));
 
       if(nGeom && theWorld && theWorld->existsWorld()) {
