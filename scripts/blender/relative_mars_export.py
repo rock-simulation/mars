@@ -63,7 +63,10 @@ def exportBobj(outname, obj):
             uv_layer = mesh.uv_textures.active.data[:]
             write_uv = True
 
-        face_index_pairs = [(face, index) for index, face in enumerate(mesh.tessfaces)]
+        if bpy.app.version[1] >= 65:
+            face_index_pairs = [(face, index) for index, face in enumerate(mesh.tessfaces)]
+        else:
+            face_index_pairs = [(face, index) for index, face in enumerate(mesh.faces)]
 
         mesh.calc_normals()
 
