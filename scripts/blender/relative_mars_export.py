@@ -15,7 +15,7 @@ defValues = {"filename":"example", "path":".",
 for key in defValues:
     if key in scn.world:
         defValues[key] = scn.world[key]
-
+defValues["path"] = os.path.expanduser(defValues["path"])
 
 #import export_obj
 #myobj = __import__(Blender.Get("scriptsdir") + "/export_obj.py")
