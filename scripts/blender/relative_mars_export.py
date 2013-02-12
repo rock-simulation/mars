@@ -288,7 +288,10 @@ def writeNode(obj):
         obj_name = obj["use"]
 
     out.write('      <origname>'+obj_name+'</origname>\n')
-    out.write('      <filename>'+obj_name+'.bobj</filename>\n')
+    if defValues["exportBobj"]:
+        out.write('      <filename>'+obj_name+'.bobj</filename>\n')
+    else:
+        out.write('      <filename>'+obj_name+'.obj</filename>\n')
     out.write('      <index>'+str(obj["id"])+'</index>\n')
     out.write('      <groupid>'+str(obj["group"])+'</groupid>\n')
     out.write('      <physicmode>'+physicMode+'</physicmode>\n')
@@ -646,8 +649,8 @@ for obj in objList:
     location = obj.location.copy()
     rotation = obj.rotation_quaternion.copy()
     parent = obj.parent
-    #obj.location = [0.0, 0.0, 0.0]
-    #obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
+    obj.location = [0.0, 0.0, 0.0]
+    obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
     obj.parent = None
     if defValues["exportMesh"]:
         if defValues["exportBobj"]:
@@ -664,8 +667,8 @@ for obj in objList:
         os.system("zip "+defValues["filename"]+".scn "+obj.name+".obj")
 
     #os.system("zip "+defValues["filename"]+".scn "+obj.name+".mtl")
-    #obj.location = location
-    #obj.rotation_quaternion = rotation
+    obj.location = location
+    obj.rotation_quaternion = rotation
     obj.parent = parent
     obj.select = False
 
