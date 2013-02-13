@@ -928,6 +928,10 @@ namespace mars {
         resetSim();
       } else if("warn" == onError) {
         // warning already happend in message handler
+      } else {
+        LOG_WARN("unsupported config value for \"Simulator/onPhysicsError\": \"%s\"", onError.c_str());
+        LOG_WARN("aborting by default...");
+        abort();
       }
     }
 
