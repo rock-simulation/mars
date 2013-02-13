@@ -549,6 +549,8 @@ namespace mars {
                                        const std::string &toItemName) = 0;
 
       virtual void pushMessage(MessageType messageType, 
+                               const std::string &format, va_list args) = 0;
+      virtual void pushMessage(MessageType messageType,
                                const std::string &format, ...) = 0;
       virtual void pushFatal(const std::string &format, ...) = 0;
       virtual void pushError(const std::string &format, ...) = 0;
