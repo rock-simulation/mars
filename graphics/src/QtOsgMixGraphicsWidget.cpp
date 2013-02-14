@@ -256,10 +256,8 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::mouseMoveEvent(QMouseEvent* e) {
-#ifdef __APPLE__
+#ifndef WIN32
       view->getEventQueue()->mouseMotion(e->x(), e->y());
-#else
-      view->getEventQueue()->mouseMotion(e->x(), height()-e->y());
 #endif
     }
 
@@ -272,10 +270,8 @@ namespace mars {
       case(Qt::NoButton): button = 0; break;
       default: button = 0; break;
       }
-#ifdef __APPLE__
+#ifndef WIN32
       view->getEventQueue()->mouseButtonPress(e->x(), e->y(), button);
-#else
-      view->getEventQueue()->mouseButtonPress(e->x(), height()-e->y(), button);
 #endif
       grabKeyboard();
     }
@@ -291,10 +287,8 @@ namespace mars {
         default: button = 0; break;
         }
 
-#ifdef __APPLE__
+#ifndef WIN32
       view->getEventQueue()->mouseButtonRelease(e->x(), e->y(), button);
-#else
-      view->getEventQueue()->mouseButtonRelease(e->x(), height()-e->y(), button);
 #endif
       releaseKeyboard();
     }

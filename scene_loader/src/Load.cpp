@@ -317,7 +317,7 @@ namespace mars {
 
       // the group ids could be also handled in the NodeData by the mapIndex
       if(node.groupID)
-        node.groupID += hack_ids*1000;
+        node.groupID += hack_ids*10000;
 
       NodeId oldId = node.index;
       NodeId newId = control->nodes->addNode(&node);
