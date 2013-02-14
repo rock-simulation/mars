@@ -142,27 +142,33 @@ Building the Model
     on the input shaft it determined by the parent of the helper
     object itself so set that to "Body".
 
-12. Turn the timeline into a text editor
+12. By default each joint is automatically associated with a servo
+    motor.  To change the motor type to a PID motor you need to create
+    another custom property called "motor_type" and set its value to
+    "2" (note that you might need to increase the "Max" value in the
+    custom property)
+
+13. Turn the timeline into a text editor
 
     .. image:: screenshots/text_editor.png
       :width: 80%
 
-13. By selecting the menu "text->Open Text Block" in the text editor
+14. By selecting the menu "text->Open Text Block" in the text editor
     open the "create_mars_props.py" script from
     ~/devel/mars/scripts/blender/
 
-14. Select all objects of the model in the 3d-view and run the script
+15. Select all objects of the model in the 3d-view and run the script
     by pressing "Run Script" in the text editor window.  You will see
     that this creates various custom properties on every object.  You
     are free to edit these properties (e.g. set the mass)
 
-15. For each wheel create two more custom properties: "physicMode" and
+16. For the wheel create two more custom properties: "physicMode" and
     "radius".  Set "physicMode" to "sphere" and "radius" to half the
     diameter (in our case 0.05).  Otherwise the physical
     representation of the wheels in the simulation would be boxes
     makeing very poor wheels.
 
-16. Duplicate the wheel and the helper object by selecting them and
+17. Duplicate the wheel and the helper object by selecting them and
     pressing "shift+d".  A duplicated object will inherit the
     location, orientation, material, parent, and custom properties
     among other things.  By nameing the first wheel "Wheel.000" we
@@ -170,23 +176,17 @@ Building the Model
     ending to "Wheel.001" for the duplication.  Of course you can set
     the name to what ever you like.
 
-17. Also create the last two remaining wheels by duplicating one of
+18. Also create the last two remaining wheels by duplicating one of
     the first.  Position the four wheels at the four lower corners of
     the box.
 
-18. Do not forget to change the value of the "node2" in each of the
+19. Do not forget to change the value of the "node2" in each of the
     copied helper objects' custom property.
-
-19. By default each joint is automatically associated with a servo
-    motor.  To change the motor type to a PID motor you need to create
-    another custom property called "motor_type" and set its value to
-    "2" (note that you might need to increase the "Max" value in the
-    custom property)
 
 20. Add the custom properties "filename" and "path" to the World and
     fill in where you want to export the scene to.  Ideally, this
     should be an empty directory because bside the .scn file the .obj
-    and .scene files are also expotred for debuging purposes.
+    and .scene files are also exported for debuging purposes.
 
     .. image:: screenshots/world_properties.png
       :width: 80%
@@ -201,10 +201,10 @@ Building the Model
 
 Congratulations!  You have your first blender created MARS scene.
 However, if you load the scene in MARS and try to do a tank turn you
-might notice that it does not work to well.  You would need to tune to
-friction parameters for the wheels.  Alternatively we add a third pair
-of wheels to the model to show the workflow of editing an existing
-scene.
+might notice that it does not work to well.  You would need to tune
+the friction parameters for the wheels.  Alternatively, we add a third
+pair of wheels to the model to show the workflow of editing an
+existing scene.
 
 24. Reopen your blender scene if you do not have it opened any more.
 
