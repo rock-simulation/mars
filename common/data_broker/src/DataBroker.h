@@ -261,6 +261,8 @@ namespace mars {
       }
 
       virtual void pushMessage(MessageType messageType,
+                               const std::string &format, va_list args);
+      virtual void pushMessage(MessageType messageType,
                                const std::string &format, ...);
       virtual void pushFatal(const std::string &format, ...);
       virtual void pushError(const std::string &format, ...);
@@ -280,8 +282,6 @@ namespace mars {
       void destroyLock(pthread_cond_t *cond);
       DataElement *getElement(const std::string &groupName,
                               const std::string &dataName) const;
-      void pushMessage(MessageType messageType,
-                       const std::string &format, va_list args);
 
       /**
        * Get all DataElements that match groupName and dataName.

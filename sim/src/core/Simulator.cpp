@@ -691,13 +691,16 @@ namespace mars {
 
     void Simulator::resetSim(void) {
       reloadSim = true;
-      if(isSimRunning())
+      if(isSimRunning() && !single_step)
         was_running = true;
       else
         was_running = false;
 
-      if(was_running) simulationStatus = STOPPING;
-      else simulationStatus = STOPPED;
+      if(was_running || single_step) {
+        simulationStatus = STOPPING;
+      } else {
+        simulationStatus = STOPPED;
+      }
       if(control->graphics)
         this->allowDraw();
       //was_running = 0;
