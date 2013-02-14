@@ -51,7 +51,7 @@ select object
 select multiple objects
   shift + right click or "b" and drag a selection box
 set parent object
-  first select child, then the parent (press "shift"), then press "ctrl+p"
+  first select child, then the parent (shift + right click), then press "ctrl+p"
 
 Rescaling Objects
 ~~~~~~~~~~~~~~~~~
@@ -61,7 +61,7 @@ notice that the scale changes automatically.  This is because in
 object mode you do not really change the object's vertices.  To apply
 the changes you did in "object mode" to the object's vertices you can
 press "ctrl+a" (with the mouse hovering over the 3D-View) and choose
-scale.  you will notice that the scale in "object mode" is back to (1,
+scale.  You will notice that the scale in "object mode" is back to (1,
 1, 1).  Alternatively you can select this option from the menu
 object->apply->scale
 
