@@ -72,12 +72,12 @@ namespace mars {
         //New
         interfaces::hudElementStruct hudCam;
         hudCam.type            = HUD_ELEMENT_TEXTURE;
-        hudCam.width           = 420;
-        hudCam.height          = 280;
-        hudCam.texture_width   = 420;
-        hudCam.texture_height  = 280;
-        hudCam.view_width      = 420;
-        hudCam.view_height     = 280;
+        hudCam.width           = config.hud_width;
+        hudCam.height          = config.hud_height;
+        hudCam.texture_width   = hudCam.width;
+        hudCam.texture_height  = hudCam.height;
+        hudCam.view_width      = hudCam.width;
+        hudCam.view_height     = hudCam.height;
         hudCam.posx            = 40 + (hudCam.width * config.hud_pos); // aligned in a row
         hudCam.posy            = 30;
         hudCam.border_color[0] = 0.0;
@@ -235,6 +235,11 @@ namespace mars {
           cfg->hud_pos = it2->second[0].getInt();
       }
 
+      if((it = config->find("hud_size")) != config->end()) {
+        cfg->hud_width = it->second[0].children["x"][0].getDouble();
+        cfg->hud_height = it->second[0].children["y"][0].getDouble();
+      }
+
       if((it = config->find("position_offset")) != config->end()) {
         cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
         cfg->pos_offset[1] = it->second[0].children["y"][0].getDouble();
@@ -302,6 +307,11 @@ namespace mars {
       (*tmpCfg)["y"][0] = ConfigItem(q.y());
       (*tmpCfg)["z"][0] = ConfigItem(q.z());
       (*tmpCfg)["w"][0] = ConfigItem(q.w());
+
+      cfg["hud_size"][0] = mars::ConfigItem(std::string());
+      tmpCfg = &(cfg["hud_size"][0].children);
+      (*tmpCfg)["x"][0] = mars::ConfigItem(config.hud_width);
+      (*tmpCfg)["y"][0] = mars::ConfigItem(config.hud_height);
 
       return cfg;
     }

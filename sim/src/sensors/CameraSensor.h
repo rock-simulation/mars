@@ -55,6 +55,8 @@ namespace mars {
         ori_offset.setIdentity();
         opening_width=90;
         opening_height=90;
+        hud_width = 320;
+        hud_height = 240;
       }
 
       unsigned long attached_node;
@@ -66,6 +68,8 @@ namespace mars {
       utils::Quaternion ori_offset;
       double opening_width;
       double opening_height;
+      int hud_width;
+      int hud_height;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,
