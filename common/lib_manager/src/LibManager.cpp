@@ -40,6 +40,19 @@
 namespace mars {
   namespace lib_manager {
 
+    static struct LibInfo stdlibInfo = { "unknown stdlib", "", 0, "", "", 0 };
+#if defined(_LIBCPP_VERSION)
+    // clang's libc++
+    stdlibInfo.name = "libc++";
+    stdlibInfo.version = _LIBCPP_VERSION;
+#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)
+    // GNU libstdc++
+    stdlibInfo.name = "libstdc++";
+    stdlibInfo.version = (__GNUC__*100 + __GNUC_MINOR__);
+#else
+#  warning Unknown standard C Library!
+#endif
+
     using namespace std;
 
     // forward declarations
@@ -275,6 +288,15 @@ namespace mars {
                 "    </module>\n",
                 info.name.c_str(), info.src.c_str(), info.revision.c_str());
       }
+      fprintf(file,
+              "    <module>\n"
+              "      <name>%s</name>\n"
+              "      <src>%s</src>\n"
+              "      <version>%d</version>\n"
+              "      <revision>%s</revision>\n"
+              "    </module>\n",
+              stdlibInfo.name.c_str(), stdlibInfo.src.c_str(),
+              stdlibInfo.version, stdlibInfo.revision.c_str());
       fprintf(file, "  </modules>\n");
       fclose(file);
     }
