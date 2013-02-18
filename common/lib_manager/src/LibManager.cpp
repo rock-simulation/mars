@@ -40,17 +40,17 @@
 namespace mars {
   namespace lib_manager {
 
-    static struct LibInfo stdlibInfo = { "unknown stdlib", "", 0, "", "", 0 };
 #if defined(_LIBCPP_VERSION)
     // clang's libc++
-    stdlibInfo.name = "libc++";
-    stdlibInfo.version = _LIBCPP_VERSION;
+    static struct LibInfo stdlibInfo = { "libc++", "", _LIBCPP_VERSION,
+                                         "", "", 0 };
 #elif defined(__GLIBCPP__) || defined(__GLIBCXX__)
     // GNU libstdc++
-    stdlibInfo.name = "libstdc++";
-    stdlibInfo.version = (__GNUC__*100 + __GNUC_MINOR__);
+    static struct LibInfo stdlibInfo = { "libstdc++", "",
+                                         (__GNUC__*100+__GNUC_MINOR__),"","",0};
 #else
 #  warning Unknown standard C Library!
+    static struct LibInfo stdlibInfo = { "unknown stdlib", "", 0, "", "", 0 };
 #endif
 
     using namespace std;
