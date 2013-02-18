@@ -308,10 +308,10 @@ namespace mars {
       (*tmpCfg)["z"][0] = ConfigItem(q.z());
       (*tmpCfg)["w"][0] = ConfigItem(q.w());
 
-      cfg["hud_size"][0] = mars::ConfigItem(std::string());
+      cfg["hud_size"][0] = ConfigItem(std::string());
       tmpCfg = &(cfg["hud_size"][0].children);
-      (*tmpCfg)["x"][0] = mars::ConfigItem(config.hud_width);
-      (*tmpCfg)["y"][0] = mars::ConfigItem(config.hud_height);
+      (*tmpCfg)["x"][0] = ConfigItem(config.hud_width);
+      (*tmpCfg)["y"][0] = ConfigItem(config.hud_height);
 
       return cfg;
     }
