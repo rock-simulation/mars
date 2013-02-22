@@ -217,24 +217,27 @@ namespace mars {
       FILE *plugin_config;
 
       plugin_config = fopen(config_file.c_str() , "r");
-
-      if(plugin_config) {
-        while(fgets(plugin_chars, 255, plugin_config)) {
-          plugin_path = plugin_chars;
-          // strip whitespaces from start and end of line
-          size_t pos1 = plugin_path.find_first_not_of(" \t\n\r");
-          size_t pos2 = plugin_path.find_last_not_of(" \t\n\r");
-          if(pos1 == string::npos || pos2 == string::npos) {
-            continue;
-          }
-          plugin_path = plugin_path.substr(pos1, pos2 - pos1 + 1);
-          // ignore lines that start with #
-          if(plugin_path[0] != '#') {
-            loadLibrary(plugin_path);
-          }
-        }
-        fclose(plugin_config);
+      if(!plugin_config) {
+        fprintf(stderr, "LibManager::loadConfigFile: file \"%s\" not found.\n",
+                config_file.c_str());
+        return;
       }
+
+      while(fgets(plugin_chars, 255, plugin_config)) {
+        plugin_path = plugin_chars;
+        // strip whitespaces from start and end of line
+        size_t pos1 = plugin_path.find_first_not_of(" \t\n\r");
+        size_t pos2 = plugin_path.find_last_not_of(" \t\n\r");
+        if(pos1 == string::npos || pos2 == string::npos) {
+          continue;
+        }
+        plugin_path = plugin_path.substr(pos1, pos2 - pos1 + 1);
+        // ignore lines that start with #
+        if(plugin_path[0] != '#') {
+          loadLibrary(plugin_path);
+        }
+      }
+      fclose(plugin_config);
     }
 
 
