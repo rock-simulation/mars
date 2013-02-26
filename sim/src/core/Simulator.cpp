@@ -263,6 +263,32 @@ namespace mars {
       this->setStackSize(16777216);
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
+      
+    if (arg_scene_name != "") 
+    {
+	LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
+	loadScene(arg_scene_name);
+	arg_scene_name = "";
+    }
+    if (arg_run) 
+    {
+	simulationStatus = RUNNING;
+	arg_run = 0;
+    }
+	
+    if (arg_grid) 
+    {
+	arg_grid = 0;
+	if(control->graphics)
+	    control->graphics->showGrid();
+    }
+    if (arg_ortho) 
+    {
+	arg_ortho = 0;
+	if(control->graphics)
+	    control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
+    }
+
 
       this->start();
     }
@@ -555,120 +581,6 @@ namespace mars {
         control->graphics->addLight(light);
     }
 
-
-    void Simulator::finishedDraw(void) {
-      static char first = 10;
-      long time;
-
-      if (first > 0) {
-        first--;
-        // open Plugin file
-        if (!first) {
-
-          if (arg_scene_name != "") {
-            LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
-            loadScene(arg_scene_name);
-            arg_scene_name = "";
-          }
-          if (arg_run) {
-            simulationStatus = RUNNING;
-            arg_run = 0;
-          }
-          if (arg_grid) {
-            arg_grid = 0;
-            if(control->graphics)
-              control->graphics->showGrid();
-          }
-          if (arg_ortho) {
-            arg_ortho = 0;
-            if(control->graphics)
-              control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
-          }
-        }
-      }
-      if (reloadSim) {
-        while (simulationStatus != STOPPED) {
-
-          if(simulationStatus == RUNNING) {
-            StopSimulation();
-          }
-
-          msleep(10);
-        }
-        reloadSim = false;
-        control->controllers->setLoadingAllowed(false);
-
-        /*
-          while (isSimRunning()) {
-          msleep(100);
-          }
-        */
-        newWorld();
-        reloadWorld();
-        control->controllers->resetControllerData();
-
-        for (unsigned int i=0; i<allPlugins.size(); i++)
-          allPlugins[i].p_interface->reset();
-        control->controllers->setLoadingAllowed(true);
-        if (was_running) StartSimulation();
-      }
-      allow_draw = 0;
-      sync_count = 1;
-
-      /** NO idea what the following commented section should be good for
-          the erased_active is pretty much useless
-          and the need for 'first' is not described
-
-          if(first == 0) {
-          first--;
-          // open Plugin file
-          pluginLocker.lockForRead();
-          for(unsigned int i = 0; i < activePlugins.size();) {
-          erased_active = false;
-          activePlugins[i].p_interface->init();
-          if(!erased_active) i++;
-          }
-          pluginLocker.unlock();
-          }
-      */
-
-      // Add plugins that have been add vie Simulator::addPlugin
-      pluginLocker.lockForWrite();
-      for (unsigned int i=0; i<newPlugins.size(); i++) {
-        allPlugins.push_back(newPlugins[i]);
-        activePlugins.push_back(newPlugins[i]);
-        newPlugins[i].p_interface->init();
-      }
-      newPlugins.clear();
-      pluginLocker.unlock();
-
-
-      pluginLocker.lockForRead();
-      for (unsigned int i=0; i<guiPlugins.size(); i++) {
-        if(show_time)
-          time = getTime();
-
-        guiPlugins[i].p_interface->update(0);
-
-        if(show_time) {
-          time = getTimeDiff(time);
-          guiPlugins[i].timer_gui += time;
-          guiPlugins[i].t_count_gui++;
-          if(guiPlugins[i].t_count_gui > 20) {
-            guiPlugins[i].timer_gui /= guiPlugins[i].t_count_gui;
-            guiPlugins[i].t_count_gui = 0;
-            fprintf(stderr, "debug_time_gui: %s: %g\n",
-                    guiPlugins[i].name.data(),
-                    guiPlugins[i].timer_gui);
-            guiPlugins[i].timer_gui = 0.0;
-          }
-        }
-      }
-      pluginLocker.unlock();
-      // process ice events
-      //while(comServer.eventList->processEvent(control)) {}
-    }
-
     void Simulator::newWorld(bool clear_all) {
       physicsThreadLock();
       // reset simTime
@@ -818,10 +730,6 @@ namespace mars {
       return physics;
     }
 
-    void Simulator::postGraphicsUpdate(void) {
-      finishedDraw();
-    }
-
     void Simulator::exitMars(void) {
       kill_sim = 1;
       if(isCurrentThread()) {
@@ -949,12 +857,6 @@ namespace mars {
       }
     }
 
-
-    void Simulator::noGUITimerUpdate(void) {
-      finishedDraw();
-    }
-
-
     ControlCenter* Simulator::getControlCenter(void) const {
       return control;
     }
@@ -1032,12 +934,6 @@ namespace mars {
         control->graphics->exportScene(filename);
       }
     }
-
-    /* will be removed soon
-       void* Simulator::getWinId() const {
-       return 0;//(void*)mainGUI->mainWindow_p()->winId();
-       }
-    */
 
     void Simulator::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
 

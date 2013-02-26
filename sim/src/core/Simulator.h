@@ -113,8 +113,6 @@ namespace mars {
  
       virtual void exportScene() const;
 
-      virtual void postGraphicsUpdate(void);
-
       bool startStopTrigger();
 
       /// control the realtime calculation
@@ -132,7 +130,6 @@ namespace mars {
       virtual void sceneHasChanged(bool reseted);
 
       void addLight(interfaces::LightData light);
-      virtual void finishedDraw(void);
 
       virtual void newWorld(bool clear_all = false);
       virtual void resetSim(void);
@@ -164,10 +161,6 @@ namespace mars {
 
       const std::string getConfigDir() const {return config_dir;}
       void readArguments(int argc, char **argv);
-
-      //public slots:
-      // TODO: currently this is disabled
-      void noGUITimerUpdate(void);
 
     private:
       bool exit_sim;
