@@ -265,23 +265,23 @@ namespace mars {
 #endif
 
       if (arg_scene_name != "") {
-	LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
-	loadScene(arg_scene_name);
-	arg_scene_name = "";
+        LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
+        loadScene(arg_scene_name);
+        arg_scene_name = "";
       }
       if (arg_run) {
-	simulationStatus = RUNNING;
-	arg_run = 0;
+        simulationStatus = RUNNING;
+        arg_run = 0;
       }
       if (arg_grid) {
-	arg_grid = 0;
-	if(control->graphics)
-	  control->graphics->showGrid();
+        arg_grid = 0;
+        if(control->graphics)
+          control->graphics->showGrid();
       }
       if (arg_ortho) {
-	arg_ortho = 0;
-	if(control->graphics)
-	  control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
+        arg_ortho = 0;
+        if(control->graphics)
+          control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
       }
       
       this->start();
