@@ -600,8 +600,11 @@ namespace mars {
 
       if (!node->inertia_set && 
           (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {
-        LOG_ERROR("cannot create Node. "
-                  "Mesh Nodes must have ext.x, ext.y, and ext.z > 0.");
+        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
+                  "  Mesh Nodes must have ext.x(), ext.y(), and ext.z() > 0.\n"
+                  "  Current values are: x=%g; y=%g, z=%g",
+                  node->name.c_str(), node->index,
+                  node->ext.x(), node->ext.y(), node->ext.z());
         return false;
       }
 
@@ -649,8 +652,11 @@ namespace mars {
     bool NodePhysics::createBox(NodeData* node) {
       if (!node->inertia_set && 
           (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {
-        LOG_ERROR("cannot create Node. "
-                  "Box Nodes must have ext.x(), ext.y(), and ext.z() > 0.");
+        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
+                  "  Box Nodes must have ext.x(), ext.y(), and ext.z() > 0.\n"
+                  "  Current values are: x=%g; y=%g, z=%g",
+                  node->name.c_str(), node->index,
+                  node->ext.x(), node->ext.y(), node->ext.z());
         return false;
       }
 
@@ -680,7 +686,10 @@ namespace mars {
      */
     bool NodePhysics::createSphere(NodeData* node) {
       if (!node->inertia_set && node->ext.x() <= 0) {
-        LOG_ERROR("cannot create Node. Sphere Nodes must have ext.x() > 0.");
+        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
+                  "  Sphere Nodes must have ext.x() > 0.\n"
+                  "  Current value is: x=%g",
+                  node->name.c_str(), node->index, node->ext.x());
         return false;
       }
 
@@ -706,8 +715,11 @@ namespace mars {
      */
     bool NodePhysics::createCapsule(NodeData* node) {
       if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
-        LOG_ERROR("cannot create Node. "
-                  "Capsule Nodes must have ext.x() and ext.y() > 0.");
+        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
+                  "  Capsule Nodes must have ext.x() and ext.y() > 0.\n"
+                  "  Current values are: x=%g; y=%g",
+                  node->name.c_str(), node->index,
+                  node->ext.x(), node->ext.y());
         return false;
       }
 
@@ -736,8 +748,11 @@ namespace mars {
      */
     bool NodePhysics::createCylinder(NodeData* node) {
       if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
-        LOG_ERROR("cannot create Node. "
-                  "Cylinder Nodes must have ext.x() and ext.y() > 0.");
+        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
+                  "  Cylinder Nodes must have ext.x() and ext.y() > 0.\n"
+                  "  Current values are: x=%g; y=%g",
+                  node->name.c_str(), node->index,
+                  node->ext.x(), node->ext.y());
         return false;
       }
 
