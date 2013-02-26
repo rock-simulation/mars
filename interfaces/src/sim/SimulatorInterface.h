@@ -86,6 +86,9 @@ namespace mars {
       virtual bool startStopTrigger() = 0;
 
       /** \todo write docs */
+      virtual void finishedDraw(void) = 0;
+
+      /** \todo write docs */
       virtual void newWorld(bool clear_all=false) = 0;
       /** \todo write docs */
       virtual void resetSim(void) = 0;

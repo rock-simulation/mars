@@ -160,6 +160,8 @@ namespace mars {
       mars::main_gui::MainGUI *mainGui = NULL;
       mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
 
+      control->sim->runSimulation();
+
       mars::interfaces::GraphicsManagerInterface *marsGraphics = NULL;
       mars::lib_manager::LibInterface *lib= libManager->getLibrary("mars_graphics");
       if(lib) {
@@ -179,8 +181,6 @@ namespace mars {
 
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
-
-      control->sim->runSimulation();
 
       graphicsTimer = new mars::app::GraphicsTimer(marsGraphics, control->sim);
       graphicsTimer->run();
@@ -261,7 +261,7 @@ namespace mars {
     int MARS::runWoQApp() {
       while(!quit) {
         if(control->sim->getAllowDraw() || !control->sim->getSyncGraphics()) {
-//           control->sim->finishedDraw();
+          control->sim->finishedDraw();
         }
         //mars::utils::msleep(2);
       }

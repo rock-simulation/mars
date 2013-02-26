@@ -63,6 +63,9 @@ namespace mars {
         if(graphics) {
           graphics->draw();
         }
+        else {
+          sim->finishedDraw();
+        }
       }
     }
  
