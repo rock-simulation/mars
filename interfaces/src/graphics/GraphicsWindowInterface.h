@@ -55,8 +55,29 @@ namespace mars {
       virtual void setFullscreen(bool val, int display = 1) = 0;
       virtual void setGrabFrames(bool grab) = 0;
       virtual void setSaveFrames(bool grab) = 0;
-      virtual void getImageData(void **data, int &width, int &height, bool depthImage=false) = 0;
-      virtual void getRTTDepthData(float **data, int &width, int &height) = 0;
+      /**
+       * This function copies the image data in the given buffer.
+       * It assumes that the buffer ist correctly initalized
+       * with a char array of the size width * height * 4
+       * 
+       * @param buffer buffer in which the image gets copied
+       * @param width returns the width of the image
+       * @param height returns the height of the image
+       * */
+      virtual void getImageData(char *buffer, int &width, int &height) = 0;
+      virtual void getImageData(void **data, int &width, int &height) = 0;
+      
+      /**
+       * This function copies the depth image in the given buffer.
+       * It assumes that the buffer ist correctly initalized
+       * with a double array of the size width * height
+       * 
+       * @param buffer buffer in which the image gets copied
+       * @param width returns the width of the image
+       * @param height returns the height of the image
+       * */
+      virtual void getRTTDepthData(float *buffer, int &width, int &height) = 0;
+      virtual void getRTTDepthData(float **data, int &width, int &height) = 0;      
       virtual osg::Group* getScene() = 0;
       virtual void addGraphicsEventHandler(GraphicsEventInterface *graphicsEventHandler) = 0;
     }; // end of class GraphicsWindowInterface
