@@ -116,6 +116,29 @@ namespace mars {
         std::cerr << "could not get camera info." << std::endl;
     }
 
+    void CameraSensor::getImage(std::vector< Pixel >& buffer)
+    {
+        assert(buffer.size() == (config.width * config.height));
+        int width;
+        int height;
+	gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height);
+        
+        assert(config.width == width);
+        assert(config.height == height);
+    }
+
+    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer)
+    {
+        assert(buffer.size() == (config.width * config.height));
+        int width;
+        int height;
+        gw->getRTTDepthData(reinterpret_cast<float *>(buffer.data()), width, height);
+        
+        assert(config.width == width);
+        assert(config.height == height);
+    }
+
+    
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
     int CameraSensor::getSensorData(sReal** data) const {

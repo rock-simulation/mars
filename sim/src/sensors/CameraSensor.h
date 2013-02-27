@@ -44,6 +44,17 @@ namespace mars {
   namespace sim {
 
 
+      class Pixel
+      {
+        public:
+	  u_int8_t r;
+	  u_int8_t g;
+	  u_int8_t b;
+	  u_int8_t a;
+      } __attribute__ ((packed)) ;
+
+      typedef float DistanceMeasurement;
+      
     struct CameraConfigStruct: public interfaces::BaseConfig{
       CameraConfigStruct(){
         name = "Unknown Camera";
@@ -57,6 +68,7 @@ namespace mars {
         opening_height=90;
         hud_width = 320;
         hud_height = 240;
+	depthImage = false;
       }
 
       unsigned long attached_node;
@@ -70,6 +82,7 @@ namespace mars {
       double opening_height;
       int hud_width;
       int hud_height;
+      bool depthImage;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,
@@ -83,6 +96,10 @@ namespace mars {
       ~CameraSensor(void);
 
       virtual int getSensorData(interfaces::sReal** data) const;
+
+      void getImage(std::vector<Pixel> &buffer);
+      void getDepthImage(std::vector<DistanceMeasurement> &buffer);
+      
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -93,7 +110,12 @@ namespace mars {
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                      utils::ConfigMap *config);
       virtual utils::ConfigMap createConfig() const;
-
+      
+      const CameraConfigStruct &getConfig() const
+      {
+        return config;
+      }
+      
     private:
       CameraConfigStruct config;
       interfaces::BaseCameraSensor<double> depthCamera;
