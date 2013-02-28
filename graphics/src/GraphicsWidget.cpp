@@ -828,6 +828,7 @@ namespace mars {
         osgCamera->setAllowEventFocus(false);
         osgCamera->setCullMask(CULL_LAYER);
         rttTexture = new osg::Texture2D();
+        rttTexture->setResizeNonPowerOfTwoHint(false);
         rttTexture->setDataVariance(osg::Object::DYNAMIC);
         rttTexture->setTextureSize(g_width, g_height);
         rttTexture->setInternalFormat(GL_RGBA);
@@ -846,6 +847,7 @@ namespace mars {
 
         // depth component
         rttDepthTexture = new osg::Texture2D();
+        rttDepthTexture->setResizeNonPowerOfTwoHint(false);
         rttDepthTexture->setDataVariance(osg::Object::DYNAMIC);
         rttDepthTexture->setTextureSize(g_width, g_height);
         rttDepthTexture->setInternalFormat(GL_FLOAT);
