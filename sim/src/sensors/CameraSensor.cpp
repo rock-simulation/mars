@@ -89,7 +89,7 @@ namespace mars {
         if(config.show_cam)
           cam_id = control->graphics->addHUDElement(&hudCam);
 
-        cam_window_id = control->graphics->new3DWindow(0, true,0,0,name);
+        cam_window_id = control->graphics->new3DWindow(0, true, config.width, config.height, name);
         if(config.show_cam)
           control->graphics->setHUDElementTextureRTT(cam_id, cam_window_id,false);
 
