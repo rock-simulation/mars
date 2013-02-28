@@ -984,34 +984,66 @@ namespace mars {
       getGraphicsWindow()->grabFocus();
     }
 
-    void GraphicsWidget::getImageData(void **data, int &width, int &height, bool depthImage) {
+    void GraphicsWidget::getImageData(char* buffer, int& width, int& height)
+    {
       if(isRTTWidget) {
-        osg::Image *image = depthImage?rttDepthImage:rttImage;
+        osg::Image *image = rttImage;
         width = image->s();
         height = image->t();
+        memcpy(buffer, image->data(), width*height*4);
+      }
+      else
+      {
+        //slow but works...
+        void *data;
+        postDrawCallback->getImageData(&data, width, height);
+        memcpy(buffer, data, width*height*4);
+        free(data);
+      }
+    }
+    
+    void GraphicsWidget::getImageData(void **data, int &width, int &height) {
+      if(isRTTWidget) {
         *data = malloc(width*height*4);
-        memcpy(*data, image->data(), width*height*4);
+        getImageData((char *)*data, width, height);
       }
       else {
         postDrawCallback->getImageData(data, width, height);
       }
     }
 
-    void GraphicsWidget::getRTTDepthData(float **data, int &width, int &height) {
-      if(isRTTWidget) {
-        float* data2 = (float*)rttDepthImage->data();
+    void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height)
+    {
+      if(isRTTWidget) {        
+        const float* data2 = (const float*)rttDepthImage->data();
         width = rttDepthImage->s();
         height = rttDepthImage->t();
-        *data = (float*)malloc(width*height*sizeof(float));
 
         double fovy, aspectRatio, Zn, Zf;
         graphicsCamera->getOSGCamera()->getProjectionMatrixAsPerspective( fovy, aspectRatio, Zn, Zf );
         int d = 0;
         for(int i=height-1; i>=0; --i) {
           for(int k=0; k<width; ++k) {
-            (*data)[d++] = Zn*Zf/(Zf-data2[i*width+k]*(Zf-Zn));
+            const float dv = data2[i*width+k];
+            // 1.0 is the max depth in the depth buffer, and
+            // is represented as a nan in the distance image
+            if( dv >= 1.0 )
+              buffer[d++] = std::numeric_limits<float>::quiet_NaN();
+            else
+              buffer[d++] = Zn*Zf/(Zf-dv*(Zf-Zn));
           }
         }
+      } else {
+        throw std::runtime_error("Depth image not supported on non RTT Widges");
+      }
+    }
+
+    void GraphicsWidget::getRTTDepthData(float **data, int &width, int &height) {
+      if(isRTTWidget) {
+        *data = (float*)malloc(width*height*sizeof(float));
+        getRTTDepthData(data, width, height);
+      } else {
+        throw std::runtime_error("Depth image not supported on non RTT Widges");
       }
     }
 
