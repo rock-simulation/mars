@@ -146,7 +146,7 @@ namespace mars {
         if((it = config->find("physicmode")) != config->end()) {
           std::string typeName =it->second[0].getString();
           try {
-            physicMode = typeFromString(typeName);
+            physicMode = typeFromString(trim(typeName));
           } catch(...) {
             //throw SceneParseException("invalid physicmode for node", -1);
             LOG_ERROR("could not get type for node: %s", name.c_str());
@@ -155,6 +155,9 @@ namespace mars {
 
         GET_VALUE("origname", origName, String);
         GET_VALUE("filename", filename, String);
+        
+        origName = trim(origName);
+        filename = trim(filename);
 
         if(filename == "PRIMITIVE") {
           if(origName.empty()) {
