@@ -313,7 +313,7 @@ def writeNode(obj):
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
     out.write('      <density>'+str(density)+'</density>\n')
     outputVector(out, "pivot", pivot, 6)
-    outputVector(out, "visualize", size, 6)
+    outputVector(out, "visualsize", size, 6)
     out.write('      <coll_bitmask>'+str(coll_bitmask)+'</coll_bitmask>\n')
     out.write('    </node>\n')
 
