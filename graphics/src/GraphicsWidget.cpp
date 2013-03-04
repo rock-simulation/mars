@@ -841,16 +841,17 @@ namespace mars {
     
         rttImage = new osg::Image();
         rttImage->allocateImage(g_width, g_height,
-                                1, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV);
+                                1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
         osgCamera->attach(osg::Camera::COLOR_BUFFER, rttImage.get());
-        rttTexture->setImage(rttImage);
+        rttTexture->setImage(rttImage);	
 
         // depth component
         rttDepthTexture = new osg::Texture2D();
         rttDepthTexture->setResizeNonPowerOfTwoHint(false);
         rttDepthTexture->setDataVariance(osg::Object::DYNAMIC);
         rttDepthTexture->setTextureSize(g_width, g_height);
-        rttDepthTexture->setInternalFormat(GL_FLOAT);
+        rttDepthTexture->setSourceType(GL_FLOAT);
+        rttDepthTexture->setSourceFormat(GL_DEPTH_COMPONENT);
         rttDepthTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
         rttDepthTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
         rttDepthTexture->setFilter(osg::Texture2D::MIN_FILTER,
