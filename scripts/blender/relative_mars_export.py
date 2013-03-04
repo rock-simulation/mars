@@ -516,6 +516,7 @@ def main():
                 i += 1
     out.write('  </motorlist>\n')
 
+    haveController = 0
     for joint in jointList:
         if "controllerIndex" in joint and joint["controllerIndex"] > 0:
             haveController = 1
