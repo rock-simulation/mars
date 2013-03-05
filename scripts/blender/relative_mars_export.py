@@ -307,7 +307,7 @@ def writeNode(obj):
     outputQuaternion(out, "rotation", q, 6)
     outputVector(out, "extend", ext, 6)
     outputVector(out, "pivot", pivot, 6)
-    outputVector(out, "visualize", size, 6)
+    outputVector(out, "visualsize", size, 6)
     out.write('      <movable>true</movable>\n')
     if "mass" in obj:
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
