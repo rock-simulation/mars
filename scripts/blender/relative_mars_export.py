@@ -305,15 +305,14 @@ def writeNode(obj):
         out.write('      <relativeid>'+str(parentID)+'</relativeid>\n')
     outputVector(out, "position", center, 6)
     outputQuaternion(out, "rotation", q, 6)
-    out.write('      <movable>true</movable>\n')
     outputVector(out, "extend", ext, 6)
-
-    out.write('      <material_id>'+str(matID)+'</material_id>\n')
+    outputVector(out, "pivot", pivot, 6)
+    outputVector(out, "visualize", size, 6)
+    out.write('      <movable>true</movable>\n')
     if "mass" in obj:
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
     out.write('      <density>'+str(density)+'</density>\n')
-    outputVector(out, "pivot", pivot, 6)
-    outputVector(out, "visualize", size, 6)
+    out.write('      <material_id>'+str(matID)+'</material_id>\n')
     out.write('      <coll_bitmask>'+str(coll_bitmask)+'</coll_bitmask>\n')
     out.write('    </node>\n')
 
@@ -574,6 +573,7 @@ def main():
     for obj in objList:
         if "use" in obj:
             continue
+        obj_filename = obj.name + (".bobj" if defValues["exportBobj"] else ".obj")
         obj.select = True
         bpy.context.scene.objects.active = obj
         bpy.ops.object.modifier_apply(modifier='EdgeSplit')
@@ -585,19 +585,14 @@ def main():
         obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
         obj.parent = None
         if defValues["exportMesh"]:
+            out_name = defValues["path"]+"/" + obj_filename
             if defValues["exportBobj"]:
-                out_name = defValues["path"]+"/"+obj.name + ".bobj"
                 exportBobj(out_name, obj)
             else:
-                out_name = defValues["path"]+"/"+obj.name + ".obj"
                 bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z',
                                          axis_up='Y', use_selection=True,
                                          use_normals=True)
-        if defValues["exportBobj"]:
-            os.system("zip "+defValues["filename"]+".scn "+obj.name+".bobj")
-        else:
-            os.system("zip "+defValues["filename"]+".scn "+obj.name+".obj")
-
+        os.system("zip "+defValues["filename"]+".scn "+obj_filename)
         #os.system("zip "+defValues["filename"]+".scn "+obj.name+".mtl")
         obj.location = location
         obj.rotation_quaternion = rotation
