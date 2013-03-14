@@ -61,6 +61,9 @@ void qtExitHandler(int sig) {
   mars::app::exit_main(sig);
 }
 
+void ignoreSignal(int sig)
+{ (void)(sig); }
+
 /**
  * The main function, that starts the GUI and init the physical environment.
  *Convention that start the simulation
@@ -81,6 +84,7 @@ int main(int argc, char *argv[]) {
   signal(SIGABRT, qtExitHandler);
   signal(SIGTERM, qtExitHandler);
   signal(SIGINT, qtExitHandler);
+  signal(SIGUSR1, ignoreSignal);
 
 
   mars::app::MARS *simulation = new mars::app::MARS();

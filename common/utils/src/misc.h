@@ -127,6 +127,11 @@ namespace mars {
      * \note Escaping wildcards is currently not supported.
      */
     bool matchPattern(const std::string &pattern, const std::string &str);
+    
+    /**
+     * remove leading and trailing whitespaces
+     */
+    std::string trim(const std::string& str);
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix);
 

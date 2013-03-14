@@ -30,6 +30,7 @@
 
 #include <cstdio>
 #include <cmath>
+#include <cctype>
 #include <vector>
 #include <sstream>
 #include <iostream>
@@ -84,6 +85,20 @@ namespace mars {
         pos1 += patternListIt->length();
       }
       return true;
+    }
+
+    std::string trim(const std::string& str) {
+
+        int front_idx, back_idx, len;
+
+        front_idx = 0;
+        back_idx = ( len = str.size() ) - 1;
+
+        while (isspace(str[front_idx]) && front_idx < len ) front_idx++;
+        while (isspace(str[back_idx]) && back_idx > 0 ) back_idx--;
+
+        if ( front_idx >= back_idx ) return "";
+        else return str.substr(front_idx, back_idx-front_idx+1);
     }
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix) {

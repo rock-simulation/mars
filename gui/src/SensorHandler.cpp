@@ -301,7 +301,8 @@ namespace mars {
 
 
     void SensorHandler::selection() {
-      nodeDialog->hide();
+      if(!filled)
+        return;
       jointDialog->hide();
       motorDialog->hide();
       if (objects->propertyName() == "Nodes")

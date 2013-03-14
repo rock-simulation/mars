@@ -40,6 +40,19 @@
 namespace mars {
   namespace lib_manager {
 
+#if defined(_LIBCPP_VERSION)
+    // clang's libc++
+    static struct LibInfo stdlibInfo = { "libc++", "", _LIBCPP_VERSION,
+                                         "", "", 0 };
+#elif defined(__GLIBCPP__) || defined(__GLIBCXX__)
+    // GNU libstdc++
+    static struct LibInfo stdlibInfo = { "libstdc++", "",
+                                         (__GNUC__*100+__GNUC_MINOR__),"","",0};
+#else
+#  warning Unknown standard C Library!
+    static struct LibInfo stdlibInfo = { "unknown stdlib", "", 0, "", "", 0 };
+#endif
+
     using namespace std;
 
     // forward declarations
@@ -204,24 +217,27 @@ namespace mars {
       FILE *plugin_config;
 
       plugin_config = fopen(config_file.c_str() , "r");
-
-      if(plugin_config) {
-        while(fgets(plugin_chars, 255, plugin_config)) {
-          plugin_path = plugin_chars;
-          // strip whitespaces from start and end of line
-          size_t pos1 = plugin_path.find_first_not_of(" \t\n\r");
-          size_t pos2 = plugin_path.find_last_not_of(" \t\n\r");
-          if(pos1 == string::npos || pos2 == string::npos) {
-            continue;
-          }
-          plugin_path = plugin_path.substr(pos1, pos2 - pos1 + 1);
-          // ignore lines that start with #
-          if(plugin_path[0] != '#') {
-            loadLibrary(plugin_path);
-          }
-        }
-        fclose(plugin_config);
+      if(!plugin_config) {
+        fprintf(stderr, "LibManager::loadConfigFile: file \"%s\" not found.\n",
+                config_file.c_str());
+        return;
       }
+
+      while(fgets(plugin_chars, 255, plugin_config)) {
+        plugin_path = plugin_chars;
+        // strip whitespaces from start and end of line
+        size_t pos1 = plugin_path.find_first_not_of(" \t\n\r");
+        size_t pos2 = plugin_path.find_last_not_of(" \t\n\r");
+        if(pos1 == string::npos || pos2 == string::npos) {
+          continue;
+        }
+        plugin_path = plugin_path.substr(pos1, pos2 - pos1 + 1);
+        // ignore lines that start with #
+        if(plugin_path[0] != '#') {
+          loadLibrary(plugin_path);
+        }
+      }
+      fclose(plugin_config);
     }
 
 
@@ -275,6 +291,15 @@ namespace mars {
                 "    </module>\n",
                 info.name.c_str(), info.src.c_str(), info.revision.c_str());
       }
+      fprintf(file,
+              "    <module>\n"
+              "      <name>%s</name>\n"
+              "      <src>%s</src>\n"
+              "      <version>%d</version>\n"
+              "      <revision>%s</revision>\n"
+              "    </module>\n",
+              stdlibInfo.name.c_str(), stdlibInfo.src.c_str(),
+              stdlibInfo.version, stdlibInfo.revision.c_str());
       fprintf(file, "  </modules>\n");
       fclose(file);
     }

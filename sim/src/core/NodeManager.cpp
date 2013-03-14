@@ -162,6 +162,7 @@ namespace mars {
           delete newNode;
           delete newNodeInterface;
           // and return false
+          LOG_ERROR("NodeManager::addNode: No node was created in physics.");
           return INVALID_ID;
         }
         // put all data to the correct place

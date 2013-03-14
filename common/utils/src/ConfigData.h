@@ -33,6 +33,7 @@
 
 #include "FIFOMap.h"
 
+#include "misc.h"
 
 namespace mars {
   namespace utils {
@@ -328,6 +329,7 @@ namespace mars {
         if(type != UNDEFINED_TYPE) {
           throw std::runtime_error("ConfigItem parsing wrong type line ...");
         }
+        sValue = trim(sValue);
         if(sValue == "true" || sValue == "True" || sValue == "TRUE") {
           iValue = 1;
           return true;

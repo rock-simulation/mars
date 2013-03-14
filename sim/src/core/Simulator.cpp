@@ -110,10 +110,35 @@ namespace mars {
       control->sim = (SimulatorInterface*)this;
       control->cfg = 0;//defaultCFG;
       dbSimTimePackage.add("simTime", 0.);
-
       // load optional libs
       checkOptionalDependency("data_broker");
       checkOptionalDependency("cfg_manager");
+
+      if(control->cfg) {
+        configPath = control->cfg->getOrCreateProperty("Config", "config_path",
+                                                         string("."));
+
+        string loadFile = configPath.sValue;
+        loadFile.append("/mars_Preferences.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+        loadFile = configPath.sValue;
+        loadFile.append("/mars_Simulator.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+
+        loadFile = configPath.sValue;
+        loadFile.append("/mars_Physics.yaml");
+        control->cfg->loadConfig(loadFile.c_str());
+
+        bool loadLastSave = false;
+        control->cfg->getPropertyValue("Config", "loadLastSave", "value",
+                                       &loadLastSave);
+        if (loadLastSave) {
+          loadFile = configPath.sValue;
+          loadFile.append("/mars_saveOnClose.yaml");
+          control->cfg->loadConfig(loadFile.c_str());
+        }
+      }
+
     }
 
     Simulator::~Simulator() {
@@ -207,31 +232,6 @@ namespace mars {
 
     void Simulator::runSimulation() {
 
-      if(control->cfg) {
-        configPath = control->cfg->getOrCreateProperty("Config", "config_path",
-                                                         string("."));
-
-        string loadFile = configPath.sValue;
-        loadFile.append("/mars_Preferences.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-        loadFile = configPath.sValue;
-        loadFile.append("/mars_Simulator.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-
-        loadFile = configPath.sValue;
-        loadFile.append("/mars_Physics.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-
-        bool loadLastSave = false;
-        control->cfg->getPropertyValue("Config", "loadLastSave", "value",
-                                       &loadLastSave);
-        if (loadLastSave) {
-          loadFile = configPath.sValue;
-          loadFile.append("/mars_saveOnClose.yaml");
-          control->cfg->loadConfig(loadFile.c_str());
-        }
-      }
-
       checkOptionalDependency("mars_graphics");
       checkOptionalDependency("log_console");
 
@@ -264,6 +264,26 @@ namespace mars {
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
 
+      if (arg_scene_name != "") {
+        LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
+        loadScene(arg_scene_name);
+        arg_scene_name = "";
+      }
+      if (arg_run) {
+        simulationStatus = RUNNING;
+        arg_run = 0;
+      }
+      if (arg_grid) {
+        arg_grid = 0;
+        if(control->graphics)
+          control->graphics->showGrid();
+      }
+      if (arg_ortho) {
+        arg_ortho = 0;
+        if(control->graphics)
+          control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
+      }
+      
       this->start();
     }
 
@@ -557,35 +577,8 @@ namespace mars {
 
 
     void Simulator::finishedDraw(void) {
-      static char first = 10;
       long time;
 
-      if (first > 0) {
-        first--;
-        // open Plugin file
-        if (!first) {
-
-          if (arg_scene_name != "") {
-            LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
-            loadScene(arg_scene_name);
-            arg_scene_name = "";
-          }
-          if (arg_run) {
-            simulationStatus = RUNNING;
-            arg_run = 0;
-          }
-          if (arg_grid) {
-            arg_grid = 0;
-            if(control->graphics)
-              control->graphics->showGrid();
-          }
-          if (arg_ortho) {
-            arg_ortho = 0;
-            if(control->graphics)
-              control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
-          }
-        }
-      }
       if (reloadSim) {
         while (simulationStatus != STOPPED) {
 

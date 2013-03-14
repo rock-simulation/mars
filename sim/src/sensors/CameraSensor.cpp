@@ -72,12 +72,12 @@ namespace mars {
         //New
         interfaces::hudElementStruct hudCam;
         hudCam.type            = HUD_ELEMENT_TEXTURE;
-        hudCam.width           = 420;
-        hudCam.height          = 280;
-        hudCam.texture_width   = 420;
-        hudCam.texture_height  = 280;
-        hudCam.view_width      = 420;
-        hudCam.view_height     = 280;
+        hudCam.width           = config.hud_width;
+        hudCam.height          = config.hud_height;
+        hudCam.texture_width   = hudCam.width;
+        hudCam.texture_height  = hudCam.height;
+        hudCam.view_width      = hudCam.width;
+        hudCam.view_height     = hudCam.height;
         hudCam.posx            = 40 + (hudCam.width * config.hud_pos); // aligned in a row
         hudCam.posy            = 30;
         hudCam.border_color[0] = 0.0;
@@ -89,7 +89,7 @@ namespace mars {
         if(config.show_cam)
           cam_id = control->graphics->addHUDElement(&hudCam);
 
-        cam_window_id = control->graphics->new3DWindow(0, true,0,0,name);
+        cam_window_id = control->graphics->new3DWindow(0, true, config.width, config.height, name);
         if(config.show_cam)
           control->graphics->setHUDElementTextureRTT(cam_id, cam_window_id,false);
 
@@ -116,6 +116,29 @@ namespace mars {
         std::cerr << "could not get camera info." << std::endl;
     }
 
+    void CameraSensor::getImage(std::vector< Pixel >& buffer)
+    {
+        assert(buffer.size() == (config.width * config.height));
+        int width;
+        int height;
+	gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height);
+        
+        assert(config.width == width);
+        assert(config.height == height);
+    }
+
+    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer)
+    {
+        assert(buffer.size() == (config.width * config.height));
+        int width;
+        int height;
+        gw->getRTTDepthData(reinterpret_cast<float *>(buffer.data()), width, height);
+        
+        assert(config.width == width);
+        assert(config.height == height);
+    }
+
+    
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
     int CameraSensor::getSensorData(sReal** data) const {
@@ -235,6 +258,11 @@ namespace mars {
           cfg->hud_pos = it2->second[0].getInt();
       }
 
+      if((it = config->find("hud_size")) != config->end()) {
+        cfg->hud_width = it->second[0].children["x"][0].getDouble();
+        cfg->hud_height = it->second[0].children["y"][0].getDouble();
+      }
+
       if((it = config->find("position_offset")) != config->end()) {
         cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
         cfg->pos_offset[1] = it->second[0].children["y"][0].getDouble();
@@ -302,6 +330,11 @@ namespace mars {
       (*tmpCfg)["y"][0] = ConfigItem(q.y());
       (*tmpCfg)["z"][0] = ConfigItem(q.z());
       (*tmpCfg)["w"][0] = ConfigItem(q.w());
+
+      cfg["hud_size"][0] = ConfigItem(std::string());
+      tmpCfg = &(cfg["hud_size"][0].children);
+      (*tmpCfg)["x"][0] = ConfigItem(config.hud_width);
+      (*tmpCfg)["y"][0] = ConfigItem(config.hud_height);
 
       return cfg;
     }

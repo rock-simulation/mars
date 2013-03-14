@@ -162,7 +162,28 @@ namespace mars {
       virtual bool setShadow(int id,float intensity);
       virtual bool addSize(int id, float x, float y);
       virtual bool addColor(int id,float r,float g,float b,float a);
-      virtual void getImageData(void **data, int &width, int &height, bool depthImage = false);
+      /**
+       * This function copies the image data in the given buffer.
+       * It assumes that the buffer ist correctly initalized
+       * with a char array of the size width * height * 4
+       * 
+       * @param buffer buffer in which the image gets copied
+       * @param width returns the width of the image
+       * @param height returns the height of the image
+       * */
+      virtual void getImageData(char *buffer, int &width, int &height);
+      virtual void getImageData(void **data, int &width, int &height);
+      
+      /**
+       * This function copies the depth image in the given buffer.
+       * It assumes that the buffer ist correctly initalized
+       * with a double array of the size width * height
+       * 
+       * @param buffer buffer in which the image gets copied
+       * @param width returns the width of the image
+       * @param height returns the height of the image
+       * */
+      virtual void getRTTDepthData(float *buffer, int &width, int &height);
       virtual void getRTTDepthData(float **data, int &width, int &height);
   
       virtual osg::Group* getScene(){

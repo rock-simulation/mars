@@ -1,30 +1,50 @@
+# ******** TODO:
+#               - add jointOffset calculation by using rotation difference
+#                 on joint axis of node2
+
 import bpy
 import os, glob
 import mathutils
 import struct
 
 scn = bpy.context.scene
+objList = []
+jointList = []
+sensorList = []
+haveController = 0
+myMotorList = {}
+out = None
+
+class IdGenerator(object):
+    def __init__(self, initValue=0):
+        self._nextId = initValue
+    def __call__(self):
+        ret, self._nextId = self._nextId, self._nextId + 1
+        return ret
+
+nextMaterialId = IdGenerator(1)
 
 # configuration
-defValues = {"filename":"example", "path":".",
-             "exportMesh":True, "exportBobj":False,
-             "defCollBitmask":65535, "defP":13,
-             "defD":0, "defI":0.015,
-             "defMaxMotorForce":18, "defMaxMotorSpeed":12}
+defValues = { "filename": "example",
+              "path": ".",
+              "exportMesh": True,
+              "exportBobj": False,
+              "defCollBitmask": 65535,
+              "defP": 13,
+              "defI": 0.015,
+              "defD": 0,
+              "defMaxMotorForce": 18,
+              "defMaxMotorSpeed": 12,
+              }
 
-for key in defValues:
-    if key in scn.world:
-        defValues[key] = scn.world[key]
-defValues["path"] = os.path.expanduser(defValues["path"])
 
-#import export_obj
-#myobj = __import__(Blender.Get("scriptsdir") + "/export_obj.py")
+def parseDefaultValues():
+    global defValues
+    for key in defValues:
+        if key in scn.world:
+            defValues[key] = scn.world[key]
+    defValues["path"] = os.path.expanduser(defValues["path"])
 
-nextMaterialID = 1
-
-# ******** TODO:
-#               - add jointOffset calculation by using rotation difference
-#                 on joint axis of node2
 
 def veckey3d(v):
     return round(v.x, 6), round(v.y, 6), round(v.z, 6)
@@ -32,11 +52,26 @@ def veckey3d(v):
 def getID(name):
     for obj in bpy.data.objects:
         if obj.name == name:
-            if "id" in obj:
-                return obj["id"]
-            else :
-                return 0
+            return obj["id"] if "id" in obj else 0
     return 0
+
+def outputVector(outStream, name, vec, indentLevel):
+    indent = " " * indentLevel
+    outStream.write(indent + '<'+name+'>\n')
+    outStream.write(indent + '  <x>'+str(vec[0])+'</x>\n')
+    outStream.write(indent + '  <y>'+str(vec[1])+'</y>\n')
+    outStream.write(indent + '  <z>'+str(vec[2])+'</z>\n')
+    outStream.write(indent + '</'+name+'>\n')
+
+def outputQuaternion(outStream, name, q, indentLevel):
+    indent = " " * indentLevel
+    outStream.write(indent + '<'+name+'>\n')
+    outStream.write(indent + '  <x>'+str(q[1])+'</x>\n')
+    outStream.write(indent + '  <y>'+str(q[2])+'</y>\n')
+    outStream.write(indent + '  <z>'+str(q[3])+'</z>\n')
+    outStream.write(indent + '  <w>'+str(q[0])+'</w>\n')
+    outStream.write(indent + '</'+name+'>\n')
+
 
 def exportBobj(outname, obj):
     totverts = totuvco = totno = 1
@@ -75,8 +110,7 @@ def exportBobj(outname, obj):
         out = open(outname, "wb")
 
         for v in mesh.vertices:
-            da = struct.pack('ifff', 1, v.co[0], v.co[1], v.co[2])
-            out.write(da)
+            out.write(struct.pack('ifff', 1, v.co[0], v.co[1], v.co[2]))
 
         if faceuv:
             uv = uvkey = uv_dict = f_index = uv_index = None
@@ -92,8 +126,7 @@ def exportBobj(outname, obj):
                         uv_face_mapping[f_index][uv_index] = uv_dict[uvkey]
                     except:
                         uv_face_mapping[f_index][uv_index] = uv_dict[uvkey] = len(uv_dict)
-                        da = struct.pack('iff', 2, uv[0], uv[1])
-                        out.write(da)
+                        out.write(struct.pack('iff', 2, uv[0], uv[1]))
 
             uv_unique_count = len(uv_dict)
 
@@ -155,28 +188,17 @@ def exportBobj(outname, obj):
                         for vi, v in f_v:
                             da = struct.pack('iii', v.index + totverts, 0, no)
                             out.write(da)  # vert, uv, normal
-
-
         out.close()
 
-
-objList = []
-jointList = []
-sensorList = []
 
 def getChildren(parent):
     children = []
     for obj in bpy.data.objects:
-        if obj.select:
-            if obj.parent == parent:
-                children.append(obj)
+        if obj.select and obj.parent == parent:
+            children.append(obj)
     return children
 
 def fillList(obj):
-    global objList
-    global jointList
-    global sensorList
-
     if "type" in obj:
         if obj["type"] == "body":
             objList.append(obj)
@@ -190,16 +212,11 @@ def fillList(obj):
     for child in children:
         fillList(child)
 
-#editmode = Blender.Window.EditMode()
-#if editmode: Blender.Window.EditMode(0)
-
-out = open(defValues["path"]+"/"+defValues["filename"]+".scene", "w")
-out.write("""<?xml version="1.0"?>
-<!DOCTYPE dfkiMarsSceneFile PUBLIC '-//DFKI/RIC/MARS SceneFile 1.0//EN' ''>
-<SceneFile>
-  <version>0.2</version>
-  <nodelist>
-""")
+def writeSceneHeader():
+    out.write('<?xml version="1.0"?>\n'
+              "<!DOCTYPE dfkiMarsSceneFile PUBLIC '-//DFKI/RIC/MARS SceneFile 1.0//EN' ''>\n"
+              '<SceneFile>\n'
+              '  <version>0.2</version>\n')
 
 def calcCenter(boundingbox):
     c = [0,0,0]
@@ -211,58 +228,52 @@ def calcCenter(boundingbox):
     return c
 
 def writeNode(obj):
-    global nextMaterialID
-
+    if obj.active_material is None:
+        print("WARNING: Object %s has no material! Creating default" % str(obj))
+        obj.active_material = bpy.data.materials.new("default")
     if "marsID" in obj.active_material and obj.active_material["marsID"] != 0:
         matID = obj.active_material["marsID"]
     else:
-        obj.active_material["marsID"] = nextMaterialID
-        matID = nextMaterialID
-        nextMaterialID = nextMaterialID + 1
+        matID = nextMaterialId()
+        obj.active_material["marsID"] = matID
+
+    obj_name = obj["use"] if "use" in obj else obj.name
+    filename = obj_name + (".bobj" if defValues["exportBobj"] else ".obj")
 
     # get bounding box:
     bBox = obj.bound_box
     center = calcCenter(bBox)
-#    center = sum(bBox) * 0.125
     size = [0.0, 0.0, 0.0]
     size[0] = abs(2.0*(bBox[0][0] - center[0]))
     size[1] = abs(2.0*(bBox[0][1] - center[1]))
     size[2] = abs(2.0*(bBox[0][2] - center[2]))
 
-    sizeScaleX = 1.0
-    sizeScaleY = 1.0
-    sizeScaleZ = 1.0
+    sizeScaleX = obj["sizeScaleX"] if "sizeScaleX" in obj else 1.0
+    sizeScaleY = obj["sizeScaleY"] if "sizeScaleY" in obj else 1.0
+    sizeScaleZ = obj["sizeScaleZ"] if "sizeScaleZ" in obj else 1.0
 
-    if "sizeScaleX" in obj:
-        sizeScaleX = obj["sizeScaleX"]
-    if "sizeScaleY" in obj:
-        sizeScaleY = obj["sizeScaleY"]
-    if "sizeScaleZ" in obj:
-        sizeScaleZ = obj["sizeScaleZ"]
+    physicMode = obj["physicMode"] if "physicMode" in obj else "box"
+    radius = obj["radius"] if "radius" in obj else 0.0
+    height = obj["height"] if "height" in obj else 0.0
 
-    physicMode = "box"
-    radius = 0.0
-    height = 0.0
-    if "physicMode" in obj:
-        physicMode = obj["physicMode"]
-    if "radius" in obj:
-        radius = obj["radius"]
-    if "height" in obj:
-        height = obj["height"]
+    ext = [0, 0, 0]
+    ext[0] = radius if radius > 0. else sizeScaleX*size[0]
+    ext[1] = height if height > 0. else sizeScaleY*size[1]
+    ext[2] = sizeScaleZ*size[2]
 
     pivot = center
     center = obj.location.copy()
     center += obj.matrix_world.to_quaternion() * mathutils.Vector((pivot[0], pivot[1], pivot[2]))
 
-#mesh = obj.data
-    #for vertex in mesh.vertices:
-    #    vertex.co[0] -= center[0]
-    #    vertex.co[1] -= center[1]
-    #    vertex.co[2] -= center[2]
+    if "mass" in obj:
+        density = 0
+    elif "density" in obj:
+        density = obj["density"]
+    else:
+        density = 500
+    coll_bitmask = obj["coll_bitmask"] if "coll_bitmask" in obj else defValues["defCollBitmask"]
 
     parentID = 0
-    posString = "position"
-    rotString = "rotation"
 
     obj.rotation_mode = 'QUATERNION'
     q = obj.rotation_quaternion
@@ -270,8 +281,7 @@ def writeNode(obj):
     if obj.parent:
         parentID = obj.parent["id"]
         parent = obj.parent
-        parentIQ = parent.matrix_world.to_quaternion()
-        parentIQ.invert()
+        parentIQ = parent.matrix_world.to_quaternion().inverted()
         bBox = parent.bound_box
         pivot2 = calcCenter(bBox)
         v = mathutils.Vector((pivot2[0], pivot2[1], pivot2[2]))
@@ -286,74 +296,29 @@ def writeNode(obj):
         q = childRot
 
     out.write('    <node name="'+obj.name+'">\n')
-    obj_name = obj.name
-    if "use" in obj:
-        obj_name = obj["use"]
-
     out.write('      <origname>'+obj_name+'</origname>\n')
-    if defValues["exportBobj"]:
-        out.write('      <filename>'+obj_name+'.bobj</filename>\n')
-    else:
-        out.write('      <filename>'+obj_name+'.obj</filename>\n')
+    out.write('      <filename>'+filename+'</filename>\n')
     out.write('      <index>'+str(obj["id"])+'</index>\n')
     out.write('      <groupid>'+str(obj["group"])+'</groupid>\n')
     out.write('      <physicmode>'+physicMode+'</physicmode>\n')
     if parentID:
         out.write('      <relativeid>'+str(parentID)+'</relativeid>\n')
-    out.write('      <'+posString+'>\n')
-    out.write('        <x>'+str(center[0])+'</x>\n')
-    out.write('        <y>'+str(center[1])+'</y>\n')
-    out.write('        <z>'+str(center[2])+'</z>\n')
-    out.write('      </'+posString+'>\n')
-    out.write('      <'+rotString+'>\n')
-    out.write('        <x>'+str(q[1])+'</x>\n')
-    out.write('        <y>'+str(q[2])+'</y>\n')
-    out.write('        <z>'+str(q[3])+'</z>\n')
-    out.write('        <w>'+str(q[0])+'</w>\n')
-    out.write('      </'+rotString+'>\n')
+    outputVector(out, "position", center, 6)
+    outputQuaternion(out, "rotation", q, 6)
+    outputVector(out, "extend", ext, 6)
+    outputVector(out, "pivot", pivot, 6)
+    outputVector(out, "visualsize", size, 6)
     out.write('      <movable>true</movable>\n')
-    out.write('      <extend>\n')
-
-    if radius > 0.0 :
-        out.write('        <x>'+str(radius)+'</x>\n')
-    else :
-        out.write('        <x>'+str(sizeScaleX*size[0])+'</x>\n')
-    if height > 0.0 :
-        out.write('        <y>'+str(height)+'</y>\n')
-    else :
-        out.write('        <y>'+str(sizeScaleY*size[1])+'</y>\n')
-
-    out.write('        <z>'+str(sizeScaleZ*size[2])+'</z>\n')
-    out.write('      </extend>\n')
-    out.write('      <material_id>'+str(matID)+'</material_id>\n')
     if "mass" in obj:
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
-        out.write('      <density>0.0</density>\n')
-    elif "density" in obj:
-        out.write('      <density>'+str(obj["density"])+'</density>\n')
-    else:
-        out.write('      <density>500</density>\n')
-    out.write('      <pivot>\n')
-    out.write('        <x>'+str(pivot[0])+'</x>\n')
-    out.write('        <y>'+str(pivot[1])+'</y>\n')
-    out.write('        <z>'+str(pivot[2])+'</z>\n')
-    out.write('      </pivot>\n')
-
-    out.write('      <visualsize>\n')
-    out.write('        <x>'+str(size[0])+'</x>\n')
-    out.write('        <y>'+str(size[1])+'</y>\n')
-    out.write('        <z>'+str(size[2])+'</z>\n')
-    out.write('      </visualsize>\n')
-    if "coll_bitmask" in obj:
-        out.write('      <coll_bitmask>'+str(obj["coll_bitmask"])+
-                  '</coll_bitmask>\n')
-    else:
-        out.write('      <coll_bitmask>'+str(defValues["defCollBitmask"])+'</coll_bitmask>\n')
-
+    out.write('      <density>'+str(density)+'</density>\n')
+    out.write('      <material_id>'+str(matID)+'</material_id>\n')
+    out.write('      <coll_bitmask>'+str(coll_bitmask)+'</coll_bitmask>\n')
     out.write('    </node>\n')
 
-def writeJoint(joint):
 
+
+def writeJoint(joint):
     #bBox = joint.bound_box
     pos = mathutils.Vector((0.0, 0.0, 1.0))
     axis = joint.matrix_world.to_quaternion() * pos
@@ -376,8 +341,7 @@ def writeJoint(joint):
         v1 = joint.rotation_quaternion * mathutils.Vector((1.0, 0.0, 0.0))
         v2 = node2.rotation_quaternion * mathutils.Vector((1.0, 0.0, 0.0))
         jointOffset = v1.angle(v2, 0.0)
-        q = joint.rotation_quaternion.copy()
-        q.invert()
+        q = joint.rotation_quaternion.copy().inverted()
         axis_ = q * v1.cross(v2)
         if axis_[2] > 0:
             jointOffset *= -1
@@ -394,23 +358,10 @@ def writeJoint(joint):
     out.write('      <nodeindex1>'+str(joint.parent["id"])+'</nodeindex1>\n')
     out.write('      <nodeindex2>'+str(node2ID)+'</nodeindex2>\n')
     out.write('      <anchorpos>'+str(anchorPos)+'</anchorpos>\n')
-    out.write('      <anchor>\n')
-    out.write('        <x>'+str(center[0])+'</x>\n')
-    out.write('        <y>'+str(center[1])+'</y>\n')
-    out.write('        <z>'+str(center[2])+'</z>\n')
-    out.write('      </anchor>\n')
-    out.write('      <axis1>\n')
-    out.write('        <x>'+str(invert*axis[0])+'</x>\n')
-    out.write('        <y>'+str(invert*axis[1])+'</y>\n')
-    out.write('        <z>'+str(invert*axis[2])+'</z>\n')
-    out.write('      </axis1>\n')
+    outputVector(out, "anchor", center, 6)
+    outputVector(out, "axis1", (invert*axis[0],invert*axis[1],invert*axis[2]), 6)
     if "axis2x" in joint:
-        out.write('      <axis2>\n')
-        out.write('        <x>'+str(joint["axis2x"])+'</x>\n')
-        out.write('        <y>'+str(joint["axis2y"])+'</y>\n')
-        out.write('        <z>'+str(joint["axis2z"])+'</z>\n')
-        out.write('      </axis2>\n')
-
+        outputVector(out, "axis2", (joint["axis2x"], joint["axis2y"], joint["axis2z"]), 6)
     if "lowStop" in joint:
         out.write('      <lowStopAxis1>'+str(joint["lowStop"])+'</lowStopAxis1>\n')
     if "highStop" in joint:
@@ -419,93 +370,64 @@ def writeJoint(joint):
         out.write('      <spring_const_constraint_axis1>'+str(joint["springConst"])+'</spring_const_constraint_axis1>\n')
     if "dampingConst" in joint:
         out.write('      <damping_const_constraint_axis1>'+str(joint["dampingConst"])+'</damping_const_constraint_axis1>\n')
-
     out.write('      <angle1_offset>'+str(invert*jointOffset)+'</angle1_offset>\n')
     out.write('    </joint>\n')
     return jointOffset*invert
 
+
 def writeMotor(joint, motorValue):
+    motor_type = joint["motor_type"] if "motor_type" in joint else 1
+    motor_axis = joint["motorAxis"] if "motorAxis" in joint else 1
+    motor_p = joint["p"] if "p" in joint else defValues["defP"]
+    motor_i = joint["i"] if "i" in joint else defValues["defI"]
+    motor_d = joint["d"] if "d" in joint else defValues["defD"]
+    low_stop = joint["lowStop"] if "lowStop" in joint else -6.28
+    high_stop = joint["highStop"] if "highStop" in joint else 6.28
+    max_speed = joint["maxSpeed"] if "maxSpeed" in joint else defValues["defMaxMotorSpeed"]
+    max_force = joint["maxForce"] if "maxForce" in joint else defValues["defMaxMotorForce"]
+
     out.write('    <motor name="'+joint.name+'">\n')
     out.write('      <index>'+str(joint["id"])+'</index>\n')
     out.write('      <jointIndex>'+str(joint["id"])+'</jointIndex>\n')
-    if "motorAxis" in joint:
-        out.write('      <axis>'+str(joint["motorAxis"])+'</axis>\n')
-    else:
-        out.write('      <axis>1</axis>\n')
-
-    out.write('      <maximumVelocity>'+str(defValues["defMaxMotorSpeed"])+'</maximumVelocity>\n')
-    out.write('      <motorMaxForce>'+str(defValues["defMaxMotorForce"])+'</motorMaxForce>\n')
-
-    if "motor_type" in joint:
-        out.write('      <type>'+str(joint["motor_type"])+'</type>\n')
-    else:
-        out.write('      <type>1</type>\n')
-    if "p" in joint:
-        out.write('      <p>'+str(joint["p"])+'</p>\n')
-    else:
-        out.write('      <p>'+str(defValues["defP"])+'</p>\n')
-    if "d" in joint:
-        out.write('      <d>'+str(joint["d"])+'</d>\n')
-    else:
-        out.write('      <d>'+str(defValues["defD"])+'</d>\n')
-    if "i" in joint:
-        out.write('      <i>'+str(joint["i"])+'</i>\n')
-    else:
-        out.write('      <i>'+str(defValues["defI"])+'</i>\n')
-    if "lowStop" in joint:
-        out.write('      <min_val>'+str(joint["lowStop"])+'</min_val>\n')
-    else:
-        out.write('      <min_val>-6.28</min_val>\n')
-
-    if "highStop" in joint:
-        out.write('      <max_val>'+str(joint["highStop"])+'</max_val>\n')
-    else:
-        out.write('      <max_val>6.28</max_val>\n')
-
+    out.write('      <axis>'+str(motor_axis)+'</axis>\n')
+    out.write('      <maximumVelocity>'+str(max_speed)+'</maximumVelocity>\n')
+    out.write('      <motorMaxForce>'+str(max_force)+'</motorMaxForce>\n')
+    out.write('      <type>'+str(motor_type)+'</type>\n')
+    out.write('      <p>'+str(motor_p)+'</p>\n')
+    out.write('      <i>'+str(motor_i)+'</i>\n')
+    out.write('      <d>'+str(motor_d)+'</d>\n')
+    out.write('      <min_val>'+str(low_stop)+'</min_val>\n')
+    out.write('      <max_val>'+str(high_stop)+'</max_val>\n')
     out.write('      <value>'+str(motorValue)+'</value>\n')
     out.write('    </motor>\n')
 
-def writeSensor(sensor):
-    sensorType = "unknown"
-    rate = 10.0
-    if "sensorType" in sensor:
-        sensorType = sensor["sensorType"]
-    if "rate" in sensor:
-        rate = sensor["rate"]
 
+def writeSensor(sensor):
+    sensorType = sensor["sensorType"] if "sensorType" in sensor else "unknown"
+    rate = sensor["rate"] if "rate" in sensor else 10.0
 
     idList = {}
-
-    global myMotorList
-    global objList
 
     if "listMotors" in sensor:
         idList = myMotorList
     elif "listNodes" in sensor:
-        i = 0
-        for obj in objList:
+        for i, obj in enumerate(objList):
             idList[i] = obj["id"]
-            i += 1
-
     for key, value in sensor.items():
         if key[:5] == "index":
             index = getID(value)
-            #print("found id "+str(index)+" for "+value)
             if index != 0:
                 idList[int(key[5:])] = index
-
     out.write('    <sensor name="'+sensor.name+'" type="'+str(sensorType)+'">\n')
     out.write('      <index>'+str(sensor["id"])+'</index>\n')
     out.write('      <rate>'+str(rate)+'</rate>\n')
     for value in idList.values():
         out.write('      <id>'+str(value)+'</id>\n')
-
     if sensorType == "Joint6DOF":
         nodeID = getID(sensor["nodeID"])
         jointID = getID(sensor["jointID"])
         out.write('      <nodeID>'+str(nodeID)+'</nodeID>\n')
         out.write('      <jointID>'+str(jointID)+'</jointID>\n')
-
     elif sensorType == "RaySensor":
         nodeID = getID(sensor["attached_node"])
         out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
@@ -514,8 +436,6 @@ def writeSensor(sensor):
                   '</opening_width>\n')
         out.write('      <max_distance>'+str(sensor["max_distance"])+
                   '</max_distance>\n')
-
-
     out.write('    </sensor>\n')
 
 
@@ -537,144 +457,151 @@ def writeMaterial(material):
     out.write('      <shininess>'+str(material.specular_hardness/2)+'</shininess>\n');
     out.write('    </material>\n')
 
-root = None
-
-for obj in bpy.data.objects:
-    if obj.select:
-        if not obj.parent:
-            root = obj
-            break
-
-if root:
-    fillList(root)
-
-for material in bpy.data.materials:
-    if "marsID" in material:
-        material["marsID"] = 0
 
 
-for node in objList:
-    writeNode(node)
-out.write('  </nodelist>\n')
+def findRoot():
+    root = None
+    for obj in bpy.data.objects:
+        if obj.select:
+            if not obj.parent:
+                root = obj
+                break
+    return root
 
-out.write('  <jointlist>\n')
-motorValue = []
-for joint in jointList:
-    motorOffset = writeJoint(joint)
-    if joint["jointType"] == "hinge":
-        motorValue.append(motorOffset)
-    if joint["jointType"] == "hinge2":
-        motorValue.append(motorOffset)
-    if joint["jointType"] == "slider":
-        motorValue.append(motorOffset)
 
-out.write('  </jointlist>\n')
+def main():
+    global out
 
-out.write('  <motorlist>\n')
-i = 0
-for joint in jointList:
-    if not "springConst" in joint:
+    parseDefaultValues()
+    out = open(defValues["path"]+"/"+defValues["filename"]+".scene", "w")
+
+    writeSceneHeader()
+    root = findRoot()
+    if root:
+        fillList(root)
+    for material in bpy.data.materials:
+        if "marsID" in material:
+            material["marsID"] = 0
+
+    out.write('  <nodelist>\n')
+    for node in objList:
+        writeNode(node)
+    out.write('  </nodelist>\n')
+
+    out.write('  <jointlist>\n')
+    motorValue = []
+    for joint in jointList:
+        motorOffset = writeJoint(joint)
         if joint["jointType"] == "hinge":
-            writeMotor(joint, motorValue[i])
-            i += 1
-        elif joint["jointType"] == "hinge2":
-            writeMotor(joint, motorValue[i])
-            i += 1
-        elif joint["jointType"] == "slider":
-            writeMotor(joint, motorValue[i])
-            i += 1
+            motorValue.append(motorOffset)
+        if joint["jointType"] == "hinge2":
+            motorValue.append(motorOffset)
+        if joint["jointType"] == "slider":
+            motorValue.append(motorOffset)
+    out.write('  </jointlist>\n')
 
-out.write('  </motorlist>\n')
+    out.write('  <motorlist>\n')
+    i = 0
+    for joint in jointList:
+        if not "springConst" in joint:
+            if joint["jointType"] == "hinge":
+                writeMotor(joint, motorValue[i])
+                i += 1
+            elif joint["jointType"] == "hinge2":
+                writeMotor(joint, motorValue[i])
+                i += 1
+            elif joint["jointType"] == "slider":
+                writeMotor(joint, motorValue[i])
+                i += 1
+    out.write('  </motorlist>\n')
 
-haveController = 0
-myMotorList = {}
-for joint in jointList:
-    if "controllerIndex" in joint and joint["controllerIndex"] > 0:
-        haveController = 1
-        myMotorList[joint["controllerIndex"]] = str(joint["id"])
+    haveController = 0
+    for joint in jointList:
+        if "controllerIndex" in joint and joint["controllerIndex"] > 0:
+            haveController = 1
+            myMotorList[joint["controllerIndex"]] = str(joint["id"])
 
-mySensorList = {}
-for sensor in sensorList:
-    if sensor["id"] > 0:
-        haveController = 1
-        mySensorList[sensor["id"]] = str(sensor["id"])
-
-
-out.write('  <sensorlist>\n')
-for sensor in sensorList:
-    writeSensor(sensor)
-out.write('  </sensorlist>\n')
-
-if haveController == 1:
-    out.write('  <controllerlist>\n')
-    out.write('    <controller>\n')
-    out.write('      <rate>40</rate>\n')
-    for value in mySensorList.values():
-        out.write('      <sensorid>'+value+'</sensorid>\n')
-    for value in myMotorList.values():
-        out.write('      <motorid>'+value+'</motorid>\n')
-    out.write('    </controller>\n')
-    out.write('  </controllerlist>\n')
-
-out.write('  <materiallist>\n')
-
-for material in bpy.data.materials:
-    if "marsID" in material and material["marsID"] != 0:
-        writeMaterial(material)
-
-out.write('  </materiallist>\n')
-
-out.write('  <graphicOptions>\n')
-out.write('    <clearColor>\n')
-out.write('      <r>0.550000</r>\n')
-out.write('      <g>0.670000</g>\n')
-out.write('      <b>0.880000</b>\n')
-out.write('      <a>1.000000</a>\n')
-out.write('    </clearColor>\n')
-out.write('    <fogEnabled>false</fogEnabled>\n')
-out.write('  </graphicOptions>\n')
-out.write('</SceneFile>\n')
-
-out.close()
-
-os.chdir(defValues["path"])
-os.system("rm "+defValues["filename"]+".scn")
-os.system("zip "+defValues["filename"]+".scn "+defValues["filename"]+".scene")
+    mySensorList = {}
+    for sensor in sensorList:
+        if sensor["id"] > 0:
+            haveController = 1
+            mySensorList[sensor["id"]] = str(sensor["id"])
 
 
-for obj in objList:
-    if "use" in obj:
-        continue
-    obj.select = True
-    bpy.context.scene.objects.active = obj
-    bpy.ops.object.modifier_apply(modifier='EdgeSplit')
+    out.write('  <sensorlist>\n')
+    for sensor in sensorList:
+        writeSensor(sensor)
+    out.write('  </sensorlist>\n')
+
+    if haveController == 1:
+        out.write('  <controllerlist>\n')
+        out.write('    <controller>\n')
+        out.write('      <rate>40</rate>\n')
+        for value in mySensorList.values():
+            out.write('      <sensorid>'+value+'</sensorid>\n')
+        for value in myMotorList.values():
+            out.write('      <motorid>'+value+'</motorid>\n')
+        out.write('    </controller>\n')
+        out.write('  </controllerlist>\n')
+
+    out.write('  <materiallist>\n')
+
+    for material in bpy.data.materials:
+        if "marsID" in material and material["marsID"] != 0:
+            writeMaterial(material)
+
+    out.write('  </materiallist>\n')
+
+    out.write('  <graphicOptions>\n')
+    out.write('    <clearColor>\n')
+    out.write('      <r>0.550000</r>\n')
+    out.write('      <g>0.670000</g>\n')
+    out.write('      <b>0.880000</b>\n')
+    out.write('      <a>1.000000</a>\n')
+    out.write('    </clearColor>\n')
+    out.write('    <fogEnabled>false</fogEnabled>\n')
+    out.write('  </graphicOptions>\n')
+    out.write('</SceneFile>\n')
+
+    out.close()
+
+    os.chdir(defValues["path"])
+    os.system("rm "+defValues["filename"]+".scn")
+    os.system("zip "+defValues["filename"]+".scn "+defValues["filename"]+".scene")
+
+
+    for obj in objList:
+        if "use" in obj:
+            continue
+        obj_filename = obj.name + (".bobj" if defValues["exportBobj"] else ".obj")
+        obj.select = True
+        bpy.context.scene.objects.active = obj
+        bpy.ops.object.modifier_apply(modifier='EdgeSplit')
     #bpy.ops.object.transform_apply(rotation=True)
-    location = obj.location.copy()
-    rotation = obj.rotation_quaternion.copy()
-    parent = obj.parent
-    obj.location = [0.0, 0.0, 0.0]
-    obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
-    obj.parent = None
-    if defValues["exportMesh"]:
-        if defValues["exportBobj"]:
-            out_name = defValues["path"]+"/"+obj.name + ".bobj"
-            exportBobj(out_name, obj)
-        else:
-            out_name = defValues["path"]+"/"+obj.name + ".obj"
-            bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z',
-                                     axis_up='Y', use_selection=True,
-                                     use_normals=True)
-    if defValues["exportBobj"]:
-        os.system("zip "+defValues["filename"]+".scn "+obj.name+".bobj")
-    else:
-        os.system("zip "+defValues["filename"]+".scn "+obj.name+".obj")
-
-    #os.system("zip "+defValues["filename"]+".scn "+obj.name+".mtl")
-    obj.location = location
-    obj.rotation_quaternion = rotation
-    obj.parent = parent
-    obj.select = False
+        location = obj.location.copy()
+        rotation = obj.rotation_quaternion.copy()
+        parent = obj.parent
+        obj.location = [0.0, 0.0, 0.0]
+        obj.rotation_quaternion = [1.0, 0.0, 0.0, 0.0]
+        obj.parent = None
+        if defValues["exportMesh"]:
+            out_name = defValues["path"]+"/" + obj_filename
+            if defValues["exportBobj"]:
+                exportBobj(out_name, obj)
+            else:
+                bpy.ops.export_scene.obj(filepath=out_name, axis_forward='-Z',
+                                         axis_up='Y', use_selection=True,
+                                         use_normals=True)
+        os.system("zip "+defValues["filename"]+".scn "+obj_filename)
+        #os.system("zip "+defValues["filename"]+".scn "+obj.name+".mtl")
+        obj.location = location
+        obj.rotation_quaternion = rotation
+        obj.parent = parent
+        obj.select = False
 
 
 # it would be nice to also set the pivot to the object center
 #Blender.Redraw()
+
+if __name__ == '__main__':
+    main()

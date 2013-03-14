@@ -74,7 +74,7 @@ namespace mars {
 
         void update(mars::interfaces::sReal time_ms) { (void) time_ms; }
         virtual void reset(void) {}
-        virtual void init(void) {}
+        virtual void init(void);
         virtual void preGraphicsUpdate(void);
 
         virtual void menuAction(int action, bool checked = false);
