@@ -56,6 +56,7 @@ set(HEADERS
     src/DataPackageMapping.h
     src/DataItem.h
     src/DataInfo.h
+	src/LockableContainer.h
 )
 
 
