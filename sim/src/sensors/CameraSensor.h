@@ -34,6 +34,10 @@
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
 #include <mars/interfaces/graphics/GraphicsCameraInterface.h>
 
+#include <inttypes.h>
+typedef uint8_t  u_int8_t;
+
+
 namespace mars {
 
   namespace graphics {
@@ -43,14 +47,13 @@ namespace mars {
 
   namespace sim {
 
-
       class Pixel
       {
         public:
-	  u_int8_t r;
-	  u_int8_t g;
-	  u_int8_t b;
-	  u_int8_t a;
+          u_int8_t r;
+          u_int8_t g;
+          u_int8_t b;
+          u_int8_t a;
       } __attribute__ ((packed)) ;
 
       typedef float DistanceMeasurement;
