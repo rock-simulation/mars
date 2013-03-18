@@ -75,6 +75,7 @@ int main(int argc, char *argv[]) {
   signal(SIGQUIT, qtExitHandler);
   signal(SIGPIPE, qtExitHandler);
   //signal(SIGKILL, qtExitHandler);
+  signal(SIGUSR1, ignoreSignal);
 #else
   signal(SIGFPE, qtExitHandler);
   signal(SIGILL, qtExitHandler);
@@ -84,7 +85,6 @@ int main(int argc, char *argv[]) {
   signal(SIGABRT, qtExitHandler);
   signal(SIGTERM, qtExitHandler);
   signal(SIGINT, qtExitHandler);
-  signal(SIGUSR1, ignoreSignal);
 
 
   mars::app::MARS *simulation = new mars::app::MARS();
