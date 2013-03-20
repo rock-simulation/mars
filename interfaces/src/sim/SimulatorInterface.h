@@ -69,9 +69,15 @@ namespace mars {
        * are running in a different thread; it would probably be better to just copy them instead
        * of using references
        */
-      virtual int loadScene(const std::string &filename, const std::string &robotname) = 0;
+      virtual int loadScene(const std::string &filename, const std::string &robotname, bool threadsave=false, bool blocking=false) = 0;
       virtual int loadScene(const std::string &filename, bool wasrunning=false,
-                            const std::string &robotname = "") = 0;
+                        const std::string &robotname = "", bool threadsave=false, bool blocking=false) = 0;
+  
+      /**
+       * Returns true if no external requests are open
+       */
+      bool allConcurrencysHandeled();
+
       /** \todo write docs */
       virtual bool sceneChanged() const = 0;
       /** \todo write docs */
