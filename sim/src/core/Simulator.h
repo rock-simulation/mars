@@ -121,11 +121,12 @@ namespace mars {
       void myRealTime(void);
 
       virtual int loadScene(const std::string &filename,
-                            const std::string &robotname);
+                            const std::string &robotname,bool threadsave=false, bool blocking=false);
       virtual int loadScene(const std::string &filename, 
                             bool wasrunning=false,
-                            const std::string &robotname="");
+                            const std::string &robotname="",bool threadsave=false, bool blocking=false);
 
+      virtual bool allConcurrencysHandeled();
       virtual int saveScene(const std::string &filename, bool wasrunning);
       virtual bool isSimRunning() const;
       virtual bool sceneChanged() const;
@@ -170,6 +171,19 @@ namespace mars {
       void noGUITimerUpdate(void);
 
     private:
+      struct LoadOptions{
+        std::string filename;
+        std::string robotname;
+        bool wasRunning;
+      };
+    
+      std::vector<LoadOptions> filesToLoad;
+      //This method is used for all Calls that cannot be done from an external thread,
+      //this means the requests have to be caches (like in loadScene) and has to be handelt by
+      //this methos, which is called by this (run())
+      void processRequests();
+    
+      int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
       bool exit_sim;
       bool allow_draw;
       bool sync_graphics;
@@ -190,6 +204,7 @@ namespace mars {
       bool erased_active;
       utils::ReadWriteLock pluginLocker;
       int sync_count;
+      utils::Mutex externalMutex;
       utils::Mutex coreMutex;
       utils::Mutex physicsMutex;
       utils::Mutex physicsCountMutex;

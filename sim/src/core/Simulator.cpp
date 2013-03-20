@@ -296,6 +296,7 @@ namespace mars {
       static int count = 0;
 
       while (!kill_sim) {
+        processRequests();
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
         if (!isSimRunning() && !single_step) {
@@ -513,12 +514,34 @@ namespace mars {
       }
     }
 
-    int Simulator::loadScene(const std::string &filename, const std::string &robotname) {
-      return loadScene(filename, false, robotname);
+    int Simulator::loadScene(const std::string &filename, const std::string &robotname, bool threadsave, bool blocking) {
+      return loadScene(filename, false, robotname,threadsave,blocking);
     }
 
     int Simulator::loadScene(const std::string &filename,
+                             bool wasrunning, const std::string &robotname, bool threadsave, bool blocking) {
+        if(!threadsave){
+            return loadScene_internal(filename,wasrunning, robotname);
+        }
+
+        //Loading is handles inside the mars thread itsels later 
+        externalMutex.lock();
+        LoadOptions lo;
+        lo.filename = filename;
+        lo.wasRunning = wasrunning;
+        lo.robotname = robotname;
+        filesToLoad.push_back(lo);
+        externalMutex.unlock();
+
+        while(blocking && !filesToLoad.empty()){
+            msleep(10);
+        }
+        return 1;
+    }
+
+    int Simulator::loadScene_internal(const std::string &filename,
                              bool wasrunning, const std::string &robotname) {
+
       string tmpPath = configPath.sValue;
 
       if(!control->loadCenter->loadScene) {
@@ -1014,6 +1037,19 @@ namespace mars {
 
     void Simulator::allowDraw(void) {
       allow_draw = 1;
+    }
+    
+    bool Simulator::allConcurrencysHandeled(){
+        return filesToLoad.empty();
+    }
+
+    void Simulator::processRequests(){
+        externalMutex.lock();
+        for(unsigned int i=0;i<filesToLoad.size();i++){
+           loadScene_internal(filesToLoad[i].filename,filesToLoad[i].wasRunning,filesToLoad[i].robotname); 
+        }
+        filesToLoad.clear();
+        externalMutex.unlock();
     }
 
 
