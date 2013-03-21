@@ -93,7 +93,6 @@ def exportBobj(outname, obj):
         #mesh.transform(obj.matrix_world)
 
         write_uv = False
-        faceuv =len(mesh.uv_textures)
         if faceuv:
             uv_layer = mesh.uv_textures.active.data[:]
             write_uv = True
@@ -265,6 +264,10 @@ def writeNode(obj):
     center = obj.location.copy()
     center += obj.matrix_world.to_quaternion() * mathutils.Vector((pivot[0], pivot[1], pivot[2]))
 
+    noPhysical = False
+    if "noPhysical" in obj:
+        noPhysical = obj["noPhysical"]
+
     if "mass" in obj:
         density = 0
     elif "density" in obj:
@@ -301,6 +304,8 @@ def writeNode(obj):
     out.write('      <index>'+str(obj["id"])+'</index>\n')
     out.write('      <groupid>'+str(obj["group"])+'</groupid>\n')
     out.write('      <physicmode>'+physicMode+'</physicmode>\n')
+    if(noPhysical):
+        out.write('      <noPhysical>'+str(noPhysical)+'</noPhysical>\n')
     if parentID:
         out.write('      <relativeid>'+str(parentID)+'</relativeid>\n')
     outputVector(out, "position", center, 6)
