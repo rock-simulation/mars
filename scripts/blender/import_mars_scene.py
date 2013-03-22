@@ -25,7 +25,7 @@ def getGenericConfig(domElement):
 
     if domElement.hasAttributes():
         for key, value in domElement.attributes.items():
-#            print "attrib [%s : %s]" % (key, value)
+#            print("attrib [%s : %s]" % (key, value))
             if key not in config:
                 config[key] = value
             else:
@@ -37,7 +37,7 @@ def getGenericConfig(domElement):
             value = child.nodeValue
             if child.hasChildNodes():
                 value = getGenericConfig(child)
-#                print "element [%s : %s]" % (key, value)
+#                print("element [%s : %s]" % (key, value))
                 if key not in config:
                     config[key] = value
                 else:
@@ -53,7 +53,7 @@ def getGenericConfig(domElement):
     return config
 
 
-def checkConfigParameter(config,key):
+def checkConfigParameter(config, key):
     if key not in config.keys():
         print("WARNING! Node config does not contain parameter \'%s\'!" % key)
         return False
@@ -317,7 +317,7 @@ def main(fileDir, filename):
         sys.exit(1)
 
     # --- DO THE PARSING HERE!!! ---
-    
+
     # parsing all nodes
     nodes = dom.getElementsByTagName("node")
     for node in nodes :
@@ -333,9 +333,13 @@ if __name__ == '__main__' :
     if len(sys.argv) != 2:
         print("USAGE: %s <fullpath_to_scn_file>" % sys.argv[0])
         sys.exit(1)
+
     if not os.path.isfile(sys.argv[1]):
         print('USAGE: %s <fullpath_to_scn_file>' % sys.argv[0])
         print('  Error: "%s" is not an existing file!' % sys.argv[1])
         sys.exit(1)
+
     fileDirectory, filename = os.path.split(sys.argv[1])
+
     main(fileDirectory, filename)
+
