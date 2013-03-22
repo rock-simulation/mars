@@ -1007,8 +1007,10 @@ namespace mars {
     
     void GraphicsWidget::getImageData(void **data, int &width, int &height) {
       if(isRTTWidget) {
+        width = rttImage->s();
+        height = rttImage->t();
         *data = malloc(width*height*4);
-        getImageData((char *)*data, width, height);
+        getImageData((char *) *data, width, height);
       }
       else {
         postDrawCallback->getImageData(data, width, height);
@@ -1043,6 +1045,8 @@ namespace mars {
 
     void GraphicsWidget::getRTTDepthData(float **data, int &width, int &height) {
       if(isRTTWidget) {
+        width = rttDepthImage->s();
+        height = rttDepthImage->t();
         *data = (float*)malloc(width*height*sizeof(float));
         getRTTDepthData(data, width, height);
       } else {
