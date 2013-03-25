@@ -19,36 +19,54 @@ nodeTypes = ["undefined",
             ]
 
 
-def getGenericConfig(domElement):
+# clean up all the "empty" whitespace nodes
+def removeWhitespaceNodes(parent, unlink=True):
+    remove_list = []
+
+    for child in parent.childNodes:
+        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and \
+           not child.data.strip():
+            remove_list.append(child)
+        elif child.hasChildNodes():
+            removeWhitespaceNodes(child, unlink)
+
+    for node in remove_list:
+        node.parentNode.removeChild(node)
+        if unlink:
+            node.unlink()
+
+
+# convert the given xml structure into a python dict
+def getGenericConfig(parent):
+    child = parent.firstChild
+    if (not child):
+        return None
+    # if it is a text node, we just return the contained string
+    elif (child.nodeType == xml.dom.minidom.Node.TEXT_NODE):
+        return child.nodeValue
 
     config = {}
 
-    if domElement.hasAttributes():
-        for key, value in domElement.attributes.items():
+    # check for attributes ...
+    if parent.hasAttributes():
+        for key, value in parent.attributes.items():
 #            print("attrib [%s : %s]" % (key, value))
             if key not in config:
                 config[key] = value
             else:
                 print("Warning! Key '%s' already exists!" % key)
 
-    if domElement.hasChildNodes():
-        for child in domElement.childNodes:
-            key   = child.nodeName
-            value = child.nodeValue
-            if child.hasChildNodes():
-                value = getGenericConfig(child)
-#                print("element [%s : %s]" % (key, value))
-                if key not in config:
-                    config[key] = value
-                else:
-                    print("Warning! Key '%s' already exists!" % key)
+    # and check the appending child nodes
+    while child is not None:
+        if (child.nodeType == xml.dom.minidom.Node.ELEMENT_NODE):
+            key   = child.tagName
+            value = getGenericConfig(child)
+ #           print("element [%s : %s]" % (key, value))
+            if key not in config:
+                config[key] = value
             else:
-                # remove indentation and leading and trailing whitespaces
-                value = textwrap.dedent(value).strip()
-#                value = ''.join(value.split())
-                ## FIXME: This seems wrong! what about the other cildren?
-                if value != '':
-                    return value
+                print("Warning! Key '%s' already exists!" % child.tagName)
+        child = child.nextSibling
 
     return config
 
@@ -63,7 +81,6 @@ def checkConfigParameter(config, key):
 def parseNode(domElement):
     # read the config from the xml file
     config = getGenericConfig(domElement)
-#    print(config["name"], ":", config)
 
     check = False
     massDensity = False
@@ -73,6 +90,8 @@ def parseNode(domElement):
     if not checkConfigParameter(config,"name"):
         return False
     name = config["name"]
+
+#    print("%s : %s" % (config["name"], config))
 
     # handle node mass
     if checkConfigParameter(config,"mass"):
@@ -131,7 +150,7 @@ def parseNode(domElement):
         groupID = int(config["groupid"])
 
     if checkConfigParameter(config,"index"):
-        index = long(config["index"])
+        index = int(config["index"])
 
     if checkConfigParameter(config,"position"):
         pos = config["position"]
@@ -147,7 +166,7 @@ def parseNode(domElement):
 
     # handle relatvie positioning
     if checkConfigParameter(config,"relativeid"):
-        relative_id = long(config["relativeid"])
+        relative_id = int(config["relativeid"])
         if relative_id:
             if checkConfigParamter(config,"mapIndex"):
                 mapIndex = int(config["mapIndex"])
@@ -318,11 +337,14 @@ def main(fileDir, filename):
 
     # --- DO THE PARSING HERE!!! ---
 
+    # clean up all the unnecessary white spaces
+    removeWhitespaceNodes(dom)
+
     # parsing all nodes
     nodes = dom.getElementsByTagName("node")
     for node in nodes :
         if not parseNode(node):
-            print("Error while parsing parsing node!")
+            print("Error while parsing node!")
             sys.exit(1)
 
     #cleaning up afterwards
