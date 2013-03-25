@@ -573,6 +573,7 @@ namespace mars {
     }
 
     void GraphicsManager::draw() {
+      graphicMutex.lock();
       std::vector<GraphicsWidget*>::iterator iter;
 
       for (unsigned int i =0; i<graphicsUpdateObjects.size(); i++) {
@@ -590,6 +591,7 @@ namespace mars {
       for (unsigned int i =0; i<graphicsUpdateObjects.size(); i++) {
         graphicsUpdateObjects[i]->postGraphicsUpdate();
       }
+      graphicMutex.unlock();
     }
 
     void GraphicsManager::setGrabFrames(bool value) {

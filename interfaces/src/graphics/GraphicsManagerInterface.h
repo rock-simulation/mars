@@ -221,6 +221,9 @@ namespace mars {
       virtual void initializeOSG(void *data) = 0;
       virtual LoadMeshInterface* getLoadMeshInterface(void) = 0;
       virtual LoadHeightmapInterface* getLoadHeightmapInterface(void) = 0;
+      
+      virtual void lockGraphics() = 0;
+      virtual void unlockGraphics() = 0;
 
     }; // end of class GraphicsManagerInterface
 

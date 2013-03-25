@@ -60,6 +60,7 @@
 #include <mars/interfaces/graphics/GraphicsEventInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
+#include <mars/utils/Mutex.h>
 
 #include "gui_helper_functions.h"
 
@@ -275,8 +276,16 @@ namespace mars {
 
       virtual mars::interfaces::LoadMeshInterface* getLoadMeshInterface(void);
       virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
+      
+      void lockGraphics(){
+        graphicMutex.lock();
+      }
+      void unlockGraphics(){
+        graphicMutex.unlock();
+      }
 
     private:
+      utils::Mutex graphicMutex;
 
       mars::interfaces::GraphicData graphicOptions;
 
