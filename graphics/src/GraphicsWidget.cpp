@@ -862,14 +862,10 @@ namespace mars {
         rttDepthImage->allocateImage(g_width, g_height,
                                      1, GL_DEPTH_COMPONENT, GL_FLOAT);
 
-#ifdef DEPTH_IMAGES //If Depth images are enabled it crashes on some machines simply later 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
-#else
-        osgCamera->attach(osg::Camera::COLOR_BUFFER, rttTexture.get(), 0, 0, false, 2, 0);
-#endif
-
-
         rttDepthTexture->setImage(rttDepthImage);
+
+
       }
       graphicsCamera = new GraphicsCamera(osgCamera, g_width, g_height);
     }
