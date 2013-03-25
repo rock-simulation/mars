@@ -6,14 +6,15 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-set(ADDITION_LIBS "")
+set(ADDITIONAL_LIBS "" CACHE INTERNAL "")
 
 function(add_plugin_if_availible LIBNAME)
     find_library(${LIBNAME}_VAR "${LIBNAME}" HINTS ${CMAKE_INSTALL_PREFIX}/lib)
     if(${LIBNAME}_VAR)
         MESSAGE("Found ${LIBNAME} Plugin: ${${LIBNAME}_VAR}")
-        set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}
-${CMAKE_INSTALL_PREFIX}/${LIBPATH}/${${LIBNAME}_VAR}")
+        set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}${${LIBNAME}_VAR} " CACHE INTERNAL "")
+else()
+    MESSAGE("Not found: ${LIBNAME}")
     endif()
 endfunction()
 
@@ -114,7 +115,16 @@ ENDIF (WIN32)
 
 
 add_plugin_if_availible("connexion_plugin")
+add_plugin_if_availible("data_broker_gui")
+add_plugin_if_availible("cfg_manager_gui")
+add_plugin_if_availible("lib_manager_gui")
 
+
+
+string(REGEX REPLACE " " " 
+" ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
+
+MESSAGE("ADDITIONAL LIBS: ${ADDITIONAL_LIBS}")
 
 configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt @ONLY)
 configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt @ONLY)
