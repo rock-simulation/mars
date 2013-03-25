@@ -515,16 +515,20 @@ namespace mars {
     }
 
     int Simulator::loadScene(const std::string &filename, const std::string &robotname, bool threadsave, bool blocking) {
+      printf("Load 1\n");
       return loadScene(filename, false, robotname,threadsave,blocking);
     }
 
     int Simulator::loadScene(const std::string &filename,
                              bool wasrunning, const std::string &robotname, bool threadsave, bool blocking) {
+      printf("Load 2\n");
         if(!threadsave){
+            printf("Loading scene direct\n");
             return loadScene_internal(filename,wasrunning, robotname);
         }
 
         //Loading is handles inside the mars thread itsels later 
+        printf("Loading scene: quees\n");
         externalMutex.lock();
         LoadOptions lo;
         lo.filename = filename;
@@ -543,6 +547,7 @@ namespace mars {
                              bool wasrunning, const std::string &robotname) {
 
       string tmpPath = configPath.sValue;
+        printf("Loading scene internal\n");
 
       if(!control->loadCenter->loadScene) {
         LOG_ERROR("Simulator:: no module to load scene found");
