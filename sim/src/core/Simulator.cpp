@@ -296,7 +296,6 @@ namespace mars {
       static int count = 0;
 
       while (!kill_sim) {
-        processRequests();
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
         if (!isSimRunning() && !single_step) {
@@ -603,6 +602,8 @@ namespace mars {
 
     void Simulator::finishedDraw(void) {
       long time;
+
+      processRequests();
 
       if (reloadSim) {
         while (simulationStatus != STOPPED) {
@@ -1046,15 +1047,30 @@ namespace mars {
     }
 
     void Simulator::processRequests(){
+      externalMutex.lock();
+      if(filesToLoad.size() > 0) {
+        bool wasrunning = false;
+        while (simulationStatus != STOPPED) {
 
-        externalMutex.lock();
-        if(control->graphics) control->graphics->lockGraphics();
+          if(simulationStatus == RUNNING) {
+            StopSimulation();
+            wasrunning = true;
+          }
+
+          msleep(10);
+        }
+
         for(unsigned int i=0;i<filesToLoad.size();i++){
-           loadScene_internal(filesToLoad[i].filename,filesToLoad[i].wasRunning,filesToLoad[i].robotname); 
+          loadScene_internal(filesToLoad[i].filename, false,
+                             filesToLoad[i].robotname);
         }
         filesToLoad.clear();
-        if(control->graphics) control->graphics->unlockGraphics();
-        externalMutex.unlock();
+
+        if(wasrunning) {
+          StartSimulation();
+        }
+      }
+      externalMutex.unlock();
     }
 
 
