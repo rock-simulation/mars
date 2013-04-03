@@ -187,7 +187,8 @@ namespace mars {
                                                       NULL,
                                                       data_broker::DATA_PACKAGE_READ_FLAG);
           control->dataBroker->createTimer("mars_sim/simTimer");
-          control->dataBroker->createTrigger("mars_sim/physicsUpdate");
+          control->dataBroker->createTrigger("mars_sim/prePhysicsUpdate");
+          control->dataBroker->createTrigger("mars_sim/postPhysicsUpdate");
         } else {
           fprintf(stderr, "ERROR: could not get DataBroker!\n");
         }
@@ -320,6 +321,9 @@ namespace mars {
         long startTime = getTime();
 
 #endif
+        if(control->dataBroker) {
+          control->dataBroker->trigger("mars_sim/prePhysicsUpdate");
+        }
         physics->stepTheWorld();
 #ifdef DEBUG_TIME
         LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
@@ -338,7 +342,6 @@ namespace mars {
           control->dataBroker->pushData(dbSimTimeId,
                                         dbSimTimePackage);
           control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
-          control->dataBroker->trigger("mars_sim/physicsUpdate");
         }
 
         if(show_time) {
@@ -389,6 +392,9 @@ namespace mars {
               this->allowDraw();
             calc_time = 0;
           }
+        }
+        if(control->dataBroker) {
+          control->dataBroker->trigger("mars_sim/postPhysicsUpdate");
         }
         physicsThreadUnlock();
         single_step = 0;
