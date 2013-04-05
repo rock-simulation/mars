@@ -3,8 +3,8 @@
        Plugin to load and save MARS scene files.
     </description>
 
-    <depend package="simulation/mars/lib_manager" />
-    <depend package="simulation/mars/utils" />
+    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/interfaces" />
 
     <depend package="external/minizip" />

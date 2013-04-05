@@ -2,7 +2,7 @@
     <description brief="lib_manager_gui">
       GUI for the LibManager
    </description>
-    <depend package="simulation/mars/lib_manager" />
-    <depend package="simulation/mars/main_gui" />
-    <depend package="simulation/mars/cfg_manager" />
+   <depend package="simulation/mars/common/lib_manager" />
+   <depend package="simulation/mars/common/main_gui" />
+   <depend package="simulation/mars/common/cfg_manager" />
 </package>

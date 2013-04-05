@@ -300,7 +300,7 @@ namespace mars {
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
         if (!isSimRunning() && !single_step) {
-          msleep(20);
+          msleep(20); //TODO Remove active waiting and cancel this wait if some event occurs (single step or start_sim)
           continue;
         }
         if (sync_graphics && !sync_count) {
