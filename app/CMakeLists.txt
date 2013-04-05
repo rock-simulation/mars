@@ -114,17 +114,17 @@ ELSE (WIN32)
 ENDIF (WIN32)
 
 
+
 add_plugin_if_availible("connexion_plugin")
 add_plugin_if_availible("data_broker_gui")
 add_plugin_if_availible("cfg_manager_gui")
 add_plugin_if_availible("lib_manager_gui")
 
 
-
+if(ADDITIONAL_LIBS)
 string(REGEX REPLACE " " " 
 " ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
-
-MESSAGE("ADDITIONAL LIBS: ${ADDITIONAL_LIBS}")
+endif()
 
 configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt @ONLY)
 configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt @ONLY)
