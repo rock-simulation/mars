@@ -299,10 +299,16 @@ namespace mars {
       while (!kill_sim) {
         if (simulationStatus == STOPPING)
           simulationStatus = STOPPED;
+        
+        stepping_mutex.lock();
         if (!isSimRunning() && !single_step) {
-          msleep(20); //TODO Remove active waiting and cancel this wait if some event occurs (single step or start_sim)
+          stepping_wc.wait(&stepping_mutex);
+          stepping_mutex.unlock();
+          //msleep(20); //TODO Remove active waiting and cancel this wait if some event occurs (single step or start_sim)
           continue;
         }
+        stepping_mutex.unlock();
+
         if (sync_graphics && !sync_count) {
           msleep(2);
           single_step = 0;
@@ -407,6 +413,7 @@ namespace mars {
 
     bool Simulator::startStopTrigger() {
       //LOG_INFO("Simulator start/stop command.");
+      stepping_mutex.lock();
 
       switch(simulationStatus) {
 
@@ -435,11 +442,14 @@ namespace mars {
         msleep(10);
 
       //fprintf(stderr, " [OK]\n");
+      stepping_wc.wakeAll();
+      stepping_mutex.unlock();
 
       if(simulationStatus == STOPPED)
         return false;
       else
         return true;
+    
     }
 
     //consider the case where the time step is smaller than 1 ms
@@ -729,6 +739,10 @@ namespace mars {
       if(control->graphics)
         this->allowDraw();
       //was_running = 0;
+          
+    stepping_mutex.lock();
+    stepping_wc.wakeAll();
+    stepping_mutex.unlock();
     }
 
 
@@ -848,7 +862,10 @@ namespace mars {
     }
 
     void Simulator::exitMars(void) {
+      stepping_mutex.lock();
       kill_sim = 1;
+      stepping_wc.wakeAll();
+      stepping_mutex.unlock();
       if(isCurrentThread()) {
         return;
       }
@@ -883,7 +900,10 @@ namespace mars {
 
 
     void Simulator::singleStep(void) {
+      stepping_mutex.lock();
       single_step = 1;
+      stepping_wc.wakeAll();
+      stepping_mutex.unlock();
     }
 
     void Simulator::switchPluginUpdateMode(int mode, PluginInterface *pl) {

@@ -37,6 +37,7 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/utils/Thread.h>
 #include <mars/utils/Mutex.h>
+#include <mars/utils/WaitCondition.h>
 #include <mars/utils/ReadWriteLock.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/PhysicsInterface.h>
@@ -87,8 +88,18 @@ namespace mars {
                                const data_broker::DataPackage &package,
                                int callbackParam);
 
-      virtual void StartSimulation() {simulationStatus = RUNNING;}
-      virtual void StopSimulation() {simulationStatus = STOPPING;}
+      virtual void StartSimulation() {
+        stepping_mutex.lock();
+        simulationStatus = RUNNING;
+        stepping_wc.wakeAll();
+        stepping_mutex.unlock();
+      }
+      virtual void StopSimulation() {
+        stepping_mutex.lock();
+        simulationStatus = STOPPING;
+        stepping_wc.wakeAll();
+        stepping_mutex.unlock();
+      }
 
       virtual bool getAllowDraw(void) {return allow_draw;}
       virtual bool getSyncGraphics(void) {return sync_graphics;}
@@ -208,6 +219,17 @@ namespace mars {
       utils::Mutex coreMutex;
       utils::Mutex physicsMutex;
       utils::Mutex physicsCountMutex;
+      
+      /**
+       * This mutex is used to to prevent active waiting for an single step or start event
+       */
+      utils::Mutex stepping_mutex;
+      /**
+       * This Wait Conition is used to to prevent active waiting for an single step or start event
+       */
+      utils::WaitCondition stepping_wc;
+      
+      
       int physics_mutex_count;
       interfaces::PhysicsInterface *physics;
       double calc_ms;
