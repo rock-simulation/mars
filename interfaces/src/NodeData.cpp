@@ -194,7 +194,7 @@ namespace mars {
       // handle terrain info
       if((it = config->find("t_srcname")) != config->end()) {
         terrain = new(terrainStruct);
-        terrain->srcname = it->second[0].getString();
+        terrain->srcname = trim(it->second[0].getString());
 
         GET_VALUE("t_width", terrain->targetWidth, Double);
         GET_VALUE("t_height", terrain->targetHeight, Double);
