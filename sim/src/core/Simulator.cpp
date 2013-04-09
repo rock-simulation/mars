@@ -81,7 +81,6 @@ namespace mars {
       // we don't want the physical calculation running from the beginning
       simulationStatus = STOPPED;
       was_running = false;
-      single_step = 0;
       // control a clean exit from the thread
       kill_sim = 0;
       // set the calculation step size in ms
@@ -297,23 +296,29 @@ namespace mars {
       static int count = 0;
 
       while (!kill_sim) {
-        if (simulationStatus == STOPPING)
+        stepping_mutex.lock();
+        if(simulationStatus == STOPPING)
           simulationStatus = STOPPED;
         
-        stepping_mutex.lock();
-        if (!isSimRunning() && !single_step) {
+        if(!isSimRunning()) {
           stepping_wc.wait(&stepping_mutex);
-          stepping_mutex.unlock();
-          //msleep(20); //TODO Remove active waiting and cancel this wait if some event occurs (single step or start_sim)
-          continue;
+          if(kill_sim){
+            stepping_mutex.unlock();
+            break;
+          }
+        }
+
+        if (sync_graphics && !sync_count) {
+            msleep(2);
+            stepping_mutex.unlock();
+            continue;
+        }
+          
+        if(simulationStatus == STEPPING){
+            simulationStatus = STOPPING;
         }
         stepping_mutex.unlock();
 
-        if (sync_graphics && !sync_count) {
-          msleep(2);
-          single_step = 0;
-          continue;
-        }
         if(my_real_time) {
           myRealTime();
         } else if(physics_mutex_count > 0) {
@@ -403,7 +408,6 @@ namespace mars {
           control->dataBroker->trigger("mars_sim/postPhysicsUpdate");
         }
         physicsThreadUnlock();
-        single_step = 0;
       }
       simulationStatus = STOPPED;
       // here everthing of the physical simulation can be closed
@@ -432,18 +436,20 @@ namespace mars {
         //fprintf(stderr, "Simulator has been started\t");
         //fflush(stderr);
         break;
+      case STEPPING:
+         simulationStatus = RUNNING;
       default: // UNKNOWN
         //fprintf(stderr, "Simulator has unknown status\n");
         throw std::exception();
       }
 
+      stepping_wc.wakeAll();
+      stepping_mutex.unlock();
       // Waiting for transition, i.e. main loop to set STOPPED
       while(simulationStatus == STOPPING)
         msleep(10);
 
       //fprintf(stderr, " [OK]\n");
-      stepping_wc.wakeAll();
-      stepping_mutex.unlock();
 
       if(simulationStatus == STOPPED)
         return false;
@@ -514,7 +520,7 @@ namespace mars {
 
 
     bool Simulator::isSimRunning() const {
-      return (simulationStatus != STOPPED || single_step);
+      return (simulationStatus != STOPPED);
     }
 
     bool Simulator::sceneChanged() const {
@@ -726,23 +732,22 @@ namespace mars {
 
     void Simulator::resetSim(void) {
       reloadSim = true;
-      if(isSimRunning() && !single_step)
+      stepping_mutex.lock();
+      if(isSimRunning())
         was_running = true;
       else
         was_running = false;
 
-      if(was_running || single_step) {
+      if(was_running) {
         simulationStatus = STOPPING;
       } else {
         simulationStatus = STOPPED;
       }
       if(control->graphics)
         this->allowDraw();
-      //was_running = 0;
           
-    stepping_mutex.lock();
-    stepping_wc.wakeAll();
-    stepping_mutex.unlock();
+      stepping_wc.wakeAll();
+      stepping_mutex.unlock();
     }
 
 
@@ -901,7 +906,7 @@ namespace mars {
 
     void Simulator::singleStep(void) {
       stepping_mutex.lock();
-      single_step = 1;
+      simulationStatus = STEPPING;
       stepping_wc.wakeAll();
       stepping_mutex.unlock();
     }

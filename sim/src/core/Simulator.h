@@ -70,7 +70,7 @@ namespace mars {
 
     public:
 
-      enum Status { UNKNOWN = -1, STOPPED = 0, RUNNING = 1, STOPPING = 2 };
+      enum Status { UNKNOWN = -1, STOPPED = 0, RUNNING = 1, STOPPING = 2, STEPPING=3 };
 
       Simulator(lib_manager::LibManager *theManager);
       virtual ~Simulator();
@@ -206,7 +206,7 @@ namespace mars {
       bool b_SceneChanged;
       bool reloadSim;
       short running;
-      char single_step, was_running;
+      char was_running;
       bool kill_sim;
       bool show_time;
       interfaces::sReal sync_time;
