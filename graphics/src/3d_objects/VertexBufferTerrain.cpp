@@ -57,8 +57,8 @@ namespace mars {
 
       mrhmr = new MultiResHeightMapRenderer(ts->width, ts->height,
                                             ts->targetWidth, ts->targetHeight,
-                                            1.0, 1.0, 1.0, ts->texScale,
-                                            ts->texScale);
+                                            1.0, 1.0, 1.0, ts->texScaleX,
+                                            ts->texScaleY);
       double maxHeight = 0.0;
       double offset;
 
@@ -111,6 +111,17 @@ namespace mars {
 
     osg::BoundingBox VertexBufferTerrain::computeBound() const {
       return osg::BoundingBox(0.0, 0.0, 0.0, width, height, scale);
+    }
+
+    void VertexBufferTerrain::setSelected(bool val) {
+      if(val) {
+        mrhmr->setDrawSolid(false);
+        mrhmr->setDrawWireframe(true);
+      }
+      else {
+        mrhmr->setDrawSolid(true);
+        mrhmr->setDrawWireframe(false);
+      }
     }
 
   } // end of namespace graphics

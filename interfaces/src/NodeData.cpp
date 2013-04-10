@@ -199,7 +199,13 @@ namespace mars {
         GET_VALUE("t_width", terrain->targetWidth, Double);
         GET_VALUE("t_height", terrain->targetHeight, Double);
         GET_VALUE("t_scale", terrain->scale, Double);
-        GET_VALUE("t_tex_scale", terrain->texScale, Double);
+        double texScale = 1.0;
+        GET_VALUE("t_tex_scale", texScale, Double);
+        terrain->texScaleX = texScale;
+        terrain->texScaleY = (texScale*(terrain->targetWidth /
+                                        terrain->targetHeight));
+        GET_VALUE("t_tex_scale_x", terrain->texScaleX, Double);
+        GET_VALUE("t_tex_scale_y", terrain->texScaleY, Double);
       }
 
       GET_OBJECT("visualposition", visual_offset_pos, vector);
@@ -305,7 +311,8 @@ namespace mars {
         (*config)["t_width"][0] = ConfigItem(terrain->targetWidth);
         (*config)["t_height"][0] = ConfigItem(terrain->targetHeight);
         (*config)["t_scale"][0] = ConfigItem(terrain->scale);
-        (*config)["t_tex_scale"][0] = ConfigItem(terrain->texScale);
+        (*config)["t_tex_scale_x"][0] = ConfigItem(terrain->texScaleX);
+        (*config)["t_tex_scale_y"][0] = ConfigItem(terrain->texScaleY);
       }
 
       SET_OBJECT("visualposition", visual_offset_pos, vector);

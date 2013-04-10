@@ -46,7 +46,8 @@ namespace mars {
       : DrawObject(), info(*ts) {
       info.name = ts->name;
       info.srcname = ts->srcname;
-      info.texScale = ts->texScale;
+      info.texScaleX = ts->texScaleX;
+      info.texScaleY = ts->texScaleY;
       
 #ifdef USE_VERTEX_BUFFER
       vbt = new VertexBufferTerrain(ts);
@@ -92,8 +93,8 @@ namespace mars {
       y_step2 = pow(y_step, 2);
       num_y =  (int)(1.0/y_step);
       num_x =  (int)(1.0/y_step);
-      tex_scale_x = info.texScale;
-      tex_scale_y = info.texScale;
+      tex_scale_x = info.texScaleX;
+      tex_scale_y = info.texScaleY;
 
       geom = new osg::Geometry();
       geom->setDataVariance(osg::Object::DYNAMIC);
@@ -169,7 +170,7 @@ namespace mars {
       tex_data_y[info.height][info.width] = tex_data_y[info.height-1][info.width]+y_step;
       height_data[info.height][info.width] = height_data[info.height-1][info.width-1] - 0.3;
 
-      if(info.texScale == 0)
+      if(info.texScaleX == 0)
         {
           // override all the calculations in the top and scale the texture to
           // match the terrain
@@ -1284,6 +1285,13 @@ namespace mars {
         geometry3->dirtyBound();
       */
     }
+
+#ifdef USE_VERTEX_BUFFER
+    void TerrainDrawObject::setSelected(bool val) {
+      DrawObject::setSelected(val);
+      vbt->setSelected(val);     
+    }
+#endif
 
   } // end of namespace graphics
 } // end of namespace mars

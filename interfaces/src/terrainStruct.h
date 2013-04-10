@@ -37,7 +37,8 @@ namespace mars {
         : width(0), height(0), 
           targetWidth(0), targetHeight(0), 
           scale(1.0), 
-          texScale(0.1),
+          texScaleX(0.1),
+          texScaleY(0.1),
           pixelData(NULL),
           mesh(0) {}
 
@@ -49,7 +50,7 @@ namespace mars {
       double targetWidth;
       double targetHeight;
       double scale;
-      double texScale; // texture scaling - a value of 0 will fit the complete terrain
+      double texScaleX, texScaleY; // texture scaling - a value of 0 will fit the complete terrain
       double *pixelData;
       int mesh;
 

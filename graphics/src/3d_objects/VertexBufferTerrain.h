@@ -64,6 +64,7 @@ namespace mars {
       virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
       void collideSphere(double xPos, double yPos, double zPos, double radius);
       virtual osg::BoundingBox computeBound() const;
+      void setSelected(bool val);
 
     private:
       MultiResHeightMapRenderer *mrhmr;

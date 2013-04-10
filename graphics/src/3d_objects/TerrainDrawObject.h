@@ -88,6 +88,10 @@ namespace mars {
                                  mars::interfaces::sReal radius);
       static int countSubTiles;
 
+#ifdef USE_VERTEX_BUFFER
+      virtual void setSelected(bool val);
+#endif
+
     private:
 
 #ifdef USE_VERTEX_BUFFER

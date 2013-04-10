@@ -339,18 +339,21 @@ namespace mars {
       if(img) {
         terrain->width = img->width;
         terrain->height = img->height;
+        fprintf(stderr, "w h = %d %d\n", img->width, img->height);
         terrain->pixelData = (double*)calloc((terrain->width*
                                               terrain->height),
                                              sizeof(double));
 
 
-        CvScalar s;
+       CvScalar s;
         int count = 0;
         double imageMaxValue = pow(2., img->depth);
-        for(int x=0; x<terrain->width; x++) {
-          for(int y=terrain->height-1; y>=0; y--) {
+        //for(int y=0; y<terrain->height; y++) {
+        //for(int x=terrain->width-1; x>=0; x--) {
+        for(int y=terrain->height-1; y>=0; y--) {
+          for(int x=0; x<terrain->width; x++) {
 
-            s=cvGet2D(img,x,y);
+            s=cvGet2D(img,y,x);
             terrain->pixelData[count++] = ((double)s.val[0])/imageMaxValue;
             if(y==0 || y == terrain->height-1 ||
                x==0 || x == terrain->width-1)

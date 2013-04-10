@@ -22,35 +22,15 @@
 
 #include <signal.h>
 //#include "HandleFileNames.h"
-#include <QApplication>
 #include <QPlastiqueStyle>
 
 
 #include <stdexcept>
-#include <iostream>
 
 
 namespace mars {
 
   namespace app {
-
-    /**
-     * This function provides a clean exit of the simulation
-     * in case of a kill-signal.
-     */
-
-    class MyApp : public QApplication {
-    public:
-      MyApp(int &argc, char **argv) : QApplication(argc, argv) {}
-      virtual bool notify( QObject *receiver, QEvent *event ) {
-        try {
-          return QApplication::notify(receiver, event);
-        } catch (const std::exception &e) {
-          std::cerr << e.what() << std::endl;
-          throw(e);
-        }
-      }
-    };
 
   } // end of namespace app
 } // end of namespace mars

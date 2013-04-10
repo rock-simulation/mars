@@ -27,10 +27,13 @@
 #ifndef MARS_H
 #define MARS_H
 
+
 #ifdef _PRINT_HEADER_
   #warning "MARS.h"
 #endif
 
+#include <QApplication>
+#include <iostream>
 #include <string>
 
 namespace mars {
@@ -75,6 +78,25 @@ namespace mars {
       interfaces::MarsGuiInterface *marsGui;
 
 
+    };
+
+
+    /**
+     * This function provides a clean exit of the simulation
+     * in case of a kill-signal.
+     */
+
+    class MyApp : public QApplication {
+    public:
+      MyApp(int &argc, char **argv) : QApplication(argc, argv) {}
+      virtual bool notify( QObject *receiver, QEvent *event ) {
+        try {
+          return QApplication::notify(receiver, event);
+        } catch (const std::exception &e) {
+          std::cerr << e.what() << std::endl;
+          throw(e);
+        }
+      }
     };
 
   } // end of namespace app

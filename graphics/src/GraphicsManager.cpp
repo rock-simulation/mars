@@ -271,10 +271,10 @@ namespace mars {
         shadowedScene->setShadowTechnique(shadowMap.get());
 
         shadowMap->setTextureSize(osg::Vec2s(4096,4096));
-        shadowMap->setTextureUnit(1);
+        shadowMap->setTextureUnit(2);
         shadowMap->clearShaderList();
         //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
-        shadowMap->setPolygonOffset(osg::Vec2(-0.01,-0.01));
+        shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
 #endif
       }
 

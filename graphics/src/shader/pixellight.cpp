@@ -69,23 +69,23 @@ namespace mars {
         stringstream lightSource;
         lightSource << "gl_LightSource[" << (*it)->index << "]";
 
-        s << "    if(" << lightSource.str() << ".position.w < 0.001 ) {" << endl;
-        s << "        // directional light" << endl;
-        s << "        lightVec[" << lightIndex << "] = " << lightSource.str() << ".position.xyz;" << endl;
-        s << "    } else {" << endl;
-        s << "        // point/spot light" << endl;
-        s << "        lightVec[" << lightIndex << "] = vec3(" << lightSource.str() << ".position.xyz - v.xyz);" << endl;
-        s << "    }" << endl;
+        //s << "    if(" << lightSource.str() << ".position.w < 0.001 ) {" << endl;
+        //s << "        // directional light" << endl;
+        //s << "        lightVec[" << lightIndex << "] = " << lightSource.str() << ".position.xyz;" << endl;
+        //s << "    } else {" << endl;
+        //s << "        // point/spot light" << endl;
+        s << "      lightVec[" << lightIndex << "] = vec3(" << lightSource.str() << ".position.xyz - v.xyz);" << endl;
+        //s << "    }" << endl;
         s << "    dist = length(lightVec[" << lightIndex << "]);" << endl;
         s << "    attenFacs[" << lightIndex << "] = 1.0/(gl_LightSource[" << lightIndex << "].constantAttenuation +" << endl;
         s << "                 gl_LightSource[" << lightIndex << "].linearAttenuation * dist +" << endl;
         s << "                 gl_LightSource[" << lightIndex << "].quadraticAttenuation * dist * dist);" << endl;
 #if USE_LSPSM_SHADOW or USE_SM_SHADOW
         s << "    // generate coords for shadow mapping" << endl;
-        s << "    gl_TexCoord[1].s = dot( eyeVec, gl_EyePlaneS[1] );" << endl;
-        s << "    gl_TexCoord[1].t = dot( eyeVec, gl_EyePlaneT[1] );" << endl;
-        s << "    gl_TexCoord[1].p = dot( eyeVec, gl_EyePlaneR[1] );" << endl;
-        s << "    gl_TexCoord[1].q = dot( eyeVec, gl_EyePlaneQ[1] );" << endl;
+        s << "    gl_TexCoord[2].s = dot( eyeVec, gl_EyePlaneS[2] );" << endl;
+        s << "    gl_TexCoord[2].t = dot( eyeVec, gl_EyePlaneT[2] );" << endl;
+        s << "    gl_TexCoord[2].p = dot( eyeVec, gl_EyePlaneR[2] );" << endl;
+        s << "    gl_TexCoord[2].q = dot( eyeVec, gl_EyePlaneQ[2] );" << endl;
 #endif
         ++lightIndex;
       }
@@ -244,7 +244,7 @@ namespace mars {
 #if USE_LSPSM_SHADOW
         s << "    shadow = shadow2DProj( shadowTexture, gl_TexCoord[6] ).r;" << endl;
 #elif USE_SM_SHADOW
-        s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[1] ).r * osgShadow_ambientBias.y);" << endl;
+        s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * osgShadow_ambientBias.y);" << endl;
 #elif USE_PSSM_SHADOW
         s << "    shadow = pssmAmount();" << endl;
 #else
@@ -252,35 +252,28 @@ namespace mars {
 #endif
         // real light still emits some diffuse light in shadowed region
         s << "    diffuseShadow = 0.1 + 0.9 * shadow;" << endl;
+        s << "    float attenuation = attenFacs[" << lightIndex << "];" << endl;
 
         s << "    // add diffuse and specular light" << endl;
-        s << "    //if( gl_LightSource[" << (*it)->index << "].position.w < 0.001 ) { // directional" << endl;
-        s << "        diffuse  += diffuseShadow * gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL;" << endl;
-        s << "        specular += shadow * gl_FrontLightProduct[" << (*it)->index <<
-          "].specular * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
-        s << "    //} else if( gl_LightSource[" << (*it)->index << "].spotCutoff > 179.0 ) { // point " << endl;
-        s << "    //    float dist = length(lightVec[" << lightIndex << "]);" << endl;
-        s << "    //    float attenuation = 1.0/(";
-        s << "    //                " << lightSource.str() << ".constantAttenuation +" << endl;
-        s << "    //                " << lightSource.str() << ".linearAttenuation * dist +" << endl;
-        s << "    //                " << lightSource.str() << ".quadraticAttenuation * dist * dist );" << endl;
-        s << "    //    diffuse  += diffuseShadow * attenuation * (gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL);" << endl;
-        s << "    //    if(gl_FrontMaterial.shininess > 0.0)" << endl;
-        s << "    //        specular += shadow * attenuation * gl_FrontLightProduct[" << (*it)->index << "].specular" << endl;
-        s << "    //            * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
-        s << "    //} else { // spot" << endl;
-        s << "    //    float spotEffect = dot( normalize( gl_LightSource[" << (*it)->index <<
-          "].spotDirection ), -normalize( lightVec[" << lightIndex << "]  ) );" << endl;
-        s << "    //    if (spotEffect > gl_LightSource[" << (*it)->index << "].spotCosCutoff) {" << endl;
-        s << "    //        float dist = length(lightVec[" << lightIndex << "]);" << endl;
-        s << "    //        float attenuation = spotEffect / (" << endl;
-        s << "    //            " << lightSource.str() << ".constantAttenuation +" << endl;
-        s << "    //            " << lightSource.str() << ".linearAttenuation * dist +" << endl;
-        s << "    //            " << lightSource.str() << ".quadraticAttenuation * dist * dist);" << endl;
-        s << "    //        diffuse  += diffuseShadow * attenuation * (gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL);" << endl;
-        s << "    //        specular += shadow * attenuation * gl_FrontLightProduct[" << (*it)->index << "].specular * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
-        s << "    //    }" << endl;
-        s << "    //}" << endl;
+        //s << "    if( gl_LightSource[" << (*it)->index << "].position.w < 0.001 ) { // directional" << endl;
+        //s << "        diffuse  += diffuseShadow * gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL;" << endl;
+        //s << "        specular += shadow * gl_FrontLightProduct[" << (*it)->index <<
+        //  "].specular * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+        //s << "    } else if( gl_LightSource[" << (*it)->index << "].spotCutoff > 179.0 ) { // point " << endl;
+        //s << "        float dist = length(lightVec[" << lightIndex << "]);" << endl;
+        s << "        diffuse  += diffuseShadow * attenuation * (gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL);" << endl;
+        //s << "        if(gl_FrontMaterial.shininess > 0.0)" << endl;
+        s << "            specular += shadow * attenuation * gl_FrontLightProduct[" << (*it)->index << "].specular" << endl;
+        s << "                * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+        //s << "    } else { // spot" << endl;
+        //s << "        float spotEffect = dot( normalize( gl_LightSource[" << (*it)->index <<
+        //  "].spotDirection ), -normalize( lightVec[" << lightIndex << "]  ) );" << endl;
+        //s << "        if (spotEffect > gl_LightSource[" << (*it)->index << "].spotCosCutoff) {" << endl;
+        //s << "            float dist = length(lightVec[" << lightIndex << "]);" << endl;
+        //s << "            diffuse  += diffuseShadow * attenuation * (gl_FrontLightProduct[" << (*it)->index << "].diffuse * nDotL);" << endl;
+        //s << "            specular += shadow * attenuation * gl_FrontLightProduct[" << (*it)->index << "].specular * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+        //s << "        }" << endl;
+        //s << "    }" << endl;
 
         ++lightIndex;
       }
