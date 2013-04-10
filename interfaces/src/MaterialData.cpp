@@ -76,9 +76,9 @@ namespace mars {
       if((it = config->find("shininess")) != config->end())
         shininess = it->second[0].getDouble();
       if((it = config->find("texturename")) != config->end())
-        texturename = it->second[0].getString();
+        texturename = trim(it->second[0].getString());
       if((it = config->find("bumpmap")) != config->end())
-        bumpmap = it->second[0].getString();
+        bumpmap = trim(it->second[0].getString());
       if((it = config->find("tex_scale")) != config->end())
         tex_scale = it->second[0].getDouble();
       if((it = config->find("reflect")) != config->end())
