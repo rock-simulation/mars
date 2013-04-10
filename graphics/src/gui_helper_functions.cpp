@@ -391,8 +391,8 @@ namespace mars {
 	//float g = 0, b = 0;
         int count = 0;
         osg::Vec4 pixel;
-        for (int y = 1; y <= terrain->height; y++){
-          for (int x = 1; x <= terrain->width; x++){
+        for (int y = terrain->height; y >= 1; --y){
+          for (int x = terrain->width; x >= 1; --x){
             pixel = image->getColor(osg::Vec2(x, y));
             r = pixel[0];
             //g = pixel[1];
