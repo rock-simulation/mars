@@ -135,4 +135,5 @@ configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/GraphicsTimer.h DESTINATION include/mars/app/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/MARS.h DESTINATION include/mars/app/)
+install(FILES ${CMAKE_SOURCE_DIR}/src/MyApp.h DESTINATION include/mars/app/)
 

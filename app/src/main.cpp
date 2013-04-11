@@ -19,6 +19,7 @@
  */
 
 #include "MARS.h"
+#include "MyApp.h"
 
 #include <signal.h>
 //#include "HandleFileNames.h"
