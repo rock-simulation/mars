@@ -27,6 +27,8 @@
 #ifndef MY_APP_H
 #define MY_APP_H
 
+#include <QApplication>
+
 namespace mars {
 
   namespace app {

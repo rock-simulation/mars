@@ -32,7 +32,6 @@
   #warning "MARS.h"
 #endif
 
-#include <QApplication>
 #include <iostream>
 #include <string>
 
