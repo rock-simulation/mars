@@ -213,7 +213,7 @@ namespace mars {
       s << endl;
       s << "    vec3 eye = normalize( - eyeVec.xyz );" << endl;
       s << "    float pixelDistance = length( eyeVec );" << endl;
-      s << "    float nDotL, rDotE, shadow, diffuseShadow;" << endl;
+      s << "    float nDotL, rDotE, shadow, diffuseShadow, attenuation;" << endl;
       s << endl;
 
       for(it = lightList.begin(); it != lightList.end(); ++it) {
@@ -252,7 +252,7 @@ namespace mars {
 #endif
         // real light still emits some diffuse light in shadowed region
         s << "    diffuseShadow = 0.1 + 0.9 * shadow;" << endl;
-        s << "    float attenuation = attenFacs[" << lightIndex << "];" << endl;
+        s << "    attenuation = attenFacs[" << lightIndex << "];" << endl;
 
         s << "    // add diffuse and specular light" << endl;
         //s << "    if( gl_LightSource[" << (*it)->index << "].position.w < 0.001 ) { // directional" << endl;
