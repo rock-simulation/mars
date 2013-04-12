@@ -56,15 +56,13 @@ namespace mars {
 
         lib_manager::LibInterface *lib;
         lib = libManager->getLibrary("mars_sim");
-
+        pluginStruct newplugin;
         if(lib) {
           if( (mars = dynamic_cast<SimulatorInterface*>(lib)) ) {
             control = mars->getControlCenter();
-            pluginStruct newplugin;
             newplugin.name = libName;
             newplugin.p_interface = dynamic_cast<PluginInterface*>(this);
             newplugin.p_destroy = 0;
-            mars->addPlugin(newplugin);
       
             if(control->cfg) {
               cfg_manager::cfgPropertyStruct cfgPath;
@@ -86,6 +84,11 @@ namespace mars {
 #ifdef PLUGIN_WITH_MARS_GUI
         gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
 #endif
+        // this part should be the last line of the contructor
+        // we can get a timing problem if mars want to use the
+        // plugin before the contructor is finished -> so the last part here
+        // is to register the plugin to mars
+        if(mars) mars->addPlugin(newplugin);
       }
 
 #ifdef PLUGIN_WITH_MARS_GUI

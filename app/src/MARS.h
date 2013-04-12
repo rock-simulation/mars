@@ -58,6 +58,7 @@ namespace mars {
     class MARS {
     public:
       MARS();
+      MARS(lib_manager::LibManager *theManager);
       ~MARS();
 
       void readArguments(int argc, char **argv);

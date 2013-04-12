@@ -651,7 +651,9 @@ namespace mars {
         for (unsigned int i=0; i<allPlugins.size(); i++)
           allPlugins[i].p_interface->reset();
         control->controllers->setLoadingAllowed(true);
-        if (was_running) StartSimulation();
+        if (was_running) {
+          StartSimulation();
+        }
       }
       allow_draw = 0;
       sync_count = 1;

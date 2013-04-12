@@ -90,6 +90,17 @@ namespace mars {
 #endif //WIN32
     }
 
+    MARS::MARS(lib_manager::LibManager *theManager) : configDir("."),
+                   libManager(theManager),
+                   marsGui(NULL) {
+      needQApp = true;
+      graphicsTimer = NULL;
+#ifdef WIN32
+      // request a scheduler of 1ms
+      timeBeginPeriod(1);
+#endif //WIN32
+    }
+
     MARS::~MARS() {
       //! close simulation
       exit_main(0);
@@ -182,8 +193,11 @@ namespace mars {
       
       control->sim->runSimulation();
 
-      graphicsTimer = new mars::app::GraphicsTimer(marsGraphics, control->sim);
-      graphicsTimer->run();
+      if(needQApp) {
+        graphicsTimer = new mars::app::GraphicsTimer(marsGraphics,
+                                                     control->sim);
+        graphicsTimer->run();
+      }
     }
 
 

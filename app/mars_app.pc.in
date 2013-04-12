@@ -5,7 +5,6 @@ includedir=${prefix}/include/
 
 Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator Application
-Requires: QtCore
 Requires.private: lib_manager main_gui mars_interfaces
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -lmars
