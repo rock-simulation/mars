@@ -3,9 +3,9 @@
       ConnexionPlugin for MARS
     </description>
 
-    <depend package="simulation/mars/lib_manager" />
-    <depend package="simulation/mars/data_broker" />
-    <depend package="simulation/mars/main_gui" />
+    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/interfaces" />
 
     <rosdep name="qt4" />
