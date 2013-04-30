@@ -93,7 +93,6 @@ namespace mars {
       sync_count = 0;
       load_option = OPEN_INITIAL;
       reloadSim = false;
-      arg_scene_name = "";
       arg_actual = OPEN_INITIAL;
       arg_run    = 0;
       arg_grid   = 0;
@@ -188,6 +187,7 @@ namespace mars {
           control->dataBroker->createTimer("mars_sim/simTimer");
           control->dataBroker->createTrigger("mars_sim/prePhysicsUpdate");
           control->dataBroker->createTrigger("mars_sim/postPhysicsUpdate");
+          control->dataBroker->createTrigger("mars_sim/finishedDrawTrigger");
         } else {
           fprintf(stderr, "ERROR: could not get DataBroker!\n");
         }
@@ -259,15 +259,21 @@ namespace mars {
       physics->step_size = calc_ms/1000.;
       physics->fast_step = false;
 
+      gravity.x() = cfgGX.dValue;
+      gravity.y() = cfgGY.dValue;
+      gravity.z() = cfgGZ.dValue;
+      physics->world_gravity = gravity;
+
 #ifndef __linux__
       this->setStackSize(16777216);
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
 
-      if (arg_scene_name != "") {
-        LOG_INFO("Simulator: scene to load: %s", arg_scene_name.c_str());
-        loadScene(arg_scene_name);
-        arg_scene_name = "";
+      while(arg_v_scene_name.size() > 0) {
+        LOG_INFO("Simulator: scene to load: %s",
+                 arg_v_scene_name.back().c_str());
+        loadScene(arg_v_scene_name.back());
+        arg_v_scene_name.pop_back();
       }
       if (arg_run) {
         simulationStatus = RUNNING;
@@ -710,6 +716,7 @@ namespace mars {
       pluginLocker.unlock();
       // process ice events
       //while(comServer.eventList->processEvent(control)) {}
+      control->dataBroker->trigger("mars_sim/finishedDrawTrigger");
     }
 
     void Simulator::newWorld(bool clear_all) {
@@ -793,8 +800,19 @@ namespace mars {
           break;
         switch (c) {
         case 's':
-          if(pathExists(optarg)) arg_scene_name = optarg;
-          else printf("The given scene file does not exists: %s\n", optarg);
+          {
+            std::vector<std::string> tmp_v_s;
+            tmp_v_s = explodeString(':', optarg);
+            for(unsigned int i=0; i<tmp_v_s.size(); ++i) {
+              if(pathExists(tmp_v_s[i])) {
+                arg_v_scene_name.push_back(tmp_v_s[i]);
+              }
+              else {
+                printf("The given scene file does not exists: %s\n",
+                       tmp_v_s[i].c_str());
+              }
+            }
+          }
           break;
         case 'a':
           arg_actual = OPEN_ACTUAL;

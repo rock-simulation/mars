@@ -93,6 +93,7 @@ def exportBobj(outname, obj):
         #mesh.transform(obj.matrix_world)
 
         write_uv = False
+        faceuv = len(mesh.uv_textures)
         if faceuv:
             uv_layer = mesh.uv_textures.active.data[:]
             write_uv = True
@@ -497,12 +498,13 @@ def main():
     motorValue = []
     for joint in jointList:
         motorOffset = writeJoint(joint)
-        if joint["jointType"] == "hinge":
-            motorValue.append(motorOffset)
-        if joint["jointType"] == "hinge2":
-            motorValue.append(motorOffset)
-        if joint["jointType"] == "slider":
-            motorValue.append(motorOffset)
+        if not "springConst" in joint:
+            if joint["jointType"] == "hinge":
+                motorValue.append(motorOffset)
+            if joint["jointType"] == "hinge2":
+                motorValue.append(motorOffset)
+            if joint["jointType"] == "slider":
+                motorValue.append(motorOffset)
     out.write('  </jointlist>\n')
 
     out.write('  <motorlist>\n')

@@ -243,7 +243,7 @@ namespace mars {
       std::vector<interfaces::pluginStruct> guiPlugins;
 
       std::string scenename;
-      std::string arg_scene_name;
+      std::list<std::string> arg_v_scene_name;
       int arg_actual, arg_no_gui, arg_run, arg_grid, arg_ortho;
       std::string config_dir;
 

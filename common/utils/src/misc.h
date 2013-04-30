@@ -31,6 +31,7 @@
 #endif
 
 #include <string>
+#include <vector>
 
 namespace mars {
   namespace utils {
@@ -155,6 +156,8 @@ namespace mars {
 
     std::string getCurrentWorkingDir();
     unsigned int createDirectory(const std::string &dir);
+
+    std::vector<std::string> explodeString(const char c, const std::string &s);
 
   } // end of namespace utils
 } // namespace mars

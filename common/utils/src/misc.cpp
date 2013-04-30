@@ -152,7 +152,7 @@ namespace mars {
     }
 
     std::string getPathOfFile(const std::string &filename) {
-      std::string path = ".";
+      std::string path = "./";
       size_t pos;
 
       if((pos = filename.rfind('/')) != std::string::npos) {
@@ -183,6 +183,17 @@ namespace mars {
       return 1;
     }
     
+    std::vector<std::string> explodeString(const char c, const std::string &s) {
+      std::vector<std::string> result;
+      std::stringstream  stream(s);
+      std::string entry;
+
+      while(std::getline(stream,entry,c)) {
+        result.push_back(entry);
+      }
+      return result;
+    }
+
   } // end of namespace utils
 
 } // end of namespace mars
