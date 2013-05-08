@@ -83,6 +83,7 @@ namespace mars {
       was_running = false;
       // control a clean exit from the thread
       kill_sim = 0;
+      sim_fault = false;
       // set the calculation step size in ms
       calc_ms      = 10; //defaultCFG->getInt("physics", "calc_ms", 10);
       my_real_time = 0;
@@ -970,6 +971,10 @@ namespace mars {
       }
     }
 
+    bool Simulator::hasSimFault() const{
+        return sim_fault;
+    }
+
     void Simulator::handleError(PhysicsError error) {
       std::vector<pluginStruct>::iterator p_iter;
 
@@ -1001,6 +1006,11 @@ namespace mars {
         resetSim();
       } else if("warn" == onError) {
         // warning already happend in message handler
+      } else if("shutdown" == onError){           
+        //Killing the simulation thread, means the simulation gui still runs but the simulation thread get's stopped
+        //In this state the the sim_fault is set to true which can be checked externally to react to this fault
+        sim_fault = true;
+        kill_sim = true;
       } else {
         LOG_WARN("unsupported config value for \"Simulator/onPhysicsError\": \"%s\"", onError.c_str());
         LOG_WARN("aborting by default...");

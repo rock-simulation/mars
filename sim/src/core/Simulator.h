@@ -142,6 +142,7 @@ namespace mars {
       virtual bool isSimRunning() const;
       virtual bool sceneChanged() const;
       virtual void sceneHasChanged(bool reseted);
+      virtual bool hasSimFault() const;
 
       void addLight(interfaces::LightData light);
       virtual void finishedDraw(void);
@@ -195,6 +196,7 @@ namespace mars {
       void processRequests();
     
       int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
+      bool sim_fault;
       bool exit_sim;
       bool allow_draw;
       bool sync_graphics;

@@ -60,6 +60,15 @@ namespace mars {
 
       /** \todo write docs */
       virtual void exportScene() const = 0;
+      
+      /**
+       * Return true if the physic simulation thread
+       * has been stopped caused by an ODE error
+       * If true you cannot recover (currently) from this point
+       * without restartin the sim.
+       * To extend this, restart the simulatior thread an reset the scene (untested)
+       */
+      virtual bool hasSimFault() const = 0;
   
       //saves the actual scene
       /** \todo write docs */
