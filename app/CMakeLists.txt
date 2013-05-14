@@ -6,18 +6,6 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-set(ADDITIONAL_LIBS "" CACHE INTERNAL "")
-
-function(add_plugin_if_availible LIBNAME)
-    find_library(${LIBNAME}_VAR "${LIBNAME}" HINTS ${CMAKE_INSTALL_PREFIX}/lib)
-    if(${LIBNAME}_VAR)
-        MESSAGE("Found ${LIBNAME} Plugin: ${${LIBNAME}_VAR}")
-        set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}${${LIBNAME}_VAR} " CACHE INTERNAL "")
-else()
-    MESSAGE("Not found: ${LIBNAME}")
-    endif()
-endfunction()
-
 mars_defaults()
 define_module_info()
 
@@ -113,6 +101,17 @@ ELSE (WIN32)
   ENDIF (APPLE)
 ENDIF (WIN32)
 
+set(ADDITIONAL_LIBS "" CACHE INTERNAL "")
+
+function(add_plugin_if_availible LIBNAME)
+  find_library(${LIBNAME}_VAR "${LIBNAME}" HINTS ${CMAKE_INSTALL_PREFIX}/${LIBPATH})
+  if(${LIBNAME}_VAR)
+    MESSAGE("Found ${LIBNAME} Plugin: ${${LIBNAME}_VAR}")
+    set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}${${LIBNAME}_VAR} " CACHE INTERNAL "")
+  else()
+    MESSAGE("Not found: ${LIBNAME}")
+  endif()
+endfunction()
 
 
 add_plugin_if_availible("connexion_plugin")
