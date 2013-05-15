@@ -10,7 +10,7 @@ import xml.dom.minidom
 import bpy
 import mathutils
 
-# allowed node types
+# definition of node types
 nodeTypes = ["undefined",
              "mesh",
              "box",
@@ -21,6 +21,17 @@ nodeTypes = ["undefined",
              "terrain",
              "reference"
             ]
+
+# definition of joint types
+jointTypes = ["undefined",
+              "hinge",
+              "hinge2",
+              "slider",
+              "ball",
+              "universal",
+              "fixed",
+              "istruct-spine"
+             ]
 
 
 # clean up all the "empty" whitespace nodes
@@ -77,7 +88,7 @@ def getGenericConfig(parent):
 
 def checkConfigParameter(config, key):
     if key not in config.keys():
-        print("WARNING! Node config does not contain parameter \'%s\'!" % key)
+        print("WARNING! Config does not contain parameter \'%s\'!" % key)
         return False
     return True
 
@@ -315,7 +326,7 @@ def parseNode(domElement, tmpDir):
     if filename != "PRIMITIVE":
         # import the respective .obj file
         bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
-        
+
         # rename the currently loaded object
         for obj in bpy.data.objects:
             if filename in obj.name:
@@ -369,6 +380,83 @@ def parseNode(domElement, tmpDir):
     return True
 
 
+def parseJoint(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    # handle joint name
+    if not checkConfigParameter(config,"name"):
+        return False
+    name = config["name"]
+
+    # handle joint type
+    if checkConfigParameter(config,"type"):
+        typeName = config["type"].strip()
+        if typeName in jointTypes:
+            type = jointTypes.index(typeName)
+            if type == 0:
+                print("JointData: type given is undefined for joint \'%s\'" % name)
+        else:
+            print("JointData: no type given for joint \'%s\'" % name)
+
+    if checkConfigParameter(config,"index"):
+        index = int(config["index"])
+
+    if checkConfigParameter(config,"nodeindex1"):
+        nodeIndex1 = int(config["nodeindex1"])
+        if not nodeIndex1:
+            print("JointData: no first node attached to joint \'%s\'" % name);
+
+    if checkConfigParameter(config,"nodeindex2"):
+        nodeIndex2 = int(config["nodeindex2"])
+    
+    # handle axis 1
+    if checkConfigParameter(config,"axis1"):
+        axis1 = config["axis1"]
+
+    if checkConfigParameter(config,"lowStopAxis1"):
+        lowStopAxis1 = float(config["lowStopAxis1"])
+
+    if checkConfigParameter(config,"highStopAxis1"):
+        highStopAxis1 = float(config["highStopAxis1"])
+
+    if checkConfigParameter(config,"damping_const_constraint_axis1"):
+        damping_const_constraint_axis1 = float(config["damping_const_constraint_axis1"])
+
+    if checkConfigParameter(config,"spring_const_constraint_axis1"):
+        spring_const_constraint_axis1 = float(config["spring_const_constraint_axis1"])
+
+    if checkConfigParameter(config,"angle1_offset"):
+        angle1_offset = float(config["angle1_offset"])
+
+    # handle axis 2
+    if checkConfigParameter(config,"axis2"):
+        axis2 = config["axis2"]
+
+    if checkConfigParameter(config,"lowStopAxis2"):
+        lowStopAxis2 = float(config["lowStopAxis2"])
+
+    if checkConfigParameter(config,"highStopAxis2"):
+        highStopAxis2 = float(config["highStopAxis2"])
+
+    if checkConfigParameter(config,"damping_const_constraint_axis2"):
+        damping_const_constraint_axis2 = float(config["damping_const_constraint_axis2"])
+
+    if checkConfigParameter(config,"spring_const_constraint_axis2"):
+        spring_const_constraint_axis2 = float(config["spring_const_constraint_axis2"])
+
+    if checkConfigParameter(config,"angle2_offset"):
+        angle2_offset = float(config["angle2_offset"])
+
+    if checkConfigParameter(config,"anchorpos"):
+        anchorPos = int(config["anchorpos"])
+
+    if checkConfigParameter(config,"anchor"):
+        anchor = config["anchor"]
+
+    return True
+
+
 def main(fileDir, filename):
     tmpDir = os.path.join(fileDir, "tmp")
 
@@ -405,6 +493,12 @@ def main(fileDir, filename):
     for node in nodes :
         if not parseNode(node, tmpDir):
             print("Error while parsing node!")
+            sys.exit(1)
+
+    joints = dom.getElementsByTagName("joint")
+    for joint in joints :
+        if not parseJoint(joint):
+            print("Error while parsing Joint!")
             sys.exit(1)
 
     #cleaning up afterwards
