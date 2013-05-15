@@ -1,10 +1,14 @@
 import os
 import sys
+import math
 import shutil
 import zipfile
 import textwrap
 
 import xml.dom.minidom
+
+import bpy
+import mathutils
 
 # allowed node types
 nodeTypes = ["undefined",
@@ -78,7 +82,7 @@ def checkConfigParameter(config, key):
     return True
 
 
-def parseNode(domElement):
+def parseNode(domElement, tmpDir):
     # read the config from the xml file
     config = getGenericConfig(domElement)
 
@@ -306,6 +310,62 @@ def parseNode(domElement):
     #   }
     # }
 
+    ######## LOAD THE NODE IN BLENDER ########
+
+    if filename != "PRIMITIVE":
+        # import the respective .obj file
+        bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
+        
+        # rename the currently loaded object
+        for obj in bpy.data.objects:
+            if filename in obj.name:
+                # set the name of the object
+                obj.name = name
+
+                # set the size of the object
+                print("visualsize = %s" % visual_size)
+                obj.dimensions = mathutils.Vector((float(visual_size['x']),\
+                                                   float(visual_size['z']),\
+                                                   float(visual_size['y'])))
+
+                # set the position of the object
+                print("pos = %s" % pos)
+                position = mathutils.Vector((float(pos["x"]),\
+                                             float(pos["y"]),\
+                                             float(pos["z"])))
+
+                print("rot = %s" % rot)
+                rotation = mathutils.Quaternion((float(rot["w"]),\
+                                                 float(rot["x"]),\
+                                                 float(rot["y"]),\
+                                                 float(rot["z"])))
+
+                print("visual_offset_pos = %s" % visual_offset_pos)
+                visual_position = mathutils.Vector((float(visual_offset_pos["x"]),\
+                                                    float(visual_offset_pos["y"]),\
+                                                    float(visual_offset_pos["z"])))
+
+                obj.location = position + rotation * visual_position
+
+                # set the rotation of the object
+                print("rot = %s" % rot)
+                rotation = mathutils.Quaternion((float(rot["w"]),\
+                                                 float(rot["x"]),\
+                                                 float(rot["y"]),\
+                                                 float(rot["z"])))
+
+                print("visual_offset_rot = %s" % visual_offset_rot)
+                visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),\
+                                                        float(visual_offset_rot["x"]),\
+                                                        float(visual_offset_rot["y"]),\
+                                                        float(visual_offset_rot["z"])))
+
+                # TODO: why do we need this offset rotation?!?
+                rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
+
+                obj.rotation_mode = "QUATERNION"
+                obj.rotation_quaternion = rotation * visual_rotation * rotation_offset
+
     return True
 
 
@@ -343,7 +403,7 @@ def main(fileDir, filename):
     # parsing all nodes
     nodes = dom.getElementsByTagName("node")
     for node in nodes :
-        if not parseNode(node):
+        if not parseNode(node, tmpDir):
             print("Error while parsing node!")
             sys.exit(1)
 
