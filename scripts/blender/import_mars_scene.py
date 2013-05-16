@@ -10,6 +10,8 @@ import xml.dom.minidom
 import bpy
 import mathutils
 
+EPSILON = sys.float_info.epsilon
+
 # definition of node types
 nodeTypes = ["undefined",
              "mesh",
@@ -332,12 +334,15 @@ def parseNode(domElement, tmpDir):
             if filename in obj.name:
                 # set the name of the object
                 obj.name = name
+                
+                # store the index of the node as custom property
+                obj["id"] = index
 
                 # set the size of the object
                 print("visualsize = %s" % visual_size)
-                obj.dimensions = mathutils.Vector((float(visual_size['x']),\
-                                                   float(visual_size['z']),\
-                                                   float(visual_size['y'])))
+                obj.dimensions = mathutils.Vector((float(visual_size["x"]),\
+                                                   float(visual_size["z"]),\
+                                                   float(visual_size["y"])))
 
                 # set the position of the object
                 print("pos = %s" % pos)
@@ -388,6 +393,9 @@ def parseJoint(domElement):
     if not checkConfigParameter(config,"name"):
         return False
     name = config["name"]
+
+    nodeIndex1 = None
+    nodeIndex2 = None
 
     # handle joint type
     if checkConfigParameter(config,"type"):
@@ -454,6 +462,61 @@ def parseJoint(domElement):
     if checkConfigParameter(config,"anchor"):
         anchor = config["anchor"]
 
+
+    ######## LOAD THE JOINT IN BLENDER ########
+
+    # create a new cylinder as representation of the joint        
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=0.25)
+
+    for obj in bpy.data.objects:
+        if obj.name == "Cylinder":
+            # set the name of the object
+            obj.name = name
+
+            axis1 = mathutils.Vector((float(axis1["x"]),\
+                                      float(axis1["z"]),\
+                                      float(axis1["y"])))
+
+            # check whether 'axis1' is valid and the type is not 'fixed'
+            if axis1.length_squared < EPSILON and type != 6:
+                print("ERROR! Cannot create joint \'%s\' without axis1" % name)
+                #TODO: remove created cylinder
+                return False
+
+            node1 = None
+            node2 = None
+
+            for tmp in bpy.data.objects:
+                # check whether it's a node or a joint
+                if "id" in tmp:
+                    # check for thr right "ids"
+                    if tmp["id"] == nodeIndex1:
+                        node1 =tmp
+                    if tmp["id"] == nodeIndex2:
+                        node2 = tmp
+
+            # determine the anchor position of the joint
+            if anchorPos == 1: # "node1"
+                obj.location = node1.location
+            elif anchorPos == 2: # "node2"
+                obj.location = node2.location
+            elif anchorPos == 3: # "center"
+                obj.location = (node1.location + node2.location) / 2.0
+            elif anchorPos == 4: # "custom"
+                obj.location = mathutils.Vector((float(anchor["x"]),\
+                                                 float(anchor["y"]),\
+                                                 float(anchor["z"])))
+            else:
+                print("WARNING! Wrong anchor position for joint \'%s\'" % name)
+
+#            axisInNode1 = mathutils.Vector((float(axis1["x"]),\
+#                                            float(axis1["y"]),\
+#                                            float(axis1["z"])))
+
+#            obj.rotation_mode = "QUATERNION"
+#            obj.rotation_quaternion = axisInNode1 * node1.rotation_quaternion.inverted()
+
+
     return True
 
 
@@ -498,7 +561,7 @@ def main(fileDir, filename):
     joints = dom.getElementsByTagName("joint")
     for joint in joints :
         if not parseJoint(joint):
-            print("Error while parsing Joint!")
+            print("Error while parsing joint!")
             sys.exit(1)
 
     #cleaning up afterwards
