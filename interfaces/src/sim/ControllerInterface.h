@@ -36,6 +36,8 @@
 
 #include "../sim_common.h"
 
+#include <list>
+
 namespace mars {
   namespace interfaces {
 
@@ -50,6 +52,7 @@ namespace mars {
       virtual void update(sReal time_ms, sReal *sensors,
                           sReal *motors, int *flags, char **other) = 0;
       virtual void handleError(void) {}
+      virtual std::list<sReal> getSensorValues(void) = 0;
     };
 
     typedef ControllerInterface* create_controller(void);

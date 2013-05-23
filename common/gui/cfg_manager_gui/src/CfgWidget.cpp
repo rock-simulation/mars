@@ -131,7 +131,7 @@ namespace mars {
       addMutex.unlock();
 
       // check for updates
-      changeMutex.lock();
+      //changeMutex.lock();
       ignore_change = true;
       while(changeList.size() > 0) {
         theWrapper_p = getWrapperById(changeList[0]);
@@ -160,7 +160,7 @@ namespace mars {
         changeList.erase(changeList.begin());
       }
       ignore_change = false;
-      changeMutex.unlock();
+      //changeMutex.unlock();
 
       // and go through the remove list ^^
       removeMutex.lock();

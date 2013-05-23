@@ -392,5 +392,13 @@ namespace mars {
       do_not_load_controller = !allowed;
     }
 
+    std::list<sReal> ControllerManager::getSensorValues(unsigned long id) {
+      MutexLocker locker(&iMutex);
+      map<unsigned long, Controller*>::iterator iter = simController.find(id);
+      if (iter != simController.end())
+        return iter->second->getSensorValues();
+      return std::list<sReal>();
+    }
+
   } // end of namespace sim
 } // end of namespace mars

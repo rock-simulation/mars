@@ -233,6 +233,8 @@ namespace mars {
        */
       virtual void setLoadingAllowed(bool allowed);
   
+      virtual std::list<interfaces::sReal> getSensorValues(unsigned long id);
+
     private:
   
       //! a flag indicating if adding new controllers is allowed

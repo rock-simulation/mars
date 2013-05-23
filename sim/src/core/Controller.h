@@ -73,6 +73,8 @@ namespace mars {
                  interfaces::ControlCenter *control, int portn=1500);
       virtual ~Controller(void);
       virtual void update(interfaces::sReal time_ms);
+      virtual std::list<interfaces::sReal> getSensorValues(void);
+
       void handleError(void);
       void setID(unsigned long id);
       unsigned long getID(void) const;

@@ -803,7 +803,7 @@ namespace mars {
         case 's':
           {
             std::vector<std::string> tmp_v_s;
-            tmp_v_s = explodeString(':', optarg);
+            tmp_v_s = explodeString(';', optarg);
             for(unsigned int i=0; i<tmp_v_s.size(); ++i) {
               if(pathExists(tmp_v_s[i])) {
                 arg_v_scene_name.push_back(tmp_v_s[i]);

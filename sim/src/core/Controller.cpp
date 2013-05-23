@@ -1043,5 +1043,21 @@ namespace mars {
       if(connected) close(conn);
     }
 
+    std::list<sReal> Controller::getSensorValues(void) {
+      std::vector<BaseSensor*>::iterator iter;
+      sReal *sens_val;
+      std::list<sReal> sensorValues;
+
+      for (iter=sensors.begin(); iter!=sensors.end(); ++iter) {
+        int count_val = (*iter)->getSensorData(&sens_val);
+        for(int i=0; i<count_val; i++) {
+          sensorValues.push_back(sens_val[i]);
+        }
+        free(sens_val);
+      }
+      return sensorValues;
+    }
+
+
   } // end of namespace sim
 } // end of namespace mars

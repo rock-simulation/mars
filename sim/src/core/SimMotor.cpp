@@ -40,6 +40,7 @@ namespace mars {
       sMotor.index = sMotor_.index;
       sMotor.type = sMotor_.type;
       sMotor.value = sMotor_.value;
+      sMotor.name = sMotor_.name.c_str();
       myJoint = 0;
       last_error = 0;
       integ_error = 0;
@@ -605,7 +606,7 @@ namespace mars {
     void SimMotor::getDataBrokerNames(std::string *groupName,
                                       std::string *dataName) const {
       char buffer[32];
-      sprintf(buffer, "Motors/motor%05lu", sMotor.index);
+      sprintf(buffer, "Motors/%05lu_%s", sMotor.index, sMotor.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;
     }

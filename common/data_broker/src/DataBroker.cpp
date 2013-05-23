@@ -93,7 +93,7 @@ namespace mars {
       DataBrokerInterface(theManager),
       mars::utils::Thread(),
       next_id(1), thread_running(false), stop_thread(false),
-      realtimeThreadRunning(false) {
+      realtimeThreadRunning(false), startingRealtimeThread(false) {
 
       updatedElementsBackBuffer = new std::set<DataElement*>;
       updatedElementsFrontBuffer = new std::set<DataElement*>;
@@ -131,7 +131,7 @@ namespace mars {
 
       createTimer("_REALTIME_");
 
-      pthread_create(&theThread, NULL, createDataBrokerThread, (void*)this);
+      //pthread_create(&theThread, NULL, createDataBrokerThread, (void*)this);
       //start();
     }
 

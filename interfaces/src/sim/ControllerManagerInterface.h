@@ -40,6 +40,7 @@
 #include "../core_objects_exchange.h"
 
 #include <vector>
+#include <list>
 
 namespace mars {
   namespace interfaces {
@@ -224,6 +225,8 @@ namespace mars {
        * \param allowed Indicates if adding will be allowed or not.
        */
       virtual void setLoadingAllowed(bool allowed) = 0;
+
+      virtual std::list<sReal> getSensorValues(unsigned long id) = 0;
 
     }; // class ControllerManagerInterface
 
