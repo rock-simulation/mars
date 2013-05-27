@@ -64,9 +64,14 @@ namespace mars {
         sensitivity[1] = 2.0;
         sensitivity[2] = 2.0;
 
+        isInit = false;
+        init();
       }
 
       void ConnexionPlugin::init() {
+        if(!control->graphics || isInit) return;
+        isInit = true;
+
         // add options to the menu
         if(gui) {
           std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";

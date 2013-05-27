@@ -86,7 +86,7 @@ namespace mars {
       private:
         std::string name;
         bool resetCam;
-  
+        bool isInit;
         QMutex camMutex;
 
         ConnexionWidget *myWidget;
