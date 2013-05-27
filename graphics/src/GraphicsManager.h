@@ -275,6 +275,8 @@ namespace mars {
 
       virtual mars::interfaces::LoadMeshInterface* getLoadMeshInterface(void);
       virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
+
+      virtual void makeChild(unsigned long parentId, unsigned long childId);
       
     private:
 

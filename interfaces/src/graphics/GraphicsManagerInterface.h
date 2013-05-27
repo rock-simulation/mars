@@ -222,6 +222,7 @@ namespace mars {
       virtual LoadMeshInterface* getLoadMeshInterface(void) = 0;
       virtual LoadHeightmapInterface* getLoadHeightmapInterface(void) = 0;
       
+      virtual void makeChild(unsigned long parentId, unsigned long childId) = 0;
 
     }; // end of class GraphicsManagerInterface
 

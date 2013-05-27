@@ -1701,6 +1701,23 @@ namespace mars {
       return guiHelper;
     }
 
+    void GraphicsManager::makeChild(unsigned long parentId,
+                                    unsigned long childId) {
+      OSGNodeStruct *parent = findDrawObject(parentId);
+      OSGNodeStruct *child = findDrawObject(childId);
+      osg::PositionAttitudeTransform *parentTransform;
+      osg::PositionAttitudeTransform *childTransform;
+
+      if(!parent || !child) return;
+
+      parentTransform = parent->object()->getPosTransform();
+      childTransform = child->object()->getPosTransform();
+
+      parentTransform->addChild(childTransform);
+      scene->removeChild(childTransform);
+      shadowedScene->removeChild(childTransform);
+    }
+
 
   } // end of namespace graphics
 } // end of namespace mars

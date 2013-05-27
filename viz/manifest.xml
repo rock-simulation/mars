@@ -1,0 +1,13 @@
+<package>
+    <description brief="mars_viz">
+       A library that allows to use MARS scenes for a pure visualization.
+    </description>
+
+    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/mars/common/cfg_manager" />
+    <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/graphics" />
+    <depend package="simulation/mars/scene_loader" />
+
+    <rosdep name="qt4" />
+</package>
