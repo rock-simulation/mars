@@ -47,6 +47,20 @@ namespace mars {
        */
       unsigned int load();
 
+      unsigned int prepareLoad();
+      unsigned int parseScene();
+      unsigned int loadScene();
+
+      std::map<unsigned long, interfaces::MaterialData> materials;
+      std::vector<utils::ConfigMap> materialList;
+      std::vector<utils::ConfigMap> nodeList;
+      std::vector<utils::ConfigMap> jointList;
+      std::vector<utils::ConfigMap> motorList;
+      std::vector<utils::ConfigMap> sensorList;
+      std::vector<utils::ConfigMap> controllerList;
+      std::vector<utils::ConfigMap> graphicList;
+      std::vector<utils::ConfigMap> lightList;
+
     private:
       // Every new load scene gets a new hack id, which will be multiplied with
       // 1000 and added to all group_ids to prevent that object loaded from
@@ -59,12 +73,12 @@ namespace mars {
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
 
-      void getGenericConfig(utils::ConfigMap *config, QDomElement * elementNode);
-      unsigned int parseScene(const std::string& sceneDirectory,
-                              const std::string& sceneFilename,
-                              unsigned int mapIndex);
+      void getGenericConfig(std::vector<utils::ConfigMap> *configList,
+                            const QDomElement &elementNode);
+      void getGenericConfig(utils::ConfigMap *config,
+                            const QDomElement &elementNode);
 
-      std::map<unsigned long, interfaces::MaterialData> materials;
+
 
       /**
        * Name of the file which should be opened (including the extension .scn or .scene).
@@ -78,31 +92,17 @@ namespace mars {
 
       interfaces::ControlCenter *control;
       std::string tmpPath;
+      std::string sceneFilename;
+      unsigned int mapIndex;
 
-      /**
-       * unsigned int parseNode(QDomElement * elementNode, NodeData * p_node)
-       *
-       * is used for parsing the passed QDom structure for node entries.
-       * outsourced for reasons of readability.
-       *
-       * /pre: there has to be a pointer to a QDomElement and one to a NodeData
-       *        the QDomElement includes a root element named nodelist
-       * /post: none
-       * /important: not to be used or called outside Load.cpp
-       */
-      unsigned int parseNode(QDomElement *elementNode, unsigned int mapIndex);
-      unsigned int parseJoint(QDomElement *elementNode, unsigned int mapIndex);
-      unsigned int parseMotor(QDomElement *elementNode, unsigned int mapIndex);
-      unsigned int parseLight(QDomElement *elementNode, unsigned int mapIndex);
-      unsigned int parseGraphic(QDomElement *elementNode, unsigned int mapIndex);
-      unsigned int parseController(QDomElement *elementNode,
-                                   unsigned int mapIndex);
-
-      interfaces::BaseSensor* parseSensor(QDomElement *elementNode,
-                                          unsigned int mapIndex);
-
-      unsigned int parseMaterial(QDomElement *elementNode,
-                                 unsigned int mapIndex);
+      unsigned int loadMaterial(utils::ConfigMap config);
+      unsigned int loadNode(utils::ConfigMap config);
+      unsigned int loadJoint(utils::ConfigMap config);
+      unsigned int loadMotor(utils::ConfigMap config);
+      interfaces::BaseSensor* loadSensor(utils::ConfigMap config);
+      unsigned int loadController(utils::ConfigMap config);
+      unsigned int loadGraphic(utils::ConfigMap config);
+      unsigned int loadLight(utils::ConfigMap config);
 
     };
 

@@ -38,7 +38,7 @@ namespace mars {
     using namespace std;
 
     SceneLoader::SceneLoader(lib_manager::LibManager *theManager) :
-      interfaces::LoadSceneInterface(theManager) {
+      interfaces::LoadSceneInterface(theManager), control(NULL) {
       indexMaps_t tmp;
       maps.push_back(tmp);
 

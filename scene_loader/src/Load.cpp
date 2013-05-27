@@ -54,10 +54,17 @@ namespace mars {
     }
 
     unsigned int Load::load() {
-      unsigned int fileNameIndex;
-      LoadSceneInterface *loadScene = control->loadCenter->loadScene;
+
+      if(!prepareLoad()) return 0;
+      if(!parseScene()) return 0;
+      return loadScene();
+    }
+
+    unsigned int Load::prepareLoad() {
+      LoadSceneInterface *loadScene = NULL;
       std::string filename = mFileName;
 
+      if(control) loadScene = control->loadCenter->loadScene;
       hack_ids++;
 
       if(mRobotName != ""){
@@ -78,14 +85,17 @@ namespace mars {
       utils::removeFilenamePrefix(&filename);
       utils::removeFilenameSuffix(&filename);
 
-      fileNameIndex = loadScene->getMappedSceneByName(mFileName);
-      if (fileNameIndex == 0) {
-        loadScene->setMappedSceneName(mFileName);
-        fileNameIndex = loadScene->getMappedSceneByName(mFileName);
+      if(loadScene) {
+        mapIndex = loadScene->getMappedSceneByName(mFileName);
+        if (mapIndex == 0) {
+          loadScene->setMappedSceneName(mFileName);
+          mapIndex = loadScene->getMappedSceneByName(mFileName);
+        }
       }
-
-      parseScene(tmpPath, tmpPath + filename + ".scene", fileNameIndex);
-
+      else {
+        mapIndex = 0;
+      }
+      sceneFilename = tmpPath + filename + ".scene";
       return 1;
     }
 
@@ -101,9 +111,7 @@ namespace mars {
       return 1;
     }
 
-    unsigned int Load::parseScene(const std::string& sceneDirectory,
-                                  const std::string& sceneFilename,
-                                  unsigned int mapIndex) {
+    unsigned int Load::parseScene() {
       //  HandleFileNames h_filenames;
       vector<string> v_filesToLoad;
       QString xmlErrorMsg="";
@@ -160,130 +168,70 @@ namespace mars {
         LOG_WARN("\t- the actual_pos and acutal_rot is removed from nodes");
       }
 
-      xmlnodelist = root.elementsByTagName(QString("material"));
-      for (int i=0; i<xmlnodelist.size(); i++) {
-        tmpElement = xmlnodelist.at(i).toElement();
-        if (parseMaterial(&tmpElement, mapIndex)==0) {
-          LOG_ERROR("Load:: parseMaterial failed");
-          file.close();
-          return 0;
-        }
-      }
-
       //first checking wether there is a node with name "node"
       //by passing it in a xmlnodelist and checking if it's not empty.
       //if so, there is at least an element with name "node"
       xmlnodelist = root.elementsByTagName(QString("node"));
       for (int i=0; i<xmlnodelist.size(); i++) {
-        tmpElement = xmlnodelist.at(i).toElement();
-        if (parseNode(&tmpElement, mapIndex)==0) {
-          std::cout<<"error while parsing in->Load.cpp->parseScene" <<std::endl;
-          file.close();
-          return 0;
-        }
+        getGenericConfig(&nodeList, xmlnodelist.at(i).toElement());
       }
 
-      //first checking wether there is a node with name "joint"
-      //by passing it in a xmlnodelist and checking if it's not empty.
-      //if so, there is at least an element with name "joint"
+      xmlnodelist = root.elementsByTagName(QString("material"));
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&materialList, xmlnodelist.at(i).toElement());
+      }
+
       xmlnodelist = root.elementsByTagName(QString("joint"));
-      if (!xmlnodelist.isEmpty()) {
-        for (int i=0; i<xmlnodelist.size(); i++) {
-          tmpElement = xmlnodelist.at(i).toElement();
-          if (parseJoint(&tmpElement, mapIndex)==0) {
-            LOG_ERROR("Load::parseJoint returned error");
-            file.close();
-            return 0;
-          }
-        }
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&jointList, xmlnodelist.at(i).toElement());
       }
 
       xmlnodelist = root.elementsByTagName(QString("motor"));//motor
-      if (!xmlnodelist.isEmpty()) {
-        for (int i=0; i<xmlnodelist.size(); i++) {
-          tmpElement = xmlnodelist.at(i).toElement();
-          if (parseMotor(&tmpElement, mapIndex)==0) {
-            LOG_ERROR("Load::parseMotor returned error");
-            file.close();
-            return 0;
-          }
-        }
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&motorList, xmlnodelist.at(i).toElement());
       }
 
       xmlnodelist = root.elementsByTagName(QString("light"));//lights
-      if (!xmlnodelist.isEmpty()) {
-        for (int i=0; i<xmlnodelist.size(); i++) {
-          tmpElement = xmlnodelist.at(i).toElement();
-          if (parseLight(&tmpElement, mapIndex)==0) {
-            LOG_ERROR("Load::parseLight returned error");
-            file.close();
-            return 0;
-          }
-        }
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&lightList, xmlnodelist.at(i).toElement());
       }
 
       xmlnodelist = root.elementsByTagName(QString("sensor"));//sensor
-      if (!xmlnodelist.isEmpty()) {
-        //now generating a vector of sensorstructs to store the extracted datas
-        for (int i=0; i<xmlnodelist.size(); i++) {
-          tmpElement = xmlnodelist.at(i).toElement();
-          if (parseSensor(&tmpElement, mapIndex)==0) {
-            LOG_ERROR("Load::parseSensor returned error");
-            file.close();
-            return 0;
-          }
-        }
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&sensorList, xmlnodelist.at(i).toElement());
       }
 
       xmlnodelist = root.elementsByTagName(QString("controller"));
-      if (!xmlnodelist.isEmpty()) {
-        for (int i=0; i<xmlnodelist.size(); i++) {
-          tmpElement = xmlnodelist.at(i).toElement();
-          if (parseController(&tmpElement, mapIndex)==0) {
-            LOG_ERROR("Load::parseController returned error");
-            file.close();
-            return 0;
-          }
-        }
+      for (int i=0; i<xmlnodelist.size(); i++) {
+        getGenericConfig(&controllerList, xmlnodelist.at(i).toElement());
       }
 
       xmlnodelist = root.elementsByTagName(QString("graphicOptions"));//graphicoptions
       if (!xmlnodelist.isEmpty()) {
-        tmpElement = xmlnodelist.at(0).toElement();
-        if (parseGraphic(&tmpElement, mapIndex)==0) {
-          LOG_ERROR("Load::parseGraphic returned error");
-          file.close();
-          return 0;
-        }
+        getGenericConfig(&graphicList, xmlnodelist.at(0).toElement());
       }
 
       file.close();
+
       return 1;
     }
 
-    BaseSensor* Load::parseSensor(QDomElement * elementNode,
-                                  unsigned int mapIndex) {
+    unsigned int Load::loadScene() {
+      for(unsigned int i=0; i<materialList.size(); ++i) if(!loadMaterial(materialList[i])) return 0;
+      for(unsigned int i=0; i<nodeList.size(); ++i) if(!loadNode(nodeList[i])) return 0;
+      for(unsigned int i=0; i<jointList.size(); ++i) if(!loadJoint(jointList[i])) return 0;
+      for(unsigned int i=0; i<motorList.size(); ++i) if(!loadMotor(motorList[i])) return 0;
+      for(unsigned int i=0; i<sensorList.size(); ++i) if(!loadSensor(sensorList[i])) return 0;
+      for(unsigned int i=0; i<controllerList.size(); ++i) if(!loadController(controllerList[i])) return 0;
+      for(unsigned int i=0; i<graphicList.size(); ++i) if(!loadGraphic(graphicList[i])) return 0;
+      for(unsigned int i=0; i<lightList.size(); ++i) if(!loadLight(lightList[i])) return 0;
 
-      utils::ConfigMap config;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
-      unsigned long sceneID = config["index"][0].getULong();
-      BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
-      if (sensor != 0) {
-        control->loadCenter->loadScene->setMappedID(sceneID, sensor->getID(),
-                                                    MAP_TYPE_SENSOR,
-                                                    mapIndex);
-      }
-
-      return sensor;
+      return 1;
     }
 
-    unsigned int Load::parseMaterial(QDomElement * elementNode,
-                                     unsigned int mapIndex) {
+    unsigned int Load::loadMaterial(utils::ConfigMap config) {
       MaterialData material;
       unsigned long id;
-      utils::ConfigMap config;
-      getGenericConfig(&config, elementNode);
 
       int valid = material.fromConfigMap(&config, tmpPath);
       if((id = config["id"][0].getULong())) {
@@ -293,14 +241,9 @@ namespace mars {
       return valid;
     }
 
-    unsigned int Load::parseNode(QDomElement * elementNode,
-                                 unsigned int mapIndex) {
-
+    unsigned int Load::loadNode(utils::ConfigMap config) {
       NodeData node;
-      utils::ConfigMap config;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
-
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene);
       if(!valid) return 0;
 
@@ -330,19 +273,18 @@ namespace mars {
       if(mRobotName != "") {
         control->entities->addNode(mRobotName, node.index, node.name);
       }
-      return true;
+      return 1;
     }
 
-    unsigned int Load::parseJoint(QDomElement * elementNode,
-                                  unsigned int mapIndex) {
-
+    unsigned int Load::loadJoint(utils::ConfigMap config) {
       JointData joint;
-      utils::ConfigMap config;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
-
-      int valid = joint.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene);
-      if(!valid) return 0;
+      int valid = joint.fromConfigMap(&config, tmpPath,
+                                      control->loadCenter->loadScene);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading joint\n");
+        return 0;
+      }
 
       JointId oldId = joint.index;
       JointId newId = control->joints->addJoint(&joint);
@@ -359,16 +301,15 @@ namespace mars {
       return true;
     }
 
-    unsigned int Load::parseMotor(QDomElement * elementNode,
-                                  unsigned int mapIndex) {
-
+    unsigned int Load::loadMotor(utils::ConfigMap config) {
       MotorData motor;
-      utils::ConfigMap config;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
 
       int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene);
-      if(!valid) return 0;
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading motor\n");
+        return 0;
+      }
 
       MotorId oldId = motor.index;
       MotorId newId = control->motors->addMotor(&motor);
@@ -385,49 +326,29 @@ namespace mars {
       return true;
     }
 
-    unsigned int Load::parseLight(QDomElement * elementNode,
-                                  unsigned int mapIndex) {
-
-      LightData light;
-      utils::ConfigMap config;
+    BaseSensor* Load::loadSensor(utils::ConfigMap config) {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
+      unsigned long sceneID = config["index"][0].getULong();
+      BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
+      if (sensor != 0) {
+        control->loadCenter->loadScene->setMappedID(sceneID, sensor->getID(),
+                                                    MAP_TYPE_SENSOR,
+                                                    mapIndex);
+      }
 
-      int valid = light.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene);
-      if(!valid) return 0;
-
-      control->sim->addLight(light);
-      return true;
+      return sensor;
     }
 
-    unsigned int Load::parseGraphic(QDomElement * elementNode,
-                                    unsigned int mapIndex) {
-
-      GraphicData graphic;
-      utils::ConfigMap config;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
-
-      int valid = graphic.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene);
-      if(!valid) return 0;
-
-      if (control->graphics)
-        control->graphics->setGraphicOptions(graphic);
-
-      return true;
-    }
-
-    unsigned int Load::parseController(QDomElement * elementNode,
-                                       unsigned int mapIndex) {
-
+    unsigned int Load::loadController(utils::ConfigMap config) {
       ControllerData controller;
-      utils::ConfigMap config;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      getGenericConfig(&config, elementNode);
 
       int valid = controller.fromConfigMap(&config, tmpPath,
                                            control->loadCenter->loadScene);
-      if(!valid) return 0;
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading Controller\n");
+        return 0;
+      }
 
       MotorId oldId = controller.id;
       MotorId newId = control->controllers->addController(controller);
@@ -441,15 +362,52 @@ namespace mars {
       if(mRobotName != "") {
         control->entities->addController(mRobotName, newId);
       }
+      return 1;
+    }
 
+    unsigned int Load::loadGraphic(utils::ConfigMap config) {
+      GraphicData graphic;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      int valid = graphic.fromConfigMap(&config, tmpPath,
+                                        control->loadCenter->loadScene);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading graphic\n");
+        return 0;
+      }
+
+      if (control->graphics)
+        control->graphics->setGraphicOptions(graphic);
+
+      return 1;
+    }
+
+    unsigned int Load::loadLight(utils::ConfigMap config) {
+      LightData light;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      int valid = light.fromConfigMap(&config, tmpPath,
+                                      control->loadCenter->loadScene);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading light\n");
+        return 0;
+      }
+
+      control->sim->addLight(light);
       return true;
     }
 
-    void Load::getGenericConfig(utils::ConfigMap *config,
-                                QDomElement * elementNode) {
 
-      QDomNodeList xmlnodepartlist=elementNode->childNodes();
-      QDomNamedNodeMap attributes = elementNode->attributes();
+    void Load::getGenericConfig(std::vector<utils::ConfigMap> *configList,
+                                const QDomElement &elementNode) {
+      utils::ConfigMap config;
+      getGenericConfig(&config, elementNode);
+      configList->push_back(config);
+    }
+
+    void Load::getGenericConfig(utils::ConfigMap *config,
+                                const QDomElement &elementNode) {
+
+      QDomNodeList xmlnodepartlist=elementNode.childNodes();
+      QDomNamedNodeMap attributes = elementNode.attributes();
 
       std::string tagName, value;
       QDomElement child;
@@ -477,7 +435,7 @@ namespace mars {
 #ifdef DEBUG_PARSE_SENSOR
           LOG_DEBUG("element [%s : %s]", tagName.c_str(), value.c_str());
 #endif
-          getGenericConfig(&((*config)[tagName].back().children), &child);
+          getGenericConfig(&((*config)[tagName].back().children), child);
         }
       }
 
