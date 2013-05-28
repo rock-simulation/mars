@@ -71,6 +71,26 @@ namespace mars {
 
     LibManager::~LibManager() {
       std::map<std::string, libStruct>::iterator it;
+      clearLibraries();
+
+      if(libMap.size() > 0) {
+        for(it = libMap.begin(); it != libMap.end(); ++it) {
+          fprintf(stderr, "LibManager: [%s] not deleted correctly! "
+                  "%d references remain.\n"
+                  "      NOTE: The semantics of the LibManager has changed. To correctly\n"
+                  "            dispose of a library acquired by a call to getLibrary(libName)\n"
+                  "            you should now call releaseLibrary(libName) instead\n"
+                  "            of unloadLibrary(libName).\n",
+                  it->first.c_str(), it->second.useCount);
+        }
+      } else {
+        fprintf(stderr, "LibManager: successfully deleted all libraries!\n");
+      }
+      fprintf(stderr, "Delete lib_manager\n");
+    }
+
+    void LibManager::clearLibraries() {
+      std::map<std::string, libStruct>::iterator it;
       bool finished = false;
 
       while(!finished) {
@@ -87,20 +107,6 @@ namespace mars {
           }
         }
       }
-      if(libMap.size() > 0) {
-        for(it = libMap.begin(); it != libMap.end(); ++it) {
-          fprintf(stderr, "LibManager: [%s] not deleted correctly! "
-                  "%d references remain.\n"
-                  "      NOTE: The semantics of the LibManager has changed. To correctly\n"
-                  "            dispose of a library acquired by a call to getLibrary(libName)\n"
-                  "            you should now call releaseLibrary(libName) instead\n"
-                  "            of unloadLibrary(libName).\n",
-                  it->first.c_str(), it->second.useCount);
-        }
-      } else {
-        fprintf(stderr, "LibManager: successfully deleted all libraries!\n");
-      }
-      fprintf(stderr, "Delete lib_manager\n");
     }
 
     void LibManager::addLibrary(LibInterface *_lib) {
@@ -118,6 +124,14 @@ namespace mars {
 
       if(libMap.find(name) == libMap.end()) {
         libMap[name] = newLib;
+
+        // notify all Libs of newly loaded lib
+        for(map<string, libStruct>::iterator it = libMap.begin();
+            it != libMap.end(); ++it) {
+          // not notify the new lib about itself
+          if(it->first != name)
+            it->second.libInterface->newLibLoaded(name);
+        }
       }
     }
 
