@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   graphicsTimer->run();
 
   viz->loadScene(argv[1]);
-  viz->setJointAngle("leg4_joint0", 1.2);
+  viz->setJointValue("leg4_joint4", -0.03);
 
   int state;
   state = app->exec();

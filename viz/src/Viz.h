@@ -61,8 +61,9 @@ namespace mars {
       utils::Vector relPos;
       utils::Vector axis;
       utils::Quaternion q;
-      double angle, offset;
+      double value, offset;
       unsigned long id;
+      bool linear;
     };
 
     class GraphicsTimer;
@@ -80,7 +81,7 @@ namespace mars {
       void start(int argc, char **argv);
 
       void loadScene(std::string filename);
-      void setJointAngle(std::string jointName, double angle);
+      void setJointValue(std::string jointName, double angle);
       void setNodePosition(const std::string &nodeName,
                            const utils::Vector &pos);
       void setNodePosition(const unsigned long &id, const utils::Vector &pos);

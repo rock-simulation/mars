@@ -136,11 +136,13 @@ namespace mars {
         cfg = c;
       }
       if(cfg) {
-        cfg_manager::cfgPropertyStruct configPath;
-        configPath = cfg->getOrCreateProperty("Config", "config_path",
+        cfg_manager::cfgPropertyStruct prop;
+        prop = cfg->getOrCreateProperty("Config", "config_path",
                                               configDir);
-        configPath.sValue = configDir;
-        cfg->setProperty(configPath);
+        prop.sValue = configDir;
+        cfg->setProperty(prop);
+        cfg->getOrCreateProperty("Graphics", "backfaceCulling", false);
+        cfg->getOrCreateProperty("Graphics", "num multisamples", 4);
       }
 
       // then get the simulation
@@ -153,6 +155,7 @@ namespace mars {
       }
 
       graphics->initializeOSG(NULL);
+      graphics->hideCoords();
     }
 
     void Viz::loadScene(std::string filename) {
@@ -296,6 +299,9 @@ namespace mars {
                   node.pos = it1->second.rot.inverse() * (node.pos - v);
                   node.rot = it1->second.rot.inverse() * node.rot;
 
+                  // ToDo: - handle second axis for hing2 and universal
+                  //       - handle if we have to invert the axis depending on
+                  //         on the node order
                   ForwardTransform ft;
                   if(jointIt->anchorPos == ANCHOR_NODE1) {
                     ft.anchor = it1->second.pos;
@@ -313,10 +319,18 @@ namespace mars {
                   ft.anchor = it1->second.rot.inverse() * (ft.anchor - v);
                   ft.relPos = node.pos - ft.anchor;
                   ft.axis = it1->second.rot.inverse() * jointIt->axis1;
+                  ft.axis.normalize();
                   ft.q = node.rot;
-                  ft.angle = jointIt->angle1_offset;
+                  ft.value = jointIt->angle1_offset;
                   ft.offset = jointIt->angle1_offset;
                   ft.id = node.index;
+                  if(jointIt->type == JOINT_TYPE_SLIDER) {
+                    ft.linear = true;
+                  }
+                  else {
+                    ft.linear = false;
+                  }
+
                   joints[jointIt->name] = ft;
 
                   graphics->makeChild(it1->second.index, it2->second.index);
@@ -347,18 +361,24 @@ namespace mars {
     }
 
 
-    void Viz::setJointAngle(std::string jointName, double angle) {
+    void Viz::setJointValue(std::string jointName, double value) {
       std::map<std::string, ForwardTransform>::iterator it;
       it = joints.find(jointName);
       if(it!=joints.end()) {
         ForwardTransform *joint = &joints[jointName];
 
-        joint->angle = angle;
-        utils::Quaternion q = utils::angleAxisToQuaternion(joint->angle+joint->offset,
-                                                           joint->axis);
-        utils::Vector v = q * joint->relPos;
-        graphics->setDrawObjectPos(joint->id, joint->anchor+v);
-        graphics->setDrawObjectRot(joint->id, q * joint->q);
+        joint->value = value;
+        if(joint->linear) {
+          utils::Vector v = joint->axis*joint->value + joint->relPos;
+          graphics->setDrawObjectPos(joint->id, joint->anchor+v);
+        }
+        else {
+          utils::Quaternion q = utils::angleAxisToQuaternion(joint->value+joint->offset,
+                                                             joint->axis);
+          utils::Vector v = q * joint->relPos;
+          graphics->setDrawObjectPos(joint->id, joint->anchor+v);
+          graphics->setDrawObjectRot(joint->id, q * joint->q);
+        }
       }
     }
 
