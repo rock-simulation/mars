@@ -137,16 +137,67 @@ namespace mars {
 
     LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath, 
                                                     void *config) {
+      const char *prefix = "lib";
+#ifdef WIN32
+      const char *suffix = ".dll";
+      const char sep = ';';
+      const char *env = "PATH";
+#elif __APPLE__
+      const char *suffix = ".dylib";
+      const char sep = ':';
+      const char *env = "DYLD_LIBRARY_PATH";
+#else
+      const char *suffix = ".so";
+      const char sep = ':';
+      const char *env = "LD_LIBRARY_PATH";
+#endif
       fprintf(stderr, "lib_manager: load plugin: %s\n", libPath.c_str());
+
+      FILE *testFile = fopen(libPath.c_str(), "r");
+      std::string filepath;
+      if(!testFile) {
+        filepath = prefix;
+        filepath.append(libPath);
+        filepath.append(suffix);
+        char* lib_path = getenv(env);
+        if(lib_path) {
+          // try to first find library
+          std::string lib_path_s(lib_path);
+          size_t next_path_pos = 0;
+          size_t actual_path_pos = 0;
+          while(next_path_pos != string::npos) {
+            next_path_pos = lib_path_s.find(sep, actual_path_pos);
+            string actual_path = lib_path_s.substr(actual_path_pos, (next_path_pos != string::npos) ? next_path_pos - actual_path_pos : lib_path_s.size() - actual_path_pos);
+            actual_path.append("/");
+            std::string actual_lib_path = actual_path;
+            actual_lib_path.append(filepath);
+            testFile = fopen(actual_lib_path.c_str(), "r");
+            if(testFile) {
+              fclose(testFile);
+              filepath = actual_lib_path;
+              fprintf(stderr, "lib_manager: found plugin at: %s\n",
+                      filepath.c_str());
+              break;
+            }
+            actual_path_pos = next_path_pos + 1;
+          }
+        }
+      }
+      else {
+        filepath = libPath;
+        fclose(testFile);
+      }
+
 
       libStruct newLib;
       newLib.destroy = 0;
       newLib.libInterface = 0;
       newLib.useCount = 0;
       newLib.wasUnloaded = false;
-      newLib.path = libPath;
+      newLib.path = filepath;
 
-      LibHandle pl = intern_loadLib(libPath);
+
+      LibHandle pl = intern_loadLib(filepath);
 
       if(pl) {
         newLib.destroy = getFunc<destroyLib*>(pl, "destroy_c");
