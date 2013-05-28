@@ -22,6 +22,8 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 pkg_check_modules(PKGCONFIG
 	lib_manager
 	mars_interfaces
+	mars_graphics
+	cfg_manager
         mars_scene_loader
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

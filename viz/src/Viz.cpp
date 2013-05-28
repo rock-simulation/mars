@@ -29,8 +29,8 @@
 #include <mars/lib_manager/LibManager.h>
 #include <mars/lib_manager/LibInterface.h>
 #include <mars/utils/misc.h>
-#include <mars/cfg_manager/CFGManagerInterface.h>
-#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/cfg_manager/CFGManager.h>
+#include <mars/graphics/GraphicsManager.h>
 #include <mars/scene_loader/Load.h>
 #include <mars/interfaces/utils.h>
 #include <mars/interfaces/JointData.h>
@@ -74,6 +74,8 @@ namespace mars {
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
+      c = NULL;
+      gM = NULL;
     }
 
     Viz::Viz(lib_manager::LibManager *theManager) : configDir(".") {
@@ -81,6 +83,8 @@ namespace mars {
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
+      c = NULL;
+      gM = NULL;
     }
 
     Viz::~Viz() {
@@ -88,6 +92,11 @@ namespace mars {
       exit_main(0);
 
       libManager->releaseLibrary("mars_graphics");
+      libManager->releaseLibrary("cfg_manager");
+
+      libManager->clearLibraries();
+      if(gM) delete gM;
+      if(c) delete c;
 
       delete libManager;
 
@@ -121,6 +130,11 @@ namespace mars {
 
       mars::cfg_manager::CFGManagerInterface *cfg;
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+      if(!cfg) {
+        c = new cfg_manager::CFGManager(libManager);
+        libManager->addLibrary(c);
+        cfg = c;
+      }
       if(cfg) {
         cfg_manager::cfgPropertyStruct configPath;
         configPath = cfg->getOrCreateProperty("Config", "config_path",
@@ -128,11 +142,15 @@ namespace mars {
         configPath.sValue = configDir;
         cfg->setProperty(configPath);
       }
-      libManager->releaseLibrary("cfg_manager");
 
       // then get the simulation
 
       graphics = libManager->getLibraryAs<mars::interfaces::GraphicsManagerInterface>("mars_graphics");
+      if(!graphics) {
+        gM = new graphics::GraphicsManager(libManager);
+        libManager->addLibrary(gM);
+        graphics = gM;
+      }
 
       graphics->initializeOSG(NULL);
     }

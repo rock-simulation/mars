@@ -45,6 +45,14 @@ namespace mars {
     class GraphicsManagerInterface;
   }
 
+  namespace graphics {
+    class GraphicsManager;
+  }
+
+  namespace cfg_manager {
+    class CFGManager;
+  }
+
 
   namespace viz {
 
@@ -91,7 +99,8 @@ namespace mars {
       std::map<unsigned long, interfaces::NodeData> nodeMapById;
       std::map<std::string, interfaces::NodeData> nodeMapByName;
       std::map<std::string, ForwardTransform> joints;
-
+      graphics::GraphicsManager *gM;
+      cfg_manager::CFGManager *c;
     };
 
   } // end of namespace viz
