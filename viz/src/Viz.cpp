@@ -108,7 +108,7 @@ namespace mars {
 
     }
 
-    void Viz::start(int argc, char **argv) {
+    void Viz::init() {
 
       std::string coreConfigFile = configDir+"/core_libs.txt";
 

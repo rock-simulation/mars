@@ -78,7 +78,7 @@ namespace mars {
 
       static interfaces::ControlCenter *control;
 
-      void start(int argc, char **argv);
+      void init();
 
       void loadScene(std::string filename);
       void setJointValue(std::string jointName, double angle);

@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
   mars::viz::MyApp *app = new mars::viz::MyApp(argc, argv);
   app->setStyle(new QPlastiqueStyle);
 
-  viz->start(argc, argv);
+  viz->init();
 
   void *widget = viz->graphics->getQTWidget(1);
   if(widget) ((QWidget*)widget)->show();
