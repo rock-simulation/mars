@@ -218,7 +218,7 @@ namespace mars {
       virtual const utils::Quaternion& getDrawObjectQuaternion(unsigned long id=0) = 0;
       
       virtual void draw() = 0;
-      virtual void initializeOSG(void *data) = 0;
+      virtual void initializeOSG(void *data, bool createWindow=true) = 0;
       virtual LoadMeshInterface* getLoadMeshInterface(void) = 0;
       virtual LoadHeightmapInterface* getLoadHeightmapInterface(void) = 0;
       

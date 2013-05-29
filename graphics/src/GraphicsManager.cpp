@@ -125,7 +125,7 @@ namespace mars {
     // TODO: not use global! but until shadows handled nicely...
     //osg::ref_ptr<osg::Camera> debugCam;
 #endif
-    void GraphicsManager::initializeOSG(void *data) {
+    void GraphicsManager::initializeOSG(void *data, bool createWindow) {
       cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(!cfg) {
         fprintf(stderr, "******* mars_graphics: couldn't find cfg_manager\n");
@@ -291,17 +291,19 @@ namespace mars {
       grid = new GridPrimitive(osgWidget);
       showCoords();
 
-      viewer = new GraphicsViewer((GuiEventInterface*)this);
-      viewer->setKeyEventSetsDone(0);
-#ifdef SINGLE_THREADED
-      viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
-#else
-      viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
-#endif
       // reset number of frames
       framecount = 0;
 
-      new3DWindow(data);
+      if(createWindow) {
+        viewer = new GraphicsViewer((GuiEventInterface*)this);
+        viewer->setKeyEventSetsDone(0);
+#ifdef SINGLE_THREADED
+        viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+#else
+        viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
+#endif
+        new3DWindow(data);
+      }
 
       //guiHelper->setGraphicsWidget(graphicsWindows[0]);
       setupCFG();

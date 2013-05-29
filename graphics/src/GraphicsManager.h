@@ -112,7 +112,7 @@ namespace mars {
 
       CREATE_MODULE_INFO();
 
-      virtual void initializeOSG(void *data);
+      virtual void initializeOSG(void *data, bool createWindow=true);
 
       virtual void* getWindowManager(int id=1); // get osgWidget WindowManager*
 
