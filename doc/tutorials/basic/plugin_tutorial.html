@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <link rel="stylesheet" type="text/css" href="../../css/mars_default.css" media="all" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.9.1: http://docutils.sourceforge.net/" />
+<title>Basic Modeling Tutorial</title>
+</head>
+<body>
+  <div class="nav-box">
+    <h3>Navigation</h3>
+    <nav>
+      <ol>
+        <li><a href="../../index.html">Home</a></li>
+      </ol>
+    </nav>
+  </div>
+
+  <div id="content">
+    <header>
+      <img src="../../images/logo_v2_wob.png" alt="MARS" />
+    </header>
+
+<div class="document" id="basic-modeling-tutorial">
+<h2 class="title">Basic Plugin Tutorial</h2>
+
+<div class="section" id="introduction">
+<h3>Introduction</h3>
+<p>There are different possibilities how the MARS simulation can be used. One possibility is to write a plugin that handles the loading of a scenario and interfaces the simulation to some control software. Also, in many cases, the control software can be directly wrapped into a simulation plugin. This tutorial will guide you how to create a new plugin, load your scene, and control the simulation.</p>
+</div>
+<div class="section" id="prerequisites">
+<h3>Prerequisites</h3>
+<p>We assume you already have a MARS development environment setup in
+&quot;$MARS_DEV_ROOT&quot;. You should also have a robot scene file to start with (if not you can use this <a href="robo.scn">scene</a> to follow the tutorial. You should have a terminal opened with the $MARS_DEV_ROOT/env.sh sourced into it.  <code class="lang-bash block">cd $MARS_DEV_ROOT;
+. env.sh</code>
+</p>
+</div>
+<div class="section" id="basic-plugin">
+<h3>Basic Plugin</h3>
+<h4>Create and build a new plugin</h4>
+<p>To setup your first plugin you can use a script wich will create a new plugiin:
+  <code class="lang-bash block">cd $MARS_DEV_ROOT/mars/plugins/plugin_template
+./cnp.sh</code>
+The script will ask you for the project name, which will be also the class name of the main c++ class. E.g. we can enter "BasicPlugin" here. Then you can enter a description of your plugin ("The plugin created by following the guide of the basic plugin tutorial."). Afterwards, enter the author name, email, and confirm your data. The script will create your plugin one folder above the script ("$MARS_DEV_ROOT/mars/plugins/BasicPlugin"). You can go into that folder and use the build.sh script to build and install the plugin for a first test if everything went well.
+  <code class="lang-bash block">cd $MARS_DEV_ROOT/mars/plugins/BasicPlugin
+./build.sh</code>
+Now copy the "mars_default" configuration to "mars_basic_plugin" and add the plugin to the "other_libs.txt" within "mars_basic_plugin" to load the new plugin when starting MARS.
+</p>
+<h4>Adapt the plugin</h4>
+In the "$MARS_DEV_ROOT/mars/plugins/BasicPlugin/src/BasicPlugin.cpp" you will find a "init()" function that is called by the simulation to initialize the plugin. Just comment in the loadScene line with the path to your scene file.
+  <code class="lang-bash block">
+      void BasicPlugin::init() {
+        // Load a scene file:
+        control->sim->loadScene("robo.scn");
+</code>
+To control the robot in the simulation you can set motor values in the update callback. The update callback is triggered by the simulation thread giving the simulation step time as parameter. Here we can set some motor values:
+  <code class="lang-bash block">
+      void BasicPlugin::update(sReal time_ms) {
+
+        control->motors->setMotorValue(1, 0.4);
+        control->motors->setMotorValue(2, 1.7);
+      }
+</code>
+After doing "make install" in "$MARS_DEV_ROOT/mars/plugins/BasicPlugin/build" or reusing the "build.sh" script we should have a small robot driving a circle when starting the simulation.
+</div>
+    <footer>
+      <a href="http://validator.w3.org/check?uri=referer" target="_blank">
+        <img src="http://www.w3.org/Icons/valid-html401"
+             alt="Valid HTML 4.01 Transitional"/>
+      </a>
+      <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank">
+        <img src="http://jigsaw.w3.org/css-validator/images/vcss"
+             alt="Valid CSS!"/>
+      </a>
+    </footer>
+</div>
+</body>
+</html>
