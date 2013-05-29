@@ -36,6 +36,8 @@
 #endif
 
 #include <cstdio>
+#include <stdlib.h>
+
 
 namespace mars {
   namespace lib_manager {
