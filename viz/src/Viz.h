@@ -63,6 +63,7 @@ namespace mars {
       utils::Quaternion q;
       double value, offset;
       unsigned long id;
+      unsigned long jointId;
       bool linear;
     };
 
@@ -78,10 +79,11 @@ namespace mars {
 
       static interfaces::ControlCenter *control;
 
-      void init();
+      void init(bool createWindow=true);
 
       void loadScene(std::string filename);
-      void setJointValue(std::string jointName, double angle);
+      void setJointValue(std::string jointName, double value);
+      void setJointValue(unsigned int controllerIdx, double value);
       void setNodePosition(const std::string &nodeName,
                            const utils::Vector &pos);
       void setNodePosition(const unsigned long &id, const utils::Vector &pos);
@@ -99,9 +101,14 @@ namespace mars {
 
       std::map<unsigned long, interfaces::NodeData> nodeMapById;
       std::map<std::string, interfaces::NodeData> nodeMapByName;
-      std::map<std::string, ForwardTransform> joints;
+      std::map<std::string, ForwardTransform> jointMapByName;
+      std::map<unsigned long, ForwardTransform*> jointMapById;
+      std::vector<ForwardTransform*> jointByControllerIdx;
       graphics::GraphicsManager *gM;
       cfg_manager::CFGManager *c;
+
+      void setJointValue(ForwardTransform *joint, double value);
+
     };
 
   } // end of namespace viz

@@ -34,6 +34,8 @@
 #include <mars/scene_loader/Load.h>
 #include <mars/interfaces/utils.h>
 #include <mars/interfaces/JointData.h>
+#include <mars/interfaces/MotorData.h>
+#include <mars/interfaces/ControllerData.h>
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/utils/mathUtils.h>
 
@@ -108,7 +110,7 @@ namespace mars {
 
     }
 
-    void Viz::init() {
+    void Viz::init(bool createWindow) {
 
       std::string coreConfigFile = configDir+"/core_libs.txt";
 
@@ -147,14 +149,14 @@ namespace mars {
 
       // then get the simulation
 
-      graphics = libManager->getLibraryAs<mars::interfaces::GraphicsManagerInterface>("mars_graphics");
+      graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
       if(!graphics) {
         gM = new graphics::GraphicsManager(libManager);
         libManager->addLibrary(gM);
         graphics = gM;
       }
 
-      graphics->initializeOSG(NULL);
+      graphics->initializeOSG(NULL, createWindow);
       graphics->hideCoords();
     }
 
@@ -324,6 +326,7 @@ namespace mars {
                   ft.value = jointIt->angle1_offset;
                   ft.offset = jointIt->angle1_offset;
                   ft.id = node.index;
+                  ft.jointId = jointIt->index;
                   if(jointIt->type == JOINT_TYPE_SLIDER) {
                     ft.linear = true;
                   }
@@ -331,7 +334,8 @@ namespace mars {
                     ft.linear = false;
                   }
 
-                  joints[jointIt->name] = ft;
+                  jointMapByName[jointIt->name] = ft;
+                  jointMapById[ft.jointId] = &jointMapByName[jointIt->name];
 
                   graphics->makeChild(it1->second.index, it2->second.index);
                   graphics->setDrawObjectPos(node.index, node.pos);
@@ -346,39 +350,53 @@ namespace mars {
             if(!done) break;
           }
         }
+        std::map<unsigned long, MotorData> motorMapById;
+        for(unsigned int i=0; i<load.motorList.size(); ++i) {
+          MotorData motor;
+          motor.fromConfigMap(&load.motorList[i], tmpPath, NULL);
+          motorMapById[motor.index] = motor;
+        }
+        if(!load.controllerList.empty()) {
+          ControllerData controller;
+          controller.fromConfigMap(&load.controllerList[0], tmpPath, NULL);
+          for(unsigned int i=0; i<controller.motors.size(); ++i) {
+            jointByControllerIdx.push_back(jointMapById[motorMapById[controller.motors[i]].jointIndex]);
+          }
+        }
       }
 
       for(it1=nodeMapI.begin(); it1!=nodeMapI.end(); ++it1) {
         nodeMapById[it1->second.index] = it1->second;
         nodeMapByName[it1->second.name] = it1->second;
       }
-
-      std::map<std::string, ForwardTransform>::iterator jointsIt;
-
-      for(jointsIt=jointsI.begin(); jointsIt!=jointsI.end(); ++jointsIt) {
-        joints[jointsIt->first] = jointsIt->second;
-      }
     }
 
 
     void Viz::setJointValue(std::string jointName, double value) {
       std::map<std::string, ForwardTransform>::iterator it;
-      it = joints.find(jointName);
-      if(it!=joints.end()) {
-        ForwardTransform *joint = &joints[jointName];
+      it = jointMapByName.find(jointName);
+      if(it!=jointMapByName.end()) {
+        setJointValue(&jointMapByName[jointName], value);
+      }
+    }
 
-        joint->value = value;
-        if(joint->linear) {
-          utils::Vector v = joint->axis*joint->value + joint->relPos;
-          graphics->setDrawObjectPos(joint->id, joint->anchor+v);
-        }
-        else {
-          utils::Quaternion q = utils::angleAxisToQuaternion(joint->value+joint->offset,
-                                                             joint->axis);
-          utils::Vector v = q * joint->relPos;
-          graphics->setDrawObjectPos(joint->id, joint->anchor+v);
-          graphics->setDrawObjectRot(joint->id, q * joint->q);
-        }
+    void Viz::setJointValue(unsigned int controllerIdx, double value) {
+      assert(controllerIdx < jointByControllerIdx.size());
+      setJointValue(jointByControllerIdx[controllerIdx], value);
+    }
+
+    void Viz::setJointValue(ForwardTransform *joint, double value) {
+      joint->value = value;
+      if(joint->linear) {
+        utils::Vector v = joint->axis*joint->value + joint->relPos;
+        graphics->setDrawObjectPos(joint->id, joint->anchor+v);
+      }
+      else {
+        utils::Quaternion q = utils::angleAxisToQuaternion(joint->value+joint->offset,
+                                                           joint->axis);
+        utils::Vector v = q * joint->relPos;
+        graphics->setDrawObjectPos(joint->id, joint->anchor+v);
+        graphics->setDrawObjectRot(joint->id, q * joint->q);
       }
     }
 
