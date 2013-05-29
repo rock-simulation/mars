@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>MARS Simulator</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <meta name="description" content="MARS is a flexible physics simulator.">
+  <meta name="author" content="MARS Project">
+  <meta name="keywords" content="MARS, simulation, physics, robotics">
+  <link rel="stylesheet" type="text/css" href="css/mars_default.css" media="all" />
+</head>
+<body>
+
+  <div class="nav-box">
+    <h3>Navigation</h3>
+    <nav>
+      <ol>
+        <li><a href="">Home</a></li>
+        <li><a href="#section_about">About</a></li>
+        <li><a href="#section_news">News</a></li>
+        <li><a href="#section_install">Installation</a></li>
+        <li><a href="#section_launch">Launch</a></li>
+        <li><a href="#section_tutorials">Tutorials</a></li>
+        <li><a href="screenshots.html">Screenshots</a></li>
+      </ol>
+    </nav>
+  </div>
+
+
+  <div id="content">
+    <header>
+      <img src="images/logo_v2_wob.png" alt="MARS" />
+    </header>
+
+    
+    <section id="section_about">
+      <h2>About:</h2>
+      MARS (Machina Arte Robotum Simulans) is a simulation and visualisation tool for developing control algorithms and designing robots. It consists of a core framework containing all main simulation components, a GUI, OpenGL based visualisation and a physics core that is currently based on ODE (www.ode.org). The software is designed in a modular manner by making high use of interfaces. In this way many parts of MARS can be also used standalone (e.g. the physic simulation can be used without any visualization or GUI).
+    </section>
+
+    <section id="section_news">
+      <h2>News:</h2>
+    </section>
+
+    <section id="section_install">
+      <h2>Installation:</h2>
+      This section describes how to setup a development environment for MARS.
+      You should create a dedicated development folder on your harddrive.
+      Something like C:/development/mars_git or /home/my_username/development/mars_git.
+      We will refer to this directory as the development directory or $MARS_DEV_ROOT.
+      You should clone the git sources into that directory using
+      <code class="lang-bash block">cd $MARS_DEV_ROOT
+git clone git://gitorious.org/rock-simulation/mars.git</code>
+      This will create a new subdirectory "mars" containing the working copy.
+      You then must fetch some dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS:
+      <code class="lang-bash block">cd $MARS_DEV_ROOT
+./mars/scripts/bootstrap/mars.sh bootstrap</code>
+      When running it for the first time the script will ask you for the root development directory.
+      Please enter the <em>absolute</em> path to your development directory.
+      Next you will be asked how many CPU cores the system may use to build MARS.
+      <section class="subsection" id="subsection_install_linux">
+        <h3>GNU/Linux:</h3>
+        You can check the "apt_get_dep.sh" to get a list of the needed dependencies. If you have no conflict with manually installed libraries you can also use the script to install the dependecies:
+        <code class="lang-bash block">cd $MARS_DEV_ROOT
+./mars/scripts/bootstrap/apt_get_dep.sh</code>
+     </section>
+      <section class="subsection" id="subsection_install_osx">
+        <h3>OS X:</h3>
+        On "OS X" you have to install QT and OpenSceneGraph manually. Check the project pages for installation help (http://qt-project.org and http://openscenegraph.org).
+        Other dependencies can be installed by the script "port_get_deb.sh" via macports:
+        <code class="lang-bash block">cd $MARS_DEV_ROOT
+./mars/scripts/bootstrap/port_get_dep.sh</code>
+      </section>
+      <section class="subsection" id="subsection_install_windows">
+        <h3>Windows:</h3>
+        <section class="subsubsection" if="subsubsection_install_windows_prerequisites">
+          <h4>Prerequisites</h4>
+          <ul>
+            <li>OSG: installed and bin dir in PATH
+            <li>SSH: <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY</a> (pick the "Windows installer for everything except PuTTYtel")
+            <li>MinGW / MSYS: <a href="http://mingw.org/wiki/Getting_Started">Install MinGW</a>
+              <ol>
+                <li>download and run the mingw-get-inst graphical user interface installer
+                <li>When asked what components to install make sure the "C Compiler", "C++ Compiler", "MSYS Basic System", and "MinGW Developer ToolKit" options are selected.
+                <li>After installation completed you should install/update some software components. Open a MinGW Shell.
+                  <ul>
+                    <li>To get a quick overview over what packages are available type <code class="lang-bash">mingw-get list | grep Package</code>
+                    <li><code class="lang-bash">mingw-get upgrade "gcc=4.6.2-1-mingw32"</code>
+                    <li><code class="lang-bash">mingw-get upgrade "g++=4.6.2-1-mingw32"</code>
+                    <li><code class="lang-bash">mingw-get upgrade "mingwrt=3.20-mingw32"</code>
+                    <li><code class="lang-bash">mingw-get install msys-wget</code>
+                    <li><code class="lang-bash">mingw-get install msys-tar</code>
+                    <li><code class="lang-bash">mingw-get install msys-zip</code>
+                    <li><code class="lang-bash">mingw-get install msys-gzip</code>
+                    <li><code class="lang-bash">mingw-get install msys-bzip2</code>
+                    <li><code class="lang-bash">mingw-get install msys-sed</code>
+                    <li><code class="lang-bash">mingw-get install mingw32-libz</code>
+                  </ul>
+              </ol>
+            <li><a href="http://msysgit.github.com/">Git For Windows</a> (don't take the msysGit version)
+              <ol>
+                <li>When asked how you would like to adjust your PATH environment select the third option "Run Git and include Unix tools from the Windows Command Promt"
+                    <img src="images/install/git for windows - adjust PATH.png">
+                <li>When asked how to handle line endings make sure to select the option to "keep the line endings on checkout" and commit as UNIX.
+              </ol>
+          </ul>
+        </section>
+      </section>
+      <section class="subsection" id="subsection_trouble">
+        <h3>Troubleshooting:</h3>
+        <ul>
+          <li>
+            <div class="question">Q: When compiling you get errors like: <code>unknown type uintptr_t</code></div>
+            <div class="answer">A: You are probably on windows and git your line endings got messed up. Type <code>git config --global core.autocrlf input</code> in a shell, remove your working directory and checkout mars anew.</div>
+          </li>
+        </ul>
+      </section>
+    </section>
+    <section id="section_launch">
+      <h2>Launch:</h2>
+      After MARS is installed you can find a mars_default configuration folder in $MARS_DEV_ROOT/install/configuration. To launch MARS open a Terminal (on Windows a msys shell) and type:
+      <code class="lang-bash block">cd $MARS_DEV_ROOT
+. env.sh
+cd install/configuration/mars_default
+mars_app</code>      
+    </section>
+    <section id="section_tutorials">
+      <h2>Tutorials:</h2>
+      <ul>
+        <li>
+          <a href="tutorials/basic/basic_tutorial.html"> basic modeling tutorial (create a first robot with Blender)</a>
+        </li>
+      </ul>
+    </section>
+    <footer>
+      <a href="http://validator.w3.org/check?uri=referer" target="_blank">
+        <img src="http://www.w3.org/Icons/valid-html401"
+             alt="Valid HTML 4.01 Transitional"/>
+      </a>
+      <a href="http://jigsaw.w3.org/css-validator/check/referer" target="_blank">
+        <img src="http://jigsaw.w3.org/css-validator/images/vcss"
+             alt="Valid CSS!"/>
+      </a>
+    </footer>
+</div>
+</body>
+</html>

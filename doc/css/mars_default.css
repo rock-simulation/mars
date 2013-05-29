@@ -1,0 +1,106 @@
+.nav-box {
+  position:fixed;
+  top:15px; 
+  right:15px; 
+  width:180px;
+  overflow:hidden;
+  float:right;
+  border-width:2px;
+  border-style:solid;
+  padding:10px;
+}
+
+nav ol {
+    margin-top: 0px;
+    margin-left: -2em;
+    list-style-position:outside;
+    list-style-type: none;
+}
+
+nav ol li{
+    padding-left: 0px;
+}
+
+body {
+    background-color: #D3D3D3;
+    margin:15px;
+    
+}
+
+#content {
+    background-color: #FFFFFF;    
+    width: 860px;
+    outline-width: 3px;
+    outline-style: solid;
+    padding: 20px 40px;
+    margin: 40px auto 80px auto;
+}
+
+header img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+    
+h2 {
+    font-size: 2.2em;
+    font-weight: bold;
+    text-decoration: underline;
+}
+
+h3 {
+    font-size:1.5em; 
+    font-weight:bold;
+    margin-bottom:10px;
+    margin-top:0px;
+}
+
+.logo {
+    height: 3.5em;
+}
+
+#logo-left {
+    float: left;
+}
+
+#logo-right {
+    float: right;
+}
+
+section {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.question {
+    text-decoration: underline;
+}
+.answer {
+}
+code {
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
+    font-size: 0.8em;
+    background-color: #eaeaea;
+}
+code.block {
+    border-width: 1px;
+    border-style: dashed;
+    display: block;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    white-space: pre;
+}
+.quote {
+    font-style: italic;
+}
+
+footer {
+    text-align: center;
+    margin-top: 60px;
+}
+
+footer img {
+    border-style: none;
+    border-width:0px;
+}
