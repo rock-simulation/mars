@@ -142,7 +142,7 @@ namespace mars {
         prop.sValue = configDir;
         cfg->setProperty(prop);
         cfg->getOrCreateProperty("Graphics", "backfaceCulling", false);
-        cfg->getOrCreateProperty("Graphics", "num multisamples", 4);
+        cfg->getOrCreateProperty("Graphics", "num multisamples", 0);
       }
 
       // then get the simulation
