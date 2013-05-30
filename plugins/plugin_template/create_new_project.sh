@@ -9,8 +9,7 @@ echo "namespace:      $4"
 echo "author:         $5"
 echo "email:          $6"
 echo -e "\033[32;1m"
-echo -n "are the arguments correct? (y/n) "
-read answer
+read -p "are the arguments correct? (y/n) " answer
 
 if [ $answer = "y" ]; then
   projDir=../$4
@@ -31,95 +30,27 @@ if [ $answer = "y" ]; then
 
   echo "replace variables ..."
 
-  # project name in CMakeLists.txt
-  mv $projDir/CMakeLists.txt tmp.txt
-  sed "s/__project__/${projName}/g" tmp.txt > $projDir/CMakeLists.txt
-  rm -f tmp.txt
+  FILES="${projDir}/CMakeLists.txt
+         ${projDir}/manifest.xml
+         ${projDir}/src/${classname}.h
+         ${projDir}/src/${classname}.cpp"
+  SED_PAIRS="__project__:${projName}
+             __classname__:${classname}
+             __description__:${description}
+             __namespace__:${namespace}
+             __author__:${author}
+             __email__:${email}
+             __headerDef__:${headerDef}"
 
-  # class name in CMakeLists.txt
-  mv $projDir/CMakeLists.txt tmp.txt
-  sed "s/__classname__/${classname}/g" tmp.txt > $projDir/CMakeLists.txt
-  rm -f tmp.txt
-
-  # description in CMakeLists.txt
-  mv $projDir/CMakeLists.txt tmp.txt
-  sed "s/__description__/${description}/g" tmp.txt > $projDir/CMakeLists.txt
-  rm -f tmp.txt
-
-  # project name in manifest.xml
-  mv $projDir/manifest.xml tmp.txt
-  sed "s/__project__/${projName}/g" tmp.txt > $projDir/manifest.xml
-  rm -f tmp.txt
-
-  # description in manifest.xml
-  mv $projDir/manifest.xml tmp.txt
-  sed "s/__description__/${description}/g" tmp.txt > $projDir/manifest.xml
-  rm -f tmp.txt
-
-  # project name in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__project__/${projName}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # class name in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__classname__/${classname}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # description in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__description__/${description}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # namespace in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__namespace__/${namespace}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # author in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__author__/${author}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # email in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__email__/${email}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # header definition in .h
-  mv $projDir/src/${classname}.h tmp.txt
-  sed "s/__headerDef__/${headerDef}/g" tmp.txt > $projDir/src/${classname}.h
-  rm -f tmp.txt
-
-  # project name in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__project__/${projName}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
-
-  # project name in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__classname__/${classname}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
-
-  # description in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__description__/${description}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
-
-  # namespace in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__namespace__/${namespace}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
-
-  # author in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__author__/${author}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
-
-  # email in .cpp
-  mv $projDir/src/${classname}.cpp tmp.txt
-  sed "s/__email__/${email}/g" tmp.txt > $projDir/src/${classname}.cpp
-  rm -f tmp.txt
+  for F in ${FILES}; do
+      for PAIR in ${SED_PAIRS}; do
+          SEARCH_STRING=${PAIR%:*};
+          REPLACE_STRING=${PAIR#*:};
+          mv "${F}" tmp.txt;
+          sed "s/${SEARCH_STRING}/${REPLACE_STRING}/g" tmp.txt > "${F}";
+          rm -f tmp.txt;
+      done
+  done
 
   echo  -e "\033[32;1m"
   echo "********** done creating project **********"
