@@ -12,7 +12,7 @@
 <body>
 
   <div class="nav-box">
-    <h3>Navigation</h3>
+    <h2>Navigation</h2>
     <nav>
       <ol>
         <li><a href="">Home</a></li>
@@ -34,16 +34,16 @@
 
     
     <section id="section_about">
-      <h2>About:</h2>
+      <h1>About:</h1>
       MARS (Machina Arte Robotum Simulans) is a simulation and visualisation tool for developing control algorithms and designing robots. It consists of a core framework containing all main simulation components, a GUI, OpenGL based visualisation and a physics core that is currently based on ODE (www.ode.org). The software is designed in a modular manner by making high use of interfaces. In this way many parts of MARS can be also used standalone (e.g. the physic simulation can be used without any visualization or GUI).
     </section>
 
     <section id="section_news">
-      <h2>News:</h2>
+      <h1>News:</h1>
     </section>
 
     <section id="section_install">
-      <h2>Installation:</h2>
+      <h1>Installation:</h1>
       This section describes how to setup a development environment for MARS.
       You should create a dedicated development folder on your harddrive.
       Something like C:/development/mars_git or /home/my_username/development/mars_git.
@@ -65,16 +65,16 @@ git clone git://gitorious.org/rock-simulation/mars.git</code>
 ./mars/scripts/bootstrap/apt_get_dep.sh</code>
      </section>
       <section class="subsection" id="subsection_install_osx">
-        <h3>OS X:</h3>
+        <h2>OS X:</h2>
         On "OS X" you have to install QT and OpenSceneGraph manually. Check the project pages for installation help (http://qt-project.org and http://openscenegraph.org).
         Other dependencies can be installed by the script "port_get_deb.sh" via macports:
         <code class="lang-bash block">cd $MARS_DEV_ROOT
 ./mars/scripts/bootstrap/port_get_dep.sh</code>
       </section>
       <section class="subsection" id="subsection_install_windows">
-        <h3>Windows:</h3>
+        <h2>Windows:</h2>
         <section class="subsubsection" if="subsubsection_install_windows_prerequisites">
-          <h4>Prerequisites</h4>
+          <h3>Prerequisites</h3>
           <ul>
             <li>OSG: installed and bin dir in PATH
             <li>SSH: <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY</a> (pick the "Windows installer for everything except PuTTYtel")
@@ -107,7 +107,7 @@ git clone git://gitorious.org/rock-simulation/mars.git</code>
         </section>
       </section>
       <section class="subsection" id="subsection_trouble">
-        <h3>Troubleshooting:</h3>
+        <h2>Troubleshooting:</h2>
         <ul>
           <li>
             <div class="question">Q: When compiling you get errors like: <code>unknown type uintptr_t</code></div>
@@ -117,7 +117,7 @@ git clone git://gitorious.org/rock-simulation/mars.git</code>
       </section>
     </section>
     <section id="section_launch">
-      <h2>Launch:</h2>
+      <h1>Launch:</h1>
       After MARS is installed you can find a mars_default configuration folder in $MARS_DEV_ROOT/install/configuration. To launch MARS open a Terminal (on Windows a msys shell) and type:
       <code class="lang-bash block">cd $MARS_DEV_ROOT
 . env.sh
@@ -125,7 +125,7 @@ cd install/configuration/mars_default
 mars_app</code>      
     </section>
     <section id="section_tutorials">
-      <h2>Tutorials:</h2>
+      <h1>Tutorials:</h1>
       <ul>
         <li>
           <a href="tutorials/basic/basic_tutorial.html"> basic modeling tutorial (create a first robot with Blender)</a>

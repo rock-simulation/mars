@@ -1,7 +1,7 @@
 .nav-box {
   position:fixed;
-  top:15px; 
-  right:15px; 
+  top:15px;
+  right:15px;
   width:180px;
   overflow:hidden;
   float:right;
@@ -24,11 +24,11 @@ nav ol li{
 body {
     background-color: #D3D3D3;
     margin:15px;
-    
+
 }
 
 #content {
-    background-color: #FFFFFF;    
+    background-color: #FFFFFF;
     width: 860px;
     outline-width: 3px;
     outline-style: solid;
@@ -41,17 +41,24 @@ header img {
     margin-left: auto;
     margin-right: auto;
 }
-    
-h2 {
+
+h1 {
     font-size: 2.2em;
     font-weight: bold;
     text-decoration: underline;
 }
 
-h3 {
-    font-size:1.5em; 
-    font-weight:bold;
+h2 {
+    font-size: 1.5em;
+    font-weight: bold;
     margin-bottom:10px;
+    margin-top:0px;
+}
+
+h3 {
+    font-size:1.1em;
+    font-weight:bold;
+    margin-bottom:8px;
     margin-top:0px;
 }
 
