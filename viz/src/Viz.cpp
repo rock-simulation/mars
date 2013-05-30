@@ -164,7 +164,6 @@ namespace mars {
 
       std::string tmpPath = "./tmp/";
       scene_loader::Load load(filename, NULL, tmpPath, "");
-
       load.prepareLoad();
       load.parseScene();
 
@@ -284,12 +283,18 @@ namespace mars {
               }
               else {
                 bool connected = false;
+                bool invert = false;
                 for(jointIt=jointList.begin(); jointIt!=jointList.end();
                     ++jointIt) {
                   if((jointIt->nodeIndex1 == it1->first &&
-                      jointIt->nodeIndex2 == it2->first) ||
-                     (jointIt->nodeIndex2 == it1->first &&
-                      jointIt->nodeIndex1 == it2->first)) {
+                      jointIt->nodeIndex2 == it2->first)) {
+                    connected = true;
+                    done = false;
+                    invert = true;
+                    break;
+                  }
+                  else if((jointIt->nodeIndex2 == it1->first &&
+                        jointIt->nodeIndex1 == it2->first)) {
                     connected = true;
                     done = false;
                     break;
@@ -305,6 +310,7 @@ namespace mars {
                   //       - handle if we have to invert the axis depending on
                   //         on the node order
                   ForwardTransform ft;
+                  ft.name = jointIt->name;
                   if(jointIt->anchorPos == ANCHOR_NODE1) {
                     ft.anchor = it1->second.pos;
                   }
@@ -323,8 +329,15 @@ namespace mars {
                   ft.axis = it1->second.rot.inverse() * jointIt->axis1;
                   ft.axis.normalize();
                   ft.q = node.rot;
-                  ft.value = jointIt->angle1_offset;
-                  ft.offset = jointIt->angle1_offset;
+                  if(invert) {
+                    ft.axis *= -1;
+                    ft.value = -jointIt->angle1_offset;
+                    ft.offset = -jointIt->angle1_offset;
+                  }
+                  else {
+                    ft.value = jointIt->angle1_offset;
+                    ft.offset = jointIt->angle1_offset;
+                  }
                   ft.id = node.index;
                   ft.jointId = jointIt->index;
                   if(jointIt->type == JOINT_TYPE_SLIDER) {

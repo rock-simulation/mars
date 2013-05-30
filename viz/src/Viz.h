@@ -65,6 +65,7 @@ namespace mars {
       unsigned long id;
       unsigned long jointId;
       bool linear;
+      std::string name;
     };
 
     class GraphicsTimer;
