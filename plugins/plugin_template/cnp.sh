@@ -7,8 +7,8 @@ echo -n "insert project name: "
 read name
 
 # sed only supports the \u operator since version 4.x and MSYS ships 3.y
-if [[ `sed --version | grep "version"  | sed -e 's/.*version \([0-9]\).*/\1/g'` == "4" ]]; then
-    classname=`sed -e 's/_\([a-z]\)/\u\1/g' <<< $name`;
+if [[ `sed --version | grep -i "version"  | sed -e 's/.*[vV]ersion \([0-9]\).*/\1/g'` == "4" ]]; then
+    classname=`sed -e 's/_\([a-z]\)/\u\1/g' -e 's/^\([a-z]\)/\u\1/g' <<< $name`;
 elif [[ -x `which perl` ]]; then
     classname=`perl -pe 's/_([a-z])/\u\1/g;' -pe 's/^([a-z])/\u\1/;' <<< $name`;
 else
