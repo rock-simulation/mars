@@ -337,7 +337,10 @@ def parseNode(domElement, tmpDir):
                 
                 # store the index of the node as custom property
                 obj["id"] = index
-
+                
+                # set the object type to be a node
+                obj["type"] = "body"
+                
                 # set the size of the object
                 print("visualsize = %s" % visual_size)
                 obj.dimensions = mathutils.Vector((float(visual_size["x"]),\
@@ -466,12 +469,18 @@ def parseJoint(domElement):
     ######## LOAD THE JOINT IN BLENDER ########
 
     # create a new cylinder as representation of the joint        
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=0.25)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
     for obj in bpy.data.objects:
         if obj.name == "Cylinder":
             # set the name of the object
             obj.name = name
+            
+            # store the index of the joint as custom property
+            obj["id"] = index
+            
+            # set the object type to be a joint
+            obj["type"] = "joint"
 
             axis1 = mathutils.Vector((float(axis1["x"]),\
                                       float(axis1["z"]),\
@@ -488,7 +497,7 @@ def parseJoint(domElement):
 
             for tmp in bpy.data.objects:
                 # check whether it's a node or a joint
-                if "id" in tmp:
+                if tmp["type"] == "body":
                     # check for thr right "ids"
                     if tmp["id"] == nodeIndex1:
                         node1 =tmp
@@ -558,6 +567,7 @@ def main(fileDir, filename):
             print("Error while parsing node!")
             sys.exit(1)
 
+    # parsing all joints
     joints = dom.getElementsByTagName("joint")
     for joint in joints :
         if not parseJoint(joint):
