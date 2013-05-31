@@ -69,4 +69,5 @@ if __name__ == '__main__':
     relPath = "../.."
     filePath = "tutorials/basic/"
     convertRstToHtml(relPath, filePath, "basic_tutorial")
+    convertRstToHtml(relPath, filePath, "plugin_tutorial")
 
