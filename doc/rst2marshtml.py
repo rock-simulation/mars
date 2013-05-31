@@ -25,7 +25,7 @@ def createHeader(relPath):
                </div>
                <div id="content">
                <header>
-                 <img src="{relPath}/images/logo_v2_wob.png" alt="MARS" />
+                 <a href="{relPath}/index.html"><img src="{relPath}/images/logo_v2_wob.png" alt="MARS" /></a>
                </header>
        '''.format(relPath = relPath)
     return textwrap.dedent(out)
