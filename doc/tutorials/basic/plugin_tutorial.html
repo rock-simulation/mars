@@ -27,67 +27,103 @@
 <img alt="../../images/robo.jpg" src="../../images/robo.jpg" style="width: 600px;" />
 <div class="section" id="introduction">
 <h1>Introduction</h1>
-<p>There are different possibilities how the MARS simulation can be used. One possibility is to write a plugin that handles the loading of a scenario and interfaces the simulation to some control software. Also, in many cases, the control software can be directly wrapped into a simulation plugin. This tutorial will guide you how to create a new plugin, load your scene, and control the simulation.</p>
+<p>There are different possibilities how the MARS simulation can be
+used. One possibility is to write a plugin that handles the loading of
+a scenario and interfaces the simulation to some control software.
+Also, in many cases, the control software can be directly wrapped into
+a simulation plugin.  This tutorial will guide you how to create a new
+plugin, load your scene, and control the simulation.</p>
 </div>
 <div class="section" id="prerequisites">
 <h1>Prerequisites</h1>
 <p>We assume you already have a MARS development environment setup in
-&quot;$MARS_DEV_ROOT&quot;. You should also have a robot scene file to start with (if not you can use this <a class="reference external" href="robo.scn">scene</a> to follow the tutorial. You should have a terminal opened with the $MARS_DEV_ROOT/env.sh sourced into it.</p>
+&quot;$MARS_DEV_ROOT&quot;.  You should also have a robot scene file to start
+with (if not you can use this <a class="reference external" href="robo.scn">scene</a> to follow the
+tutorial.  You should have a terminal opened with the
+$MARS_DEV_ROOT/env.sh sourced into it.</p>
 <pre class="literal-block">
 cd $MARS_DEV_ROOT;
-. env.sh&lt;/code&gt;
+. env.sh
 </pre>
 </div>
 <div class="section" id="basic-plugin">
 <h1>Basic Plugin</h1>
 <div class="section" id="create-and-build-a-new-plugin">
 <h2>Create and build a new plugin</h2>
-<p>To setup your first plugin you can use a script wich will create a new plugiin:</p>
+<p>To setup your first plugin you can use a script wich will create a new
+plugin:</p>
 <pre class="literal-block">
 cd $MARS_DEV_ROOT/mars/plugins/plugin_template
 ./cnp.sh
 </pre>
-<p>The script will ask you for the project name, which will be also the class name of the main c++ class. E.g. we can enter &quot;BasicPlugin&quot; here. Then you can enter a description of your plugin (&quot;The plugin created by following the guide of the basic plugin tutorial.&quot;). Afterwards, enter the author name, email, and confirm your data. The script will create your plugin one folder above the script (&quot;$MARS_DEV_ROOT/mars/plugins/BasicPlugin&quot;). You can go into that folder and use the build.sh script to build the plugin for a first test if everything went well. To install the plugin you have to use &quot;make install&quot; within the new created build folder.</p>
+<p>The script will ask you for the project name, from which it will also
+try to derive the class name of the main c++ class.  E.g. we can enter
+&quot;basic_plugin&quot; here and the main class will then be called
+&quot;BasicPlugin&quot;.  Then you can enter a description of your plugin (&quot;The
+plugin created by following the guide of the basic plugin tutorial.&quot;).
+Afterwards, enter the author name, email, and confirm your data.  The
+script will create a folder containing your plugin one directory above
+the script location (&quot;$MARS_DEV_ROOT/mars/plugins/basic_plugin&quot;).  You
+can go into that folder and use the build.sh script to build the
+plugin for a first test if everything went well.  To install the
+plugin you have to use &quot;make install&quot; within the newly created build
+folder.</p>
 <pre class="literal-block">
-cd $MARS_DEV_ROOT/mars/plugins/BasicPlugin
+cd $MARS_DEV_ROOT/mars/plugins/basic_plugin
 ./build.sh
 cd build
 make install
 </pre>
-<p>Now copy the &quot;mars_default&quot; configuration to &quot;mars_basic_plugin&quot; and add the plugin to the &quot;other_libs.txt&quot; within &quot;mars_basic_plugin&quot; to load the new plugin when starting MARS.</p>
+<p>Now copy the &quot;mars_default&quot; configuration to &quot;mars_basic_plugin&quot; and
+add the plugin to the &quot;other_libs.txt&quot; within &quot;mars_basic_plugin&quot; to
+load the new plugin when starting MARS.</p>
 <pre class="literal-block">
 cd $MARS_DEV_ROOT/install/configuration
 cp -r mars_default mars_basic_plugin
 cd mars_basic_plugin
 </pre>
-<p>other_libs.txt:</p>
+<p>Content of other_libs.txt:</p>
 <pre class="literal-block">
 log_console
 connexion_plugin
 data_broker_gui
 cfg_manager_gui
 lib_manager_gui
-BasicPlugin
+basic_plugin
 </pre>
 <p>Start the simulation:</p>
 <pre class="literal-block">
 mars_app
 </pre>
+<p>Currently the plugin does not do anything, but it should show up in
+the list of loaded plugins which you can find under the menu entry:
+File-&gt;Library Info...</p>
 </div>
 <div class="section" id="adapt-the-plugin">
 <h2>Adapt the plugin</h2>
-<p>In the &quot;$MARS_DEV_ROOT/mars/plugins/BasicPlugin/src/BasicPlugin.cpp&quot; you will find a &quot;init()&quot; function that is called by the simulation to initialize the plugin. Just comment in the loadScene line with the path to your scene file.</p>
+<p>In the &quot;$MARS_DEV_ROOT/mars/plugins/basic_plugin/src/BasicPlugin.cpp&quot;
+you will find a &quot;init()&quot; function that is called by the simulation to
+initialize the plugin.  If your initialization code depends on the
+simulation or other plugins you should rather perform it in the init()
+function than in the constructor as the other modules may not be in a
+defined state, yet.  Just comment in the loadScene line with the path to
+your scene file.</p>
 <pre class="literal-block">
 void BasicPlugin::init() {
   // Load a scene file:
   control-&gt;sim-&gt;loadScene(&quot;robo.scn&quot;);
 </pre>
-<p>In this tutorial we are going to access the motors and sensors of the simulation. To do that we first need to include the corresponding interfaces:</p>
+<p>In this tutorial we are going to access the motors and sensors of the
+simulation.  To do that we first need to include the corresponding
+interfaces:</p>
 <pre class="literal-block">
-#include &amp;lt;mars/interfaces/sim/MotorManagerInterface.h&gt;&amp;gt;
-#include &amp;lt;mars/interfaces/sim/SensorManagerInterface.h&amp;gt;
+#include &lt;mars/interfaces/sim/MotorManagerInterface.h&gt;
+#include &lt;mars/interfaces/sim/SensorManagerInterface.h&gt;
 </pre>
-<p>To control the robot in the simulation you can set motor values in the update callback. The update callback is triggered by the simulation thread giving the simulation step time as parameter. Here we can set some motor values:</p>
+<p>To control the robot in the simulation you can set motor values in the
+update callback.  The update callback is triggered by the simulation
+thread giving the simulation step time as parameter.  Here we can set
+some motor values:</p>
 <pre class="literal-block">
 void BasicPlugin::update(sReal time_ms) {
 
@@ -95,8 +131,13 @@ void BasicPlugin::update(sReal time_ms) {
   control-&gt;motors-&gt;setMotorValue(2, 3.0);
 }
 </pre>
-<p>After doing &quot;make install&quot; in &quot;$MARS_DEV_ROOT/mars/plugins/BasicPlugin/build&quot; we should have a small robot driving a circle when starting the simulation. &lt;br/&gt;
-In the next step we want to read the sensor values of the laserscanner to create a wall following behavior. We can acess the sensor values by the id the senor gets when it is loaded into the simulation:</p>
+<p>After doing &quot;make install&quot; in
+&quot;$MARS_DEV_ROOT/mars/plugins/basic_plugin/build&quot; we should have a
+small robot driving in circles when we start the simulation.</p>
+<p>In the next step we want to read the sensor values from the laser
+scanner to create a wall following behavior.  We can access the sensor
+values by the id the sensor gets when it is loaded into the
+simulation:</p>
 <pre class="literal-block">
 void BasicPlugin::update(sReal time_ms) {
   static unsigned long laserId = control-&gt;sensors-&gt;getSensorID(&quot;laser&quot;);
@@ -105,7 +146,11 @@ void BasicPlugin::update(sReal time_ms) {
   control-&gt;motors-&gt;setMotorValue(2, 3.0);
 }
 </pre>
-<p>The &quot;getSensorData()&quot; methods gets the sensor id and a pointer to a unallocated sReal pointer. It allocates memory for the sensor data and it is important to free the memory after reading the sensor data. The method returns the number of values representing the sensor data.</p>
+<p>The &quot;getSensorData()&quot; methods takes the sensor id and a pointer to a
+unallocated sReal pointer as arguments.  It will allocate memory for
+the sensor data but the caller (in this case that is you) is
+responsible for freeing the memory after reading the sensor data.  The
+method returns the number of values representing the sensor data.</p>
 <pre class="literal-block">
 void BasicPlugin::update(sReal time_ms) {
   static unsigned long laserId = control-&gt;sensors-&gt;getSensorID(&quot;laser&quot;);
@@ -114,19 +159,21 @@ void BasicPlugin::update(sReal time_ms) {
   assert(numSensorValues == 8);
   if(sensorData[3] &lt; 1.0 || sensorData[0] &lt; 0.4) {
     control-&gt;motors-&gt;setMotorValue(2, 12.0);
-  }
-  else if(sensorData[0] &gt; 0.7) {
+  } else if(sensorData[0] &gt; 0.7) {
     control-&gt;motors-&gt;setMotorValue(2, 4.8);
-  }
-  else {
+  } else {
     control-&gt;motors-&gt;setMotorValue(2, 5.0);
   }
   control-&gt;motors-&gt;setMotorValue(1, 5.0);
   free(sensorData);
 }
 </pre>
-<p>Now we can do &quot;make install&quot; again, start the simulation, and we should see robot following the walls!</p>
-<p>The plugin source generated by the &quot;cnp.sh&quot; script includes many commented code, that gives examples how to use the simulation modules like the &quot;DataBroker&quot;, the &quot;CFGManager&quot;, or the &quot;MainGUI&quot;. A seperated documentation of these modules will be created soon.</p>
+<p>Now we can do &quot;make install&quot; again, start the simulation, and we
+should see the robot following the wall!</p>
+<p>The plugin source generated by the &quot;cnp.sh&quot; script includes many
+commented code, that gives examples of how to use the simulation
+modules like the &quot;DataBroker&quot;, the &quot;CFGManager&quot;, or the &quot;MainGUI&quot;.  A
+seperated documentation of these modules will be created soon.</p>
 </div>
 </div>
 </div>
