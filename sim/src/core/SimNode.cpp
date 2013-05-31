@@ -802,8 +802,10 @@ namespace mars {
 
     void SimNode::getDataBrokerNames(std::string *groupName,
                                      std::string *dataName) const {
-      char buffer[32];
-      sprintf(buffer, "Nodes/%05lu_%s", sNode.index, sNode.name.c_str());
+      char format[] = "Nodes/%05lu_%s";
+      int size = snprintf(0, 0, format, sNode.index, sNode.name.c_str());
+      char buffer[size];
+      sprintf(buffer, format, sNode.index, sNode.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;
     }
