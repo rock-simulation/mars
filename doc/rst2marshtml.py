@@ -12,7 +12,7 @@ def createHeader(relPath):
                  <meta name="description" content="MARS is a flexible physics simulator.">
                  <meta name="author" content="MARS Project">
                  <meta name="keywords" content="MARS, simulation, physics, robotics">
-                 <link rel="stylesheet" type="text/css" href="{relPath}/css/mars_default.css" media="all" />'
+                 <link rel="stylesheet" type="text/css" href="{relPath}/css/mars_default.css" media="all" />
                </head>
              <body>
                <div class="nav-box">
