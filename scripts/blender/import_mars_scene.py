@@ -338,6 +338,9 @@ def parseNode(domElement, tmpDir):
                 # store the index of the node as custom property
                 obj["id"] = index
                 
+                # store the group index as custom property
+                obj["group"] = groupID
+                
                 # set the object type to be a node
                 obj["type"] = "body"
                 
@@ -500,7 +503,7 @@ def parseJoint(domElement):
                 if tmp["type"] == "body":
                     # check for thr right "ids"
                     if tmp["id"] == nodeIndex1:
-                        node1 =tmp
+                        node1 = tmp
                     if tmp["id"] == nodeIndex2:
                         node2 = tmp
 
@@ -525,7 +528,47 @@ def parseJoint(domElement):
 #            obj.rotation_mode = "QUATERNION"
 #            obj.rotation_quaternion = axisInNode1 * node1.rotation_quaternion.inverted()
 
+            # setting up the node hierarchy (between parent and child node)
+            if node1 != None and node2 != None:
+                # de-select all objects
+                if len(bpy.context.selected_objects) > 0:
+                    bpy.ops.object.select_all()
 
+                # select the child    
+                node2.select = True
+
+                # select the parent
+                node1.select = True
+                
+                # set the parent to be the currently active object
+                bpy.context.scene.objects.active = node1
+
+                # set the parent-child relationship    
+                bpy.ops.object.parent_set(type="OBJECT")
+
+            # setting up the node hierarchy (between parent node and joint helper)
+            if node1 != None:
+                # de-select all objects
+                if len(bpy.context.selected_objects) > 0:
+                    bpy.ops.object.select_all()
+
+                # select the child    
+                obj.select = True
+
+                # select the parent
+                node1.select = True
+                
+                # set the parent to be the currently active object
+                bpy.context.scene.objects.active = node1
+
+                # set the parent-child relationship    
+                bpy.ops.object.parent_set(type="OBJECT")
+
+            # store the pointer to the second joint node as custom property
+            if node2 != None:
+                obj["node2"] = node2
+
+    
     return True
 
 
