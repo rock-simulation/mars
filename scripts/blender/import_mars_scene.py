@@ -345,6 +345,7 @@ def parseNode(domElement, tmpDir):
                 obj["type"] = "body"
                 
                 # set the size of the object
+                #TODO: find out why the inversion of y- and z-axis is required
                 print("visualsize = %s" % visual_size)
                 obj.dimensions = mathutils.Vector((float(visual_size["x"]),\
                                                    float(visual_size["z"]),\
@@ -486,8 +487,8 @@ def parseJoint(domElement):
             obj["type"] = "joint"
 
             axis1 = mathutils.Vector((float(axis1["x"]),\
-                                      float(axis1["z"]),\
-                                      float(axis1["y"])))
+                                      float(axis1["y"]),\
+                                      float(axis1["z"])))
 
             # check whether 'axis1' is valid and the type is not 'fixed'
             if axis1.length_squared < EPSILON and type != 6:
@@ -521,12 +522,10 @@ def parseJoint(domElement):
             else:
                 print("WARNING! Wrong anchor position for joint \'%s\'" % name)
 
-#            axisInNode1 = mathutils.Vector((float(axis1["x"]),\
-#                                            float(axis1["y"]),\
-#                                            float(axis1["z"])))
-
-#            obj.rotation_mode = "QUATERNION"
-#            obj.rotation_quaternion = axisInNode1 * node1.rotation_quaternion.inverted()
+            # set the orientation of the joint
+            z_axis = mathutils.Vector((0.0,0.0,1.0))
+            obj.rotation_mode = "QUATERNION"
+            obj.rotation_quaternion = z_axis.rotation_difference(axis1)
 
             # setting up the node hierarchy (between parent and child node)
             if node1 != None and node2 != None:
