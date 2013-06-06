@@ -325,69 +325,152 @@ def parseNode(domElement, tmpDir):
 
     ######## LOAD THE NODE IN BLENDER ########
 
-    if filename != "PRIMITIVE":
+    # "pointer" to the newly created object
+    node = None
+
+    if filename == "PRIMITIVE":
+
+        if typeName == "box":
+            # create a new box as representation of the node
+            bpy.ops.mesh.primitive_cube_add()
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cube":
+                    # set the name of the object
+                    node = obj
+                    # set the size of the cube
+                    node.dimensions = mathutils.Vector((float(ext["x"]),\
+                                                        float(ext["y"]),\
+                                                        float(ext["z"])))
+
+        elif typeName == "sphere":
+            # create a new sphere as representation of the node
+            bpy.ops.mesh.primitive_uv_sphere_add(size = float(ext["x"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Sphere":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "reference":
+            # TODO: is that really needed?
+            print("Warning! Unhandled node type \'reference\'.")
+
+        elif typeName == "mesh":
+            # TODO: is that really needed?
+            print("Warning! Unhandled node type \'mesh\'.")
+
+        elif typeName == "cylinder":
+            # create a new cylinder as representation of the node
+            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cylinder":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "capsule":
+            print("Warning! Node type \'capsule\' yet supported, using \'cylinder\' instead.")
+            # create a new cylinder as representation of the node
+            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cylinder":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "plane":
+            # create a new plane as representation of the node
+            bpy.ops.mesh.primitive_plane_add()
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Plane":
+                    # set the name of the object
+                    node = obj
+                    # set the size of the cube
+                    node.dimensions = mathutils.Vector((float(ext["x"]),\
+                                                        float(ext["y"]),\
+                                                        float(ext["z"])))
+
+        else:
+            print("Cannot find primitive type: %s" % origName) 
+
+    elif physicMode == "terrain":
+        # TODO: Creating terrain in Blender ...
+        print("Warning! \'Terrain\' nodes are not handled right now!")
+
+    # we have to load the node from an import file
+    else:
         # import the respective .obj file
         bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
 
-        # rename the currently loaded object
+        # get the currently added object
         for obj in bpy.data.objects:
             if filename in obj.name:
-                # set the name of the object
-                obj.name = name
-                
-                # store the index of the node as custom property
-                obj["id"] = index
-                
-                # store the group index as custom property
-                obj["group"] = groupID
-                
-                # set the object type to be a node
-                obj["type"] = "body"
-                
-                # set the size of the object
-                #TODO: find out why the inversion of y- and z-axis is required
-                print("visualsize = %s" % visual_size)
-                obj.dimensions = mathutils.Vector((float(visual_size["x"]),\
-                                                   float(visual_size["z"]),\
-                                                   float(visual_size["y"])))
+                node = obj
 
-                # set the position of the object
-                print("pos = %s" % pos)
-                position = mathutils.Vector((float(pos["x"]),\
-                                             float(pos["y"]),\
-                                             float(pos["z"])))
+        # set the size of the object
+        #TODO: find out why the inversion of y- and z-axis is required
+        node.dimensions = mathutils.Vector((float(visual_size["x"]),\
+                                            float(visual_size["z"]),\
+                                            float(visual_size["y"])))
 
-                print("rot = %s" % rot)
-                rotation = mathutils.Quaternion((float(rot["w"]),\
-                                                 float(rot["x"]),\
-                                                 float(rot["y"]),\
-                                                 float(rot["z"])))
+    # Set the parameter, orientation and position of the new node
+    if node != None:
 
-                print("visual_offset_pos = %s" % visual_offset_pos)
-                visual_position = mathutils.Vector((float(visual_offset_pos["x"]),\
-                                                    float(visual_offset_pos["y"]),\
-                                                    float(visual_offset_pos["z"])))
+        # set the name of the object
+        node.name = name
 
-                obj.location = position + rotation * visual_position
+        # store the index of the node as custom property
+        node["id"] = index
 
-                # set the rotation of the object
-                print("rot = %s" % rot)
-                rotation = mathutils.Quaternion((float(rot["w"]),\
-                                                 float(rot["x"]),\
-                                                 float(rot["y"]),\
-                                                 float(rot["z"])))
+        # store the group index as custom property
+        node["group"] = groupID
 
-                print("visual_offset_rot = %s" % visual_offset_rot)
-                visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),\
-                                                        float(visual_offset_rot["x"]),\
-                                                        float(visual_offset_rot["y"]),\
-                                                        float(visual_offset_rot["z"])))
+        # set the object type to be a node
+        node["type"] = "body"
 
-                # TODO: why do we need this offset rotation?!?
-                rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
+        # set the position of the object
+        print("pos = %s" % pos)
+        position = mathutils.Vector((float(pos["x"]),\
+                                     float(pos["y"]),\
+                                     float(pos["z"])))
 
-                obj.rotation_mode = "QUATERNION"
-                obj.rotation_quaternion = rotation * visual_rotation * rotation_offset
+        print("rot = %s" % rot)
+        rotation = mathutils.Quaternion((float(rot["w"]),\
+                                         float(rot["x"]),\
+                                         float(rot["y"]),\
+                                         float(rot["z"])))
+
+        print("visual_offset_pos = %s" % visual_offset_pos)
+        visual_position = mathutils.Vector((float(visual_offset_pos["x"]),\
+                                            float(visual_offset_pos["y"]),\
+                                            float(visual_offset_pos["z"])))
+
+        node.location = position + rotation * visual_position
+
+        # set the rotation of the object
+        print("rot = %s" % rot)
+        rotation = mathutils.Quaternion((float(rot["w"]),\
+                                         float(rot["x"]),\
+                                         float(rot["y"]),\
+                                         float(rot["z"])))
+
+        print("visual_offset_rot = %s" % visual_offset_rot)
+        visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),\
+                                                float(visual_offset_rot["x"]),\
+                                                float(visual_offset_rot["y"]),\
+                                                float(visual_offset_rot["z"])))
+
+        # TODO: why do we need this offset rotation?!?
+        rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
+
+        node.rotation_mode = "QUATERNION"
+        node.rotation_quaternion = rotation * visual_rotation * rotation_offset
+    
+    else:
+        print("ERROR! Something went wrong while creating node \'%s\'" % name)
+        return False
 
     return True
 
