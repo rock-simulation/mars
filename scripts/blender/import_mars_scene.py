@@ -35,6 +35,10 @@ jointTypes = ["undefined",
               "istruct-spine"
              ]
 
+# global list of nodes and joints
+nodeList = []
+jointList = []
+
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
@@ -418,6 +422,9 @@ def parseNode(domElement, tmpDir):
     # Set the parameter, orientation and position of the new node
     if node != None:
 
+        # add the node to the global node list
+        nodeList.append(node)
+
         # set the name of the object
         node.name = name
 
@@ -467,7 +474,7 @@ def parseNode(domElement, tmpDir):
 
         node.rotation_mode = "QUATERNION"
         node.rotation_quaternion = rotation * visual_rotation * rotation_offset
-    
+
     else:
         print("ERROR! Something went wrong while creating node \'%s\'" % name)
         return False
@@ -507,7 +514,7 @@ def parseJoint(domElement):
 
     if checkConfigParameter(config,"nodeindex2"):
         nodeIndex2 = int(config["nodeindex2"])
-    
+
     # handle axis 1
     if checkConfigParameter(config,"axis1"):
         axis1 = config["axis1"]
@@ -555,102 +562,111 @@ def parseJoint(domElement):
 
     ######## LOAD THE JOINT IN BLENDER ########
 
+    # "pointer" to the newly created object
+    joint = None
+
     # create a new cylinder as representation of the joint        
     bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
     for obj in bpy.data.objects:
         if obj.name == "Cylinder":
-            # set the name of the object
-            obj.name = name
-            
-            # store the index of the joint as custom property
-            obj["id"] = index
-            
-            # set the object type to be a joint
-            obj["type"] = "joint"
+            joint = obj
 
-            axis1 = mathutils.Vector((float(axis1["x"]),\
-                                      float(axis1["y"]),\
-                                      float(axis1["z"])))
+    if joint != None:
+        # add the node to the global node list
+        jointList.append(joint)
 
-            # check whether 'axis1' is valid and the type is not 'fixed'
-            if axis1.length_squared < EPSILON and type != 6:
-                print("ERROR! Cannot create joint \'%s\' without axis1" % name)
-                #TODO: remove created cylinder
-                return False
+        # set the name of the object
+        joint.name = name
 
-            node1 = None
-            node2 = None
+        # store the index of the joint as custom property
+        joint["id"] = index
 
-            for tmp in bpy.data.objects:
-                # check whether it's a node or a joint
-                if tmp["type"] == "body":
-                    # check for thr right "ids"
-                    if tmp["id"] == nodeIndex1:
-                        node1 = tmp
-                    if tmp["id"] == nodeIndex2:
-                        node2 = tmp
+        # set the object type to be a joint
+        joint["type"] = "joint"
 
-            # determine the anchor position of the joint
-            if anchorPos == 1: # "node1"
-                obj.location = node1.location
-            elif anchorPos == 2: # "node2"
-                obj.location = node2.location
-            elif anchorPos == 3: # "center"
-                obj.location = (node1.location + node2.location) / 2.0
-            elif anchorPos == 4: # "custom"
-                obj.location = mathutils.Vector((float(anchor["x"]),\
-                                                 float(anchor["y"]),\
-                                                 float(anchor["z"])))
-            else:
-                print("WARNING! Wrong anchor position for joint \'%s\'" % name)
+        axis1 = mathutils.Vector((float(axis1["x"]),\
+                                  float(axis1["y"]),\
+                                  float(axis1["z"])))
 
-            # set the orientation of the joint
-            z_axis = mathutils.Vector((0.0,0.0,1.0))
-            obj.rotation_mode = "QUATERNION"
-            obj.rotation_quaternion = z_axis.rotation_difference(axis1)
+        # check whether 'axis1' is valid and the type is not 'fixed'
+        if axis1.length_squared < EPSILON and type != 6:
+            print("ERROR! Cannot create joint \'%s\' without axis1" % name)
+            #TODO: remove created cylinder
+            return False
 
-            # setting up the node hierarchy (between parent and child node)
-            if node1 != None and node2 != None:
-                # de-select all objects
-                if len(bpy.context.selected_objects) > 0:
-                    bpy.ops.object.select_all()
+        node1 = None
+        node2 = None
 
-                # select the child    
-                node2.select = True
+        for tmp in bpy.data.objects:
+            # check whether it's a node or a joint
+            if tmp["type"] == "body":
+                # check for thr right "ids"
+                if tmp["id"] == nodeIndex1:
+                    node1 = tmp
+                if tmp["id"] == nodeIndex2:
+                    node2 = tmp
 
-                # select the parent
-                node1.select = True
-                
-                # set the parent to be the currently active object
-                bpy.context.scene.objects.active = node1
+        # determine the anchor position of the joint
+        if anchorPos == 1: # "node1"
+            joint.location = node1.location
+        elif anchorPos == 2: # "node2"
+            joint.location = node2.location
+        elif anchorPos == 3: # "center"
+            joint.location = (node1.location + node2.location) / 2.0
+        elif anchorPos == 4: # "custom"
+            joint.location = mathutils.Vector((float(anchor["x"]),\
+                                               float(anchor["y"]),\
+                                               float(anchor["z"])))
+        else:
+            #TODO: What position should be set in this case?
+            print("WARNING! Wrong anchor position for joint \'%s\'" % name)
 
-                # set the parent-child relationship    
-                bpy.ops.object.parent_set(type="OBJECT")
+        # set the orientation of the joint
+        z_axis = mathutils.Vector((0.0,0.0,1.0))
+        joint.rotation_mode = "QUATERNION"
+        joint.rotation_quaternion = z_axis.rotation_difference(axis1)
 
-            # setting up the node hierarchy (between parent node and joint helper)
-            if node1 != None:
-                # de-select all objects
-                if len(bpy.context.selected_objects) > 0:
-                    bpy.ops.object.select_all()
+        # setting up the node hierarchy (between parent and child node)
+        if node1 != None and node2 != None:
+            # de-select all objects
+            if len(bpy.context.selected_objects) > 0:
+                bpy.ops.object.select_all()
 
-                # select the child    
-                obj.select = True
+            # select the child
+            node2.select = True
 
-                # select the parent
-                node1.select = True
-                
-                # set the parent to be the currently active object
-                bpy.context.scene.objects.active = node1
+            # select the parent
+            node1.select = True
 
-                # set the parent-child relationship    
-                bpy.ops.object.parent_set(type="OBJECT")
+            # set the parent to be the currently active object
+            bpy.context.scene.objects.active = node1
 
-            # store the pointer to the second joint node as custom property
-            if node2 != None:
-                obj["node2"] = node2
+            # set the parent-child relationship
+            bpy.ops.object.parent_set(type="OBJECT")
 
-    
+        # setting up the node hierarchy (between parent node and joint helper)
+        if node1 != None:
+            # de-select all objects
+            if len(bpy.context.selected_objects) > 0:
+                bpy.ops.object.select_all()
+
+            # select the child
+            joint.select = True
+
+            # select the parent
+            node1.select = True
+
+            # set the parent to be the currently active object
+            bpy.context.scene.objects.active = node1
+
+            # set the parent-child relationship
+            bpy.ops.object.parent_set(type="OBJECT")
+
+#        # store the pointer to the second joint node as custom property
+#        if node2 != None:
+#            joint["node2"] = node2
+
     return True
 
 
