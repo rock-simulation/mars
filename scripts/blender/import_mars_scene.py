@@ -45,7 +45,7 @@ def removeWhitespaceNodes(parent, unlink=True):
     remove_list = []
 
     for child in parent.childNodes:
-        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and \
+        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and
            not child.data.strip():
             remove_list.append(child)
         elif child.hasChildNodes():
@@ -343,8 +343,8 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = mathutils.Vector((float(ext["x"]),\
-                                                        float(ext["y"]),\
+                    node.dimensions = mathutils.Vector((float(ext["x"]),
+                                                        float(ext["y"]),
                                                         float(ext["z"])))
 
         elif typeName == "sphere":
@@ -392,8 +392,8 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = mathutils.Vector((float(ext["x"]),\
-                                                        float(ext["y"]),\
+                    node.dimensions = mathutils.Vector((float(ext["x"]),
+                                                        float(ext["y"]),
                                                         float(ext["z"])))
 
         else:
@@ -415,8 +415,8 @@ def parseNode(domElement, tmpDir):
 
         # set the size of the object
         #TODO: find out why the inversion of y- and z-axis is required
-        node.dimensions = mathutils.Vector((float(visual_size["x"]),\
-                                            float(visual_size["z"]),\
+        node.dimensions = mathutils.Vector((float(visual_size["x"]),
+                                            float(visual_size["z"]),
                                             float(visual_size["y"])))
 
     # Set the parameter, orientation and position of the new node
@@ -439,34 +439,34 @@ def parseNode(domElement, tmpDir):
 
         # set the position of the object
         print("pos = %s" % pos)
-        position = mathutils.Vector((float(pos["x"]),\
-                                     float(pos["y"]),\
+        position = mathutils.Vector((float(pos["x"]),
+                                     float(pos["y"]),
                                      float(pos["z"])))
 
         print("rot = %s" % rot)
-        rotation = mathutils.Quaternion((float(rot["w"]),\
-                                         float(rot["x"]),\
-                                         float(rot["y"]),\
+        rotation = mathutils.Quaternion((float(rot["w"]),
+                                         float(rot["x"]),
+                                         float(rot["y"]),
                                          float(rot["z"])))
 
         print("visual_offset_pos = %s" % visual_offset_pos)
-        visual_position = mathutils.Vector((float(visual_offset_pos["x"]),\
-                                            float(visual_offset_pos["y"]),\
+        visual_position = mathutils.Vector((float(visual_offset_pos["x"]),
+                                            float(visual_offset_pos["y"]),
                                             float(visual_offset_pos["z"])))
 
         node.location = position + rotation * visual_position
 
         # set the rotation of the object
         print("rot = %s" % rot)
-        rotation = mathutils.Quaternion((float(rot["w"]),\
-                                         float(rot["x"]),\
-                                         float(rot["y"]),\
+        rotation = mathutils.Quaternion((float(rot["w"]),
+                                         float(rot["x"]),
+                                         float(rot["y"]),
                                          float(rot["z"])))
 
         print("visual_offset_rot = %s" % visual_offset_rot)
-        visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),\
-                                                float(visual_offset_rot["x"]),\
-                                                float(visual_offset_rot["y"]),\
+        visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),
+                                                float(visual_offset_rot["x"]),
+                                                float(visual_offset_rot["y"]),
                                                 float(visual_offset_rot["z"])))
 
         # TODO: why do we need this offset rotation?!?
@@ -585,8 +585,8 @@ def parseJoint(domElement):
         # set the object type to be a joint
         joint["type"] = "joint"
 
-        axis1 = mathutils.Vector((float(axis1["x"]),\
-                                  float(axis1["y"]),\
+        axis1 = mathutils.Vector((float(axis1["x"]),
+                                  float(axis1["y"]),
                                   float(axis1["z"])))
 
         # check whether 'axis1' is valid and the type is not 'fixed'
@@ -615,8 +615,8 @@ def parseJoint(domElement):
         elif anchorPos == 3: # "center"
             joint.location = (node1.location + node2.location) / 2.0
         elif anchorPos == 4: # "custom"
-            joint.location = mathutils.Vector((float(anchor["x"]),\
-                                               float(anchor["y"]),\
+            joint.location = mathutils.Vector((float(anchor["x"]),
+                                               float(anchor["y"]),
                                                float(anchor["z"])))
         else:
             #TODO: What position should be set in this case?
