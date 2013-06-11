@@ -35,13 +35,17 @@ jointTypes = ["undefined",
               "istruct-spine"
              ]
 
+# global list of nodes and joints
+nodeList = []
+jointList = []
+
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
     remove_list = []
 
     for child in parent.childNodes:
-        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and \
+        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and
            not child.data.strip():
             remove_list.append(child)
         elif child.hasChildNodes():
@@ -325,62 +329,155 @@ def parseNode(domElement, tmpDir):
 
     ######## LOAD THE NODE IN BLENDER ########
 
-    if filename != "PRIMITIVE":
+    # "pointer" to the newly created object
+    node = None
+
+    if filename == "PRIMITIVE":
+
+        if typeName == "box":
+            # create a new box as representation of the node
+            bpy.ops.mesh.primitive_cube_add()
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cube":
+                    # set the name of the object
+                    node = obj
+                    # set the size of the cube
+                    node.dimensions = mathutils.Vector((float(ext["x"]),
+                                                        float(ext["y"]),
+                                                        float(ext["z"])))
+
+        elif typeName == "sphere":
+            # create a new sphere as representation of the node
+            bpy.ops.mesh.primitive_uv_sphere_add(size = float(ext["x"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Sphere":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "reference":
+            # TODO: is that really needed?
+            print("Warning! Unhandled node type \'reference\'.")
+
+        elif typeName == "mesh":
+            # TODO: is that really needed?
+            print("Warning! Unhandled node type \'mesh\'.")
+
+        elif typeName == "cylinder":
+            # create a new cylinder as representation of the node
+            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cylinder":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "capsule":
+            print("Warning! Node type \'capsule\' yet supported, using \'cylinder\' instead.")
+            # create a new cylinder as representation of the node
+            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Cylinder":
+                    # set the name of the object
+                    node = obj
+
+        elif typeName == "plane":
+            # create a new plane as representation of the node
+            bpy.ops.mesh.primitive_plane_add()
+            # get the "pointer" to the new node
+            for obj in bpy.data.objects:
+                if obj.name == "Plane":
+                    # set the name of the object
+                    node = obj
+                    # set the size of the cube
+                    node.dimensions = mathutils.Vector((float(ext["x"]),
+                                                        float(ext["y"]),
+                                                        float(ext["z"])))
+
+        else:
+            print("Cannot find primitive type: %s" % origName) 
+
+    elif physicMode == "terrain":
+        # TODO: Creating terrain in Blender ...
+        print("Warning! \'Terrain\' nodes are not handled right now!")
+
+    # we have to load the node from an import file
+    else:
         # import the respective .obj file
         bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
 
-        # rename the currently loaded object
+        # get the currently added object
         for obj in bpy.data.objects:
             if filename in obj.name:
-                # set the name of the object
-                obj.name = name
-                
-                # store the index of the node as custom property
-                obj["id"] = index
+                node = obj
 
-                # set the size of the object
-                print("visualsize = %s" % visual_size)
-                obj.dimensions = mathutils.Vector((float(visual_size["x"]),\
-                                                   float(visual_size["z"]),\
-                                                   float(visual_size["y"])))
+        # set the size of the object
+        #TODO: find out why the inversion of y- and z-axis is required
+        node.dimensions = mathutils.Vector((float(visual_size["x"]),
+                                            float(visual_size["z"]),
+                                            float(visual_size["y"])))
 
-                # set the position of the object
-                print("pos = %s" % pos)
-                position = mathutils.Vector((float(pos["x"]),\
-                                             float(pos["y"]),\
-                                             float(pos["z"])))
+    # Set the parameter, orientation and position of the new node
+    if node != None:
 
-                print("rot = %s" % rot)
-                rotation = mathutils.Quaternion((float(rot["w"]),\
-                                                 float(rot["x"]),\
-                                                 float(rot["y"]),\
-                                                 float(rot["z"])))
+        # add the node to the global node list
+        nodeList.append(node)
 
-                print("visual_offset_pos = %s" % visual_offset_pos)
-                visual_position = mathutils.Vector((float(visual_offset_pos["x"]),\
-                                                    float(visual_offset_pos["y"]),\
-                                                    float(visual_offset_pos["z"])))
+        # set the name of the object
+        node.name = name
 
-                obj.location = position + rotation * visual_position
+        # store the index of the node as custom property
+        node["id"] = index
 
-                # set the rotation of the object
-                print("rot = %s" % rot)
-                rotation = mathutils.Quaternion((float(rot["w"]),\
-                                                 float(rot["x"]),\
-                                                 float(rot["y"]),\
-                                                 float(rot["z"])))
+        # store the group index as custom property
+        node["group"] = groupID
 
-                print("visual_offset_rot = %s" % visual_offset_rot)
-                visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),\
-                                                        float(visual_offset_rot["x"]),\
-                                                        float(visual_offset_rot["y"]),\
-                                                        float(visual_offset_rot["z"])))
+        # set the object type to be a node
+        node["type"] = "body"
 
-                # TODO: why do we need this offset rotation?!?
-                rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
+        # set the position of the object
+        print("pos = %s" % pos)
+        position = mathutils.Vector((float(pos["x"]),
+                                     float(pos["y"]),
+                                     float(pos["z"])))
 
-                obj.rotation_mode = "QUATERNION"
-                obj.rotation_quaternion = rotation * visual_rotation * rotation_offset
+        print("rot = %s" % rot)
+        rotation = mathutils.Quaternion((float(rot["w"]),
+                                         float(rot["x"]),
+                                         float(rot["y"]),
+                                         float(rot["z"])))
+
+        print("visual_offset_pos = %s" % visual_offset_pos)
+        visual_position = mathutils.Vector((float(visual_offset_pos["x"]),
+                                            float(visual_offset_pos["y"]),
+                                            float(visual_offset_pos["z"])))
+
+        node.location = position + rotation * visual_position
+
+        # set the rotation of the object
+        print("rot = %s" % rot)
+        rotation = mathutils.Quaternion((float(rot["w"]),
+                                         float(rot["x"]),
+                                         float(rot["y"]),
+                                         float(rot["z"])))
+
+        print("visual_offset_rot = %s" % visual_offset_rot)
+        visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),
+                                                float(visual_offset_rot["x"]),
+                                                float(visual_offset_rot["y"]),
+                                                float(visual_offset_rot["z"])))
+
+        # TODO: why do we need this offset rotation?!?
+        rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
+
+        node.rotation_mode = "QUATERNION"
+        node.rotation_quaternion = rotation * visual_rotation * rotation_offset
+
+    else:
+        print("ERROR! Something went wrong while creating node \'%s\'" % name)
+        return False
 
     return True
 
@@ -417,7 +514,7 @@ def parseJoint(domElement):
 
     if checkConfigParameter(config,"nodeindex2"):
         nodeIndex2 = int(config["nodeindex2"])
-    
+
     # handle axis 1
     if checkConfigParameter(config,"axis1"):
         axis1 = config["axis1"]
@@ -465,57 +562,110 @@ def parseJoint(domElement):
 
     ######## LOAD THE JOINT IN BLENDER ########
 
+    # "pointer" to the newly created object
+    joint = None
+
     # create a new cylinder as representation of the joint        
-    bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=0.25)
+    bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
     for obj in bpy.data.objects:
         if obj.name == "Cylinder":
-            # set the name of the object
-            obj.name = name
+            joint = obj
 
-            axis1 = mathutils.Vector((float(axis1["x"]),\
-                                      float(axis1["z"]),\
-                                      float(axis1["y"])))
+    if joint != None:
+        # add the node to the global node list
+        jointList.append(joint)
 
-            # check whether 'axis1' is valid and the type is not 'fixed'
-            if axis1.length_squared < EPSILON and type != 6:
-                print("ERROR! Cannot create joint \'%s\' without axis1" % name)
-                #TODO: remove created cylinder
-                return False
+        # set the name of the object
+        joint.name = name
 
-            node1 = None
-            node2 = None
+        # store the index of the joint as custom property
+        joint["id"] = index
 
-            for tmp in bpy.data.objects:
-                # check whether it's a node or a joint
-                if "id" in tmp:
-                    # check for thr right "ids"
-                    if tmp["id"] == nodeIndex1:
-                        node1 =tmp
-                    if tmp["id"] == nodeIndex2:
-                        node2 = tmp
+        # set the object type to be a joint
+        joint["type"] = "joint"
 
-            # determine the anchor position of the joint
-            if anchorPos == 1: # "node1"
-                obj.location = node1.location
-            elif anchorPos == 2: # "node2"
-                obj.location = node2.location
-            elif anchorPos == 3: # "center"
-                obj.location = (node1.location + node2.location) / 2.0
-            elif anchorPos == 4: # "custom"
-                obj.location = mathutils.Vector((float(anchor["x"]),\
-                                                 float(anchor["y"]),\
-                                                 float(anchor["z"])))
-            else:
-                print("WARNING! Wrong anchor position for joint \'%s\'" % name)
+        axis1 = mathutils.Vector((float(axis1["x"]),
+                                  float(axis1["y"]),
+                                  float(axis1["z"])))
 
-#            axisInNode1 = mathutils.Vector((float(axis1["x"]),\
-#                                            float(axis1["y"]),\
-#                                            float(axis1["z"])))
+        # check whether 'axis1' is valid and the type is not 'fixed'
+        if axis1.length_squared < EPSILON and type != 6:
+            print("ERROR! Cannot create joint \'%s\' without axis1" % name)
+            #TODO: remove created cylinder
+            return False
 
-#            obj.rotation_mode = "QUATERNION"
-#            obj.rotation_quaternion = axisInNode1 * node1.rotation_quaternion.inverted()
+        node1 = None
+        node2 = None
 
+        for tmp in bpy.data.objects:
+            # check whether it's a node or a joint
+            if tmp["type"] == "body":
+                # check for thr right "ids"
+                if tmp["id"] == nodeIndex1:
+                    node1 = tmp
+                if tmp["id"] == nodeIndex2:
+                    node2 = tmp
+
+        # determine the anchor position of the joint
+        if anchorPos == 1: # "node1"
+            joint.location = node1.location
+        elif anchorPos == 2: # "node2"
+            joint.location = node2.location
+        elif anchorPos == 3: # "center"
+            joint.location = (node1.location + node2.location) / 2.0
+        elif anchorPos == 4: # "custom"
+            joint.location = mathutils.Vector((float(anchor["x"]),
+                                               float(anchor["y"]),
+                                               float(anchor["z"])))
+        else:
+            #TODO: What position should be set in this case?
+            print("WARNING! Wrong anchor position for joint \'%s\'" % name)
+
+        # set the orientation of the joint
+        z_axis = mathutils.Vector((0.0,0.0,1.0))
+        joint.rotation_mode = "QUATERNION"
+        joint.rotation_quaternion = z_axis.rotation_difference(axis1)
+
+        # setting up the node hierarchy (between parent and child node)
+        if node1 != None and node2 != None:
+            # de-select all objects
+            if len(bpy.context.selected_objects) > 0:
+                bpy.ops.object.select_all()
+
+            # select the child
+            node2.select = True
+
+            # select the parent
+            node1.select = True
+
+            # set the parent to be the currently active object
+            bpy.context.scene.objects.active = node1
+
+            # set the parent-child relationship
+            bpy.ops.object.parent_set(type="OBJECT")
+
+        # setting up the node hierarchy (between parent node and joint helper)
+        if node1 != None:
+            # de-select all objects
+            if len(bpy.context.selected_objects) > 0:
+                bpy.ops.object.select_all()
+
+            # select the child
+            joint.select = True
+
+            # select the parent
+            node1.select = True
+
+            # set the parent to be the currently active object
+            bpy.context.scene.objects.active = node1
+
+            # set the parent-child relationship
+            bpy.ops.object.parent_set(type="OBJECT")
+
+#        # store the pointer to the second joint node as custom property
+#        if node2 != None:
+#            joint["node2"] = node2
 
     return True
 
@@ -558,6 +708,7 @@ def main(fileDir, filename):
             print("Error while parsing node!")
             sys.exit(1)
 
+    # parsing all joints
     joints = dom.getElementsByTagName("joint")
     for joint in joints :
         if not parseJoint(joint):
