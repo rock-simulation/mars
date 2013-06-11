@@ -59,7 +59,7 @@ extern "C" mars::lib_manager::LibInterface* create_c(mars::lib_manager::LibManag
 #define EXPAND_STRING(x) #x
 #define MACRO_TO_STRING(x) EXPAND_STRING(x)
 #define GIT_INFO_REV_STR MACRO_TO_STRING(GIT_INFO_REV)
-#define GIT_INFO_SRC_STR MACRO_TO_STRING(GIT_INFO_SRC)
+#define GIT_INFO_SRC_STR GIT_INFO_SRC
 #else
 #define GIT_INFO_REV_STR "<no git info>"
 #define GIT_INFO_SRC_STR "<unknown>"

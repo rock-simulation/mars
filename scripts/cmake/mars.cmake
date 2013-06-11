@@ -29,7 +29,7 @@ function(define_module_info)
     else(git_has_local_changes)
       set(git_revision ${git_hash})
     endif(git_has_local_changes)
-    add_definitions("-DGIT_INFO" "-DGIT_INFO_REV=${git_revision}" "-DGIT_INFO_SRC=${git_src}")
+    add_definitions("-DGIT_INFO" "-DGIT_INFO_REV=${git_revision}" "-DGIT_INFO_SRC=\"${git_src}\"")
   endif(NOT under_git_control)
 endfunction(define_module_info)
 
