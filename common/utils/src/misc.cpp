@@ -28,6 +28,8 @@
 
 #include "misc.h"
 
+#include <cstdlib>
+#include <cstring>
 #include <cstdio>
 #include <cmath>
 #include <cctype>
@@ -161,20 +163,20 @@ namespace mars {
       return path;
     }
 
-    unsigned int createDirectory(const std::string &dir) {
+    unsigned int createDirectory(const std::string &dir, int mode) {
       std::string s_tmpString = dir;
       DIR *p_Directory;
 
       p_Directory = opendir(dir.c_str());
       if(p_Directory != NULL) {
         closedir(p_Directory);
-        return 1;
+        return 2;
       }
 
 #ifdef WIN32
       int result = mkdir(dir.c_str());
 #else
-      int result = mkdir(dir.c_str(), 0755);
+      int result = mkdir(dir.c_str(), mode);
 #endif
       if(result == -1) {
         fprintf(stderr, "misc:: could not create dir: %s\n", dir.c_str());

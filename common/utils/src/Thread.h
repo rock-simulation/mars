@@ -100,6 +100,8 @@ namespace mars {
       bool isCurrentThread() const;
       static Thread* getCurrentThread();
 
+      static void cancelAll(bool block=false);
+
     protected:
       /**
        * \brief The thread will execute this method once it has been 

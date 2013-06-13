@@ -112,6 +112,8 @@ namespace mars {
       // load optional libs
       checkOptionalDependency("data_broker");
       checkOptionalDependency("cfg_manager");
+      checkOptionalDependency("mars_graphics");
+      checkOptionalDependency("log_console");
 
       if(control->cfg) {
         configPath = control->cfg->getOrCreateProperty("Config", "config_path",
@@ -232,9 +234,6 @@ namespace mars {
     */
 
     void Simulator::runSimulation() {
-
-      checkOptionalDependency("mars_graphics");
-      checkOptionalDependency("log_console");
 
       if(control->cfg) {
         initCfgParams();

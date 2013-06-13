@@ -439,6 +439,8 @@ function patch_minizip {
     setScriptDir
     setupConfig
     patch -N -p0 -d ${MARS_DEV_ROOT}/external -i ${MARS_SCRIPT_DIR}/patches/minizip.patch
+    # patch was submitted upstream and confirmed via email to 
+    # Gilles Vollant <info@winimage.com> on 22. Oct. 2012
     patch -N -p0 -d ${MARS_DEV_ROOT}/external -i ${MARS_SCRIPT_DIR}/patches/minizip_unzip.patch
     printBold "... done patching external/minizip."
 }
@@ -460,9 +462,13 @@ function patch_ode_mars {
     printBold "patching external/ode_mars version 0.12 ..."
     setScriptDir
     setupConfig
+    # patch was accepted upstream (http://sf.net/p/opende/patches/180) and
+    # applied to Rev. 1913 (http://sf.net/p/opende/code/1913) and should be
+    # in the next release
     patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-va_end.patch
     patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-lambda.patch
     patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-export_joint_internals.patch
+    # patch was submitted upstream (http://sf.net/p/opende/patches/187)
     patch -N -p0 -d ${MARS_DEV_ROOT}/external/ode_mars -i ${MARS_SCRIPT_DIR}/patches/ode-0.12-abort.patch
     printBold "... done patching external/ode_mars version 0.12."
 }

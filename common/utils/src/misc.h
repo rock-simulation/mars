@@ -155,7 +155,15 @@ namespace mars {
     std::string getPathOfFile(const std::string &filename);
 
     std::string getCurrentWorkingDir();
-    unsigned int createDirectory(const std::string &dir);
+
+    /**
+     * creates a directory at the given path.
+     * On platforms that support it you can also specify the mode.
+     * returns 0 if creation fails
+     * returns 1 if creation was successful
+     * returns 2 if directory already exists
+     */
+    unsigned int createDirectory(const std::string &dir, int mode=0755);
 
     std::vector<std::string> explodeString(const char c, const std::string &s);
 

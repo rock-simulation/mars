@@ -179,5 +179,14 @@ namespace mars {
       mars::utils::msleep(msec);
     }
 
+    void Thread::cancelAll(bool block) {
+      threadListMutex.lock();
+      std::list<Thread*>::iterator threadIt;
+      for(threadIt = threads.begin(); threadIt != threads.end(); ++threadIt) {
+        (*threadIt)->cancel(block);
+      }
+      threadListMutex.unlock();
+    }
+
   } // end of namespace utils
 } // end of namespace mars
