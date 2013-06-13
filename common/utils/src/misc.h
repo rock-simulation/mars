@@ -60,15 +60,15 @@ namespace mars {
     /**
      * @return current time in milliseconds
      */
-    inline long getTime() {
+    inline long long getTime() {
 #ifdef WIN32
       struct timeb timer;
       ftime(&timer);
-      return (long)(timer.time*1000 + timer.millitm);
+      return (long long)(timer.time*1000LL + timer.millitm);
 #else
       struct timeval timer;
       gettimeofday(&timer, NULL);
-      return ((long)(timer.tv_sec))*1000 + ((long)(timer.tv_usec))/1000;
+      return ((long long)(timer.tv_sec))*1000LL + ((long)(timer.tv_usec))/1000;
 #endif
     }
 
@@ -77,7 +77,7 @@ namespace mars {
      * @param start reference time
      * @return time difference between now and start in milliseconds
      */
-    inline long getTimeDiff(long start) {
+    inline long long getTimeDiff(long long start) {
       return getTime() - start;
     }
 
