@@ -452,8 +452,8 @@ namespace mars {
       stepping_wc.wakeAll();
       stepping_mutex.unlock();
       // Waiting for transition, i.e. main loop to set STOPPED
-      while(simulationStatus == STOPPING)
-        msleep(10);
+      //while(simulationStatus == STOPPING)
+      //msleep(10);
 
       //fprintf(stderr, " [OK]\n");
 
@@ -742,12 +742,12 @@ namespace mars {
     void Simulator::resetSim(void) {
       reloadSim = true;
       stepping_mutex.lock();
-      if(isSimRunning())
+      if(simulationStatus == RUNNING)
         was_running = true;
       else
         was_running = false;
 
-      if(was_running) {
+      if(isSimRunning()) {
         simulationStatus = STOPPING;
       } else {
         simulationStatus = STOPPED;
