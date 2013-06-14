@@ -71,6 +71,9 @@ namespace mars {
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
                                           std::string("."));
         path = r_path.sValue;
+        showOnStdError = cfg->getOrCreateProperty("log_console",
+                                                  "showOnStdError",
+                                                  false, this);
       }
 
 
@@ -126,7 +129,6 @@ namespace mars {
 
       //showing messages on stderr is nice because you can read
       //the error/debug messages even if the simulator crashes.
-      bool showOnStdErr = true;
 
       if (showInWidget) {
         int wait = 100;
@@ -150,7 +152,7 @@ namespace mars {
         messages.push_back(da);
         consoleLock.unlock();
       }
-      if (showOnStdErr)
+      if (showOnStdError.bValue)
         {
           // output to stderr
           switch(type) {
@@ -280,6 +282,10 @@ namespace mars {
       else if(_property.paramId == cfgW_height.paramId) {
         cfgW_height.iValue = _property.iValue;
         change_view = 1;
+      }
+
+      else if(_property.paramId == showOnStdError.paramId) {
+        showOnStdError.bValue = _property.bValue;
       }
   
       if(change_view) {
