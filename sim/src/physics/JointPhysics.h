@@ -98,6 +98,9 @@ namespace mars {
       dReal damping, spring;
       utils::Vector axis1_torque, axis2_torque, joint_load;
       dReal motor_torque;
+
+      void calculateCfmErp(const interfaces::JointData *jointS);
+
       ///create a joint from type Hing
       void createHinge(interfaces::JointData* jointS,
                        dBodyID body1, dBodyID body2);

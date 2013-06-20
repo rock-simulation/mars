@@ -73,26 +73,7 @@ namespace mars {
     }
 
 
-
-    /**
-     * \brief create the joint with the informations giving from jointS 
-     * 
-     */
-    bool JointPhysics::createJoint(JointData *jointS, const NodeInterface *node1,
-                                   const NodeInterface *node2) {
-#ifdef _VERIFY_WORLD_
-      fprintf(stderr, "joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f\n",
-              jointS->index, jointS->nodeIndex1, jointS->nodeIndex2,
-              jointS->anchor.x(), jointS->anchor.y(), jointS->anchor.z(),
-              jointS->axis1.x(), jointS->axis1.y(), jointS->axis1.z());
-#endif
-      MutexLocker locker(&(theWorld->iMutex));
-      if ( theWorld && theWorld->existsWorld() ) {
-        //get the bodies from the interfaces nodes
-        //here we have to make some verifications
-        const NodePhysics *n1= static_cast<const NodePhysics*>(node1);
-        const NodePhysics *n2= static_cast<const NodePhysics*>(node2);
-        dBodyID b1 = 0, b2 = 0;
+    void JointPhysics::calculateCfmErp(const JointData *jointS) {
         // how to set erp and cfm
         // ERP = h kp / (h kp + kd)
         // CFM = 1 / (h kp + kd)
@@ -119,6 +100,29 @@ namespace mars {
         cfm1 = (cfm1>0)?1/cfm1:0.00000000001;
         erp2 = (erp2>0)?h*(dReal)jointS->spring_const_constraint_axis2/erp2:0;
         cfm2 = (cfm2>0)?1/cfm2:0.000000000001;
+    }
+
+    /**
+     * \brief create the joint with the informations giving from jointS 
+     * 
+     */
+    bool JointPhysics::createJoint(JointData *jointS, const NodeInterface *node1,
+                                   const NodeInterface *node2) {
+#ifdef _VERIFY_WORLD_
+      fprintf(stderr, "joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f\n",
+              jointS->index, jointS->nodeIndex1, jointS->nodeIndex2,
+              jointS->anchor.x(), jointS->anchor.y(), jointS->anchor.z(),
+              jointS->axis1.x(), jointS->axis1.y(), jointS->axis1.z());
+#endif
+      MutexLocker locker(&(theWorld->iMutex));
+      if ( theWorld && theWorld->existsWorld() ) {
+        //get the bodies from the interfaces nodes
+        //here we have to make some verifications
+        const NodePhysics *n1= static_cast<const NodePhysics*>(node1);
+        const NodePhysics *n2= static_cast<const NodePhysics*>(node2);
+        dBodyID b1 = 0, b2 = 0;
+
+        calculateCfmErp(jointS);
 
         joint_type = jointS->type;
         if(n1) b1 = n1->getBody();
@@ -1165,32 +1169,7 @@ namespace mars {
     void JointPhysics::changeStepSize(const JointData &jointS) {
       MutexLocker locker(&(theWorld->iMutex));
       if(theWorld && theWorld->existsWorld()) {
-        // how to set erp and cfm
-        // ERP = h kp / (h kp + kd)
-        // CFM = 1 / (h kp + kd)
-        damping = (dReal)jointS.damping_constant;
-        spring = (dReal)jointS.spring_constant;
-        dReal h = theWorld->getWorldStep();
-        cfm = damping;
-        erp1 = h*(dReal)jointS.spring_const_constraint_axis1
-          +(dReal)jointS.damping_const_constraint_axis1;
-        cfm1 = h*(dReal)jointS.spring_const_constraint_axis1
-          +(dReal)jointS.damping_const_constraint_axis1;
-        erp2 = h*(dReal)jointS.spring_const_constraint_axis2
-          +(dReal)jointS.damping_const_constraint_axis2;
-        cfm2 = h*(dReal)jointS.spring_const_constraint_axis2
-          +(dReal)jointS.damping_const_constraint_axis2;
-
-        lo1 = jointS.lowStopAxis1;
-        hi1 = jointS.highStopAxis1;
-        lo2 = jointS.lowStopAxis2;
-        hi2 = jointS.highStopAxis2;
-        // we don't want to run in the trap where kp and kd are set to zero
-        cfm = (cfm>0)?1/cfm:0.000000000001;
-        erp1 = (erp1>0)?h*(dReal)jointS.spring_const_constraint_axis1/erp1:0;
-        cfm1 = (cfm1>0)?1/cfm1:0.00000000001;
-        erp2 = (erp2>0)?h*(dReal)jointS.spring_const_constraint_axis2/erp2:0;
-        cfm2 = (cfm2>0)?1/cfm2:0.000000000001;
+        calculateCfmErp(&jointS);
 
         switch(jointS.type) {
         case  JOINT_TYPE_HINGE:

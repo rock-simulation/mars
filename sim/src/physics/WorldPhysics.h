@@ -118,6 +118,8 @@ namespace mars {
       bool world_init;
       interfaces::ControlCenter *control;
       utils::Vector old_gravity;
+      interfaces::sReal old_cfm, old_erp;
+
       std::vector<body_nbr_tupel> comp_body_list;
       std::vector<interfaces::draw_item> draw_intern;
       std::vector<interfaces::draw_item> draw_extern;

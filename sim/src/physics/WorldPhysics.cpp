@@ -157,6 +157,9 @@ namespace mars {
         contactgroup = dJointGroupCreate(0);
 
         old_gravity = world_gravity;
+        old_cfm = world_cfm;
+        old_erp = world_erp;
+
         dWorldSetGravity(world, world_gravity.x(), world_gravity.y(), world_gravity.z()); 
         dWorldSetCFM(world, (dReal)world_cfm);
         dWorldSetERP (world, (dReal)world_erp);
@@ -232,6 +235,17 @@ namespace mars {
           dWorldSetGravity(world, world_gravity.x(),
                            world_gravity.y(), world_gravity.z());
         }
+
+        if(old_cfm != world_cfm) {
+          old_cfm = world_cfm;
+          dWorldSetCFM(world, (dReal)world_cfm);
+        }
+
+        if(old_erp != world_erp) {
+          old_erp = world_erp;
+          dWorldSetERP(world, (dReal)world_erp);
+        }
+
         /// first clear the collision counters of all geoms
         for(i=0; i<dSpaceGetNumGeoms(space); i++) {
           data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));

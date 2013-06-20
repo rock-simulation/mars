@@ -78,7 +78,7 @@ namespace mars {
       while(addList.size() > 0) {
         std::map<QString, QVariant> attr;
         attr["singleStep"] = 0.01;
-        attr["decimals"] = 5;
+        attr["decimals"] = 12;
         theParam = &(addList[0]);
     
         // get the type and add the param to the gui
