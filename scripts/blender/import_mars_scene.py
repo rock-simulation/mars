@@ -39,6 +39,8 @@ jointTypes = ["undefined",
 nodeList = []
 jointList = []
 
+# global list of imported but not used meshes
+unusedNodeList = []
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
@@ -167,6 +169,7 @@ def parseNode(domElement, tmpDir):
             tmp = nodeTypes[physicMode]
             print("WARNING! Origname set to \"%s\" for primitive in node \"%s\" with physicMode \"%s\"" % (origName, name, tmp))
 
+    groupID = None
     if checkConfigParameter(config,"groupid"):
         groupID = int(config["groupid"])
 
@@ -405,13 +408,37 @@ def parseNode(domElement, tmpDir):
 
     # we have to load the node from an import file
     else:
-        # import the respective .obj file
-        bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
-
-        # get the currently added object
+        # check whether the object was previously already imported
         for obj in bpy.data.objects:
-            if filename in obj.name:
+            if filename in obj.name or name in obj.name:
                 node = obj
+                # removed the current object from the unused list
+                unusedNodeList.remove(obj.name)
+
+        # if not, import the respective .obj file
+        if not node:
+            # store the names of all objects before importing
+            old_object_list = bpy.data.objects.keys()
+
+            # import the .obj file
+            bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
+
+            # store the names of all objects after importing
+            new_object_list = bpy.data.objects.keys()
+
+            # put the newly imported objects into the "unused" list
+            for object in new_object_list:
+                if object not in old_object_list:
+                    unusedNodeList.append(object)
+
+            # get the currently added object
+            for obj in bpy.data.objects:
+                if filename in obj.name or name in obj.name:
+                    node = obj
+                    # removed the current object from the unused list
+                    unusedNodeList.remove(obj.name)
+        else:
+            print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % obj.name)
 
         # set the size of the object
         #TODO: find out why the inversion of y- and z-axis is required
@@ -420,7 +447,7 @@ def parseNode(domElement, tmpDir):
                                             float(visual_size["y"])))
 
     # Set the parameter, orientation and position of the new node
-    if node != None:
+    if node:
 
         # add the node to the global node list
         nodeList.append(node)
@@ -432,7 +459,8 @@ def parseNode(domElement, tmpDir):
         node["id"] = index
 
         # store the group index as custom property
-        node["group"] = groupID
+        if groupID:
+            node["group"] = groupID
 
         # set the object type to be a node
         node["type"] = "body"
@@ -572,7 +600,7 @@ def parseJoint(domElement):
         if obj.name == "Cylinder":
             joint = obj
 
-    if joint != None:
+    if joint:
         # add the node to the global node list
         jointList.append(joint)
 
@@ -649,7 +677,7 @@ def parseJoint(domElement):
         joint.rotation_quaternion = z_axis.rotation_difference(axis1)
 
         # setting up the node hierarchy (between parent and child node)
-        if node1 != None and node2 != None:
+        if node1 and node2:
             # de-select all objects
             if len(bpy.context.selected_objects) > 0:
                 bpy.ops.object.select_all()
@@ -667,7 +695,7 @@ def parseJoint(domElement):
             bpy.ops.object.parent_set(type="OBJECT")
 
         # setting up the node hierarchy (between parent node and joint helper)
-        if node1 != None:
+        if node1:
             # de-select all objects
             if len(bpy.context.selected_objects) > 0:
                 bpy.ops.object.select_all()
@@ -685,7 +713,7 @@ def parseJoint(domElement):
             bpy.ops.object.parent_set(type="OBJECT")
 
         # store the pointer to the second joint node as custom property
-        if node2 != None:
+        if node2:
             joint["node2"] = node2.name
 
     return True
@@ -728,6 +756,12 @@ def main(fileDir, filename):
         if not parseNode(node, tmpDir):
             print("Error while parsing node!")
             sys.exit(1)
+
+    # clean up if some unused meshes were loaded
+    if len(unusedNodeList) > 0:
+        print("WARNING! Not all imported meshes are in use!")
+        #TODO: remove unneeded objects/meshes
+        pass
 
     # parsing all joints
     joints = dom.getElementsByTagName("joint")
