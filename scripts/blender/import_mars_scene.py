@@ -45,7 +45,7 @@ def removeWhitespaceNodes(parent, unlink=True):
     remove_list = []
 
     for child in parent.childNodes:
-        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and
+        if child.nodeType == xml.dom.minidom.Node.TEXT_NODE and \
            not child.data.strip():
             remove_list.append(child)
         elif child.hasChildNodes():
@@ -585,6 +585,27 @@ def parseJoint(domElement):
         # set the object type to be a joint
         joint["type"] = "joint"
 
+        # set the color of the joint helper object to green
+        if "green" not in bpy.data.materials:
+            # create new "green" material
+            mat = bpy.data.materials.new("green")
+            mat.diffuse_color = mathutils.Color((0.0,
+                                                 1.0,
+                                                 0.0))
+            mat.diffuse_shader = "LAMBERT"
+            mat.diffuse_intensity = 0.6
+            mat.specular_color = mathutils.Color((0.208,
+                                                  0.208,
+                                                  0.208))
+            mat.specular_shader = "COOKTORR"
+            mat.specular_intensity = 0.5
+            mat.alpha = 1.0
+            mat.ambient = 1.0
+        else:
+            mat = bpy.data.materials["green"]
+
+        joint.data.materials.append(mat)
+
         axis1 = mathutils.Vector((float(axis1["x"]),
                                   float(axis1["y"]),
                                   float(axis1["z"])))
@@ -663,9 +684,9 @@ def parseJoint(domElement):
             # set the parent-child relationship
             bpy.ops.object.parent_set(type="OBJECT")
 
-#        # store the pointer to the second joint node as custom property
-#        if node2 != None:
-#            joint["node2"] = node2
+        # store the pointer to the second joint node as custom property
+        if node2 != None:
+            joint["node2"] = node2.name
 
     return True
 
