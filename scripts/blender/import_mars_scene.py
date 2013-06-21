@@ -429,7 +429,25 @@ def parseNode(domElement, tmpDir):
             # put the newly imported objects into the "unused" list
             for object in new_object_list:
                 if object not in old_object_list:
+                    # add the name of the imported object to the list of
+                    # unused nodes
                     unusedNodeList.append(object)
+                    
+                    # de-select all objects
+                    if len(bpy.context.selected_objects) > 0:
+                        bpy.ops.object.select_all()
+
+                    # select the node/object
+                    tmp = bpy.data.objects[object]
+                    tmp.select = True
+
+                    # set the parent to be the currently active object
+                    bpy.context.scene.objects.active = tmp
+
+                    # set the origin of the mesh to the center of its
+                    # bounding box
+                    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY",
+                                              center="BOUNDS")
 
             # get the currently added object
             for obj in bpy.data.objects:
