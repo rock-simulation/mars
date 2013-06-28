@@ -430,7 +430,7 @@ namespace mars {
       //up to MAX_CONTACTS contact per Box-box
       //dContact contact[MAX_CONTACTS];
       dVector3 v1, v;
-      dMatrix3 R;
+      //dMatrix3 R;
       dReal dot;
   
       if (dGeomIsSpace(o1) || dGeomIsSpace(o2)) {
@@ -570,8 +570,8 @@ namespace mars {
         contact[0].surface.mode |= dContactFDir1;
         if(!geom_data2->c_params.friction_direction1) {
           // get the orientation of the geom
-          dGeomGetQuaternion(o1, v);
-          dRfromQ(R, v);
+          //dGeomGetQuaternion(o1, v);
+          //dRfromQ(R, v);
           // copy the friction direction
           v1[0] = geom_data1->c_params.friction_direction1->x();
           v1[1] = geom_data1->c_params.friction_direction1->y();
@@ -589,8 +589,8 @@ namespace mars {
         }
         else if(!geom_data1->c_params.friction_direction1) {
           // get the orientation of the geom
-          dGeomGetQuaternion(o2, v);
-          dRfromQ(R, v);
+          //dGeomGetQuaternion(o2, v);
+          //dRfromQ(R, v);
           // copy the friction direction
           v1[0] = geom_data2->c_params.friction_direction1->x();
           v1[1] = geom_data2->c_params.friction_direction1->y();
