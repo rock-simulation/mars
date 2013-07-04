@@ -787,7 +787,6 @@ def parseJoint(domElement):
                 for tmp in nodeList:
                     if tmp["group"] == groupID2:
                         tmp["group"] = groupID1
-                        print(tmp.name)
 
     return True
 
@@ -797,6 +796,11 @@ def checkGroupIDs():
     
     # check all nodes ...
     for node1 in nodeList:
+        # objects with group ID zero are ignored because they are handled
+        # seperately by MARS (not as one object consisting of multiple nodes)
+        if node1["group"] == 0:
+            continue
+        
         # put all nodes with the same group ID together in a list
         group = []
         for node2 in nodeList:
@@ -822,7 +826,7 @@ def checkGroupIDs():
                 node2 = children[0]
                 setParentChild(node2,node1)
             else:
-                print("WARNING! Unable to set parent-child relationship while checking group IDs!")
+                print("WARNING! Unable to set parent-child relationship for node <%s> while checking group IDs!" % node1.name)
 
 
 def main(fileDir, filename):
