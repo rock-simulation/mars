@@ -792,6 +792,39 @@ def parseJoint(domElement):
     return True
 
 
+def checkGroupIDs():
+    print("# Checking group IDs")
+    
+    # check all nodes ...
+    for node1 in nodeList:
+        # put all nodes with the same group ID together in a list
+        group = []
+        for node2 in nodeList:
+            # check for matching group IDs
+            if node2["group"] == node1["group"]:
+                group.append(node2)
+
+        # if there are other nodes with the same group ID
+        if len(group) > 1:
+            # see if the nodes with the same group ID are either parents
+            # or children of a joint
+            parents  = []
+            children = []
+            for node2 in group:
+                for joint in jointList:
+                    if joint["node2"] == node2.name and node2 not in children:
+                        children.append(node2)
+                    if joint.parent == node2 and node2 not in parents:
+                        parents.append(node2)
+
+            if len(children) == 1:
+                # set the parent-child relationship
+                node2 = children[0]
+                setParentChild(node2,node1)
+            else:
+                print("WARNING! Unable to set parent-child relationship while checking group IDs!")
+
+
 def main(fileDir, filename):
     tmpDir = os.path.join(fileDir, "tmp")
 
@@ -842,6 +875,9 @@ def main(fileDir, filename):
         if not parseJoint(joint):
             print("Error while parsing joint!")
             sys.exit(1)
+
+    # check for nodes with the same group ID
+    checkGroupIDs()
 
     #cleaning up afterwards
     shutil.rmtree(tmpDir)
