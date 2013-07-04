@@ -102,7 +102,6 @@ def checkConfigParameter(config, key):
 
 
 def setParentChild(parent, child):
-
     if parent not in nodeList:
         print("WARNING! Unable to set parent-child relationship! Parent non-existing! Parent must be a node!")
         return False
@@ -128,6 +127,30 @@ def setParentChild(parent, child):
     bpy.ops.object.parent_set(type="OBJECT")
 
     return True
+
+
+def centerNodeOrigin(node):
+    if node.name not in bpy.data.objects:
+        print("WARNING! Unable to center the origin of node <%s>! Node does not exist!" % node.name)
+        return False
+
+    # de-select all objects
+    if len(bpy.context.selected_objects) > 0:
+        bpy.ops.object.select_all()
+
+    # select the node/object
+    node.select = True
+
+    # set the parent to be the currently active object
+    bpy.context.scene.objects.active = node
+
+    # set the origin of the mesh to the center of its
+    # bounding box
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY",
+                              center="BOUNDS")
+
+    return True
+
 
 def parseNode(domElement, tmpDir):
     # read the config from the xml file
@@ -440,11 +463,12 @@ def parseNode(domElement, tmpDir):
     # we have to load the node from an import file
     else:
         # check whether the object was previously already imported
-        for obj in nodeList:
-            if filename in obj.name or name in obj.name:
-                node = obj
+        # and is not used
+        for nodeName in unusedNodeList:
+            if filename in nodeName or name in nodeName:
+                node = bpy.data.objects[nodeName]
                 # remove the current object from the unused list
-                unusedNodeList.remove(obj.name)
+                unusedNodeList.remove(nodeName)
 
         # if not, import the respective .obj file
         if not node:
@@ -457,38 +481,35 @@ def parseNode(domElement, tmpDir):
             # store the names of all objects after importing
             new_object_list = bpy.data.objects.keys()
 
-            # put the newly imported objects into the "unused" list
-            for object in new_object_list:
-                if object not in old_object_list:
-                    # add the name of the imported object to the list of
-                    # unused nodes
-                    unusedNodeList.append(object)
-                    
-                    #TODO: fix that? it is needed when more than one object is loaded from .obj file
-#                    # de-select all objects
-#                    if len(bpy.context.selected_objects) > 0:
-#                        bpy.ops.object.select_all()
-#
-#                    # select the node/object
-#                    tmp = bpy.data.objects[object]
-#                    tmp.select = True
-#
-#                    # set the parent to be the currently active object
-#                    bpy.context.scene.objects.active = tmp
-#
-#                    # set the origin of the mesh to the center of its
-#                    # bounding box
-#                    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY",
-#                                              center="BOUNDS")
+            # if there were added multiple meshes from one .obj file
+            if len(new_object_list) - len(old_object_list) > 1:
+                # put the newly imported objects into the "unused" list
+                for nodeName in new_object_list:
+                    if nodeName not in old_object_list:
+                        # add the name of the imported object to the list of
+                        # unused nodes
+                        unusedNodeList.append(nodeName)
 
-            # get the currently added object
-            for obj in bpy.data.objects:
-                if filename in obj.name or name in obj.name:
-                    node = obj
-                    # removed the current object from the unused list
-                    unusedNodeList.remove(obj.name)
+                        # center the origin of the loaded node to the center
+                        # of its bounding box
+                        tmp = bpy.data.objects[nodeName]
+                        centerNodeOrigin(tmp)
+
+                    # get the currently added object
+                    if filename in nodeName or name in nodeName:
+                        node = bpy.data.objects[nodeName]
+                        # remove the current object from the unused list
+                        unusedNodeList.remove(nodeName)
+
+            # if there was added just one mesh
+            else:
+                # get the currently added object
+                for nodeName in new_object_list:
+                    if filename in nodeName or name in nodeName:
+                        node = bpy.data.objects[nodeName]
+
         else:
-            print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % obj.name)
+            print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % name)
 
         # set the size of the object
         #TODO: find out why the inversion of y- and z-axis is required
