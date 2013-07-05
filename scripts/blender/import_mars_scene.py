@@ -246,7 +246,7 @@ def parseNode(domElement, tmpDir):
             print("ERROR! Could not get type for node: %s" % name)
 
     if checkConfigParameter(config,"origname"):
-        origName = config["origname"].strip()
+        origName = config["origname"]
 
     if checkConfigParameter(config,"filename"):
         filename = config["filename"].strip()
@@ -267,13 +267,13 @@ def parseNode(domElement, tmpDir):
         index = int(config["index"])
 
     if checkConfigParameter(config,"position"):
-        pos = config["position"]
+        position = config["position"]
 
     if checkConfigParameter(config,"pivot"):
         pivot = config["pivot"]
 
     if checkConfigParameter(config,"rotation"):
-        rot = config["rotation"]
+        rotation = config["rotation"]
 
     if checkConfigParameter(config,"extend"):
         ext = config["extend"]
@@ -306,10 +306,10 @@ def parseNode(domElement, tmpDir):
           terrain["texScale"] = float(config["t_tex_scale"])
 
     if checkConfigParameter(config, "visualposition"):
-        visual_offset_pos = config["visualposition"]
+        visual_position = config["visualposition"]
 
     if checkConfigParameter(config, "visualrotation"):
-        visual_offset_rot = config["visualrotation"]
+        visual_rotation = config["visualrotation"]
 
     if checkConfigParameter(config,"visualsize"):
         visual_size = config["visualsize"]
@@ -436,13 +436,11 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = mathutils.Vector((float(ext["x"]),
-                                                        float(ext["y"]),
-                                                        float(ext["z"])))
+                    node.dimensions = ext
 
         elif typeName == "sphere":
             # create a new sphere as representation of the node
-            bpy.ops.mesh.primitive_uv_sphere_add(size = float(ext["x"]))
+            bpy.ops.mesh.primitive_uv_sphere_add(size = ext.x)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Sphere":
@@ -459,7 +457,7 @@ def parseNode(domElement, tmpDir):
 
         elif typeName == "cylinder":
             # create a new cylinder as representation of the node
-            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            bpy.ops.mesh.primitive_cylinder_add(radius = ext.x, depth = ext.y)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Cylinder":
@@ -469,7 +467,7 @@ def parseNode(domElement, tmpDir):
         elif typeName == "capsule":
             print("Warning! Node type \'capsule\' yet supported, using \'cylinder\' instead.")
             # create a new cylinder as representation of the node
-            bpy.ops.mesh.primitive_cylinder_add(radius = float(ext["x"]), depth = float(ext["y"]))
+            bpy.ops.mesh.primitive_cylinder_add(radius = ext.x, depth = ext.y)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Cylinder":
@@ -485,9 +483,7 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = mathutils.Vector((float(ext["x"]),
-                                                        float(ext["y"]),
-                                                        float(ext["z"])))
+                    node.dimensions = ext
 
         else:
             print("Cannot find primitive type: %s" % origName) 
@@ -549,9 +545,9 @@ def parseNode(domElement, tmpDir):
 
         # set the size of the object
         #TODO: find out why the inversion of y- and z-axis is required
-        node.dimensions = mathutils.Vector((float(visual_size["x"]),
-                                            float(visual_size["z"]),
-                                            float(visual_size["y"])))
+        node.dimensions = mathutils.Vector((visual_size.x,
+                                            visual_size.z,
+                                            visual_size.y))
 
     # Set the parameter, orientation and position of the new node
     if node:
@@ -572,32 +568,9 @@ def parseNode(domElement, tmpDir):
         node["type"] = "body"
 
         # set the position of the object
-        position = mathutils.Vector((float(pos["x"]),
-                                     float(pos["y"]),
-                                     float(pos["z"])))
-
-        rotation = mathutils.Quaternion((float(rot["w"]),
-                                         float(rot["x"]),
-                                         float(rot["y"]),
-                                         float(rot["z"])))
-
-        visual_position = mathutils.Vector((float(visual_offset_pos["x"]),
-                                            float(visual_offset_pos["y"]),
-                                            float(visual_offset_pos["z"])))
-
         node.location = position + rotation * visual_position
 
         # set the rotation of the object
-        rotation = mathutils.Quaternion((float(rot["w"]),
-                                         float(rot["x"]),
-                                         float(rot["y"]),
-                                         float(rot["z"])))
-
-        visual_rotation = mathutils.Quaternion((float(visual_offset_rot["w"]),
-                                                float(visual_offset_rot["x"]),
-                                                float(visual_offset_rot["y"]),
-                                                float(visual_offset_rot["z"])))
-
         # TODO: why do we need this offset rotation?!?
         rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
 
@@ -739,10 +712,6 @@ def parseJoint(domElement):
 
             joint.data.materials.append(mat)
 
-            axis1 = mathutils.Vector((float(axis1["x"]),
-                                      float(axis1["y"]),
-                                      float(axis1["z"])))
-
             # check whether 'axis1' is valid and the type is not 'fixed'
             if axis1.length_squared < EPSILON and type != 6:
                 print("ERROR! Cannot create joint \'%s\' without axis1" % name)
@@ -768,9 +737,7 @@ def parseJoint(domElement):
             elif anchorPos == 3: # "center"
                 joint.location = (node1.location + node2.location) / 2.0
             elif anchorPos == 4: # "custom"
-                joint.location = mathutils.Vector((float(anchor["x"]),
-                                                   float(anchor["y"]),
-                                                   float(anchor["z"])))
+                joint.location = anchor
             else:
                 #TODO: What position should be set in this case?
                 print("WARNING! Wrong anchor position for joint \'%s\'" % name)
