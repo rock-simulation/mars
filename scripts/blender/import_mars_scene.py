@@ -62,10 +62,31 @@ def removeWhitespaceNodes(parent, unlink=True):
 # convert the given xml structure into a python dict
 def getGenericConfig(parent):
     child = parent.firstChild
-    if (not child):
+    if not child:
         return None
-    # if it is a text node, we just return the contained string
+    # if it is a text node, we just return the contained value
     elif (child.nodeType == xml.dom.minidom.Node.TEXT_NODE):
+        # check if it is an integer ...
+        try:
+            return int(child.nodeValue)
+        except ValueError:
+            pass
+
+        # or a float ...
+        try:
+            return float(child.nodeValue)
+        except ValueError:
+            pass
+
+        # or the boolean 'True' ...
+        if child.nodeValue in ["true", "True"]:
+            child.nodeValue = True
+
+        # or the boolean 'False' ...
+        if child.nodeValue in ["false", "False"]:
+            child.nodeValue = False
+
+        # or just a string
         return child.nodeValue
 
     config = {}
@@ -84,12 +105,27 @@ def getGenericConfig(parent):
         if (child.nodeType == xml.dom.minidom.Node.ELEMENT_NODE):
             key   = child.tagName
             value = getGenericConfig(child)
- #           print("element [%s : %s]" % (key, value))
+#            print("element [%s : %s]" % (key, value))
             if key not in config:
                 config[key] = value
             else:
                 print("Warning! Key '%s' already exists!" % child.tagName)
         child = child.nextSibling
+
+    # check if it is a vector
+    if isinstance(config,dict) and sorted(config.keys()) == ["x","y","z"]:
+        # and transform it into a Blender Vector
+        config = mathutils.Vector((config["x"],
+                                   config["y"],
+                                   config["z"]))
+
+    # check if it is a quaternion
+    if isinstance(config,dict) and sorted(config.keys()) == ["w","x","y","z"]:
+      # and transform it into a Blender Quaternion
+      config = mathutils.Quaternion((config["w"],
+                                     config["x"],
+                                     config["y"],
+                                     config["z"]))
 
     return config
 
