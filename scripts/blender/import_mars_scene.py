@@ -66,28 +66,31 @@ def getGenericConfig(parent):
         return None
     # if it is a text node, we just return the contained value
     elif (child.nodeType == xml.dom.minidom.Node.TEXT_NODE):
-        # check if it is an integer ...
+        # check if it is an integer?
         try:
             return int(child.nodeValue)
         except ValueError:
             pass
 
-        # or a float ...
+        # or a float?
         try:
             return float(child.nodeValue)
         except ValueError:
             pass
 
-        # or the boolean 'True' ...
-        if child.nodeValue in ["true", "True"]:
-            child.nodeValue = True
+        # if it is a string, remove leading and trailing
+        # white space characters
+        string = child.nodeValue.strip()
 
-        # or the boolean 'False' ...
-        if child.nodeValue in ["false", "False"]:
-            child.nodeValue = False
+        # see if it is the boolean 'True'?
+        if string in ["true", "True"]:
+            string = True
 
-        # or just a string
-        return child.nodeValue
+        # or the boolean 'False'?
+        if string in ["false", "False"]:
+            string = False
+
+        return string
 
     config = {}
 
@@ -239,7 +242,7 @@ def parseNode(domElement, tmpDir):
 
     # handle node physic mode
     if checkConfigParameter(config,"physicmode"):
-        typeName = config["physicmode"].strip()
+        typeName = config["physicmode"]
         if typeName in nodeTypes:
             physicMode = nodeTypes.index(typeName)
         else:
@@ -249,7 +252,7 @@ def parseNode(domElement, tmpDir):
         origName = config["origname"]
 
     if checkConfigParameter(config,"filename"):
-        filename = config["filename"].strip()
+        filename = config["filename"]
 
     if filename == "PRIMITIVE":
         if not origName:
@@ -558,6 +561,10 @@ def parseNode(domElement, tmpDir):
         # set the name of the object
         node.name = name
 
+        # add each item of 'config' as a custom property to the node
+        for (key, value) in config.items():
+            node[key] = value
+
         # store the index of the node as custom property
         node["id"] = index
 
@@ -600,7 +607,7 @@ def parseJoint(domElement):
 
     # handle joint type
     if checkConfigParameter(config,"type"):
-        typeName = config["type"].strip()
+        typeName = config["type"]
         if typeName in jointTypes:
             type = jointTypes.index(typeName)
             if type == 0:
@@ -684,6 +691,10 @@ def parseJoint(domElement):
 
             # set the name of the object
             joint.name = name
+
+            # add each item of 'config' as a custom property to the joint
+            for (key, value) in config.items():
+                joint[key] = value
 
             # store the index of the joint as custom property
             joint["id"] = index
