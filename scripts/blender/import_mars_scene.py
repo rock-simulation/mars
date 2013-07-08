@@ -42,6 +42,11 @@ jointList = []
 # global list of imported but not used meshes
 unusedNodeList = []
 
+# map of keyword differences between MARS .scn and Blender
+scnToBlenderKeyMap = {"groupid" : "group",
+                      "index" : "id",
+                      "type" : "jointType"}
+
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
     remove_list = []
@@ -414,7 +419,10 @@ def parseNode(domElement, tmpDir):
 
         # add each item of 'config' as a custom property to the node
         for (key, value) in config.items():
-            node[key] = value
+            if key in scnToBlenderKeyMap:
+                node[scnToBlenderKeyMap[key]] = value
+            else:
+                node[key] = value
 
         # set the object type to be a node
         node["type"] = "body"
@@ -447,9 +455,6 @@ def parseJoint(domElement):
 
     print("# Creating joint <%s>" % name)
 
-    nodeIndex1 = None
-    nodeIndex2 = None
-
     # handle joint type
     if checkConfigParameter(config,"type"):
         typeName = config["type"]
@@ -461,56 +466,22 @@ def parseJoint(domElement):
             print("JointData: no type given for joint \'%s\'" % name)
 
     if checkConfigParameter(config,"index"):
-        index = int(config["index"])
+        index = config["index"]
 
     if checkConfigParameter(config,"nodeindex1"):
-        nodeIndex1 = int(config["nodeindex1"])
+        nodeIndex1 = config["nodeindex1"]
         if not nodeIndex1:
             print("JointData: no first node attached to joint \'%s\'" % name);
 
     if checkConfigParameter(config,"nodeindex2"):
-        nodeIndex2 = int(config["nodeindex2"])
+        nodeIndex2 = config["nodeindex2"]
 
     # handle axis 1
     if checkConfigParameter(config,"axis1"):
         axis1 = config["axis1"]
 
-    if checkConfigParameter(config,"lowStopAxis1"):
-        lowStopAxis1 = float(config["lowStopAxis1"])
-
-    if checkConfigParameter(config,"highStopAxis1"):
-        highStopAxis1 = float(config["highStopAxis1"])
-
-    if checkConfigParameter(config,"damping_const_constraint_axis1"):
-        damping_const_constraint_axis1 = float(config["damping_const_constraint_axis1"])
-
-    if checkConfigParameter(config,"spring_const_constraint_axis1"):
-        spring_const_constraint_axis1 = float(config["spring_const_constraint_axis1"])
-
-    if checkConfigParameter(config,"angle1_offset"):
-        angle1_offset = float(config["angle1_offset"])
-
-    # handle axis 2
-    if checkConfigParameter(config,"axis2"):
-        axis2 = config["axis2"]
-
-    if checkConfigParameter(config,"lowStopAxis2"):
-        lowStopAxis2 = float(config["lowStopAxis2"])
-
-    if checkConfigParameter(config,"highStopAxis2"):
-        highStopAxis2 = float(config["highStopAxis2"])
-
-    if checkConfigParameter(config,"damping_const_constraint_axis2"):
-        damping_const_constraint_axis2 = float(config["damping_const_constraint_axis2"])
-
-    if checkConfigParameter(config,"spring_const_constraint_axis2"):
-        spring_const_constraint_axis2 = float(config["spring_const_constraint_axis2"])
-
-    if checkConfigParameter(config,"angle2_offset"):
-        angle2_offset = float(config["angle2_offset"])
-
     if checkConfigParameter(config,"anchorpos"):
-        anchorPos = int(config["anchorpos"])
+        anchorPos = config["anchorpos"]
 
     if checkConfigParameter(config,"anchor"):
         anchor = config["anchor"]
@@ -539,7 +510,10 @@ def parseJoint(domElement):
 
             # add each item of 'config' as a custom property to the joint
             for (key, value) in config.items():
-                joint[key] = value
+                if key in scnToBlenderKeyMap:
+                    joint[scnToBlenderKeyMap[key]] = value
+                else:
+                    joint[key] = value
 
             # set the object type to be a joint
             joint["type"] = "joint"
@@ -577,9 +551,9 @@ def parseJoint(domElement):
 
             for tmp in nodeList:
                 # check for thr right "ids"
-                if tmp["index"] == nodeIndex1:
+                if tmp["id"] == nodeIndex1:
                     node1 = tmp
-                if tmp["index"] == nodeIndex2:
+                if tmp["id"] == nodeIndex2:
                     node2 = tmp
 
             # determine the anchor position of the joint
@@ -623,9 +597,9 @@ def parseJoint(domElement):
 
         for tmp in nodeList:
             # check for thr right "ids"
-            if tmp["index"] == nodeIndex1:
+            if tmp["id"] == nodeIndex1:
                 node1 = tmp
-            if tmp["index"] == nodeIndex2:
+            if tmp["id"] == nodeIndex2:
                 node2 = tmp
 
         # setting up the node hierarchy (between parent and child node)
@@ -635,14 +609,14 @@ def parseJoint(domElement):
 
             # check whether the groupID of both nodes differ (highly probable,
             # if used in combination with a joint!)
-            if node1["groupid"] != node2["groupid"]:
+            if node1["group"] != node2["group"]:
                 # some helper variables for the groupIDs of node1 and node2
-                groupID1 = node1["groupid"]
-                groupID2 = node2["groupid"]
+                groupID1 = node1["group"]
+                groupID2 = node2["group"]
                 # see if there are other nodes with the same groupID as the child
                 for tmp in nodeList:
-                    if tmp["groupid"] == groupID2:
-                        tmp["groupid"] = groupID1
+                    if tmp["group"] == groupID2:
+                        tmp["group"] = groupID1
 
     return True
 
@@ -654,14 +628,14 @@ def checkGroupIDs():
     for node1 in nodeList:
         # objects with group ID zero are ignored because they are handled
         # seperately by MARS (not as one object consisting of multiple nodes)
-        if node1["groupid"] == 0:
+        if node1["group"] == 0:
             continue
         
         # put all nodes with the same group ID together in a list
         group = []
         for node2 in nodeList:
             # check for matching group IDs
-            if node2["groupid"] == node1["groupid"]:
+            if node2["group"] == node1["group"]:
                 group.append(node2)
 
         # if there are other nodes with the same group ID
