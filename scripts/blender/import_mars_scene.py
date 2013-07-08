@@ -402,13 +402,39 @@ def parseNode(domElement, tmpDir):
             else:
                 node[key] = value
 
+        # if the node should be positioned "relative" to some other node
+        if checkConfigParameter(config,"relativeid"):
+            # get the ID of this "relative" node
+            relativeID = config["relativeid"]
+
+            # find the "relative" node
+            relative = None
+            for tmp in nodeList:
+                if tmp["id"] == relativeID:
+                    relative = tmp
+
+            # if the "relative" node was found
+            if relative:
+                # TODO: why do we have to remove the previous applied rotation?
+                inverted_rotation_offset = mathutils.Euler((-math.pi/2.0, 0.0, 0.0)).to_quaternion()
+
+                # calculate the absolute position based on the "relative" node's
+                # position and the given position
+                position = relative.location + relative.rotation_quaternion * inverted_rotation_offset * position
+
+                # calculate the absolute orientation based on the "relative" node's
+                # orientation and the given orientation
+                rotation = relative.rotation_quaternion * inverted_rotation_offset * rotation
+            else:
+                print("WARNING! Could not find relative node (id: %u)!" % relativeID)
+
         # set the position of the object
         node.location = position + rotation * visual_position
 
-        # set the rotation of the object
         # TODO: why do we need this offset rotation?!?
         rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
 
+        # set the rotation of the object
         node.rotation_mode = "QUATERNION"
         node.rotation_quaternion = rotation * visual_rotation * rotation_offset
 
