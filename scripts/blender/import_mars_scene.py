@@ -230,11 +230,6 @@ def parseNode(domElement, tmpDir):
             tmp = nodeTypes[physicMode]
             print("WARNING! Origname set to \"%s\" for primitive in node \"%s\" with physicMode \"%s\"" % (origName, name, tmp))
 
-    if checkConfigParameter(config,"groupid"):
-        groupID = int(config["groupid"])
-    else:
-        groupID = 0
-
     if checkConfigParameter(config,"index"):
         index = int(config["index"])
 
@@ -281,21 +276,15 @@ def parseNode(domElement, tmpDir):
             # create a new box as representation of the node
             bpy.ops.mesh.primitive_cube_add()
             # get the "pointer" to the new node
-            for obj in bpy.data.objects:
-                if obj.name == "Cube":
-                    # set the name of the object
-                    node = obj
-                    # set the size of the cube
-                    node.dimensions = extend
+            node = bpy.context.selected_objects[0]
+            # set the size of the cube
+            node.dimensions = extend
 
         elif typeName == "sphere":
             # create a new sphere as representation of the node
             bpy.ops.mesh.primitive_uv_sphere_add(size = extend.x)
             # get the "pointer" to the new node
-            for obj in bpy.data.objects:
-                if obj.name == "Sphere":
-                    # set the name of the object
-                    node = obj
+            node = bpy.context.selected_objects[0]
 
         elif typeName == "reference":
             # TODO: is that really needed?
@@ -309,31 +298,22 @@ def parseNode(domElement, tmpDir):
             # create a new cylinder as representation of the node
             bpy.ops.mesh.primitive_cylinder_add(radius = extend.x, depth = extend.y)
             # get the "pointer" to the new node
-            for obj in bpy.data.objects:
-                if obj.name == "Cylinder":
-                    # set the name of the object
-                    node = obj
+            node = bpy.context.selected_objects[0]
 
         elif typeName == "capsule":
             print("Warning! Node type \'capsule\' yet supported, using \'cylinder\' instead.")
             # create a new cylinder as representation of the node
             bpy.ops.mesh.primitive_cylinder_add(radius = extend.x, depth = extend.y)
             # get the "pointer" to the new node
-            for obj in bpy.data.objects:
-                if obj.name == "Cylinder":
-                    # set the name of the object
-                    node = obj
+            node = bpy.context.selected_objects[0]
 
         elif typeName == "plane":
             # create a new plane as representation of the node
             bpy.ops.mesh.primitive_plane_add()
             # get the "pointer" to the new node
-            for obj in bpy.data.objects:
-                if obj.name == "Plane":
-                    # set the name of the object
-                    node = obj
-                    # set the size of the cube
-                    node.dimensions = extend
+            node = bpy.context.selected_objects[0]
+            # set the size of the cube
+            node.dimensions = extend
 
         else:
             print("Cannot find primitive type: %s" % origName) 
@@ -344,12 +324,9 @@ def parseNode(domElement, tmpDir):
         # create a new box as placeholder for the "terrain" node
         bpy.ops.mesh.primitive_cube_add()
         # get the "pointer" to the new node
-        for obj in bpy.data.objects:
-            if obj.name == "Cube":
-                # set the name of the object
-                node = obj
-                # set the size of the cube
-                node.dimensions = mathutils.Vector((0.1,0.1,0.1))
+        node = bpy.context.selected_objects[0]
+        # set the size of the cube
+        node.dimensions = mathutils.Vector((0.1,0.1,0.1))
 
     # we have to load the node from an import file
     else:
@@ -363,41 +340,35 @@ def parseNode(domElement, tmpDir):
 
         # if not, import the respective .obj file
         if not node:
-            # store the names of all objects before importing
-            old_object_list = bpy.data.objects.keys()
-
-            # import the .obj file
+            # import the .obj file (after importing a .obj file the newly
+            # added objects are selected by Blender)
             bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
 
-            # store the names of all objects after importing
-            new_object_list = bpy.data.objects.keys()
-
             # if there were added multiple meshes from one .obj file
-            if len(new_object_list) - len(old_object_list) > 1:
+            if len(bpy.context.selected_objects) > 1:
+                # store the list of newly added meshes
+                new_object_list = bpy.context.selected_objects
+                
                 # put the newly imported objects into the "unused" list
-                for nodeName in new_object_list:
-                    if nodeName not in old_object_list:
-                        # add the name of the imported object to the list of
-                        # unused nodes
-                        unusedNodeList.append(nodeName)
+                for tmp in new_object_list:
+                    # add the name of the imported object to the list of
+                    # unused nodes
+                    unusedNodeList.append(tmp.name)
 
-                        # center the origin of the loaded node to the center
-                        # of its bounding box
-                        tmp = bpy.data.objects[nodeName]
-                        centerNodeOrigin(tmp)
+                    # center the origin of the loaded node to the center
+                    # of its bounding box
+                    centerNodeOrigin(tmp)
 
                     # get the currently added object
-                    if filename in nodeName or name in nodeName:
-                        node = bpy.data.objects[nodeName]
+                    if filename in tmp.name or name in tmp.name:
+                        node = bpy.data.objects[tmp.name]
                         # remove the current object from the unused list
-                        unusedNodeList.remove(nodeName)
+                        unusedNodeList.remove(tmp.name)
 
             # if there was added just one mesh
             else:
-                # get the currently added object
-                for nodeName in new_object_list:
-                    if filename in nodeName or name in nodeName:
-                        node = bpy.data.objects[nodeName]
+                # get the newly added node as the only selected object
+                node = bpy.context.selected_objects[0]
 
         else:
             print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % name)
@@ -417,15 +388,19 @@ def parseNode(domElement, tmpDir):
         # set the name of the object
         node.name = name
 
+        # set the object type to be a node
+        node["type"] = "body"
+
+        # if there is no "groupid" in the config set the default value of zero
+        if not checkConfigParameter(config,"groupid"):
+            node["group"] = 0
+
         # add each item of 'config' as a custom property to the node
         for (key, value) in config.items():
             if key in scnToBlenderKeyMap:
                 node[scnToBlenderKeyMap[key]] = value
             else:
                 node[key] = value
-
-        # set the object type to be a node
-        node["type"] = "body"
 
         # set the position of the object
         node.location = position + rotation * visual_position
@@ -491,102 +466,97 @@ def parseJoint(domElement):
 
     if type != jointTypes.index("fixed"):
 
-        # "pointer" to the newly created object
-        joint = None
-
         # create a new cylinder as representation of the joint        
         bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
-        for obj in bpy.data.objects:
-            if obj.name == "Cylinder":
-                joint = obj
+        # get the "pointer" to the new joint
+        joint = bpy.context.selected_objects[0]
 
-        if joint:
-            # add the node to the global node list
-            jointList.append(joint)
+        # add the node to the global node list
+        jointList.append(joint)
 
-            # set the name of the object
-            joint.name = name
+        # set the name of the object
+        joint.name = name
 
-            # add each item of 'config' as a custom property to the joint
-            for (key, value) in config.items():
-                if key in scnToBlenderKeyMap:
-                    joint[scnToBlenderKeyMap[key]] = value
-                else:
-                    joint[key] = value
+        # set the object type to be a joint
+        joint["type"] = "joint"
 
-            # set the object type to be a joint
-            joint["type"] = "joint"
-
-            # set the color of the joint helper object to green
-            if "green" not in bpy.data.materials:
-                # create new "green" material
-                mat = bpy.data.materials.new("green")
-                mat.diffuse_color = mathutils.Color((0.0,
-                                                     1.0,
-                                                     0.0))
-                mat.diffuse_shader = "LAMBERT"
-                mat.diffuse_intensity = 0.6
-                mat.specular_color = mathutils.Color((0.208,
-                                                      0.208,
-                                                      0.208))
-                mat.specular_shader = "COOKTORR"
-                mat.specular_intensity = 0.5
-                mat.alpha = 1.0
-                mat.ambient = 1.0
+        # add each item of 'config' as a custom property to the joint
+        for (key, value) in config.items():
+            if key in scnToBlenderKeyMap:
+                joint[scnToBlenderKeyMap[key]] = value
             else:
-                mat = bpy.data.materials["green"]
+                joint[key] = value
 
-            joint.data.materials.append(mat)
+        # set the color of the joint helper object to green
+        if "green" not in bpy.data.materials:
+            # create new "green" material
+            mat = bpy.data.materials.new("green")
+            mat.diffuse_color = mathutils.Color((0.0,
+                                                 1.0,
+                                                 0.0))
+            mat.diffuse_shader = "LAMBERT"
+            mat.diffuse_intensity = 0.6
+            mat.specular_color = mathutils.Color((0.208,
+                                                  0.208,
+                                                  0.208))
+            mat.specular_shader = "COOKTORR"
+            mat.specular_intensity = 0.5
+            mat.alpha = 1.0
+            mat.ambient = 1.0
+        else:
+            mat = bpy.data.materials["green"]
 
-            # check whether 'axis1' is valid and the type is not 'fixed'
-            if axis1.length_squared < EPSILON and type != 6:
-                print("ERROR! Cannot create joint \'%s\' without axis1" % name)
-                #TODO: remove created cylinder
-                return False
+        joint.data.materials.append(mat)
 
-            # find the corresponding two nodes
-            node1 = None
-            node2 = None
+        # check whether 'axis1' is valid and the type is not 'fixed'
+        if axis1.length_squared < EPSILON and type != 6:
+            print("ERROR! Cannot create joint \'%s\' without axis1" % name)
+            #TODO: remove created cylinder
+            return False
 
-            for tmp in nodeList:
-                # check for thr right "ids"
-                if tmp["id"] == nodeIndex1:
-                    node1 = tmp
-                if tmp["id"] == nodeIndex2:
-                    node2 = tmp
+        # find the corresponding two nodes
+        node1 = None
+        node2 = None
 
-            # determine the anchor position of the joint
-            if anchorPos == 1: # "node1"
-                joint.location = node1.location
-            elif anchorPos == 2: # "node2"
-                joint.location = node2.location
-            elif anchorPos == 3: # "center"
-                joint.location = (node1.location + node2.location) / 2.0
-            elif anchorPos == 4: # "custom"
-                joint.location = anchor
-            else:
-                #TODO: What position should be set in this case?
-                print("WARNING! Wrong anchor position for joint \'%s\'" % name)
+        for tmp in nodeList:
+            # check for thr right "ids"
+            if tmp["id"] == nodeIndex1:
+                node1 = tmp
+            if tmp["id"] == nodeIndex2:
+                node2 = tmp
 
-            # set the orientation of the joint
-            z_axis = mathutils.Vector((0.0,0.0,1.0))
-            joint.rotation_mode = "QUATERNION"
-            joint.rotation_quaternion = z_axis.rotation_difference(axis1)
+        # determine the anchor position of the joint
+        if anchorPos == 1: # "node1"
+            joint.location = node1.location
+        elif anchorPos == 2: # "node2"
+            joint.location = node2.location
+        elif anchorPos == 3: # "center"
+            joint.location = (node1.location + node2.location) / 2.0
+        elif anchorPos == 4: # "custom"
+            joint.location = anchor
+        else:
+            #TODO: What position should be set in this case?
+            print("WARNING! Wrong anchor position for joint \'%s\'" % name)
 
-            # setting up the node hierarchy (between parent and child node)
-            if node1 and node2:
-                # set the parent-child relationship
-                setParentChild(node1,node2)
+        # set the orientation of the joint
+        z_axis = mathutils.Vector((0.0,0.0,1.0))
+        joint.rotation_mode = "QUATERNION"
+        joint.rotation_quaternion = z_axis.rotation_difference(axis1)
 
-            # setting up the node hierarchy (between parent node and joint helper)
-            if node1:
-                # set the parent-child relationship
-                setParentChild(node1,joint)
+        # setting up the node hierarchy (between parent and child node)
+        if node1 and node2:
+            # set the parent-child relationship
+            setParentChild(node1,node2)
 
-            # store the pointer to the second joint node as custom property
-            if node2:
-                joint["node2"] = node2.name
+        # setting up the node hierarchy (between parent node and joint helper)
+        if node1:
+            # set the parent-child relationship
+            setParentChild(node1,joint)
+
+        # store the pointer to the second joint node as custom property
+        if node2:
+            joint["node2"] = node2.name
 
     # if it is a 'fixed' joint, we don't create a helper object, we just create
     # the parent-child-relationship and set the groupID of both objects accordingly
@@ -651,9 +621,16 @@ def checkGroupIDs():
                     if joint.parent == node2 and node2 not in parents:
                         parents.append(node2)
 
+            # if there is only one child, we use this as parent for the whole
+            # group (would make sense)
             if len(children) == 1:
                 # set the parent-child relationship
                 node2 = children[0]
+                setParentChild(node2,node1)
+            # if there are no children, we use the "first" parent as "group parent"
+            elif len(children) == 0 and len(parents) > 0:
+                # set the parent-child relationship
+                node2 = parents[0]
                 setParentChild(node2,node1)
             else:
                 print("WARNING! Unable to set parent-child relationship for node <%s> while checking group IDs!" % node1.name)
