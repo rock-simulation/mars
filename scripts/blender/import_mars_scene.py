@@ -195,10 +195,6 @@ def parseNode(domElement, tmpDir):
     # read the config from the xml file
     config = getGenericConfig(domElement)
 
-    check = False
-    massDensity = False
-    needMass = True
-
     # handle node name
     if not checkConfigParameter(config,"name"):
         return False
@@ -207,38 +203,6 @@ def parseNode(domElement, tmpDir):
     print("# Creating node <%s>" % name)
 
 #    print("%s : %s" % (config["name"], config))
-
-    # handle node mass
-    if checkConfigParameter(config,"mass"):
-        mass = float(config["mass"])
-        # use some epsilon here
-        if abs(mass) > 0.000000001:
-            check = True
-
-    if checkConfigParameter(config,"density"):
-        density = float(config["density"])
-        # use some epsilon here
-        if abs(density) > 0.000000001:
-            if check:
-                massDensity = True;
-            check = True;
-
-    if checkConfigParameter(config,"noPhysical"):
-        noPhysical = (config["noPhysical"] == "true")
-        if noPhysical:
-            needMass = False
-
-    if checkConfigParameter(config,"movable"):
-        movable = (config["movable"] == "true")
-        if not movable:
-            needMass = False
-
-    if needMass:
-        if not check:
-            print("WARNING! No mass nor density given for node %s." % name)
-        elif massDensity:
-            print("WARNING! Mass and density given for node %s. Using only the mass." % name)
-            density = 0.0
 
     # handle node physic mode
     if checkConfigParameter(config,"physicmode"):
@@ -271,157 +235,35 @@ def parseNode(domElement, tmpDir):
 
     if checkConfigParameter(config,"position"):
         position = config["position"]
-
-    if checkConfigParameter(config,"pivot"):
-        pivot = config["pivot"]
+    else:
+        position = mathutils.Vector()
 
     if checkConfigParameter(config,"rotation"):
         rotation = config["rotation"]
+    else:
+        rotation = mathtutils.Quaternion()
+        rotation.identity()
 
     if checkConfigParameter(config,"extend"):
-        ext = config["extend"]
-
-    # handle relatvie positioning
-    if checkConfigParameter(config,"relativeid"):
-        relative_id = int(config["relativeid"])
-        if relative_id:
-            if checkConfigParamter(config,"mapIndex"):
-                mapIndex = int(config["mapIndex"])
-            #TODO: Do we need this?
-            #if mapIndex and loadScene:
-            #    relative_id = loadScene->getMappedID(relative_id, MAP_TYPE_NODE, mapIndex);
-
-    # handle terrain info
-    if checkConfigParameter(config,"t_srcname"):
-      terrain = {}
-      terrain["srcname"] = config["t_srcname"]
-
-      if checkConfigParameter(config,"t_width"):
-          terrain["targetWidth"] = float(config["t_width"])
-
-      if checkConfigParameter(config,"t_height"):
-          terrain["targetHeight"] = float(config["t_height"])
-
-      if checkConfigParameter(config,"t_scale"):
-          terrain["scale"] = float(config["t_scale"])
-
-      if checkConfigParameter(config,"t_tex_scale"):
-          terrain["texScale"] = float(config["t_tex_scale"])
+        extend = config["extend"]
+    else:
+        extend = mathutils.Vector()
 
     if checkConfigParameter(config, "visualposition"):
         visual_position = config["visualposition"]
+    else:
+        visual_position = mathutils.Vector()
 
     if checkConfigParameter(config, "visualrotation"):
         visual_rotation = config["visualrotation"]
+    else:
+        visual_rotation = mathutils.Quaternion()
+        visual_rotation.identity()
 
     if checkConfigParameter(config,"visualsize"):
         visual_size = config["visualsize"]
     else:
-      visual_size = ext
-
-    # handle contact info
-    c_params = {}
-
-    if checkConfigParameter(config,"cmax_num_contacts"):
-        c_params["max_num_contacts"] = float(config["cmax_num_contacts"])
-        
-    if checkConfigParameter(config,"cerp"):
-        c_params["erp"] = float(config["cerp"])
-        
-    if checkConfigParameter(config,"ccfm"):
-        c_params["cfm"] = float(config["ccfm"])
-
-    if checkConfigParameter(config,"cfriction1"):
-        c_params["friction1"] = float(config["cfriction1"])
-
-    if checkConfigParameter(config,"cfriction2"):
-        c_params["friction2"] = float(config["cfriction2"])
-
-    if checkConfigParameter(config,"cmotion1"):
-        c_params["motion1"] = float(config["cmotion1"])
-
-    if checkConfigParameter(config,"cmotion2"):
-        c_params["motion2"] = float(config["cmotion2"])
-
-    if checkConfigParameter(config,"cfds1"):
-        c_params["fds1"] = float(config["cfds1"])
-
-    if checkConfigParameter(config,"cfds2"):
-        c_params["fds2"] = float(config["cfds2"])
-
-    if checkConfigParameter(config,"cbounce"):
-        c_params["bounce"] = float(config["cbounce"])
-
-    if checkConfigParameter(config,"cbounce_vel"):
-        c_params["bounce_vel"] = float(config["cbounce_vel"])
-
-    if checkConfigParameter(config,"capprox"):
-        c_params["approx_pyramid"] = (config["capprox"] == "true")
-
-    if checkConfigParameter(config,"coll_bitmask"):
-        c_params["coll_bitmask"] = int(config["coll_bitmask"])
-
-    if checkConfigParameter(config,"cfdir1"):
-        c_params["friction_direction1"] = config["cfdir1"]
-
-    if checkConfigParameter(config,"inertia"):
-        inertia_set = (config["inertia"] == "true")
-
-    inertia = [[0.0 for x in range(3)] for x in range(3)]
-
-    if checkConfigParameter(config,"i00"):
-        inertia[0][0] = float(config["i00"])
-
-    if checkConfigParameter(config,"i01"):
-        inertia[0][1] = float(config["i01"])
-
-    if checkConfigParameter(config,"i02"):
-         inertia[0][2] = float(config["i02"])
-
-    if checkConfigParameter(config,"i10"):
-         inertia[1][0] = float(config["i10"])
-
-    if checkConfigParameter(config,"i11"):
-         inertia[1][1] = float(config["i11"])
-
-    if checkConfigParameter(config,"i12"):
-         inertia[1][2] = float(config["i12"])
-
-    if checkConfigParameter(config,"i20"):
-         inertia[2][0] = float(config["i20"])
-
-    if checkConfigParameter(config,"i21"):
-         inertia[2][1] = float(config["i21"])
-
-    if checkConfigParameter(config,"i22"):
-         inertia[2][2] = float(config["i22"])
-
-    if checkConfigParameter(config,"linear_damping"):
-         linear_damping = float(config["linear_damping"])
-
-    if checkConfigParameter(config,"angular_damping"):
-         angular_damping = float(config["angular_damping"])
-
-    if checkConfigParameter(config,"angular_low"):
-         angular_low = float(config["angular_low"])
-
-    if checkConfigParameter(config,"shadow_id"):
-         shadow_id = int(config["shadow_id"])
-
-    if checkConfigParameter(config,"shadowcaster"):
-         isShadowCaster = (config["shadowcaster"] == "true")
-
-    if checkConfigParameter(config,"shadowreceiver"):
-         isShadowReceiver= (config["shadowreceiver"] == "true")
-
-    #TODO: Do we need this?
-    #if(!filenamePrefix.empty()) { 
-    #   if(filename != "PRIMITIVE")
-    #     handleFilenamePrefix(&filename, filenamePrefix);
-    #   if(terrain) {
-    #     handleFilenamePrefix(&terrain->srcname, filenamePrefix);
-    #   }
-    # }
+        visual_size = extend
 
     ######## LOAD THE NODE IN BLENDER ########
 
@@ -439,11 +281,11 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = ext
+                    node.dimensions = extend
 
         elif typeName == "sphere":
             # create a new sphere as representation of the node
-            bpy.ops.mesh.primitive_uv_sphere_add(size = ext.x)
+            bpy.ops.mesh.primitive_uv_sphere_add(size = extend.x)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Sphere":
@@ -460,7 +302,7 @@ def parseNode(domElement, tmpDir):
 
         elif typeName == "cylinder":
             # create a new cylinder as representation of the node
-            bpy.ops.mesh.primitive_cylinder_add(radius = ext.x, depth = ext.y)
+            bpy.ops.mesh.primitive_cylinder_add(radius = extend.x, depth = extend.y)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Cylinder":
@@ -470,7 +312,7 @@ def parseNode(domElement, tmpDir):
         elif typeName == "capsule":
             print("Warning! Node type \'capsule\' yet supported, using \'cylinder\' instead.")
             # create a new cylinder as representation of the node
-            bpy.ops.mesh.primitive_cylinder_add(radius = ext.x, depth = ext.y)
+            bpy.ops.mesh.primitive_cylinder_add(radius = extend.x, depth = extend.y)
             # get the "pointer" to the new node
             for obj in bpy.data.objects:
                 if obj.name == "Cylinder":
@@ -486,14 +328,23 @@ def parseNode(domElement, tmpDir):
                     # set the name of the object
                     node = obj
                     # set the size of the cube
-                    node.dimensions = ext
+                    node.dimensions = extend
 
         else:
             print("Cannot find primitive type: %s" % origName) 
 
     elif physicMode == "terrain":
         # TODO: Creating terrain in Blender ...
-        print("Warning! \'Terrain\' nodes are not handled right now!")
+        print("Warning! \'Terrain\' nodes are not supported right now! Using a small box as a placeholder!")
+        # create a new box as placeholder for the "terrain" node
+        bpy.ops.mesh.primitive_cube_add()
+        # get the "pointer" to the new node
+        for obj in bpy.data.objects:
+            if obj.name == "Cube":
+                # set the name of the object
+                node = obj
+                # set the size of the cube
+                node.dimensions = mathutils.Vector((0.1,0.1,0.1))
 
     # we have to load the node from an import file
     else:
@@ -564,12 +415,6 @@ def parseNode(domElement, tmpDir):
         # add each item of 'config' as a custom property to the node
         for (key, value) in config.items():
             node[key] = value
-
-        # store the index of the node as custom property
-        node["id"] = index
-
-        # store the group index as custom property
-        node["group"] = groupID
 
         # set the object type to be a node
         node["type"] = "body"
@@ -696,9 +541,6 @@ def parseJoint(domElement):
             for (key, value) in config.items():
                 joint[key] = value
 
-            # store the index of the joint as custom property
-            joint["id"] = index
-
             # set the object type to be a joint
             joint["type"] = "joint"
 
@@ -735,9 +577,9 @@ def parseJoint(domElement):
 
             for tmp in nodeList:
                 # check for thr right "ids"
-                if tmp["id"] == nodeIndex1:
+                if tmp["index"] == nodeIndex1:
                     node1 = tmp
-                if tmp["id"] == nodeIndex2:
+                if tmp["index"] == nodeIndex2:
                     node2 = tmp
 
             # determine the anchor position of the joint
@@ -781,9 +623,9 @@ def parseJoint(domElement):
 
         for tmp in nodeList:
             # check for thr right "ids"
-            if tmp["id"] == nodeIndex1:
+            if tmp["index"] == nodeIndex1:
                 node1 = tmp
-            if tmp["id"] == nodeIndex2:
+            if tmp["index"] == nodeIndex2:
                 node2 = tmp
 
         # setting up the node hierarchy (between parent and child node)
@@ -793,14 +635,14 @@ def parseJoint(domElement):
 
             # check whether the groupID of both nodes differ (highly probable,
             # if used in combination with a joint!)
-            if node1["group"] != node2["group"]:
+            if node1["groupid"] != node2["groupid"]:
                 # some helper variables for the groupIDs of node1 and node2
-                groupID1 = node1["group"]
-                groupID2 = node2["group"]
+                groupID1 = node1["groupid"]
+                groupID2 = node2["groupid"]
                 # see if there are other nodes with the same groupID as the child
                 for tmp in nodeList:
-                    if tmp["group"] == groupID2:
-                        tmp["group"] = groupID1
+                    if tmp["groupid"] == groupID2:
+                        tmp["groupid"] = groupID1
 
     return True
 
@@ -812,14 +654,14 @@ def checkGroupIDs():
     for node1 in nodeList:
         # objects with group ID zero are ignored because they are handled
         # seperately by MARS (not as one object consisting of multiple nodes)
-        if node1["group"] == 0:
+        if node1["groupid"] == 0:
             continue
         
         # put all nodes with the same group ID together in a list
         group = []
         for node2 in nodeList:
             # check for matching group IDs
-            if node2["group"] == node1["group"]:
+            if node2["groupid"] == node1["groupid"]:
                 group.append(node2)
 
         # if there are other nodes with the same group ID
