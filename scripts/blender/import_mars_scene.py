@@ -35,17 +35,19 @@ jointTypes = ["undefined",
               "istruct-spine"
              ]
 
-# global list of nodes and joints
+# global list of nodes, joints and materials
 nodeList = []
 jointList = []
+materialList = []
 
 # global list of imported but not used meshes
 unusedNodeList = []
 
 # map of keyword differences between MARS .scn and Blender
-scnToBlenderKeyMap = {"groupid" : "group",
-                      "index" : "id",
-                      "type" : "jointType"}
+scnToBlenderKeyMap = {"groupid" : "group", # node
+                      "index" : "id", # node
+                      "type" : "jointType", # joint
+                      "id" : "marsID"} # material
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
@@ -135,6 +137,13 @@ def getGenericConfig(parent):
                                      config["y"],
                                      config["z"]))
 
+    # check if it is a color
+    if isinstance(config,dict) and sorted(config.keys()) == ["a","b","g","r"]:
+        # and transform it into a Blender Color
+        config = mathutils.Color((config["r"],
+                                  config["g"],
+                                  config["b"]))
+
     return config
 
 
@@ -192,6 +201,55 @@ def centerNodeOrigin(node):
     # bounding box
     bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY",
                               center="BOUNDS")
+
+    return True
+
+
+def parseMaterial(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    # check for the material index
+    if not checkConfigParameter(config,"id"):
+        return False
+    marsID = config["id"]
+
+    # create a name out of the material index (not needed in MARS
+    # but here in Blender)
+    name = "mars_material_%u" % marsID
+
+    print("# Creating material <%s>" % name)
+
+    # check if a material with the same name already does exist
+    if name in bpy.data.materials:
+        # when it exists remove it (just to wipe the plate clear)
+        tmp = bpy.data.materials[name]
+        bpy.data.materials.remove(tmp)
+
+    # create a new material
+    material = bpy.data.materials.new(name)
+
+    # add the material to the global list
+    materialList.append(material)
+
+    # add each item of 'config' as a custom property to the material
+    for (key, value) in config.items():
+        if key in scnToBlenderKeyMap:
+            material[scnToBlenderKeyMap[key]] = value
+        else:
+            material[key] = value
+
+    # set the diffuse color
+    if checkConfigParameter(config,"diffuseFront"):
+        material.diffuse_color = config["diffuseFront"]
+
+    # set the specular color
+    if checkConfigParameter(config,"specularFront"):
+        material.specular_color = config["specularFront"]
+
+    # set the shininess
+    if checkConfigParameter(config,"shininess"):
+        material.specular_hardness = 2 * config["shininess"]
 
     return True
 
@@ -438,6 +496,17 @@ def parseNode(domElement, tmpDir):
         node.rotation_mode = "QUATERNION"
         node.rotation_quaternion = rotation * visual_rotation * rotation_offset
 
+        # if a node is linked to a material
+        if checkConfigParameter(config,"material_id"):
+            # get the node ID
+            materialID = config["material_id"]
+
+            # find the corresponding material
+            for material in materialList:
+                if material["marsID"] == materialID:
+                    # and add the new material to the node
+                    node.active_material = material
+
     else:
         print("ERROR! Something went wrong while creating node \'%s\'" % name)
         return False
@@ -533,7 +602,7 @@ def parseJoint(domElement):
         else:
             mat = bpy.data.materials["joint"]
 
-        joint.data.materials.append(mat)
+        joint.active_material = mat
 
         # check whether 'axis1' is valid and the type is not 'fixed'
         if axis1.length_squared < EPSILON and type != 6:
@@ -692,6 +761,13 @@ def main(fileDir, filename):
 
     # clean up all the unnecessary white spaces
     removeWhitespaceNodes(dom)
+
+    # parsing all materials
+    materials = dom.getElementsByTagName("material")
+    for material in materials :
+        if not parseMaterial(material):
+            print("Error while parsing material!")
+            sys.exit(1)
 
     # parsing all nodes
     nodes = dom.getElementsByTagName("node")
