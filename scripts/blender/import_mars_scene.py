@@ -515,9 +515,9 @@ def parseJoint(domElement):
                 joint[key] = value
 
         # set the color of the joint helper object to green
-        if "green" not in bpy.data.materials:
+        if "joint" not in bpy.data.materials:
             # create new "green" material
-            mat = bpy.data.materials.new("green")
+            mat = bpy.data.materials.new("joint")
             mat.diffuse_color = mathutils.Color((0.0,
                                                  1.0,
                                                  0.0))
@@ -531,7 +531,7 @@ def parseJoint(domElement):
             mat.alpha = 1.0
             mat.ambient = 1.0
         else:
-            mat = bpy.data.materials["green"]
+            mat = bpy.data.materials["joint"]
 
         joint.data.materials.append(mat)
 
