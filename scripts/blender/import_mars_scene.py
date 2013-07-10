@@ -47,7 +47,26 @@ unusedNodeList = []
 scnToBlenderKeyMap = {"groupid" : "group", # node
                       "index" : "id", # node
                       "type" : "jointType", # joint
-                      "id" : "marsID"} # material
+                      "id" : "marsID" # material
+                     }
+
+# delete all objects, meshes and material from Blender
+def cleanUpScene():
+    # select all objects
+    bpy.ops.object.select_all(action="SELECT")
+
+    # and delete them
+    bpy.ops.object.delete()
+
+    # after that we have to clean up all loaded meshes (unfortunately
+    # this is not done automatically)
+    for mesh in bpy.data.meshes:
+        bpy.data.meshes.remove(mesh)
+
+    # and all materials
+    for material in bpy.data.materials:
+        bpy.data.materials.remove(material)
+
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
@@ -164,8 +183,7 @@ def setParentChild(parent, child):
         return False
 
     # de-select all objects
-    if len(bpy.context.selected_objects) > 0:
-        bpy.ops.object.select_all()
+    bpy.ops.object.select_all(action="DESELECT")
 
     # select the child
     child.select = True
@@ -188,8 +206,7 @@ def centerNodeOrigin(node):
         return False
 
     # de-select all objects
-    if len(bpy.context.selected_objects) > 0:
-        bpy.ops.object.select_all()
+    bpy.ops.object.select_all(action="DESELECT")
 
     # select the node/object
     node.select = True
@@ -203,6 +220,14 @@ def centerNodeOrigin(node):
                               center="BOUNDS")
 
     return True
+
+
+def calculateCenter(boundingBox):
+    c = mathutils.Vector()
+    for v in boundingBox:
+        for i in range(3):
+            c[i] += v[i]
+    return c / 8.0
 
 
 def parseMaterial(domElement):
@@ -306,6 +331,11 @@ def parseNode(domElement, tmpDir):
         extend = config["extend"]
     else:
         extend = mathutils.Vector()
+
+    if checkConfigParameter(config,"pivot"):
+        pivot = config["pivot"]
+    else:
+        pivot = mathutils.Vector()
 
     if checkConfigParameter(config, "visualposition"):
         visual_position = config["visualposition"]
@@ -477,8 +507,11 @@ def parseNode(domElement, tmpDir):
                 inverted_rotation_offset = mathutils.Euler((-math.pi/2.0, 0.0, 0.0)).to_quaternion()
 
                 # calculate the absolute position based on the "relative" node's
-                # position and the given position
-                position = relative.location + relative.rotation_quaternion * inverted_rotation_offset * position
+                # position, the center of its bounding box (could be different
+                # than its orign) and the given position
+                position = relative.location + \
+                           relative.rotation_quaternion * calculateCenter(relative.bound_box) + \
+                           relative.rotation_quaternion * inverted_rotation_offset * position
 
                 # calculate the absolute orientation based on the "relative" node's
                 # orientation and the given orientation
@@ -487,7 +520,7 @@ def parseNode(domElement, tmpDir):
                 print("WARNING! Could not find relative node (id: %u)!" % relativeID)
 
         # set the position of the object
-        node.location = position + rotation * visual_position
+        node.location = position + rotation * (visual_position - pivot)
 
         # TODO: why do we need this offset rotation?!?
         rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
@@ -758,6 +791,9 @@ def main(fileDir, filename):
         sys.exit(1)
 
     # --- DO THE PARSING HERE!!! ---
+
+    # before we start, wipe the plate clean
+    cleanUpScene()
 
     # clean up all the unnecessary white spaces
     removeWhitespaceNodes(dom)
