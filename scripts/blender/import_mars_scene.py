@@ -41,7 +41,8 @@ jointList = []
 materialList = []
 
 # global dictionary for mapping of names of imported .obj file
-# unto the first node who imported it
+# unto the first node who imported it (used also for just having
+# one cylindrical mesh for the joint helper objects)
 objFileMap = {}
 
 # global list of imported but not used objects
@@ -667,12 +668,24 @@ def parseJoint(domElement):
     ######## LOAD THE JOINT IN BLENDER ########
 
     if type != jointTypes.index("fixed"):
+        # check if a joint helper object was already created
+        if "Cylinder" not in objFileMap:
+            # if not, create a new cylinder as representation of the joint        
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
-        # create a new cylinder as representation of the joint        
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
+            # get the "pointer" to the new joint
+            joint = bpy.context.selected_objects[0]
 
-        # get the "pointer" to the new joint
-        joint = bpy.context.selected_objects[0]
+            # register the joint helper object with the global .obj file
+            # map (this is not a hundred percent save; but importing an
+            # .obj file named "Cylinder" should never happen)
+            objFileMap["Cylinder"] = joint
+        else:
+            # else get the original joint helper object
+            tmp = objFileMap["Cylinder"]
+
+            # and duplicate the object
+            joint = duplicateObject(tmp)
 
         # add the node to the global node list
         jointList.append(joint)
