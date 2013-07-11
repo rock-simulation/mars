@@ -40,7 +40,11 @@ nodeList = []
 jointList = []
 materialList = []
 
-# global list of imported but not used meshes
+# global dictionary for mapping of names of imported .obj file
+# unto the first node who imported it
+objFileMap = {}
+
+# global list of imported but not used objects
 unusedNodeList = []
 
 # map of keyword differences between MARS .scn and Blender
@@ -200,6 +204,36 @@ def setParentChild(parent, child):
     return True
 
 
+def duplicateObject(original, linked=True):
+    # de-select all currently selected nodes
+    bpy.ops.object.select_all(action="DESELECT")
+
+    # select the original object
+    original.select = True
+    
+    # and set it as the currently active object
+    bpy.context.scene.objects.active = original
+
+    # and link duplicate it (which makes a copy of the given
+    # object using the same meshes and materials but have an
+    # own transformation)
+    bpy.ops.object.duplicate(linked=True)
+
+    # store the pointer to the copied object
+    copy = bpy.context.selected_objects[0]
+
+    # clear the parent of the copied object
+    bpy.ops.object.parent_clear()
+
+    # clear all custom properties (just to be sure to don't
+    # have some properties belonging to the original but were
+    # not present in the copy)
+    for key in copy.keys():
+        del copy[key]
+
+    return copy
+
+
 def centerNodeOrigin(node):
     if node.name not in bpy.data.objects:
         print("WARNING! Unable to center the origin of node <%s>! Node does not exist!" % node.name)
@@ -245,6 +279,8 @@ def parseMaterial(domElement):
 
     print("# Creating material <%s>" % name)
 
+    # TODO: Is this really necessary? Right now before we start we
+    # remove all objects, meshes and materials!?
     # check if a material with the same name already does exist
     if name in bpy.data.materials:
         # when it exists remove it (just to wipe the plate clear)
@@ -275,6 +311,8 @@ def parseMaterial(domElement):
     # set the shininess
     if checkConfigParameter(config,"shininess"):
         material.specular_hardness = 2 * config["shininess"]
+
+    # TODO: what about transparency?!?
 
     return True
 
@@ -426,11 +464,31 @@ def parseNode(domElement, tmpDir):
                 # remove the current object from the unused list
                 unusedNodeList.remove(nodeName)
 
+        # see if the mesh was already imported for another node
+        if not node:
+            # if the mesh was already imported
+            if filename in objFileMap:
+                # get the other object which already imported the same
+                # .obj file
+                tmp = objFileMap[filename]
+
+                # duplicate the given object
+                node = duplicateObject(tmp)
+
         # if not, import the respective .obj file
         if not node:
+
             # import the .obj file (after importing a .obj file the newly
             # added objects are selected by Blender)
             bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
+
+#            # TODO: Find out why this does'nt work!!
+#            bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename,
+#                                     axis_forward="X", axis_up="Y")
+#
+#            # apply the rotation to the imported object (is needed in
+#            # order to get the right orientation of the imported object)
+#            bpy.ops.object.transform_apply(rotation=True)
 
             # if there were added multiple meshes from one .obj file
             if len(bpy.context.selected_objects) > 1:
@@ -457,6 +515,10 @@ def parseNode(domElement, tmpDir):
             else:
                 # get the newly added node as the only selected object
                 node = bpy.context.selected_objects[0]
+
+                # store the mapping between the loaded mesh file and a pointer
+                # to the first node which imported it
+                objFileMap[filename] = node
 
         else:
             print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % name)
@@ -536,9 +598,21 @@ def parseNode(domElement, tmpDir):
 
             # find the corresponding material
             for material in materialList:
-                if material["marsID"] == materialID:
-                    # and add the new material to the node
+                # and also test if it is already set (happens when we duplicate an object)
+                if material["marsID"] == materialID and material != node.active_material:
+                    # store the pointer to the old material (if there is
+                    # one)
+                    tmp = None
+                    if node.active_material != None:
+                        tmp = node.active_material
+
+                    # add the new material to the node
                     node.active_material = material
+
+                    # clean up the "old" material (default material added
+                    # by importing the .obj file without .mtl file)
+                    if tmp:
+                        bpy.data.materials.remove(tmp)
 
     else:
         print("ERROR! Something went wrong while creating node \'%s\'" % name)
@@ -617,9 +691,9 @@ def parseJoint(domElement):
                 joint[key] = value
 
         # set the color of the joint helper object to green
-        if "joint" not in bpy.data.materials:
+        if "joint_material" not in bpy.data.materials:
             # create new "green" material
-            mat = bpy.data.materials.new("joint")
+            mat = bpy.data.materials.new("joint_material")
             mat.diffuse_color = mathutils.Color((0.0,
                                                  1.0,
                                                  0.0))
@@ -633,7 +707,7 @@ def parseJoint(domElement):
             mat.alpha = 1.0
             mat.ambient = 1.0
         else:
-            mat = bpy.data.materials["joint"]
+            mat = bpy.data.materials["joint_material"]
 
         joint.active_material = mat
 
