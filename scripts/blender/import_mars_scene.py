@@ -35,9 +35,30 @@ jointTypes = ["undefined",
               "istruct-spine"
              ]
 
+# definition of sensor types
+sensorTypes = ["RaySensor",
+               "CameraSensor",
+               "ScanningSonar",
+               "JointPosition",
+               "JointVelocity",
+               "JointLoad",
+               "JointTorque",
+               "JointAVGTorque",
+               "Joint6DOF",
+               "NodeContact",
+               "NodePosition",
+               "NodeRotation",
+               "NodeContactForce",
+               "NodeCOM",
+               "NodeVelocity",
+               "NodeAngularVelocity",
+               "MotorCurrent"
+              ]
+
 # global list of nodes, joints and materials
 nodeList = []
 jointList = []
+sensorList = []
 materialList = []
 
 # global dictionary for mapping of names of imported .obj file
@@ -48,12 +69,36 @@ objFileMap = {}
 # global list of imported but not used objects
 unusedNodeList = []
 
-# map of keyword differences between MARS .scn and Blender
-scnToBlenderKeyMap = {"groupid" : "group", # node
-                      "index" : "id", # node
-                      "type" : "jointType", # joint
-                      "id" : "marsID" # material
-                     }
+# map of keyword differences between MARS .scn and Blender for nodes
+nodeKeyMap = {"groupid" : "group",
+              "index" : "id"
+             }
+
+# map of keyword differences between MARS .scn and Blender for joints
+jointKeyMap = {"index" : "id",
+               "type" : "jointType"
+              }
+
+
+# map of keyword differences between MARS .scn and Blender for sensors
+sensorKeyMap = {"type" : "sensorType"
+               }
+
+
+# map of keyword differences between MARS .scn and Blender for materials
+materialKeyMap = {"id" : "marsID"
+                 }
+
+# map of keyword differences between MARS .scn and Blender for motors
+motorKeyMap = {"name" : "motor_name",
+               "index" : "motor_index",
+               "type" : "motor_type",
+               "axis" : "motorAxis",
+               "maximumVelocity" : "maxSpeed",
+               "motorMaxForce" : "maxForce",
+               "min_val" : "lowStop",
+               "max_val" : "highStop"
+              }
 
 # delete all objects, meshes and material from Blender
 def cleanUpScene():
@@ -143,7 +188,15 @@ def getGenericConfig(parent):
             if key not in config:
                 config[key] = value
             else:
-                print("Warning! Key '%s' already exists!" % child.tagName)
+                # while parsing a sensor, there could be multiple entries
+                # for "id"
+                if key == "id":
+                    if isinstance(config[key],int):
+                        config[key] = [config[key]]
+                    config[key].append(value)
+                else:
+                    print("Warning! Key '%s' already exists!" % child.tagName)
+
         child = child.nextSibling
 
     # check if it is a vector
@@ -183,8 +236,8 @@ def setParentChild(parent, child):
         print("WARNING! Unable to set parent-child relationship! Parent non-existing! Parent must be a node!")
         return False
 
-    if child not in nodeList and child not in jointList:
-        print("WARNING! Unable to set parent-child relationship! Child non-existing! Child must be either a node or a joint!")
+    if child not in nodeList and child not in jointList and child not in sensorList:
+        print("WARNING! Unable to set parent-child relationship! Child non-existing! Child must be either a node,a joint or a sensor!")
         return False
 
     # de-select all objects
@@ -296,8 +349,8 @@ def parseMaterial(domElement):
 
     # add each item of 'config' as a custom property to the material
     for (key, value) in config.items():
-        if key in scnToBlenderKeyMap:
-            material[scnToBlenderKeyMap[key]] = value
+        if key in materialKeyMap:
+            material[materialKeyMap[key]] = value
         else:
             material[key] = value
 
@@ -548,8 +601,8 @@ def parseNode(domElement, tmpDir):
 
         # add each item of 'config' as a custom property to the node
         for (key, value) in config.items():
-            if key in scnToBlenderKeyMap:
-                node[scnToBlenderKeyMap[key]] = value
+            if key in nodeKeyMap:
+                node[nodeKeyMap[key]] = value
             else:
                 node[key] = value
 
@@ -669,7 +722,7 @@ def parseJoint(domElement):
 
     if type != jointTypes.index("fixed"):
         # check if a joint helper object was already created
-        if "Cylinder" not in objFileMap:
+        if "joint_helper" not in objFileMap:
             # if not, create a new cylinder as representation of the joint        
             bpy.ops.mesh.primitive_cylinder_add(radius=0.01, depth=0.2)
 
@@ -678,11 +731,11 @@ def parseJoint(domElement):
 
             # register the joint helper object with the global .obj file
             # map (this is not a hundred percent save; but importing an
-            # .obj file named "Cylinder" should never happen)
-            objFileMap["Cylinder"] = joint
+            # .obj file named "joint_helper" should never happen)
+            objFileMap["joint_helper"] = joint
         else:
             # else get the original joint helper object
-            tmp = objFileMap["Cylinder"]
+            tmp = objFileMap["joint_helper"]
 
             # and duplicate the object
             joint = duplicateObject(tmp)
@@ -698,8 +751,8 @@ def parseJoint(domElement):
 
         # add each item of 'config' as a custom property to the joint
         for (key, value) in config.items():
-            if key in scnToBlenderKeyMap:
-                joint[scnToBlenderKeyMap[key]] = value
+            if key in jointKeyMap:
+                joint[jointKeyMap[key]] = value
             else:
                 joint[key] = value
 
@@ -851,6 +904,240 @@ def checkGroupIDs():
                 print("WARNING! Unable to set parent-child relationship for node <%s> while checking group IDs!" % node1.name)
 
 
+def parseMotor(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    # check for the joint index (because we just store all the motor
+    # information within the joint helper object)
+    if not checkConfigParameter(config,"jointIndex"):
+        return False
+    jointIndex = config["jointIndex"]
+
+    print("# Creating motor <%s>" % config["name"])
+
+    # find the joint in question
+    for tmp in jointList:
+        if tmp["id"] == jointIndex:
+            joint = tmp
+
+    # when the joint was found
+    if joint:
+        # remove the additional joint index from the config
+        del config["jointIndex"]
+
+        # add each item of 'config' as a custom property to the joint
+        for (key, value) in config.items():
+            if key in motorKeyMap:
+                joint[motorKeyMap[key]] = value
+            else:
+                joint[key] = value
+
+    return True
+
+
+def parseSensor(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    # handle sensor name
+    if not checkConfigParameter(config,"name"):
+        return False
+    name = config["name"]
+
+    print("# Creating sensor <%s>" % name)
+
+    # check if a sensor helper object was already created
+    if "sensor_helper" not in objFileMap:
+        # if not, create a new sphere as representation of the sensor
+        bpy.ops.mesh.primitive_uv_sphere_add(size=0.02)
+
+        # get the "pointer" to the new sensor
+        sensor = bpy.context.selected_objects[0]
+
+        # register the sensor helper object with the global .obj file
+        # map (this is not a hundred percent save; but importing an
+        # .obj file named "sensor_helper" should never happen)
+        objFileMap["sensor_helper"] = sensor
+    else:
+        # else get the original sensor helper object
+        tmp = objFileMap["sensor_helper"]
+
+        # and duplicate the object
+        sensor = duplicateObject(tmp)
+
+    # when the joint was found
+    if sensor:
+        # add the node to the global sensor list
+        sensorList.append(sensor)
+
+        # set the name of the object to be the same as the senor
+        sensor.name = name
+
+        # set the correct object type to "sensor"
+        sensor["type"] = "sensor"
+        
+        # add each item of 'config' as a custom property to the joint
+        for (key, value) in config.items():
+            if key in sensorKeyMap:
+                sensor[sensorKeyMap[key]] = value
+            else:
+                sensor[key] = value
+
+        # set the color of the joint helper object to yellow
+        if "sensor_material" not in bpy.data.materials:
+            # create new "yellow" material
+            mat = bpy.data.materials.new("sensor_material")
+            mat.diffuse_color = mathutils.Color((1.0,
+                                                 1.0,
+                                                 0.0))
+            mat.diffuse_shader = "LAMBERT"
+            mat.diffuse_intensity = 0.6
+            mat.specular_color = mathutils.Color((0.208,
+                                                  0.208,
+                                                  0.208))
+            mat.specular_shader = "COOKTORR"
+            mat.specular_intensity = 0.5
+            mat.alpha = 1.0
+            mat.ambient = 1.0
+        else:
+            mat = bpy.data.materials["sensor_material"]
+
+        sensor.active_material = mat
+
+        if config["type"] == "NodeContactForce":
+            # get the node ID of the belonging object
+            nodeID = config["id"]
+            node = None
+            for tmp in nodeList:
+                if tmp["id"] == nodeID:
+                    node = tmp
+                    break
+
+            # if the node exists
+            if node:
+                # put the sensor helper object 10 cm under the object
+                # TODO: is that a good position
+                sensor.location = node.location + mathutils.Vector((0.0,0.0,-0.1))
+
+                # if the position is already taken by another sensor
+                # move the new sensor a little bit down
+                for tmp in sensorList:
+                    distance = sensor.location - tmp.location
+                    if tmp != sensor and distance.length < 0.03:
+                        sensor.location = sensor.location + mathutils.Vector((0.0,0.0,-0.05))
+
+                # set the sensor helper object as child for the given object
+                setParentChild(node,sensor)
+
+            else:
+                print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
+
+        elif config["type"] == "Joint6DOF":
+            # get the node ID of the belonging object
+            nodeID = config["nodeID"]
+            node = None
+            for tmp in nodeList:
+                if tmp["id"] == nodeID:
+                    node = tmp
+                    break
+
+            # if the node exists
+            if node:
+                # put the sensor helper object 10 cm under the object
+                # TODO: is that a good position
+                sensor.location = node.location + mathutils.Vector((0.0,0.0,0.1))
+
+                # if the position is already taken by another sensor
+                # move the new sensor a little bit up
+                for tmp in sensorList:
+                    distance = sensor.location - tmp.location
+                    if tmp != sensor and distance.length < 0.03:
+                        sensor.location = sensor.location + mathutils.Vector((0.0,0.0,0.05))
+
+                # set the sensor helper object as child for the given object
+                setParentChild(node,sensor)
+
+            else:
+                print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
+
+        elif config["type"] == "NodePosition" or \
+             config["type"] == "NodeRotation":
+            # get the node ID of the belonging object
+            nodeID = config["id"]
+            node = None
+            for tmp in nodeList:
+                if tmp["id"] == nodeID:
+                    node = tmp
+                    break
+
+            # if the node exists
+            if node:
+                # put the sensor helper object 10 cm under the object
+                # TODO: is that a good position
+                sensor.location = node.location + mathutils.Vector((0.0,0.0,0.1))
+
+                # if the position is already taken by another sensor
+                # move the new sensor a little bit up
+                for tmp in sensorList:
+                    distance = sensor.location - tmp.location
+                    if tmp != sensor and distance.length < 0.03:
+                        sensor.location = sensor.location + mathutils.Vector((0.0,0.0,0.05))
+
+                # set the sensor helper object as child for the given object
+                setParentChild(node,sensor)
+
+            else:
+                print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
+
+        elif config["type"] == "JointPosition" or \
+             config["type"] == "MotorCurrent":
+            # get the node ID of the belonging object
+            nodeID = config["id"]
+            #if it is a list, just pick the first item
+            if isinstance(nodeID,list):
+                nodeID = nodeID[0]
+            node = None
+            for tmp in nodeList:
+                if tmp["id"] == nodeID:
+                    node = tmp
+                    break
+
+            # if the node exists
+            if node:
+                # put the sensor helper object 10 cm under the object
+                # TODO: is that a good position
+                sensor.location = node.location + mathutils.Vector((0.0,0.0,0.1))
+
+                # if the position is already taken by another sensor
+                # move the new sensor a little bit up
+                for tmp in sensorList:
+                    distance = sensor.location - tmp.location
+                    if tmp != sensor and distance.length < 0.03:
+                        sensor.location = sensor.location + mathutils.Vector((0.0,0.0,0.05))
+
+                # set the sensor helper object as child for the given object
+                setParentChild(node,sensor)
+
+            else:
+                print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
+        else:
+            print("WARNING! Unhandled sensor type <%s>!" % config["type"])
+
+    return True
+
+
+def createWorldProperties():
+    # get the first world
+    world = bpy.data.worlds[0]
+
+    # set the default values for the world properties
+    world["path"] = "."
+    world["filename"] = "example"
+    world["exportBobj"] = False
+    world["exportMesh"] = True
+
+
 def main(fileDir, filename):
     tmpDir = os.path.join(fileDir, "tmp")
 
@@ -914,6 +1201,23 @@ def main(fileDir, filename):
 
     # check for nodes with the same group ID
     checkGroupIDs()
+
+    # parsing all motors
+    motors = dom.getElementsByTagName("motor")
+    for motor in motors :
+        if not parseMotor(motor):
+            print("Error while parsing motor!")
+            sys.exit(1)
+
+    # parsing all sensors
+    sensors = dom.getElementsByTagName("sensor")
+    for sensor in sensors :
+        if not parseSensor(sensor):
+            print("Error while parsing sensor!")
+            sys.exit(1)
+
+
+    createWorldProperties()
 
     #cleaning up afterwards
     shutil.rmtree(tmpDir)
