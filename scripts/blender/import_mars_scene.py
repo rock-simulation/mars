@@ -1198,7 +1198,7 @@ def main(fileDir, filename):
         os.chdir(fileDir)
     else:
         print("ERROR! File path (%s) does not exist!" % fileDir)
-        sys.exit(1)
+        return False
 
     # if there is already a "tmp" directory delete it
     shutil.rmtree(tmpDir, ignore_errors=True)
@@ -1214,7 +1214,7 @@ def main(fileDir, filename):
         dom = xml.dom.minidom.parse(scenepath)
     else:
         print("ERROR! Couldn't find .scene file (%s)!" % scenepath)
-        sys.exit(1)
+        return False
 
     # --- DO THE PARSING HERE!!! ---
 
@@ -1229,14 +1229,14 @@ def main(fileDir, filename):
     for material in materials :
         if not parseMaterial(material):
             print("Error while parsing material!")
-            sys.exit(1)
+            return False
 
     # parsing all nodes
     nodes = dom.getElementsByTagName("node")
     for node in nodes :
         if not parseNode(node, tmpDir):
             print("Error while parsing node!")
-            sys.exit(1)
+            return False
 
     # clean up if some unused meshes were loaded
     if len(unusedNodeList) > 0:
@@ -1249,7 +1249,7 @@ def main(fileDir, filename):
     for joint in joints :
         if not parseJoint(joint):
             print("Error while parsing joint!")
-            sys.exit(1)
+            return False
 
     # check for nodes with the same group ID
     checkGroupIDs()
@@ -1259,40 +1259,66 @@ def main(fileDir, filename):
     for motor in motors :
         if not parseMotor(motor):
             print("Error while parsing motor!")
-            sys.exit(1)
+            return False
 
     # parsing all sensors
     sensors = dom.getElementsByTagName("sensor")
     for sensor in sensors :
         if not parseSensor(sensor):
             print("Error while parsing sensor!")
-            sys.exit(1)
+            return False
 
     # parsing all controllers
     controllers = dom.getElementsByTagName("controller")
     for controller in controllers :
         if not parseController(controller):
             print("Error while parsing controller!")
-            sys.exit(1)
+            return False
 
     # creating the global world properties
     createWorldProperties()
 
+    # de-select all objects
+    bpy.ops.object.select_all(action="DESELECT")
+
     #cleaning up afterwards
     shutil.rmtree(tmpDir)
 
+    return True
+
+
+class marsScnFileImporter(bpy.types.Operator):
+    """Importer for MARS .scn files"""
+    bl_idname = "import_scene.scn"
+    bl_label = "Import MARS .scn file"
+
+    filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+
+    @classmethod
+    def poll(cls, context):
+        return context is not None
+
+    def execute(self, context):
+        # get the chosen file path
+        directory, filename = os.path.split(self.filepath)
+
+        # import the mars .scn file
+        main(directory, filename)
+        
+        return {'FINISHED'}
+
+    def invoke(self, context, event):
+        # create the open file dialog
+        context.window_manager.fileselect_add(self)
+
+        return {'RUNNING_MODAL'}
+
 
 if __name__ == '__main__' :
-    if len(sys.argv) != 2:
-        print("USAGE: %s <fullpath_to_scn_file>" % sys.argv[0])
-        sys.exit(1)
 
-    if not os.path.isfile(sys.argv[1]):
-        print('USAGE: %s <fullpath_to_scn_file>' % sys.argv[0])
-        print('  Error: "%s" is not an existing file!' % sys.argv[1])
-        sys.exit(1)
+    # Register and add to the file selector
+    bpy.utils.register_class(marsScnFileImporter)
 
-    fileDirectory, filename = os.path.split(sys.argv[1])
-
-    main(fileDirectory, filename)
+    # call the newly registered operator
+    bpy.ops.import_scene.scn('INVOKE_DEFAULT')
 
