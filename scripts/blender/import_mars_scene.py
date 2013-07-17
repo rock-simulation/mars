@@ -1292,7 +1292,11 @@ class marsScnFileImporter(bpy.types.Operator):
     bl_idname = "import_scene.scn"
     bl_label = "Import MARS .scn file"
 
+    # creating property for storing the path to the .scn file
     filepath = bpy.props.StringProperty(subtype="FILE_PATH")
+
+    # set a filter to only consider .scn files (only used internally)
+    filter_glob = bpy.props.StringProperty(default="*.scn",options={'HIDDEN'})
 
     @classmethod
     def poll(cls, context):
