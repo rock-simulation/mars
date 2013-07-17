@@ -442,6 +442,18 @@ def writeSensor(sensor):
                   '</opening_width>\n')
         out.write('      <max_distance>'+str(sensor["max_distance"])+
                   '</max_distance>\n')
+    elif sensorType == "CameraSensor":
+        #nodeID = getID(sensor["attached_node"])
+        #out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
+        out.write('      <attached_node>1</attached_node>\n')
+        out.write('      <depth_image>'+str(sensor["depth_image"])+'</depth_image>\n')
+        out.write('      <show_cam hud_idx="'+str(sensor["hud_idx"])+'">'+str(sensor["show_cam"])+'</show_cam>\n')
+        out.write('      <position_offset x="'+str(sensor["position_offset_x"])+
+                '" y="'+str(sensor["position_offset_y"])+
+                '" z="'+str(sensor["position_offset_z"])+'"/>\n')
+        out.write('      <orientation_offset yaw="'+str(sensor["orientation_offset_yaw"])+
+                '" pitch="'+str(sensor["orientation_offset_pitch"])+
+                '" roll="'+str(sensor["orientation_offset_roll"])+'"/>\n')
     out.write('    </sensor>\n')
 
 
