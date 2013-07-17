@@ -60,6 +60,7 @@ nodeList = []
 jointList = []
 sensorList = []
 materialList = []
+controllerList = []
 
 # global dictionary for mapping of names of imported .obj file
 # unto the first node who imported it (used also for just having
@@ -188,9 +189,12 @@ def getGenericConfig(parent):
             if key not in config:
                 config[key] = value
             else:
-                # while parsing a sensor, there could be multiple entries
-                # for "id"
-                if key == "id":
+                # while parsing there could be multiple entries
+                # for "id" (sensor), "sensorid" or "motorid" (both
+                # controller)
+                if key == "id" or \
+                   key == "sensorid" or \
+                   key == "motorid":
                     if isinstance(config[key],int):
                         config[key] = [config[key]]
                     config[key].append(value)
@@ -331,7 +335,7 @@ def parseMaterial(domElement):
     # but here in Blender)
     name = "mars_material_%u" % marsID
 
-    print("# Creating material <%s>" % name)
+#    print("# Creating material <%s>" % name)
 
     # TODO: Is this really necessary? Right now before we start we
     # remove all objects, meshes and materials!?
@@ -380,7 +384,7 @@ def parseNode(domElement, tmpDir):
         return False
     name = config["name"]
 
-    print("# Creating node <%s>" % name)
+#    print("# Creating node <%s>" % name)
 
 #    print("%s : %s" % (config["name"], config))
 
@@ -684,7 +688,7 @@ def parseJoint(domElement):
         return False
     name = config["name"]
 
-    print("# Creating joint <%s>" % name)
+#    print("# Creating joint <%s>" % name)
 
     # handle joint type
     if checkConfigParameter(config,"type"):
@@ -860,7 +864,7 @@ def parseJoint(domElement):
 
 
 def checkGroupIDs():
-    print("# Checking group IDs")
+#    print("# Checking group IDs")
     
     # check all nodes ...
     for node1 in nodeList:
@@ -914,7 +918,7 @@ def parseMotor(domElement):
         return False
     jointIndex = config["jointIndex"]
 
-    print("# Creating motor <%s>" % config["name"])
+#    print("# Creating motor <%s>" % config["name"])
 
     # find the joint in question
     for tmp in jointList:
@@ -943,9 +947,16 @@ def parseSensor(domElement):
     # handle sensor name
     if not checkConfigParameter(config,"name"):
         return False
+
     name = config["name"]
 
-    print("# Creating sensor <%s>" % name)
+    # check if right sensor type
+    if checkConfigParameter(config,"type"):
+        if config["type"] not in sensorTypes:
+            print("WARNING! Unhandled sensor type <%s> encountered! Skipping sensor!" % config["type"])
+            return False
+
+#    print("# Adding sensor <%s>" % name)
 
     # check if a sensor helper object was already created
     if "sensor_helper" not in objFileMap:
@@ -1127,6 +1138,47 @@ def parseSensor(domElement):
     return True
 
 
+def parseController(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    if not checkConfigParameter(config,"index"):
+        # get the number of available controllers as the controller ID
+        controllerID = len(controllerList)
+    else:
+        controllerID = config["index"]
+
+#    print("# Adding controller <%d>" % controllerID)
+
+    # due to the fact that we don't have an actual helper object,
+    # we just store the whole config in the global list
+    controllerList.append(config)
+
+    # see if the controller contains sensors
+    if checkConfigParameter(config,"sensorid"):
+        sensorIDs = config["sensorid"]
+    else:
+        sensorIDs = []
+
+    # see if the controller contains motors
+    if checkConfigParameter(config,"motorid"):
+        motorIDs = config["motorid"]
+    else:
+        motorIDs = []
+
+    # add the controller ID to the contained sensors
+    for sensor in sensorList:
+        if sensor["index"] in sensorIDs:
+            sensor["controllerIndex"] = controllerID
+
+    # add the controller ID to the contained motors
+    for joint in jointList:
+        if "motor_index" in joint and joint["motor_index"] in motorIDs:
+            joint["controllerIndex"] = controllerID
+
+    return True
+
+
 def createWorldProperties():
     # get the first world
     world = bpy.data.worlds[0]
@@ -1216,7 +1268,14 @@ def main(fileDir, filename):
             print("Error while parsing sensor!")
             sys.exit(1)
 
+    # parsing all controllers
+    controllers = dom.getElementsByTagName("controller")
+    for controller in controllers :
+        if not parseController(controller):
+            print("Error while parsing controller!")
+            sys.exit(1)
 
+    # creating the global world properties
     createWorldProperties()
 
     #cleaning up afterwards
