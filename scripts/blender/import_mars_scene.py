@@ -668,8 +668,11 @@ def parseNode(domElement, tmpDir):
                     node.active_material = material
 
                     # clean up the "old" material (default material added
-                    # by importing the .obj file without .mtl file)
-                    if tmp:
+                    # by importing the .obj file without .mtl file; if you
+                    # have multiple objects using the same material, e.g.
+                    # loading multiple meshes from the same .obj file, the
+                    # last one deletes the material)
+                    if tmp and tmp.users == 0:
                         bpy.data.materials.remove(tmp)
 
     else:
