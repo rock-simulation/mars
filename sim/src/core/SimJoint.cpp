@@ -404,9 +404,10 @@ namespace mars {
 
     void SimJoint::getDataBrokerNames(std::string *groupName,
                                       std::string *dataName) const {
-      char buffer[232];
-
-      sprintf(buffer, "Joints/%05lu_%s", sJoint.index, sJoint.name.c_str());
+      char format[] = "Joints/%05lu_%s";
+      int size = snprintf(0, 0, format, sJoint.index, sJoint.name.c_str());
+      char buffer[size];
+      sprintf(buffer, format, sJoint.index, sJoint.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;
     }
