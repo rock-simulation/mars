@@ -71,7 +71,7 @@ namespace mars {
         opening_height=90;
         hud_width = 320;
         hud_height = 240;
-	depthImage = false;
+	    depthImage = false;
       }
 
       unsigned long attached_node;
