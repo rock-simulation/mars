@@ -21,6 +21,7 @@
 #include "Dialog_Import_Mesh.h"
 #include <mars/utils/mathUtils.h>
 #include <iostream>
+#include <stdlib.h>
 
 #include <osg/ComputeBoundsVisitor>
 #include <osgDB/WriteFile>
@@ -183,12 +184,11 @@ namespace mars {
     Dialog_Import_Mesh::~Dialog_Import_Mesh() {
     }
 
-    void Dialog_Import_Mesh::fill()
-    {				
+    void Dialog_Import_Mesh::fill() {
       std::vector<std::string> nameString;
       QStringList enumNames;
       filled = false;
-		
+
       QString filename = myFileName->value().toString();
       if (filename.isEmpty()) {
         initialized = false;
@@ -207,7 +207,11 @@ namespace mars {
 
       // convert node to group for getting the group functions
       // don't use Node if conversion failed
+      osg::ref_ptr<osg::Geode> osgGeodeFromRead = NULL;
       osg::ref_ptr<osg::Group> osgGroupFromRead = NULL;
+
+      // when importing .obj files all nodes are imported as osg::Group (with
+      // all objects being its children)
       if ((osgGroupFromRead = osgReadNode->asGroup()) != 0) {
         fprintf(stderr, "\n");
         // get childrens names
@@ -227,30 +231,50 @@ namespace mars {
             nameString.push_back(createdNode->getName());  
         }
       }
-  
+      // when importing .stl files the mesh is stored as an osg::Geode
+      else if ((osgGeodeFromRead = osgReadNode->asGeode()) != 0) {
+        fprintf(stderr, "\n");
+        // clean the filename of everything path related and just keep the pure
+        // file name
+        std::string name = filename.toStdString();
+        const size_t last_slash_idx = name.find_last_of("\\/");
+        if (std::string::npos != last_slash_idx) {
+          name.erase(0, last_slash_idx + 1);
+        }
+        //the name for the new node is the filename of the STL file
+        nameString.push_back(name);
+
+      }
+
       // combine nodes with same name
       // go through the namelist
       for (unsigned int j=0; j<nameString.size();j++){
-        osg::ref_ptr<osg::PositionAttitudeTransform> transform = 
+        osg::ref_ptr<osg::PositionAttitudeTransform> transform =
           new osg::PositionAttitudeTransform();
         bool found = false;
         // create a groupnode for each name in the list
         osg::ref_ptr<osg::Group>createdGroup = new osg::Group;
-        for (unsigned int i = j ; i < osgGroupFromRead->getNumChildren(); i ++){ 
-          // add all nodes with same name to the group
-          osg::ref_ptr<osg::Node> createdNode = osgGroupFromRead->getChild(i);
-          if (createdNode->getName() == nameString[j]) {
-            createdGroup->addChild(createdNode.get());
-            found = true;
-          }
-          else {
-            if (found){
-              i = osgGroupFromRead->getNumChildren();
-              found = false;
+        if (osgGroupFromRead != 0) {
+          for (unsigned int i = j ; i < osgGroupFromRead->getNumChildren(); i ++){
+            // add all nodes with same name to the group
+            osg::ref_ptr<osg::Node> createdNode = osgGroupFromRead->getChild(i);
+            if (createdNode->getName() == nameString[j]) {
+              createdGroup->addChild(createdNode.get());
+              found = true;
+            }
+            else {
+              if (found){
+                i = osgGroupFromRead->getNumChildren();
+                found = false;
+              }
             }
           }
-        } 
-      
+        }
+        else if (osgGeodeFromRead != 0) {
+          //if the read file is a .STL file the node was read as geode
+          createdGroup->addChild(osgReadNode);
+        }
+
         // attach the group to a transform ndoe
         transform->addChild(createdGroup.get());
         // create bounding box to get center point
@@ -310,7 +334,9 @@ namespace mars {
   
       meshes->setAttribute("enumNames", enumNames);
       meshes->setValue(0);
-      wno->init(allNodes[0].c_params);  
+      if(allNodes.size() > 0) {
+        wno->init(allNodes[0].c_params);
+      }
       /*
         if (allNodes.size() == 1)
         remove_mesh->setEnabled(false);
