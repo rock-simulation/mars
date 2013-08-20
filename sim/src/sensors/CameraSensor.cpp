@@ -238,7 +238,7 @@ namespace mars {
 
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
-      else cfg->updateRate = 0;
+      else cfg->updateRate = 100;
 
       if((it = config->find("width")) != config->end())
         cfg->width = it->second[0].getULong();

@@ -48,6 +48,7 @@ namespace mars {
 
     std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::createGeometry() {
       osg::ref_ptr<osg::Node> readNode;
+      osg::ref_ptr<osg::Geode> readGeode;
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
 
@@ -55,6 +56,24 @@ namespace mars {
         //readBobjFormat(info_.fileName);
         geodes.push_back(readBobjFormat(info_.fileName));
       }
+      // import an .STL file
+      else if((info_.fileName.substr(info_.fileName.size()-4, 4) == ".STL") ||
+             (info_.fileName.substr(info_.fileName.size()-4, 4) == ".stl")) {
+        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
+        if(!loadedNode.valid()) {
+          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
+          return geodes; // TODO: error message
+        }
+        // if the file is a .STL file, OSG read the node as a geode not as a
+        // group
+        readGeode = loadedNode->asGeode();
+        if(!readGeode.valid()) {
+          std::cerr << "LoadDrawObject: no geode found" << std::endl;
+          return geodes; // TODO: error message
+        }
+        geodes.push_back(readGeode);
+      }
+      // import an .OBJ file
       else {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
         if(!loadedNode.valid()) {

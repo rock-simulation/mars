@@ -540,13 +540,9 @@ def parseNode(domElement, tmpDir):
             # added objects are selected by Blender)
             bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename)
 
-#            # TODO: Find out why this does'nt work!!
-#            bpy.ops.import_scene.obj(filepath=tmpDir+os.sep+filename,
-#                                     axis_forward="X", axis_up="Y")
-#
-#            # apply the rotation to the imported object (is needed in
-#            # order to get the right orientation of the imported object)
-#            bpy.ops.object.transform_apply(rotation=True)
+            # apply the rotation to the imported object (is needed in
+            # order to get the right orientation of the imported object)
+            bpy.ops.object.transform_apply(rotation=True)
 
             # if there were added multiple meshes from one .obj file
             if len(bpy.context.selected_objects) > 1:
@@ -582,10 +578,7 @@ def parseNode(domElement, tmpDir):
             print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % name)
 
         # set the size of the object
-        #TODO: find out why the inversion of y- and z-axis is required
-        node.dimensions = mathutils.Vector((visual_size.x,
-                                            visual_size.z,
-                                            visual_size.y))
+        node.dimensions = visual_size
 
     # Set the parameter, orientation and position of the new node
     if node:
@@ -623,31 +616,25 @@ def parseNode(domElement, tmpDir):
 
             # if the "relative" node was found
             if relative:
-                # TODO: why do we have to remove the previous applied rotation?
-                inverted_rotation_offset = mathutils.Euler((-math.pi/2.0, 0.0, 0.0)).to_quaternion()
-
                 # calculate the absolute position based on the "relative" node's
                 # position, the center of its bounding box (could be different
                 # than its orign) and the given position
                 position = relative.location + \
-                           relative.rotation_quaternion * calculateCenter(relative.bound_box) + \
-                           relative.rotation_quaternion * inverted_rotation_offset * position
+                           relative.rotation_quaternion * \
+                           (calculateCenter(relative.bound_box) + position)
 
                 # calculate the absolute orientation based on the "relative" node's
                 # orientation and the given orientation
-                rotation = relative.rotation_quaternion * inverted_rotation_offset * rotation
+                rotation = relative.rotation_quaternion * rotation
             else:
                 print("WARNING! Could not find relative node (id: %u)!" % relativeID)
 
         # set the position of the object
         node.location = position + rotation * (visual_position - pivot)
 
-        # TODO: why do we need this offset rotation?!?
-        rotation_offset = mathutils.Euler((math.pi/2.0, 0.0, 0.0)).to_quaternion()
-
         # set the rotation of the object
         node.rotation_mode = "QUATERNION"
-        node.rotation_quaternion = rotation * visual_rotation * rotation_offset
+        node.rotation_quaternion = rotation * visual_rotation
 
         # if a node is linked to a material
         if checkConfigParameter(config,"material_id"):
