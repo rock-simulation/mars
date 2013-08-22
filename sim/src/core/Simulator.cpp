@@ -247,6 +247,7 @@ namespace mars {
       control->entities = new EntityManager(control);
 
       control->controllers->setDefaultPort(std_port);
+      control->nodes->setVisualRep(0, cfgVisRep.iValue);
 
       if (control->graphics) {
         control->graphics->addGraphicsUpdateInterface((GraphicsUpdateInterface*)this);
@@ -1265,6 +1266,7 @@ namespace mars {
 
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
+
       control->cfg->getOrCreateProperty("Simulator", "onPhysicsError",
                                         "abort", this);
       show_time = cfgDebugTime.bValue;
