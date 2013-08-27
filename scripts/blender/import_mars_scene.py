@@ -118,6 +118,16 @@ def cleanUpScene():
     for material in bpy.data.materials:
         bpy.data.materials.remove(material)
 
+    # clear global parameters (needed when importing this file and trying
+    # to load multiple .scn files)
+    nodeList.clear()
+    jointList.clear()
+    sensorList.clear()
+    materialList.clear()
+    controllerList.clear()
+    objFileMap.clear()
+    unusedNodeList.clear()
+
 
 # clean up all the "empty" whitespace nodes
 def removeWhitespaceNodes(parent, unlink=True):
