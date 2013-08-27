@@ -264,7 +264,7 @@ namespace mars {
       gravity.y() = cfgGY.dValue;
       gravity.z() = cfgGZ.dValue;
       physics->world_gravity = gravity;
-
+      physics->draw_contact_points = cfgDrawContact.bValue;
 #ifndef __linux__
       this->setStackSize(16777216);
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
@@ -433,6 +433,7 @@ namespace mars {
         simulationStatus = STOPPING;
         //fprintf(stderr, "Simulator will be stopped\t");
         //fflush(stderr);
+        stepping_wc.wakeAll();
         break;
       case STOPPING:
         //fprintf(stderr, "WARNING: Simulator is stopping. Start/Stop Trigger ignored.\t");
@@ -445,12 +446,12 @@ namespace mars {
         break;
       case STEPPING:
          simulationStatus = RUNNING;
+         stepping_wc.wakeAll();
       default: // UNKNOWN
         //fprintf(stderr, "Simulator has unknown status\n");
         throw std::exception();
       }
 
-      stepping_wc.wakeAll();
       stepping_mutex.unlock();
       // Waiting for transition, i.e. main loop to set STOPPED
       //while(simulationStatus == STOPPING)
@@ -748,15 +749,13 @@ namespace mars {
       else
         was_running = false;
 
-      if(isSimRunning()) {
+      if(simulationStatus != STOPPED) {
         simulationStatus = STOPPING;
-      } else {
-        simulationStatus = STOPPED;
       }
       if(control->graphics)
         this->allowDraw();
           
-      stepping_wc.wakeAll();
+      //stepping_wc.wakeAll();
       stepping_mutex.unlock();
     }
 
