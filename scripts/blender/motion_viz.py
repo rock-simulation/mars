@@ -332,12 +332,7 @@ def createAnimation():
     fps = float(bpy.context.scene.render.fps)
     # get the total count of frames
 #    bpy.context.scene.frame_end = mvp.times[len(mvp.times)-1]*fps
-    print("###")
-    print(mvp.times)
-    print(len(mvp.times))
-    print(mvp.times[-1])
-    print("###")
-    bpy.context.scene.frame_end = mvp.times[len(mvp.times)-1]*fps
+    bpy.context.scene.frame_end = mvp.times[-1]*fps
     currIndex = 0
     # delete all old Keyframes
     for node in nodeList:
