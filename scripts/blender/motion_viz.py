@@ -1,7 +1,6 @@
 import os
 import sys
 import math
-#import numpy
 import time
 
 import bpy
@@ -101,7 +100,10 @@ def loadExperiment(filename):
 
         # create the parser for the experimentfiles and parse the experimentfile
         global mvp
-        mvp = motion_viz_parser(motionFile)
+        mvp = MotionVizParser()
+        if not mvp.parseFile(motionFile):
+            return False
+        
         markerEnumItems = []
 
         if hasattr(bpy.context.scene,"NodeProp") and \
@@ -284,22 +286,18 @@ def createHelperObjects():
                 if marker in childrenList and childrenList[marker] != "<none>":
                     childVec = mvp.markerPositions[mappingNodeToMarker[childrenList[marker]]][0]
                     # get the vector which points in the direction the cylinder should point to
-#                    dirrVec = currVec - childVec
                     dirrVec = [a - b for a, b in zip(currVec,childVec)]
                     # get the rotation-quaternion
                     rotation = quatFromTwoVectors(mathutils.Vector((0.0,0.0,1.0)),dirrVec)
                     # move the cylinder have the way of the direction-vector so everything sticks together
-#                    pos = mvp.markerPositions[marker][0]-0.5*dirrVec
                     pos = [a - 0.5*b for a, b in zip(mvp.markerPositions[marker][0],dirrVec)]
                 else:
                     parentVec = mvp.markerPositions[mappingNodeToMarker[parentList[marker]]][0]
                     # get the vector which points in the direction the cylinder should point to
-#                    dirrVec = parentVec - currVec
                     dirrVec = [a - b for a, b in zip(parentVec,currVec)]
                     # get the rotation-quaternion
                     rotation = quatFromTwoVectors(mathutils.Vector((0.0,0.0,1.0)),dirrVec)
                     # move the cylinder have the way of the direction-vector so everything sticks together
-#                    pos = mvp.markerPositions[marker][0]+0.5*dirrVec
                     pos = [a + 0.5*b for a, b in zip(mvp.markerPositions[marker][0],dirrVec)]
 
                 addVisualOffset(marker,pos)
@@ -309,7 +307,6 @@ def createHelperObjects():
                 # set the rotation and the height of the new cylinder
                 node = nodeList[len(nodeList)-1]
                 node.rotation_mode = "QUATERNION"
-#                node.scale.z = numpy.linalg.norm(dirrVec)
                 node.scale.z = math.sqrt(sum(x*x for x in dirrVec))
                 node.rotation_quaternion = rotation
             else:
@@ -331,7 +328,6 @@ def createAnimation():
     # get the fps
     fps = float(bpy.context.scene.render.fps)
     # get the total count of frames
-#    bpy.context.scene.frame_end = mvp.times[len(mvp.times)-1]*fps
     bpy.context.scene.frame_end = mvp.times[-1]*fps
     currIndex = 0
     # delete all old Keyframes
@@ -358,36 +354,28 @@ def createAnimation():
                 # if the node is has a parent or child node we have to update the rotation and height
                 currVec = mvp.markerPositions[mappingNodeToMarker[node.name]][currIndex]
                 rotation = mathutils.Quaternion()
-#                pos = numpy.array([0.0,0.0,0.0])
                 pos = mathutils.Vector()
                 # if the marker has got a child the cylinder should look to the child-node
                 if node.name in childrenList and childrenList[node.name] != "<none>":
                     childVec = mvp.markerPositions[mappingNodeToMarker[childrenList[node.name]]][currIndex]
                     # get the vector which points in the direction the cylinder should point to
-#                    dirrVec = currVec - childVec
                     dirrVec = [a - b for a, b in zip(currVec,childVec)]
                     # get the rotation-quaternion
-#                    rotation = quatFromTwoVectors(numpy.array([0.0,0.0,1.0]),dirrVec)
                     rotation = quatFromTwoVectors(mathutils.Vector((0.0,0.0,1.0)),dirrVec)
                     # move the cylinder have the way of the direction-vector so everything sticks together
-#                    pos = mvp.markerPositions[mappingNodeToMarker[node.name]][currIndex]-0.5*dirrVec
                     pos = [a - 0.5*b for a, b in zip(mvp.markerPositions[mappingNodeToMarker[node.name]][currIndex],dirrVec)]
 
                 else:
                     parentVec = mvp.markerPositions[mappingNodeToMarker[parentList[node.name]]][currIndex]
                     # get the vector which points in the direction the cylinder should point to
-#                    dirrVec = parentVec - currVec
                     dirrVec = [a - b for a, b in zip(parentVec,currVec)]
                     # get the rotation-quaternion
-#                    rotation = quatFromTwoVectors(numpy.array([0.0,0.0,1.0]),dirrVec)
                     rotation = quatFromTwoVectors(mathutils.Vector((0.0,0.0,1.0)),dirrVec)
                     # move the cylinder have the way of the direction-vector so everything sticks together
-#                    pos = mvp.markerPositions[mappingNodeToMarker[node.name]][currIndex]+0.5*dirrVec
                     pos = [a + 0.5*b for a, b in zip(mvp.markerPositions[mappingNodeToMarker[node.name]][currIndex],dirrVec)]
 
                 addVisualOffset(mappingNodeToMarker[node.name],pos)
                 # update position, rotation and height
-#                node.scale.z = numpy.linalg.norm(dirrVec)
                 node.scale.z = math.sqrt(sum(x*x for x in dirrVec))
                 node.rotation_quaternion = rotation
                 node.location = pos
@@ -431,7 +419,6 @@ def quatFromTwoVectors(vec1, vec2):
     # initialize the result quaternion
     q = mathutils.Quaternion()
     # get the vector we rotate around (vector that stands upright on the 2 given vectors)
-#    a = numpy.cross(vec1, vec2)
     a = mathutils.Vector((vec1[1]*vec2[2] - vec1[2]*vec2[1], \
                           vec1[2]*vec2[0] - vec1[0]*vec2[2], \
                           vec1[0]*vec2[1] - vec1[1]*vec2[0]))
@@ -441,7 +428,6 @@ def quatFromTwoVectors(vec1, vec2):
     q.y = a[1]
     q.z = a[2]
     # compute the angle
-#    q.w = math.sqrt((numpy.linalg.norm(vec1) ** 2) * (numpy.linalg.norm(vec2) ** 2)) + numpy.dot(vec1, vec2)
     q.w = math.sqrt(sum(x*x for x in vec1) * sum(x*x for x in vec2)) + sum(x1 * x2 for x1, x2 in zip(vec1, vec2))
     # normalize the quaternion
     q.normalize()
@@ -637,7 +623,7 @@ class LoadYAMLFileDialog(bpy.types.Operator):
 # Property GUI Class
 class NodePropertiesPanel(bpy.types.Panel):
     # Button to select a new Marsscene file
-    class Browse_SceneFile_Button(bpy.types.Operator):
+    class BrowseSceneFileButton(bpy.types.Operator):
         bl_idname = "select_mars_scene.scn"
         bl_label = "..."
     
@@ -664,7 +650,7 @@ class NodePropertiesPanel(bpy.types.Panel):
             return {'RUNNING_MODAL'}
             
     # Button to select a new Experiment file
-    class Browse_ExperimentFile_Button(bpy.types.Operator):
+    class BrowseExperimentFileButton(bpy.types.Operator):
         bl_idname = "select_experiment.tsv"
         bl_label = "..."
     
@@ -691,7 +677,7 @@ class NodePropertiesPanel(bpy.types.Panel):
             return {'RUNNING_MODAL'}
 
     # Dialog to select a new config file
-    class sceneUpadte_Button(bpy.types.Operator):
+    class SceneUpdateButton(bpy.types.Operator):
         bl_idname = "scene.update"
         bl_label = "Update"
     
@@ -705,9 +691,9 @@ class NodePropertiesPanel(bpy.types.Panel):
             return {'FINISHED'}
 
     # register the dialogclasses
-    bpy.utils.register_class(Browse_SceneFile_Button)
-    bpy.utils.register_class(Browse_ExperimentFile_Button)
-    bpy.utils.register_class(sceneUpadte_Button)
+    bpy.utils.register_class(BrowseSceneFileButton)
+    bpy.utils.register_class(BrowseExperimentFileButton)
+    bpy.utils.register_class(SceneUpdateButton)
 
     bl_label = "MotionViz Properties"
     bl_space_type = 'PROPERTIES'
@@ -756,7 +742,7 @@ class NodePropertiesPanel(bpy.types.Panel):
 
 
 # class for parsing the experimentdata
-class motion_viz_parser:
+class MotionVizParser:
 
     # variables for the experimentdata
     frameCount = 0
@@ -771,9 +757,6 @@ class motion_viz_parser:
     markerNames = []
     markerPositions = {}
     times = []
-
-    def __init__(self,filename):
-        self.parseFile(filename)
 
 
     def clearData(self):
@@ -825,9 +808,9 @@ class motion_viz_parser:
                        line[curr_line_index+2]=="null":
                         # if the current line is "null null null" we have a invalid position
                         # this have to be corrected later. Setting x,y and z to nan so we can find this entry
-                        x = float("nan") # numpy.NAN
-                        y = float("nan") # numpy.NAN
-                        z = float("nan") # numpy.NAN
+                        x = float("nan")
+                        y = float("nan")
+                        z = float("nan")
                     else:
                         x = float(line[curr_line_index])*scale
                         y = float(line[curr_line_index+1])*scale
@@ -836,10 +819,10 @@ class motion_viz_parser:
                     # seach for the markername in the markerposiotns map
                     if self.markerNames[i] in self.markerPositions:
                         # append the new markerposition
-                        self.markerPositions[self.markerNames[i]].append([x,y,z])
+                        self.markerPositions[self.markerNames[i]].append(mathutils.Vector((x,y,z)))
                     else:       
                         # create a new map-entry with the markerposition                 
-                        self.markerPositions[self.markerNames[i]] = [[x,y,z]]
+                        self.markerPositions[self.markerNames[i]] = [mathutils.Vector((x,y,z))]
                         
             elif line[0] == "NO_OF_FRAMES":
                 self.frameCount = int(line[1])
@@ -866,12 +849,7 @@ class motion_viz_parser:
                 for i in range(1,len(line),1):
                     self.markerNames.append(line[i])
 
-#        self.times = numpy.array(tmpListTimes)
         self.times = tmpListTimes
-
-#        for i in self.markerNames:
-#            # make the lists to numpy arrays
-#            self.markerPositions[i] = numpy.array(self.markerPositions[i])
 
         # check if there are invalid marker positions
         self.checkInvalidMarkerPos()
@@ -904,16 +882,11 @@ class motion_viz_parser:
             
             startIndex = 0;
             count = 0;
-#            startVector = numpy.array([0.0,0.0,0.0])
             startVector = mathutils.Vector()
-#            dirVector   = numpy.array([0.0,0.0,0.0])
             dirVector   = mathutils.Vector()
             # iterate through all postions of the marker
             for index in range(len(self.markerPositions[i])):
                 # if all entries of the vector are NAN the position is invalid
-#                if numpy.isnan(self.markerPositions[i][index][0]) and \
-#                   numpy.isnan(self.markerPositions[i][index][1]) and \
-#                   numpy.isnan(self.markerPositions[i][index][2]):
                 if math.isnan(self.markerPositions[i][index][0]) and \
                    math.isnan(self.markerPositions[i][index][1]) and \
                    math.isnan(self.markerPositions[i][index][2]):
