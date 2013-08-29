@@ -80,7 +80,9 @@ def loadExperiment(filename):
                 cfg.setPropertyValue(group,paramName,scene.Experimentfile)
                 motionFile = scene.Experimentfile
         else:
-            bpy.types.Scene.Experimentfile = bpy.props.StringProperty(name="Experimentfile", default=motionFile)
+            if not hasattr(bpy.context.scene,"Experimentfile"):
+                bpy.types.Scene.Experimentfile = bpy.props.StringProperty(name="Experimentfile", default="")
+            bpy.context.scene.Experimentfile = motionFile
 
         # check if the scenefilename has changed
         paramName = "scenefile"
@@ -94,7 +96,9 @@ def loadExperiment(filename):
                 cfg.setPropertyValue(group,paramName,scene.MarsScene)
                 sceneFile = scene.MarsScene
         else:
-            bpy.types.Scene.MarsScene = bpy.props.StringProperty(name="MarsScene", default=sceneFile)
+            if not hasattr(bpy.context.scene,"MarsScene"):
+                bpy.types.Scene.MarsScene = bpy.props.StringProperty(name="MarsScene", default="")
+            bpy.context.scene.MarsScene = sceneFile
             
         newConfig = False
 
