@@ -55,12 +55,25 @@ sensorTypes = ["RaySensor",
                "MotorCurrent"
               ]
 
+# enum mapping of indices onto descriptive strings
+anchorPositions = {1: "node1",
+                   2: "node2",
+                   3: "center",
+                   4 : "custom"
+                  }
+
+# enum of allowed light types
+lightTypes = {1 : "POINT",
+              2 : "SPOT"
+             }
+
 # global list of nodes, joints and materials
 nodeList = []
 jointList = []
 sensorList = []
 materialList = []
 controllerList = []
+lightList = []
 
 # global dictionary for mapping of names of imported .obj file
 # unto the first node who imported it (used also for just having
@@ -76,10 +89,12 @@ nodeKeyMap = {"groupid" : "group",
              }
 
 # map of keyword differences between MARS .scn and Blender for joints
+# (change the identifier "anchor" and "anchorpos" for the export script)
 jointKeyMap = {"index" : "id",
-               "type" : "jointType"
+               "type" : "jointType",
+               "anchor" : "anchorpos",
+               "anchorpos" : "anchor"
               }
-
 
 # map of keyword differences between MARS .scn and Blender for sensors
 sensorKeyMap = {"type" : "sensorType"
@@ -118,6 +133,10 @@ def cleanUpScene():
     for material in bpy.data.materials:
         bpy.data.materials.remove(material)
 
+    # and all lights (aka lamps)
+    for lamp in bpy.data.lamps:
+        bpy.data.lamps.remove(lamp)
+
     # clear global parameters (needed when importing this file and trying
     # to load multiple .scn files)
     nodeList.clear()
@@ -125,6 +144,7 @@ def cleanUpScene():
     sensorList.clear()
     materialList.clear()
     controllerList.clear()
+    lightList.clear()
     objFileMap.clear()
     unusedNodeList.clear()
 
@@ -323,6 +343,19 @@ def centerNodeOrigin(node):
 
     return True
 
+def centerAllNodeOrigin():
+
+    # select all objects
+    bpy.ops.object.select_all(action="SELECT")
+
+    # set the origin of the mesh to the center of its
+    # bounding box
+    bpy.ops.object.origin_set(type="ORIGIN_GEOMETRY",
+                              center="BOUNDS")
+    # de-select all objects
+    bpy.ops.object.select_all(action="DESELECT")
+
+    return True
 
 def calculateCenter(boundingBox):
     c = mathutils.Vector()
@@ -590,6 +623,24 @@ def parseNode(domElement, tmpDir):
         # set the size of the object
         node.dimensions = visual_size
 
+        # apply the scaling to the node (needed for the export script to work;
+        # can only be applied to single user meshes, states an error when using
+        # with a mesh with used by multiple objects)
+        if node.data.users == 1:
+            # de-select all objects
+            bpy.ops.object.select_all(action="DESELECT")
+            # select the node/object
+            node.select = True
+            # set it as the currently active object
+            bpy.context.scene.objects.active = node
+            # apply the scaling (will set all scaling factors to 1.0)
+            bpy.ops.object.transform_apply(scale=True)
+
+        # set the scale of the object (should be always 1.0!?)
+        node["sizeScaleX"] = node.scale[0]
+        node["sizeScaleY"] = node.scale[1]
+        node["sizeScaleZ"] = node.scale[2]
+
     # Set the parameter, orientation and position of the new node
     if node:
 
@@ -717,6 +768,14 @@ def parseJoint(domElement):
 
     if checkConfigParameter(config,"anchorpos"):
         anchorPos = config["anchorpos"]
+        # check if it is an integer
+        if isinstance(anchorPos, int):
+            # check if it is a defined integer value
+            if anchorPos in anchorPositions.keys():
+                # if so, we have to convert it to the respective string
+                anchorPos = anchorPositions[anchorPos]
+                # write it back to the config for later use
+                config["anchorpos"] = anchorPos
 
     if checkConfigParameter(config,"anchor"):
         anchor = config["anchor"]
@@ -799,13 +858,13 @@ def parseJoint(domElement):
                 node2 = tmp
 
         # determine the anchor position of the joint
-        if anchorPos == 1: # "node1"
+        if anchorPos == "node1": # (1) "node1"
             joint.location = node1.location
-        elif anchorPos == 2: # "node2"
+        elif anchorPos == "node2": # (2) "node2"
             joint.location = node2.location
-        elif anchorPos == 3: # "center"
+        elif anchorPos == "center": # (3) "center"
             joint.location = (node1.location + node2.location) / 2.0
-        elif anchorPos == 4: # "custom"
+        elif anchorPos == "custom": # (4) "custom"
             joint.location = anchor
         else:
             #TODO: What position should be set in this case?
@@ -1178,6 +1237,95 @@ def parseController(domElement):
 
     return True
 
+def parseLight(domElement):
+    # read the config from the xml file
+    config = getGenericConfig(domElement)
+
+    # handle light name
+    if not checkConfigParameter(config,"name"):
+        return False
+    name = config["name"]
+    
+    # Get the type of the light
+    if checkConfigParameter(config,"type"):
+        lightType = config["type"]
+        # check if it is an integer
+        if isinstance(lightType, int):
+            # and one of the allowed integers
+            if lightType in lightTypes.keys():
+                # map it to the corresponding string
+                lightType = lightTypes[lightType]
+
+    # check if the light types is one of the allowed ones
+    if lightType not in lightTypes.values():
+        print("WARNING! Unrecognized light type \"%s\"! Using \"POINT\" type!" % lightType)
+        # otherwise set it to be a point light
+        lightType = "POINT"
+
+    # position the lamp to a specified location
+    if checkConfigParameter(config,"position"):
+        position = config["position"]
+    else:
+        position = mathutils.Vector()
+
+    # create the new light as "lightType" and at the given "position"
+    bpy.ops.object.lamp_add(type=lightType, location=position)
+
+    # get the pointer to the new light
+    light = bpy.context.selected_objects[0]
+
+    # set the right name for the lamp
+    light.name = name
+
+    # calculate the direction (orientation) of the light
+    if checkConfigParameter(config,"lookat"):
+        # get the value from the config
+        lookat = config["lookat"]
+
+        # calculate the quaternion given the vector
+        minus_z_axis = mathutils.Vector((0.0,0.0,-1.0))
+
+        # set the orientation of the light
+        light.rotation_mode = "QUATERNION"
+        light.rotation_quaternion = minus_z_axis.rotation_difference(lookat - position)
+
+    # set the color of the light
+    # (Here we use the "diffuse" light; the "ambient" light is more or less
+    # like a global light; while "specular" light is the color of light after
+    # reflection under a certain angle on a surface)
+    if checkConfigParameter(config,"diffuse"):
+        light.data.color = config["diffuse"]
+
+    # set the falloff type to use linear and quadratic attenuation
+    light.data.falloff_type = "LINEAR_QUADRATIC_WEIGHTED"
+
+    # set the value for linear attenuation
+    if checkConfigParameter(config,"linearAttenuation"):
+        light.data.linear_attenuation = config["linearAttenuation"]
+
+    # check for the quadratic attenuation
+    if checkConfigParameter(config,"quadraticAttenuation"):
+        light.data.quadratic_attenuation = config["quadraticAttenuation"]
+
+    # if it is a "spot" light
+    if light.data.type == "SPOT":
+        # we have to set the angle of the spot
+        if checkConfigParameter(config,"angle"):
+            light.data.spot_size = math.pi * config["angle"] / 180.0
+
+        # and the softness of the spot edges
+        if checkConfigParameter(config,"exponent"):
+            light.data.spot_blend = config["exponent"]
+
+    # add each item of 'config' as a custom property to the lamp
+    for (key, value) in config.items():
+        light[key] = value
+
+    # append it to the global light list
+    lightList.append(light)
+
+    return True
+
 
 def createWorldProperties():
     # get the first world
@@ -1275,6 +1423,13 @@ def main(fileDir, filename):
             print("Error while parsing controller!")
             return False
 
+    # parsing all lights
+    lights = dom.getElementsByTagName("light")
+    for light in lights :
+        if not parseLight(light):
+            print("Error while parsing light!")
+            return False
+
     # creating the global world properties
     createWorldProperties()
 
@@ -1283,7 +1438,10 @@ def main(fileDir, filename):
 
     #cleaning up afterwards
     shutil.rmtree(tmpDir)
-
+    
+    #set the origin of all nodes to the center of the bounding box
+    centerAllNodeOrigin()
+        
     return True
 
 
