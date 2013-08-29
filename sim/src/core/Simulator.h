@@ -96,8 +96,10 @@ namespace mars {
       }
       virtual void StopSimulation() {
         stepping_mutex.lock();
-        simulationStatus = STOPPING;
-        stepping_wc.wakeAll();
+        if(simulationStatus != STOPPED) {
+          simulationStatus = STOPPING;
+          //stepping_wc.wakeAll();
+        }
         stepping_mutex.unlock();
       }
 

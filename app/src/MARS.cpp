@@ -81,7 +81,7 @@ namespace mars {
 
     MARS::MARS() : configDir("."),
                    libManager(new lib_manager::LibManager()),
-                   marsGui(NULL) {
+                   marsGui(NULL), ownLibManager(true) {
       needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
@@ -92,7 +92,7 @@ namespace mars {
 
     MARS::MARS(lib_manager::LibManager *theManager) : configDir("."),
                    libManager(theManager),
-                   marsGui(NULL) {
+                   marsGui(NULL), ownLibManager(false) {
       needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
@@ -113,7 +113,7 @@ namespace mars {
       libManager->releaseLibrary("main_gui");
       libManager->releaseLibrary("cfg_manager");
 
-      delete libManager;
+      if(ownLibManager) delete libManager;
 
 #ifdef WIN32
       // end scheduler of 1ms

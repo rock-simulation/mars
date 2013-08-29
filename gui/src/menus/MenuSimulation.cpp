@@ -168,12 +168,18 @@ namespace mars {
       case GUI_ACTION_EDIT_GRAPHICS: menu_graphicsOptions(); break;
       case GUI_ACTION_RESCALE_ENV: menu_rescaleEnvironment(); break;
       case GUI_ACTION_SIM_START:
+        control->sim->StartSimulation();
+        /*
         if(!(control->sim->isSimRunning()))
           control->sim->startStopTrigger();
+        */
         break;
       case GUI_ACTION_SIM_PAUSE:
+        control->sim->StopSimulation();
+        /*
         if(control->sim->isSimRunning())
           control->sim->startStopTrigger();
+        */
         break;
       case GUI_ACTION_SIM_STEP:
         if(!(control->sim->isSimRunning()))
