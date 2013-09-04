@@ -598,10 +598,6 @@ def parseNode(domElement, tmpDir):
                     # unused nodes
                     unusedNodeList.append(tmp.name)
 
-                    # center the origin of the loaded node to the center
-                    # of its bounding box
-                    centerNodeOrigin(tmp)
-
                     # get the currently added object
                     if filename in tmp.name or name in tmp.name:
                         node = bpy.data.objects[tmp.name]
@@ -620,8 +616,14 @@ def parseNode(domElement, tmpDir):
         else:
             print("WARNING! Mesh \'%s\' already imported! Skipping second import!" % name)
 
-        # set the size of the object
-        node.dimensions = visual_size
+        # whenever we decrease the size of a mesh (dimensions > visual_size),
+        # we can set the new size just now
+        # TODO: Find out why!?!
+        if visual_size.x < node.dimensions.x or \
+           visual_size.y < node.dimensions.y or \
+           visual_size.z < node.dimensions.z:
+            # set the size of the object
+            node.dimensions = visual_size
 
         # apply the scaling to the node (needed for the export script to work;
         # can only be applied to single user meshes, states an error when using
@@ -697,6 +699,20 @@ def parseNode(domElement, tmpDir):
         node.rotation_mode = "QUATERNION"
         node.rotation_quaternion = rotation * visual_rotation
 
+        # whenever we increase the size of a mesh (dimensions < visual_size),
+        # we have to reset the origin first before we can set the new size
+        # TODO: Find out why!?!
+        if visual_size.x > node.dimensions.x or \
+           visual_size.y > node.dimensions.y or \
+           visual_size.z > node.dimensions.z:
+            # center the origin of the loaded node to the center
+            # of its bounding box
+            centerNodeOrigin(node)
+
+            # set the size of the object. This have to be done AFTER
+            # centerNodeOrigin()!!
+            node.dimensions = visual_size
+        
         # if a node is linked to a material
         if checkConfigParameter(config,"material_id"):
             # get the node ID
@@ -1132,7 +1148,9 @@ def parseSensor(domElement):
                 print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
 
         elif config["type"] == "NodePosition" or \
-             config["type"] == "NodeRotation":
+             config["type"] == "NodeRotation" or \
+             config["type"] == "NodeAngularVelocity" or \
+             config["type"] == "NodeVelocity":
             # get the node ID of the belonging object
             nodeID = config["id"]
             node = None
@@ -1161,6 +1179,7 @@ def parseSensor(domElement):
                 print("WARNING! For sensor <%s> node (%d) does not exist!" %(name, nodeID))
 
         elif config["type"] == "JointPosition" or \
+             config["type"] == "JointVelocity" or \
              config["type"] == "MotorCurrent":
             # get the node ID of the belonging object
             nodeID = config["id"]
@@ -1386,6 +1405,9 @@ def main(fileDir, filename):
             print("Error while parsing node!")
             return False
 
+    # set the origin of all nodes to the center of the bounding box
+    centerAllNodeOrigin()
+
     # clean up if some unused meshes were loaded
     if len(unusedNodeList) > 0:
         print("WARNING! Not all imported meshes are in use!")
@@ -1438,9 +1460,6 @@ def main(fileDir, filename):
 
     #cleaning up afterwards
     shutil.rmtree(tmpDir)
-    
-    #set the origin of all nodes to the center of the bounding box
-    centerAllNodeOrigin()
         
     return True
 
