@@ -945,6 +945,10 @@ namespace mars {
       if(myHUD) myHUD->addHUDElement(elem);
     }
 
+    void GraphicsWidget::removeHUDElement(HUDElement* elem) {
+      if(myHUD) myHUD->removeHUDElement(elem);
+    }
+
     void GraphicsWidget::switchHudElemtVis(int num_element) {
       if(myHUD) myHUD->switchElementVis(num_element);
     }

@@ -93,6 +93,7 @@ namespace mars {
       virtual osgWidget::WindowManager* getOrCreateWindowManager();
       void setHUD(HUD *theHUD);
       void addHUDElement(HUDElement *elem);
+      void removeHUDElement(HUDElement* elem);
       void switchHudElemtVis(int num_element);
 
       /**\brief sets the clear color */
