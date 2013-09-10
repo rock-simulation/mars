@@ -394,15 +394,15 @@ namespace mars {
       dJointSetSliderAxis(jointId, jointS->axis1.x(), jointS->axis1.y(),
                           jointS->axis1.z());
   
-      if(damping > 0.00000001) {
-        dJointSetSliderParam(jointId, dParamFMax, damping);
-        dJointSetSliderParam(jointId, dParamVel, 0);
-      }
       if(spring > 0.00000001) {
         dJointSetSliderParam(jointId, dParamLoStop, lo1);
         dJointSetSliderParam(jointId, dParamHiStop, hi1);
         dJointSetSliderParam(jointId, dParamStopCFM, cfm1);
         dJointSetSliderParam(jointId, dParamStopERP, erp1);
+      }
+      else if(damping > 0.00000001) {
+        dJointSetSliderParam(jointId, dParamFMax, damping);
+        dJointSetSliderParam(jointId, dParamVel, 0);
       }
       else if(lo1 != 0) {
         dJointSetSliderParam(jointId, dParamLoStop, lo1);
