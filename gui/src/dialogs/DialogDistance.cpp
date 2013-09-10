@@ -32,7 +32,7 @@ namespace mars {
 
     DialogDistance::DialogDistance(interfaces::ControlCenter* c)
       : main_gui::BaseWidget(0, c->cfg, "DialogDistance"),
-        pDialog(new main_gui::PropertyDialog(this)) {
+        pDialog(new main_gui::PropertyDialog(NULL)) {
       filled = false;
       control = c;
       selection = distance = ap1 = ap2 = rp1 = rp2 = NULL;
@@ -46,7 +46,7 @@ namespace mars {
       viewNodes = pDialog->addGenericProperty("../Nodes", QVariant::Bool, true);
       viewJoints = pDialog->addGenericProperty("../Joints", QVariant::Bool, true);
   
-      objectList = new QListWidget(this);
+      objectList = new QListWidget(NULL);
       objectList->setSelectionMode(QAbstractItemView::MultiSelection);
       connect(objectList, SIGNAL(itemSelectionChanged()), this, SLOT(selectObjects()));
 
@@ -225,7 +225,7 @@ namespace mars {
         map<QString, QVariant> attr;
         attr["decimals"] = 9; 
         attr["singleStep"] = 0.1;
-        attr["minimum"] = 0.1;
+        attr["minimum"] = 0.0;
         selection =  pDialog->addGenericProperty("../Current selection", QVariant::String, label);
         distance =  pDialog->addGenericProperty("../Distance", QVariant::Double, original_distance, &attr);
         ap1 = pDialog->addGenericProperty("../Absolute position of " + first.name,  QVariant::String, abs1);
