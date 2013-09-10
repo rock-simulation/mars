@@ -232,31 +232,42 @@ namespace mars {
       osg::ref_ptr<osg::Node> completeNode;
       osg::ref_ptr<osg::Group> myCreatedGroup;
       osg::ref_ptr<osg::Group> myGroupFromRead;
+      osg::ref_ptr<osg::Geode> myGeodeFromRead;
       nodemanager tempnode;
       bool found = false;
 
       completeNode  = GuiHelper::readNodeFromFile(node->filename);
-      myGroupFromRead = completeNode->asGroup();
 
-      //go through the read node group and combine the parts of the actually
-      //handled node
-      myCreatedGroup = new osg::Group();
-      osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
-      for (unsigned int i = 0; i < myGroupFromRead->getNumChildren(); i ++) {
-        osg::ref_ptr<osg::Node> myTestingNode = myGroupFromRead->getChild(i);
-        if (myTestingNode == 0) {
-          return;
-        }
-        if (myTestingNode->getName() == node->origName) {
-          myTestingNode->setStateSet(stateset.get());
-          myCreatedGroup->addChild(myTestingNode.get());
-          found = true;
-        } else {
-          if (found) {
-            break;
-            found = false;
+      // check whether it is a osg::Group (.obj file)
+      if((myGroupFromRead = completeNode->asGroup()) != 0){
+        //go through the read node group and combine the parts of the actually
+        //handled node
+        myCreatedGroup = new osg::Group();
+        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
+        for (unsigned int i = 0; i < myGroupFromRead->getNumChildren(); i ++) {
+          osg::ref_ptr<osg::Node> myTestingNode = myGroupFromRead->getChild(i);
+          if (myTestingNode == 0) {
+            return;
+          }
+          if (myTestingNode->getName() == node->origName) {
+            myTestingNode->setStateSet(stateset.get());
+            myCreatedGroup->addChild(myTestingNode.get());
+            found = true;
+          } else {
+            if (found) {
+              break;
+              found = false;
+            }
           }
         }
+      }
+      // or if it is a osg::Geode (.stl file)
+      else if((myGeodeFromRead = completeNode->asGeode()) != 0) {
+        //if the node was read from a .stl-file it read as geode not as group
+        myCreatedGroup = new osg::Group();
+        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
+        completeNode->setStateSet(stateset.get());
+        myCreatedGroup->addChild(completeNode.get());
       }
 
       osg::ComputeBoundsVisitor cbbv;
