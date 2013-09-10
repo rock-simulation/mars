@@ -142,7 +142,7 @@ namespace mars {
       quadGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
       //quadGeom->setDataVariance(osg::Object::DYNAMIC);
   
-      quadGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,8));
+      quadGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,0,4));
   
       geode->addDrawable(quadGeom.get());
       
