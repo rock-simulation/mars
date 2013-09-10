@@ -135,7 +135,7 @@ namespace mars {
         for(unsigned int i = 0; i < it->second.dataPackage.size(); ++i) {
           std::map<QString, QVariant> attr;
           attr["singleStep"] = 0.01;
-          attr["decimals"] = 5;
+          attr["decimals"] = 7;
           path = "";
           path.append(it->second.info.groupName);
           path.append("/");
