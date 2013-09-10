@@ -509,13 +509,14 @@ namespace mars {
         myHUD->init(gw->getGraphicsWindow());
         myHUD->setViewSize(1920, 1200);
 
+        gw->setHUD(myHUD);
+
         // iterator over hudElements
 
         for(HUDElements::iterator iter = hudElements.begin();
             iter != hudElements.end(); iter++)
-          myHUD->addHUDElement((*iter)->getHUDElement());
+          gw->addHUDElement((*iter)->getHUDElement());
 
-        gw->setHUD(myHUD);
       }
       return next_window_id - 1;
     }
