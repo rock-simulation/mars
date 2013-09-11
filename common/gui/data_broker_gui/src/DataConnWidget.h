@@ -120,6 +120,7 @@ namespace mars {
       protected slots:
       void slotConnectDataItems();
       void slotUnconnectDataItems();
+      void slotSaveConfiguration(void);
       virtual void accept();
       virtual void reject();
       void addDataPackage(const mars::data_broker::DataInfo &info,

@@ -145,7 +145,7 @@ namespace mars {
 
     void HUD::addHUDElement(HUDElement *elem) {
       elements.push_back(elem);
-      hudTerminalList->addChild(elem->getNode());  
+      hudTerminalList->addChild(elem->getNode());
     }
 
     void HUD::removeHUDElement(HUDElement *elem) {
@@ -158,7 +158,7 @@ namespace mars {
         }
       }
 
-      hudTerminalList->removeChild(elem->getNode());  
+      hudTerminalList->removeChild(elem->getNode());
     }
 
     void HUD::switchCullElement(int key) {

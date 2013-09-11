@@ -509,13 +509,14 @@ namespace mars {
         myHUD->init(gw->getGraphicsWindow());
         myHUD->setViewSize(1920, 1200);
 
+        gw->setHUD(myHUD);
+
         // iterator over hudElements
 
         for(HUDElements::iterator iter = hudElements.begin();
             iter != hudElements.end(); iter++)
-          myHUD->addHUDElement((*iter)->getHUDElement());
+          gw->addHUDElement((*iter)->getHUDElement());
 
-        gw->setHUD(myHUD);
       }
       return next_window_id - 1;
     }
@@ -1187,6 +1188,25 @@ namespace mars {
       }
 
       return 0;
+    }
+
+    void GraphicsManager::removeHUDElement(unsigned long id) {
+      HUDElements::iterator iter;
+      HUDElement* elem = findHUDElement(id);
+
+      if (elem) {
+        for (vector<GraphicsWidget*>::iterator iter = graphicsWindows.begin();
+             iter!=graphicsWindows.end(); iter++) {
+          (*iter)->removeHUDElement(elem);
+        }
+
+        for (iter = hudElements.begin(); iter != hudElements.end(); iter++) {
+          if ((*iter)->getHUDElement() == elem) {
+            hudElements.erase(iter);
+            break;
+          }
+        }
+      }
     }
 
     HUDElement* GraphicsManager::findHUDElement(unsigned long id) const {

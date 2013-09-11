@@ -47,12 +47,12 @@ namespace mars {
     using std::endl;
 
     template<class T>
-    class map_data_compare : public std::binary_function<typename T::value_type, 
-                                                         typename T::mapped_type, 
+    class map_data_compare : public std::binary_function<typename T::value_type,
+                                                         typename T::mapped_type,
                                                          bool>
     {
     public:
-      bool operator() (typename T::value_type &pair, 
+      bool operator() (typename T::value_type &pair,
                        typename T::mapped_type i) const
       {
         return pair.second == i;
@@ -94,16 +94,16 @@ namespace mars {
     int GraphicsWidget::addOsgWindow(osgWidget::Window* wnd){
       this->_osgWidgetWindowCnt++;
       int id= _osgWidgetWindowCnt;
-  
+
       osg::ref_ptr<osgWidget::Window> w = getWindowById(id);
       if(w.valid()){
         cout << "id is already in MAP !! error!!" << endl;
         return -1;
       }else {
-        _osgWindowIdMap.insert(WindowIdMapType::value_type(id,wnd )); 
+        _osgWindowIdMap.insert(WindowIdMapType::value_type(id,wnd ));
         cout << "added window to the map: " << id << endl;
       }
-  
+
       return id;
     }
 
@@ -143,17 +143,17 @@ namespace mars {
       }
       return false;
     }
- 
+
     bool GraphicsWidget::createStyle(const std::string& name,const std::string &style){
-  
+
       osg::ref_ptr<osgWidget::WindowManager> wm = getOrCreateWindowManager();
       if(wm.valid()){
         cout << "GraphicsWidget::createStyle: " << style << endl;
         return  wm->getStyleManager()->addStyle(new osgWidget::Style(name, style));
       }
-  
+
       return false;
-   
+
     }
     bool GraphicsWidget::setSize(int id,float x, float y){
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(id);
@@ -168,10 +168,10 @@ namespace mars {
         return true;
       }
       return false;
-  
+
     }
 
-  
+
     bool GraphicsWidget::setStyle(int id,const std::string &styleName){
       cerr << " GraphicsWidget::setStyle " << styleName << endl;
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(id);
@@ -189,15 +189,15 @@ namespace mars {
       }
       return false;
     }
-  
+
     bool GraphicsWidget::hideWindow(int wndId){
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(wndId);
       osg::ref_ptr<osgWidget::WindowManager> wm = getOrCreateWindowManager();
-    
+
       if(wnd.valid() && wm.valid()){
         return wm->removeChild(wnd);
       }
-  
+
       return false;
     }
     bool GraphicsWidget::deleteWidget(int wdgId)
@@ -209,10 +209,10 @@ namespace mars {
         if(it != _widgetCallBackMap.end()){
           _widgetCallBackMap.erase(it);
         }
-      
+
         return true;
       }
-    
+
       return false;
     }
 
@@ -221,7 +221,7 @@ namespace mars {
       osg::ref_ptr<osgWidget::WindowManager> wm = getOrCreateWindowManager();
       if(wnd.valid() && wm.valid()){
         wm->removeChild(wnd);
-    
+
         const osgWidget::Window::Vector& v = wnd->getObjects();
         for(unsigned int i = 0;i<v.size();i++){
           osgWidget::Widget* w = v[i].get();
@@ -231,23 +231,23 @@ namespace mars {
             _osgWidgetIdMap.erase(it);
             cerr << "erasing widget" << endl;
           }
-      
+
         }
-    
+
         _osgWindowIdMap.erase(wndId);
       }
-  
+
       return false;
     }
     int GraphicsWidget::createInput(const std::string& name, const std::string& text, int count)
     {
-      osg::ref_ptr<osgWidget::Label> widget =   new osgWidget::Input(name,text,count);        
+      osg::ref_ptr<osgWidget::Label> widget =   new osgWidget::Input(name,text,count);
       return addOsgWidget(widget);
     }
 
     int GraphicsWidget::createLabel(const std::string &name,const std::string &text){
-   
-      osg::ref_ptr<osgWidget::Label> widget =   new osgWidget::Label(name,text);        
+
+      osg::ref_ptr<osgWidget::Label> widget =   new osgWidget::Label(name,text);
       return addOsgWidget(widget);
     }
 
@@ -268,7 +268,7 @@ namespace mars {
       }
       return false;
     }
-  
+
     bool GraphicsWidget::setAlignHorizontal(int id,int h){
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
       if(wd.valid()){
@@ -278,7 +278,7 @@ namespace mars {
       return false;
     }
     bool GraphicsWidget::setAlignVertical(int id, int v){
-  
+
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
       if(wd.valid()){
         wd->setAlignVertical( (osgWidget::Widget::VerticalAlignment) v);
@@ -304,7 +304,7 @@ namespace mars {
       }
       return false;
     }
-  
+
     bool GraphicsWidget::getLayer(int id, int& layer)
     {
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
@@ -330,7 +330,7 @@ namespace mars {
     {
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(window);
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(widget);
- 
+
       if(wnd.valid() && wd.valid()){
         osgWidget::Table* table = dynamic_cast<osgWidget::Table*>(wnd.get());
         if(table){
@@ -356,9 +356,9 @@ namespace mars {
                 }else{
                   cerr << "but other Window as content is not valid" << endl;
                 }
-                
+
               }
-           
+
             }else{
               cerr << "UNKNOWN WINODW TYPE" << endl;
             }
@@ -372,7 +372,7 @@ namespace mars {
     bool GraphicsWidget::addWidgetToWindow(int window,int widget,float x, float y){
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(window);
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(widget);
- 
+
       if(wnd.valid() && wd.valid()){
         osgWidget::Canvas* can = dynamic_cast<osgWidget::Canvas*>(wnd.get());
         if(can){
@@ -383,18 +383,18 @@ namespace mars {
       }
       return false;
     }
-  
+
     bool GraphicsWidget::addWidgetToWindow(int window, int widget)
     {
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(window);
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(widget);
- 
+
       if(wnd.valid() && wd.valid()){
         wnd->addWidget(wd);
         cout << "added widget to window." << endl;
         return true;
       }
- 
+
       cout << "window or widget does not exist!" << endl;
       return false;
     }
@@ -407,7 +407,7 @@ namespace mars {
         cout << "id is already in MAP !! error!!" << endl;
         return -1;
       }else{
-        _osgWidgetIdMap.insert(WidgetIdMapType::value_type(id,wid ));   
+        _osgWidgetIdMap.insert(WidgetIdMapType::value_type(id,wid ));
         cout << "widget created." << id << endl;
       }
       return id;
@@ -415,9 +415,9 @@ namespace mars {
     int GraphicsWidget::createWidget(const std::string &name,float sizex,float sizey){
       osg::ref_ptr<osgWidget::Widget> widget =   new osgWidget::Widget(name,sizex,sizey);
       return addOsgWidget(widget.get());
-    
+
     }
- 
+
     bool GraphicsWidget::setColor(int id, float r, float g, float b, float a)
     {
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(id);
@@ -439,24 +439,24 @@ namespace mars {
       if(iter != _osgWidgetIdMap.end() ){
         return (*iter).second.get();
       }
-      return NULL; 
+      return NULL;
     }
- 
+
     osgWidget::Window* GraphicsWidget::getWindowById(int wndId){
       WindowIdMapType::iterator iter= _osgWindowIdMap.find(wndId);
       if(iter != _osgWindowIdMap.end() ){
         return (*iter).second.get();
       }
-  
+
       return NULL;
-    
+
     }
     bool GraphicsWidget::windowSetPosition(int wndId, float x, float y)
     {
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(wndId);
       if(wnd.valid()){
         wnd->setPosition(osgWidget::Point(x,y,0));
-	return true;
+        return true;
       }
       return false;
     }
@@ -472,9 +472,9 @@ namespace mars {
         cout << "window not known!" << endl;
         return false;
       }
-  
+
       return true;
-  
+
     }
 
     bool GraphicsWidget::setCanFill(int id, bool state){
@@ -507,7 +507,7 @@ namespace mars {
 
     bool GraphicsWidget::addColor(int id,float r,float g,float b,float a){
       cerr << "in add color" << endl;
-        
+
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(id);
       if(!wnd.valid()){
         osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
@@ -522,7 +522,7 @@ namespace mars {
       }
       return false;
     }
-  
+
     bool GraphicsWidget::setLabel(int id, const std::string& text)
     {
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
@@ -538,24 +538,24 @@ namespace mars {
 
     bool GraphicsWidget::manageClickEvent(osgWidget::Event& event)
     {
-  
+
       cerr << "seaching 4 callback!" << endl;
-  
+
       WidgetCallBackPairType *ip =(WidgetCallBackPairType*) event.getData();
-          
+
       if(ip){
         if(ip->second == NULL && ip->first) {
           guiClickCallBack  call=  ip->first;
           call(event.x ,event.y);
-             
+
         }else{
           if(ip->second.get()) {
             (*(ip->second.get()))(event.x ,event.y);
           }
-          cerr << "base set" << endl; 
+          cerr << "base set" << endl;
         }
       }
-   
+
       return false;
     }
 
@@ -586,8 +586,8 @@ namespace mars {
     bool GraphicsWidget::addEventToWidget(int id,guiClickCallBack function,guiClickCallBackBind *bindptr, osgWidget::EventType type){
       osg::ref_ptr<osgWidget::Window> wnd = getWindowById(id);
       osg::ref_ptr<osgWidget::Widget> wd = getWidgetById(id);
-      
-  
+
+
       if(wnd.valid() || wd.valid()){
         cout << "found somethink to add callback" << endl;
         WidgetCallBackList *wcb;
@@ -605,13 +605,13 @@ namespace mars {
 
         }else{
           cout << "addCallback to Widget !!" << endl;
-          wd->setEventMask(osgWidget::EVENT_ALL);      
+          wd->setEventMask(osgWidget::EVENT_ALL);
           wd->addCallback( new osgWidget::Callback(&GraphicsWidget::manageClickEvent,this, type,(void*)&wcb->back()));
 
-            
+
         }
         return true;
-    
+
       }
       return false;
     }
@@ -629,7 +629,7 @@ namespace mars {
     bool GraphicsWidget::addMouseLeaveEventCallback(int id, guiClickCallBack function,guiClickCallBackBind *bindptr){
       return addEventToWidget(id,function,bindptr,osgWidget::EVENT_MOUSE_LEAVE);
     }
- 
+
     int GraphicsWidget::createCanvas(const std::string& name)
     {
       cout << "createCanvas" << endl;
@@ -652,27 +652,27 @@ namespace mars {
                                                                                  x2,
                                                                                  y2
                                                                                  );
-      
+
       return addOsgWindow(frame);
     }
 
     int GraphicsWidget::createBox(const std::string& name,int type){
-  
+
       cout << "createBox" << endl;
       osg::ref_ptr<osgWidget::Window>  wnd = new osgWidget::Box(name,type);
       return addOsgWindow(wnd);
     }
- 
+
     osgWidget::WindowManager* GraphicsWidget::getOrCreateWindowManager()
     {
       if(this->_osgWidgetWindowManager){
         return _osgWidgetWindowManager;
       }
-                
+
       osgWidget::point_type w = view->getCamera()->getViewport()->width();
       osgWidget::point_type h =  view->getCamera()->getViewport()->height();
 
-              
+
       osgWidget::WindowManager* wm = new osgWidget::WindowManager(
                                                                   view,
                                                                   w,
@@ -697,9 +697,9 @@ namespace mars {
 
       view->getCamera()->addChild( camera );
       _osgWidgetWindowManager = wm;
-    
+
       return wm;
-  
+
     }
 
     void GraphicsWidget::initializeOSG(void* data,
@@ -836,14 +836,14 @@ namespace mars {
         rttTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
         rttTexture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
         rttTexture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
-    
 
-    
+
+
         rttImage = new osg::Image();
         rttImage->allocateImage(g_width, g_height,
                                 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
         osgCamera->attach(osg::Camera::COLOR_BUFFER, rttImage.get());
-        rttTexture->setImage(rttImage);	
+        rttTexture->setImage(rttImage);
 
         // depth component
         rttDepthTexture = new osg::Texture2D();
@@ -945,6 +945,10 @@ namespace mars {
       if(myHUD) myHUD->addHUDElement(elem);
     }
 
+    void GraphicsWidget::removeHUDElement(HUDElement* elem) {
+      if(myHUD) myHUD->removeHUDElement(elem);
+    }
+
     void GraphicsWidget::switchHudElemtVis(int num_element) {
       if(myHUD) myHUD->switchElementVis(num_element);
     }
@@ -1000,7 +1004,7 @@ namespace mars {
         free(data);
       }
     }
-    
+
     void GraphicsWidget::getImageData(void **data, int &width, int &height) {
       if(isRTTWidget) {
         width = rttImage->s();
@@ -1015,7 +1019,7 @@ namespace mars {
 
     void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height)
     {
-      if(isRTTWidget) {        
+      if(isRTTWidget) {
         const float* data2 = (const float*)rttDepthImage->data();
         width = rttDepthImage->s();
         height = rttDepthImage->t();
@@ -1054,7 +1058,7 @@ namespace mars {
                                 const osgGA::GUIEventAdapter& ea,
                                 osgGA::GUIActionAdapter& aa)
     {
-      
+
       // remember position for mouse/camera interaction
       mouseX = ea.getX();
       mouseY = ea.getY();
@@ -1087,11 +1091,11 @@ namespace mars {
         return false;
       case osgGA::GUIEventAdapter::QUIT_APPLICATION:
         if (graphicsEventHandler.size() > 0)
-	  graphicsEventHandler[0]->emitQuitEvent(widgetID);
+          graphicsEventHandler[0]->emitQuitEvent(widgetID);
         return true;
       case osgGA::GUIEventAdapter::CLOSE_WINDOW:
         return false;
-    
+
       default:
         return false;
       }
@@ -1108,7 +1112,7 @@ namespace mars {
 
       if(graphicsEventHandler.size() > 0) {
         graphicsEventHandler[0]->emitGeometryChange(widgetID,
-						    ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
+                                                    ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
       }
 
       return true;
@@ -1119,9 +1123,9 @@ namespace mars {
       // *** Picking ***
 
       if(!isMouseMoving) {
-	for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
-	  graphicsEventHandler[i]->emitPickEvent(ea.getX(), ea.getY());
-	}
+        for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+          graphicsEventHandler[i]->emitPickEvent(ea.getX(), ea.getY());
+        }
       }
 
       isMouseButtonDown = false;
