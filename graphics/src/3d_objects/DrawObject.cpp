@@ -351,8 +351,8 @@ namespace mars {
           cerr << "Failed to generate tangents for DrawObject " << id_ << "!" << endl;
           return;
         }
-        geom->setVertexAttribData( TANGENT_UNIT,
-                                   osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_PER_VERTEX ) );
+        geom->setVertexAttribArray( TANGENT_UNIT,
+                                   tangents, osg::Array::BIND_PER_VERTEX );
       }
     }
 

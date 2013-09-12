@@ -340,9 +340,7 @@ namespace mars {
 #ifdef USE_VERTEX_BUFFER
       return;
 #endif
-      geom->setVertexAttribData(TANGENT_UNIT,
-                                osg::Geometry::ArrayData(tangents.get(),
-                                                         osg::Geometry::BIND_PER_VERTEX ) );
+      geom->setVertexAttribArray(TANGENT_UNIT, tangents.get(), osg::Array::BIND_PER_VERTEX );
     }
 
     void TerrainDrawObject::collideSphere(Vector pos, sReal radius) {
@@ -595,9 +593,7 @@ namespace mars {
       newSubTile->geom->setTexCoordArray(DEFAULT_UV_UNIT,
                                          newSubTile->texcoords.get());
       newSubTile->geom->setTexCoordArray(1,newSubTile->texcoords.get()); // TODO: y?
-      newSubTile->geom->setVertexAttribData(TANGENT_UNIT,
-                                            osg::Geometry::ArrayData(newSubTile->tangents.get(),
-                                                                     osg::Geometry::BIND_PER_VERTEX ) );
+      newSubTile->geom->setVertexAttribArray(TANGENT_UNIT, newSubTile->tangents.get(), osg::Array::BIND_PER_VERTEX );
 
       newSubTile->geode = new osg::Geode;
       newSubTile->geode->addDrawable(newSubTile->geom);
