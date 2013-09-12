@@ -233,7 +233,7 @@ ELSE(APPLE)
                         ${QT_LIBRARIES}
                         ${QT_QTXML_LIBRARY}
                         ${QT_QTOPENGL_LIBRARIES} 
-                        ${PKGCONFIG_LIBRARIES}
+                        ${PKGCONFIG_LIBRARIES} ${PKGCONFIG_LDFLAGS_OTHER}
                         ${WIN_LIBS}
                         ${OPENSCENEGRAPH_LIBRARIES}
   )
