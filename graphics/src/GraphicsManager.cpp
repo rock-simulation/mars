@@ -1221,6 +1221,13 @@ namespace mars {
       return NULL;
     }
 
+    void GraphicsManager::switchHUDElementVis(unsigned long id) {
+      HUDTexture *elem = (HUDTexture*) findHUDElement(id);
+      if(elem!=NULL) {
+        elem->switchCullMask();
+      }
+    }
+
     void GraphicsManager::setHUDElementTexture(unsigned long id,
                                                std::string texturename) {
       HUDTexture *elem = (HUDTexture*) findHUDElement(id);
