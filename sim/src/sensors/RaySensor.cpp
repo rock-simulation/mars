@@ -83,45 +83,46 @@ namespace mars {
       orientation = control->nodes->getRotation(attached_node);
 
       //Drawing Stuff
-      draw.ptr_draw = (DrawInterface*)this;
-      item.id = 0;
-      item.type = DRAW_LINE;
-      item.draw_state = DRAW_STATE_CREATE;
-      item.point_size = 1;
-      item.myColor.r = 1;
-      item.myColor.g = 0;
-      item.myColor.b = 0;
-      item.myColor.a = 1;
-      item.texture = "";
-      item.t_width = item.t_height = 0;
-      item.get_light = 0.0;
+      if(config.draw_rays) {
+        draw.ptr_draw = (DrawInterface*)this;
+        item.id = 0;
+        item.type = DRAW_LINE;
+        item.draw_state = DRAW_STATE_CREATE;
+        item.point_size = 1;
+        item.myColor.r = 1;
+        item.myColor.g = 0;
+        item.myColor.b = 0;
+        item.myColor.a = 1;
+        item.texture = "";
+        item.t_width = item.t_height = 0;
+        item.get_light = 0.0;
+          
+    
+        double rad_steps = getCols(); //rad_angle/(sReal)(sensor.resolution-1);
+        double rad_start = -((rad_steps-1)/2.0)*stepX; //Starting to Left, because 0 is in front and rock convention posive CCW //(M_PI-rad_angle)/2;
+        if(rad_steps == 1){
+          rad_start = 0;
+        }
+
+        //printf("Rad Start: %f, rad_steps: %f, stepX: %f\n",rad_start,rad_steps,stepX);
+
+        for(i=0; i<rad_steps; i++){
+          tmp = Vector(cos(rad_start+i*stepX),
+                       sin(rad_start+i*stepX), 0);
+          directions.push_back(tmp);
+          tmp = (orientation * tmp);
+          item.start = position;
+          item.end = (orientation * tmp);
+          item.end *= data[i];
+          draw.drawItems.push_back(item); // TEST
+        }
+    
+        if(control->graphics)
+          control->graphics->addDrawItems(&draw);
         
-  
-      double rad_steps = getCols(); //rad_angle/(sReal)(sensor.resolution-1);
-      double rad_start = -((rad_steps-1)/2.0)*stepX; //Starting to Left, because 0 is in front and rock convention posive CCW //(M_PI-rad_angle)/2;
-      if(rad_steps == 1){
-        rad_start = 0;
+    
+        assert(rad_steps == data.size());
       }
-
-      //printf("Rad Start: %f, rad_steps: %f, stepX: %f\n",rad_start,rad_steps,stepX);
-
-      for(i=0; i<rad_steps; i++){
-        tmp = Vector(cos(rad_start+i*stepX),
-                     sin(rad_start+i*stepX), 0);
-        directions.push_back(tmp);
-        tmp = (orientation * tmp);
-        item.start = position;
-        item.end = (orientation * tmp);
-        item.end *= data[i];
-        draw.drawItems.push_back(item);
-      }
-  
-      if(control->graphics)
-        control->graphics->addDrawItems(&draw);
-      
-  
-      assert(rad_steps == data.size());
-
     }
 
     RaySensor::~RaySensor(void) {
@@ -168,23 +169,23 @@ namespace mars {
 
     void RaySensor::update(std::vector<draw_item>* drawItems) {
       unsigned int i;
-  
-      if(have_update) {
-        control->nodes->updateRay(attached_node);
-        have_update = false;
-      }
-  
-  
-      if(!(*drawItems)[0].draw_state) {
-        for(i=0; i<data.size(); i++) {
-          (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
-          (*drawItems)[i].start = position;
-          (*drawItems)[i].end = (orientation * directions[i]);
-          (*drawItems)[i].end *= data[i];
-          (*drawItems)[i].end += (*drawItems)[i].start;
+      if(config.draw_rays) {
+        if(have_update) {
+          control->nodes->updateRay(attached_node);
+          have_update = false;
+        }
+    
+    
+        if(!(*drawItems)[0].draw_state) {
+          for(i=0; i<data.size(); i++) {
+            (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
+            (*drawItems)[i].start = position;
+            (*drawItems)[i].end = (orientation * directions[i]);
+            (*drawItems)[i].end *= data[i];
+            (*drawItems)[i].end += (*drawItems)[i].start;
+          }
         }
       }
-  
     }
 
     BaseConfig* RaySensor::parseConfig(ControlCenter *control,
@@ -205,6 +206,8 @@ namespace mars {
         cfg->opening_width = it->second[0].getDouble();
       if((it = config->find("max_distance")) != config->end())
         cfg->maxDistance = it->second[0].getDouble();
+      if((it = config->find("draw_rays")) != config->end())
+        cfg->draw_rays = it->second[0].getBool();
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -235,6 +238,7 @@ namespace mars {
       cfg["width"][0] = ConfigItem(config.width);
       cfg["opening_width"][0] = ConfigItem(config.opening_width);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
+      cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);

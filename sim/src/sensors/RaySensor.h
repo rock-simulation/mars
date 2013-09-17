@@ -54,6 +54,7 @@ namespace mars {
         opening_height=0.5*M_PI;
         attached_node = 0;
         maxDistance = 100.0;
+        draw_rays = true;
       }
 
       unsigned long attached_node;
@@ -64,6 +65,7 @@ namespace mars {
       double opening_width;
       double opening_height;
       double maxDistance;
+      bool draw_rays;
     };
 
     class RaySensor : 
