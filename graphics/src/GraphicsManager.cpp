@@ -509,13 +509,14 @@ namespace mars {
         myHUD->init(gw->getGraphicsWindow());
         myHUD->setViewSize(1920, 1200);
 
+        gw->setHUD(myHUD);
+
         // iterator over hudElements
 
         for(HUDElements::iterator iter = hudElements.begin();
             iter != hudElements.end(); iter++)
-          myHUD->addHUDElement((*iter)->getHUDElement());
+          gw->addHUDElement((*iter)->getHUDElement());
 
-        gw->setHUD(myHUD);
       }
       return next_window_id - 1;
     }
@@ -688,6 +689,41 @@ namespace mars {
         mask |= ReceivesShadowTraversalMask;
       }
       transform->setNodeMask(transform->getNodeMask() | mask);
+
+      // import an .STL file : we have to insert an additional transformation
+      // in order to add the additional rotation by 90 degrees around the
+      // x-axis (adding the rotation to "transform" does not help at all,
+      // because the values of "transform" are constantly resetted by MARS
+      // itself)
+      if((snode.filename.substr(snode.filename.size()-4, 4) == ".STL") ||
+         (snode.filename.substr(snode.filename.size()-4, 4) == ".stl")) {
+        // create the new transformation to be added
+        osg::ref_ptr<osg::PositionAttitudeTransform> transformSTL =
+            new osg::PositionAttitudeTransform();
+
+        // remove all child nodes from "transform" and add them to
+        // "transformSTL"
+        osg::Node* node = NULL;
+        while (transform->getNumChildren() > 0) {
+          node = transform->getChild(0);
+          transformSTL->addChild(node);
+          transform->removeChild(node);
+        }
+
+        // add "transformSTL" as child to "transform"
+        transform->addChild(transformSTL);
+
+        // calulate the quaternion for the rotation of 90 degrees around the
+        // x-axis
+        mars::utils::Quaternion offset =
+            mars::utils::eulerToQuaternion(mars::utils::Vector(90.0, 0.0, 0.0));
+
+        // set the orientation to the newly added transformation
+        transformSTL->setAttitude(osg::Quat(offset.x(),
+                                            offset.y(),
+                                            offset.z(),
+                                            offset.w()));
+      }
 
       if(activated) {
         if(mask != 0) {
@@ -1152,6 +1188,25 @@ namespace mars {
       }
 
       return 0;
+    }
+
+    void GraphicsManager::removeHUDElement(unsigned long id) {
+      HUDElements::iterator iter;
+      HUDElement* elem = findHUDElement(id);
+
+      if (elem) {
+        for (vector<GraphicsWidget*>::iterator iter = graphicsWindows.begin();
+             iter!=graphicsWindows.end(); iter++) {
+          (*iter)->removeHUDElement(elem);
+        }
+
+        for (iter = hudElements.begin(); iter != hudElements.end(); iter++) {
+          if ((*iter)->getHUDElement() == elem) {
+            hudElements.erase(iter);
+            break;
+          }
+        }
+      }
     }
 
     HUDElement* GraphicsManager::findHUDElement(unsigned long id) const {

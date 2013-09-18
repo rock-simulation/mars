@@ -26,6 +26,7 @@
 //#include <osgDB/WriteFile>
 #include <osg/MatrixTransform>
 #include <osg/ComputeBoundsVisitor>
+#include <osgUtil/Optimizer>
 
 #ifdef WIN32
  #include <cv.h>
@@ -231,31 +232,42 @@ namespace mars {
       osg::ref_ptr<osg::Node> completeNode;
       osg::ref_ptr<osg::Group> myCreatedGroup;
       osg::ref_ptr<osg::Group> myGroupFromRead;
+      osg::ref_ptr<osg::Geode> myGeodeFromRead;
       nodemanager tempnode;
       bool found = false;
 
       completeNode  = GuiHelper::readNodeFromFile(node->filename);
-      myGroupFromRead = completeNode->asGroup();
 
-      //go through the read node group and combine the parts of the actually
-      //handled node
-      myCreatedGroup = new osg::Group();
-      osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
-      for (unsigned int i = 0; i < myGroupFromRead->getNumChildren(); i ++) {
-        osg::ref_ptr<osg::Node> myTestingNode = myGroupFromRead->getChild(i);
-        if (myTestingNode == 0) {
-          return;
-        }
-        if (myTestingNode->getName() == node->origName) {
-          myTestingNode->setStateSet(stateset.get());
-          myCreatedGroup->addChild(myTestingNode.get());
-          found = true;
-        } else {
-          if (found) {
-            break;
-            found = false;
+      // check whether it is a osg::Group (.obj file)
+      if((myGroupFromRead = completeNode->asGroup()) != 0){
+        //go through the read node group and combine the parts of the actually
+        //handled node
+        myCreatedGroup = new osg::Group();
+        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
+        for (unsigned int i = 0; i < myGroupFromRead->getNumChildren(); i ++) {
+          osg::ref_ptr<osg::Node> myTestingNode = myGroupFromRead->getChild(i);
+          if (myTestingNode == 0) {
+            return;
+          }
+          if (myTestingNode->getName() == node->origName) {
+            myTestingNode->setStateSet(stateset.get());
+            myCreatedGroup->addChild(myTestingNode.get());
+            found = true;
+          } else {
+            if (found) {
+              break;
+              found = false;
+            }
           }
         }
+      }
+      // or if it is a osg::Geode (.stl file)
+      else if((myGeodeFromRead = completeNode->asGeode()) != 0) {
+        //if the node was read from a .stl-file it read as geode not as group
+        myCreatedGroup = new osg::Group();
+        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
+        completeNode->setStateSet(stateset.get());
+        myCreatedGroup->addChild(completeNode.get());
       }
 
       osg::ComputeBoundsVisitor cbbv;
@@ -323,6 +335,143 @@ namespace mars {
       nodeFileStruct newNodeFile;
       newNodeFile.fileName = fileName;
       newNodeFile.node = osgDB::readNodeFile(fileName);
+      GuiHelper::nodeFiles.push_back(newNodeFile);
+      return newNodeFile.node;
+    }
+
+
+    osg::ref_ptr<osg::Node> GuiHelper::readBobjFromFile(const std::string &filename) {
+
+      std::vector<nodeFileStruct>::iterator iter;
+
+      for(iter = GuiHelper::nodeFiles.begin();
+          iter != GuiHelper::nodeFiles.end(); iter++) {
+        if((*iter).fileName == filename) return (*iter).node;
+      }
+      nodeFileStruct newNodeFile;
+      newNodeFile.fileName = filename;
+
+      FILE* input = fopen(filename.c_str(), "rb");
+      if(!input) return 0;
+
+      char buffer[312];
+
+      int da, i, r, o, foo=0;
+      int iData[3];
+      float fData[4];
+
+      osg::Geode *geode = new osg::Geode();
+      std::vector<osg::Vec3> vertices;
+      std::vector<osg::Vec3> normals;
+      std::vector<osg::Vec2> texcoords;
+
+      std::vector<osg::Vec3> vertices2;
+      std::vector<osg::Vec3> normals2;
+      std::vector<osg::Vec2> texcoords2;
+
+      osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
+      osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
+      osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
+
+      while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
+        o = 0;
+        while(o < r+foo-50 || (r<256 && o < r+foo)) {
+          da = *(int*)(buffer+o);
+          o += 4;
+          if(da == 1) {
+            for(i=0; i<3; i++) {
+              fData[i] = *(float*)(buffer+o);
+              o+=4;
+            }
+            vertices.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
+          }
+          else if(da == 2) {
+            for(i=0; i<2; i++) {
+              fData[i] = *(float*)(buffer+o);
+              o+=4;
+            }
+            texcoords.push_back(osg::Vec2(fData[0], fData[1]));
+          }
+          else if(da == 3) {
+            for(i=0; i<3; i++) {
+              fData[i] = *(float*)(buffer+o);
+              o+=4;
+            }
+            normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
+          }
+          else if(da == 4) {
+            for(i=0; i<3; i++) {
+              iData[i] = *(int*)(buffer+o);
+              o+=4;
+            }
+            // add osg vertices etc.
+            osgVertices->push_back(vertices[iData[0]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
+            osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
+
+            for(i=0; i<3; i++) {
+              iData[i] = *(int*)(buffer+o);
+              o+=4;
+            }
+            // add osg vertices etc.
+            osgVertices->push_back(vertices[iData[0]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
+            osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
+
+            for(i=0; i<3; i++) {
+              iData[i] = *(int*)(buffer+o);
+              o+=4;
+            }
+            // add osg vertices etc.
+            osgVertices->push_back(vertices[iData[0]-1]);
+            vertices2.push_back(vertices[iData[0]-1]);
+            if(iData[1] > 0) {
+              osgTexcoords->push_back(texcoords[iData[1]-1]);
+              texcoords2.push_back(texcoords[iData[1]-1]);
+            }
+            osgNormals->push_back(normals[iData[2]-1]);
+            normals2.push_back(normals[iData[2]-1]);
+          }
+        }
+        foo = r+foo-o;
+        if(r==256) memcpy(buffer, buffer+o, foo);
+      }
+
+#ifdef USE_MARS_VBO
+      MarsVBOGeom *geometry = new MarsVBOGeom();
+      geometry->setVertexArray(vertices2);
+      geometry->setNormalArray(normals2);
+      if(osgTexcoords->size() > 0)
+        geometry->setTexCoordArray(texcoords2);
+#else
+      osg::Geometry* geometry = new osg::Geometry;
+      geometry->setVertexArray(osgVertices.get());
+      geometry->setNormalArray(osgNormals.get());
+      geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+      if(osgTexcoords->size() > 0)
+        geometry->setTexCoordArray(0, osgTexcoords.get());
+
+      osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
+      geometry->addPrimitiveSet(drawArrays);
+#endif
+      geode->addDrawable(geometry);
+      geode->setName("bobj");
+
+      fclose(input);
+      osgUtil::Optimizer optimizer;
+      optimizer.optimize( geode );
+
+      newNodeFile.node = geode;
       GuiHelper::nodeFiles.push_back(newNodeFile);
       return newNodeFile.node;
     }

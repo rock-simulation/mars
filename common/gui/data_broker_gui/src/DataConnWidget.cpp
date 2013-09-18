@@ -68,6 +68,11 @@ namespace mars {
       connect(unconnectButton, SIGNAL(clicked()), 
               this, SLOT(slotUnconnectDataItems()));
 
+      QPushButton *saveButton = new QPushButton("save");
+      horizontalButtonLayout->addWidget(saveButton);
+      connect(saveButton, SIGNAL(clicked()), 
+              this, SLOT(slotSaveConfiguration()));
+
    
       if(dataBroker) {
         dataBroker->registerSyncReceiver(this, "data_broker", "newStream",
@@ -156,7 +161,9 @@ namespace mars {
       dataBroker->unregisterAsyncReceiver(this, "*", "*");
       dataBroker->unregisterTimedReceiver(this, "*", "*", "_REALTIME_");
       dataBroker->unregisterSyncReceiver(this, "data_broker", "newStream");
-    
+    }
+
+    void DataConnWidget::slotSaveConfiguration(void) {
       // save connections in config
       if(cfg) {
         std::vector<TreeItem*>::iterator it;

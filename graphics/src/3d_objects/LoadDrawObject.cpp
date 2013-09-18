@@ -31,7 +31,6 @@
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
-#include <osgUtil/Optimizer>
 
 #include <iostream>
 #include <cstdio>
@@ -48,13 +47,37 @@ namespace mars {
 
     std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::createGeometry() {
       osg::ref_ptr<osg::Node> readNode;
+      osg::ref_ptr<osg::Geode> readGeode;
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
 
       if(info_.fileName.substr(info_.fileName.size()-5, 5) == ".bobj") {
         //readBobjFormat(info_.fileName);
-        geodes.push_back(readBobjFormat(info_.fileName));
+        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readBobjFromFile(info_.fileName);
+        if(!loadedNode.valid()) {
+          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
+          return geodes; // TODO: error message
+        }
+        geodes.push_back(loadedNode->asGeode());
       }
+      // import an .STL file
+      else if((info_.fileName.substr(info_.fileName.size()-4, 4) == ".STL") ||
+             (info_.fileName.substr(info_.fileName.size()-4, 4) == ".stl")) {
+        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
+        if(!loadedNode.valid()) {
+          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
+          return geodes; // TODO: error message
+        }
+        // if the file is a .STL file, OSG read the node as a geode not as a
+        // group
+        readGeode = loadedNode->asGeode();
+        if(!readGeode.valid()) {
+          std::cerr << "LoadDrawObject: no geode found" << std::endl;
+          return geodes; // TODO: error message
+        }
+        geodes.push_back(readGeode);
+      }
+      // import an .OBJ file
       else {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
         if(!loadedNode.valid()) {
@@ -81,128 +104,6 @@ namespace mars {
         }
       }
       return geodes;
-    }
-
-    osg::Geode* LoadDrawObject::readBobjFormat(const std::string &filename) {
-      FILE* input = fopen(filename.c_str(), "rb");
-      if(!input) return 0;
-      char buffer[312];
-
-      int da, i, r, o, foo=0;
-      int iData[3];
-      float fData[4];
-
-      osg::Geode *geode = new osg::Geode();
-      std::vector<osg::Vec3> vertices;
-      std::vector<osg::Vec3> normals;
-      std::vector<osg::Vec2> texcoords;
-
-      std::vector<osg::Vec3> vertices2;
-      std::vector<osg::Vec3> normals2;
-      std::vector<osg::Vec2> texcoords2;
-
-      osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
-      osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
-      osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
-
-      while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
-        o = 0;
-        while(o < r+foo-50 || (r<256 && o < r+foo)) {
-          da = *(int*)(buffer+o);
-          o += 4;
-          if(da == 1) {
-            for(i=0; i<3; i++) {
-              fData[i] = *(float*)(buffer+o);
-              o+=4;
-            }
-            vertices.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
-          }
-          else if(da == 2) {
-            for(i=0; i<2; i++) {
-              fData[i] = *(float*)(buffer+o);
-              o+=4;
-            }
-            texcoords.push_back(osg::Vec2(fData[0], fData[1]));
-          }
-          else if(da == 3) {
-            for(i=0; i<3; i++) {
-              fData[i] = *(float*)(buffer+o);
-              o+=4;
-            }
-            normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
-          }
-          else if(da == 4) {
-            for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
-              o+=4;
-            }
-            // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
-            vertices2.push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
-              texcoords2.push_back(texcoords[iData[1]-1]);
-            }
-            osgNormals->push_back(normals[iData[2]-1]);
-            normals2.push_back(normals[iData[2]-1]);
-
-            for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
-              o+=4;
-            }
-            // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
-            vertices2.push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
-              texcoords2.push_back(texcoords[iData[1]-1]);
-            }
-            osgNormals->push_back(normals[iData[2]-1]);
-            normals2.push_back(normals[iData[2]-1]);
-
-            for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
-              o+=4;
-            }
-            // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
-            vertices2.push_back(vertices[iData[0]-1]);
-            if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
-              texcoords2.push_back(texcoords[iData[1]-1]);
-            }
-            osgNormals->push_back(normals[iData[2]-1]);
-            normals2.push_back(normals[iData[2]-1]);
-          }
-        }
-        foo = r+foo-o;
-        if(r==256) memcpy(buffer, buffer+o, foo);
-      }
-
-#ifdef USE_MARS_VBO
-      MarsVBOGeom *geometry = new MarsVBOGeom();
-      geometry->setVertexArray(vertices2);
-      geometry->setNormalArray(normals2);
-      if(osgTexcoords->size() > 0)
-        geometry->setTexCoordArray(texcoords2);
-#else
-      osg::Geometry* geometry = new osg::Geometry;
-      geometry->setVertexArray(osgVertices.get());
-      geometry->setNormalArray(osgNormals.get());
-      geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
-      if(osgTexcoords->size() > 0)
-        geometry->setTexCoordArray(0, osgTexcoords.get());
-
-      osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
-      geometry->addPrimitiveSet(drawArrays);
-#endif
-      geode->addDrawable(geometry);
-      geode->setName("bobj");
-
-      fclose(input);
-      osgUtil::Optimizer optimizer;
-      optimizer.optimize( geode );
-      return geode;
     }
 
   } // end of graphics

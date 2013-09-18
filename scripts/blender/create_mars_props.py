@@ -42,7 +42,7 @@ def createBodyProperties(obj):
         setGroup = False
         for child in children:
             if "type" in child and child["type"] == "joint":
-                if child["node2"] == obj.name:
+                if "node2" in child and child["node2"] == obj.name:
                     obj["group"] = getNextGroupID()
                     setGroup = True
                     break

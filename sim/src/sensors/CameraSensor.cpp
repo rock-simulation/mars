@@ -98,7 +98,7 @@ namespace mars {
         if(gw) {
           gc = gw->getCameraInterface();
           control->graphics->addGraphicsUpdateInterface(this);
-          //gc->setFrustumFromRad(150.0/180.0*M_PI,90.0/180.0*M_PI,0.5,100);
+          gc->setFrustumFromRad(config.opening_width/180.0*M_PI,config.opening_height/180.0*M_PI,0.5,100);
         }
       }
     }
@@ -238,7 +238,7 @@ namespace mars {
 
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
-      else cfg->updateRate = 0;
+      else cfg->updateRate = 100;
 
       if((it = config->find("width")) != config->end())
         cfg->width = it->second[0].getULong();

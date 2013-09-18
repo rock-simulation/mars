@@ -76,7 +76,7 @@ namespace mars {
       lib_manager::LibManager *libManager;
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;
-
+      bool ownLibManager;
 
     };
 

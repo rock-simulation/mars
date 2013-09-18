@@ -116,7 +116,7 @@ namespace mars {
       virtual void readPixelData(mars::interfaces::terrainStruct *terrain);
 
       static osg::ref_ptr<osg::Node> readNodeFromFile(std::string fileName);
-
+      static osg::ref_ptr<osg::Node> readBobjFromFile(const std::string &filename);
       static osg::ref_ptr<osg::Texture2D> loadTexture(std::string filename);
 
     private:

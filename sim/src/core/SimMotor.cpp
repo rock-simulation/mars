@@ -605,8 +605,10 @@ namespace mars {
 
     void SimMotor::getDataBrokerNames(std::string *groupName,
                                       std::string *dataName) const {
-      char buffer[32];
-      sprintf(buffer, "Motors/%05lu_%s", sMotor.index, sMotor.name.c_str());
+      char format[] = "Motors/%05lu_%s";
+      int size = snprintf(0, 0, format, sMotor.index, sMotor.name.c_str());
+      char buffer[size];
+      sprintf(buffer, format, sMotor.index, sMotor.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;
     }

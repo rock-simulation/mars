@@ -146,7 +146,6 @@ namespace mars {
       if (sNode.c_params.friction_direction1) {
         delete (sNode.c_params.friction_direction1);
         sNode.c_params.friction_direction1 = 0;
-        fprintf(stderr, "killed friction direction1\n");
       }
       if (sNode.terrain) {
         delete sNode.terrain;

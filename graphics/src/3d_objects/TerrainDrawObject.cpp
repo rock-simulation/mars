@@ -33,6 +33,7 @@
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
 #include <osg/Geometry>
+#include <osg/Version>
 
 namespace mars {
   namespace graphics {
@@ -340,9 +341,15 @@ namespace mars {
 #ifdef USE_VERTEX_BUFFER
       return;
 #endif
-      geom->setVertexAttribData(TANGENT_UNIT,
-                                osg::Geometry::ArrayData(tangents.get(),
-                                                         osg::Geometry::BIND_PER_VERTEX ) );
+
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
+      geom->setVertexAttribData(TANGENT_UNIT, osg::Geometry::ArrayData(tangents.get(), osg::Geometry::BIND_PER_VERTEX ) );
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
+      geom->setVertexAttribArray(TANGENT_UNIT, tangents.get(), osg::Array::BIND_PER_VERTEX );
+#else
+    #error Unknown OSG Version OPENSCENEGRAPH_MAJOR_VERSION
+#endif
+
     }
 
     void TerrainDrawObject::collideSphere(Vector pos, sReal radius) {
@@ -595,9 +602,16 @@ namespace mars {
       newSubTile->geom->setTexCoordArray(DEFAULT_UV_UNIT,
                                          newSubTile->texcoords.get());
       newSubTile->geom->setTexCoordArray(1,newSubTile->texcoords.get()); // TODO: y?
-      newSubTile->geom->setVertexAttribData(TANGENT_UNIT,
-                                            osg::Geometry::ArrayData(newSubTile->tangents.get(),
-                                                                     osg::Geometry::BIND_PER_VERTEX ) );
+
+
+
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
+      newSubTile->geom->setVertexAttribData(TANGENT_UNIT,osg::Geometry::ArrayData(newSubTile->tangents.get(),osg::Geometry::BIND_PER_VERTEX ) );
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
+      newSubTile->geom->setVertexAttribArray(TANGENT_UNIT, newSubTile->tangents.get(), osg::Array::BIND_PER_VERTEX );
+#else
+#error Unknown OSG Version
+#endif
 
       newSubTile->geode = new osg::Geode;
       newSubTile->geode->addDrawable(newSubTile->geom);
