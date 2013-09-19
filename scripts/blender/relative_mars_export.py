@@ -411,7 +411,6 @@ def writeMotor(joint, motorValue):
 def writeSensor(sensor):
     sensorType = sensor["sensorType"] if "sensorType" in sensor else "unknown"
     rate = sensor["rate"] if "rate" in sensor else 10.0
-
     idList = {}
 
     if "listMotors" in sensor:
@@ -442,6 +441,8 @@ def writeSensor(sensor):
                   '</opening_width>\n')
         out.write('      <max_distance>'+str(sensor["max_distance"])+
                   '</max_distance>\n')
+        if "draw_rays" in sensor:
+            out.write('      <draw_rays>'+str(sensor["draw_rays"])+'</draw_rays>\n')
     elif sensorType == "CameraSensor":
         #nodeID = getID(sensor["attached_node"])
         #out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')

@@ -351,8 +351,17 @@ namespace mars {
           cerr << "Failed to generate tangents for DrawObject " << id_ << "!" << endl;
           return;
         }
+
+
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
         geom->setVertexAttribData( TANGENT_UNIT,
-                                   osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_PER_VERTEX ) );
+            osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_PER_VERTEX ) );
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
+        geom->setVertexAttribArray( TANGENT_UNIT,
+                                   tangents, osg::Array::BIND_PER_VERTEX );
+#else
+#error Unknown OSG Version
+#endif
       }
     }
 
