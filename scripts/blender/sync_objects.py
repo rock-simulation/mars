@@ -6,28 +6,38 @@ import mathutils
 
 # Finds the closest points in "data" to every point in "model".
 def getClosestPoints(model, data):
+    # init the return value with all zeroes
     closest = numpy.zeros(model.shape)
 
+    # TODO: what happens when there are less "data" points than "model" points!?!?
+
     for i in range(len(model)):
-
+        # calculate all the distances between the current point of "model" and "data"
         distances = numpy.sum((model[i] - data)**2,axis=-1)**(1./2)
-
+        # determine the index of the closest point
         i_min = numpy.argmin(distances)
-
+        # set the closest point
         closest[i] = data[i_min]
+        # delete the used point from data (make sure it is only used once)
+        data = numpy.delete(data, i_min, 0)
 
+    # return the array of closest points
     return closest
 
 
+# find the mapping (translation and orientation) between "A" and "B"
 def rigid_transform_3D(A, B):
+    # make sure "A" and "B" have the same number of data points
     assert len(A) == len(B)
 
-    N = A.shape[0]; # total points
+    # get the total number of data points
+    N = A.shape[0]
 
+    # calculate the center of both point clouds
     centroid_A = numpy.mean(numpy.matrix(A), axis=0)
     centroid_B = numpy.mean(numpy.matrix(B), axis=0)
 
-    # centre the points
+    # center both point clouds
     AA = A - numpy.tile(centroid_A, (N, 1))
     BB = B - numpy.tile(centroid_B, (N, 1))
 
@@ -67,27 +77,50 @@ def main(nodeName1, nodeName2):
     node1 = bpy.data.objects[nodeName1]
     node2 = bpy.data.objects[nodeName2]
 
+    if node1.scale.x != 1.0 and \
+       node1.scale.y != 1.0 and \
+       node1.scale.z != 1.0:
+        print("WARNING! Not all scaling factors of node <%s> are 1.0! Could be problematic!" % nodeName1)
+
+    if node2.scale.x != 1.0 and \
+       node2.scale.y != 1.0 and \
+       node2.scale.z != 1.0:
+        print("WARNING! Not all scaling factors of node <%s> are 1.0! Could be problematic!" % nodeName2)
+
+    # get the pointers to both meshes
     mesh1 = node1.data.vertices
     mesh2 = node2.data.vertices
 
+    # initialize the root mean square error and the iteration counter
     rmse = float("inf")
     i = 0
 
-    while rmse > 0.1 and i < 50:
+    # do the iterative closest point (ICP) until rmse is small or for
+    # a maximal number of iterations
+    while rmse > 0.1 and i < 1:
+
+        # TODO: ???
+        node1.rotation_quaternion.normalize()
+        node2.rotation_quaternion.normalize()
 
         # TODO: incorporate "scale"
         vert1 = numpy.array([node1.rotation_quaternion * v.co + node1.location for v in mesh1])
         vert2 = numpy.array([node2.rotation_quaternion * v.co + node2.location for v in mesh2])
 
+        # calculate the closest point for each point of vert1 from vert2
         vert3 = getClosestPoints(vert1, vert2);
 
         # recover the transformation
         R, t = rigid_transform_3D(vert1, vert3)
 
+        # add the translation t to the current position
         node1.location += mathutils.Vector(t)
 
+        # add the rotation R to the current orientation
+        node1.rotation_mode = "QUATERNION"
         node1.rotation_quaternion = mathutils.Matrix(R.tolist()).to_quaternion() * node1.rotation_quaternion
 
+        # calculate the resulting error
         err = numpy.array([node1.rotation_quaternion * v.co + node1.location for v in mesh1])
         err = vert1 - vert3
         err = numpy.multiply(err, err)
@@ -95,6 +128,7 @@ def main(nodeName1, nodeName2):
         rmse = math.sqrt(err/len(vert1));
         print("rmse = %f" % rmse)
 
+        # increase the iteration counter
         i += 1
 
     return True
