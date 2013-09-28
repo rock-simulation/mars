@@ -118,7 +118,10 @@ def exportBobj(outname, obj):
             uv_face_mapping = [[0, 0, 0, 0] for i in range(len(face_index_pairs))]  # a bit of a waste for tri's :/
 
             uv_dict = {}  # could use a set() here
-            uv_layer = mesh.uv_textures.active.data
+            if bpy.app.version[1] >= 65:
+                uv_layer = mesh.tessface_uv_textures.active.data[:]
+            else:
+                uv_layer = mesh.uv_textures.active.data
             for f, f_index in face_index_pairs:
                 for uv_index, uv in enumerate(uv_layer[f_index].uv):
                     uvkey = round(uv[0], 6), round(uv[1], 6)
@@ -314,7 +317,10 @@ def writeNode(obj):
     outputVector(out, "extend", ext, 6)
     outputVector(out, "pivot", pivot, 6)
     outputVector(out, "visualsize", size, 6)
-    out.write('      <movable>true</movable>\n')
+    if "movable" in obj:
+        out.write('      <movable>'+str(obj["movable"])+'</movable>\n')
+    else:
+        out.write('      <movable>true</movable>\n')
     if "mass" in obj:
         out.write('      <mass>'+str(obj["mass"])+'</mass>\n')
     out.write('      <density>'+str(density)+'</density>\n')
@@ -474,6 +480,10 @@ def writeMaterial(material):
     out.write('        <b>'+str(material.specular_color[2])+'</b>\n');
     out.write('      </specularFront>\n');
     out.write('      <shininess>'+str(material.specular_hardness/2)+'</shininess>\n');
+    if "cullMask" in material:
+        out.write('      <cullMask>'+str(material["cullMask"])+'</cullMask>\n');
+    if "texturename" in material:
+        out.write('      <texturename>'+str(material["texturename"])+'</texturename>\n');
     out.write('    </material>\n')
 
 
