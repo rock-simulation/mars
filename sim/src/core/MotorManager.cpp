@@ -443,6 +443,14 @@ namespace mars {
       return 0.;
     }
 
+    void MotorManager::setMaxTorque(unsigned long id, sReal maxTorque) {
+      MutexLocker locker(&iMutex);
+      map<unsigned long, SimMotor*>::const_iterator iter;
+      iter = simMotors.find(id);
+      if (iter != simMotors.end())
+        iter->second->setMotorMaxForce(maxTorque);
+    }
+
 
     /**
      * \brief Detaches the joint with the given index from all motors that act on

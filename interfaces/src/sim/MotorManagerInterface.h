@@ -180,6 +180,15 @@ namespace mars {
       virtual void setMotorValue(unsigned long id, sReal value) = 0;
 
       /**
+       * \brief Sets the maximum torque of the motor with the given id to the given value.
+       *
+       * \param id The id of the motor whose value is to be changed.
+       *
+       * \param maxTorque The new maximum torque for the motor.
+       */
+      virtual void setMaxTorque(unsigned long id, sReal maxTorque) = 0;
+
+      /**
        * \brief Sets the desired speed of a motor.
        * \param id The id of the motor whose value is to be changed.
        * \param value The new value in rad/s.

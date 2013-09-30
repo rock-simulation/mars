@@ -165,7 +165,13 @@ namespace mars {
     }
 
     void SimMotor::setMotorMaxForce(sReal force) {
-      motorMaxForce = force;
+      sMotor.motorMaxForce = force;
+      if(sMotor.axis == 1) {
+        myJoint->setForceLimit(sMotor.motorMaxForce);
+      }
+      else if(sMotor.axis == 2) {
+        myJoint->setForceLimit2(sMotor.motorMaxForce);
+      }
     }
 
     sReal SimMotor::getMotorMaxForce() const {
