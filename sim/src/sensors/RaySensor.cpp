@@ -34,10 +34,12 @@
 
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/sim/RaySensor.h>
 
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <algorithm>
 
 namespace mars {
 namespace sim {
@@ -183,7 +185,7 @@ RaySensor::RaySensor(ControlCenter *control, RayConfig config):
     orientation = control->nodes->getRotation(attached_node);
 
 //     //Drawing Stuff
-//     draw.ptr_draw = (DrawInterface*)this;
+    draw.ptr_draw = (DrawInterface*)this;
 //     item.id = 0;
 //     item.type = DRAW_LINE;
 //     item.draw_state = DRAW_STATE_CREATE;
@@ -213,8 +215,8 @@ RaySensor::RaySensor(ControlCenter *control, RayConfig config):
 // 	draw.drawItems.push_back(item);
 //     }
 // 
-//     if(control->graphics)
-// 	control->graphics->addDrawItems(&draw);
+    if(control->graphics)
+	control->graphics->addDrawItems(&draw);
     
 }
 
@@ -237,7 +239,12 @@ void RaySensor::preGraphicsUpdate(void )
 }
 
 std::vector<double> RaySensor::getSensorData() const {
-    return rayValues;
+    std::vector<double> ret;
+    ret.resize(rayValues.size());
+    
+    std::copy(rayValues.rbegin(), rayValues.rend(), ret.begin());
+    
+    return ret;
 }
 
 void RaySensor::receiveData(const data_broker::DataInfo &info,
@@ -294,6 +301,8 @@ void RaySensor::update(std::vector<draw_item>* drawItems) {
     int curSubRayStart = 0;
     int curSubRayEnd = subSensor->rttWidth;
     
+//     std::cout << "Reading ";
+    
     for(std::vector<double>::iterator it = rayValues.begin(); it != rayValues.end(); it++)
     {
 	int x = curX;
@@ -320,10 +329,13 @@ void RaySensor::update(std::vector<draw_item>* drawItems) {
 	
 	*it = distance;
 	
+// 	std::cout << distance << " ";
+	
 	curX += widthStep;
 	
     }
     
+//     std::cout << std::endl;
 //     if(!(*drawItems)[0].draw_state) {
 // 	for(size_t i=0; i<rayValues.size(); i++) {
 // 	    (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
