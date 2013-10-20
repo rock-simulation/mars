@@ -116,7 +116,6 @@ namespace mars {
       int id;
       int type;
       int width, height, texture_width, texture_height;
-      int view_width, view_height;
       double posx, posy;
       double background_color[4];
       double border_color[4];

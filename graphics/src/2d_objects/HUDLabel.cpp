@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
  /**
  * \file HUD.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief The "HUD" class contains all necessary methods for rendering
  * data into a texture.
  */
@@ -96,11 +96,6 @@ namespace mars {
       posy = y;
     }
 
-    void HUDLabel::setViewSize(double width, double height) {
-      view_width = width;
-      view_height = height;
-    }
-
     void HUDLabel::setBackgroundColor(double r, double g, double b, double a) {
       background_color[0] = r;
       background_color[1] = g;
@@ -148,7 +143,8 @@ namespace mars {
         float h = bb.yMax() - bb.yMin() + pt + pb;
 
         double pos;
-        if(direction) pos = posx - w;
+        if(direction == 1) pos = posx - w;
+        else if(direction == 2) pos = posx - w*0.5;
         else pos = posx;
 
         transform->setPosition(osg::Vec3(pos, posy, -1.5f));
@@ -285,13 +281,6 @@ namespace mars {
         return scaleTransform.get();
       else
         return parent.get();
-    }
-
-    void HUDLabel::resize(double _width, double _height) {
-      double scale_x = _width / view_width;
-      double scale_y = _height / view_height;
-
-      scaleTransform->setMatrix(osg::Matrix::scale(scale_x, scale_y, 1.0));
     }
 
     void HUDLabel::setDirection(int _direction) {

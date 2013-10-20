@@ -50,7 +50,6 @@ namespace mars {
           myLabel->setConfigPath(config_path);
           myLabel->setID(id);
           myLabel->setPos(he.posx, he.posy);
-          myLabel->setViewSize(he.view_width, he.view_height);
           myLabel->setBackgroundColor(he.background_color[0],
                                       he.background_color[1],
                                       he.background_color[2],
@@ -70,7 +69,6 @@ namespace mars {
           HUDLines *myLines = new HUDLines(this);
           myLines->setID(id);
           myLines->setPos(he.posx, he.posy);
-          myLines->setViewSize(he.view_width, he.view_height);
           myLines->setBackgroundColor(he.background_color[0],
                                       he.background_color[1],
                                       he.background_color[2],
@@ -94,7 +92,6 @@ namespace mars {
           myTexture->setSize(he.width, he.height);
           myTexture->setTextureSize(he.texture_width, he.texture_height);
           myTexture->setPos(he.posx, he.posy);
-          myTexture->setViewSize(he.view_width, he.view_height);
           myTexture->setBorderColor(he.border_color[0], he.border_color[1],
                                     he.border_color[2], he.border_color[3]);
           myTexture->setBorderWidth(he.border_width);

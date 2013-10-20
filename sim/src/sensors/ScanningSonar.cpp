@@ -152,8 +152,6 @@ namespace mars {
         hudCam.height          = 280;
         hudCam.texture_width   = 420;
         hudCam.texture_height  = 280;
-        hudCam.view_width      = 420;
-        hudCam.view_height     = 280;
         hudCam.posx            = 40 + (hudCam.width * config.hud_pos); // aligned in a row
         hudCam.posy            = 30;
         hudCam.border_color[0] = 0.0;

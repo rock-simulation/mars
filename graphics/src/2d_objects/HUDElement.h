@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
  /**
  * \file HUDElement.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief The "HUDElement" 
  */
 
@@ -38,13 +38,13 @@ namespace mars {
     public:
       HUDElement(void) {}
       virtual ~HUDElement(void) {}
-      virtual void resize(double _width, double _height) = 0;
       virtual osg::Group* getNode(void) = 0;
       virtual void switchCullMask() = 0;
       virtual void xorCullMask(unsigned int mask) = 0;
       virtual void setID(unsigned long id) {this->id = id;}
       virtual unsigned long getID(void) {return id;}
       virtual void setConfigPath(std::string path) {config_path = path;}
+      virtual void setPos(double x, double y) = 0;
 
       static int elemCount;
 

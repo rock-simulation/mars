@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file HUD.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief The "HUD" class contains all necessary methods for rendering
  * data into a texture.
  */
@@ -56,6 +56,12 @@ namespace mars {
         texture_type(TEXTURE_UNKNOWN)
     {
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
+
+      posTransform = new osg::PositionAttitudeTransform();
+      posTransform->setPivotPoint(osg::Vec3(0.0, 0.0, 0.0));
+      posTransform->setPosition(osg::Vec3(0.0, 0.0, 0.0));
+      scaleTransform->addChild(posTransform.get());
+
       if(!parent.valid()) {
         parent = new osg::Group;
       }
@@ -69,6 +75,10 @@ namespace mars {
         texture_type(TEXTURE_UNKNOWN)
     {
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
+      posTransform = new osg::PositionAttitudeTransform();
+      posTransform->setPivotPoint(osg::Vec3(0.0, 0.0, 0.0));
+      posTransform->setPosition(osg::Vec3(0.0, 0.0, 0.0));
+      scaleTransform->addChild(posTransform.get());
     }
 
     HUDTexture::~HUDTexture(void) {
@@ -87,11 +97,7 @@ namespace mars {
     void HUDTexture::setPos(double x, double y) {
       posx = x;
       posy = y;
-    }
-
-    void HUDTexture::setViewSize(double width, double height) {
-      view_width = width;
-      view_height = height;
+      posTransform->setPosition(osg::Vec3(posx, posy, 0.0));  
     }
 
     void HUDTexture::setBorderColor(double r, double g, double b, double a) {
@@ -112,10 +118,10 @@ namespace mars {
 
       geode = new osg::Geode;
 
-      (*corners)[0].set(posx, posy, -1.5f);
-      (*corners)[1].set(posx + width, posy, -1.5f);
-      (*corners)[2].set(posx + width, posy + height, -1.5f);
-      (*corners)[3].set(posx, posy + height, -1.5f);
+      (*corners)[0].set(0, 0, -1.5f);
+      (*corners)[1].set(0 + width, 0, -1.5f);
+      (*corners)[2].set(0 + width, 0 + height, -1.5f);
+      (*corners)[3].set(0, 0 + height, -1.5f);
     
       (*texcoords)[0].set(0.0f, 0.0f);
       (*texcoords)[1].set(1.0f, 0.0f);
@@ -158,7 +164,7 @@ namespace mars {
       geode->getOrCreateStateSet()->setTextureAttributeAndModes(0, texture.get(),
                                                                 osg::StateAttribute::ON);
 */
-      scaleTransform->addChild(geode.get());
+      posTransform->addChild(geode.get());
   
       if(border_width > 0.0) {
         osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry;
@@ -166,14 +172,14 @@ namespace mars {
         //nodemanager tempnode;
     
         osg::Vec3Array* vertices = new osg::Vec3Array(8);
-        (*vertices)[0].set(posx, posy, -2.0f);
-        (*vertices)[1].set(posx+width, posy, -2.0f);
-        (*vertices)[2].set(posx+width, posy, -2.0f);
-        (*vertices)[3].set(posx+width, posy+height, -2.0f);
-        (*vertices)[4].set(posx+width, posy+height, -2.0f);
-        (*vertices)[5].set(posx, posy+height, -2.0f);
-        (*vertices)[6].set(posx, posy+height, -2.0f);
-        (*vertices)[7].set(posx, posy, -2.0f);
+        (*vertices)[0].set(0, 0, -2.0f);
+        (*vertices)[1].set(0+width, 0, -2.0f);
+        (*vertices)[2].set(0+width, 0, -2.0f);
+        (*vertices)[3].set(0+width, 0+height, -2.0f);
+        (*vertices)[4].set(0+width, 0+height, -2.0f);
+        (*vertices)[5].set(0, 0+height, -2.0f);
+        (*vertices)[6].set(0, 0+height, -2.0f);
+        (*vertices)[7].set(0, 0, -2.0f);
 
         // pass the created vertex array to the points geometry object.
         linesGeom->setVertexArray(vertices);
@@ -199,7 +205,7 @@ namespace mars {
 
         // add the points geometry to the geode.
         linesGeode->addDrawable(linesGeom.get());
-        scaleTransform->addChild(linesGeode.get());
+        posTransform->addChild(linesGeode.get());
       }
       osg::StateSet* stateset = parent->getOrCreateStateSet();
 
@@ -213,13 +219,6 @@ namespace mars {
 
     osg::Group* HUDTexture::getNode(void) {
       return parent.get();
-    }
-
-    void HUDTexture::resize(double _width, double _height) {
-      double scale_x = _width / view_width;
-      double scale_y = _height / view_height;
-
-      scaleTransform->setMatrix(osg::Matrix::scale(scale_x, scale_y, 1.0));
     }
 
     void HUDTexture::switchCullMask() {

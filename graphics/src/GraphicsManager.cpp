@@ -1228,6 +1228,14 @@ namespace mars {
       }
     }
 
+    void GraphicsManager::setHUDElementPos(unsigned long id, double x,
+                                           double y) {
+      HUDTexture *elem = (HUDTexture*) findHUDElement(id);
+      if(elem!=NULL) {
+        elem->setPos(x, y);
+      }
+    }
+
     void GraphicsManager::setHUDElementTexture(unsigned long id,
                                                std::string texturename) {
       HUDTexture *elem = (HUDTexture*) findHUDElement(id);

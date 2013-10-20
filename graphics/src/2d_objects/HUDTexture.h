@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
  /**
  * \file HUDTexture.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief The "HUDTexture" 
  */
 
@@ -48,12 +48,10 @@ namespace mars {
       void setSize(double width, double height);
       void setTextureSize(double width, double height);
       void setPos(double x, double y);
-      void setViewSize(double widht, double height);
       void setBorderColor(double r, double g, double b, double a);
       void setBorderWidth(double border_width);
   
       void createBox(void);
-      void resize(double _width, double _height);
       osg::Group* getNode(void);
       void switchCullMask();
       void xorCullMask(unsigned int mask);
@@ -63,11 +61,12 @@ namespace mars {
     private:
       osg::ref_ptr<osg::Group> parent;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform;
+      osg::ref_ptr<osg::PositionAttitudeTransform> posTransform;
       osg::ref_ptr<osg::Image> image;
       osg::ref_ptr<osg::Texture2D> texture;
       osg::ref_ptr<osg::Geode> geode;
 
-      double width, height, t_width, t_height, view_width, view_height;
+      double width, height, t_width, t_height;
       double posx, posy;
       double border_color[4];
       double border_width;

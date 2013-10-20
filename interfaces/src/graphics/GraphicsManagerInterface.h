@@ -181,6 +181,7 @@ namespace mars {
       virtual unsigned long addHUDElement(hudElementStruct *new_hud_element) = 0;
       virtual void removeHUDElement(unsigned long id) = 0;
       virtual void switchHUDElementVis(unsigned long id) = 0;
+      virtual void setHUDElementPos(unsigned long id, double x, double y) = 0;
       virtual void setHUDElementTextureData(unsigned long id, void* data) = 0;
       virtual void setHUDElementTextureRTT(unsigned long id,
                                            unsigned long window_id,

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2013, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
  /**
  * \file HUDLabel.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief The "HUDLabel" 
  */
 
@@ -45,14 +45,12 @@ namespace mars {
   
       void setFontSize(double _font_size);
       void setPos(double x, double y);
-      void setViewSize(double widht, double height);
       void setBackgroundColor(double r, double g, double b, double a);
       void setBorderColor(double r, double g, double b, double a);
       void setBorderWidth(double border_width);
       void setPadding(double left, double top, double right, double bottom);
       void setDirection(int _direction);
       void setText(std::string text, double color[4]);
-      void resize(double _width, double _height);
       osg::Group* getNode(void);
       void switchCullMask(void);
       void xorCullMask(unsigned int mask);
@@ -62,7 +60,6 @@ namespace mars {
       osg::ref_ptr<osg::MatrixTransform> scaleTransform;
       osg::ref_ptr<osgText::Text> labelText;
 
-      double view_width, view_height;
       double posx, posy;
       double background_color[4], border_color[4];
       double border_width;
