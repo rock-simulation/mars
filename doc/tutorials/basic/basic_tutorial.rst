@@ -200,6 +200,14 @@ Building the Model
 23. Do not forget to save your blender scene.
 
 Congratulations!  You have your first blender created MARS scene.
+If the scene is not correctly displayed in MARS (e.g. dimensions of
+the objects appear differently), you might have to change the scale
+of your meshes in Blender. For this, select all of them, then go to
+the Object menu and click "Apply->Scale". The same goes for rotation in
+case there are errors. Also in the Object menu, you can select
+"Transform->Origin to Geometry", which will fix similar problems with
+the meshes' positions.
+
 However, if you load the scene in MARS and try to do a tank turn you
 might notice that it does not work to well.  You would need to tune
 the friction parameters for the wheels.  Alternatively, we add a third
