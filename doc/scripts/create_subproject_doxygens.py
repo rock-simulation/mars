@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Oct 22 10:44:01 2013
+
+@author: Kai von Szadkowski
+"""
+
 # This script has to be executed from MARS' /mars/doc/doxygen folder, where it
 # should be located. It browses through all directories of mars, detecting
 # any folders containing a Markdown file with the same name as the folder, e.g.
@@ -10,8 +17,6 @@
 #
 # NOTE: The script overwrites any locally changed configfiles with the standard
 # template that's found in the folder /mars/doc/doxygen/subproject_doxygen_template
-#
-# Author: Kai von Szadkowski (2013/10/21)
 
 from subprocess import call
 import os
@@ -19,23 +24,22 @@ import shutil
 
 def safe_mkdir(path):
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path)
 
 doxygen_list = []
 print "Detecting *.md files describing sub-projects..."
 for root, dirs, files in os.walk("../../"):
     for d in dirs:
         if d == "doc":
-            for file in os.listdir(root+"/doc/"):
-                if file.endswith(".md") and file[0:-3] == os.path.basename(root):
+            for f in os.listdir(os.path.join(root, d)):
+                if f.endswith(".md") and f[0:-3] == os.path.basename(root):
                     print root
                     subproject = os.path.basename(root)
                     safe_mkdir(root+"/doc/doxygen")
-                    safe_mkdir(root+"/doc/css")
-                    safe_mkdir(root+"/doc/images")
-                    shutil.copy("../css/mars_doxygen.css", root+"/doc/css")
+                    safe_mkdir(root+"/doc/src/css")
+                    shutil.copy("../src/css/mars_doxygen.css", root+"/doc/src/css")
                     configfile_path = root+"/doc/doxygen/"+subproject+"_doxyconf"
-                    shutil.copyfile("subproject_doxygen_template/doxygen/subproject_doxyconf", configfile_path )
+                    shutil.copyfile("../src/subproject_doxygen_template/subproject_doxyconf", configfile_path )
                     with open(configfile_path, 'r') as f:
                         doxy_cfg = f.read()
                     subproject_title = subproject.replace("_", " ").title()

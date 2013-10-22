@@ -1,22 +1,18 @@
-=======================
-Basic Modeling Tutorial
-=======================
+Basic Modeling {#tutorial_basic_modelling}
+==============
 
-Introduction
-------------
+## Introduction
 
 In this tutorial you will learn how to build a simple model of a robot
 in Blender and how to export it to MARS.
 
-Prerequisites
--------------
+## Prerequisites
 
 We assume you already have a MARS development environment setup in
 "~/devel/".  You should also have a recent version of Blender
 installed (we use 2.62 in this tutorial).
 
-Blender Basics
---------------
+## Blender Basics
 
 Blender's shortcuts and hotkeys depend on the context in which they
 are triggered.  The context is usually determined by the mouse cursor.
@@ -26,35 +22,24 @@ mouse is hovering the 3D-View the hotkey "alt+p" will break up
 child-parent relations, when hovering the text editor it will run the
 current script.
 
-3D-View Shortcuts and Hotkeys
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-rotate view
-  middle mouse button
-move view
-  shift + middle mouse button
-zoom view
-  mouse wheel or ctrl + middle mouse button
-move object (grab)
-  g
-rotate object
-  r
-scale object
-  s
-restrict move/rotate/scale axis
-  Press x, y, or z while moving/rotating/scaling.  If you press the same
-  axis again it will select the local axis.  Pressing a third time will
-  deselect the axis.
-open toolbar
-  n
-select object
-  right click
-select multiple objects
-  shift + right click or "b" and drag a selection box
-set parent object
-  first select child, then the parent (shift + right click), then press "ctrl+p"
+### 3D-View Shortcuts and Hotkeys
 
-Rescaling Objects
-~~~~~~~~~~~~~~~~~
+| Operation | Shortcut |
+| ----------- | -------- |
+| rotate view | middle mouse button |
+| move view | shift + middle mouse button |
+| zoom view | mouse wheel or ctrl + middle mouse button |
+| move object (grab) | g |
+| rotate object | r |
+| scale object | s |
+| restrict move/rotate/scale axis | Press x, y, or z while moving/rotating/scaling.  If you press the same axis again it will select the local axis.  Pressing a third time will deselect the axis. |
+| open toolbar | n |
+| select object | right click |
+| select multiple objects | shift + right click or "b" and drag a selection box |
+| set parent object | first select child, then the parent (shift + right click), then press "ctrl+p" |
+
+### Rescaling Objects
+
 
 If you edit the dimensions of an object in "object mode" you might
 notice that the scale changes automatically.  This is because in
@@ -65,11 +50,9 @@ scale.  You will notice that the scale in "object mode" is back to (1,
 1, 1).  Alternatively you can select this option from the menu
 object->apply->scale
 
-.. image:: screenshots/object_menu.png
-   :width: 80%
+![Object Menu](../../../src/images/screenshots/object_menu.png)
 
-Building the Model
-------------------
+## Building the Model
 
 1. Start by creating a box of the dimensions 0.5 x 0.3 x 0.2 this can
    be done by directly editing the object properties "Dimensions" in
@@ -78,16 +61,14 @@ Building the Model
 2. Rename the object (e.g. "Body") this can be done in the object
    property window.
 
-   .. image:: screenshots/rename_object2.png
-      :width: 80%
+   ![Renaming an object](../../../src/images/screenshots/rename_object2.png)
 
 3. Choose a color by selecting a diffuse and/or specular color in the
    material property window.
 
-   .. image:: screenshots/material.png
-      :width: 80%
+   ![Material properties](../../../src/images/screenshots/material.png)
 
-4. It is convinient to have the model on a different layer than the
+4. It is convenient to have the model on a different layer than the
    camera and lights.  Therefore we move it to a different layer by
    selecting everything belonging to the model (so far only the box).
    Then press "m" and select a new layer to move the objects to that
@@ -96,8 +77,7 @@ Building the Model
 5. Create a sphere that will serve as a wheel.  In the Menu select
    "Add->Mesh->UV Sphere" and name the object (e.g., "Wheel.000").
 
-   .. image:: screenshots/create_sphere2.png
-      :width: 80%
+   ![Create Sphere](../../../src/images/screenshots/create_sphere2.png)
 
 6. Scale the sphere to an appropriate size (we used 0.1 in all
    dimensions)
@@ -108,8 +88,7 @@ Building the Model
 8. Create a new material by pressing "new" in the material property
    window
 
-   .. image:: screenshots/new_material.png
-      :width: 80%
+   ![New Material](../../../src/images/screenshots/new_material.png)
 
 9. Set material properties for the wheel/sphere.
 
@@ -130,8 +109,7 @@ Building the Model
     object.  Create two custom properties in the "object property"
     window.
     
-    .. image:: screenshots/joint.png
-      :width: 80%
+    ![Joint](../../../src/images/screenshots/joint.png)
 
     For the first custom property press edit to set the "property
     name" to "type" and the "property value" to "joint" for the second
@@ -150,8 +128,7 @@ Building the Model
 
 13. Turn the timeline into a text editor
 
-    .. image:: screenshots/text_editor.png
-      :width: 80%
+    ![Text Editor](../../../src/images/screenshots/text_editor.png)
 
 14. By selecting the menu "text->Open Text Block" in the text editor
     open the "create_mars_props.py" script from
@@ -188,8 +165,7 @@ Building the Model
     should be an empty directory because bside the .scn file the .obj
     and .scene files are also exported for debuging purposes.
 
-    .. image:: screenshots/world_properties.png
-      :width: 80%
+    ![World Properties](../../../src/images/screenshots/world_properties.png)
 
 21. Load the "relative_mars_export.py" from
     ~/devel/mars/scripts/blender/ in the text editor window.
@@ -220,8 +196,7 @@ existing scene.
     move it to the middle of the body ("g" for grab; "x" to constrain
     the movement to the x-axis; "0.25" to move it to the middle)
 
-    .. image:: screenshots/new_wheels.png
-      :width: 80%
+    ![New Wheels](../../../src/images/screenshots/new_wheels.png)
 
 26. Adjust the custom property "node2" of the new joint helper objects
     to let them point to the new wheels.
