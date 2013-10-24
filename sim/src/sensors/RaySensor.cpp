@@ -140,6 +140,14 @@ namespace mars {
       return result;
     }
 
+    int RaySensor::getSensorData(double *data_) const {
+      data_ = (double*)malloc(data.size()*sizeof(double));
+      for(unsigned int i=0; i<data.size(); i++) {
+        data_[i] = data[i];
+      }
+      return data.size();
+    }
+
     void RaySensor::receiveData(const data_broker::DataInfo &info,
                                 const data_broker::DataPackage &package,
                                 int callbackParam) {
