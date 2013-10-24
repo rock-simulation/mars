@@ -1,9 +1,3 @@
-sudo apt-get install cmake
-sudo apt-get install git
-sudo apt-get install git-core
-sudo apt-get install libopenscenegraph-dev
-sudo apt-get install libqt4-dev
-sudo apt-get install zlib1g-dev
-sudo apt-get install libcv-dev
-sudo apt-get install libcvaux-dev
-sudo apt-get install libhighgui-dev
+sudo apt-get install cmake libopenscenegraph-dev libqt4-dev zlib1g-dev libcvaux-dev libhighgui-dev libopencv-dev libqt4-opengl libqt4-opengl-dev 
+#libcv-dev
+#libxmu-dev libxi-dev
