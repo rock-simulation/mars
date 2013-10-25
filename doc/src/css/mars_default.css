@@ -1,13 +1,43 @@
 .nav-box {
+  background-color: #ECECEC;
   position:fixed;
-  top:15px;
+  top:40px;
   right:15px;
-  width:180px;
+  width:18%;
   overflow:hidden;
   float:right;
   border-width:2px;
   border-style:solid;
   padding:10px;
+}
+
+nav {
+    font-size:100%
+}
+
+nav a:link { /* unvisited link */
+    color:#761F10;
+    text-decoration:none;
+}
+
+nav a:visited { /* visited link */
+    color:#761F10;
+    text-decoration:none;
+}
+
+nav a:hover { /* mouse over link */
+    color:#D2422A;
+    text-decoration:none;
+}
+
+nav a:active { /* selected link */
+    color:#761F10;
+    text-decoration:none;
+}
+
+nav ul {
+    padding-left: 20px;
+    color:#942D1C;
 }
 
 nav ol {
@@ -27,9 +57,29 @@ body {
 
 }
 
+#content a:link { /* unvisited link */
+    color:#761F10;
+    text-decoration:none;
+}
+
+#content a:visited { /* visited link */
+    color:#761F10;
+    text-decoration:none;
+}
+
+#content a:hover {
+    color:#D2422A;
+    text-decoration:none;
+}
+
+#content a:active { /* selected link */
+    color:#761F10;
+    text-decoration:none;
+}
+
 #content {
     background-color: #FFFFFF;
-    width: 860px;
+    width: 50%;/*860px;*/
     outline-width: 3px;
     outline-style: solid;
     padding: 20px 40px;
@@ -83,6 +133,10 @@ h3 {
 section {
     margin-top: 20px;
     margin-bottom: 20px;
+}
+
+figure {
+    width:80%;
 }
 
 .section {

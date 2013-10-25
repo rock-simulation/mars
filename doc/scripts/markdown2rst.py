@@ -7,6 +7,7 @@ Created on Tue Oct 22 10:44:01 2013
 
 # This script detects all *.md files in MARS' doc folders and converts them
 # to *.rst files using pandoc (http://johnmacfarlane.net/pandoc/)
+# Note that pandoc >1.11 is needed for conversion to work correctly, e.g. for tables
 # TODO:
 #    There are still some mistakes when processing the .rst files to html, which can be
 #    avoided by introducing changes directly here:
