@@ -187,7 +187,7 @@ namespace mars {
     }
 
     void SimMotor::setMaximumVelocity(sReal value) {
-      sMotor.maximumVelocity = value;
+      sMotor.maximumVelocity = fabs(value);
     }
 
     sReal SimMotor::getMaximumVelocity() const {
