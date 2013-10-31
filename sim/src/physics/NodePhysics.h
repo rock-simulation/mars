@@ -69,6 +69,7 @@ namespace mars {
       bool sense_contact_force;
       interfaces::sReal value;
       dGeomID parent_geom;
+      dBodyID parent_body;
     };
 
     struct sensor_list_element {

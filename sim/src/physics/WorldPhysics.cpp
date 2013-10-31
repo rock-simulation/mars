@@ -832,6 +832,9 @@ namespace mars {
         if(geom_data1->parent_geom == otherGeom) {
           continue;
         }
+        if(geom_data1->parent_body == dGeomGetBody(otherGeom)) {
+          continue;
+        }
         if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom))) {
           continue;
         }
