@@ -18,7 +18,7 @@ def createHeader(relPath, linklist, fileName, local_links):
                 li_list += '  '*indent+'<ul>\n  '#*(n_subfolders-indent)
             elif n_subfolders < indent:
                 li_list += '</ul>\n'*(indent-n_subfolders-1)
-            li_list += '  '*indent + '<li><a href="' + relPath + os.path.join(f["outPath"][2:], f["fileName"][:-3]+".html") + '">' + f["fileName"][:-3].title() + '</a></li>\n'
+            li_list += '  '*indent + '<li><a href="' + relPath + os.path.join(f["outPath"][2:], f["fileName"][:-3]+".html") + '">' + f["fileName"][:-3].title().replace("_", " ") + '</a></li>\n'
             indent = n_subfolders
             if f["fileName"] == fileName: #if we have to add the local links:
                 level = 1
@@ -28,7 +28,7 @@ def createHeader(relPath, linklist, fileName, local_links):
                         li_list += '<ul>\n  ' * (ll[0]-level)
                     elif ll[0] < level:
                         li_list += '</ul>\n'*(level-ll[0])
-                    li_list += '<li><a href=#' + name + '>' + name.title() + '</a></li>\n'
+                    li_list += '<li><a href=#' + name + '>' + name.title().replace("-", " ") + '</a></li>\n'
                     level = ll[0]
                 li_list += '</ul>\n'*(level-1)
     if indent > 0:
