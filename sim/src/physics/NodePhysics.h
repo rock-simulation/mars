@@ -79,6 +79,7 @@ namespace mars {
       utils::Vector ray_direction;
       utils::Vector ray_pos_offset;
       unsigned int index;
+      dReal updateTime;
     };
 
     /**

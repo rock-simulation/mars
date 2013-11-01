@@ -1332,6 +1332,7 @@ namespace mars {
       //case SENSOR_TYPE_RAY:
       if(polarSensor){
         sle.sensor = sensor;
+        sle.updateTime = 0.0;
         //sensor.count_data = sensor.resolution;
         //sensor.data = (sReal*)malloc(sensor.resolution * sizeof(sReal));
 
@@ -1379,6 +1380,7 @@ namespace mars {
 
       if(polarGridSensor){
         sle.sensor = sensor;
+        sle.updateTime = 0.0;
         int cols, rows;
         dVector3 dir, xStep, yStep, xOffset, yOffset;
 
@@ -1472,6 +1474,7 @@ namespace mars {
      * post:
      */
     void NodePhysics::handleSensorData(bool physics_thread) {
+      if(!physics_thread) return;
       MutexLocker locker(&(theWorld->iMutex));
       std::vector<sensor_list_element>::iterator iter;
       const dReal* pos = dGeomGetPosition(nGeom);
@@ -1480,9 +1483,15 @@ namespace mars {
       dReal steps_size = 1.0, length = 0.0;
       bool done = false;
       int steps = 0;
-  
+      dReal worldStep = theWorld->getWorldStep();
+
       //New Code
       for(iter = sensor_list.begin(); iter != sensor_list.end(); iter++) {
+        if((double)iter->sensor->updateRate * 0.001 > worldStep) {
+          iter->updateTime += worldStep;
+          if(iter->updateTime < 0.001*iter->sensor->updateRate) continue;
+          iter->updateTime -= 0.001*iter->sensor->updateRate;
+        }
         BasePolarIntersectionSensor *polarSensor = dynamic_cast<BasePolarIntersectionSensor*>((*iter).sensor);
         if(polarSensor){
           sensor_list_element elem = *iter;

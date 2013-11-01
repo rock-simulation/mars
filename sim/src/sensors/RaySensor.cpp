@@ -57,7 +57,7 @@ namespace mars {
                                   config.opening_height),
       SensorInterface(control), config(config) {
 
-      updateRate = 0;
+      updateRate = config.updateRate;
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       this->attached_node = config.attached_node;
@@ -216,6 +216,8 @@ namespace mars {
         cfg->maxDistance = it->second[0].getDouble();
       if((it = config->find("draw_rays")) != config->end())
         cfg->draw_rays = it->second[0].getBool();
+      if((it = config->find("rate")) != config->end())
+        cfg->updateRate = it->second[0].getULong();
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -247,6 +249,7 @@ namespace mars {
       cfg["opening_width"][0] = ConfigItem(config.opening_width);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
+      cfg["rate"][0] = ConfigItem(config.updateRate);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);
