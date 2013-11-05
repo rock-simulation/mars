@@ -37,9 +37,9 @@ What is important now is to get the hierarchy in this system right. Since the lo
 
 Create the custom properties for the joints:
 
-    - motor_type: 1 (1 simulates a servo motor, 2 a simple electric motor)
-    - type: joint
-    - node2: here it's easiest to choose the spheres we used to represent the joints with visually
+- motor_type: 1 (1 simulates a servo motor, 2 a simple electric motor)
+- type: joint
+- node2: here it's easiest to choose the spheres we used to represent the joints with visually
     
 Also, you can add a nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.    
 
