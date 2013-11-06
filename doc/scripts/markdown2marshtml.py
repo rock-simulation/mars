@@ -2,6 +2,8 @@ import os
 import textwrap
 #from docutils import core
 import subprocess
+import re #regular expressions
+from PIL import Image    
 
 def createHeader(relPath, linklist, fileName, local_links):
     # create linklist
@@ -114,14 +116,13 @@ def convertMdToHtml(linklist, f):
     inFile.close()
     #bodyString = core.publish_parts(bodyString, writer_name='html') ['html_body'] #original code for rst-html-conversion
     pandoc = subprocess.Popen(["pandoc", os.path.join(filePath, fileName), "-f", "markdown+pipe_tables", "-t", "html"], stdout = subprocess.PIPE)
-    bodyString = pandoc.communicate()[0].replace('''<div class="figure">\n<img''', '''<div class="figure">\n<img width="100%"''')
+    bodyString = pandoc.communicate()[0]#.replace('''<div class="figure">\n<img''', '''<div class="figure">\n<img width="100%"''')
 
     # make alterations to lines
     local_links = []
     bodyLines = str(bodyString).split("\n")
     alt_bodyString = ""
     for line in bodyLines:
-        altLine = line
         pos = line.find("<h") # create local link list
         if pos >= 0:
             level = int(line[pos+2])
@@ -129,8 +130,10 @@ def convertMdToHtml(linklist, f):
             name = line[id_pos+4:line.find('"', id_pos+4)]
             if level > 1:
                 local_links.append([level, name])
-        # get rid of stupid doxygen links
+        # line-by-line modifications of pandoc's html output
+        altLine = line
         minstart = 0
+        # get rid of doxygen class links
         while altLine.find("::") >= 0 and altLine.find("<a") >= 0:
             #print altLine
             pos = altLine.find("::", minstart)
@@ -146,6 +149,22 @@ def convertMdToHtml(linklist, f):
                 altLine = altLine.replace(altLine[start:end], "<i>" + name + "</i>")
                 #print name
             #print altLine, "\n"
+        if altLine.find("<img src=") >= 0:
+            url_start = altLine.find('src="') + 5
+            url_end = altLine.find('"', url_start)
+            url = altLine[url_start:url_end]
+            image_filename = "../" + url.replace("../", "")
+            print image_filename
+            im = Image.open(image_filename)
+            width, height = im.size
+            ratio = height*1.0 / width*1.0
+            img_width = 900
+            if width > img_width:
+                output_width = img_width
+            else:
+                output_width = width
+            print output_width, ratio, int(output_width*ratio)
+            altLine = altLine.replace("<img src=", "<img " + 'width="' + str(int(output_width)) + '" height="' +str(int(ratio*output_width)) + '" src=')
         alt_bodyString += altLine+"\n"
             
             
