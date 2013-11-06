@@ -30,7 +30,7 @@ NOTE: You will get the latest datum, regardless of whether it has been updated o
 
 ### Triggered receivers
 
-Tp create a triggered receiver, which is receiving data as a result of a called trigger, the following steps are necessary:
+To create a triggered receiver, which is receiving data as a result of a called trigger, the following steps are necessary:
 
 - call createTrigger() with a suitable triggerName
 - call registerTriggered() to register to a certain trigger
@@ -39,7 +39,7 @@ Tp create a triggered receiver, which is receiving data as a result of a called 
   
 As with timed receivers, one only has to create a new trigger if no appropriate trigger exists already.
 
-NOTE: You will get the latest datum, regardless of whether it has been updated or not since the last trigge call.
+NOTE: You will get the latest datum, regardless of whether it has been updated or not since the last trigger call.
 
 ### Asynchronous receivers
 
@@ -80,7 +80,7 @@ Data is managed by the DataBroker library in the form of a [DataPackage](@ref ma
 - string
 - bool
 
-contained in a \c std::vector named \c package. The field \c name contains a string describing the [DataItem](@ref mars::data_broker::DataItem).
+contained in an \c std::vector named \c package. The field \c name contains a string describing the [DataItem](@ref mars::data_broker::DataItem).
 
 The class [DataPackage](@ref mars::data_broker::DataPackage) is a container for multiple instances of [DataItem](@ref mars::data_broker::DataItem). These can be added to a package and afterwards accessed either by name ([getItemByName](@ref mars::data_broker::DataItem::getItemByName)) or by index ([getItemByIndex](@ref mars::data_broker::DataItem::getItemByIndex)). Also, the method [getType](@ref mars::data_broker::DataItem::getType) allows to read the type of a [DataItem](@ref mars::data_broker::DataItem) either by index or name as well.
 

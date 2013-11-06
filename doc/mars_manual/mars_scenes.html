@@ -24,14 +24,13 @@
 <li><a href="../mars_manual/mars_scenes.html">Mars Scenes</a></li>
 <ul>
   <li><a href=#overview>Overview</a></li>
-<ul>
-  <li><a href=#nodes>Nodes</a></li>
+<li><a href=#nodes>Nodes</a></li>
 <li><a href=#joints>Joints</a></li>
 <li><a href=#motors>Motors</a></li>
 <li><a href=#sensors>Sensors</a></li>
+<li><a href=#controllers>Controllers</a></li>
 <li><a href=#materials>Materials</a></li>
 <li><a href=#graphic-options>Graphic Options</a></li>
-</ul>
 </ul>
 <li><a href="../mars_manual/installation.html">Installation</a></li>
 <li><a href="../mars_manual/tutorials/tutorials.html">Tutorials</a></li>
@@ -60,11 +59,14 @@
   &lt;jointlist&gt;
   &lt;motorlist&gt;
   &lt;sensorlist&gt;
+  &lt;controllerlist&gt;
   &lt;materiallist&gt;
   &lt;graphicOptions&gt;
 &lt;/SceneFile&gt;</code></pre>
+<p>You may have noted that the lists of items correspond to the types of objects needed to represent a robot graphically as well as physically. However, MARS scenes can not merely be used for robots, but also to define an environment a robot can operate in. As it is possible to load multiple MARS scenes in the same MARS simulation, it thus makes sense to save robots and environment in different scene files. This makes it a lot easier to edit the files and to prevent errors in one element of a simulation interfering with another part. It also enables the user to test the same robot in various environments without having to re-edit any of the underlying scenes.</p>
+<p>When you load multiple scenes into MARS, make sure that they are all in the same scale.</p>
 <p>We will have a closer look at the items in these lists in the following.</p>
-<h3 id="nodes">Nodes</h3>
+<h2 id="nodes">Nodes</h2>
 <p><em>Nodes</em> are all visible objects in MARS, whether they are physical objects or not. Now</p>
 <p>--&gt; show notedata.h</p>
 <pre><code>&lt;node name=&quot;Lower.Leg.003&quot;&gt;
@@ -109,79 +111,95 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left">variable</th>
-<th align="left">description</th>
-<th align="left">possible values</th>
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">origname</td>
-<td align="left"></td>
+<td align="left">name used in Blender to represent the object</td>
+<td align="left">any String</td>
 </tr>
 <tr class="even">
 <td align="left">filename</td>
-<td align="left"></td>
+<td align="left">name of the *.obj or *.bobj file associated with this note</td>
+<td align="left">any valid file path</td>
 </tr>
 <tr class="odd">
 <td align="left">index</td>
-<td align="left"></td>
+<td align="left">running index of the nodes</td>
+<td align="left">int ≥ 1</td>
 </tr>
 <tr class="even">
 <td align="left">groupid</td>
-<td align="left"></td>
+<td align="left">id of the group to which a node belongs</td>
+<td align="left">int ≥ 1</td>
 </tr>
 <tr class="odd">
 <td align="left">physicmode</td>
-<td align="left"></td>
+<td align="left">primitive object by which the node is represented in physics</td>
+<td align="left">box, sphere</td>
 </tr>
 <tr class="even">
 <td align="left">relativeid</td>
-<td align="left"></td>
+<td align="left">?</td>
+<td align="left">?</td>
 </tr>
 <tr class="odd">
 <td align="left">position</td>
-<td align="left"></td>
+<td align="left">position of the node in x, y and z coordinates</td>
+<td align="left">double</td>
 </tr>
 <tr class="even">
 <td align="left">rotation</td>
-<td align="left"></td>
+<td align="left">rotation of the node in quaternion format</td>
+<td align="left">double</td>
 </tr>
 <tr class="odd">
 <td align="left">extend</td>
-<td align="left"></td>
+<td align="left">extend of the representing primitive (see physicmode)</td>
+<td align="left">double</td>
 </tr>
 <tr class="even">
 <td align="left">pivot</td>
-<td align="left"></td>
+<td align="left">?</td>
+<td align="left">?</td>
 </tr>
 <tr class="odd">
 <td align="left">visualsize</td>
-<td align="left"></td>
+<td align="left">?</td>
+<td align="left">?</td>
 </tr>
 <tr class="even">
 <td align="left">movable</td>
-<td align="left"></td>
+<td align="left">whether or not the object is fixed in the world</td>
+<td align="left">true / false</td>
 </tr>
 <tr class="odd">
 <td align="left">mass</td>
-<td align="left"></td>
+<td align="left">mass of the object in kg</td>
+<td align="left">double</td>
 </tr>
 <tr class="even">
 <td align="left">density</td>
-<td align="left"></td>
+<td align="left">density of the object in kg/m³</td>
+<td align="left">double</td>
 </tr>
 <tr class="odd">
 <td align="left">material_id</td>
-<td align="left"></td>
+<td align="left">index of the associated material</td>
+<td align="left">int ≥ 1</td>
 </tr>
 <tr class="even">
 <td align="left">coll_bitmask</td>
-<td align="left"></td>
+<td align="left">?</td>
+<td align="left">?</td>
 </tr>
 </tbody>
 </table>
-<h3 id="joints">Joints</h3>
+<h2 id="joints">Joints</h2>
 <p><em>Joints</em> are helper objects defining how <em>nodes</em> or groups of nodes are connected with each other.</p>
 <pre><code>&lt;joint name=&quot;H.Knee.000&quot;&gt;
   &lt;index&gt;n&lt;/index&gt;
@@ -204,48 +222,56 @@
 <table>
 <thead>
 <tr class="header">
-<th align="left">variable</th>
-<th align="left">description</th>
-<th align="left">possible values</th>
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td align="left">index</td>
-<td align="left"></td>
+<td align="left">running index of the <em>joints</em></td>
+<td align="left">int ≥ 1</td>
 </tr>
 <tr class="even">
 <td align="left">type</td>
-<td align="left"></td>
+<td align="left">type of the joint</td>
+<td align="left">hinge, slider</td>
 </tr>
 <tr class="odd">
 <td align="left">nodeindex1</td>
-<td align="left"></td>
+<td align="left">index of first attached <em>node</em></td>
+<td align="left">valid <em>node</em> id</td>
 </tr>
 <tr class="even">
 <td align="left">nodeindex2</td>
-<td align="left"></td>
+<td align="left">index of second attached <em>node</em></td>
+<td align="left">valid <em>node</em> id</td>
 </tr>
 <tr class="odd">
 <td align="left">anchorpos</td>
-<td align="left"></td>
+<td align="left"><em>node</em> to which the <em>joint</em> is anchored</td>
+<td align="left">valid <em>node</em> id</td>
 </tr>
 <tr class="even">
 <td align="left">anchor</td>
-<td align="left"></td>
+<td align="left">pos to which the <em>joint</em> is anchored</td>
+<td align="left">position of <em>node</em> id</td>
 </tr>
 <tr class="odd">
 <td align="left">axis1</td>
-<td align="left"></td>
+<td align="left">axis around / along which joint moves</td>
+<td align="left">x, y, z: double</td>
 </tr>
 <tr class="even">
 <td align="left">angle1_offset</td>
-<td align="left"></td>
+<td align="left">initial offset of the joint</td>
+<td align="left">double</td>
 </tr>
 </tbody>
 </table>
-<h3 id="motors">Motors</h3>
-<p>Motors are associated with joints and can apply forces and torques respectively; for a <em>slider joint</em>, a force is applied while for a <em>hinge joint</em>, motors create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation]{http://www.ode.org/ode-latest-userguide.html} to read further on different [joint and motor types]{http://www.ode.org/ode-latest-userguide.html#sec_7_0_0}.</p>
+<h2 id="motors">Motors</h2>
+<p>Motors are associated with <em>joints</em> and can apply forces and torques respectively; for a <em>slider joint</em>, a force is applied while for a <em>hinge joint</em>, <em>motors</em> create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation]{http://www.ode.org/ode-latest-userguide.html} to read further on different [joint and motor types]{http://www.ode.org/ode-latest-userguide.html#sec_7_0_0}.</p>
 <p>As for the decoding in MARS scenes, motors are described as follows:</p>
 <pre><code>&lt;motor name=&quot;H.Hip.000&quot;&gt;
   &lt;index&gt;n&lt;/index&gt;
@@ -261,26 +287,324 @@
   &lt;max_val&gt;maxval&lt;/max_val&gt;
   &lt;value&gt;val&lt;/value&gt;
 &lt;/motor&gt;</code></pre>
-<p>variable | description | possible values |<br />index | index of the motor | 1..inf |<br />jointIndex | index of the joint with which the motor is associated | 1..inf |<br />axis | around/along which axis of its associated joint the motor turns/slides | 1..3 |<br />maximumVelocity | maximum velocity with which the motor can move the joint | 0..inf |<br />motorMaxForce | maximum force the motor can apply | 0..inf |<br />type | motor type | 1: servo, 2: electric motor |<br />p | P value of a PID controller | 0.. |<br />i | I value of a PID controller | |<br />d | D value of a PID controller | |<br />min_val | minimum value (see below) |<br />max_val | maximum value (see below) |<br />value | |</p>
-<h3 id="sensors">Sensors</h3>
-<h3 id="materials">Materials</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">index</td>
+<td align="left">index of the motor</td>
+<td align="left">int ≥ 1</td>
+</tr>
+<tr class="even">
+<td align="left">jointIndex</td>
+<td align="left">index of the joint with which the motor is associated</td>
+<td align="left">int≥ 1</td>
+</tr>
+<tr class="odd">
+<td align="left">axis</td>
+<td align="left">around/along which axis of its associated joint the motor turns/slides</td>
+<td align="left">1 ≤ int ≤ 3</td>
+</tr>
+<tr class="even">
+<td align="left">maximumVelocity</td>
+<td align="left">maximum velocity with which the motor can move the joint</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">motorMaxForce</td>
+<td align="left">maximum force the motor can apply</td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">type</td>
+<td align="left">motor type</td>
+<td align="left">1: servo, 2: electric motor</td>
+</tr>
+<tr class="odd">
+<td align="left">p</td>
+<td align="left">P value of a PID controller</td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">i</td>
+<td align="left">I value of a PID controller</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">d</td>
+<td align="left">D value of a PID controller</td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">min_val</td>
+<td align="left">minimum value (see below)</td>
+<td align="left">?</td>
+</tr>
+<tr class="odd">
+<td align="left">max_val</td>
+<td align="left">maximum value (see below)</td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">value</td>
+<td align="left">?</td>
+<td align="left">?</td>
+</tr>
+</tbody>
+</table>
+<h2 id="sensors">Sensors</h2>
+<p>There are a number of different <em>sensors</em> in MARS which can be attached to <em>nodes</em>, <em>joints</em> or <em>motors</em> in order to get readings of certain variables. The valid types are:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Type</th>
+<th align="left">Data yielded</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Camera</td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">Joint6DOF</td>
+<td align="left">?</td>
+</tr>
+<tr class="odd">
+<td align="left">JointArray</td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">JointAVGTorque</td>
+<td align="left">?</td>
+</tr>
+<tr class="odd">
+<td align="left">JointLoad</td>
+<td align="left">load of associated joint</td>
+</tr>
+<tr class="even">
+<td align="left">JointPosition</td>
+<td align="left">position of associated joint</td>
+</tr>
+<tr class="odd">
+<td align="left">JointTorque</td>
+<td align="left">torque of associated joint</td>
+</tr>
+<tr class="even">
+<td align="left">JointVelocity</td>
+<td align="left">velocity of associated joint</td>
+</tr>
+<tr class="odd">
+<td align="left">MotorCurrent</td>
+<td align="left">current of associated motor</td>
+</tr>
+<tr class="even">
+<td align="left">NodeAngularVelocity</td>
+<td align="left">angular velocity of associated node</td>
+</tr>
+<tr class="odd">
+<td align="left">NodeArray</td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">NodeCOM</td>
+<td align="left">center of mass (COM) of associated node</td>
+</tr>
+<tr class="odd">
+<td align="left">NodeContactForce</td>
+<td align="left">contact force of associated node</td>
+</tr>
+<tr class="even">
+<td align="left">NodePosition</td>
+<td align="left">position of associated node</td>
+</tr>
+<tr class="odd">
+<td align="left">NodeRotation</td>
+<td align="left">rotation of associated node</td>
+</tr>
+<tr class="even">
+<td align="left">NodeVelocity</td>
+<td align="left">velocity of associated node</td>
+</tr>
+<tr class="odd">
+<td align="left">RayGrid</td>
+<td align="left">collision point cloud of ray grid traced in defined direction</td>
+</tr>
+<tr class="even">
+<td align="left">Ray</td>
+<td align="left">collision point of ray traced in defined direction</td>
+</tr>
+<tr class="odd">
+<td align="left">ScanningSonar</td>
+<td align="left">?</td>
+</tr>
+</tbody>
+</table>
+<p><em>Sensors</em> are defined in a scene file as follows:</p>
+<pre><code>&lt;sensor name=&quot;sensorName&quot; type=&quot;sensorType&quot;&gt;
+  &lt;index&gt;i&lt;/index&gt;
+  &lt;rate&gt;r&lt;/rate&gt;
+  &lt;id&gt;id1&lt;/id&gt;
+  &lt;id&gt;id2&lt;/id&gt;
+  ...
+&lt;/sensor&gt;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">sensor.name</td>
+<td align="left">name of the <em>sensor</em></td>
+<td align="left">any valid string</td>
+</tr>
+<tr class="even">
+<td align="left">sensor.type</td>
+<td align="left">type of the <em>sensor</em></td>
+<td align="left">any valid <em>sensor</em> type with respect to id</td>
+</tr>
+<tr class="odd">
+<td align="left">index</td>
+<td align="left">running index of the <em>sensor</em></td>
+<td align="left">int ≥ 1</td>
+</tr>
+<tr class="even">
+<td align="left">rate</td>
+<td align="left">reading rate of <em>sensor</em></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">id</td>
+<td align="left">id of <em>node</em>, <em>joint</em> or <em>motor</em></td>
+<td align="left">any valid id; can be list of multiple ids</td>
+</tr>
+</tbody>
+</table>
+<h2 id="controllers">Controllers</h2>
+<p>Controllers ...</p>
+<pre><code>&lt;controller&gt;
+  &lt;rate&gt;40&lt;/rate&gt;
+  &lt;sensorid&gt;s_id1&lt;/sensorid&gt;
+  &lt;sensorid&gt;s_id2&lt;/sensorid&gt;
+  ...
+  &lt;motorid&gt;m_id1&lt;/motorid&gt;
+  &lt;motorid&gt;m_id21&lt;/motorid&gt;
+  ...
+&lt;/controller&gt;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">rate</td>
+<td align="left">operation rate of the <em>controller</em></td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">sensorid</td>
+<td align="left">running index of an attached <em>sensor</em></td>
+<td align="left">int ≥ 1</td>
+</tr>
+<tr class="odd">
+<td align="left">motorid</td>
+<td align="left">running index of an attached <em>motor</em></td>
+<td align="left">int ≥ 1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="materials">Materials</h2>
 <pre><code>&lt;material&gt;
-  &lt;id&gt;3&lt;/id&gt;
+  &lt;id&gt;i&lt;/id&gt;
   &lt;diffuseFront&gt;
-    &lt;a&gt;1.0&lt;/a&gt;
-    &lt;r&gt;0.21402966976165771&lt;/r&gt;
-    &lt;g&gt;0.008978134021162987&lt;/g&gt;
-    &lt;b&gt;0.0&lt;/b&gt;
+    &lt;a&gt;a&lt;/a&gt;
+    &lt;r&gt;r&lt;/r&gt;
+    &lt;g&gt;g&lt;/g&gt;
+    &lt;b&gt;b&lt;/b&gt;
   &lt;/diffuseFront&gt;
   &lt;specularFront&gt;
-    &lt;a&gt;1.0&lt;/a&gt;
-    &lt;r&gt;1.0&lt;/r&gt;
-    &lt;g&gt;1.0&lt;/g&gt;
-    &lt;b&gt;1.0&lt;/b&gt;
+    &lt;a&gt;a&lt;/a&gt;
+    &lt;r&gt;r&lt;/r&gt;
+    &lt;g&gt;g&lt;/g&gt;
+    &lt;b&gt;b&lt;/b&gt;
   &lt;/specularFront&gt;
-  &lt;shininess&gt;25.0&lt;/shininess&gt;
+  &lt;shininess&gt;shiny&lt;/shininess&gt;
 &lt;/material&gt;</code></pre>
-<h3 id="graphic-options">Graphic Options</h3>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">id</td>
+<td align="left">running index of the materials</td>
+<td align="left">int ≥ 1</td>
+</tr>
+<tr class="even">
+<td align="left">diffuseFront</td>
+<td align="left">basic color of an object</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="odd">
+<td align="left">specularFront</td>
+<td align="left">color of light reflected off an object</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="even">
+<td align="left">shininess</td>
+<td align="left">strength of light reflexion</td>
+<td align="left">0 ≤ double ≤ 1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="graphic-options">Graphic Options</h2>
+<pre><code>&lt;clearColor&gt;
+  &lt;r&gt;r&lt;/r&gt;
+  &lt;g&gt;g&lt;/g&gt;
+  &lt;b&gt;b&lt;/b&gt;
+  &lt;a&gt;a&lt;/a&gt;
+&lt;/clearColor&gt;
+&lt;fogEnabled&gt;true/false&lt;/fogEnabled&gt;</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Description</th>
+<th align="left">Possible Values</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">clearColor</td>
+<td align="left">?</td>
+<td align="left">?</td>
+</tr>
+<tr class="even">
+<td align="left">fogEnabled</td>
+<td align="left">whether or not there is fog in the simulation</td>
+<td align="left">true / false</td>
+</tr>
+</tbody>
+</table>
+
       <footer>
         <a href="http://validator.w3.org/check?uri=referer" target="_blank">
           <img src="http://www.w3.org/Icons/valid-html401"

@@ -63,6 +63,7 @@ cd ..</code></pre>
 <pre><code>cmake .. -DCMAKE_INSTALL_PREFIX=/$MARS_DEV_ROOT/install -DCMAKE_BUILD_TYPE=DEBUG $@</code></pre>
 <p>thus running <em>cmake</em> with a specific install directory in debug-mode. &quot;mMake -j4&quot;&quot; then allows <em>make</em> to compile on up to 4 separate processes, speeding up the compiling process. You can change 4 to any number of CPU cores you would like your system to use for compilation.</p>
 <p>So this is what's happening behind the curtains when you run the build.sh script. You can of course always manually execute the same commands.</p>
+
       <footer>
         <a href="http://validator.w3.org/check?uri=referer" target="_blank">
           <img src="http://www.w3.org/Icons/valid-html401"

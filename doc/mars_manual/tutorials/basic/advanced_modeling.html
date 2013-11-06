@@ -88,6 +88,7 @@
 <h2 id="final-remarks">Final Remarks</h2>
 <p>And that's it, you've successfully built a walking robot. We'll deal with how to actually make it walk in another tutorial, but you can use MARS' motor controller window to manually play around with the robot and check whether everything worked out or not.</p>
 <p>If you have taken a closer look at the custom properties created by the <em>create_mars_props</em> script you will have noticed that the hierarchy shown in the Blender model was mirrored in the groups: each section of the robot belonged to a separate group. Technically, the hierarchy introduced above is not strict in the sense that it is internally represented as connected groups rather than hierarchical levels. However, the <em>create_mars_props</em> script uses the hierarchy to properly subdivide everything in groups, thus if you have a centipede-like robot where each part is equally structurally equivalent, you will still have to order them manually into a nested hierarchy. The only alternative is to assign the group numbers manually before running the export script.</p>
+
       <footer>
         <a href="http://validator.w3.org/check?uri=referer" target="_blank">
           <img src="http://www.w3.org/Icons/valid-html401"

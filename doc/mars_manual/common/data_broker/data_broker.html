@@ -53,10 +53,10 @@
                </header>
 <h1 id="data_broker">Data Broker</h1>
 <h2 id="overview">Overview</h2>
-<p>The data_broker library provides functionality to manage data transfer between the components of the MARS simulation. Its interface is defined in the class <a href="@ref%20mars::data_broker::DataBrokerInterface">DataBrokerInterface</a>, while the <a href="@ref%20mars::data_broker::DataBroker">DataBroker</a> class is the actual implementation.</p>
+<p>The data_broker library provides functionality to manage data transfer between the components of the MARS simulation. Its interface is defined in the class <i>DataBrokerInterface</i>, while the <i>DataBroker</i> class is the actual implementation.</p>
 <h2 id="producers-and-receivers">Producers and receivers</h2>
-<p>An instance of DataBroker passes data between registered producers and receivers (see <a href="@ref%20data_broker::ProducerInterface">ProducerInterface</a> and <a href="@ref%20mars::data_broker::ReceiverInterface">ReceiverInterface</a>, respectively) in the MARS framework. For this purpose it holds buffered local copies of the data packages and is thus able to coordinate data transfer between various threads.</p>
-<p>Consequently, there are a number of ways in which data can be handled. and for this purpose holds a local copy of the data. For this purpose, the <a href="@ref%20mars::data_broker::DataBroker">DataBroker</a> calls the functions produceData and receiveData of the classes implementing the respective interfaces. When this happens is determined by the way the producer/receiver is registered with the <a href="@ref%20mars::data_broker::DataBroker">DataBroker</a>. While producers can only be registered as timed producers (using a previously created timer, either manually defined - see <a href="@ref%20mars::data_broker::DataBroker::createTimer">createTimer</a> - or using the DataBroker's real time Timer which is automatically created if a producer is registered with a &quot;<em>realTime</em>&quot; timer), receivers can be registered in four different ways:</p>
+<p>An instance of DataBroker passes data between registered producers and receivers (see <i>ProducerInterface</i> and <i>ReceiverInterface</i>, respectively) in the MARS framework. For this purpose it holds buffered local copies of the data packages and is thus able to coordinate data transfer between various threads.</p>
+<p>Consequently, there are a number of ways in which data can be handled. and for this purpose holds a local copy of the data. For this purpose, the <i>DataBroker</i> calls the functions produceData and receiveData of the classes implementing the respective interfaces. When this happens is determined by the way the producer/receiver is registered with the <i>DataBroker</i>. While producers can only be registered as timed producers (using a previously created timer, either manually defined - see <i>createTimer</i> - or using the DataBroker's real time Timer which is automatically created if a producer is registered with a &quot;<em>realTime</em>&quot; timer), receivers can be registered in four different ways:</p>
 <ol style="list-style-type: decimal">
 <li>timed</li>
 <li>triggered</li>
@@ -73,14 +73,14 @@
 <p>The first step can be omitted if an appropriate timer already exists.</p>
 <p>NOTE: You will get the latest datum, regardless of whether it has been updated or not since the last timer step.</p>
 <h3 id="triggered-receivers">Triggered receivers</h3>
-<p>Tp create a triggered receiver, which is receiving data as a result of a called trigger, the following steps are necessary:</p>
+<p>To create a triggered receiver, which is receiving data as a result of a called trigger, the following steps are necessary:</p>
 <ul>
 <li>call createTrigger() with a suitable triggerName</li>
 <li>call registerTriggered() to register to a certain trigger</li>
 <li>call trigger() to manually trigger a certain trigger and update all receivers registered to it</li>
 </ul>
 <p>As with timed receivers, one only has to create a new trigger if no appropriate trigger exists already.</p>
-<p>NOTE: You will get the latest datum, regardless of whether it has been updated or not since the last trigge call.</p>
+<p>NOTE: You will get the latest datum, regardless of whether it has been updated or not since the last trigger call.</p>
 <h3 id="asynchronous-receivers">Asynchronous receivers</h3>
 <p>Asynchronous receivers are updated asynchronously whenever the run() method of the DataBroker is called (which is typically by the MARS simulation), i.e. are not synchronized with the producers which provide the data they receive. This means that if the producer updates with a higher frequency than the receiver, only the last datum is received.</p>
 <p>This can be the case if the producer it called from a timer with a higher frequency than whichever thread processes the data of the AsyncReceiver. It can also be the case if data are pushed to the DataBroker via pushData() with a higher frequency.</p>
@@ -101,7 +101,7 @@
 <li>Command: When listening for commands you should run in Synchronous mode.</li>
 </ol>
 <h2 id="data-formats">Data formats</h2>
-<p>Data is managed by the DataBroker library in the form of a <a href="@ref%20mars::data_broker::DataPackage">DataPackage</a> which itself contains a number of instances of <a href="@ref%20mars::data_broker::DataItem">DataItem</a>. The latter is a wrapper class for variables of any of the following types:</p>
+<p>Data is managed by the DataBroker library in the form of a <i>DataPackage</i> which itself contains a number of instances of <i>DataItem</i>. The latter is a wrapper class for variables of any of the following types:</p>
 <ul>
 <li>int</li>
 <li>long</li>
@@ -110,18 +110,19 @@
 <li>string</li>
 <li>bool</li>
 </ul>
-<p>contained in a td::vector named ackage. The field ame contains a string describing the <a href="@ref%20mars::data_broker::DataItem">DataItem</a>.</p>
-<p>The class <a href="@ref%20mars::data_broker::DataPackage">DataPackage</a> is a container for multiple instances of <a href="@ref%20mars::data_broker::DataItem">DataItem</a>. These can be added to a package and afterwards accessed either by name (<a href="@ref%20mars::data_broker::DataItem::getItemByName">getItemByName</a>) or by index (<a href="@ref%20mars::data_broker::DataItem::getItemByIndex">getItemByIndex</a>). Also, the method <a href="@ref%20mars::data_broker::DataItem::getType">getType</a> allows to read the type of a <a href="@ref%20mars::data_broker::DataItem">DataItem</a> either by index or name as well.</p>
+<p>contained in a <code>std::vector</code> named ackage. The field ame contains a string describing the <i>DataItem</i>.</p>
+<p>The class <i>DataPackage</i> is a container for multiple instances of <i>DataItem</i>. These can be added to a package and afterwards accessed either by name (<i>getItemByName</i>) or by index (<i>getItemByIndex</i>). Also, the method <i>getType</i> allows to read the type of a <i>DataItem</i> either by index or name as well.</p>
 <h2 id="important-functions">Important functions</h2>
-<p><a href="@ref%20mars::data_broker::DataBroker::pushData">pushData</a></p>
+<p><i>pushData</i></p>
 <p>This function allows to easily write data to the DataBroker without the need of implementing the DataProducerInterface first. As long as the used names or consistent (or better, the initially received ID is used), the DataBroker will overwrite the pushed DataPackage. This can be used, e.g., for testing purposes, or in general when handling asynchronous receivers. Another useful application is communication between libraries: A library can push an initial DataPackage and then register itself as a receiver of that package. If updates are made to the data by any other library, the first one will be notified.</p>
-<p><a href="@ref%20mars::data_broker::DataBroker::stepTimer">stepTimer</a></p>
-<p>This function can be called from outside of DataBroker to step any previously created timer. It is also called from within DataBroker to step its own &quot;_realtime_&quot; thread which in turn is activated by <a href="@ref%20mars::data_broker::DataBroker::runRealtime">runRealtime</a>.</p>
-<p><a href="@ref%20mars::data_broker::DataBroker::run">run</a></p>
+<p><i>stepTimer</i></p>
+<p>This function can be called from outside of DataBroker to step any previously created timer. It is also called from within DataBroker to step its own &quot;_realtime_&quot; thread which in turn is activated by <i>runRealtime</i>.</p>
+<p><i>run</i></p>
 <p>This function handles asynchronous receivers and has to be called from another thread than the data producers.</p>
-<p><a href="@ref%20mars::data_broker::DataBroker::runRealtime">runRealtime</a></p>
+<p><i>runRealtime</i></p>
 <p>This function activates the &quot;_realtime_&quot; timer of a DatBroker, thus handling synchronous receivers as well as timed receivers and producers registered with the timer.</p>
 <p>[27.09.2013]</p>
+
       <footer>
         <a href="http://validator.w3.org/check?uri=referer" target="_blank">
           <img src="http://www.w3.org/Icons/valid-html401"

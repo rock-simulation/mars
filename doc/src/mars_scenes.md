@@ -14,13 +14,18 @@ MARS possesses its own format to represent 3D environments with physical entitie
       <jointlist>
       <motorlist>
       <sensorlist>
+      <controllerlist>
       <materiallist>
       <graphicOptions>
     </SceneFile>
     
+You may have noted that the lists of items correspond to the types of objects needed to represent a robot graphically as well as physically. However, MARS scenes can not merely be used for robots, but also to define an environment a robot can operate in. As it is possible to load multiple MARS scenes in the same MARS simulation, it thus makes sense to save robots and environment in different scene files. This makes it a lot easier to edit the files and to prevent errors in one element of a simulation interfering with another part. It also enables the user to test the same robot in various environments without having to re-edit any of the underlying scenes.
+
+When you load multiple scenes into MARS, make sure that they are all in the same scale.
+
 We will have a closer look at the items in these lists in the following.
 
-### Nodes
+## Nodes
 
 *Nodes* are all visible objects in MARS, whether they are physical objects or not. Now
 
@@ -66,27 +71,27 @@ We will have a closer look at the items in these lists in the following.
       <coll_bitmask>65535</coll_bitmask>
     </node>
     
-| variable | description | possible values |
+| Variable | Description | Possible Values |
 |----------|-------------|-----------------|
-| origname | | 
-| filename | | 
-| index | | 
-| groupid | | 
-| physicmode | | 
-| relativeid | | 
-| position | | 
-| rotation | | 
-| extend | | 
-| pivot | | 
-| visualsize | | 
-| movable | | 
-| mass | | 
-| density | | 
-| material_id | |  
-| coll_bitmask | |  
+| origname | name used in Blender to represent the object | any String | 
+| filename | name of the *.obj or *.bobj file associated with this note | any valid file path |
+| index | running index of the nodes | int ≥ 1 | 
+| groupid | id of the group to which a node belongs | int ≥ 1 |
+| physicmode | primitive object by which the node is represented in physics | box, sphere  | 
+| relativeid | ? | ? | 
+| position | position of the node in x, y and z coordinates | double |
+| rotation | rotation of the node in quaternion format | double |
+| extend | extend of the representing primitive (see physicmode) | double |
+| pivot | ? | ? | 
+| visualsize | ? | ? |
+| movable | whether or not the object is fixed in the world | true / false | 
+| mass | mass of the object in kg | double |
+| density | density of the object in kg/m³ | double  |
+| material_id | index of the associated material | int ≥ 1
+| coll_bitmask | ? | ? |  
 
 
-### Joints
+## Joints
 
 *Joints* are helper objects defining how *nodes* or groups of nodes are connected with each other.
 
@@ -109,21 +114,21 @@ We will have a closer look at the items in these lists in the following.
       <angle1_offset>offset</angle1_offset>
     </joint>
     
-| variable | description | possible values |
+| Variable | Description | Possible Values |
 |----------|-------------|-----------------|
-| index |  | 
-| type |  | 
-| nodeindex1 |  | 
-| nodeindex2 |  | 
-| anchorpos |  | 
-| anchor |  | 
-| axis1 |  | 
-| angle1_offset |  | 
+| index | running index of the *joints* | int ≥ 1 | 
+| type | type of the joint | hinge, slider |
+| nodeindex1 | index of first attached *node* | valid *node* id |
+| nodeindex2 | index of second attached *node* | valid *node* id |
+| anchorpos | *node* to which the *joint* is anchored | valid *node* id |
+| anchor | pos to which the *joint* is anchored | position of *node* id |
+| axis1 | axis around / along which joint moves | x, y, z: double |
+| angle1_offset | initial offset of the joint | double |
 
 
-### Motors
+## Motors
 
-Motors are associated with joints and can apply forces and torques respectively; for a *slider joint*, a force is applied while for a *hinge joint*, motors create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation]{http://www.ode.org/ode-latest-userguide.html} to read further on different [joint and motor types]{http://www.ode.org/ode-latest-userguide.html#sec_7_0_0}.
+Motors are associated with *joints* and can apply forces and torques respectively; for a *slider joint*, a force is applied while for a *hinge joint*, *motors* create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation]{http://www.ode.org/ode-latest-userguide.html} to read further on different [joint and motor types]{http://www.ode.org/ode-latest-userguide.html#sec_7_0_0}.
 
 As for the decoding in MARS scenes, motors are described as follows:
 
@@ -142,45 +147,134 @@ As for the decoding in MARS scenes, motors are described as follows:
       <value>val</value>
     </motor>
   
-| variable | description | possible values |
-| index | index of the motor | 1..inf |
-| jointIndex | index of the joint with which the motor is associated | 1..inf |
-| axis | around/along which axis of its associated joint the motor turns/slides | 1..3 |
-| maximumVelocity | maximum velocity with which the motor can move the joint | 0..inf |
-| motorMaxForce | maximum force the motor can apply | 0..inf |
+| Variable | Description | Possible Values |
+| -------- | ----------- | --------------- |
+| index | index of the motor |  int ≥ 1 |
+| jointIndex | index of the joint with which the motor is associated | int≥ 1 |
+| axis | around/along which axis of its associated joint the motor turns/slides | 1 ≤ int ≤ 3 |
+| maximumVelocity | maximum velocity with which the motor can move the joint | double |
+| motorMaxForce | maximum force the motor can apply | double |
 | type | motor type | 1: servo, 2: electric motor |
-| p | P value of a PID controller | 0.. |
-| i | I value of a PID controller |   |
-| d | D value of a PID controller |  |
-| min_val | minimum value (see below) |
-| max_val | maximum value (see below) |
-| value |  |
+| p | P value of a PID controller | double |
+| i | I value of a PID controller | double |
+| d | D value of a PID controller | double |
+| min_val | minimum value (see below) | ? |
+| max_val | maximum value (see below) | ? |
+| value | ? | ? |
 
 
-### Sensors
+## Sensors
+
+There are a number of different *sensors* in MARS which can be attached to *nodes*, *joints* or *motors* in order to get readings of certain variables. The valid types are:
+
+| Type | Data yielded |
+|------|-------------|
+| Camera | ? |
+| Joint6DOF | ? |
+| JointArray | ? |
+| JointAVGTorque | ? |
+| JointLoad | load of associated joint |
+| JointPosition | position of associated joint |
+| JointTorque | torque of associated joint |
+| JointVelocity | velocity of associated joint |
+| MotorCurrent | current of associated motor |
+| NodeAngularVelocity | angular velocity of associated node |
+| NodeArray | ? |
+| NodeCOM | center of mass (COM) of associated node |
+| NodeContactForce | contact force of associated node |
+| NodePosition | position of associated node |
+| NodeRotation | rotation of associated node |
+| NodeVelocity | velocity of associated node  |
+| RayGrid | collision point cloud of ray grid traced in defined direction |
+| Ray | collision point of ray traced in defined direction |
+| ScanningSonar | ? |
 
 
-### Materials
+
+*Sensors* are defined in a scene file as follows:
+
+    <sensor name="sensorName" type="sensorType">
+      <index>i</index>
+      <rate>r</rate>
+      <id>id1</id>
+      <id>id2</id>
+      ...
+    </sensor>
+    
+| Variable | Description | Possible Values |
+| -------- | ----------- | --------------- |
+| sensor.name | name of the *sensor*| any valid string |
+| sensor.type | type of the *sensor* | any valid *sensor* type with respect to id |
+| index | running index of the *sensor* | int ≥ 1 |
+| rate | reading rate of *sensor* | double |
+| id | id of *node*, *joint* or *motor* | any valid id; can be list of multiple ids |
+
+
+## Controllers
+
+Controllers ...
+
+    <controller>
+      <rate>40</rate>
+      <sensorid>s_id1</sensorid>
+      <sensorid>s_id2</sensorid>
+      ...
+      <motorid>m_id1</motorid>
+      <motorid>m_id21</motorid>
+      ...
+    </controller>
+    
+    
+| Variable | Description | Possible values |
+| -------- | ----------- | --------------- |
+| rate | operation rate of the *controller* | ? |
+| sensorid | running index of an attached *sensor* | int ≥ 1 |
+| motorid | running index of an attached *motor* | int ≥ 1 |
+
+
+
+## Materials
 
     <material>
-      <id>3</id>
+      <id>i</id>
       <diffuseFront>
-        <a>1.0</a>
-        <r>0.21402966976165771</r>
-        <g>0.008978134021162987</g>
-        <b>0.0</b>
+        <a>a</a>
+        <r>r</r>
+        <g>g</g>
+        <b>b</b>
       </diffuseFront>
       <specularFront>
-        <a>1.0</a>
-        <r>1.0</r>
-        <g>1.0</g>
-        <b>1.0</b>
+        <a>a</a>
+        <r>r</r>
+        <g>g</g>
+        <b>b</b>
       </specularFront>
-      <shininess>25.0</shininess>
+      <shininess>shiny</shininess>
     </material>
+    
+    
+| Variable | Description | Possible Values |
+| -------- | ----------- | --------------- |
+| id | running index of the materials | int ≥ 1 |
+| diffuseFront | basic color of an object | a, r, g, b: 0 ≤ double ≤ 1 |
+| specularFront | color of light reflected off an object | a, r, g, b: 0 ≤ double ≤ 1 |
+| shininess | strength of light reflexion | 0 ≤ double ≤ 1 |
 
 
-### Graphic Options
+## Graphic Options
+
+    <clearColor>
+      <r>r</r>
+      <g>g</g>
+      <b>b</b>
+      <a>a</a>
+    </clearColor>
+    <fogEnabled>true/false</fogEnabled>
+    
+| Variable | Description | Possible Values |
+| -------- | ----------- | --------------- |
+| clearColor | ? | ? |
+| fogEnabled | whether or not there is fog in the simulation | true / false |   
 
 
 

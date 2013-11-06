@@ -92,6 +92,11 @@ header img {
     margin-right: auto;
 }
 
+p {
+    text-indent: 1em;
+    line-height: 150%;
+}
+
 h1 {
     font-size: 2.2em;
     font-weight: bold;
@@ -156,7 +161,15 @@ figure {
 code {
     font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;
     font-size: 1em;
-    background-color: #eaeaea;
+    border-width: 1px;
+    border-style: dashed;
+    display: block;
+    padding: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 1em;
+    white-space: pre;
+    background-color: #f3f3f3;
 }
 
 .block {
@@ -166,7 +179,7 @@ code {
     padding: 10px;
     margin-top: 5px;
     margin-bottom: 5px;
-    margin-left: 10%;
+    margin-left: 3em;
     white-space: pre;
     background-color: #eaeaea;
 }
@@ -197,3 +210,22 @@ footer img {
     border-style: none;
     border-width:0px;
 }
+
+table {
+    /*width:98.4%;*/
+    border: 1px solid black;
+    border-collapse:collapse;
+    margin-left: 1em;
+}
+
+th, td {
+    font-size: 0.85em;
+    height:1.7em;
+    border: 1px solid black;
+    padding-left: 0.5em;
+}
+
+th {
+    background-color: #ba928b;
+}
+
