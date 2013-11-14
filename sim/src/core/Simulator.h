@@ -20,7 +20,7 @@
 
 /**
  * \file Simulator.h
- * \author Malte Römmermann
+ * \author Malte Langosz
  * \brief "Simulator" is the main class of the simulation
  *
  */
@@ -54,11 +54,11 @@ namespace mars {
     /**
      *\brief The Simulator class implements the main functions of the simulator.
      *
-     * Its constructor presents the core function in the simulation and takes directly the arguments
-     * given from the user.(if the simulation is starting from a command line).
-     * It inherits the mars::Thread Class and the i_GuiToSim
-     * A Simulator object presents a separate thread and shares data with all other threads within the process.(remarque )
-     * To handles and acces the data  of the Simulator properly the Mutex variable coreMutex are used.
+     * Its constructor presents the core function in the simulation and directly takes the arguments
+     * given by the user if the simulation is starting from a command line.
+     * It inherits the mars::Thread \c class and the i_GuiToSim
+     * A Simulator object presents a separate thread and shares data with all other threads within the process.(remarque)
+     * To handle and access the data of the Simulator properly, the mutex variable \c coreMutex is used.
      *
      */
     class Simulator : public utils::Thread,
@@ -70,23 +70,39 @@ namespace mars {
 
     public:
 
-      enum Status { UNKNOWN = -1, STOPPED = 0, RUNNING = 1, STOPPING = 2, STEPPING=3 };
+      enum Status {
+        UNKNOWN = -1,
+        STOPPED = 0,
+        RUNNING = 1,
+        STOPPING = 2,
+        STEPPING=3
+      };
 
-      Simulator(lib_manager::LibManager *theManager);
+      Simulator(lib_manager::LibManager *theManager); ///< Constructor of the \c class Simulator.
       virtual ~Simulator();
+      static Simulator *activeSimulator;
 
-      // LibInterface methods
-      int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("mars_sim");}
+
+      // --- LibInterface ---
+      int getLibVersion() const {
+        return 1;
+      }
+
+      const std::string getLibName() const {
+        return std::string("mars_sim");
+      }
+
       void newLibLoaded(const std::string &libName);
       CREATE_MODULE_INFO();
-
       void checkOptionalDependency(const std::string &libName);
-      void runSimulation();
-  
-      virtual void receiveData(const data_broker::DataInfo &info,
-                               const data_broker::DataPackage &package,
-                               int callbackParam);
+
+
+      // --- SimulatorInterface ---
+
+      // controlling the simulation
+      void updateSim(); ///< Updates the simulation.
+      void myRealTime(void); ///< control the realtime calculation
+      void runSimulation(); ///< Initiates the simulation
 
       virtual void StartSimulation() {
         stepping_mutex.lock();
@@ -94,6 +110,7 @@ namespace mars {
         stepping_wc.wakeAll();
         stepping_mutex.unlock();
       }
+
       virtual void StopSimulation() {
         stepping_mutex.lock();
         if(simulationStatus != STOPPED) {
@@ -103,119 +120,121 @@ namespace mars {
         stepping_mutex.unlock();
       }
 
-      virtual bool getAllowDraw(void) {return allow_draw;}
-      virtual bool getSyncGraphics(void) {return sync_graphics;}
-
-      static Simulator *activeSimulator;
-      ///the Simulator constructor
-
-      //Coming from MainGUI
-      /** \brief open the osg window */
-
-      void setSyncThreads(bool value);
-
-      /**
-       * \brief updates the osg objects position from the simulation
-       * updates the simulation
-       */
-      void updateSim();
-      /**
-       * \brief allows the osgWidget to draw a frame
-       */
-      void allowDraw(void);
- 
-      virtual void exportScene() const;
-
-      virtual void postGraphicsUpdate(void);
-
-      bool startStopTrigger();
-
-      /// control the realtime calculation
-      void myRealTime(void);
-
-      virtual int loadScene(const std::string &filename,
-                            const std::string &robotname,bool threadsave=false, bool blocking=false);
-      virtual int loadScene(const std::string &filename, 
-                            bool wasrunning=false,
-                            const std::string &robotname="",bool threadsave=false, bool blocking=false);
-
-      virtual bool allConcurrencysHandeled();
-      virtual int saveScene(const std::string &filename, bool wasrunning);
-      virtual bool isSimRunning() const;
-      virtual bool sceneChanged() const;
-      virtual void sceneHasChanged(bool reseted);
-      virtual bool hasSimFault() const;
-
-      void addLight(interfaces::LightData light);
-      virtual void finishedDraw(void);
-
-      virtual void newWorld(bool clear_all = false);
       virtual void resetSim(void);
-
-      virtual void controlSet(unsigned long id, interfaces::sReal value);
-      virtual void physicsThreadLock(void);
-      virtual void physicsThreadUnlock(void);
-      virtual interfaces::PhysicsInterface* getPhysics(void) const;
+      virtual bool isSimRunning() const;
+      bool startStopTrigger(); ///< Starts and pauses the simulation.
+      virtual void singleStep(void);
+      virtual void newWorld(bool clear_all = false);
       virtual void exitMars(void);
+      void readArguments(int argc, char **argv);
+      virtual interfaces::ControlCenter* getControlCenter(void) const;
+
+      // simulation contents
+      void addLight(interfaces::LightData light);
       virtual void connectNodes(unsigned long id1, unsigned long id2);
       virtual void disconnectNodes(unsigned long id1, unsigned long id2);
       virtual void rescaleEnvironment(interfaces::sReal x, interfaces::sReal y, interfaces::sReal z);
 
-      virtual void singleStep(void);
-      virtual void switchPluginUpdateMode(int mode, interfaces::PluginInterface *pl);
+      // scenes
+      virtual int loadScene(const std::string &filename,
+                            const std::string &robotname,bool threadsave=false, bool blocking=false);
+      virtual int loadScene(const std::string &filename,
+                            bool wasrunning=false,
+                            const std::string &robotname="",bool threadsave=false, bool blocking=false);
+      virtual int saveScene(const std::string &filename, bool wasrunning);
+      virtual void exportScene() const; ///< Exports the current scene as both *.obj and *.osg file.
+      virtual bool sceneChanged() const;
+      virtual void sceneHasChanged(bool reseted);
+
+      //threads
+      virtual bool allConcurrencysHandeled(); ///< Checks if external requests are open.
+      void setSyncThreads(bool value); ///< Syncs the threads of GUI and simulation.
+      virtual void physicsThreadLock(void);
+      virtual void physicsThreadUnlock(void);
+
+
+      //physics
+      virtual void controlSet(unsigned long id, interfaces::sReal value);
+      virtual interfaces::PhysicsInterface* getPhysics(void) const;
       virtual void handleError(interfaces::PhysicsError error);
       virtual void setGravity(const utils::Vector &gravity);
+      virtual int checkCollisions(void);
+      virtual bool hasSimFault() const; ///< Checks if the physic simulation thread has been stopped caused by an ODE error.
 
-      virtual interfaces::ControlCenter* getControlCenter(void) const;
+      //graphics
+      virtual void postGraphicsUpdate(void);
+      virtual void finishedDraw(void);
+      void allowDraw(void); ///< Allows the osgWidget to draw a frame.
+
+      virtual bool getAllowDraw(void) {
+        return allow_draw;
+      }
+
+      virtual bool getSyncGraphics(void) {
+        return sync_graphics;
+      }
+
+      // plugins
       virtual void addPlugin(const interfaces::pluginStruct& plugin);
       virtual void removePlugin(interfaces::PluginInterface *pl);
-
-      virtual int checkCollisions(void);
+      virtual void switchPluginUpdateMode(int mode, interfaces::PluginInterface *pl);
       virtual void sendDataToPlugin(int plugin_index, void* data);
+
       //  virtual double initTimer(void);
       //  virtual double getTimer(double start) const;
 
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
 
-      const std::string getConfigDir() const {return config_dir;}
-      void readArguments(int argc, char **argv);
+      const std::string getConfigDir() const {
+        return config_dir;
+      }
 
       //public slots:
       // TODO: currently this is disabled
       void noGUITimerUpdate(void);
 
+
+      // --- ReceiverInterface ---
+
+      virtual void receiveData(const data_broker::DataInfo &info,
+                               const data_broker::DataPackage &package,
+                               int callbackParam);
+
+
     private:
-      struct LoadOptions{
+
+      struct LoadOptions {
         std::string filename;
         std::string robotname;
         bool wasRunning;
       };
-    
-      std::vector<LoadOptions> filesToLoad;
-      //This method is used for all Calls that cannot be done from an external thread,
-      //this means the requests have to be caches (like in loadScene) and has to be handelt by
-      //this methos, which is called by this (run())
-      void processRequests();
-    
-      int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
-      bool sim_fault;
-      bool exit_sim;
-      bool allow_draw;
-      bool sync_graphics;
-      int cameraMenuCheckedIndex;
-      Status simulationStatus;
 
-      //IceServer comServer;
-      interfaces::ControlCenter *control;
-      bool b_SceneChanged;
+      // simulation control
+      void processRequests();
+      void reloadWorld(void);      
+
+      int arg_actual, arg_no_gui, arg_run, arg_grid, arg_ortho;
       bool reloadSim;
       short running;
       char was_running;
       bool kill_sim;
-      bool show_time;
+      bool show_time; ///< Bool to enable output of the calculation time.
+      interfaces::ControlCenter *control; ///< Pointer to instance of ControlCenter (created in Simulator::Simulator(lib_manager::LibManager *theManager))
+      std::vector<LoadOptions> filesToLoad;
+      bool sim_fault;
+      bool exit_sim;
+      Status simulationStatus;
       interfaces::sReal sync_time;
       bool my_real_time;
-      bool fast_step;
+      bool fast_step;      
+
+
+      // graphics
+      bool allow_draw;
+      bool sync_graphics;
+      int cameraMenuCheckedIndex;
+
+      // threads
       bool erased_active;
       utils::ReadWriteLock pluginLocker;
       int sync_count;
@@ -223,34 +242,34 @@ namespace mars {
       utils::Mutex coreMutex;
       utils::Mutex physicsMutex;
       utils::Mutex physicsCountMutex;
-      
-      /**
-       * This mutex is used to to prevent active waiting for an single step or start event
-       */
-      utils::Mutex stepping_mutex;
-      /**
-       * This Wait Conition is used to to prevent active waiting for an single step or start event
-       */
-      utils::WaitCondition stepping_wc;
-      
-      
+      utils::Mutex stepping_mutex; ///< Used for preventing active waiting for a single step or start event.
+      utils::WaitCondition stepping_wc; ///< Used for preventing active waiting for a single step or start event.
       int physics_mutex_count;
+      
+      // physics
       interfaces::PhysicsInterface *physics;
       double calc_ms;
       int load_option;
-      int std_port;
+      int std_port; ///< Controller port (default value: 1600)
       utils::Vector gravity;
+      unsigned long dbPhysicsUpdateId;
+      unsigned long dbSimTimeId;
 
+      // plugins
       std::vector<interfaces::pluginStruct> allPlugins;
       std::vector<interfaces::pluginStruct> newPlugins;
       std::vector<interfaces::pluginStruct> activePlugins;
       std::vector<interfaces::pluginStruct> guiPlugins;
 
+      // scenes
+      int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
       std::string scenename;
       std::list<std::string> arg_v_scene_name;
-      int arg_actual, arg_no_gui, arg_run, arg_grid, arg_ortho;
-      std::string config_dir;
+      bool b_SceneChanged;
 
+      // configuration
+      void initCfgParams(void);
+      std::string config_dir;
       cfg_manager::cfgPropertyStruct cfgCalcMs, cfgFaststep;
       cfg_manager::cfgPropertyStruct cfgRealtime, cfgDebugTime;
       cfg_manager::cfgPropertyStruct cfgSyncGui, cfgDrawContact;
@@ -258,33 +277,19 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgWorldErp, cfgWorldCfm;
       cfg_manager::cfgPropertyStruct cfgVisRep;
       cfg_manager::cfgPropertyStruct cfgSyncTime;
-
       cfg_manager::cfgPropertyStruct configPath;
-
-      unsigned long dbPhysicsUpdateId;
-      unsigned long dbSimTimeId;
+      
+      // data
       data_broker::DataPackage dbPhysicsUpdatePackage;
       data_broker::DataPackage dbSimTimePackage;
-
-      void reloadWorld(void);
-      void initCfgParams(void);
+      
+      // IceServer comServer;
 
     protected:
-      /**
-       * \brief The simulator main loop.
-       *
-       * This function is executing while the program is running.
-       * It handles the physical simulation, if the physical simulation is started,
-       * otherwise the function is in idle mode.
-       *
-       * pre:
-       *     start the simulator thread and by the way the Physics loop
-       *
-       * post:
-       *
-       */
+      
+      // simulation control
       void run();
-
+      
     };
 
   } // end of namespace sim

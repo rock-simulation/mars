@@ -18,6 +18,12 @@
  *
  */
 
+/**
+ * \file Simulator.cpp
+ * \author Malte Langosz
+ * 
+ */
+
 //Convention:the includes should be defined in the header file
 
 #include "Simulator.h"
@@ -62,12 +68,6 @@ namespace mars {
 
     Simulator *Simulator::activeSimulator = 0;
 
-    /**
-     * \brief Constructor of the Simulation.
-     * pre:
-     *
-     * post:
-     */
     Simulator::Simulator(lib_manager::LibManager *theManager) :
       lib_manager::LibInterface(theManager),
       exit_sim(false), allow_draw(true),
@@ -75,7 +75,6 @@ namespace mars {
 
       config_dir = ".";
 
-      // default controller port
       std_port = 1600;
 
       // we don't want the physical calculation running from the beginning
@@ -87,9 +86,8 @@ namespace mars {
       // set the calculation step size in ms
       calc_ms      = 10; //defaultCFG->getInt("physics", "calc_ms", 10);
       my_real_time = 0;
-      // a bool to enable an output of the calculation time
       show_time = 0;
-      // to synchronise drawing and pysics
+      // to synchronise drawing and physics
       sync_time = 40;
       sync_count = 0;
       load_option = OPEN_INITIAL;
@@ -294,6 +292,19 @@ namespace mars {
       this->start();
     }
 
+     /**
+       * \brief The simulator main loop.
+       *
+       * This function is executing while the program is running.
+       * It handles the physical simulation, if the physical simulation is started,
+       * otherwise the function is in idle mode.
+       *
+       * pre:
+       *     start the simulator thread and by the way the Physics loop
+       *
+       * post:
+       *
+       */
     void Simulator::run() {
 
       std::vector<pluginStruct>::iterator p_iter;
@@ -422,6 +433,9 @@ namespace mars {
       //hard_exit(0);
     }
 
+    /** 
+     * \return \c true if started, \c false if stopped
+     */
     bool Simulator::startStopTrigger() {
       //LOG_INFO("Simulator start/stop command.");
       stepping_mutex.lock();
@@ -970,6 +984,12 @@ namespace mars {
       }
     }
 
+    /**
+     * If \c true you cannot recover (currently) from this point without restarting the simulation.
+     * To extend this, restart the simulator thread and reset the scene (untested).
+     * 
+     * \return \c true if the simulation thread was not interrupted by ODE
+     */
     bool Simulator::hasSimFault() const{
         return sim_fault;
     }
@@ -1087,26 +1107,37 @@ namespace mars {
     }
 
 
-    void Simulator::setSyncThreads(bool value){
+    void Simulator::setSyncThreads(bool value) {
       sync_graphics = value;
     }
 
-
+    /** 
+     * updates the osg objects position from the simulation
+     */
     void Simulator::updateSim() {
       if(control->graphics)
         control->graphics->update();
     }
 
-
+    /** 
+     * This method is used for gui and simulation synchronization.
+     */
     void Simulator::allowDraw(void) {
       allow_draw = 1;
     }
     
+    /** 
+     * \return \c true if no external requests are open.
+     */
     bool Simulator::allConcurrencysHandeled(){
         return filesToLoad.empty();
     }
 
-    void Simulator::processRequests(){
+    /** This method is used for all calls that cannot be done from an external thread.
+     * This means the requests have to be caches (like in loadScene) and have to be handled by
+     * this method, which is called by Simulator::run().
+     */
+    void Simulator::processRequests() {
       externalMutex.lock();
       if(filesToLoad.size() > 0) {
         bool wasrunning = false;

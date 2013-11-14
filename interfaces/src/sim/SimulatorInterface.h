@@ -18,6 +18,13 @@
  *
  */
 
+/**
+ * \file SimulatorInterface.h
+ * \author Malte Langosz
+ * \brief "SimulatorInterface" provides an interface for using the Simulator class
+ *
+ */
+
 
 #ifndef SIMULATOR_INTERFACE_H
 #define SIMULATOR_INTERFACE_H
@@ -40,123 +47,69 @@ namespace mars {
 
   namespace interfaces {
 
-    /** \todo write docs */
     class SimulatorInterface {
     public:
 
       static SimulatorInterface* getInstance(lib_manager::LibManager *libManager);
-
       virtual ~SimulatorInterface() {}
-
-      /** \todo write docs */
-      virtual void runSimulation() = 0;
-      /** \todo write docs */
-      virtual void StartSimulation() = 0;
-      /** \todo write docs */
-      virtual void StopSimulation() = 0;
-
-      /** \todo write docs */
-      virtual void addLight(LightData light) = 0;
-
-      /** \todo write docs */
-      virtual void exportScene() const = 0;
       
-      /**
-       * Return true if the physic simulation thread
-       * has been stopped caused by an ODE error
-       * If true you cannot recover (currently) from this point
-       * without restartin the sim.
-       * To extend this, restart the simulatior thread an reset the scene (untested)
-       */
-      virtual bool hasSimFault() const = 0;
-  
-      //saves the actual scene
-      /** \todo write docs */
+      // controlling the simulation
+      virtual void runSimulation() = 0;
+      virtual void StartSimulation() = 0;
+      virtual void StopSimulation() = 0;
+      virtual void resetSim(void) = 0;
+      virtual bool isSimRunning() const = 0;
+      virtual bool startStopTrigger() = 0;
+      virtual void singleStep(void) = 0;
+      virtual void newWorld(bool clear_all=false) = 0;
+      virtual void exitMars(void) = 0;
+      virtual void readArguments(int argc, char **argv) = 0;
+      virtual ControlCenter* getControlCenter(void) const = 0;      
+
+      // simulation contents
+      virtual void addLight(LightData light) = 0;
+      virtual void connectNodes(unsigned long id1, unsigned long id2) = 0;
+      virtual void disconnectNodes(unsigned long id1, unsigned long id2) = 0;
+      virtual void rescaleEnvironment(sReal x, sReal y, sReal z) = 0;
+
+      // scenes
+      virtual int loadScene(const std::string &filename, const std::string &robotname, bool threadsave=false, bool blocking=false) = 0;
+      virtual int loadScene(const std::string &filename, bool wasrunning=false,
+                        const std::string &robotname = "", bool threadsave=false, bool blocking=false) = 0;
       virtual int saveScene(const std::string &filename, bool wasrunning) = 0;
-      /** \todo write docs */
       /**make sure the string objects exist during the execution of those functions even if they
        * are running in a different thread; it would probably be better to just copy them instead
        * of using references
        */
-      virtual int loadScene(const std::string &filename, const std::string &robotname, bool threadsave=false, bool blocking=false) = 0;
-      virtual int loadScene(const std::string &filename, bool wasrunning=false,
-                        const std::string &robotname = "", bool threadsave=false, bool blocking=false) = 0;
-  
-      /**
-       * Returns true if no external requests are open
-       */
-      bool allConcurrencysHandeled();
-
-      /** \todo write docs */
+      virtual void exportScene() const = 0;
       virtual bool sceneChanged() const = 0;
-      /** \todo write docs */
-      virtual void sceneHasChanged(bool reseted) = 0;
-      /** \todo write docs */
-      virtual bool isSimRunning() const = 0;
+      virtual void sceneHasChanged(bool reseted) = 0; //FIXME: this is misspelled
 
-      /** 
-       * \brief start and pause the simulation
-       * \return true if started, false if stopped
-       */
-      virtual bool startStopTrigger() = 0;
-
-      /** \todo write docs */
-      virtual void finishedDraw(void) = 0;
-
-      /** \todo write docs */
-      virtual void newWorld(bool clear_all=false) = 0;
-      /** \todo write docs */
-      virtual void resetSim(void) = 0;
-
-      /** \todo write docs */
-      virtual void controlSet(unsigned long id, sReal value) = 0;
-      /** \todo write docs */
-      virtual void physicsThreadLock(void) = 0;
-      /** \todo write docs */
-      virtual void physicsThreadUnlock(void) = 0;
-      /** \todo write docs */
-      virtual PhysicsInterface* getPhysics(void) const = 0;
-      /** \todo write docs */
-      virtual void exitMars(void) = 0;
-      /** \todo write docs */
-      virtual void connectNodes(unsigned long id1, unsigned long id2) = 0;
-      /** \todo write docs */
-      virtual void disconnectNodes(unsigned long id1, unsigned long id2) = 0;
-      /** \todo write docs */
-      virtual void rescaleEnvironment(sReal x, sReal y, sReal z) = 0;
-      /** \todo write docs */
-      virtual void singleStep(void) = 0;
-      /** \todo write docs */
-      virtual void switchPluginUpdateMode(int mode, PluginInterface *pl) = 0;
-      /** \todo write docs */
-      virtual void handleError(PhysicsError error) = 0;
-      /** \todo write docs */
-      virtual void setGravity(const utils::Vector &gravity) = 0;
-
-      /** \todo write docs */
-      virtual ControlCenter* getControlCenter(void) const = 0;
-      /** \todo write docs */
-      virtual void addPlugin(const pluginStruct& plugin) = 0;
-      /** \todo write docs */
-      virtual void removePlugin(PluginInterface *pl) = 0;
-
-      /** \todo write docs */
-      virtual int checkCollisions(void) = 0;
-      /** \todo write docs */
-      virtual void sendDataToPlugin(int plugin_index, void* data) = 0;
-
-      /** \brief syncs the threads of gui and simulation */
+      //threads
+      bool allConcurrencysHandeled(); //FIXME: this is misspelled
       virtual void setSyncThreads(bool value) = 0;
+      virtual void physicsThreadLock(void) = 0;
+      virtual void physicsThreadUnlock(void) = 0;      
 
-      /** \brief used for gui and simulation synchronization */
+      //physics
+      virtual void controlSet(unsigned long id, sReal value) = 0;
+      virtual PhysicsInterface* getPhysics(void) const = 0;
+      virtual void handleError(PhysicsError error) = 0;
+      virtual void setGravity(const utils::Vector &gravity) = 0;
+      virtual int checkCollisions(void) = 0;
+      virtual bool hasSimFault() const = 0;
+
+      //graphics
+      virtual void finishedDraw(void) = 0;
       virtual void allowDraw(void) = 0;
-      /** \todo write docs */
-      virtual void readArguments(int argc, char **argv) = 0;
-
-      /** \todo write docs */
       virtual bool getAllowDraw(void) = 0;
-      /** \todo write docs */
       virtual bool getSyncGraphics(void) = 0;
+
+      //plugins
+      virtual void addPlugin(const pluginStruct& plugin) = 0;
+      virtual void removePlugin(PluginInterface *pl) = 0;
+      virtual void switchPluginUpdateMode(int mode, PluginInterface *pl) = 0;
+      virtual void sendDataToPlugin(int plugin_index, void* data) = 0;
     };
 
 
