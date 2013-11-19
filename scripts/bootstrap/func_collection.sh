@@ -220,7 +220,7 @@ function fetch_package {
         fi
         CLONE_ERROR=0
         git clone ${CLONE_ADDR} || CLONE_ERROR=1;
-        if ${CLONE_ERROR}; then
+        if [[ ${CLONE_ERROR} != 0 ]]; then
             printErr "Error: Could not clone package from \"${CLONE_ADDR}\"!"
             MARS_SCRIPT_ERROR=1;
         fi
