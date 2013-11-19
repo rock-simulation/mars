@@ -52,11 +52,14 @@
                </header>
 <h1 id="installation">Installing MARS</h1>
 <h2 id="installation">Installation</h2>
-<p>This section describes how to setup a development environment for MARS. You should create a dedicated development folder on your harddrive. Something like C:/development/mars_git or /home/my_username/development/mars_git. We will refer to this directory as the development directory or $MARS_DEV_ROOT. You should clone the git sources into that directory using</p>
-<pre><code>cd $MARS_DEV_ROOT
+<p>This section describes how to setup a development environment for MARS. You should create a dedicated development folder on your harddrive. Something like C:/development/mars_git or /home/my_username/development/mars_git for example:
+<pre><code>export MARS_DEV_ROOT=/home/my_username/development/mars_git</code></pre>
+We will refer to this directory as the development directory or $MARS_DEV_ROOT. You should clone the git sources into that directory using</p>
+<pre><code>mkdir -p $MARS_DEV_ROOT && cd $MARS_DEV_ROOT
 git clone git://gitorious.org/rock-simulation/mars.git</code></pre>
-<p>This will create a new subdirectory &quot;mars&quot; containing the working copy. You then must fetch some dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS:</p>
+<p>This will create a new subdirectory &quot;mars&quot; containing the working copy -- note that is not possible to give the directory containing the git-checkout a different name. You then probably have to install some system dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS:</p>
 <pre><code>cd $MARS_DEV_ROOT
+cp mars/scripts/bootstrap/packageList.txt.example mars/scripts/bootstrap/packageList.txt
 ./mars/scripts/bootstrap/mars.sh bootstrap</code></pre>
 <p>When running it for the first time the script will ask you for the root development directory. Please enter the <em>absolute</em> path to your development directory. Next you will be asked how many CPU cores the system may use to build MARS.</p>
 <h3 id="gnulinux">GNU/Linux</h3>
