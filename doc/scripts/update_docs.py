@@ -11,11 +11,12 @@ Created on Tue Oct 22 10:44:33 2013
 from subprocess import call
 import os
 
-call(["python", "markdown2rst.py"])
-call(["python", "rst2marshtml.py"])
+# call(["python", "markdown2rst.py"])
+# call(["python", "rst2marshtml.py"])
+call(["python", "markdown2marshtml.py"])
 call(["python", "create_subproject_doxygens.py"])
 resp = raw_input("\nRun Doxygen on main folder? (Y/N) ")
-if resp == "Y":
+if resp == "y" or resp == "Y":
     os.chdir("../doxygen")
     call(["doxygen", "mars_doxyconf"])
     call(["ln", "-s", "doxygen/html/index.html", "../mars_doxygen_index.html"])

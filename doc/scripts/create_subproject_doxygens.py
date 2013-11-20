@@ -52,7 +52,7 @@ print "\n", len(doxygen_list), "doxygen configurations were created:"
 for d in doxygen_list:
     print d
 resp = raw_input("\nRun Doxygen on these folders? (Y/N) ")
-if resp == "Y":
+if resp == "Y" or resp == "y":
     iwd = os.getcwd()
     for doxyfile in doxygen_list:
         os.chdir(iwd)
