@@ -280,7 +280,7 @@ namespace mars {
       /**
        * Currently the position of a node can be set relative to the position
        * of the node with the id equal to the value of relative_id. If the node
-       * have it's own position the value of relative_id have to be 0.
+       * has its own position the value of relative_id have to be 0.
        * \verbatim Default value: 0 \endverbatim
        */
       unsigned long relative_id;
@@ -288,8 +288,8 @@ namespace mars {
 
 
       /**
-       * If the physicMode is set to NODE_TYPE_TERRAIN, this pointer have to
-       * store all information to create a physical representation of a heightfield.
+       * If the physicMode is set to NODE_TYPE_TERRAIN, this pointer stores
+       * all information to create a physical representation of a height map.
        * \verbatim Default value: 0 \endverbatim \sa terrainStruct
        */
       terrainStruct *terrain;
@@ -303,8 +303,8 @@ namespace mars {
       utils::Vector visual_offset_pos;
 
       /**
-       * In the same way like the visual_offset_pos, this quaternion can be used
-       * to differ the orientation of the visual representation from the physical
+       * In the same way as the visual_offset_pos, this quaternion can be used
+       * to differentiate the orientation of the visual representation from the physical
        * one. \verbatim Default value: (0.0, 0.0, 0.0, 1.0) \endverbatim
        * \sa NodeData::visual_offset_pos
        */

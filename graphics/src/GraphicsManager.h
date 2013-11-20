@@ -116,23 +116,19 @@ namespace mars {
 
       virtual void* getWindowManager(int id=1); // get osgWidget WindowManager*
 
-      /**\brief resets scene */
-      virtual void reset();
+      virtual void reset(); ///< Resets scene.
 
       virtual void addGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
 
       virtual const mars::interfaces::GraphicData getGraphicOptions(void) const;
       virtual void setGraphicOptions(const mars::interfaces::GraphicData &options);
 
-      /**\brief adds drawStruct items to the graphics scene */
-      virtual void addDrawItems(interfaces::drawStruct *draw);
+      virtual void addDrawItems(interfaces::drawStruct *draw); ///< Adds drawStruct items to the graphics scene.
       virtual void removeDrawItems(interfaces::DrawInterface *iface);
       virtual void clearDrawItems(void);
 
-      /**\brief adds a light to the scene */
-      virtual void addLight(mars::interfaces::LightData &ls);
-      /**\brief removes a light from the scene */
-      virtual void removeLight(unsigned int index);
+      virtual void addLight(mars::interfaces::LightData &ls); ///< adds a light to the scene
+      virtual void removeLight(unsigned int index); ///< removes a light from the scene
       virtual void updateLight(unsigned int index);
       virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList);
       virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const;
@@ -210,8 +206,7 @@ namespace mars {
       void hideClouds();
       bool cloudsVisible(void) const;
 
-      /**\brief updates graphics */
-      virtual void update();
+      virtual void update(); //< updates graphics
       virtual void draw();
 
       void setWidget(GraphicsWidget *widget);

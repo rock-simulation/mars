@@ -90,7 +90,7 @@ namespace mars {
     /**
      *\brief Add a node to the node pool of the simulation
      *
-     * It is very important to assure the serializaion between the threads to
+     * It is very important to assure the serialization between the threads to
      * have the desired results.
      *
      * pre:
@@ -217,7 +217,7 @@ namespace mars {
     }
 
     /**
-     *\brief This function maps an terrain struct to an node struct and add
+     *\brief This function maps a terrainStruct to a node struct and adds
      * that node to the simulation.
      *
      */
@@ -246,7 +246,7 @@ namespace mars {
 
     /**
      *\brief This function adds an vector of nodes to the factory.
-     * The funtianality is implemented in the gui, but should
+     * The functionality is implemented in the GUI, but should
      * move to the node factory soon.
      *
      */
@@ -262,7 +262,7 @@ namespace mars {
 
     /**
      *\brief This function adds an primitive to the simulation.
-     * The funtianality is implemented in the gui, but should
+     * The functionality is implemented in the GUI, but should
      * move to the node factory soon.
      *
      */
@@ -530,14 +530,14 @@ namespace mars {
     }
 
     void NodeManager::removeNode(NodeId id, bool lock) {
-      NodeMap::iterator iter;
+      NodeMap::iterator iter; //NodeMap is a map containing an id and a SimNode
       SimNode *tmpNode = 0;
 
       if(lock) iMutex.lock();
 
       iter = simNodes.find(id);
       if (iter != simNodes.end()) {
-        tmpNode = iter->second;
+        tmpNode = iter->second; //iter->second is a pointer to the SimNode associated with the map
         simNodes.erase(iter);
       }
 

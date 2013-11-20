@@ -21,7 +21,7 @@
 /**
  * \file LibInterface.h
  * \author Malte Roemmermann
- * \brief "LibInterface" is an interface to load dynamically libraries
+ * \brief "LibInterface" is an interface to dynamically load libraries
  *
  */
 

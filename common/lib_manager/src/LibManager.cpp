@@ -21,7 +21,7 @@
  /**
  * \file LibInterface.cpp
  * \author Malte Roemmermann
- * \brief "LibInterface" is an interface to load dynamically libraries
+ * \brief "LibInterface" is an interface to dynamically load libraries
  *
  */
 
@@ -90,6 +90,9 @@ namespace mars {
       fprintf(stderr, "Delete lib_manager\n");
     }
 
+    /**
+     * Empties the libMap field and deletes all items (libStructs) from memory.
+     */
     void LibManager::clearLibraries() {
       std::map<std::string, libStruct>::iterator it;
       bool finished = false;
@@ -110,6 +113,13 @@ namespace mars {
       }
     }
 
+    /**
+     * Registers a new library. An associated libStruct is created and all other
+     * registered libraries are informed about the new library by calling the
+     * newLibLoaded() method of their interface.
+     * 
+     * @param _lib A pointer to any class implementing the LibInterface.
+     */
     void LibManager::addLibrary(LibInterface *_lib) {
       if(!_lib) {
         return;
@@ -136,6 +146,14 @@ namespace mars {
       }
     }
 
+    /**
+     * Loads a library from a specified path from the hard drive. This function
+     * can be used to load a library (or plugin) through the LibManager at runtime
+     * rather than adding an already-existing instance with the addLibrary method.
+     * @param libPath The path to the library.
+     * @param config 
+     * @return 
+     */
     LibManager::ErrorNumber LibManager::loadLibrary(const string &libPath, 
                                                     void *config) {
       const char *prefix = "lib";
@@ -154,6 +172,7 @@ namespace mars {
 #endif
       fprintf(stderr, "lib_manager: load plugin: %s\n", libPath.c_str());
 
+      //try to locate the library somewhere by checking at various path positions
       FILE *testFile = fopen(libPath.c_str(), "r");
       std::string filepath;
       if(!testFile) {
@@ -236,17 +255,26 @@ namespace mars {
       return LIBMGR_NO_ERROR;
     }
 
+    /**
+     * Returns a pointer to the libStruct associated with the requested library.
+     * @param libName The name of the requested library.
+     * @return A libStruct* if library is registered, otherwise 0.
+     */
     LibInterface* LibManager::acquireLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
         fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
         return 0;
       }
-
       libStruct *theLib = &(libMap[libName]);
       theLib->useCount++;
       return theLib->libInterface;
     }
 
+    /**
+     * Releases a previously acquired library
+     * @param libName
+     * @return 
+     */
     LibManager::ErrorNumber LibManager::releaseLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
         return LIBMGR_ERR_NO_LIBRARY;
@@ -259,6 +287,9 @@ namespace mars {
       return LIBMGR_NO_ERROR;
     }
 
+    /**
+     * This method is not to be directly called. Use releaseLibrary() instead.
+     */
     LibManager::ErrorNumber LibManager::unloadLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
         return LIBMGR_ERR_NO_LIBRARY;
@@ -277,6 +308,12 @@ namespace mars {
       return LIBMGR_ERR_LIB_IN_USE;
     }
 
+    /**
+     * Loads all libraries specified in a configuration file. The configuration file
+     * has to be a text file that contains one library path per line; each can have
+     * a maximum length of 255 characters.
+     * @param config_file
+     */
     void LibManager::loadConfigFile(const std::string &config_file) {
       char plugin_chars[255];
       std::string plugin_path;
@@ -289,6 +326,7 @@ namespace mars {
         return;
       }
 
+      //check every input line for a library to load and if one is found, try to load it
       while(fgets(plugin_chars, 255, plugin_config)) {
         plugin_path = plugin_chars;
         // strip whitespaces from start and end of line
@@ -306,7 +344,11 @@ namespace mars {
       fclose(plugin_config);
     }
 
-
+    /**
+     * Accepts a pointer to a list of type LibInterface and appends pointers to 
+     * all registered libraries.
+     * @param libList
+     */
     void LibManager::getAllLibraries(std::list<LibInterface*> *libList) {
       std::map<std::string, libStruct>::iterator it;
       for(it = libMap.begin(); it != libMap.end(); ++it) {
@@ -315,6 +357,10 @@ namespace mars {
       }
     }
     
+    /**
+     * Accepts a pointer to a string list and appends the names of the registered libraries.
+     * @param libNameList A pointer to a list of strings.
+     */
     void LibManager::getAllLibraryNames(std::list<std::string> *libNameList) const {
       std::map<std::string, libStruct>::const_iterator it;
       for(it = libMap.begin(); it != libMap.end(); ++it) {
@@ -322,6 +368,11 @@ namespace mars {
       }
     }
 
+    /**
+     * Accepts a constant string and returns a LibInfo struct.
+     * @param libName
+     * @return 
+     */
     LibInfo LibManager::getLibraryInfo(const std::string &libName) const {
       LibInfo info;
       std::map<std::string, libStruct>::const_iterator it;
@@ -338,6 +389,10 @@ namespace mars {
       return info;
     }
 
+    /**
+     * Writes the names, source and revision of all registered libraries to the specified file.
+     * @param filepath The path of the file where the names should be dumped.
+     */
     void LibManager::dumpTo(const std::string &filepath) const {
       std::list<std::string> libNames;
       std::list<std::string>::const_iterator libNamesIt;

@@ -79,7 +79,7 @@ body {
 
 #content {
     background-color: #FFFFFF;
-    width: 50%;/*860px;*/
+    width: 960px;
     outline-width: 3px;
     outline-style: solid;
     padding: 20px 40px;
@@ -141,9 +141,10 @@ section {
     margin-bottom: 20px;
 }
 
-figure {
-    width:80%;
+.figure img{
     margin-bottom:2em;
+    margin-left:auto;
+    margin-right:auto;    
 }
 
 .section {

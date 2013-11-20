@@ -375,7 +375,6 @@ namespace mars {
       return (void*)globalStateset.get();
     }
 
-    /**updates graphical elements*/
     void GraphicsManager::update(){
       //update drawElements
       for (unsigned int i=0; i<draws.size(); i++) {
@@ -1127,7 +1126,7 @@ namespace mars {
     }
 
     /**
-     * adds or edits a preview node
+     * \throw std::runtime_error if action is \c PREVIEW_COLOR and mat is \c NULL.
      */
     void GraphicsManager::preview(int action, bool resize,
                                   const vector<mars::interfaces::NodeData> &allNodes,

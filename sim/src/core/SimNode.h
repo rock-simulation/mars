@@ -43,12 +43,12 @@ namespace mars {
 
 #define BACK_VEL 25
 
-    /*!
+    /**
      * Two typedefs to keep mesh structure nearly similar to ODE.
      * original ODE structure is not being used here to keep the possibility to change physic engine
      *
      * Each SimNode object publishes its state on the dataBroker.
-     * The name under which the data is published can be obtained from the 
+     * The name under which the data is published can be obtained from the
      * nodeId via NodeManager::getDataBrokerNames.
      * The data_broker::DataPackage will contain the following items:
      *  - "id" (int)
@@ -88,236 +88,95 @@ namespace mars {
       //SimNode(ControlCenter *c, unsigned long index);
       ~SimNode(void);
 
-      /**
-       * returns the density of the node
-       * @return density of node
-       */
-      interfaces::sReal getDensity(void) const;
-
-      /**
-       * returns the mass of the node
-       * @return mass of node
-       */
-      interfaces::sReal getMass(void) const;
-
-      /**
-       * returns the mesh of the node
-       * @return mesh of node
-       */
-      const interfaces::snmesh getMesh(void) const;
-
-      /**
-       * returns the name of the node
-       * @return name of node
-       */
-      const std::string getName(void) const;
-
-      /**
-       * returns the physic mode of the node as an integer
-       * @return physic mode of node
-       */
+      
+      // getter
+      interfaces::sReal getDensity(void) const; ///< Returns the density of the node.
+      interfaces::sReal getMass(void) const; ///< Returns the mass of the node.
+      const interfaces::snmesh getMesh(void) const; ///< Returns the mesh of the node.
+      const std::string getName(void) const; ///<
       interfaces::NodeType getPhysicMode(void) const;
-
-      /**
-       * returns the position of the node
-       * @return position of node
-       */
       const utils::Vector getPosition(void) const;
       const utils::Vector getVisualPosition(void) const;
-
-      /**
-       * returns the rotation of the node
-       * @return rotation of node
-       */
-      const utils::Quaternion getRotation(void) const;
+      const utils::Quaternion getRotation(void) const; ///< Returns the rotation of the node.
       const utils::Quaternion getVisualRotation(void) const;
-
       const utils::Vector getLinearVelocity(void) const;
       const utils::Vector getAngularVelocity(void) const;
       const utils::Vector getLinearAcceleration(void) const;
       const utils::Vector getAngularAcceleration(void) const;
       const utils::Vector getForce(void) const;
       const utils::Vector getTorque(void) const;
+      //int getSpace(void); ///< Returns the collision space of the node.
+      const std::string getTexture(void) const; ///< Returns the name of the nodes texture.
+      const utils::Vector getExtent(void) const; ///< returns the bounding extent of the node
+      bool isMovable(void) const; ///< returns if node is a movable node
+      unsigned long getGraphicsID2(void) const;
+      int getGroupID(void) const;
+      const interfaces::NodeData getSNode(void) const; ///< Returns a pointer to the sNode.
+      interfaces::NodeInterface* getInterface(void) const; ///< Gets the node interface object.
+      const interfaces::MaterialData getMaterial(void) const;
+      unsigned long getID(void) const; ///< Returns the node ID.
+      void getCoreExchange(interfaces::core_objects_exchange *obj) const;
+      void getPhysicalState(interfaces::nodeState *state) const;
+      bool getGroundContact(void) const;      
+      void getMass(interfaces::sReal *mass, interfaces::sReal *inertia) const;
+      void getContactPoints(std::vector<utils::Vector> *contact_points) const;
+      int getVisualRep(void) const;
+      void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
+      double getCollisionDepth(void) const;
+      const interfaces::contact_params getContactParams() const;
+      const utils::Vector getContactForce(void) const;
+      interfaces::sReal getGroundContactForce(void) const;
 
-      /**
-       * returns the collision space of the node
-       * @return collision space of node
-       */
-      //int getSpace(void);
-
-      /**
-       * returns the name of the nodes texture
-       * @return name of texture of of node
-       */
-      const std::string getTexture(void) const;
-
-      /**
-       * returns the bounding extent of the node
-       * @return extent of node
-       */
-      const utils::Vector getExtent(void) const;
-
-      /**
-       * returns if node is a movable node
-       * @return if node is a movable node
-       */
-      bool isMovable(void) const;
-
-
-      /**
-       * sets the density of the node
-       * @param objectdensity density of the node
-       */
-      void setDensity(interfaces::sReal objectdensity);
-
-      /**
-       * sets the extent of the node
-       * @param ext extent of the node
-       */
-      void setExtent(const utils::Vector &ext, bool update = false);
-
-      /**
-       * sets the mass of the node
-       * @param objectmass mass of the node
-       */
-      void setMass(interfaces::sReal objectmass);
-
-      /**
-       * sets the mesh of the node
-       * @param objectmesh mesh of the node
-       */
-      void setMesh(const interfaces::snmesh &objectmesh);
-
-      /**
-       * sets the name of the node
-       * @param objectname name of the node
-       */
-      void setName(const std::string &objectname);
+      
+      // setter
+      void setDensity(interfaces::sReal objectdensity); ///< Sets the density of the node.
+      void setExtent(const utils::Vector &ext, bool update = false); ///< sets the extend of the node
+      void setMass(interfaces::sReal objectmass); ///< Sets the mass of the node.
+      void setMesh(const interfaces::snmesh &objectmesh); ///< Sets the mesh of the node.
+      void setName(const std::string &objectname); ///< Sets the name of the node.
       void setGraphicsID(unsigned long g_id);
       unsigned long getGraphicsID(void) const;
       void setGraphicsID2(unsigned long g_id);
-      unsigned long getGraphicsID2(void) const;
-
-      /**
-       * sets the physic mode of the node. See getPhysicMode for list of modes
-       * @param mode physic mode of the node
-       */
-      void setPhysicMode(interfaces::NodeType mode);
-
+      void setPhysicMode(interfaces::NodeType mode); ///< Sets the physic mode of the node. See getPhysicMode for list of modes.
+      const utils::Vector setPosition(const utils::Vector &newPosition, bool move_group); ///< Sets the position of the node.
+      void setPositionOffset(const utils::Vector &offset);
+      const utils::Quaternion setRotation(const utils::Quaternion &rotation, bool move_all); ///< Sets the rotation of the node.
+      //void setSpace(int mySpace); ///< Sets the collision space of the node.
+      void setMovable(bool movable); ///< Set the node movable/non-movable
+      void setColor(utils::Vector v);
+      void setTexture(const std::string &tname); ///< Sets the node's texture name.
+      void setMaterial(const interfaces::MaterialData &material);
+      void setPhysicalState(const interfaces::nodeState &state);
+      void setFromSNode(const interfaces::NodeData &sNode);
+      void setInterface(interfaces::NodeInterface *_interface); ///< Sets the node interface object.
+      void setRelativePosition(const interfaces::NodeData &node);
+      void setContactParams(const interfaces::contact_params &cp);
+      void setLinearVelocity(const utils::Vector &vel);
+      void setAngularVelocity(const utils::Vector &vel);
+      void setAngularDamping(interfaces::sReal damping);
+      void setVisualRep(int val);
+      void setContactMotion1(interfaces::sReal motion);
+      
       inline void setVisQOffset(utils::Quaternion q) {
         sNode.visual_offset_rot = q;
       }
 
-      /**
-       * sets the position of the node
-       * @param newPosition position of the node
-       * @param move_group group of the node
-       */
-      const utils::Vector setPosition(const utils::Vector &newPosition, 
-                                     bool move_group);
-  
-
-      void setPositionOffset(const utils::Vector &offset);
-      /**
-       * sets the rotation of the node
-       * @param rotation the quaternion for the node-rotation
-       */
-      const utils::Quaternion setRotation(const utils::Quaternion &rotation,
-                                         bool move_all);
-
-      /**
-       * sets the collision space of the node
-       * @param collision space of the node
-       */
-      //void setSpace(int mySpace);
-
-      /**
-       * sets if node is an movable node
-       * @param movable true if a node is an movable
-       */
-      void setMovable(bool movable);
-
-      void setColor(utils::Vector v);
-
-      /**
-       * sets the nodes texture name
-       * @param tname name of the texture
-       */
-      void setTexture(const std::string &tname);
-
-      void setMaterial(const interfaces::MaterialData &material);
-      const interfaces::MaterialData getMaterial(void) const;
-
-      /**
-       * returns the nodes id
-       * @return id of the node
-       */
-      unsigned long getID(void) const;
-
-      int getGroupID(void) const;
-
-      void setFromSNode(const interfaces::NodeData &sNode);
-      /**
-       * returns a pointer to the sNode
-       * @return NodeData pointer
-       */
-      const interfaces::NodeData getSNode(void) const;
-
-      /**
-       * sets the node interface object
-       * @param _interface new node interface
-       */
-      void setInterface(interfaces::NodeInterface *_interface);
-
-      /**
-       * gets the node interface object
-       *
-       */
-      interfaces::NodeInterface* getInterface(void) const;
-
-      /**
-       * updates the values of the node from the physical layer
-       *
-       */
-      void update(interfaces::sReal calc_ms, bool physics_thread = true);
-
-      void getCoreExchange(interfaces::core_objects_exchange *obj) const;
-      void rotateAtPoint(const utils::Vector &rotation_point, const utils::Quaternion &rotation,
-                         bool move_group);
+      
+      // manipulation
+      void update(interfaces::sReal calc_ms, bool physics_thread = true); ///< Updates the values of the node from the physical layer.
+      void rotateAtPoint(const utils::Vector &rotation_point, const utils::Quaternion &rotation, bool move_group);
       void changeNode(interfaces::NodeData *node);
-      void setPhysicalState(const interfaces::nodeState &state);
-      void getPhysicalState(interfaces::nodeState *state) const;
-      bool getGroundContact(void) const;
-      interfaces::sReal getGroundContactForce(void) const;
       void clearRelativePosition(void);
-      void setRelativePosition(const interfaces::NodeData &node);
       void applyForce(const utils::Vector &force, const utils::Vector &pos);
       void applyForce(const utils::Vector &force);
       void applyTorque(const utils::Vector &torque);
-      void setContactMotion1(interfaces::sReal motion);
       void addSensor(interfaces::BaseSensor *sensor);
       void reloadSensor(interfaces::BaseSensor *s_cfg);
       void removeSensor(interfaces::BaseSensor &s_cfg);
-      void setContactParams(const interfaces::contact_params &cp);
-      const interfaces::contact_params getContactParams() const;
-      void setLinearVelocity(const utils::Vector &vel);
-      void setAngularVelocity(const utils::Vector &vel);
-      void getMass(interfaces::sReal *mass, interfaces::sReal *inertia) const;
-      void setAngularDamping(interfaces::sReal damping);
       void addRotation(const utils::Quaternion &q);
       void checkNodeState(void);
-      void getContactPoints(std::vector<utils::Vector> *contact_points) const;
       void updateRay(void);
-      void setVisualRep(int val);
-      int getVisualRep(void) const;
-      const utils::Vector getContactForce(void) const;
-      double getCollisionDepth(void) const;
-      void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
-
-      virtual void produceData(const data_broker::DataInfo &info,
-                               data_broker::DataPackage *package,
-                               int callbackParam);
-
+      virtual void produceData(const data_broker::DataInfo &info, data_broker::DataPackage *package, int callbackParam);
       void updatePR(const utils::Vector &pos,
                     const utils::Quaternion &rot,
                     const utils::Vector &visOffsetPos,

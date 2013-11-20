@@ -96,10 +96,9 @@ namespace mars {
       arg_run    = 0;
       arg_grid   = 0;
       arg_ortho  = 0;
-      // set this Simulator object to the active one
-      Simulator::activeSimulator = this;
+      Simulator::activeSimulator = this; // set this Simulator object to the active one
 
-      gravity = Vector(0.0, 0.0, -9.81);
+      gravity = Vector(0.0, 0.0, -9.81); // set gravity to earth conditions
 
       // build the factories
       control = new ControlCenter();
@@ -293,8 +292,6 @@ namespace mars {
     }
 
      /**
-       * \brief The simulator main loop.
-       *
        * This function is executing while the program is running.
        * It handles the physical simulation, if the physical simulation is started,
        * otherwise the function is in idle mode.
@@ -428,7 +425,7 @@ namespace mars {
         physicsThreadUnlock();
       }
       simulationStatus = STOPPED;
-      // here everthing of the physical simulation can be closed
+      // here everything of the physical simulation can be closed
 
       //hard_exit(0);
     }
@@ -615,7 +612,7 @@ namespace mars {
       }
 
       if (wasrunning) {
-        startStopTrigger();//if the simulation has been stopped for loading, now it contiues
+        startStopTrigger();//if the simulation has been stopped for loading, now it continues
       }
       sceneHasChanged(false);
       //load_actual = 0;
@@ -631,7 +628,7 @@ namespace mars {
         return 0;
       }
       if (wasrunning) {
-        startStopTrigger();//resuming the simulation
+        startStopTrigger(); // resuming the simulation
       }
       sceneHasChanged(true);
       return 1;
@@ -697,7 +694,7 @@ namespace mars {
           }
       */
 
-      // Add plugins that have been add vie Simulator::addPlugin
+      // Add plugins that have been added via Simulator::addPlugin
       pluginLocker.lockForWrite();
       for (unsigned int i=0; i<newPlugins.size(); i++) {
         allPlugins.push_back(newPlugins[i]);
@@ -1112,7 +1109,7 @@ namespace mars {
     }
 
     /** 
-     * updates the osg objects position from the simulation
+     * Calls GraphicsManager::update() method to redraw all OSG objects in the simulation.
      */
     void Simulator::updateSim() {
       if(control->graphics)
@@ -1184,8 +1181,7 @@ namespace mars {
 
       if(_property.paramId == cfgCalcMs.paramId) {
         calc_ms = _property.dValue;
-        // the physics step_size is in seconds
-        if(physics) physics->step_size = calc_ms*0.001;
+        if(physics) physics->step_size = calc_ms*0.001; // The physics step_size is defined in seconds.
         if(control->joints) control->joints->changeStepSize();
         return;
       }

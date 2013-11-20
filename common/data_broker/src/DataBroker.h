@@ -148,6 +148,9 @@ namespace mars {
     };
     /// \endcond
 
+    /**
+     * Central class of the DataBroker library.
+     */
     class DataBroker : public DataBrokerInterface,
                        public mars::utils::Thread {
 

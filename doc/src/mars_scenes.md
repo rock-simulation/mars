@@ -77,7 +77,7 @@ We will have a closer look at the items in these lists in the following.
 | filename | name of the *.obj or *.bobj file associated with this note | any valid file path |
 | index | running index of the nodes | int ≥ 1 | 
 | groupid | id of the group to which a node belongs | int ≥ 1 |
-| physicmode | primitive object by which the node is represented in physics | box, sphere  | 
+| physicmode | primitive object by which the node is represented in physics | box, sphere, capsule, cylinder, plane, terrain, mesh  | 
 | relativeid | ? | ? | 
 | position | position of the node in x, y and z coordinates | double |
 | rotation | rotation of the node in quaternion format | double |
@@ -128,7 +128,7 @@ We will have a closer look at the items in these lists in the following.
 
 ## Motors
 
-Motors are associated with *joints* and can apply forces and torques respectively; for a *slider joint*, a force is applied while for a *hinge joint*, *motors* create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation]{http://www.ode.org/ode-latest-userguide.html} to read further on different [joint and motor types]{http://www.ode.org/ode-latest-userguide.html#sec_7_0_0}.
+Motors are associated with *joints* and can apply forces and torques respectively; for a *slider joint*, a force is applied while for a *hinge joint*, *motors* create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at [ODE's documentation](http://www.ode.org/ode-latest-userguide.html) to read further on different [joint and motor types](http://www.ode.org/ode-latest-userguide.html#sec_7_0_0).
 
 As for the decoding in MARS scenes, motors are described as follows:
 

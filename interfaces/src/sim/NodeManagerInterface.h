@@ -51,7 +51,7 @@ namespace mars {
   namespace interfaces {
 
     /**
-     * \author Malte Roemmermann, Lorenz Quack \n
+     * \author Malte Langosz, Lorenz Quack \n
      * \brief "NodeManagerInterface" declares the interfaces for all NodeOperations
      * that are used for the communication between the simulation modules.
      *
@@ -79,7 +79,7 @@ namespace mars {
        * only destroys the physical representation of all nodes. Thus a node
        * created with this param set to \c true will produce visual waste if the
        * node is not removed manually before reseting the simulation.
-       * \return The unique id of the new added node is returned.
+       * \return The unique id of the newly added node is returned.
        */
       virtual NodeId addNode(NodeData *nodeS,
                              bool reload = false) = 0;
@@ -761,12 +761,21 @@ namespace mars {
       virtual void setIsMovable(NodeId id, bool isMovable) = 0;
       virtual void lock() = 0;
       virtual void unlock() = 0;
-      virtual void rotateNode(NodeId id, utils::Vector pivot,
-                              utils::Quaternion q,
-                              unsigned long excludeJointId) = 0;
+      
+      /** Rotates the specified node according to the provided quaternion.
+       * \param id The \c id of the node to be rotated.
+       * \param pivot The utils::Vector defining the pivot point around which to rotate.
+       * \param q The utils::Quaternion defining the rotation vector and angle.
+       * \param excludeJointId ?
+       */
+      virtual void rotateNode(NodeId id, utils::Vector pivot, utils::Quaternion q, unsigned long excludeJointId) = 0;
 
-      virtual void positionNode(NodeId id, utils::Vector pos,
-                                unsigned long excludeJointId) = 0;
+      /** Positions the node according to the provided vector.
+       * \param id The \c id of the node to be moved.
+       * \param pos The utils::Vector defining the new position of the node.
+       * \param excludeJointId ?
+       */
+      virtual void positionNode(NodeId id, utils::Vector pos, unsigned long excludeJointId) = 0;
     };
 
   } // end of namespace interfaces

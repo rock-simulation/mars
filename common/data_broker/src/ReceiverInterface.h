@@ -19,10 +19,8 @@
  */
 
 /**
- * \file DataBroker.h
+ * \file
  * \author Malte Roemmermann, Lorenz Quack
- * \brief DataBroker A small library to manage data communication within a 
- *        software framework.
  *
  * Version 0.2
  */

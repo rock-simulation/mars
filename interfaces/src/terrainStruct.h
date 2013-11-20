@@ -29,8 +29,7 @@ namespace mars {
   namespace interfaces {
 
     /**
-     * terrainStruct is a struct to exchange heightfields between the GUI and
-     * the simulation
+     * terrainStruct is a struct to exchange height maps between the GUI and the simulation
      */
     struct terrainStruct {
       terrainStruct()

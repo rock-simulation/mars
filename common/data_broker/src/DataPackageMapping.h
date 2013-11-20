@@ -84,7 +84,7 @@ namespace mars {
 
     /**
      * \brief A DataPackageMapping can be used by a 
-     *        \link ReceiverInterface Receiver \endlink to more conviniently 
+     *        \link ReceiverInterface Receiver \endlink to more conveniently 
      *        retrieve values from a DataPackage.
      *
      * The DataPackageMapping is used to map certain 

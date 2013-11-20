@@ -1,4 +1,5 @@
-/** \mainpage
+/*
+ * 
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
@@ -17,7 +18,9 @@
  *   along with MARS.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** 
+/*
+ * 
+ * 
  * HOW TO:
  *  1) producer:
  *     - push an initial data set and get an ID back
@@ -106,7 +109,7 @@ namespace mars {
 
     public:
       /**
-       * \brief Contructor takes no arguments.
+       * \brief Constructor takes no arguments.
        */
       DataBrokerInterface(mars::lib_manager::LibManager *theManager)
         : mars::lib_manager::LibInterface(theManager)
@@ -121,7 +124,7 @@ namespace mars {
       CREATE_MODULE_INFO();
 
       /**
-       * \brief create a new timer with the given name
+       * \brief creates a new timer with the given name
        * \param timerName the name of the new timer
        * \returns \c false if a timer with the given name already exists. 
        *          \c true otherwise.
@@ -137,8 +140,8 @@ namespace mars {
        *                  \ref createTimer.
        * \param step The amount by which the timer should be stepped.
        *             This can be anything from the amount of seconds passed in
-       *             real time to an artificial simulation time or somthing 
-       *             entirly different. It's up to you.
+       *             real time to an artificial simulation time or something 
+       *             entirely different. It's up to you.
        * \return \c true if the timer was stepped. 
        *         \c false if no timer with the name \a timerName exists.
        *
@@ -155,9 +158,9 @@ namespace mars {
        * \brief registers a receiver for a group/data with a timer
        * \param receiver The ReceiverInterface that should be called back.
        * \param groupName The groupName of the DataPackage the \a receiver is 
-       *                  intersted in.
+       *                  interested in.
        * \param dataName The dataName of the DataPackage the \a receiver is 
-       *                 intersted in.
+       *                 interested in.
        * \param timerName The name of the timer that should call 
        *                  the \a receiver.
        * \param updatePeriod The number of timer steps that should lie between 
@@ -338,7 +341,7 @@ namespace mars {
        * \ref ReceiverInterface "receivers"
        * will be performed synchronous by the DataBroker. 
        * This means that the callback will occur
-       * from within the same thread where the \ref pushData happend and the 
+       * from within the same thread where the \ref pushData happened and the 
        * call to pushData will not return until all 
        * receivers that 
        * \ref registerSyncReceiver "registered" 
@@ -401,7 +404,7 @@ namespace mars {
        * from a different thread as the one from which \ref pushData was called.
        * The receivers will only get a callback for the latest pushData call.
        * This means that asynchronous receivers might miss some DataPackages
-       * when they are pushed fast to the DataBroker. If you cannot aford to 
+       * when they are pushed fast to the DataBroker. If you cannot afford to 
        * miss DataPackages you should use \ref registerSyncReceiver.
        *
        * \see unregisterAsyncReceiver, registerSyncReceiver, ReceiverInterface, 

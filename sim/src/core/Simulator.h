@@ -52,7 +52,7 @@ namespace mars {
   namespace sim {
 
     /**
-     *\brief The Simulator class implements the main functions of the simulator.
+     *\brief The Simulator class implements the main functions of the MARS simulation.
      *
      * Its constructor presents the core function in the simulation and directly takes the arguments
      * given by the user if the simulation is starting from a command line.
@@ -100,7 +100,7 @@ namespace mars {
       // --- SimulatorInterface ---
 
       // controlling the simulation
-      void updateSim(); ///< Updates the simulation.
+      void updateSim(); ///< Updates the graphical simulation.
       void myRealTime(void); ///< control the realtime calculation
       void runSimulation(); ///< Initiates the simulation
 
@@ -288,7 +288,7 @@ namespace mars {
     protected:
       
       // simulation control
-      void run();
+      void run(); ///< The simulator main loop.
       
     };
 

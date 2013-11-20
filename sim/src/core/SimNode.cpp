@@ -264,7 +264,9 @@ namespace mars {
       }
       return sNode.rot;
     }
-
+    /** 
+     * \return \c rotation of the node
+     */
     const Quaternion SimNode::getRotation() const {
       MutexLocker locker(&iMutex);
       return sNode.rot;
@@ -382,6 +384,9 @@ namespace mars {
       return sNode.material;
     }
 
+    /** 
+     * \return name of texture of of node
+     */
     const std::string SimNode::getTexture() const {
       MutexLocker locker(&iMutex);
       return sNode.material.texturename;
@@ -622,12 +627,19 @@ namespace mars {
       }
     }
 
-
+    /*
+     * \param \c mySpace: collision space of the node
+     */
     /*
       void SimNode::setSpace(int mySpace) {
       targetspace = mySpace;
       }
-
+     */
+    
+    /** 
+     * \return collision space of node
+     */
+    /*
       int SimNode::getSpace() {
       return targetspace;
       }

@@ -179,7 +179,7 @@ namespace mars {
       GET_OBJECT("rotation", rot, quaternion);
       GET_OBJECT("extend", ext, vector);
 
-      { // handle relatvie positioning
+      { // handle relative positioning
         GET_VALUE("relativeid", relative_id, ULong);
         if(relative_id) {
           unsigned int mapIndex;

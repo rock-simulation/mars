@@ -20,7 +20,7 @@
 
 /**
  * \file Controller.h
- * \author Malte Römmermann
+ * \author Malte Langosz
  * \brief "Controller" provides an architecture to log all relevant data from
  *        the simulation in file, GUI or any other receiver
  */

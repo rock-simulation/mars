@@ -98,6 +98,7 @@ namespace mars {
         void clearLibraries(void);
 
       private:
+        /// The container in which information on all managed libraries is stored.
         std::map<std::string, libStruct> libMap;
         
     }; // class LibManager

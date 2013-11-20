@@ -19,10 +19,8 @@
  */
 
 /**
- * \file DataBroker.h
+ * \file
  * \author Malte Roemmermann, Lorenz Quack
- * \brief DataBroker A small library to manage data communication within a
- *        software framework.
  *
  * Version 0.2
  */
@@ -43,6 +41,9 @@ namespace mars {
     class DataPackage;
     class DataInfo;
 
+    /**
+     * Interface for classes producing data to broadcast via a DataBroker.
+     */
     class ProducerInterface {
     public:
       ProducerInterface() {}
