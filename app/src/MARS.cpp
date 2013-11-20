@@ -127,6 +127,7 @@ namespace mars {
       coreConfigFile = configDir+"/core_libs.txt";
 
       // then check locals
+      setenv("LC_ALL","C", 1);
       setlocale(LC_ALL,"C");
 
       // Test if current locale supports ENGLISH number interpretation
