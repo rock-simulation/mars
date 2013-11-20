@@ -5,17 +5,21 @@ Installing MARS {#installation}
 
 This section describes how to setup a development environment for MARS.
 You should create a dedicated development folder on your harddrive.
-Something like C:/development/mars_git or /home/my_username/development/mars_git.
+Something like C:/development/mars_git or /home/my_username/development/mars_git:
+
+    export MARS_DEV_ROOT=/home/my_username/development/mars_git
+
 We will refer to this directory as the development directory or $MARS_DEV_ROOT.
 You should clone the git sources into that directory using
 
+    mkdir -p $MARS_DEV_ROOT
     cd $MARS_DEV_ROOT
     git clone git://gitorious.org/rock-simulation/mars.git
     
-This will create a new subdirectory "mars" containing the working copy.
-You then must fetch some dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS:
+This will create a new subdirectory "mars" containing the working copy -- note that is not possible to give the directory containing the git-checkout a different name. You then probably have to install some system dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS:
 
     cd $MARS_DEV_ROOT
+    cp mars/scripts/bootstrap/packageList.txt.example mars/scripts/bootstrap/packageList.txt
     ./mars/scripts/bootstrap/mars.sh bootstrap
     
 When running it for the first time the script will ask you for the root development directory. Please enter the *absolute* path to your development directory. Next you will be asked how many CPU cores the system may use to build MARS.
