@@ -1,8 +1,9 @@
+# -*- coding: utf-8 -*-
 import os
 import textwrap
 #from docutils import core
 import subprocess
-import re #regular expressions
+#import re #regular expressions
 from PIL import Image    
 
 def createHeader(relPath, linklist, fileName, local_links):
@@ -10,34 +11,36 @@ def createHeader(relPath, linklist, fileName, local_links):
     li_list = ""
     indent = 0
     for f in linklist:
-        if f["fileName"] != "index.md":
-            n_subfolders = f["outPath"][3:].count("/")-1
-            #print f["outPath"], f["fileName"], indent, n_subfolders
-            if n_subfolders > indent:
-                if (n_subfolders-indent) > 1:
-                    dirs = f["outPath"][3:].split("/")[:-1]
-                    li_list += '  '*indent+ '<li>' + dirs[n_subfolders-indent-1].title() + '</li>\n'
-                li_list += '  '*indent+'<ul>\n  '#*(n_subfolders-indent)
-            elif n_subfolders < indent:
-                li_list += '</ul>\n'*(indent-n_subfolders-1)
-            li_list += '  '*indent + '<li><a href="' + relPath + os.path.join(f["outPath"][2:], f["fileName"][:-3]+".html") + '">' + f["fileName"][:-3].title().replace("_", " ") + '</a></li>\n'
-            indent = n_subfolders
-            if f["fileName"] == fileName: #if we have to add the local links:
-                level = 1
-                for ll in local_links:
-                    name = ll[1]
-                    if ll[0] > level:
-                        li_list += '<ul>\n  ' * (ll[0]-level)
-                    elif ll[0] < level:
-                        li_list += '</ul>\n'*(level-ll[0])
-                    li_list += '<li><a href=#' + name + '>' + name.title().replace("-", " ") + '</a></li>\n'
-                    level = ll[0]
-                li_list += '</ul>\n'*(level-1)
+        if f["fileName"] == "index.md" or f["outPath"].find("/groups/") >= 0:
+            continue
+        
+        n_subfolders = f["outPath"][3:].count("/")-1
+        #print f["outPath"], f["fileName"], indent, n_subfolders
+        if n_subfolders > indent:
+            if (n_subfolders-indent) == 1:
+                dirs = f["outPath"][3:].split("/")[:-1]
+                li_list += '  '*indent+ '<li>' + dirs[n_subfolders-indent].title() + '</li>\n'                
+            if (n_subfolders-indent) > 1:
+                dirs = f["outPath"][3:].split("/")[:-1]
+                li_list += '  '*indent+ '<li>' + dirs[n_subfolders-indent-1].title() + '</li>\n'
+            li_list += '  '*indent+'<ul>\n  '#*(n_subfolders-indent)
+        elif n_subfolders < indent:
+            li_list += '</ul>\n'*(indent-n_subfolders-1)
+        li_list += '  '*indent + '<li><a href="' + relPath + os.path.join(f["outPath"][2:], f["fileName"][:-3]+".html") + '">' + f["fileName"][:-3].title().replace("_", " ") + '</a></li>\n'
+        indent = n_subfolders
+        if f["fileName"] == fileName: #if we have to add the local links:
+            level = 1
+            for ll in local_links:
+                name = ll[1]
+                if ll[0] > level:
+                    li_list += '<ul>\n  ' * (ll[0]-level)
+                elif ll[0] < level:
+                    li_list += '</ul>\n'*(level-ll[0])
+                li_list += '<li><a href=#' + name + '>' + name.title().replace("-", " ") + '</a></li>\n'
+                level = ll[0]
+            li_list += '</ul>\n'*(level-1)
     if indent > 0:
         li_list += '</ul>\n'*(indent)
-                
-                    
-                
 
     out = '''\
              <!DOCTYPE html>
@@ -85,30 +88,37 @@ def createFooter():
           '''
     return textwrap.dedent(out)
 
-def create_outpath(filePath)    :
+def create_outpath(filePath):
     # this part is rather ugly, but os.path.join() didn't work, either
     tmpPath = filePath.replace("../", "")
     tmpPath = tmpPath.replace("doc", "")
     tmpPath = tmpPath.replace("/src", "")
-    if len(tmpPath) > 0 and tmpPath[0] == "/":
-        tmpPath = tmpPath[1:]
+    if len(tmpPath) > 0:
+        if tmpPath[0] == "/":
+            tmpPath = tmpPath[1:]
+        if tmpPath[-1] != "/":
+            tmpPath = tmpPath+"/"
     outPath = "../mars_manual/" + tmpPath
     return outPath
 
 def constructRelativePath(filePath):
     n = filePath[:-1].count("/")
     if n == 0:
-        return "."
+        return ".", 0
     else:
         relPath = ".."
         for i in range(n-1):
             relPath+="/.."
-        return relPath
+        return relPath, n
 
 def convertMdToHtml(linklist, f):
     filePath = linklist[f]["filePath"]
     fileName = linklist[f]["fileName"]
     outPath = linklist[f]["outPath"]
+    
+    if outPath.find("/groups/") >= 0:
+        print "Skipping group index file:", linklist[f]["fileName"]
+        return 0
 
     # read in and convert markdown file
     inFile = open(os.path.join(filePath, fileName), "r")
@@ -118,10 +128,9 @@ def convertMdToHtml(linklist, f):
     pandoc = subprocess.Popen(["pandoc", os.path.join(filePath, fileName), "-f", "markdown+pipe_tables", "-t", "html"], stdout = subprocess.PIPE)
     bodyString = pandoc.communicate()[0]#.replace('''<div class="figure">\n<img''', '''<div class="figure">\n<img width="100%"''')
 
-    # make alterations to lines
+    # create local links
     local_links = []
     bodyLines = str(bodyString).split("\n")
-    alt_bodyString = ""
     for line in bodyLines:
         pos = line.find("<h") # create local link list
         if pos >= 0:
@@ -130,6 +139,17 @@ def convertMdToHtml(linklist, f):
             name = line[id_pos+4:line.find('"', id_pos+4)]
             if level > 1:
                 local_links.append([level, name])
+
+    # create header and footer
+    relPathInfo = constructRelativePath(outPath)
+    relPath = relPathInfo[0]
+    n_level = relPathInfo[1]
+    headerString = createHeader(relPath, linklist, fileName, local_links)
+    footerString = createFooter()                
+    
+    # edit HTML output of pandoc    
+    alt_bodyString = ""
+    for line in bodyLines:    
         # line-by-line modifications of pandoc's html output
         altLine = line
         minstart = 0
@@ -154,7 +174,7 @@ def convertMdToHtml(linklist, f):
             url_end = altLine.find('"', url_start)
             url = altLine[url_start:url_end]
             image_filename = "../" + url.replace("../", "")
-            print image_filename
+            #print image_filename
             im = Image.open(image_filename)
             width, height = im.size
             ratio = height*1.0 / width*1.0
@@ -163,16 +183,10 @@ def convertMdToHtml(linklist, f):
                 output_width = img_width
             else:
                 output_width = width
-            print output_width, ratio, int(output_width*ratio)
+            #print output_width, ratio, int(output_width*ratio)
             altLine = altLine.replace("<img src=", "<img " + 'width="' + str(int(output_width)) + '" height="' +str(int(ratio*output_width)) + '" src=')
+            altLine = altLine.replace(url, "../" * (n_level) + url.replace("../",""))
         alt_bodyString += altLine+"\n"
-            
-            
-
-    # create header and footer
-    relPath = constructRelativePath(outPath)
-    headerString = createHeader(relPath, linklist, fileName, local_links)
-    footerString = createFooter()
 
     #output
     if not os.path.exists(outPath):
@@ -183,11 +197,12 @@ def convertMdToHtml(linklist, f):
     outFile.write(alt_bodyString)
     outFile.write(footerString)
     outFile.close()
-    print "    Converting " + filePath + "/" + fileName + " to " + os.path.join(outPath, fileName[:-3] + ".html")
+    #print "    Converting " + filePath + "/" + fileName + " to " + os.path.join(outPath, fileName[:-3] + ".html")
+    return 1
 
 if __name__ == '__main__':
 
-    #the following code browses through all directories and automatically converts all .rst files
+    #the following code browses through all directories and automatically converts all .md files
     print "Converting .md to mars/doc/*.html..."
     linklist = []
     #find all links
@@ -195,8 +210,10 @@ if __name__ == '__main__':
         for f in files:
             if f.endswith(".md"):
                 linklist.append({"filePath": root, "fileName": f, "outPath": create_outpath(root)})
+    n_files = 0;
     for f in range(len(linklist)):
-        convertMdToHtml(linklist, f)
-    print "In total,", len(linklist), "files were converted."
+        n_files += convertMdToHtml(linklist, f)
+        
+    print "In total,", str(n_files)+"/"+str(len(linklist)), "files were processed."
 
 

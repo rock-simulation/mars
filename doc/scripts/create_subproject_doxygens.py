@@ -5,7 +5,7 @@ Created on Tue Oct 22 10:44:01 2013
 @author: Kai von Szadkowski
 """
 
-# This script has to be executed from MARS' /mars/doc/doxygen folder, where it
+# This script has to be executed from MARS' /mars/doc/scripts folder, where it
 # should be located. It browses through all directories of mars, detecting
 # any folders containing a Markdown file with the same name as the folder, e.g.
 # /mars/common/data_broker/data_broker.md
@@ -16,7 +16,7 @@ Created on Tue Oct 22 10:44:01 2013
 # to the index is additionally created in the /doc/ folder.
 #
 # NOTE: The script overwrites any locally changed configfiles with the standard
-# template that's found in the folder /mars/doc/doxygen/subproject_doxygen_template
+# template that's found in the folder /mars/doc/src/subproject_doxygen_template
 
 from subprocess import call
 import os

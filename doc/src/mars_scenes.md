@@ -1,5 +1,5 @@
-Mars Scenes {#mars_scenes}
-==============
+MARS Scenes {#mars_scenes}
+===========
 
 ## Overview
 

@@ -1,7 +1,7 @@
-Advanced Modeling {#tutorial_advanced_modelling}
-==============
+Advanced Modeling {#tutorial_advanced_modeling}
+=================
 
-![](../../../src/images/tutorials/advanced_modeling/robot.png)
+![](../../src/images/tutorials/advanced_modeling/robot.png)
 
 
 ## Introduction
@@ -27,13 +27,13 @@ Let's implement all these elements in a model with a slighty more complex hierar
 
 As a starting point, we model a main body (we chose a flat cylinder) and attach limbs to it that each possess two segments. Remember to use the *Add -> Mesh* menu in Blender. Via joints, we connect the main body with the upper segment and the upper segment with the lower one:
 
-![](../../../src/images/tutorials/advanced_modeling/building_arm.png)
+![](../../src/images/tutorials/advanced_modeling/building_arm.png)
 
 MARS does not take into account how far apart objects connected by joints are, thus to properly visually represent a joint, it is often helpful to add another object to "hide" that the objects are seemingly connected only by air. In our robot, we chose spheres for that purpose.
 
 What is important now is to get the hierarchy in this system right. Since the lower leg is connected to the upper one, it has to be moved as well when the upper leg rotates around its joint to the main body. This can by setting the upper leg the *parent* of the lower leg, and the main body the *parent* of the upper leg. This effectively creates a hierarchy as shown here:
 
-![](../../../src/images/tutorials/advanced_modeling/hierarchy.png)
+![](../../src/images/tutorials/advanced_modeling/hierarchy.png)
 
 Create the custom properties for the joints:
 
@@ -41,15 +41,15 @@ Create the custom properties for the joints:
 - type: joint
 - node2: here it's easiest to choose the spheres we used to represent the joints with visually
     
-Also, you can add a nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.    
+Also, you can add a nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.
 
 Now duplicate the leg (*Shift + D*) and rearrange the copies nicely around your body:
 
-![](../../../src/images/tutorials/advanced_modeling/overview.png)
+![](../../src/images/tutorials/advanced_modeling/overview.png)
 
 Don't forget to again change the *node2* custom properties of the joints after duplicating the legs. If everything worked according to plan, you should have a hierarchy of objects in Blender looking somewhat like this, with the joint helper objects named "H.*":
 
-![](../../../src/images/tutorials/advanced_modeling/blender_model_structure.png)
+![](../../src/images/tutorials/advanced_modeling/blender_model_structure.png)
 
 
 ## Collision
@@ -61,7 +61,4 @@ At this point you might be wondering: "Wait a second, all these solid bodies we 
 And that's it, you've successfully built a walking robot. We'll deal with how to actually make it walk in another tutorial, but you can use MARS' motor controller window to manually play around with the robot and check whether everything worked out or not.
 
 If you have taken a closer look at the custom properties created by the *create_mars_props* script you will have noticed that the hierarchy shown in the Blender model was mirrored in the groups: each section of the robot belonged to a separate group. Technically, the hierarchy introduced above is not strict in the sense that it is internally represented as connected groups rather than hierarchical levels. However, the *create_mars_props* script uses the hierarchy to properly subdivide everything in groups, thus if you have a centipede-like robot where each part is equally structurally equivalent, you will still have to order them manually into a nested hierarchy. The only alternative is to assign the group numbers manually before running the export script.
-
-
-
 

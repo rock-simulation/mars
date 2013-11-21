@@ -6,10 +6,8 @@ MARS (Machina Arte Robotum Simulans) is a simulation and visualisation tool for 
 
 ## News
 
-## Documentation
-
-* \subpage installation
-* \subpage tutorials
+* 21.11.2013:
+  First functional version of the new MARS documentation is completed. MARS now comes with a constantly extended manual as well as a Doxygen-powered code documentation using a shared base of Markdown files. For details, check the [Documentation structure](@ref documentation_structure).
 
 ## Launch
 
@@ -20,5 +18,5 @@ After MARS is installed you can find a mars_default configuration folder in $MAR
     cd install/configuration/mars_default
     mars_app
     
-If it's not clear to you what these commands do, check out the [MARS environment and build tutorial](tutorials/basic/build_tutorial.html).
+If it's not clear to you what these commands do, check out the [MARS environment and build tutorial](@ref tutorial_build).
 

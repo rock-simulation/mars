@@ -1,5 +1,5 @@
-The inner workings of MARS explained {#inner_workings}
-==============
+The inner workings of MARS {#inner_workings}
+==========================
 
 ## Overview
 

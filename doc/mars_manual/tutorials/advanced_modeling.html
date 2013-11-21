@@ -7,29 +7,29 @@
                  <meta name="description" content="MARS is a flexible physics simulator.">
                  <meta name="author" content="MARS Project">
                  <meta name="keywords" content="MARS, simulation, physics, robotics">
-                 <link rel="stylesheet" type="text/css" href="../../../src/css/mars_default.css" media="all" />
+                 <link rel="stylesheet" type="text/css" href="../../src/css/mars_default.css" media="all" />
                </head>
              <body>
                <div class="nav-box">
                  <h2>Navigation</h2>
                  <nav>
                    <ol>
-                     <li><a href="../../../mars_manual/index.html">Home</a></li>
+                     <li><a href="../../mars_manual/index.html">Home</a></li>
                      <li>Common</li>
 <ul>
-  <li><a href="../../../mars_manual/common/data_broker/data_broker.html">Data Broker</a></li>
-    <li><a href="../../../mars_manual/common/lib_manager/lib_manager.html">Lib Manager</a></li>
+  <li><a href="../../mars_manual/common/data_broker/data_broker.html">Data Broker</a></li>
+    <li><a href="../../mars_manual/common/lib_manager/lib_manager.html">Lib Manager</a></li>
 </ul>
-    <li><a href="../../../mars_manual/libraries.html">Libraries</a></li>
-<li><a href="../../../mars_manual/inner_workings.html">Inner Workings</a></li>
-<li><a href="../../../mars_manual/mars_scenes.html">Mars Scenes</a></li>
-<li><a href="../../../mars_manual/installation.html">Installation</a></li>
-<li><a href="../../../mars_manual/tutorials/tutorials.html">Tutorials</a></li>
+    <li><a href="../../mars_manual/libraries.html">Libraries</a></li>
+<li><a href="../../mars_manual/inner_workings.html">Inner Workings</a></li>
+<li><a href="../../mars_manual/mars_scenes.html">Mars Scenes</a></li>
+<li><a href="../../mars_manual/documentation_structure.html">Documentation Structure</a></li>
+<li><a href="../../mars_manual/installation.html">Installation</a></li>
+<li>Tutorials</li>
 <ul>
-  <li><a href="../../../mars_manual/tutorials/basic/plugin_tutorial.html">Plugin Tutorial</a></li>
-  <li><a href="../../../mars_manual/tutorials/basic/basic_tutorial.html">Basic Tutorial</a></li>
-  <li><a href="../../../mars_manual/tutorials/basic/build_tutorial.html">Build Tutorial</a></li>
-  <li><a href="../../../mars_manual/tutorials/basic/advanced_modeling.html">Advanced Modeling</a></li>
+  <li><a href="../../mars_manual/tutorials/plugin_tutorial.html">Plugin Tutorial</a></li>
+  <li><a href="../../mars_manual/tutorials/building_mars.html">Building Mars</a></li>
+  <li><a href="../../mars_manual/tutorials/advanced_modeling.html">Advanced Modeling</a></li>
 <ul>
   <li><a href=#introduction>Introduction</a></li>
 <li><a href=#prerequisites>Prerequisites</a></li>
@@ -38,6 +38,7 @@
 <li><a href=#collision>Collision</a></li>
 <li><a href=#final-remarks>Final Remarks</a></li>
 </ul>
+  <li><a href="../../mars_manual/tutorials/basic_modeling.html">Basic Modeling</a></li>
 </ul>
 
                    </ol>
@@ -45,11 +46,11 @@
                </div>
                <div id="content">
                <header>
-                 <a href="../../../mars_manual/index.html"><img src="../../../src/images/logo_v2_wob.png" alt="MARS" /></a>
+                 <a href="../../mars_manual/index.html"><img src="../../src/images/logo_v2_wob.png" alt="MARS" /></a>
                </header>
-<h1 id="tutorial_advanced_modelling">Advanced Modeling</h1>
+<h1 id="tutorial_advanced_modeling">Advanced Modeling</h1>
 <div class="figure">
-<img width="688" height="334" src="../../../src/images/tutorials/advanced_modeling/robot.png" />
+<img width="688" height="334" src="../../src/images/tutorials/advanced_modeling/robot.png" />
 </div>
 <h2 id="introduction">Introduction</h2>
 <p>In this tutorial you will learn how to build model of a robot in Blender which has a more complicated structure than the car used in the basic modeling tutorial.</p>
@@ -62,12 +63,12 @@
 <p>Let's implement all these elements in a model with a slighty more complex hierarchy. To keep things simple, we will only use <em>hinge</em> joints represented by cylinders as in the basic modeling tutorial and model the rather clumsy looking fellow shown above. You can of course choose another design of your own fancy as long as the overall morphology stays the same.</p>
 <p>As a starting point, we model a main body (we chose a flat cylinder) and attach limbs to it that each possess two segments. Remember to use the <em>Add -&gt; Mesh</em> menu in Blender. Via joints, we connect the main body with the upper segment and the upper segment with the lower one:</p>
 <div class="figure">
-<img width="900" height="307" src="../../../src/images/tutorials/advanced_modeling/building_arm.png" />
+<img width="900" height="307" src="../../src/images/tutorials/advanced_modeling/building_arm.png" />
 </div>
 <p>MARS does not take into account how far apart objects connected by joints are, thus to properly visually represent a joint, it is often helpful to add another object to &quot;hide&quot; that the objects are seemingly connected only by air. In our robot, we chose spheres for that purpose.</p>
 <p>What is important now is to get the hierarchy in this system right. Since the lower leg is connected to the upper one, it has to be moved as well when the upper leg rotates around its joint to the main body. This can by setting the upper leg the <em>parent</em> of the lower leg, and the main body the <em>parent</em> of the upper leg. This effectively creates a hierarchy as shown here:</p>
 <div class="figure">
-<img width="667" height="381" src="../../../src/images/tutorials/advanced_modeling/hierarchy.png" />
+<img width="667" height="381" src="../../src/images/tutorials/advanced_modeling/hierarchy.png" />
 </div>
 <p>Create the custom properties for the joints:</p>
 <ul>
@@ -78,11 +79,11 @@
 <p>Also, you can add a nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties <em>physicMode</em> to <em>sphere</em> as well as <em>radius</em> to the correct value like you did in the basic modeling tutorial. You can then run the <em>create_mars_props.py</em> script.</p>
 <p>Now duplicate the leg (<em>Shift + D</em>) and rearrange the copies nicely around your body:</p>
 <div class="figure">
-<img width="900" height="522" src="../../../src/images/tutorials/advanced_modeling/overview.png" />
+<img width="900" height="522" src="../../src/images/tutorials/advanced_modeling/overview.png" />
 </div>
 <p>Don't forget to again change the <em>node2</em> custom properties of the joints after duplicating the legs. If everything worked according to plan, you should have a hierarchy of objects in Blender looking somewhat like this, with the joint helper objects named &quot;H.*&quot;:</p>
 <div class="figure">
-<img width="833" height="513" src="../../../src/images/tutorials/advanced_modeling/blender_model_structure.png" />
+<img width="833" height="513" src="../../src/images/tutorials/advanced_modeling/blender_model_structure.png" />
 </div>
 <h2 id="collision">Collision</h2>
 <p>At this point you might be wondering: &quot;Wait a second, all these solid bodies we created are penetrating each other, is this not going to be a problem for collision in MARS?&quot; In fact, this is not a problem, as objects grouped together cannot collide and may therefore safely overlap. Neither do objets connected via joints show collision behaviour. However, this is only true for direct connections, but not true over more than one hierarchical level. Thus the main body and the upper leg of our robot cannot collide, but the main body and the lower leg do collide. This is the reason why it's important to give the objects helping to visually represent the joint the same parent as the joint itself (and the leg to which the joint is attached).</p>
