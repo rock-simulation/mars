@@ -1126,7 +1126,7 @@ namespace mars {
     /** 
      * \return \c true if no external requests are open.
      */
-    bool Simulator::allConcurrencysHandeled(){
+    bool Simulator::allConcurrencysHandled(){
         return filesToLoad.empty();
     }
 

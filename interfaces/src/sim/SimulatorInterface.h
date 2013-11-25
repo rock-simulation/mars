@@ -83,10 +83,10 @@ namespace mars {
        */
       virtual void exportScene() const = 0;
       virtual bool sceneChanged() const = 0;
-      virtual void sceneHasChanged(bool reseted) = 0; //FIXME: this is misspelled
+      virtual void sceneHasChanged(bool reset) = 0;
 
       //threads
-      bool allConcurrencysHandeled(); //FIXME: this is misspelled
+      bool allConcurrencysHandled(); //FIXME: this is misspelled
       virtual void setSyncThreads(bool value) = 0;
       virtual void physicsThreadLock(void) = 0;
       virtual void physicsThreadUnlock(void) = 0;      

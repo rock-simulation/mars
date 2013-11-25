@@ -144,10 +144,10 @@ namespace mars {
       virtual int saveScene(const std::string &filename, bool wasrunning);
       virtual void exportScene() const; ///< Exports the current scene as both *.obj and *.osg file.
       virtual bool sceneChanged() const;
-      virtual void sceneHasChanged(bool reseted);
+      virtual void sceneHasChanged(bool reset);
 
       //threads
-      virtual bool allConcurrencysHandeled(); ///< Checks if external requests are open.
+      virtual bool allConcurrencysHandled(); ///< Checks if external requests are open.
       void setSyncThreads(bool value); ///< Syncs the threads of GUI and simulation.
       virtual void physicsThreadLock(void);
       virtual void physicsThreadUnlock(void);
