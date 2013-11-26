@@ -544,7 +544,7 @@ namespace mars {
       WidgetCallBackPairType *ip =(WidgetCallBackPairType*) event.getData();
 
       if(ip){
-        if(ip->second == NULL && ip->first) {
+        if(ip->second == nullptr && ip->first) {
           guiClickCallBack  call=  ip->first;
           call(event.x ,event.y);
 
@@ -598,7 +598,11 @@ namespace mars {
           _widgetCallBackMap.insert(WidgetCallBackMapType::value_type(id,WidgetCallBackList() ) );
           wcb = & _widgetCallBackMap.find(id)->second ;
         }
+#ifdef USE_TR1
         wcb->push_back(WidgetCallBackPairType(function, std::tr1::shared_ptr<guiClickCallBackBind>(bindptr) ));
+#else
+        wcb->push_back(WidgetCallBackPairType(function, std::shared_ptr<guiClickCallBackBind>(bindptr) ));
+#endif
         if(wnd.valid()){
           wnd->setEventMask( wnd->getEventMask()| type);
           wnd->addCallback( new osgWidget::Callback(&GraphicsWidget::manageClickEvent,this, type,(void*)&wcb->back()));

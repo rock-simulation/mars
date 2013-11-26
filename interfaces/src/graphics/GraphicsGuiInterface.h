@@ -26,8 +26,12 @@
 #endif
 
 #include <string>
-#include <tr1/functional>
 
+#ifdef USE_TR1
+#include <tr1/functional>
+#else
+#include <functional>
+#endif
 
 namespace osgWidget{
   class WindowManager;
@@ -51,9 +55,12 @@ namespace mars {
       /**
        *  declaration for the binding for more sophisticated callback
        */
-      typedef std::tr1::function<void(double,double)> guiClickCallBackBind; 
-     
-    
+#ifdef USE_TR1
+      typedef std::tr1::function<void(double,double)> guiClickCallBackBind;
+#else
+      typedef std::function<void(double,double)> guiClickCallBackBind;
+#endif
+
       GraphicsGuiInterface() {}
       virtual ~GraphicsGuiInterface() {}
       /**

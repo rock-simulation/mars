@@ -6,6 +6,13 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
+include(CheckIncludeFileCXX)
+CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
+
+if(${USE_TR1})
+    ADD_DEFINITIONS(-DUSE_TR1)
+endif()
+
 mars_defaults()
 define_module_info()
 
