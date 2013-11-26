@@ -544,7 +544,11 @@ namespace mars {
       WidgetCallBackPairType *ip =(WidgetCallBackPairType*) event.getData();
 
       if(ip){
+#ifdef USE_TR1
+        if(ip->second == NULL && ip->first) {
+#else
         if(ip->second == nullptr && ip->first) {
+#endif
           guiClickCallBack  call=  ip->first;
           call(event.x ,event.y);
 

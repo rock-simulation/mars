@@ -46,6 +46,12 @@
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 namespace mars {
   namespace graphics {
 
@@ -353,10 +359,7 @@ namespace mars {
         }
 
 
-#ifndef OPENSCENEGRAPH_MAJOR_VERSION
-        geom->setVertexAttribArray( TANGENT_UNIT,
-                                   tangents, osg::Array::BIND_PER_VERTEX );
-#elif (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
         geom->setVertexAttribData( TANGENT_UNIT, osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_PER_VERTEX ) );
 #elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
         geom->setVertexAttribArray( TANGENT_UNIT,

@@ -8,6 +8,7 @@ include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
 include(CheckIncludeFileCXX)
 CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
+CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 
 if(${USE_TR1})
     ADD_DEFINITIONS(-DUSE_TR1)
