@@ -7,9 +7,8 @@ include(FindPkgConfig)
 include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
 include(CheckIncludeFileCXX)
-CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
-CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 
+CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
 if(${USE_TR1})
     ADD_DEFINITIONS(-DUSE_TR1)
 endif()
@@ -45,6 +44,12 @@ endif()
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
+
+set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
+CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
+if(${HAVE_OSG_VERSION_H})
+    ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
+endif()
 
 find_package(Qt4 REQUIRED)
 set(QT_USE_QTOPENGL TRUE)
