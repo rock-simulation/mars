@@ -124,7 +124,9 @@ namespace mars {
       std::vector<interfaces::draw_item> draw_intern;
       std::vector<interfaces::draw_item> draw_extern;
       std::vector<dJointFeedback*> contact_feedback_list;
-      bool num_contacts, create_contacts, log_contacts;
+      bool create_contacts, log_contacts;
+      int num_contacts;
+      int ray_collision;
       // this functions are for the collision implementation
       void nearCallback (dGeomID o1, dGeomID o2);
       static void callbackForward(void *data, dGeomID o1, dGeomID o2);

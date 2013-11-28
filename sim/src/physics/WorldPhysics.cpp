@@ -829,15 +829,10 @@ namespace mars {
     }
 
     int WorldPhysics::handleCollision(dGeomID theGeom) {
-        geom_data* geom_data1 = (geom_data*)dGeomGetData(theGeom);
-        geom_data1->value = std::numeric_limits< double >::max();
-        dSpaceCollide2((dGeomID) space, theGeom, this, callbackForward);
-        if(geom_data1->value != std::numeric_limits< double >::max())
-        {
-            return 1;
-        }
-        geom_data1->value = -1;
-        return 0;
+      ray_collision = 0;
+      dSpaceCollide2(theGeom, (dGeomID)space, this,
+                     &WorldPhysics::callbackForward);
+      return ray_collision;
     }
 
     double WorldPhysics::getCollisionDepth(dGeomID theGeom) {
