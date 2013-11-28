@@ -135,7 +135,10 @@ namespace mars {
       std::vector<double> result;
       result.resize(data.size());
       for(unsigned int i=0; i<data.size(); i++) {
-        result[i] = data[i];
+        if(data[i] < 0)
+            result[i] = maxDistance;
+        else
+            result[i] = data[i];
       }
       return result;
     }
@@ -143,7 +146,10 @@ namespace mars {
     int RaySensor::getSensorData(double *data_) const {
       data_ = (double*)malloc(data.size()*sizeof(double));
       for(unsigned int i=0; i<data.size(); i++) {
-        data_[i] = data[i];
+        if(data[i] < 0)
+            data_[i] = maxDistance;
+        else
+            data_[i] = data[i];
       }
       return data.size();
     }
@@ -166,7 +172,10 @@ namespace mars {
         rotationIndices[3] = package.getIndexByName("rotation/w");
       }
       for(int i = 0; i < 3; ++i)
+      {
         package.get(positionIndices[i], &position[i]);
+      }
+      
       package.get(rotationIndices[0], &orientation.x());
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
@@ -189,7 +198,11 @@ namespace mars {
             (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
             (*drawItems)[i].start = position;
             (*drawItems)[i].end = (orientation * directions[i]);
-            (*drawItems)[i].end *= data[i];
+            if(data[i] < 0)
+                (*drawItems)[i].end *= maxDistance;
+            else
+                (*drawItems)[i].end *= data[i];
+            
             (*drawItems)[i].end += (*drawItems)[i].start;
           }
         }

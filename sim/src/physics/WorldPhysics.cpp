@@ -443,11 +443,45 @@ namespace mars {
       dBodyID b1=dGeomGetBody(o1);
       dBodyID b2=dGeomGetBody(o2);
 
-      if(b1 && b2 && dAreConnectedExcluding(b1,b2,dJointTypeContact))
-        return;
-
       geom_data* geom_data1 = (geom_data*)dGeomGetData(o1);
       geom_data* geom_data2 = (geom_data*)dGeomGetData(o2);
+
+            // test if we have a ray sensor:
+      if(geom_data1->ray_sensor) {
+        dContact contact;
+        if(geom_data1->parent_geom == o2) {
+          return;
+        }
+        
+        if(geom_data1->parent_body == dGeomGetBody(o2)) {
+          return;
+        }
+        
+        numc = dCollide(o2, o1, 1|CONTACTS_UNIMPORTANT, &(contact.geom), sizeof(dContact));
+        if(numc) {
+          if(contact.geom.depth < geom_data1->value)
+            geom_data1->value = contact.geom.depth;
+        }
+        return;
+      }
+      else if(geom_data2->ray_sensor) {
+        dContact contact;
+        if(geom_data2->parent_geom == o1) {
+          return;
+        }
+        if(geom_data2->parent_body == dGeomGetBody(o1)) {
+          return;
+        }
+        numc = dCollide(o2, o1, 1|CONTACTS_UNIMPORTANT, &(contact.geom), sizeof(dContact));
+        if(numc) {
+          if(contact.geom.depth < geom_data2->value)
+            geom_data2->value = contact.geom.depth;
+        }
+        return;
+      }
+      
+      if(b1 && b2 && dAreConnectedExcluding(b1,b2,dJointTypeContact))
+        return;
 
       if(!b1 && !b2 && !geom_data1->ray_sensor && !geom_data2->ray_sensor) return;
 
@@ -504,33 +538,7 @@ namespace mars {
      }
       */
   
-      // test if we have a ray sensor:
-      if(geom_data1->ray_sensor) {
-        if(geom_data1->parent_geom == o2) {
-          delete[] contact;
-          return;
-        }
-        numc = dCollide(o2, o1, 1|CONTACTS_UNIMPORTANT, &(contact[0].geom), sizeof(dContact));
-        if(numc) {
-          if(contact[0].geom.depth < geom_data1->value)
-            geom_data1->value = contact[0].geom.depth;
-        }
-        delete[] contact;
-        return;
-      }
-      else if(geom_data2->ray_sensor) {
-        if(geom_data2->parent_geom == o1) {
-          delete[] contact;
-          return;
-        }
-        numc = dCollide(o2, o1, 1|CONTACTS_UNIMPORTANT, &(contact[0].geom), sizeof(dContact));
-        if(numc) {
-          if(contact[0].geom.depth < geom_data2->value)
-            geom_data2->value = contact[0].geom.depth;
-        }
-        delete[] contact;
-        return;
-      }
+
   
       // frist we set the softness values:
       contact[0].surface.mode = dContactSoftERP | dContactSoftCFM;
@@ -820,33 +828,15 @@ namespace mars {
     }
 
     int WorldPhysics::handleCollision(dGeomID theGeom) {
-      dGeomID otherGeom;
-      dContact contact[1];
-      geom_data* geom_data1 = (geom_data*)dGeomGetData(theGeom);
-      int numc;
-      int ret = 0;
-
-      for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
-        otherGeom = dSpaceGetGeom(space, i);
-
-        if(geom_data1->parent_geom == otherGeom) {
-          continue;
+        geom_data* geom_data1 = (geom_data*)dGeomGetData(theGeom);
+        geom_data1->value = std::numeric_limits< double >::max();
+        dSpaceCollide2((dGeomID) space, theGeom, this, callbackForward);
+        if(geom_data1->value != std::numeric_limits< double >::max())
+        {
+            return 1;
         }
-        if(geom_data1->parent_body == dGeomGetBody(otherGeom)) {
-          continue;
-        }
-        if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom))) {
-          continue;
-        }
-        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
-                        &(contact[0].geom), sizeof(dContact));
-        if(numc) {
-          if(contact[0].geom.depth < geom_data1->value)
-            geom_data1->value = contact[0].geom.depth;
-          ret = 1;
-        }
-      }
-      return ret;
+        geom_data1->value = -1;
+        return 0;
     }
 
     double WorldPhysics::getCollisionDepth(dGeomID theGeom) {
