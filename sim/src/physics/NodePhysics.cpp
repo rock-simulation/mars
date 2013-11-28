@@ -1351,7 +1351,7 @@ namespace mars {
           gd->ray_sensor = 1;
           gd->parent_geom = nGeom;
           gd->parent_body = nBody;
-          sle.geom = dCreateRay(theWorld->getSpace(), polarSensor->maxDistance);
+          sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
           dGeomSetCollideBits(sle.geom, 32768);
           dGeomSetCategoryBits(sle.geom, 32768);
           direction = Vector(cos(rad_start+i*polarSensor->stepX),
