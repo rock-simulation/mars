@@ -264,7 +264,12 @@ namespace mars {
         /// first check for collisions
         num_contacts = log_contacts = 0;
         create_contacts = 1;
-        dSpaceCollide(space,this, &WorldPhysics::callbackForward);	
+        dSpaceCollide(space,this, &WorldPhysics::callbackForward);
+        
+        drawLock.lock();
+        draw_extern.swap(draw_intern);
+        drawLock.unlock();
+
         /// then calculate the next state for a time of step_size seconds
         try {
           if(fast_step) dWorldQuickStep(world, step_size);
@@ -723,10 +728,6 @@ namespace mars {
               geom_data1->node1 = true;
             }
           }
-          drawLock.lock();
-          draw_extern.clear();
-          draw_extern = draw_intern;
-          drawLock.unlock();
         }
       }
       delete[] contact;
