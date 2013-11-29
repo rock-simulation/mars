@@ -169,7 +169,7 @@ namespace mars {
         //NSView* thisWindow = (NSView*)winId();
         NSView* osgWindow = wdata->getCreatedNSView();
         if(osgWindow) {
-          setCocoaView((void*)osgWindow);
+          setCocoaView(osgWindow);
           haveNSView = true;
           setGeometry(0, 0, 0, 0);
 
