@@ -53,10 +53,16 @@ if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
 
-find_package(Qt4 REQUIRED)
-set(QT_USE_QTOPENGL TRUE)
-include(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+#find_package(Qt4 REQUIRED)
+#set(QT_USE_QTOPENGL TRUE)
+#include(${QT_USE_FILE})
+#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5MacExtras REQUIRED)
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 pkg_check_modules(PKGCONFIG REQUIRED
 			    opencv
@@ -166,13 +172,16 @@ set(SOURCES
            src/shader/texgen.cpp
 )
 
-qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
 
 #cmake variables
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/config.h @ONLY)
 include_directories("${CMAKE_BINARY_DIR}")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
+
+qt5_use_modules(${PROJECT_NAME} Widgets)
+qt5_use_modules(${PROJECT_NAME} MacExtras)
 
 if(APPLE)
  FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
@@ -189,8 +198,6 @@ endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME}         
             ${QT_LIBRARIES}
-            ${QT_QTXML_LIBRARY}
-            ${QT_QTOPENGL_LIBRARIES} 
             ${OPENSCENEGRAPH_LIBRARIES}
             ${PKGCONFIG_LIBRARIES}
             ${APPLE_LIBS}

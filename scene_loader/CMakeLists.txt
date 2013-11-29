@@ -26,10 +26,15 @@ define_module_info()
 #add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating API documentation with Doxygen" VERBATIM)
 #endif(DOXYGEN_FOUND)
 
-find_package(Qt4 REQUIRED)
-set(QT_USE_QTOPENGL TRUE)
-include(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+find_package(Qt5Core REQUIRED)
+include_directories(${Qt5Core_INCLUDES})
+add_definitions(${Qt5Core_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
+
+#find_package(Qt4 REQUIRED)
+#set(QT_USE_QTOPENGL TRUE)
+#include(${QT_USE_FILE})
+#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
 
 #Get linker and compiler flags from pkg-config
 pkg_check_modules(PKGCONFIG REQUIRED
@@ -64,6 +69,8 @@ set(TARGET_SRC ${SOURCES_H_MOC}
 )
 
 add_library(${PROJECT_NAME} SHARED ${TARGET_SRC})
+
+qt5_use_modules(${PROJECT_NAME} Xml)
 
 set(_INSTALL_DESTINATIONS
         RUNTIME DESTINATION bin

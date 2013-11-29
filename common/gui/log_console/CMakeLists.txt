@@ -20,9 +20,14 @@ IF (APPLE)
   ENDIF (DARWIN_VERSION EQUAL 11)
 ENDIF(APPLE)
 
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+find_package(Qt5Widgets REQUIRED)
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+#find_package(Qt4 REQUIRED)
+#include(${QT_USE_FILE})
+#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
 
 
 pkg_check_modules(PKGCONFIG REQUIRED
@@ -57,10 +62,12 @@ set(QT_MOC_HEADER
 )
 
 
-qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} )
+
+qt5_use_modules(${PROJECT_NAME} Widgets)
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}

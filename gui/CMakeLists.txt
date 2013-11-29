@@ -37,12 +37,17 @@ find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow os
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
-find_package(Qt4 REQUIRED)
-set(QT_USE_QTOPENGL TRUE)
-include(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+find_package(Qt5Widgets REQUIRED)
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-QT4_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
+#find_package(Qt4 REQUIRED)
+#set(QT_USE_QTOPENGL TRUE)
+#include(${QT_USE_FILE})
+#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+
+QT5_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
 
 include_directories(
         src 
@@ -156,7 +161,7 @@ set(QT_MOC_HEADER
         src/menus/MenuWindow.h
 )
  
-qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 
 set(TARGET_SRC 
             ${QT_MOC_HEADER_SRC} 
@@ -211,6 +216,8 @@ set(TARGET_SRC
 )
 
 ADD_LIBRARY(${PROJECT_NAME} SHARED ${TARGET_SRC} ${MARSGuiResources})
+
+qt5_use_modules(${PROJECT_NAME} Widgets)
 
 IF (WIN32)
   set(WIN_LIBS -lwsock32 -lwinmm -lpthread)

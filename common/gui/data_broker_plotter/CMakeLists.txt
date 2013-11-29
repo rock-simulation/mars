@@ -8,12 +8,17 @@ include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 mars_defaults()
 define_module_info()
 
-find_package(Qt4 REQUIRED)
-include(${QT_USE_FILE})
-include_directories(${QT_INCLUDE_DIR})
-link_directories(${QT_LIBRARY_DIR})
-add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
-remove_definitions(-DQT_DLL)
+find_package(Qt5Widgets REQUIRED)
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+#find_package(Qt4 REQUIRED)
+#include(${QT_USE_FILE})
+#include_directories(${QT_INCLUDE_DIR})
+#link_directories(${QT_LIBRARY_DIR})
+#add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
+#remove_definitions(-DQT_DLL)
 
 pkg_check_modules(PKGCONFIG REQUIRED
         lib_manager
@@ -53,13 +58,15 @@ set (QT_MOC_HEADER
 	src/qcustomplot/qcustomplot.h
 )
 
-qt4_wrap_ui( SOURCES_UI_H ${SOURCES_UI})
+qt5_wrap_ui( SOURCES_UI_H ${SOURCES_UI})
 
-qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 
 cmake_minimum_required(VERSION 2.6)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} ${SOURCES_UI_H} )
+
+qt5_use_modules(${PROJECT_NAME} Widgets)
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}
