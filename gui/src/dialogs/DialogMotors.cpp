@@ -27,6 +27,9 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
 
+#include <QPushButton>
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

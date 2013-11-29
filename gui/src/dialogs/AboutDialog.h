@@ -26,7 +26,7 @@
 #ifndef ABOUTDIALOG_H
 #define ABOUTDIALOG_H
 
-#include <QtGui/QDialog>
+#include <QDialog>
 
 namespace mars {
   namespace gui {

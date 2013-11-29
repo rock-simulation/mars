@@ -24,6 +24,8 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
+#include <QGridLayout>
+
 using namespace std;
 
 namespace mars {

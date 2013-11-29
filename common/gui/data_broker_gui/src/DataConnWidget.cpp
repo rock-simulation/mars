@@ -21,7 +21,8 @@
 #include "DataConnWidget.h"
 #include <mars/data_broker/DataBrokerInterface.h>
 //#include <QtUiTools>
-
+#include <QHBoxLayout>
+#include <QPushButton>
 #include <cassert>
 
 #define VERBOSE

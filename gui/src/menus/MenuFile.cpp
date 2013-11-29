@@ -32,6 +32,9 @@
 #include <mars/lib_manager/LibManager.h>
 #include <QtGui>
 
+#include <QMessageBox>
+#include <QFileDialog>
+
 namespace mars {
   namespace gui {
 

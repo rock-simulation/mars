@@ -35,6 +35,8 @@
 #include "mars/main_gui/PropertyDialog.h"
 #include "CaptureConfig.h"
 
+#include <QDoubleSpinBox>
+
 namespace mars {
   namespace gui {
 

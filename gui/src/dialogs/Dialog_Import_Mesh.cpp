@@ -33,6 +33,8 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

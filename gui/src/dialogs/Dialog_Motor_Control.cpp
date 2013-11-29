@@ -25,6 +25,9 @@
 
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 
+#include <QVBoxLayout>
+#include <QScrollArea>
+
 using namespace std;
 
 namespace mars {

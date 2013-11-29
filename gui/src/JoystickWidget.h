@@ -27,6 +27,7 @@
 #define _JOYSTICK_WIDGET_H
 
 #include <QtGui>
+#include <QLabel>
 #include <mars/main_gui/PropertyDialog.h>
 
 #define AX2 0 // 2 axis movement (up-down and left-right)

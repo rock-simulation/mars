@@ -29,6 +29,8 @@
 
 #include <iostream>
 
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

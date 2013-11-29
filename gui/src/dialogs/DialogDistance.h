@@ -35,6 +35,8 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include "NodeSelectionTree.h"
 
+#include <QListWidget>
+
 namespace mars {
   namespace gui {
 

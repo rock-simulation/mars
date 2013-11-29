@@ -21,6 +21,8 @@
 #include "DataWidget.h"
 #include <mars/data_broker/DataBrokerInterface.h>
 
+#include <QVBoxLayout>
+
 #include <cassert>
 
 namespace mars {

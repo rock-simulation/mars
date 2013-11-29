@@ -31,6 +31,8 @@
 #include <mars/interfaces/core_objects_exchange.h>
 #include <mars/interfaces/JointData.h>
 
+#include <QLabel>
+
 namespace mars {
   namespace gui {
 

@@ -20,6 +20,8 @@
 
 #include "MenuHelp.h"
 
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

@@ -34,6 +34,8 @@
 #endif
 
 #include <QtGui>
+#include <QListWidget>
+#include <QPushButton>
 
 namespace mars {
   namespace gui {

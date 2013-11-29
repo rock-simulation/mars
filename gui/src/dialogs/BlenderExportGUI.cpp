@@ -25,6 +25,8 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/core_objects_exchange.h>
 
+#include <QHBoxLayout>
+
 namespace mars {
   namespace gui {
 

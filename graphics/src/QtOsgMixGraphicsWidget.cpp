@@ -25,11 +25,11 @@
  *      Author: daniel
  */
 
-#include <QtCore/QTimer>
-#include <QtGui/QKeyEvent>
-#include <QtGui/QApplication>
-#include <QtGui/QtGui>
-#include <QtGui/QWidget>
+#include <QTimer>
+#include <QKeyEvent>
+#include <QApplication>
+#include <QtGui>
+#include <QWidget>
 #include <QKeyEvent>
 
 #include "QtOsgMixGraphicsWidget.h"

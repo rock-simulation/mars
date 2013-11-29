@@ -21,6 +21,8 @@
 
 #include "SelectionDialog.h"
 
+#include <QVBoxLayout>
+
 namespace mars {
   namespace gui {
 

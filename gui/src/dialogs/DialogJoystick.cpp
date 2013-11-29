@@ -24,6 +24,8 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 
+#include <QHBoxLayout>
+
 namespace mars {
   namespace gui {
     DialogJoystick::DialogJoystick(interfaces::ControlCenter* c)

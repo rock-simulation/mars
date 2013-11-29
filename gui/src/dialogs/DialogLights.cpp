@@ -23,6 +23,9 @@
 
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
+#include <QPushButton>
+#include <QMessageBox>
+
 using namespace std;
 
 namespace mars {

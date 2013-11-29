@@ -38,6 +38,8 @@
 #include <mars/interfaces/graphics/GraphicsEventClient.h>
 #include <mars/interfaces/core_objects_exchange.h>
 
+#include <QTreeWidget>
+
 namespace mars {
   namespace gui {
 

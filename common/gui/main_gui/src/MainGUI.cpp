@@ -32,6 +32,10 @@
 #include <iostream>
 #include <sstream>
 
+#include <QMenuBar>
+#include <QToolBar>
+#include <QMessageBox>
+
 using namespace std;
 
 namespace mars {

@@ -26,6 +26,8 @@
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

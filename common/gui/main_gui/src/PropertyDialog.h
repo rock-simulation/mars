@@ -40,7 +40,15 @@
 
 #include <map>
 #include <string>
-#include <QtGui>
+
+class QPushButton;
+class QVBoxLayout;
+class QHBoxLayout;
+class QDialogButtonBox;
+class QTabWidget;
+class QScrollArea;
+
+#include <QDialog>
 
 namespace mars {
   namespace main_gui {

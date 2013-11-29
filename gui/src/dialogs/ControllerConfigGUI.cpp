@@ -24,6 +24,8 @@
 
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 
+#include <QHBoxLayout>
+
 namespace mars {
   namespace gui {
 

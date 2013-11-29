@@ -27,6 +27,8 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 
+#include <QMessageBox>
+
 namespace mars {
   namespace gui {
 

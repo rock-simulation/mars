@@ -21,6 +21,14 @@
 
 #include "PropertyDialog.h"
 
+#include <QDialogButtonBox>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QFrame>
+#include <QScrollArea>
+#include <QTabWidget>
+
 using namespace std;
 
 namespace mars {

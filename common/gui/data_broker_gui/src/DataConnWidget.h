@@ -34,6 +34,8 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QMutex>
+#include <QTreeWidgetItem>
+#include <QListWidget>
 
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/main_gui/BaseWidget.h>

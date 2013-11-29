@@ -30,6 +30,8 @@
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/main_gui/BaseWidget.h>
 
+#include <QSlider>
+
 namespace mars {
   namespace gui {
 
