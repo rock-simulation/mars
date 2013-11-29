@@ -28,10 +28,15 @@ include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
-find_package(Qt4 REQUIRED)
-set(QT_USE_QTOPENGL TRUE)
-include(${QT_USE_FILE})
-INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+#find_package(Qt4 REQUIRED)
+#set(QT_USE_QTOPENGL TRUE)
+#include(${QT_USE_FILE})
+#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+
+find_package(Qt5Widgets REQUIRED)
+include_directories(${Qt5Widgets_INCLUDES})
+add_definitions(${Qt5Widgets_DEFINITIONS})
+set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 set(SOURCES 
     src/GraphicsTimer.cpp
@@ -43,7 +48,7 @@ set(QT_MOC_HEADERS
     #src/MARS.h
 )
 
-qt4_wrap_cpp( SOURCES_H_MOC ${QT_MOC_HEADERS})
+qt5_wrap_cpp( SOURCES_H_MOC ${QT_MOC_HEADERS})
 
 set(TARGET_SRC 
     ${SOURCES_H_MOC} 
@@ -63,6 +68,9 @@ ENDIF( MINGW )
 add_executable(${PROJECT_NAME} src/main.cpp ${TARGET_SRC})
 add_library(mars SHARED ${TARGET_SRC})
 
+qt5_use_modules(${PROJECT_NAME} Widgets)
+qt5_use_modules(mars Widgets)
+
 IF (WIN32)
   set(WIN_LIBS 
         -lwinmm
@@ -72,8 +80,6 @@ ENDIF (WIN32)
 
 target_link_libraries(mars
             ${QT_LIBRARIES} 
-            ${QT_QTOPENGL_LIBRARIES} 
-            ${QT_QTXML_LIBRARY}
             ${WIN_LIBS}
             ${PKGCONFIG_LIBRARIES}
 )
