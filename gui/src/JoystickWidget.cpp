@@ -325,7 +325,7 @@ namespace mars {
 
     void JoystickWidget::mouseMoveEvent(QMouseEvent* event)
     {
-      ballCenter = event->posF();
+      ballCenter = event->localPos();
       mouseRect = (int)(ballCenter.x())*3/250+1;
       mouseRect += (int)(ballCenter.y())*3/250*3;
       update();

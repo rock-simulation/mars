@@ -97,23 +97,23 @@ namespace mars {
 
       mainGui->addGenericMenuAction("../Simulation/Nodes", GUI_ACTION_NODE_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+N"));
+                                    QKeySequence("CTRL+N")[0]);
       mainGui->addGenericMenuAction("../Simulation/Joints", GUI_ACTION_JOINT_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+J"));
+                                    QKeySequence("CTRL+J")[0]);
       mainGui->addGenericMenuAction("../Simulation/Lights", GUI_ACTION_LIGHT_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+L"));
+                                    QKeySequence("CTRL+L")[0]);
       mainGui->addGenericMenuAction("../Simulation/Motors", GUI_ACTION_MOTOR_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+M"));
+                                    QKeySequence("CTRL+M")[0]);
       mainGui->addGenericMenuAction("../Simulation/Sensors", GUI_ACTION_SENSOR_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+E"));
+                                    QKeySequence("CTRL+E")[0]);
       mainGui->addGenericMenuAction("../Simulation/Controllers",
                                     GUI_ACTION_CONTROLLER_TREE,
                                     (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+O"));
+                                    QKeySequence("CTRL+O")[0]);
 
       mainGui->addGenericMenuAction("../Simulation/", 0, NULL, 0, "", 0, -1); // separator
       mainGui->addGenericMenuAction("../Simulation/Apply Force",

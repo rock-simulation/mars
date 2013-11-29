@@ -93,7 +93,7 @@ namespace mars {
       mainGui->addGenericMenuAction("../Windows/Dock",
                                     GUI_ACTION_DOCK_WINDOWS, 
                                     (main_gui::MenuInterface*)this,
-                                    QKeySequence("CTRL+D"), "", 0, 
+                                    QKeySequence("CTRL+D")[0], "", 0, 
                                     1+mainGui->getDocking());
       // checkable dock action initialized with the current dock view
     }
