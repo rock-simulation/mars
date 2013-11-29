@@ -466,6 +466,7 @@ namespace mars {
         if(numc) {
           if(contact.geom.depth < geom_data1->value)
             geom_data1->value = contact.geom.depth;
+          ray_collision = 1;
         }
         return;
       }
@@ -481,6 +482,7 @@ namespace mars {
         if(numc) {
           if(contact.geom.depth < geom_data2->value)
             geom_data2->value = contact.geom.depth;
+          ray_collision = 1;
         }
         return;
       }
