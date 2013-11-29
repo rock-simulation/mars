@@ -30,7 +30,7 @@
 
 #include <mars/lib_manager/LibManager.h>
 
-#include "MarsStyle.h"
+//#include "MarsStyle.h"
 
 #include "MenuFile.h"
 #include "MenuSimulation.h"
@@ -243,9 +243,11 @@ namespace mars {
 
           }
 
+          /*
           if (marsStyle.bValue) {
             qApp->setStyle(new MarsStyle(resourcesPath.sValue+"/styles"));
           }
+          */
         }
 
         new MenuFile(control, gui, resourcesPath.sValue, libManager);
@@ -260,10 +262,11 @@ namespace mars {
     void MarsGui::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
 
       if (_property.paramId == marsStyle.paramId) {
-        if (_property.bValue)
+        /*        if (_property.bValue)
           QApplication::setStyle(new MarsStyle(resourcesPath.sValue+"/styles"));
         else
           QApplication::setStyle(new QPlastiqueStyle);
+        */
         return;
       }	
 

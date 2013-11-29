@@ -23,7 +23,7 @@
 
 #include <signal.h>
 //#include "HandleFileNames.h"
-#include <QPlastiqueStyle>
+//#include <QPlastiqueStyle>
 
 
 #include <stdexcept>
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
   mars::app::MyApp *app=NULL;
   if(simulation->needQApp) {
     mars::app::MyApp *app = new mars::app::MyApp(argc, argv);
-    app->setStyle(new QPlastiqueStyle);
+    //app->setStyle(new QPlastiqueStyle);
   }
 
   // for osx relase build:

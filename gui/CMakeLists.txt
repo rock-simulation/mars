@@ -65,7 +65,7 @@ set(HEADERS
         src/LightHandler.h
         src/MainGUIDefs.h
         src/MarsGui.h
-        src/MarsStyle.h
+        #src/MarsStyle.h
         src/MotorHandler.h
         src/NodeHandler.h
         src/NodeSelectionTree.h
@@ -115,7 +115,7 @@ set(QT_MOC_HEADER
         src/JointHandler.h
         src/JoystickWidget.h
         src/LightHandler.h
-        src/MarsStyle.h
+        #src/MarsStyle.h
         src/MotorHandler.h
         src/NodeHandler.h
         src/NodeSelectionTree.h
@@ -166,7 +166,7 @@ set(TARGET_SRC
             src/SelectionDialog.cpp
             src/LightHandler.cpp
             src/MarsGui.cpp
-            src/MarsStyle.cpp
+            #src/MarsStyle.cpp
             src/MotorHandler.cpp
             src/NodeHandler.cpp
             src/NodeSelectionTree.cpp
