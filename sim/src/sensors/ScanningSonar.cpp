@@ -140,6 +140,7 @@ namespace mars {
         s.str(""); s << config.name << "_ray_sensor";
         cfg.name = s.str();
         cfg.attached_node = nodeID[1];
+        cfg.updateRate = config.updateRate;
         raySensor = dynamic_cast<RaySensor*>(control->sensors->createAndAddSensor("RaySensor",&cfg));
         assert(raySensor);
         rayID = raySensor->getID();
