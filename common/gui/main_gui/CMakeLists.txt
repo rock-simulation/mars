@@ -80,7 +80,7 @@ set(HEADERS
     src/qtpropertybrowser/qteditorfactory.h
     src/qtpropertybrowser/qtgroupboxpropertybrowser.h
     src/qtpropertybrowser/qtpropertybrowser.h
-    src/qtpropertybrowser/qtpropertybrowserutils.h
+    src/qtpropertybrowser/qtpropertybrowserutils_p.h
     src/qtpropertybrowser/qtpropertymanager.h
     src/qtpropertybrowser/qttreepropertybrowser.h
     src/qtpropertybrowser/qtvariantproperty.h
@@ -100,7 +100,7 @@ set(QT_MOC_HEADER
     src/MyQMdiArea.h
     src/PropertyDialog.h
 
-    src/qtpropertybrowser/qtpropertybrowserutils.h
+    src/qtpropertybrowser/qtpropertybrowserutils_p.h
 
     src/qtpropertybrowser/extension/fileedit.h
     src/qtpropertybrowser/extension/fileeditfactory.h
