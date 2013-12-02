@@ -544,10 +544,10 @@ namespace mars {
       WidgetCallBackPairType *ip =(WidgetCallBackPairType*) event.getData();
 
       if(ip){
-#ifdef USE_TR1
-        if(ip->second == NULL && ip->first) {
-#else
+#ifdef NO_TR1
         if(ip->second == nullptr && ip->first) {
+#else
+        if(ip->second == NULL && ip->first) {
 #endif
           guiClickCallBack  call=  ip->first;
           call(event.x ,event.y);
@@ -602,10 +602,10 @@ namespace mars {
           _widgetCallBackMap.insert(WidgetCallBackMapType::value_type(id,WidgetCallBackList() ) );
           wcb = & _widgetCallBackMap.find(id)->second ;
         }
-#ifdef USE_TR1
-        wcb->push_back(WidgetCallBackPairType(function, std::tr1::shared_ptr<guiClickCallBackBind>(bindptr) ));
-#else
+#ifdef NO_TR1
         wcb->push_back(WidgetCallBackPairType(function, std::shared_ptr<guiClickCallBackBind>(bindptr) ));
+#else
+        wcb->push_back(WidgetCallBackPairType(function, std::tr1::shared_ptr<guiClickCallBackBind>(bindptr) ));
 #endif
         if(wnd.valid()){
           wnd->setEventMask( wnd->getEventMask()| type);

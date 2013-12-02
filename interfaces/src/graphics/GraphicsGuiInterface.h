@@ -27,10 +27,10 @@
 
 #include <string>
 
-#ifdef USE_TR1
-#include <tr1/functional>
-#else
+#ifdef NO_TR1
 #include <functional>
+#else
+#include <tr1/functional>
 #endif
 
 namespace osgWidget{
@@ -55,10 +55,10 @@ namespace mars {
       /**
        *  declaration for the binding for more sophisticated callback
        */
-#ifdef USE_TR1
-      typedef std::tr1::function<void(double,double)> guiClickCallBackBind;
-#else
+#ifdef NO_TR1
       typedef std::function<void(double,double)> guiClickCallBackBind;
+#else
+      typedef std::tr1::function<void(double,double)> guiClickCallBackBind;
 #endif
 
       GraphicsGuiInterface() {}

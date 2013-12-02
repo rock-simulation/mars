@@ -41,10 +41,10 @@
 #include <osgGA/StateSetManipulator>
 #include <osgDB/ReadFile>
 
-#ifdef USE_TR1
-#include <tr1/memory>
-#else
+#ifdef NO_TR1
 #include <memory>
+#else
+#include <tr1/memory>
 #endif
 
 namespace mars {
@@ -215,10 +215,10 @@ namespace mars {
       typedef std::map<int,osg::ref_ptr<osgWidget::Widget> > WidgetIdMapType;
       WidgetIdMapType _osgWidgetIdMap;
      
-#ifdef USE_TR1
-      typedef std::pair<guiClickCallBack,std::tr1::shared_ptr<guiClickCallBackBind> > WidgetCallBackPairType;
-#else
+#ifdef NO_TR1
       typedef std::pair<guiClickCallBack,std::shared_ptr<guiClickCallBackBind> > WidgetCallBackPairType;
+#else
+      typedef std::pair<guiClickCallBack,std::tr1::shared_ptr<guiClickCallBackBind> > WidgetCallBackPairType;
 #endif
       typedef std::list<WidgetCallBackPairType > WidgetCallBackList;
       typedef std::map<int,WidgetCallBackList > WidgetCallBackMapType;
