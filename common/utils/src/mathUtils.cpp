@@ -22,6 +22,7 @@
 #include "misc.h"
 
 #include <stdexcept>
+#include <Eigen/Core>
 
 namespace mars {
   namespace utils {
@@ -29,6 +30,11 @@ namespace mars {
     static const int EULER_AXIS_1 = 2;
     static const int EULER_AXIS_2 = 0;
     static const int EULER_AXIS_3 = 1;
+
+    double getYaw(const Quaternion &q){
+        Eigen::Vector3d v = q * Eigen::Vector3d::UnitX();
+        return ::atan2(v[1],v[0]);
+    }
 
     double angleBetween(const Vector &v1, const Vector &v2, Vector *axis) {
       double squared_length1 = v1.squaredNorm();

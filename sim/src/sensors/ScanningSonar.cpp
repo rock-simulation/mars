@@ -198,7 +198,7 @@ namespace mars {
       Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
 
 
-      double bearing = mars::utils::angleBetween(q*Eigen::Vector3d::UnitX(),Eigen::Vector3d::UnitX());
+      double bearing = mars::utils::getYaw(q);
 
       if(raySensor){
         std::vector<double> res = raySensor->getSensorData();
@@ -270,7 +270,7 @@ namespace mars {
       if(motor && config.ping_pong_mode)
         {
           Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
-          double bearing = mars::utils::angleBetween(q*Eigen::Vector3d::UnitX(),Eigen::Vector3d::UnitX());
+          double bearing = mars::utils::getYaw(q);
 
           bool range_switch = false;
           if(config.right_limit - config.left_limit >= 0)
