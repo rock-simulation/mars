@@ -39,7 +39,6 @@
 
 #include <algorithm>
 #include <sstream>
-#include <base/Pose.hpp>
 
 namespace mars {
   namespace sim {
