@@ -36,6 +36,10 @@
  #include <opencv/highgui.h>
 #endif
 
+#ifdef USE_MARS_VBO
+#include "3d_objects/MarsVBOGeom.h"
+#endif
+
 namespace mars {
   namespace graphics {
 

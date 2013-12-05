@@ -27,7 +27,6 @@
 
 #include "LoadDrawObject.h"
 #include "gui_helper_functions.h"
-#include "MarsVBOGeom.h"
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
