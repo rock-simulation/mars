@@ -340,6 +340,14 @@ namespace mars {
       graphicsUpdateObjects.push_back(g);
     }
 
+    void GraphicsManager::removeGraphicsUpdateInterface(GraphicsUpdateInterface *g) {
+      std::list<interfaces::GraphicsUpdateInterface*>::iterator it;
+      it = find(graphicsUpdateObjects.begin(), graphicsUpdateObjects.end(), g);
+      if(it!=graphicsUpdateObjects.end()) {
+        graphicsUpdateObjects.erase(it);
+      }
+    }
+
     /**
      * sets the camera type
      * @param: type
@@ -575,10 +583,12 @@ namespace mars {
     }
 
     void GraphicsManager::draw() {
+      std::list<interfaces::GraphicsUpdateInterface*>::iterator it;
       std::vector<GraphicsWidget*>::iterator iter;
 
-      for (unsigned int i =0; i<graphicsUpdateObjects.size(); i++) {
-        graphicsUpdateObjects[i]->preGraphicsUpdate();
+      for(it=graphicsUpdateObjects.begin();
+          it!=graphicsUpdateObjects.end(); ++it) {
+        (*it)->preGraphicsUpdate();
       }
 
       update();
@@ -589,8 +599,9 @@ namespace mars {
       // Render a complete new frame.
       if(viewer) viewer->frame();
       ++framecount;
-      for (unsigned int i =0; i<graphicsUpdateObjects.size(); i++) {
-        graphicsUpdateObjects[i]->postGraphicsUpdate();
+      for(it=graphicsUpdateObjects.begin();
+          it!=graphicsUpdateObjects.end(); ++it) {
+        (*it)->postGraphicsUpdate();
       }
     }
 

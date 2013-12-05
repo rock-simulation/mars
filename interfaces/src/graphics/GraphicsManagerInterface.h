@@ -77,6 +77,7 @@ namespace mars {
       virtual void addLight(LightData &ls) = 0; ///< Adds a light to the scene.
 
       virtual void addGraphicsUpdateInterface(GraphicsUpdateInterface *g) = 0;
+      virtual void removeGraphicsUpdateInterface(GraphicsUpdateInterface *g) = 0;
       virtual unsigned long addDrawObject(const NodeData &snode,
                                           bool activated = true) = 0;
       virtual void removeDrawObject(unsigned long id) = 0;

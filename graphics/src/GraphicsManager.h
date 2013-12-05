@@ -119,6 +119,7 @@ namespace mars {
       virtual void reset(); ///< Resets scene.
 
       virtual void addGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
+      virtual void removeGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
 
       virtual const mars::interfaces::GraphicData getGraphicOptions(void) const;
       virtual void setGraphicOptions(const mars::interfaces::GraphicData &options);
@@ -336,7 +337,7 @@ namespace mars {
       DrawObjects drawObjects_;
       // object selection
       DrawObjectList selectedObjects_;
-      std::vector<interfaces::GraphicsUpdateInterface*> graphicsUpdateObjects;
+      std::list<interfaces::GraphicsUpdateInterface*> graphicsUpdateObjects;
       HUDElements hudElements;
 
       mars::interfaces::core_objects_exchange myNode; //for updating
