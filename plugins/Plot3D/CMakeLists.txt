@@ -20,10 +20,10 @@ if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
 
-find_package(Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
-add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+
+find_package(Qt4 REQUIRED)
+include(${QT_USE_FILE})
+INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR})
 
 
 pkg_check_modules(PKGCONFIG REQUIRED
@@ -58,11 +58,11 @@ set(QT_HEADER
  	src/MotorPlotConfig.h	
 )
 
-qt5_wrap_cpp(HEADER_MOC ${QT_HEADER})
+qt4_wrap_cpp(HEADER_MOC ${QT_HEADER})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${HEADER_MOC})
 
-qt5_use_modules(${PROJECT_NAME} Widgets)
+#qt5_use_modules(${PROJECT_NAME} Widgets)
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}
