@@ -62,7 +62,6 @@ if (${Qt5Widgets_FOUND})
   add_definitions(-DUSE_QT5)
   add_definitions(${Qt5Widgets_DEFINITIONS})
   set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-  QT5_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
 
 else (${Qt5Widgets_FOUND})
   find_package(Qt4 REQUIRED)
@@ -71,7 +70,6 @@ else (${Qt5Widgets_FOUND})
   link_directories(${QT_LIBRARY_DIR})
   add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
   remove_definitions(-DQT_DLL)
-  QT4_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
 
 endif (${Qt5Widgets_FOUND})
 
