@@ -10,11 +10,21 @@ mars_defaults()
 define_module_info()
 
 
-find_package(Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
-add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-
+find_package(Qt5Widgets)
+if (${Qt5Widgets_FOUND})
+  set(USE_QT5)
+  find_package(Qt5Widgets REQUIRED)
+  include_directories(${Qt5Widgets_INCLUDES})
+  add_definitions(${Qt5Widgets_DEFINITIONS})
+  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+else (${Qt5Widgets_FOUND})
+  find_package(Qt4 REQUIRED)
+  include(${QT_USE_FILE})
+  include_directories(${QT_INCLUDE_DIR})
+  link_directories(${QT_LIBRARY_DIR})
+  add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
+  remove_definitions(-DQT_DLL)
+endif (${Qt5Widgets_FOUND})
 
 pkg_check_modules(PKGCONFIG REQUIRED
         lib_manager
@@ -43,11 +53,17 @@ set (QT_MOC_HEADER
 	src/MainCfgGui.h
 )
 
+if (${USE_QT5})
 qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+else (${USE_QT5})
+qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+endif (${USE_QT5})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} )
 
+if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
+endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}

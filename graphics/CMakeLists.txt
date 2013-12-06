@@ -53,16 +53,27 @@ if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
 
-#find_package(Qt4 REQUIRED)
-#set(QT_USE_QTOPENGL TRUE)
-#include(${QT_USE_FILE})
-#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
+find_package(Qt5Widgets)
+if (${Qt5Widgets_FOUND})
+  set(USE_QT5)
+  find_package(Qt5Widgets REQUIRED)
+  find_package(Qt5MacExtras REQUIRED)
+  include_directories(${Qt5Widgets_INCLUDES})
+  add_definitions(-DUSE_QT5)
+  add_definitions(${Qt5Widgets_DEFINITIONS})
+  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+  QT5_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
 
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5MacExtras REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
-add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+else (${Qt5Widgets_FOUND})
+  find_package(Qt4 REQUIRED)
+  include(${QT_USE_FILE})
+  include_directories(${QT_INCLUDE_DIR})
+  link_directories(${QT_LIBRARY_DIR})
+  add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
+  remove_definitions(-DQT_DLL)
+  QT4_ADD_RESOURCES(MARSGuiResources resources/mars.qrc)
+
+endif (${Qt5Widgets_FOUND})
 
 pkg_check_modules(PKGCONFIG REQUIRED
 			    opencv
@@ -172,7 +183,11 @@ set(SOURCES
            src/shader/texgen.cpp
 )
 
+if (${USE_QT5})
 qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+else (${USE_QT5})
+qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+endif (${USE_QT5})
 
 #cmake variables
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/config.h @ONLY)
@@ -180,8 +195,10 @@ include_directories("${CMAKE_BINARY_DIR}")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
 
+if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
 qt5_use_modules(${PROJECT_NAME} MacExtras)
+endif (${USE_QT5})
 
 if(APPLE)
  FIND_LIBRARY(OPENGL_LIBRARY OpenGL)

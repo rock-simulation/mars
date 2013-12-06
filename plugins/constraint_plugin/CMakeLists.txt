@@ -19,14 +19,19 @@ include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
-find_package(Qt5Core REQUIRED)
-include_directories(${Qt5Core_INCLUDES})
-add_definitions(${Qt5Core_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Core_EXECUTABLE_COMPILE_FLAGS}")
-
-#find_package(Qt4 REQUIRED)
-#include(${QT_USE_FILE})
-#INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR})
+find_package(Qt5Widgets)
+if (${Qt5Widgets_FOUND})
+  set(USE_QT5)
+  find_package(Qt5Widgets REQUIRED)
+  include_directories(${Qt5Widgets_INCLUDES})
+  add_definitions(-DUSE_QT5)
+  add_definitions(${Qt5Widgets_DEFINITIONS})
+  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+else (${Qt5Widgets_FOUND})
+  find_package(Qt4 REQUIRED)
+  include(${QT_USE_FILE})
+  include_directories(${QT_INCLUDE_DIR})
+endif (${Qt5Widgets_FOUND})
 
 include_directories(
 	src
@@ -47,7 +52,10 @@ set(HEADERS
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
+
+if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
+endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}

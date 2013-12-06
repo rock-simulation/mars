@@ -13,52 +13,61 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
 MACRO(CMAKE_USE_FULL_RPATH install_rpath)
     SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-    SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
     SET(CMAKE_INSTALL_RPATH ${install_rpath})
     SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
-	lib_manager
-	main_gui
-	mars_interfaces
+        lib_manager
+        main_gui
+        mars_interfaces
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
-#find_package(Qt4 REQUIRED)
-#set(QT_USE_QTOPENGL TRUE)
-#include(${QT_USE_FILE})
-#INCLUDE_DIRECTORIES( ${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
 
-find_package(Qt5Widgets REQUIRED)
-include_directories(${Qt5Widgets_INCLUDES})
-add_definitions(${Qt5Widgets_DEFINITIONS})
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+find_package(Qt5Widgets)
+if (${Qt5Widgets_FOUND})
+  set(USE_QT5)
+  find_package(Qt5Widgets REQUIRED)
+  include_directories(${Qt5Widgets_INCLUDES})
+  add_definitions(-DUSE_QT5)
+  add_definitions(${Qt5Widgets_DEFINITIONS})
+  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+else (${Qt5Widgets_FOUND})
+  find_package(Qt4 REQUIRED)
+  include(${QT_USE_FILE})
+  include_directories(${QT_INCLUDE_DIR})
+endif (${Qt5Widgets_FOUND})
 
-set(SOURCES 
+set(SOURCES
     src/GraphicsTimer.cpp
     src/MARS.cpp
 )
 
-set(QT_MOC_HEADERS
+set(QT_MOC_HEADER
     src/GraphicsTimer.h
     #src/MARS.h
 )
 
-qt5_wrap_cpp( SOURCES_H_MOC ${QT_MOC_HEADERS})
+if (${USE_QT5})
+qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+else (${USE_QT5})
+qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+endif (${USE_QT5})
 
-set(TARGET_SRC 
-    ${SOURCES_H_MOC} 
+set(TARGET_SRC
+    ${QT_MOC_HEADER_SRC}
     ${SOURCES}
 )
 
 IF( MINGW )
   # resource compilation for MinGW
   ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mars_icon.o
-                      COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/resources/appicon.rc 
+                      COMMAND windres.exe -I${CMAKE_CURRENT_SOURCE_DIR} -i${CMAKE_CURRENT_SOURCE_DIR}/resources/appicon.rc
                              -o ${CMAKE_CURRENT_BINARY_DIR}/mars_icon.o )
   SET(TARGET_SRC ${TARGET_SRC} ${CMAKE_CURRENT_BINARY_DIR}/mars_icon.o)
 #ELSE( MINGW )
@@ -68,18 +77,20 @@ ENDIF( MINGW )
 add_executable(${PROJECT_NAME} src/main.cpp ${TARGET_SRC})
 add_library(mars SHARED ${TARGET_SRC})
 
+if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
 qt5_use_modules(mars Widgets)
+endif (${USE_QT5})
 
 IF (WIN32)
-  set(WIN_LIBS 
+  set(WIN_LIBS
         -lwinmm
   )
   SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS -Wl,--stack,0x1000000)
 ENDIF (WIN32)
 
 target_link_libraries(mars
-            ${QT_LIBRARIES} 
+            ${QT_LIBRARIES}
             ${WIN_LIBS}
             ${PKGCONFIG_LIBRARIES}
 )
@@ -127,7 +138,7 @@ add_plugin_if_availible("lib_manager_gui")
 
 
 if(ADDITIONAL_LIBS)
-string(REGEX REPLACE " " " 
+string(REGEX REPLACE " " "
 " ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
 endif()
 
@@ -141,4 +152,3 @@ install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/GraphicsTimer.h DESTINATION include/mars/app/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/MARS.h DESTINATION include/mars/app/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/MyApp.h DESTINATION include/mars/app/)
-

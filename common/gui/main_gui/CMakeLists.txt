@@ -10,19 +10,29 @@ mars_defaults()
 define_module_info()
 
 # Widgets finds its own dependencies (QtGui and QtCore).
-find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Widgets)
+if (${Qt5Widgets_FOUND})
+  set(USE_QT5)
 
-# The Qt5Widgets_INCLUDES also includes the include directories for
-# dependencies QtCore and QtGui
-include_directories(${Qt5Widgets_INCLUDES})
-set(BKA "blud")
-message(error " da ${BKA} ${QT_LIBRARIES} ${Qt5Widgets_DEFINITIONS}")
-# We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
-add_definitions(${Qt5Widgets_DEFINITIONS})
+  # The Qt5Widgets_INCLUDES also includes the include directories for
+  # dependencies QtCore and QtGui
+  include_directories(${Qt5Widgets_INCLUDES})
+  # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
+  add_definitions(${Qt5Widgets_DEFINITIONS})
 
-# Executables fail to build with Qt 5 in the default configuration
-# without -fPIE. We add that here.
-set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+  # Executables fail to build with Qt 5 in the default configuration
+  # without -fPIE. We add that here.
+  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+  add_definitions("-DUSE_QT5")
+else (${Qt5Widgets_FOUND})
+  find_package(Qt4 REQUIRED)
+  include(${QT_USE_FILE})
+  include_directories(${QT_INCLUDE_DIR})
+  link_directories(${QT_LIBRARY_DIR})
+  add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
+  remove_definitions(-DQT_DLL)
+endif (${Qt5Widgets_FOUND})
+
 
 pkg_check_modules(LIB_MANAGER "lib_manager")
 include_directories(${LIB_MANAGER_INCLUDE_DIRS})
@@ -122,6 +132,7 @@ set(QT_OWN_MOC
     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtpropertymanager.moc1
 )
 
+if (${USE_QT5})
 QT5_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtbuttonpropertybrowser.h
      ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtbuttonpropertybrowser.moc
 )
@@ -164,15 +175,62 @@ QT5_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtpropertyma
 
 qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
 
+else (${USE_QT5})
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtbuttonpropertybrowser.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtbuttonpropertybrowser.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qteditorfactory.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qteditorfactory.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtgroupboxpropertybrowser.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtgroupboxpropertybrowser.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtpropertybrowser.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtpropertybrowser.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtpropertymanager.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtpropertymanager.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qttreepropertybrowser.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qttreepropertybrowser.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtvariantproperty.h
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtvariantproperty.moc
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qteditorfactory.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qteditorfactory.moc1
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qttreepropertybrowser.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qttreepropertybrowser.moc1
+)
+
+QT4_GENERATE_MOC (${CMAKE_CURRENT_SOURCE_DIR}/src/qtpropertybrowser/qtpropertymanager.cpp
+     ${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser/qtpropertymanager.moc1
+)
+
+qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+endif(${USE_QT5})
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} ${QT_OWN_MOC})
 
+if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
+endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}
                       ${LIB_MANAGER_LIBRARIES}
-                      ${QT5Widgets_LIBRARIES}
+                      ${QT_LIBRARIES}
  )
 
 
