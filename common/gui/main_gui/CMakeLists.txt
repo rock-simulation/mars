@@ -12,7 +12,7 @@ define_module_info()
 # Widgets finds its own dependencies (QtGui and QtCore).
 find_package(Qt5Widgets)
 if (${Qt5Widgets_FOUND})
-  set(USE_QT5)
+  set(USE_QT5 1)
 
   # The Qt5Widgets_INCLUDES also includes the include directories for
   # dependencies QtCore and QtGui

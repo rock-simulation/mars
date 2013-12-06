@@ -21,7 +21,7 @@ add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
 find_package(Qt5Widgets)
 if (${Qt5Widgets_FOUND})
-  set(USE_QT5)
+  set(USE_QT5 1)
   find_package(Qt5Widgets REQUIRED)
   include_directories(${Qt5Widgets_INCLUDES})
   add_definitions(-DUSE_QT5)
