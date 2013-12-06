@@ -42,7 +42,6 @@
 #define PLUGIN_WITH_MARS_GUI // <- define this before MarsPluginTemplate
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
-
 #include <QThread>
 #include <QMutex>
 #include <string>
@@ -50,11 +49,13 @@
 #include <cmath>
 
 
+
 namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
       class ControlCenter;
+      struct connexionValues;
 
       class ConnexionPlugin : public QThread, 
                               public mars::interfaces::MarsPluginTemplateGUI,
@@ -94,6 +95,8 @@ namespace mars {
         int object_mode;
         bool use_axis[6];
         double sensitivity[6];
+        mars::plugins::connexion_plugin::connexionValues *newValues;
+        double motion[6];
         /*
          * state[0..2] -> trans: x,y,z
          * state[3..6] -> rot: x,y,z,w (quaternion)

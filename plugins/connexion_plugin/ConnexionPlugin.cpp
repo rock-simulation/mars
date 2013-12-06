@@ -66,6 +66,7 @@ namespace mars {
 
         isInit = false;
         init();
+        newValues = new connexionValues;
       }
 
       void ConnexionPlugin::init() {
@@ -120,6 +121,7 @@ namespace mars {
         }
 
         closeConnexionHID();
+        delete newValues;
       }
 
       void ConnexionPlugin::preGraphicsUpdate() {
@@ -244,11 +246,9 @@ namespace mars {
       }
 
       void ConnexionPlugin::run() {
-        sReal motion[6];
-        connexionValues newValues;
 
         while (run_thread) {
-          getValue(motion, &newValues);
+          getValue(motion, newValues);
 
           motion[0] *= sensitivity[0]*use_axis[0] * 0.01;
           motion[1] *= sensitivity[1]*use_axis[1] * 0.01;
@@ -259,7 +259,7 @@ namespace mars {
 
           updateCam(motion);
 
-          if (newValues.button1 == 1) {
+          if (newValues->button1 == 1) {
             camReset();
           }
 

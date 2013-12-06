@@ -35,6 +35,18 @@ namespace mars {
     namespace connexion_plugin {
       
       struct connexionValues {
+          connexionValues():
+            tx(0),
+            ty(0),
+            tz(0),
+            rx(0),
+            ry(0),
+            rz(0),
+            button1(false),
+            button2(false)
+
+          {
+          }
         double tx;
         double ty;
         double tz;
