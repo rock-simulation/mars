@@ -195,9 +195,9 @@ namespace mars {
       SimMotor *motor = control->motors->getSimMotor(motorID);
       //Quaternion q = motor->getJoint()->getAttachedNode2()->getRotation().inverse() * motor->getJoint()->getAttachedNode1()->getRotation();
       Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
-      Vector euler = q.toRotationMatrix().eulerAngles(2,1,0);
 
-      double bearing = euler[0];
+
+      double bearing = mars::utils::getYaw(q);
 
       if(raySensor){
         std::vector<double> res = raySensor->getSensorData();
@@ -269,9 +269,8 @@ namespace mars {
       if(motor && config.ping_pong_mode)
         {
           Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
-          Vector euler = q.toRotationMatrix().eulerAngles(2,1,0);
-          double bearing = euler[0];
-        
+          double bearing = mars::utils::getYaw(q);
+
           bool range_switch = false;
           if(config.right_limit - config.left_limit >= 0)
             range_switch = true;

@@ -44,6 +44,8 @@ namespace mars {
      */
     double angleBetween(const Vector &v1, const Vector &v2, Vector *axis=NULL);
 
+    double getYaw(const mars::utils::Quaternion &);
+
     inline Quaternion angleAxisToQuaternion(double angle, const Vector &axis) {
       return Quaternion(Eigen::AngleAxis<double>(angle, axis));
     }

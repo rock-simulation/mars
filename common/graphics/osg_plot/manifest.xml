@@ -1,0 +1,5 @@
+<package>
+    <description brief="osg_plot">
+	Plot implementation to create 2d opengl (OSG) plots.
+   </description>
+</package>

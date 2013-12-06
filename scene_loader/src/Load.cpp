@@ -39,7 +39,7 @@
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/utils/misc.h>
 
-#define DEBUG_PARSE_SENSOR 1
+//#define DEBUG_PARSE_SENSOR 1
 
 namespace mars {
   namespace scene_loader {
