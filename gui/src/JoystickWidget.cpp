@@ -325,7 +325,11 @@ namespace mars {
 
     void JoystickWidget::mouseMoveEvent(QMouseEvent* event)
     {
+#if USE_QT5
       ballCenter = event->localPos();
+#else
+      ballCenter = event->posF();
+#endif
       mouseRect = (int)(ballCenter.x())*3/250+1;
       mouseRect += (int)(ballCenter.y())*3/250*3;
       update();
