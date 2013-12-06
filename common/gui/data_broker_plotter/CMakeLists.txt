@@ -76,6 +76,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} ${SOURCES_UI_
 
 if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
+qt5_use_modules(${PROJECT_NAME} PrintSupport)
 endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}
