@@ -148,7 +148,7 @@ namespace mars {
               rawValues->button2 = events[i].value;
               break;
             }
-          } else if(EV_REL == events[i].type) {
+          } else if(EV_REL == events[i].type || EV_ABS == events[i].type) {
             switch(events[i].code) {
             case REL_X:
               rawValues->tx = events[i].value;
