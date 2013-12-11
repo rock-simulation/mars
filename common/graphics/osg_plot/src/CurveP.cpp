@@ -30,6 +30,7 @@
 
 #include <osg/Geode>
 #include <osg/LineWidth>
+#include <cstdio>
 
 namespace osg_plot {
   
