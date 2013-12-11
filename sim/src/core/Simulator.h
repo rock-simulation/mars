@@ -154,7 +154,6 @@ namespace mars {
 
 
       //physics
-      virtual void controlSet(unsigned long id, interfaces::sReal value);
       virtual interfaces::PhysicsInterface* getPhysics(void) const;
       virtual void handleError(interfaces::PhysicsError error);
       virtual void setGravity(const utils::Vector &gravity);

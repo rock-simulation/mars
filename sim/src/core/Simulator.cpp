@@ -866,11 +866,6 @@ namespace mars {
       return;
     }
 
-    void Simulator::controlSet(unsigned long id, sReal value){
-      id = id;
-      value = value;
-    }
-
     void Simulator::physicsThreadLock(void) {
       // physics_mutex_count is used to see how many threads are trying to
       // acquire the lock. Also see Simulator::run() on how this is used.

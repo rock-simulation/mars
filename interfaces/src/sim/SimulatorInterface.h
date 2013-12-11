@@ -92,7 +92,6 @@ namespace mars {
       virtual void physicsThreadUnlock(void) = 0;      
 
       //physics
-      virtual void controlSet(unsigned long id, sReal value) = 0;
       virtual PhysicsInterface* getPhysics(void) const = 0;
       virtual void handleError(PhysicsError error) = 0;
       virtual void setGravity(const utils::Vector &gravity) = 0;
