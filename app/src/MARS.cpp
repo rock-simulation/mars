@@ -128,6 +128,7 @@ namespace mars {
 
       // then check locals
       setenv("LC_ALL","C", 1);
+      unsetenv("LANG");
       setlocale(LC_ALL,"C");
 
       // Test if current locale supports ENGLISH number interpretation
