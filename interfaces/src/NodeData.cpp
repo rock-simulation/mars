@@ -219,7 +219,7 @@ namespace mars {
       }
 
       { // handle contact info
-        GET_VALUE("cmax_num_contacts", c_params.max_num_contacts, Double);
+        GET_VALUE("cmax_num_contacts", c_params.max_num_contacts, Int);
         GET_VALUE("cerp", c_params.erp, Double);
         GET_VALUE("ccfm", c_params.cfm, Double);
         GET_VALUE("cfriction1", c_params.friction1, Double);
