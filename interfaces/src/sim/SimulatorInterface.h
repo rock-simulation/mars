@@ -86,7 +86,7 @@ namespace mars {
       virtual void sceneHasChanged(bool reset) = 0;
 
       //threads
-      bool allConcurrencysHandled(); //FIXME: this is misspelled
+      bool allConcurrencysHandled();
       virtual void setSyncThreads(bool value) = 0;
       virtual void physicsThreadLock(void) = 0;
       virtual void physicsThreadUnlock(void) = 0;      
