@@ -450,9 +450,8 @@ def writeSensor(sensor):
         if "draw_rays" in sensor:
             out.write('      <draw_rays>'+str(sensor["draw_rays"])+'</draw_rays>\n')
     elif sensorType == "CameraSensor":
-        #nodeID = getID(sensor["attached_node"])
-        #out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
-        out.write('      <attached_node>1</attached_node>\n')
+        nodeID = getID(sensor["attached_node"])
+        out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
         out.write('      <depth_image>'+str(sensor["depth_image"])+'</depth_image>\n')
         out.write('      <show_cam hud_idx="'+str(sensor["hud_idx"])+'">'+str(sensor["show_cam"])+'</show_cam>\n')
         out.write('      <position_offset x="'+str(sensor["position_offset_x"])+
