@@ -71,45 +71,39 @@
 <h2 id="nodes">Nodes</h2>
 <p><em>Nodes</em> are all visible objects in MARS, whether they are physical objects or not. Now</p>
 <p>--&gt; show notedata.h</p>
-<pre><code>&lt;node name=&quot;Lower.Leg.003&quot;&gt;
-  &lt;origname&gt;name(in_blender)&lt;/origname&gt;
-  &lt;filename&gt;name.obj&lt;/filename&gt;
-  &lt;index&gt;i&lt;/index&gt;
-  &lt;groupid&gt;g_id&lt;/groupid&gt;
-  &lt;physicmode&gt;box&lt;/physicmode&gt;
-  &lt;relativeid&gt;rel_id&lt;/relativeid&gt;
+<pre><code>&lt;node name=&quot;node_name&quot;&gt;
+  &lt;origname&gt;
+  &lt;filename&gt;
+  &lt;index&gt;
+  &lt;groupid&gt;
+  &lt;physicmode&gt;
+  &lt;relativeid&gt;
   &lt;position&gt;
-    &lt;x&gt;pos_x&lt;/x&gt;
-    &lt;y&gt;pos_y&lt;/y&gt;
-    &lt;z&gt;-0.49999985098838806&lt;/z&gt;
-  &lt;/position&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
   &lt;rotation&gt;
-    &lt;x&gt;rot_x&lt;/x&gt;
-    &lt;y&gt;rot_y&lt;/y&gt;
-    &lt;z&gt;rot_z&lt;/z&gt;
-    &lt;w&gt;1.0&lt;/w&gt;
-  &lt;/rotation&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
+    &lt;w&gt;
   &lt;extend&gt;
-    &lt;x&gt;ext_x&lt;/x&gt;
-    &lt;y&gt;ext_y&lt;/y&gt;
-    &lt;z&gt;ext_z&lt;/z&gt;
-  &lt;/extend&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
   &lt;pivot&gt;
-    &lt;x&gt;piv_x&lt;/x&gt;
-    &lt;y&gt;piv_y&lt;/y&gt;
-    &lt;z&gt;piv_z&lt;/z&gt;
-  &lt;/pivot&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
   &lt;visualsize&gt;
-    &lt;x&gt;vs_x&lt;/x&gt;
-    &lt;y&gt;vs_y&lt;/y&gt;
-    &lt;z&gt;vs_z&lt;/z&gt;
-  &lt;/visualsize&gt;
-  &lt;movable&gt;true/false&lt;/movable&gt;
-  &lt;mass&gt;m&lt;/mass&gt;
-  &lt;density&gt;rho&lt;/density&gt;
-  &lt;material_id&gt;mat_id&lt;/material_id&gt;
-  &lt;coll_bitmask&gt;65535&lt;/coll_bitmask&gt;
-&lt;/node&gt;</code></pre>
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
+  &lt;movable&gt;
+  &lt;mass&gt;
+  &lt;density&gt;
+  &lt;material_id&gt;
+  &lt;coll_bitmask&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -196,31 +190,230 @@
 </tr>
 <tr class="even">
 <td align="left">coll_bitmask</td>
-<td align="left">?</td>
-<td align="left">?</td>
+<td align="left">bitmask to define groups of collision objects</td>
+<td align="left">int &lt; 65536</td>
+</tr>
+<tr class="odd">
+<td align="left">t_srcname</td>
+<td align="left">source name for terrain</td>
+<td align="left">string</td>
+</tr>
+<tr class="even">
+<td align="left">t_width</td>
+<td align="left">width of terrain</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">t_height</td>
+<td align="left">height of terrain</td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">t_scale</td>
+<td align="left">scale of terrain</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">t_tex_scale</td>
+<td align="left">texture scale for terrain</td>
+</tr>
+<tr class="even">
+<td align="left">t_tex_scale_x</td>
+<td align="left">texture scale for terrain</td>
+</tr>
+<tr class="odd">
+<td align="left">t_tex_scale_y</td>
+<td align="left">texture scale for terrain</td>
+</tr>
+<tr class="even">
+<td align="left">visualposition</td>
+<td align="left">offset of position of visual representation</td>
+<td align="left">vector</td>
+</tr>
+<tr class="odd">
+<td align="left">visualrotation</td>
+<td align="left">rotational offset of visual representation</td>
+<td align="left">quaternion</td>
+</tr>
+<tr class="even">
+<td align="left">visualsize</td>
+<td align="left">size of visual representation</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">cmax_num_contacts</td>
+<td align="left">maximum number of contacts in ODE of this node</td>
+<td align="left">int</td>
+</tr>
+<tr class="even">
+<td align="left">cerp</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">ccfm</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">cfriction1</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">cfriction2</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">cmotion1</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">cmotion2</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">cfds1</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">cfds2</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">cbounce</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">cbounce_vel</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">capprox</td>
+<td align="left">use of simplified friction pyramid</td>
+<td align="left">bool</td>
+</tr>
+<tr class="odd">
+<td align="left">inertia</td>
+<td align="left">whether or not the defined inertias are used</td>
+<td align="left">bool</td>
+</tr>
+<tr class="even">
+<td align="left">i00</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">i01</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">i02</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">i10</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">i11</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">i12</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">i20</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">i21</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">i22</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">linear_damping</td>
+<td align="left">damping of linear motion</td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">angular_damping</td>
+<td align="left">damping of angular motion</td>
+<td align="left">double</td>
+</tr>
+<tr class="odd">
+<td align="left">angular_low</td>
+<td align="left"></td>
+<td align="left">double</td>
+</tr>
+<tr class="even">
+<td align="left">shadow_id</td>
+<td align="left">shadow id object is associated with</td>
+<td align="left">int</td>
+</tr>
+<tr class="odd">
+<td align="left">shadowcaster</td>
+<td align="left">objects casts shadows</td>
+<td align="left">bool</td>
+</tr>
+<tr class="even">
+<td align="left">shadowreceiver</td>
+<td align="left">objects subject to shadows</td>
+<td align="left">bool</td>
 </tr>
 </tbody>
 </table>
 <h2 id="joints">Joints</h2>
 <p><em>Joints</em> are helper objects defining how <em>nodes</em> or groups of nodes are connected with each other.</p>
-<pre><code>&lt;joint name=&quot;H.Knee.000&quot;&gt;
-  &lt;index&gt;n&lt;/index&gt;
-  &lt;type&gt;jointType&lt;/type&gt;
-  &lt;nodeindex1&gt;n1&lt;/nodeindex1&gt;
-  &lt;nodeindex2&gt;n2&lt;/nodeindex2&gt;
-  &lt;anchorpos&gt;pos&lt;/anchorpos&gt;
+<pre><code>&lt;joint name=&quot;joint_name&quot;&gt;
+  &lt;index&gt;
+  &lt;type&gt;
+  &lt;nodeindex1&gt;
+  &lt;nodeindex2&gt;
+  &lt;anchorpos&gt;
   &lt;anchor&gt;
-    &lt;x&gt;anch_x&lt;/x&gt;
-    &lt;y&gt;anch_y&lt;/y&gt;
-    &lt;z&gt;anch_z&lt;/z&gt;
-  &lt;/anchor&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
+  &lt;spring_constant&gt;
+  &lt;damping_constant&gt;
   &lt;axis1&gt;
-    &lt;x&gt;a1_x&lt;/x&gt;
-    &lt;y&gt;a1_y&lt;/y&gt;
-    &lt;z&gt;a1_z&lt;/z&gt;
-  &lt;/axis1&gt;
-  &lt;angle1_offset&gt;offset&lt;/angle1_offset&gt;
-&lt;/joint&gt;</code></pre>
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
+  &lt;angle1_offset&gt;
+  &lt;lowStopAxis1&gt;
+  &lt;highStopAxis1&gt;
+  &lt;damping_const_constraint_axis1&gt;
+  &lt;spring_const_constraint_axis1&gt;
+  &lt;axis2&gt;
+    &lt;x&gt;
+    &lt;y&gt;
+    &lt;z&gt;
+  &lt;angle1_offset&gt;
+  &lt;lowStopAxis2&gt;
+  &lt;highStopAxis2&gt;
+  &lt;damping_const_constraint_axis2&gt;
+  &lt;spring_const_constraint_axis2&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -270,25 +463,75 @@
 <td align="left">initial offset of the joint</td>
 <td align="left">double</td>
 </tr>
+<tr class="odd">
+<td align="left">lowStopAxis1</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">highStopAxis1</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">damping_const_constraint_axis1</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">spring_const_constraint_axis1</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">axis2</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">angle1_offset</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">lowStopAxis2</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">highStopAxis2</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">damping_const_constraint_axis2</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">spring_const_constraint_axis2</td>
+<td align="left"></td>
+</tr>
 </tbody>
 </table>
 <h2 id="motors">Motors</h2>
 <p>Motors are associated with <em>joints</em> and can apply forces and torques respectively; for a <em>slider joint</em>, a force is applied while for a <em>hinge joint</em>, <em>motors</em> create a torque. As MARS uses the Open Dynamics Engine for its physics simulation, you can have a look at <a href="http://www.ode.org/ode-latest-userguide.html">ODE's documentation</a> to read further on different <a href="http://www.ode.org/ode-latest-userguide.html#sec_7_0_0">joint and motor types</a>.</p>
 <p>As for the decoding in MARS scenes, motors are described as follows:</p>
 <pre><code>&lt;motor name=&quot;H.Hip.000&quot;&gt;
-  &lt;index&gt;n&lt;/index&gt;
-  &lt;jointIndex&gt;j&lt;/jointIndex&gt;
-  &lt;axis&gt;1&lt;/axis&gt;
-  &lt;maximumVelocity&gt;v_max&lt;/maximumVelocity&gt;
-  &lt;motorMaxForce&gt;f_max&lt;/motorMaxForce&gt;
-  &lt;type&gt;t&lt;/type&gt;
-  &lt;p&gt;p&lt;/p&gt;
-  &lt;i&gt;i&lt;/i&gt;
-  &lt;d&gt;d&lt;/d&gt;
-  &lt;min_val&gt;minval&lt;/min_val&gt;
-  &lt;max_val&gt;maxval&lt;/max_val&gt;
-  &lt;value&gt;val&lt;/value&gt;
-&lt;/motor&gt;</code></pre>
+  &lt;index&gt;
+  &lt;jointIndex&gt;
+  &lt;jointIndex2&gt;
+  &lt;axis&gt;
+  &lt;maximumVelocity&gt;
+  &lt;motorMaxForce&gt;
+  &lt;type&gt;
+  &lt;p&gt;
+  &lt;i&gt;
+  &lt;d&gt;
+  &lt;Km&gt;
+  &lt;Kn&gt;
+  &lt;Ra&gt;
+  &lt;Lm&gt;
+  &lt;Jm&gt;
+  &lt;Rm&gt;
+  &lt;U&gt;
+  &lt;gear&gt;
+  &lt;max_current&gt;
+  &lt;r_current&gt;
+  &lt;min_val&gt;
+  &lt;max_val&gt;
+  &lt;value&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -309,51 +552,96 @@
 <td align="left">int≥ 1</td>
 </tr>
 <tr class="odd">
+<td align="left">jointIndex2</td>
+<td align="left">?</td>
+<td align="left">int</td>
+</tr>
+<tr class="even">
 <td align="left">axis</td>
 <td align="left">around/along which axis of its associated joint the motor turns/slides</td>
 <td align="left">1 ≤ int ≤ 3</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">maximumVelocity</td>
 <td align="left">maximum velocity with which the motor can move the joint</td>
 <td align="left">double</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">motorMaxForce</td>
 <td align="left">maximum force the motor can apply</td>
 <td align="left">double</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">type</td>
 <td align="left">motor type</td>
 <td align="left">1: servo, 2: electric motor</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">p</td>
 <td align="left">P value of a PID controller</td>
 <td align="left">double</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">i</td>
 <td align="left">I value of a PID controller</td>
 <td align="left">double</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">d</td>
 <td align="left">D value of a PID controller</td>
 <td align="left">double</td>
 </tr>
+<tr class="odd">
+<td align="left">Km</td>
+<td align="left"></td>
+</tr>
 <tr class="even">
+<td align="left">Kn</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Ra</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Lm</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Jm</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Rm</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">U</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">gear</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">max_current</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">r_current</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
 <td align="left">min_val</td>
 <td align="left">minimum value (see below)</td>
 <td align="left">?</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">max_val</td>
 <td align="left">maximum value (see below)</td>
 <td align="left">?</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">value</td>
 <td align="left">?</td>
 <td align="left">?</td>
@@ -450,12 +738,12 @@
 </table>
 <p><em>Sensors</em> are defined in a scene file as follows:</p>
 <pre><code>&lt;sensor name=&quot;sensorName&quot; type=&quot;sensorType&quot;&gt;
-  &lt;index&gt;i&lt;/index&gt;
-  &lt;rate&gt;r&lt;/rate&gt;
-  &lt;id&gt;id1&lt;/id&gt;
-  &lt;id&gt;id2&lt;/id&gt;
+  &lt;index&gt;
+  &lt;rate&gt;
+  &lt;dylib_path&gt;
+  &lt;id&gt;
   ...
-&lt;/sensor&gt;</code></pre>
+  &lt;id&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -495,14 +783,13 @@
 <h2 id="controllers">Controllers</h2>
 <p>Controllers ...</p>
 <pre><code>&lt;controller&gt;
-  &lt;rate&gt;40&lt;/rate&gt;
-  &lt;sensorid&gt;s_id1&lt;/sensorid&gt;
-  &lt;sensorid&gt;s_id2&lt;/sensorid&gt;
+  &lt;rate&gt;
+  &lt;sensorid&gt;
+  &lt;sensorid&gt;
   ...
-  &lt;motorid&gt;m_id1&lt;/motorid&gt;
-  &lt;motorid&gt;m_id21&lt;/motorid&gt;
-  ...
-&lt;/controller&gt;</code></pre>
+  &lt;motorid&gt;
+  &lt;motorid&gt;
+  ...</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -531,21 +818,50 @@
 </table>
 <h2 id="materials">Materials</h2>
 <pre><code>&lt;material&gt;
-  &lt;id&gt;i&lt;/id&gt;
+  &lt;id&gt;
+  &lt;ambientFront&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;      
   &lt;diffuseFront&gt;
-    &lt;a&gt;a&lt;/a&gt;
-    &lt;r&gt;r&lt;/r&gt;
-    &lt;g&gt;g&lt;/g&gt;
-    &lt;b&gt;b&lt;/b&gt;
-  &lt;/diffuseFront&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
   &lt;specularFront&gt;
-    &lt;a&gt;a&lt;/a&gt;
-    &lt;r&gt;r&lt;/r&gt;
-    &lt;g&gt;g&lt;/g&gt;
-    &lt;b&gt;b&lt;/b&gt;
-  &lt;/specularFront&gt;
-  &lt;shininess&gt;shiny&lt;/shininess&gt;
-&lt;/material&gt;</code></pre>
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
+  &lt;emissionFront&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
+  &lt;ambientBack&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
+  &lt;diffuseBack&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
+  &lt;specularBack&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;
+  &lt;emissionBack&gt;
+    &lt;a&gt;
+    &lt;r&gt;
+    &lt;g&gt;
+    &lt;b&gt;            
+  &lt;transparency&gt;
+  &lt;shininess&gt;
+  &lt;texturename&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -561,13 +877,43 @@
 <td align="left">int ≥ 1</td>
 </tr>
 <tr class="even">
+<td align="left">ambientFront</td>
+<td align="left">?</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="odd">
 <td align="left">diffuseFront</td>
 <td align="left">basic color of an object</td>
 <td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
 </tr>
+<tr class="even">
+<td align="left">emissionFront</td>
+<td align="left">color of light relfected off of object front faces</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
 <tr class="odd">
 <td align="left">specularFront</td>
-<td align="left">color of light reflected off an object</td>
+<td align="left">color of light reflection on object's front faces</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="even">
+<td align="left">ambientBack</td>
+<td align="left">?</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="odd">
+<td align="left">diffuseBack</td>
+<td align="left">basic color of object back faces</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="even">
+<td align="left">specularBack</td>
+<td align="left">color of light reflection on an object's back faces</td>
+<td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
+</tr>
+<tr class="odd">
+<td align="left">emissionBack</td>
+<td align="left">color of light reflection on object's front faces</td>
 <td align="left">a, r, g, b: 0 ≤ double ≤ 1</td>
 </tr>
 <tr class="even">
@@ -579,12 +925,19 @@
 </table>
 <h2 id="graphic-options">Graphic Options</h2>
 <pre><code>&lt;clearColor&gt;
-  &lt;r&gt;r&lt;/r&gt;
-  &lt;g&gt;g&lt;/g&gt;
-  &lt;b&gt;b&lt;/b&gt;
-  &lt;a&gt;a&lt;/a&gt;
-&lt;/clearColor&gt;
-&lt;fogEnabled&gt;true/false&lt;/fogEnabled&gt;</code></pre>
+  &lt;r&gt;
+  &lt;g&gt;
+  &lt;b&gt;
+  &lt;a&gt;
+&lt;fogEnabled&gt;
+&lt;fogDensity&gt;
+&lt;fogStart&gt;
+&lt;fogEnd&gt;
+&lt;fogColor&gt;
+  &lt;r&gt;
+  &lt;g&gt;
+  &lt;b&gt;
+  &lt;a&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -603,6 +956,26 @@
 <td align="left">fogEnabled</td>
 <td align="left">whether or not there is fog in the simulation</td>
 <td align="left">true / false</td>
+</tr>
+<tr class="odd">
+<td align="left">fogDensity</td>
+<td align="left">density of fog</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">fogStart</td>
+<td align="left">distance where the fog starts</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">fogend</td>
+<td align="left">distance where the fod ends</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">fogColor</td>
+<td align="left">rgba values to define fog color</td>
+<td align="left"></td>
 </tr>
 </tbody>
 </table>

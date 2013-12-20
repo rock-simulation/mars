@@ -31,45 +31,39 @@ We will have a closer look at the items in these lists in the following.
 
 --> show notedata.h
 
-    <node name="Lower.Leg.003">
-      <origname>name(in_blender)</origname>
-      <filename>name.obj</filename>
-      <index>i</index>
-      <groupid>g_id</groupid>
-      <physicmode>box</physicmode>
-      <relativeid>rel_id</relativeid>
+    <node name="node_name">
+      <origname>
+      <filename>
+      <index>
+      <groupid>
+      <physicmode>
+      <relativeid>
       <position>
-        <x>pos_x</x>
-        <y>pos_y</y>
-        <z>-0.49999985098838806</z>
-      </position>
+        <x>
+        <y>
+        <z>
       <rotation>
-        <x>rot_x</x>
-        <y>rot_y</y>
-        <z>rot_z</z>
-        <w>1.0</w>
-      </rotation>
+        <x>
+        <y>
+        <z>
+        <w>
       <extend>
-        <x>ext_x</x>
-        <y>ext_y</y>
-        <z>ext_z</z>
-      </extend>
+        <x>
+        <y>
+        <z>
       <pivot>
-        <x>piv_x</x>
-        <y>piv_y</y>
-        <z>piv_z</z>
-      </pivot>
+        <x>
+        <y>
+        <z>
       <visualsize>
-        <x>vs_x</x>
-        <y>vs_y</y>
-        <z>vs_z</z>
-      </visualsize>
-      <movable>true/false</movable>
-      <mass>m</mass>
-      <density>rho</density>
-      <material_id>mat_id</material_id>
-      <coll_bitmask>65535</coll_bitmask>
-    </node>
+        <x>
+        <y>
+        <z>
+      <movable>
+      <mass>
+      <density>
+      <material_id>
+      <coll_bitmask>
     
 | Variable | Description | Possible Values |
 |----------|-------------|-----------------|
@@ -88,31 +82,81 @@ We will have a closer look at the items in these lists in the following.
 | mass | mass of the object in kg | double |
 | density | density of the object in kg/m³ | double  |
 | material_id | index of the associated material | int ≥ 1
-| coll_bitmask | ? | ? |  
+| coll_bitmask | bitmask to define groups of collision objects | int < 65536 |
+| t_srcname | source name for terrain | string |
+| t_width | width of terrain | double |
+| t_height | height of terrain | double |
+| t_scale | scale of terrain | double |
+| t_tex_scale | texture scale for terrain |
+| t_tex_scale_x | texture scale for terrain |
+| t_tex_scale_y | texture scale for terrain |
+| visualposition | offset of position of visual representation | vector |
+| visualrotation | rotational offset of visual representation | quaternion |
+| visualsize | size of visual representation | double |
+| cmax_num_contacts | maximum number of contacts in ODE of this node | int |
+| cerp |  | double |
+| ccfm |  | double |
+| cfriction1 |  | double |
+| cfriction2 |  | double |
+| cmotion1 |  | double |
+| cmotion2 |  | double |
+| cfds1 |  | double |
+| cfds2 |  | double |
+| cbounce |  | double |
+| cbounce_vel |  | double |
+| capprox | use of simplified friction pyramid | bool |
+| inertia | whether or not the defined inertias are used | bool |
+| i00 |  | double |
+| i01 |  | double |
+| i02 |  | double |
+| i10 |  | double |
+| i11 |  | double |
+| i12 |  | double |
+| i20 |  | double |
+| i21 |  | double |
+| i22 |  | double |
+| linear_damping | damping of linear motion | double |
+| angular_damping | damping of angular motion | double |
+| angular_low |  | double |
+| shadow_id | shadow id object is associated with | int |
+| shadowcaster | objects casts shadows | bool |
+| shadowreceiver | objects subject to shadows | bool |
 
 
 ## Joints
 
 *Joints* are helper objects defining how *nodes* or groups of nodes are connected with each other.
 
-    <joint name="H.Knee.000">
-      <index>n</index>
-      <type>jointType</type>
-      <nodeindex1>n1</nodeindex1>
-      <nodeindex2>n2</nodeindex2>
-      <anchorpos>pos</anchorpos>
+    <joint name="joint_name">
+      <index>
+      <type>
+      <nodeindex1>
+      <nodeindex2>
+      <anchorpos>
       <anchor>
-        <x>anch_x</x>
-        <y>anch_y</y>
-        <z>anch_z</z>
-      </anchor>
+        <x>
+        <y>
+        <z>
+      <spring_constant>
+      <damping_constant>
       <axis1>
-        <x>a1_x</x>
-        <y>a1_y</y>
-        <z>a1_z</z>
-      </axis1>
-      <angle1_offset>offset</angle1_offset>
-    </joint>
+        <x>
+        <y>
+        <z>
+      <angle1_offset>
+      <lowStopAxis1>
+      <highStopAxis1>
+      <damping_const_constraint_axis1>
+      <spring_const_constraint_axis1>
+      <axis2>
+        <x>
+        <y>
+        <z>
+      <angle1_offset>
+      <lowStopAxis2>
+      <highStopAxis2>
+      <damping_const_constraint_axis2>
+      <spring_const_constraint_axis2>
     
 | Variable | Description | Possible Values |
 |----------|-------------|-----------------|
@@ -124,6 +168,16 @@ We will have a closer look at the items in these lists in the following.
 | anchor | pos to which the *joint* is anchored | position of *node* id |
 | axis1 | axis around / along which joint moves | x, y, z: double |
 | angle1_offset | initial offset of the joint | double |
+| lowStopAxis1 |  |
+| highStopAxis1 |  |
+| damping_const_constraint_axis1 |  |
+| spring_const_constraint_axis1 |  |
+| axis2 |  |
+| angle1_offset |  |
+| lowStopAxis2 |  | 
+| highStopAxis2 |  | 
+| damping_const_constraint_axis2 |   |
+| spring_const_constraint_axis2 |  |
 
 
 ## Motors
@@ -133,24 +187,35 @@ Motors are associated with *joints* and can apply forces and torques respectivel
 As for the decoding in MARS scenes, motors are described as follows:
 
     <motor name="H.Hip.000">
-      <index>n</index>
-      <jointIndex>j</jointIndex>
-      <axis>1</axis>
-      <maximumVelocity>v_max</maximumVelocity>
-      <motorMaxForce>f_max</motorMaxForce>
-      <type>t</type>
-      <p>p</p>
-      <i>i</i>
-      <d>d</d>
-      <min_val>minval</min_val>
-      <max_val>maxval</max_val>
-      <value>val</value>
-    </motor>
+      <index>
+      <jointIndex>
+      <jointIndex2>
+      <axis>
+      <maximumVelocity>
+      <motorMaxForce>
+      <type>
+      <p>
+      <i>
+      <d>
+      <Km>
+      <Kn>
+      <Ra>
+      <Lm>
+      <Jm>
+      <Rm>
+      <U>
+      <gear>
+      <max_current>
+      <r_current>
+      <min_val>
+      <max_val>
+      <value>
   
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | index | index of the motor |  int ≥ 1 |
 | jointIndex | index of the joint with which the motor is associated | int≥ 1 |
+| jointIndex2 | ? | int |
 | axis | around/along which axis of its associated joint the motor turns/slides | 1 ≤ int ≤ 3 |
 | maximumVelocity | maximum velocity with which the motor can move the joint | double |
 | motorMaxForce | maximum force the motor can apply | double |
@@ -158,6 +223,16 @@ As for the decoding in MARS scenes, motors are described as follows:
 | p | P value of a PID controller | double |
 | i | I value of a PID controller | double |
 | d | D value of a PID controller | double |
+| Km |  |
+| Kn |  |
+| Ra |  |
+| Lm |  |
+| Jm |   |
+| Rm |   |
+| U |  |
+| gear |  |
+| max_current |  |
+| r_current |  |
 | min_val | minimum value (see below) | ? |
 | max_val | maximum value (see below) | ? |
 | value | ? | ? |
@@ -194,12 +269,12 @@ There are a number of different *sensors* in MARS which can be attached to *node
 *Sensors* are defined in a scene file as follows:
 
     <sensor name="sensorName" type="sensorType">
-      <index>i</index>
-      <rate>r</rate>
-      <id>id1</id>
-      <id>id2</id>
+      <index>
+      <rate>
+      <dylib_path>
+      <id>
       ...
-    </sensor>
+      <id>
     
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
@@ -215,14 +290,13 @@ There are a number of different *sensors* in MARS which can be attached to *node
 Controllers ...
 
     <controller>
-      <rate>40</rate>
-      <sensorid>s_id1</sensorid>
-      <sensorid>s_id2</sensorid>
+      <rate>
+      <sensorid>
+      <sensorid>
       ...
-      <motorid>m_id1</motorid>
-      <motorid>m_id21</motorid>
+      <motorid>
+      <motorid>
       ...
-    </controller>
     
     
 | Variable | Description | Possible values |
@@ -236,45 +310,92 @@ Controllers ...
 ## Materials
 
     <material>
-      <id>i</id>
+      <id>
+      <ambientFront>
+        <a>
+        <r>
+        <g>
+        <b>      
       <diffuseFront>
-        <a>a</a>
-        <r>r</r>
-        <g>g</g>
-        <b>b</b>
-      </diffuseFront>
+        <a>
+        <r>
+        <g>
+        <b>
       <specularFront>
-        <a>a</a>
-        <r>r</r>
-        <g>g</g>
-        <b>b</b>
-      </specularFront>
-      <shininess>shiny</shininess>
-    </material>
+        <a>
+        <r>
+        <g>
+        <b>
+      <emissionFront>
+        <a>
+        <r>
+        <g>
+        <b>
+      <ambientBack>
+        <a>
+        <r>
+        <g>
+        <b>
+      <diffuseBack>
+        <a>
+        <r>
+        <g>
+        <b>
+      <specularBack>
+        <a>
+        <r>
+        <g>
+        <b>
+      <emissionBack>
+        <a>
+        <r>
+        <g>
+        <b>            
+      <transparency>
+      <shininess>
+      <texturename>
     
     
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | id | running index of the materials | int ≥ 1 |
+| ambientFront | ? | a, r, g, b: 0 ≤ double ≤ 1 |
 | diffuseFront | basic color of an object | a, r, g, b: 0 ≤ double ≤ 1 |
-| specularFront | color of light reflected off an object | a, r, g, b: 0 ≤ double ≤ 1 |
+| emissionFront | color of light relfected off of object front faces | a, r, g, b: 0 ≤ double ≤ 1 |
+| specularFront | color of light reflection on object's front faces | a, r, g, b: 0 ≤ double ≤ 1 |
+| ambientBack | ? | a, r, g, b: 0 ≤ double ≤ 1 |
+| diffuseBack | basic color of object back faces | a, r, g, b: 0 ≤ double ≤ 1 |
+| specularBack | color of light reflection on an object's back faces | a, r, g, b: 0 ≤ double ≤ 1 |
+| emissionBack | color of light reflection on object's front faces | a, r, g, b: 0 ≤ double ≤ 1 |
 | shininess | strength of light reflexion | 0 ≤ double ≤ 1 |
 
 
 ## Graphic Options
 
     <clearColor>
-      <r>r</r>
-      <g>g</g>
-      <b>b</b>
-      <a>a</a>
-    </clearColor>
-    <fogEnabled>true/false</fogEnabled>
+      <r>
+      <g>
+      <b>
+      <a>
+    <fogEnabled>
+    <fogDensity>
+    <fogStart>
+    <fogEnd>
+    <fogColor>
+      <r>
+      <g>
+      <b>
+      <a>
     
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | clearColor | ? | ? |
-| fogEnabled | whether or not there is fog in the simulation | true / false |   
+| fogEnabled | whether or not there is fog in the simulation | true / false |
+| fogDensity | density of fog |  |
+| fogStart | distance where the fog starts |  |
+| fogEnd | distance where the fog ends  |  |
+| fogColor| rgba values to define fog color |  |
+
 
 
 
