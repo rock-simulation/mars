@@ -39,7 +39,7 @@ namespace mars {
     BumpMapFrag::BumpMapFrag(vector<string> &args)
       : ShaderFunc("bump", args)
     {
-      addConstant( (GLSLConstant) { "float", "bumpNorFac", "1.0" });
+      addConstant( (GLSLConstant) { "float", "bumpNorFac", "0.1" });
     }
 
     string BumpMapFrag::code() const
@@ -65,6 +65,12 @@ namespace mars {
 
       s << "lightVec[" << lightList.size() << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() });
+      s.str("");
+
+      s << "spotDir[" << lightList.size() << "]";
+      addVarying( (GLSLVarying) { "vec3", s.str() });
+      s.str("");
+
       addAttribute( (GLSLAttribute) { "vec4", "vertexTangent" });
 
       this->lightList = lightList;
@@ -95,25 +101,34 @@ namespace mars {
       s << "    // multiplicated by handeness." << endl;
       s << "    vec3 b = cross(n, t);" << endl;
       s << "    // transpose tbn matrix will do the transformation to tangent space" << endl;
-      s << "    //mat3 tbn = transpose( mat3(t, b, n) );" << endl;
-      s << "    vec3 buf;" << endl;
+      s << "    mat3 tbn = transpose( mat3(t, b, n) );" << endl;
+      //s << "    vec3 buf;" << endl;
       s << "" << endl;
       s << "    // do the transformation of the eye vector (used for specuar light)" << endl;
-      s << "    buf.x = dot( eyeVec.xyz, t );" << endl;
-      s << "    buf.y = dot( eyeVec.xyz, b );" << endl;
-      s << "    buf.z = dot( eyeVec.xyz, n );" << endl;
-      s << "    eyeVec = normalize( vec4(buf,eyeVec.w) );" << endl;
-      s << "    //eyeVec = normalize( tbn * eyeVec );" << endl;
+      //s << "    buf.x = dot( eyeVec.xyz, t );" << endl;
+      //s << "    buf.y = dot( eyeVec.xyz, b );" << endl;
+      //s << "    buf.z = dot( eyeVec.xyz, n );" << endl;
+      //s << "    eyeVec = normalize( vec4(buf,eyeVec.w) );" << endl;
+      s << "    eyeVec = tbn * eyeVec;" << endl;
       s << "" << endl;
       s << "    // do the transformation of the light vectors" << endl;
 
       for(it = lightList.begin(); it != lightList.end(); ++it) {
+        /*
         s << "        buf.x = dot( lightVec[" << lightIndex << "], t );" << endl;
         s << "        buf.y = dot( lightVec[" << lightIndex << "], b );" << endl;
         s << "        buf.z = dot( lightVec[" << lightIndex << "], n ) ;" << endl;
         s << "        lightVec[" << lightIndex << "] = normalize( buf  );" << endl;
-        s << "        //lightVec[" << lightIndex << "].z = abs( lightVec[i].z  );" << endl;
-        s << "        //lightVec[" << lightIndex << "] = normalize( tbn * lightVec[i] );" << endl;
+        */
+        s << "    lightVec[" << lightIndex << "] = tbn*lightVec[" << lightIndex << "];" << endl;
+
+        /*
+        s << "        buf.x = dot( spotDir[" << lightIndex << "], t );" << endl;
+        s << "        buf.y = dot( spotDir[" << lightIndex << "], b );" << endl;
+        s << "        buf.z = dot( spotDir[" << lightIndex << "], n ) ;" << endl;
+        s << "        spotDir[" << lightIndex << "] = normalize( buf  );" << endl;
+        */
+        s << "    spotDir[" << lightIndex << "] = tbn*spotDir[" << lightIndex << "];" << endl;
         ++lightIndex;
       }
 

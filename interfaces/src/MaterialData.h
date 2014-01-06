@@ -55,6 +55,7 @@ namespace mars {
         reflect = 0;
         texturename = "";
         bumpmap = "";
+        normalmap = "";
         tex_scale = 1.0;
         brightness = 0.0;
         getLight = true;
@@ -82,7 +83,8 @@ namespace mars {
       double transparency;
       double shininess;
       std::string texturename; // the filename of the texture of the node
-      std::string bumpmap; // the filename for a bumpmap
+      std::string bumpmap; // the filename for a bump- / displacementmap
+      std::string normalmap; // the filename for a normalmap
       double tex_scale;
       bool reflect;
       double brightness;

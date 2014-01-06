@@ -130,7 +130,7 @@ namespace mars {
 
       virtual void addLight(mars::interfaces::LightData &ls); ///< adds a light to the scene
       virtual void removeLight(unsigned int index); ///< removes a light from the scene
-      virtual void updateLight(unsigned int index);
+      virtual void updateLight(unsigned int index, bool recompileShader=false);
       virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList);
       virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const;
       virtual int getLightCount(void) const;

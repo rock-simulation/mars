@@ -98,7 +98,7 @@ namespace mars {
       code << "void main()" << endl;
       code << "{" << endl;
 
-      for(set<GLSLVariable>::iterator it = u->getMainVars().begin();
+      for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
           it != u->getMainVars().end(); ++it)
         code << "    " << *it << ";" << endl;
 

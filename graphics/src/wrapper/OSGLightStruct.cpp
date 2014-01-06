@@ -66,7 +66,7 @@ namespace mars {
                                       ls.lookAt.z());
 
         light_->setDirection(lookPos-pos);
-        light_->setSpotCutoff(ls.angle);
+        light_->setSpotCutoff(ls.angle*3.14/180);
         light_->setSpotExponent(ls.exponent);
 
         //set light position
@@ -115,7 +115,7 @@ namespace mars {
         osg::Vec3 lookPos = osg::Vec3(ls.lookAt.x(), ls.lookAt.y(), ls.lookAt.z());
 
         light_->setDirection(lookPos-pos);
-        light_->setSpotCutoff(ls.angle);
+        light_->setSpotCutoff(ls.angle*3.14/180.);
         light_->setSpotExponent(ls.exponent);
         if(ls.directional == true) {
           light_->setPosition(toOSGVec4(ls.pos, 0.0f));

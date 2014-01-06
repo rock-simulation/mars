@@ -24,6 +24,7 @@
 
 #include <cstdio>
 #include <set>
+#include <list>
 #include <map>
 #include <string>
 #include <vector>
@@ -114,9 +115,9 @@ namespace mars {
       }
 
       void addMainVar(GLSLVariable var) {
-        mainVars.insert(var);
+        mainVars.push_back(var);
       }
-      const std::set<GLSLVariable>& getMainVars() const {
+      const std::list<GLSLVariable>& getMainVars() const {
         return mainVars;
       }
 
@@ -160,7 +161,7 @@ namespace mars {
       std::set<GLSLAttribute> attributes;
       // needed functions (tuple of name and code)
       std::map<std::string,std::string> deps;
-      std::set<GLSLVariable> mainVars;
+      std::list<GLSLVariable> mainVars;
       std::set<GLSLExport> exports;
       std::set<GLSLSuffix> suffixes;
       std::set<std::string> enabledExtensions;

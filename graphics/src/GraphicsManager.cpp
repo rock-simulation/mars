@@ -964,12 +964,21 @@ namespace mars {
       }
     }
 
-    void GraphicsManager::updateLight(unsigned int i) {
+    void GraphicsManager::updateLight(unsigned int i, bool recompileShader) {
       OSGLightStruct *osgLight = dynamic_cast<OSGLightStruct*>(myLights[i].lightSource.get());
-      if(osgLight != NULL)
+      if(osgLight != NULL) {
         osgLight->update(myLights[i].lStruct);
+      }
       else
         fprintf(stderr, "GraphicsManager::updateLight -> no Light %u\n", i);
+
+      if(recompileShader) {
+        vector<mars::interfaces::LightData*> lightList;
+        map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
+        getLights(&lightList);
+        for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
+          iter->second->object()->updateShader(lightList, true);
+      }
     }
 
     void GraphicsManager::getLights(vector<mars::interfaces::LightData*> *lightList) {

@@ -83,11 +83,13 @@ namespace mars {
         selectable_(true),
         lastProgram(NULL),
         normalMapUniform(NULL),
+        bumpMapUniform(NULL),
         baseImageUniform(NULL),
 	group_(0),
         material_(0),
         colorMap_(0),
         normalMap_(0),
+        bumpMap_(0),
         posTransform_(0),
         scaleTransform_(0),
         blendEquation_(0),
@@ -263,8 +265,11 @@ namespace mars {
         }
       }
 
-      if (mStruct.bumpmap != "") {
-        setBumpMap(mStruct.bumpmap);
+      if (mStruct.normalmap != "") {
+        if(mStruct.bumpmap != "") {
+          setBumpMap(mStruct.bumpmap);
+        }
+        setNormalMap(mStruct.normalmap);
       } else {
         if(lastProgram) updateShader(lastLights, true);
       }
@@ -296,9 +301,22 @@ namespace mars {
     }
 
     void DrawObject::setBumpMap(const std::string &bumpMap) {
+      bumpMap_ = GuiHelper::loadTexture( bumpMap.c_str() );
+      bumpMap_->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR );
+      bumpMap_->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
+      bumpMap_->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT );
+      bumpMap_->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT );
+      bumpMap_->setMaxAnisotropy(8);
+
+      osg::StateSet *state = group_->getOrCreateStateSet();
+      state->setTextureAttributeAndModes(BUMP_MAP_UNIT, bumpMap_,
+                                         osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+    }
+
+    void DrawObject::setNormalMap(const std::string &normalMap) {
       generateTangents();
 
-      normalMap_ = GuiHelper::loadTexture( bumpMap.data() );
+      normalMap_ = GuiHelper::loadTexture( normalMap.c_str() );
       normalMap_->setFilter( osg::Texture::MIN_FILTER, osg::Texture::LINEAR_MIPMAP_LINEAR );
       normalMap_->setFilter( osg::Texture::MAG_FILTER, osg::Texture::LINEAR );
       normalMap_->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT );
@@ -457,6 +475,8 @@ namespace mars {
 
         {
           ShaderFunc *vertexShader = new ShaderFunc;
+          vertexShader->addUniform( (GLSLUniform)
+                                    { "mat4", "osg_ViewMatrix" } );
           vertexShader->addExport( (GLSLExport)
                                    {"gl_Position", "gl_ModelViewProjectionMatrix * gl_Vertex"} );
           vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "v"} );
@@ -474,8 +494,21 @@ namespace mars {
                                         { "float", "texScale" } );
             fragmentShader->addUniform( (GLSLUniform)
                                         { "sampler2D", "BaseImage" } );
+            if(bumpMap_.valid()) {
+              fragmentShader->addUniform( (GLSLUniform)
+                                          { "sampler2D", "BumpMap" } );
+              fragmentShader->addMainVar( (GLSLVariable)
+                                          { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale + texture2D(BumpMap, gl_TexCoord[0].xy*texScale).x*0.01*eyeVec.xy" });
+              
+            }
+            else {
+              fragmentShader->addMainVar( (GLSLVariable)
+                                          { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale" });
+            }
+
             fragmentShader->addMainVar( (GLSLVariable)
-                                        { "vec4", "col", "texture2D( BaseImage, gl_TexCoord[0].xy * texScale)" });
+                                        { "vec4", "col", "texture2D( BaseImage, texCoord)" });
+
           } else {
             fragmentShader->addMainVar( (GLSLVariable)
                                         { "vec4", "col", "vec4(1.0)" });
@@ -502,7 +535,7 @@ namespace mars {
           shaderGenerator.addShaderFunction(bumpVert, mars::interfaces::SHADER_TYPE_VERTEX);
 
           args.clear();
-          args.push_back("texture2D( NormalMap, gl_TexCoord[0].xy * texScale )");
+          args.push_back("texture2D( NormalMap, texCoord )");
           args.push_back("n");
           BumpMapFrag *bumpFrag = new BumpMapFrag(args);
           bumpFrag->addUniform( (GLSLUniform) { "sampler2D", "NormalMap" } );
@@ -546,6 +579,15 @@ namespace mars {
         if(normalMap_.valid()) {
           normalMapUniform = new osg::Uniform("NormalMap", NORMAL_MAP_UNIT);
           stateSet->addUniform(normalMapUniform);
+        }
+
+        if(bumpMapUniform) {
+          stateSet->removeUniform(bumpMapUniform);
+          bumpMapUniform = NULL;
+        }
+        if(bumpMap_.valid()) {
+          bumpMapUniform = new osg::Uniform("BumpMap", BUMP_MAP_UNIT);
+          stateSet->addUniform(bumpMapUniform);
         }
 
         if(baseImageUniform) {

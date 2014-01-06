@@ -55,9 +55,9 @@ namespace mars {
       for(vector< pair<string,string> >::iterator it = uDeps.begin();
           it != uDeps.end(); ++it)
         deps[it->first] = it->second;
-      for(set<GLSLVariable>::iterator it = u->getMainVars().begin();
+      for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
           it != u->getMainVars().end(); ++it)
-        mainVars.insert(*it);
+        mainVars.push_back(*it);
       for(set<GLSLExport>::iterator it = u->getExports().begin();
           it != u->getExports().end(); ++it)
         exports.insert(*it);

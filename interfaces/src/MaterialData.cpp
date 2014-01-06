@@ -77,8 +77,10 @@ namespace mars {
         shininess = it->second[0].getDouble();
       if((it = config->find("texturename")) != config->end())
         texturename = trim(it->second[0].getString());
-      if((it = config->find("bumpmap")) != config->end())
+      if((it = config->find("displacementmap")) != config->end())
         bumpmap = trim(it->second[0].getString());
+      if((it = config->find("bumpmap")) != config->end())
+        normalmap = trim(it->second[0].getString());
       if((it = config->find("tex_scale")) != config->end())
         tex_scale = it->second[0].getDouble();
       if((it = config->find("reflect")) != config->end())
@@ -94,6 +96,7 @@ namespace mars {
       if(!filenamePrefix.empty()) {
         handleFilenamePrefix(&texturename, filenamePrefix);
         handleFilenamePrefix(&bumpmap, filenamePrefix);
+        handleFilenamePrefix(&normalmap, filenamePrefix);
       }
 
       return true;
@@ -103,10 +106,12 @@ namespace mars {
       MaterialData defaultMaterial;
       std::string texturename_ = texturename;
       std::string bumpmap_ = bumpmap;
+      std::string normalmap_ = normalmap;
 
       if(skipFilenamePrefix) {
         removeFilenamePrefix(&texturename_);
         removeFilenamePrefix(&bumpmap_);
+        removeFilenamePrefix(&normalmap_);
       }
 
       if(exists != defaultMaterial.exists)
@@ -155,7 +160,9 @@ namespace mars {
       if(texturename_ != defaultMaterial.texturename)
         (*config)["texturename"][0] = ConfigItem(texturename_);
       if(bumpmap_ != defaultMaterial.bumpmap)
-        (*config)["bumpmap"][0] = ConfigItem(bumpmap_);
+        (*config)["displacementmap"][0] = ConfigItem(bumpmap_);
+      if(normalmap_ != defaultMaterial.normalmap)
+        (*config)["bumpmap"][0] = ConfigItem(normalmap_);
       if(tex_scale != defaultMaterial.tex_scale)
         (*config)["tex_scale"][0] = ConfigItem(tex_scale);
       if(reflect != defaultMaterial.reflect)
@@ -172,6 +179,7 @@ namespace mars {
     void MaterialData::getFilesToSave(std::vector<std::string> *fileList) {
       if(!texturename.empty()) fileList->push_back(texturename);
       if(!bumpmap.empty()) fileList->push_back(bumpmap);
+      if(!normalmap.empty()) fileList->push_back(normalmap);
     }
 
   } // end of namespace interfaces

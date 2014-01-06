@@ -54,6 +54,7 @@
 
 #define COLOR_MAP_UNIT 0
 #define NORMAL_MAP_UNIT 1
+#define BUMP_MAP_UNIT 3
 #define TANGENT_UNIT 7
 #define DEFAULT_UV_UNIT 0
 
@@ -79,7 +80,8 @@ namespace mars {
                                bool useFog = false, bool useNoise = false);
       // can be used for dynamic textures
       virtual void setTexture(osg::Texture2D *texture);
-      virtual void setBumpMap(const std::string &normalMap);
+      virtual void setNormalMap(const std::string &normalMap);
+      virtual void setBumpMap(const std::string &bumpMap);
       virtual void setBlending(bool mode);
       virtual void collideSphere(mars::utils::Vector pos, 
                                  mars::interfaces::sReal radius);
@@ -157,7 +159,7 @@ namespace mars {
       bool getLight;
       float brightness_;
       osg::Program *lastProgram;
-      osg::Uniform *normalMapUniform, *baseImageUniform;
+      osg::Uniform *normalMapUniform, *bumpMapUniform, *baseImageUniform;
 
       osg::ref_ptr<osg::Group> group_;
       std::list< osg::ref_ptr<osg::Geometry> > geometry_;
@@ -165,6 +167,7 @@ namespace mars {
       osg::ref_ptr<osg::Material> material_;
       osg::ref_ptr<osg::Texture2D> colorMap_;
       osg::ref_ptr<osg::Texture2D> normalMap_;
+      osg::ref_ptr<osg::Texture2D> bumpMap_;
       osg::ref_ptr<osg::PositionAttitudeTransform> posTransform_;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform_;
       osg::ref_ptr<osg::BlendEquation> blendEquation_;

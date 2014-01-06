@@ -142,7 +142,7 @@ namespace mars {
       virtual void setGraphicOptions(const GraphicData &options) = 0;
       virtual void showGrid(void) = 0;
       virtual void hideGrid(void) = 0;
-      virtual void updateLight(unsigned int index) = 0;
+      virtual void updateLight(unsigned int index, bool recompileShader=false) = 0;
       virtual void getLights(std::vector<LightData*> *lightList) = 0;
       virtual void getLights(std::vector<LightData> *lightList) const = 0;
       virtual int getLightCount(void) const = 0;
