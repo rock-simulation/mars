@@ -35,7 +35,7 @@ namespace mars {
   
       control = c;
       topLevel = property;
-
+      recompileShader = false;
       myLightIndex = ind;
       pDialog = pd;
       filled = false;
@@ -72,8 +72,8 @@ namespace mars {
       topLevel->setPropertyName(QString::number(myLight->index) + ":" + QString::fromStdString(myLight->name));
       propName = topLevel->propertyName().toStdString();
       fill();  
-      filled = true;
       on_switched_type();
+      filled = true;
       control->graphics->updateLight(myLight->index);
     }
 
@@ -97,7 +97,7 @@ namespace mars {
       name = pDialog->addGenericProperty("../" +propName+  "/Name", QVariant::String, 
                                          QString::fromStdString(myLight->name));
       type = pDialog->addGenericProperty("../" + propName+"/Type", QtVariantPropertyManager::enumTypeId(),
-                                         QVariant(0), NULL, &enumNames);
+                                         myLight->type-1, NULL, &enumNames);
       geometry = pDialog->addGenericProperty("../"+propName+"/Geometry", QtVariantPropertyManager::groupTypeId(), 0);
       pos_x = pDialog->addGenericProperty("../"+propName+"/Geometry/Position/x", 
                                           QVariant::Double, myLight->pos.x(), &attr);
@@ -105,13 +105,13 @@ namespace mars {
                                           QVariant::Double, myLight->pos.y(), &attr);
       pos_z = pDialog->addGenericProperty("../"+propName+"/Geometry/Position/z", 
                                           QVariant::Double, myLight->pos.z(), &attr);
-      orientation = pDialog->addGenericProperty("../"+propName+"/Geometry/Orientation", 
+      orientation = pDialog->addGenericProperty("../"+propName+"/Geometry/LookAt", 
                                                 QtVariantPropertyManager::groupTypeId(), 0);
-      look_x = pDialog->addGenericProperty("../"+propName+"/Geometry/Orientation/x", 
+      look_x = pDialog->addGenericProperty("../"+propName+"/Geometry/LookAt/x", 
                                            QVariant::Double, myLight->lookAt.x(), &attr);
-      look_y = pDialog->addGenericProperty("../"+propName+"/Geometry/Orientation/y", 
+      look_y = pDialog->addGenericProperty("../"+propName+"/Geometry/LookAt/y", 
                                            QVariant::Double, myLight->lookAt.y(), &attr);
-      look_z = pDialog->addGenericProperty("../"+propName+"/Geometry/Orientation/z",
+      look_z = pDialog->addGenericProperty("../"+propName+"/Geometry/LookAt/z",
                                            QVariant::Double, myLight->lookAt.z(), &attr);
       constant = pDialog->addGenericProperty("../"+propName+"/Attenuation/Constant", 
                                              QVariant::Double, myLight->constantAttenuation, &attr);
@@ -142,12 +142,14 @@ namespace mars {
       if (property == name)
         topLevel->setPropertyName(QString::number(myLight->index) + ":" + value.toString());
 
-      if (property == type)
+      if (property == type) {
+        recompileShader = true;
         on_switched_type();
- 
+      } 
+
       update(myLight);
-      control->graphics->updateLight(myLight->index);
-  
+      control->graphics->updateLight(myLight->index, recompileShader);
+      recompileShader = false;
     }
 
 
@@ -178,6 +180,7 @@ namespace mars {
       light->type = type->value().toInt() + 1;
       light->exponent = exponent->value().toDouble();
       light->angle = cutoff->value().toDouble();
+      if(light->directional != directional->value().toBool()) recompileShader = true;
       light->directional = directional->value().toBool();
       light->ambient = to_my_color(ambient->value().value<QColor>());
       light->diffuse = to_my_color(diffuse->value().value<QColor>());
@@ -191,13 +194,13 @@ namespace mars {
         geometry->addSubProperty(orientation);
         topLevel->addSubProperty(cutoff);
         topLevel->addSubProperty(exponent);
-        topLevel->addSubProperty(directional);
+        //topLevel->addSubProperty(directional);
       }
       else{
         geometry->removeSubProperty(orientation);
         topLevel->removeSubProperty(cutoff);
         topLevel->removeSubProperty(exponent);
-        topLevel->removeSubProperty(directional);
+        //topLevel->removeSubProperty(directional);
       }
     }
 

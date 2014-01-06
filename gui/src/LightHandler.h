@@ -58,6 +58,7 @@ namespace mars {
       int myLightIndex;
       std::string propName;
       bool filled;
+      bool recompileShader;
       interfaces::ControlCenter *control;
       std::vector<struct interfaces::LightData*> allLights;
       struct interfaces::LightData* myLight;
