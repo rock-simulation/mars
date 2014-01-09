@@ -217,6 +217,7 @@ namespace mars {
       virtual unsigned long new3DWindow(void *myQTWidget = 0, bool rtt = 0,
                                         int width = 0, int height = 0, const std::string &name=std::string(""));
       virtual interfaces::GraphicsWindowInterface* get3DWindow(unsigned long id) const;
+      virtual void remove3DWindow(unsigned long id);
 
       /**
        * Return the first matching 3D windows with the given name, 0 otherwise

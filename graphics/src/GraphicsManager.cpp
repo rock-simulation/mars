@@ -561,6 +561,18 @@ namespace mars {
     }
 
 
+    void GraphicsManager::remove3DWindow(unsigned long id) {
+      std::vector<GraphicsWidget*>::const_iterator iter;
+
+      for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
+        if((*iter)->getID() == id) {
+          viewer->removeView((*iter)->getView());
+          delete (*iter);
+          graphicsWindows.erase(iter);
+          break;
+        }
+      }
+    }
 
 
     GraphicsWidget* GraphicsManager::getGraphicsWindow(unsigned long id) const {

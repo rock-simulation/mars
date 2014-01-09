@@ -64,6 +64,7 @@ namespace mars {
       GraphicsWidget(void *parent, osg::Group *scene,
                      unsigned long id, bool hasRTTWidget = 0,
                      int f=0);
+      ~GraphicsWidget();
       void initializeOSG(void *data = 0, GraphicsWidget* shared = 0,
                          int width = 0, int height = 0);
 
@@ -197,7 +198,6 @@ namespace mars {
     
     protected:
       // protected for osg reference counter
-      virtual ~GraphicsWidget();
   
       bool manageClickEvent(osgWidget::Event& event);
       std::string name; 
@@ -227,7 +227,7 @@ namespace mars {
       unsigned int _osgWidgetWindowCnt;     
      
       // holds a single view on a scene, this view may be composed of one or more slave cameras
-      osgViewer::View *view;
+      osg::ref_ptr<osgViewer::View> view;
       // root of the scene
       osg::Group *scene;
 
@@ -244,7 +244,7 @@ namespace mars {
       // 2D display on top of the scene
       HUD *myHUD;
       // camera for the 2D display
-      osg::Camera *hudCamera;
+      osg::ref_ptr<osg::Camera> hudCamera;
 
       // called post drawing
       PostDrawCallback *postDrawCallback;

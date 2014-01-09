@@ -89,6 +89,7 @@ namespace mars {
 
     GraphicsWidget::~GraphicsWidget() {
       delete graphicsCamera;
+      delete myHUD;
     }
 
     int GraphicsWidget::addOsgWindow(osgWidget::Window* wnd){

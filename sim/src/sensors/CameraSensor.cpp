@@ -66,8 +66,8 @@ namespace mars {
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
       }
 
+      cam_id=0;
       if(control->graphics) {
-        unsigned int cam_id=0;
 
         //New
         interfaces::hudElementStruct hudCam;
@@ -87,9 +87,11 @@ namespace mars {
         if(config.show_cam)
           cam_id = control->graphics->addHUDElement(&hudCam);
 
-        cam_window_id = control->graphics->new3DWindow(0, true, config.width, config.height, name);
+        cam_window_id = control->graphics->new3DWindow(0, true, config.width,
+                                                       config.height, name);
         if(config.show_cam)
-          control->graphics->setHUDElementTextureRTT(cam_id, cam_window_id,false);
+          control->graphics->setHUDElementTextureRTT(cam_id, cam_window_id,
+                                                     false);
 
         gw = control->graphics->get3DWindow(cam_window_id);
         gw->setGrabFrames(false);
@@ -104,6 +106,16 @@ namespace mars {
     CameraSensor::~CameraSensor(void){
       control->dataBroker->unregisterTimedReceiver(this, "*", "*",
                                                    "mars_sim/simTimer");
+
+      if(control->graphics) {
+        if(cam_id) {
+          control->graphics->removeHUDElement(cam_id);
+        }
+        if(cam_window_id) {
+          control->graphics->remove3DWindow(cam_window_id);
+        }
+        control->graphics->removeGraphicsUpdateInterface(this);
+      }
     }
 
     void CameraSensor::getCameraInfo(cameraStruct* cs)
@@ -119,8 +131,8 @@ namespace mars {
         assert(buffer.size() == (config.width * config.height));
         int width;
         int height;
-	gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height);
-        
+        gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height);
+
         assert(config.width == width);
         assert(config.height == height);
     }
@@ -131,12 +143,12 @@ namespace mars {
         int width;
         int height;
         gw->getRTTDepthData(reinterpret_cast<float *>(buffer.data()), width, height);
-        
+
         assert(config.width == width);
         assert(config.height == height);
     }
 
-    
+
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
     int CameraSensor::getSensorData(sReal** data) const {

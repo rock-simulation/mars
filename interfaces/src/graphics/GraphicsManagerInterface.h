@@ -153,6 +153,7 @@ namespace mars {
       virtual void setGrabFrames(bool value) = 0;
       virtual GraphicsWindowInterface* get3DWindow(unsigned long id) const = 0; ///< Return the first matching 3D windows with the given name, 0 otherwise.
       virtual GraphicsWindowInterface* get3DWindow(const std::string &name) const=0;
+      virtual void remove3DWindow(unsigned long id) = 0;
       virtual void getList3DWindowIDs(std::vector<unsigned long> *ids) const = 0;
       virtual void removeLayerFromDrawObjects(unsigned long window_id) = 0;
       

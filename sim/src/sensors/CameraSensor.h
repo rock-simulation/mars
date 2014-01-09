@@ -128,6 +128,7 @@ namespace mars {
       interfaces::GraphicsCameraInterface* gc;
       long dbPosIndices[3];
       long dbRotIndices[4];
+      unsigned int cam_id;
     };
 
   } // end of namespace sim
