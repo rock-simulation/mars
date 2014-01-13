@@ -1226,9 +1226,8 @@ namespace mars {
       HUDElement* elem = findHUDElement(id);
 
       if (elem) {
-        for (vector<GraphicsWidget*>::iterator iter = graphicsWindows.begin();
-             iter!=graphicsWindows.end(); iter++) {
-          (*iter)->removeHUDElement(elem);
+        for (vector<GraphicsWidget*>::iterator graphicsWidgetIterator = graphicsWindows.begin(); graphicsWidgetIterator!=graphicsWindows.end(); graphicsWidgetIterator++) {
+          (*graphicsWidgetIterator)->removeHUDElement(elem);
         }
 
         for (iter = hudElements.begin(); iter != hudElements.end(); iter++) {
