@@ -354,6 +354,12 @@ Controllers ...
       <transparency>
       <shininess>
       <texturename>
+      <reflect>
+      <bumpmap>
+      <tex_scale>
+      <brightness>
+      <getLight>
+      <cullMask>
     
     
 | Variable | Description | Possible Values |
