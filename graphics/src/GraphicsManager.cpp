@@ -1704,6 +1704,10 @@ namespace mars {
 
     void GraphicsManager::setMultisampling(int num_samples) {
       //Antialiasing
+      if(num_samples < 0) {
+        printf("\"num multisamples\" have to be a positiv number!");
+        num_samples = 0;
+      }
       osg::DisplaySettings::instance()->setNumMultiSamples(num_samples);
     }
 
