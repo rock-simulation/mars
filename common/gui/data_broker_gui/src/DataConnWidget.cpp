@@ -27,6 +27,10 @@
 
 #define VERBOSE
 
+#ifdef VERBOSE
+  #include <stdio.h>
+#endif
+
 namespace mars {
   namespace data_broker_gui {
 

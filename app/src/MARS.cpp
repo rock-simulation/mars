@@ -127,9 +127,11 @@ namespace mars {
       coreConfigFile = configDir+"/core_libs.txt";
 
       // then check locals
+#ifndef WIN32
       setenv("LC_ALL","C", 1);
       unsetenv("LANG");
       setlocale(LC_ALL,"C");
+#endif
 
       // Test if current locale supports ENGLISH number interpretation
       struct lconv *locale = localeconv();
