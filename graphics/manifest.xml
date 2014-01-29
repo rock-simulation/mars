@@ -8,4 +8,5 @@
     <depend package="simulation/mars/interfaces" />
     <depend package="opencv" />
     <rosdep name="osg" />
+    <tags>needs_opt</tags>
 </package>

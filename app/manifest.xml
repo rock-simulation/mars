@@ -12,4 +12,5 @@
     <depend package="simulation/mars/common/gui/lib_manager_gui" optional="1" />
 
     <rosdep name="qt4" />
+    <tags>needs_opt</tags>
 </package>

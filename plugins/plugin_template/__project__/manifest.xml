@@ -5,4 +5,5 @@
     <depend package="simulation/mars/lib_manager" />
     <depend package="simulation/mars/data_broker" />
     <depend package="simulation/mars/interfaces" />
+    <tags>needs_opt</tags>
 </package>

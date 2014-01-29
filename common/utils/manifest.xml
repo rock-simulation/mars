@@ -5,4 +5,5 @@
     <depend package="eigen3" />
     <depend package="simulation/mars/common/lib_manager" />
     <depend package="external/yaml-cpp" />
+    <tags>needs_opt</tags>
 </package>

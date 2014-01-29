@@ -5,4 +5,5 @@
 
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/common/data_broker" />
+    <tags>needs_opt</tags>
 </package>

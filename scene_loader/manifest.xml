@@ -8,4 +8,5 @@
     <depend package="simulation/mars/interfaces" />
 
     <depend package="external/minizip" />
+    <tags>needs_opt</tags>
 </package>

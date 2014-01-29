@@ -5,4 +5,5 @@
    <depend package="simulation/mars/common/lib_manager" />
    <depend package="simulation/mars/common/utils" />
     <depend package="external/yaml-cpp" />
+    <tags>needs_opt</tags>
 </package>

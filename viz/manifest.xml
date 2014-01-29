@@ -10,4 +10,5 @@
     <depend package="simulation/mars/scene_loader" />
 
     <rosdep name="qt4" />
+    <tags>needs_opt</tags>
 </package>

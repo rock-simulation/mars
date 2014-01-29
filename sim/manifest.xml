@@ -9,4 +9,5 @@
     <depend package="simulation/mars/interfaces" />
 
     <depend package="external/ode" />
+    <tags>needs_opt</tags>
 </package>

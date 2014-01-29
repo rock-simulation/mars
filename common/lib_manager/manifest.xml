@@ -2,4 +2,5 @@
     <description brief="lib_manager">
 	This library manages the loading and use of other libraries.
     </description>
+    <tags>needs_opt</tags>
 </package>

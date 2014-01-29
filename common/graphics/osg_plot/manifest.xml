@@ -2,4 +2,5 @@
     <description brief="osg_plot">
 	Plot implementation to create 2d opengl (OSG) plots.
    </description>
+    <tags>needs_opt</tags>
 </package>
