@@ -118,6 +118,10 @@ namespace mars {
       brightnessUniform = new osg::Uniform("brightness", 1.0f);
       transparencyUniform = new osg::Uniform("alpha", 1.0f);
       texScaleUniform = new osg::Uniform("texScale", 1.0f);
+      lineLaserPosUniform = new osg::Uniform("lineLaserPos", osg::Vec3f(0.0f, 0.0f, 0.0f));
+      lineLaserNormalUniform = new osg::Uniform("lineLaserNormal", osg::Vec3f(1.0f, 0.0f, 0.0f));
+
+
       scaleTransform_ = new osg::MatrixTransform();
       scaleTransform_->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
       scaleTransform_->setDataVariance(osg::Node::STATIC);
@@ -185,10 +189,11 @@ namespace mars {
 
     // the material struct can also contain a static texture (texture file)
     void DrawObject::setMaterial(const MaterialData &mStruct, bool _useFog,
-                                 bool _useNoise) {
+                                 bool _useNoise, bool _drawLineLaser) {
       //return;
       useFog = _useFog;
       useNoise = _useNoise;
+      drawLineLaser = _drawLineLaser;
       getLight = mStruct.getLight;
 
       if(mStruct.brightness != 0.0) {
@@ -519,7 +524,7 @@ namespace mars {
 
         args.clear();
         args.push_back("v");
-        PixelLightVert *plightVert = new PixelLightVert(args, lightList);
+        PixelLightVert *plightVert = new PixelLightVert(args, lightList, drawLineLaser);
         plightVert->addMainVar( (GLSLVariable)
                                 { "vec4", "v", "gl_ModelViewMatrix * gl_Vertex" } );
         plightVert->addExport( (GLSLExport)
@@ -547,7 +552,8 @@ namespace mars {
         args.push_back("n");
         args.push_back("col");
         PixelLightFrag *plightFrag = new PixelLightFrag(args, useFog,
-                                                        useNoise, lightList);
+                                                        useNoise, drawLineLaser,
+                                                        lightList);
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.
         // TODO: check not needed if backfaces not processed.
@@ -570,6 +576,10 @@ namespace mars {
           stateSet->addUniform(brightnessUniform.get());
           stateSet->addUniform(transparencyUniform.get());
           stateSet->addUniform(texScaleUniform.get());
+          if(drawLineLaser) {
+            stateSet->addUniform(lineLaserPosUniform.get());
+            stateSet->addUniform(lineLaserNormalUniform.get());
+          }
         }
 
         if(normalMapUniform) {
@@ -673,6 +683,13 @@ namespace mars {
     }
 
     void DrawObject::collideSphere(Vector pos, sReal radius) {
+    }
+
+    void DrawObject::setExperimentalLineLaser(Vector pos, Vector n) {
+      if(drawLineLaser) {
+        lineLaserPosUniform->set(osg::Vec3f(pos.x(), pos.y(), pos.z()));
+        lineLaserNormalUniform->set(osg::Vec3f(n.x(), n.y(), n.z()));
+      }
     }
 
   } // end of namespace graphics

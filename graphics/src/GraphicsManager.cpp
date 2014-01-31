@@ -98,6 +98,7 @@ namespace mars {
         show_coords(true),
         useFog(true),
         useNoise(false),
+        drawLineLaser(false),
         cfg(0),
         ignore_next_resize(0),
         set_window_prop(0)
@@ -169,6 +170,10 @@ namespace mars {
         noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
                                              true, this);
         useNoise = noiseProp.bValue;
+
+        drawLineLaserProp = cfg->getOrCreateProperty("Graphics", "drawLineLaser",
+                                                     false, this);
+        drawLineLaser = drawLineLaserProp.bValue;
       }
 
       globalStateset->setGlobalDefaults();
@@ -698,7 +703,7 @@ namespace mars {
 
       getLights(&lightList);
       if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
-      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise);
+      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser);
       osg::PositionAttitudeTransform *transform = drawObject->object()->getPosTransform();
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
@@ -828,7 +833,7 @@ namespace mars {
     void GraphicsManager::setDrawObjectMaterial(unsigned long id,
                                                 const mars::interfaces::MaterialData &material) {
       OSGNodeStruct *ns = findDrawObject(id);
-      if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise);
+      if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise, drawLineLaser);
     }
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
       OSGNodeStruct *ns = findDrawObject(id);
@@ -1134,7 +1139,7 @@ namespace mars {
 
       if (allNodes[0].filename=="PRIMITIVE") {
         osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise);
+                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser);
         previewNodes_[nextPreviewID] = drawObject;
         scene->addChild(drawObject->object()->getPosTransform());
       } else {
@@ -1142,7 +1147,7 @@ namespace mars {
         for(DrawObjects::iterator it = previewNodes_.begin();
             it != previewNodes_.end(); ++it) {
           osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise);
+                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser);
           previewNodes_[nextPreviewID] = drawObject;
           scene->addChild(drawObject->object()->getPosTransform());
         }
@@ -1641,6 +1646,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == drawLineLaserProp.paramId) {
+        drawLineLaser = drawLineLaserProp.bValue = _property.bValue;
+        return;
+      }
+
       if(_property.paramId == brightness.paramId) {
         setBrightness(_property.dValue);
         return;
@@ -1824,6 +1834,13 @@ namespace mars {
       shadowedScene->removeChild(childTransform);
     }
 
+    void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal) {
+
+      for (DrawObjects::iterator iter = drawObjects_.begin();
+           iter != drawObjects_.end(); ++iter) {
+        iter->second->object()->setExperimentalLineLaser(pos, normal);
+      }
+    }
 
   } // end of namespace graphics
 } // end of namespace mars

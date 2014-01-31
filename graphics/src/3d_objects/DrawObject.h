@@ -77,7 +77,8 @@ namespace mars {
 
       // the material struct can also contain a static texture (texture file)
       virtual void setMaterial(const mars::interfaces::MaterialData &mStruct,
-                               bool useFog = false, bool useNoise = false);
+                               bool useFog = false, bool useNoise = false,
+                               bool drawLineLaser = false);
       // can be used for dynamic textures
       virtual void setTexture(osg::Texture2D *texture);
       virtual void setNormalMap(const std::string &normalMap);
@@ -148,6 +149,8 @@ namespace mars {
       void setUseMARSShader(bool val) {useMARSShader = val;}
       void setUseFog(bool val);
       void setUseNoise(bool val);
+      void setExperimentalLineLaser(utils::Vector lineLasePos,
+                                    utils::Vector lineLaserNormal);
 
     protected:
       unsigned long id_;
@@ -174,12 +177,17 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> brightnessUniform;
       osg::ref_ptr<osg::Uniform> transparencyUniform;
       osg::ref_ptr<osg::Uniform> texScaleUniform;
+      osg::ref_ptr<osg::Uniform> lineLaserPosUniform;
+      osg::ref_ptr<osg::Uniform> lineLaserNormalUniform;
   
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;
 
       bool hasShaderSources;
       bool useMARSShader;
+      bool drawLineLaser;
+      utils::Vector lineLasePos, lineLaserNormal;
+
       std::vector<mars::interfaces::LightData*> lastLights;
 
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;

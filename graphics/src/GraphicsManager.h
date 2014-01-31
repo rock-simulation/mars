@@ -277,6 +277,7 @@ namespace mars {
       virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
 
       virtual void makeChild(unsigned long parentId, unsigned long childId);
+      virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal);
       
     private:
 
@@ -325,7 +326,7 @@ namespace mars {
       void *image_data;
       double tex_x, tex_y;
       unsigned int framecount;
-      bool useFog, useNoise;
+      bool useFog, useNoise, drawLineLaser;
 
       std::vector<interfaces::GuiEventInterface*> guiHandlerList;
       std::vector<interfaces::GraphicsEventClient*> graphicsEventClientList;
@@ -361,7 +362,7 @@ namespace mars {
       cfg_manager::CFGManagerInterface *cfg;
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow, multisamples, noiseProp,
-        brightness, marsShader, backfaceCulling;
+        brightness, marsShader, backfaceCulling, drawLineLaserProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;

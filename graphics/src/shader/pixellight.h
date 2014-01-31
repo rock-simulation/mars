@@ -35,20 +35,23 @@ namespace mars {
     class PixelLightVert : public ShaderFunc {
     public:
       PixelLightVert(std::vector<std::string> &args,
-                     std::vector<mars::interfaces::LightData*> &lightList);
+                     std::vector<mars::interfaces::LightData*> &lightList,
+                     bool drawLineLaser = false);
       std::string code() const;
     private:
+      bool drawLineLaser;
       std::vector<mars::interfaces::LightData*> lightList;
     };
 
     class PixelLightFrag : public ShaderFunc {
     public:
-      PixelLightFrag(std::vector<std::string> &args, bool useFog, bool useNoise,
+      PixelLightFrag(std::vector<std::string> &args, bool useFog,
+                     bool useNoise, bool drawLineLaser,
                      std::vector<mars::interfaces::LightData*> &lightList);
       std::string code() const;
 
     private:
-      bool useFog, useNoise;
+      bool useFog, useNoise, drawLineLaser;
       std::vector<mars::interfaces::LightData*> lightList;
     };
 

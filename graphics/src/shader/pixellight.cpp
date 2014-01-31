@@ -36,9 +36,10 @@ namespace mars {
 #define max(x,y) (x>y ? x : y)
 #endif
  
-    PixelLightVert::PixelLightVert(vector<string> &args, vector<LightData*> &lightList)
-      : ShaderFunc("plight", args)
-    {
+    PixelLightVert::PixelLightVert(vector<string> &args,
+                                   vector<LightData*> &lightList,
+                                   bool drawLineLaser)
+      : ShaderFunc("plight", args), drawLineLaser(drawLineLaser) {
       stringstream s;
       s << "lightVec[" << max(1,lightList.size()) << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() } );
@@ -63,12 +64,16 @@ namespace mars {
 
       addVarying( (GLSLVarying) { "vec3", "eyeVec" } );
       addVarying( (GLSLVarying) { "vec3", "positionVarying" } );
+      if(drawLineLaser) {
+        addVarying( (GLSLVarying) { "vec3", "worldPosition" } );
+      }
+
+      addUniform( (GLSLUniform) { "mat4", "osg_ViewMatrixInverse" } );
 
       this->lightList = lightList;
     }
 
-    string PixelLightVert::code() const
-    {
+    string PixelLightVert::code() const {
       stringstream s;
       vector<LightData*>::const_iterator it;
       int lightIndex = 0;
@@ -77,6 +82,9 @@ namespace mars {
       s << "{" << endl;
       s << "    float atten;" << endl;
       s << "    positionVarying = gl_Vertex.xyz;" << endl;
+      if(drawLineLaser) {
+        s << "    worldPosition = (osg_ViewMatrixInverse * gl_ModelViewMatrix * gl_Vertex).xyz;" << endl;
+      }
       s << "    // save the vertex vector in eye space" << endl;
       s << "    eyeVec = v.xyz;" << endl;
       s << "    float dist;" << endl;
@@ -176,7 +184,7 @@ namespace mars {
     }
 
     PixelLightFrag::PixelLightFrag(vector<string> &args, bool useFog,
-                                   bool useNoise,
+                                   bool useNoise, bool drawLineLaser,
                                    vector<LightData*> &lightList)
       : ShaderFunc("plight", args)
     {
@@ -204,6 +212,7 @@ namespace mars {
 
       addVarying( (GLSLVarying) { "vec3", "eyeVec" } );
       addVarying( (GLSLVarying) { "vec3", "positionVarying" } );
+      addVarying( (GLSLVarying) { "vec3", "worldPosition" } );
 
       addUniform( (GLSLUniform) { "float", "brightness" } );
       addUniform( (GLSLUniform) { "float", "alpha" } );
@@ -213,6 +222,11 @@ namespace mars {
 #elif USE_SM_SHADOW
       addUniform( (GLSLUniform) { "sampler2DShadow", "osgShadow_shadowTexture" });
       addUniform( (GLSLUniform) { "vec2", "osgShadow_ambientBias" });
+      if(drawLineLaser) {
+        addUniform( (GLSLUniform) { "vec3", "lineLaserPos" });
+        addUniform( (GLSLUniform) { "vec3", "lineLaserNormal" });
+      }
+
 #elif USE_PSSM_SHADOW
       std::stringstream buf;
       for (unsigned int i=0; i < NUM_PSSM_SPLITS; ++i) {
@@ -232,6 +246,7 @@ namespace mars {
       this->useFog = useFog;
       this->useNoise = useNoise;
       this->lightList = lightList;
+      this->drawLineLaser = drawLineLaser;
     }
 
     string PixelLightFrag::code() const
@@ -307,6 +322,10 @@ namespace mars {
       // calculate output color
       s << "" << endl;
       s << "    outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);" << endl;
+      if(drawLineLaser) {
+        s << "    vec3 lwP = worldPosition - lineLaserPos.xyz;" << endl;
+        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.01) outcol = vec4(1.0, 0.0, 0.0, 1.0);" << endl;
+      }
       s << "    //outcol = ((gl_FrontLightModelProduct.sceneColor + ambient + diffuse_) * vec4(1) + specular_);" << endl;
       s << "    outcol.a = alpha*base.a;" << endl;
       if(useNoise) {
