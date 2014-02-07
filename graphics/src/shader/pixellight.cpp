@@ -268,6 +268,7 @@ namespace mars {
       s << "    vec4 ambient = vec4(0.0);" << endl;
       s << "    vec4 diffuse_ = vec4(0.0);" << endl;
       s << "    vec4 specular_ = vec4(0.0);" << endl;
+      s << "    vec4 test_specular_;" << endl;      
       s << endl;
       s << "    vec3 eye = normalize( - eyeVec.xyz );" << endl;
       s << "    vec3 reflected;" << endl;
@@ -306,13 +307,15 @@ namespace mars {
             "] ), normalize( -lightVec[" << lightIndex << "]  ) );" << endl;
           s << "        float spot = (spotEffect > gl_LightSource[" << (*it)->index << "].spotCosCutoff) ? 1.0 : 0.0;" << endl;
           s << "        diffuse_  += spot*diffuseShadow * (diffuse[" << (*it)->index << "] * nDotL);" << endl;
-          s << "        specular_ += spot*shadow * specular[" << (*it)->index << "]" << endl;
+          s << "        test_specular_ = spot*shadow * specular[" << (*it)->index << "]" << endl;
           s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+          s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;          
         }
         else {
           s << "        diffuse_  += diffuseShadow * (diffuse[" << (*it)->index << "] * nDotL);" << endl;
-          s << "        specular_ += shadow * specular[" << (*it)->index << "]" << endl;
-          s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+          s << "        test_specular_ = shadow * specular[" << (*it)->index << "]" << endl;
+          s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl; //needed as in some driver implementations, pow(0,0) yields NaN
+          s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;
         }
 
         ++lightIndex;
