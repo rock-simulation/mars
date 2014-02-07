@@ -83,6 +83,7 @@ namespace mars {
 
     public:
       TerrainDrawObject(const mars::interfaces::terrainStruct *ts);
+      virtual ~TerrainDrawObject(void);
       virtual void generateTangents();
       virtual void collideSphere(mars::utils::Vector pos,
                                  mars::interfaces::sReal radius);

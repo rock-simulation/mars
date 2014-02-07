@@ -148,6 +148,7 @@ namespace mars {
         sNode.c_params.friction_direction1 = 0;
       }
       if (sNode.terrain) {
+        if(sNode.terrain->pixelData) free(sNode.terrain->pixelData);
         delete sNode.terrain;
         sNode.terrain = 0;
       }

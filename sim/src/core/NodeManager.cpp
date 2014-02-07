@@ -104,7 +104,21 @@ namespace mars {
 
       if (!reload) {
         iMutex.lock();
-        simNodesReload.push_back(*nodeS);
+        NodeData reloadNode = *nodeS;
+        if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
+          if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
+            LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
+            return INVALID_ID;
+          }
+          reloadNode.terrain = new(terrainStruct);
+          *(reloadNode.terrain) = *(nodeS->terrain);
+          control->loadCenter->loadHeightmap->readPixelData(reloadNode.terrain);
+          if(!reloadNode.terrain->pixelData) {
+            LOG_ERROR("NodeManager::addNode: could not load image for terrain");
+            return INVALID_ID;
+          }
+        }
+        simNodesReload.push_back(reloadNode);
 
         if (nodeS->c_params.friction_direction1) {
           Vector *tmp = new Vector();
@@ -134,10 +148,12 @@ namespace mars {
           LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
           return INVALID_ID;
         }
-        control->loadCenter->loadHeightmap->readPixelData(nodeS->terrain);
         if(!nodeS->terrain->pixelData) {
-          LOG_ERROR("NodeManager::addNode: could not load image for terrain");
-          return INVALID_ID;
+          control->loadCenter->loadHeightmap->readPixelData(nodeS->terrain);
+          if(!nodeS->terrain->pixelData) {
+            LOG_ERROR("NodeManager::addNode: could not load image for terrain");
+            return INVALID_ID;
+          }
         }
       }
 
@@ -1051,6 +1067,15 @@ namespace mars {
           friction = new Vector(0.0, 0.0, 0.0);
           *friction = *(tmp.c_params.friction_direction1);
           tmp.c_params.friction_direction1 = friction;
+        }
+        if(tmp.terrain) {
+          tmp.terrain = new(terrainStruct);
+          *(tmp.terrain) = *(iter->terrain);
+          tmp.terrain->pixelData = (double*)calloc((tmp.terrain->width*
+                                                     tmp.terrain->height),
+                                                    sizeof(double));
+          memcpy(tmp.terrain->pixelData, iter->terrain->pixelData,
+                 (tmp.terrain->width*tmp.terrain->height)*sizeof(double));
         }
         iMutex.unlock();
         addNode(&tmp, true);

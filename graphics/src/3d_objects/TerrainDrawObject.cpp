@@ -55,10 +55,18 @@ namespace mars {
       info.srcname = ts->srcname;
       info.texScaleX = ts->texScaleX;
       info.texScaleY = ts->texScaleY;
-      
+      height_data = NULL;
 #ifdef USE_VERTEX_BUFFER
       vbt = new VertexBufferTerrain(ts);
 #endif
+    }
+
+    TerrainDrawObject::~TerrainDrawObject() {
+      if(height_data) {
+        for(int i = 0; i < info.height + 1; ++i)
+          delete height_data[i];
+        delete height_data;
+      }
     }
 
     std::list< osg::ref_ptr< osg::Geode > > TerrainDrawObject::createGeometry() {
@@ -272,6 +280,13 @@ namespace mars {
           texcoords->push_back(osg::Vec2(tex_data_x[y][x], tex_data_y[y][x]));
         }
       }
+
+      for(int i = 0; i < info.height + 1; ++i) {
+        delete tex_data_x[i];
+        delete tex_data_y[i];
+      }
+      delete tex_data_x;
+      delete tex_data_y;
 
       geom->setVertexArray(vertices.get());
       geom->setNormalArray(normals.get());

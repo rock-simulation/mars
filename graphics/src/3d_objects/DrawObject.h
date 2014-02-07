@@ -66,7 +66,7 @@ namespace mars {
       static osg::ref_ptr<osg::Material> selectionMaterial;
 
       DrawObject();
-      ~DrawObject();
+      virtual ~DrawObject();
 
       void createObject(unsigned long id,
                         const mars::utils::Vector &_pivot);
