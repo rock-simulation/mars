@@ -8,17 +8,20 @@ marstypes = [tuple(['undefined']*3),
              tuple(['body']*3),
              ('joint', 'joint', 'joint'),
              #('motor', 'motor', 'motor'),
-             ('sensor', 'sensor', 'sensor')]
+             ('sensor', 'sensor', 'sensor'),
+             tuple(['controller']*3)]
 
 type_properties = {
     "body": ('name', 'coll_bitmask'),
     "body_default": ('new_node', '65536'),
     "joint": ('name', 'node2'),
     "joint_default": ("new_joint", 'some_node'),
-    "motor": ('name', 'motor_type'),
-    "motor_default": ("new_motor", "1"),
+    #"motor": ('name', 'motor_type'),
+    #"motor_default": ("new_motor", "1"),
     "sensor": ('name', 'sensor_type'),
-    "sensor_default": ("new_sensor", "RaySensor")
+    "sensor_default": ("new_sensor", "RaySensor"),
+    "controller": ('name'),
+    "controller_default": ("controller")
     }
 
 type_property_defaults = {
