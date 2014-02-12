@@ -3,6 +3,9 @@
        DFKI Robot simulator application loader
     </description>
 
+    <depend package="simulation/mars/scene_loader" />
+    <depend package="simulation/mars/graphics" />
+    <depend package="simulation/mars/sim" />
     <depend package="simulation/mars/common/lib_manager" />
     <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/interfaces" />
