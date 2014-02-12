@@ -863,5 +863,14 @@ namespace mars {
       return this->camType;
     }
 
+    void GraphicsCamera::deactivateCam() {
+      nodeMask = mainCamera->getNodeMask();
+      mainCamera->setNodeMask(0);
+    }
+
+    void GraphicsCamera::activateCam() {
+      mainCamera->setNodeMask(nodeMask);
+    }
+
   } // end of namespace graphics
 } // end of namespace mars

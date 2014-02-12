@@ -550,7 +550,8 @@ namespace mars {
       if(gw == NULL){
         return;
       }
-      viewer->removeView(gw->getView());
+      //viewer->removeView(gw->getView());
+      gw->getCameraInterface()->deactivateCam();
     }
 
     void GraphicsManager::activate3DWindow(unsigned long id) {
@@ -560,7 +561,7 @@ namespace mars {
       if(gw == NULL){
         return;
       }
-      viewer->addView(gw->getView());
+      gw->getCameraInterface()->activateCam();
     }
 
     GraphicsWindowInterface* GraphicsManager::get3DWindow(unsigned long id) const {

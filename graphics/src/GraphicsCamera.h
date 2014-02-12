@@ -119,6 +119,8 @@ namespace mars {
       void setSwitchEye(bool val) {switch_eyes = val;}
       void setLeftEye(void) {left = true;}
       void setRightEye(void) {left = false;}
+      void deactivateCam();
+      void activateCam();
 
     private:
       void calcEyeSep(void);
@@ -147,7 +149,7 @@ namespace mars {
       bool stereo;
       bool switch_eyes;
       short left;
-  
+      int nodeMask;
       /*flags that are set to true when corresponing key is pressed 
        * and to false when it is release*/
       bool isMovingForward, isMovingBack, isMovingLeft, isMovingRight;

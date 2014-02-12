@@ -101,6 +101,8 @@ namespace mars {
       virtual void context_setCamPredefRear() = 0;
       virtual void context_setCamPredefTop() = 0;
       virtual void context_setCamPredefBottom() = 0;
+      virtual void deactivateCam() = 0;
+      virtual void activateCam() = 0;
 
     }; // end of class GraphicsCameraInterface
 
