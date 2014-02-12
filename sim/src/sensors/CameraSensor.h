@@ -118,6 +118,9 @@ namespace mars {
       {
         return config;
       }
+
+      void deactivateRendering();
+      void activateRendering();
       
     private:
       CameraConfigStruct config;

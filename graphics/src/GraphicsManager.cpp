@@ -543,6 +543,26 @@ namespace mars {
       return (void*) gw->getView();
     }
 
+    void GraphicsManager::deactivate3DWindow(unsigned long id) {
+
+      GraphicsWidget* gw=getGraphicsWindow(id);
+
+      if(gw == NULL){
+        return;
+      }
+      viewer->removeView(gw->getView());
+    }
+
+    void GraphicsManager::activate3DWindow(unsigned long id) {
+
+      GraphicsWidget* gw=getGraphicsWindow(id);
+
+      if(gw == NULL){
+        return;
+      }
+      viewer->addView(gw->getView());
+    }
+
     GraphicsWindowInterface* GraphicsManager::get3DWindow(unsigned long id) const {
       std::vector<GraphicsWidget*>::const_iterator iter;
 

@@ -153,7 +153,8 @@ namespace mars {
       virtual void setSelectable(unsigned long id, bool val);
       virtual void exportDrawObject(unsigned long id,
                                     const std::string &name) const;
-
+      virtual void deactivate3DWindow(unsigned long id);
+      virtual void activate3DWindow(unsigned long id);
       /** \brief creates a preview node */
       void preview(int action, bool resize, const std::vector<mars::interfaces::NodeData> &allNodes,
                    unsigned int num = 0, const mars::interfaces::MaterialData *mat = 0);

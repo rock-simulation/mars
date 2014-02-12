@@ -197,6 +197,14 @@ namespace mars {
       return 0;
     }
 
+    void CameraSensor::deactivateRendering() {
+      control->graphics->deactivate3DWindow(cam_window_id);
+    }
+
+    void CameraSensor::activateRendering() {
+      control->graphics->activate3DWindow(cam_window_id);
+    }
+
     void CameraSensor::preGraphicsUpdate(void) {
       if(gc) {
         gc->updateViewportQuat(position.x(), position.y(), position.z(),

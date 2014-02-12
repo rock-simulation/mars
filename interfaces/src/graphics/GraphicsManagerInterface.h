@@ -207,6 +207,8 @@ namespace mars {
       virtual void makeChild(unsigned long parentId, unsigned long childId) = 0;
 
       virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal) = 0;
+      virtual void deactivate3DWindow(unsigned long id) = 0;
+      virtual void activate3DWindow(unsigned long id) = 0;
 
     }; // end of class GraphicsManagerInterface
 
