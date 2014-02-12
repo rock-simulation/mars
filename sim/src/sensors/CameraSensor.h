@@ -63,6 +63,7 @@ namespace mars {
         name = "Unknown Camera";
         width=640;
         height=480;
+        enabled = true;
         show_cam = false;
         hud_pos=0;
         pos_offset.setZero();
@@ -71,7 +72,7 @@ namespace mars {
         opening_height=90;
         hud_width = 320;
         hud_height = 240;
-	    depthImage = false;
+        depthImage = false;
       }
 
       unsigned long attached_node;
@@ -86,6 +87,7 @@ namespace mars {
       int hud_width;
       int hud_height;
       bool depthImage;
+      bool enabled;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,
@@ -95,7 +97,7 @@ namespace mars {
     public:
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                            interfaces::BaseConfig *config );
-      CameraSensor(interfaces::ControlCenter *control, CameraConfigStruct config);
+      CameraSensor(interfaces::ControlCenter *control, const CameraConfigStruct config);
       ~CameraSensor(void);
 
       virtual int getSensorData(interfaces::sReal** data) const;

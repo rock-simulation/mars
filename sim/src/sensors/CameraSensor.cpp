@@ -46,7 +46,7 @@ namespace mars {
     }
 
 
-    CameraSensor::CameraSensor(ControlCenter *control, CameraConfigStruct config) :
+    CameraSensor::CameraSensor(ControlCenter *control, const CameraConfigStruct config) :
       BaseNodeSensor(config.id,config.name),
       SensorInterface(control),
       config(config),
@@ -65,6 +65,7 @@ namespace mars {
       assert(erg);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
       }
+      
 
       cam_id=0;
       if(control->graphics) {
@@ -87,6 +88,7 @@ namespace mars {
         if(config.show_cam)
           cam_id = control->graphics->addHUDElement(&hudCam);
 
+       
         cam_window_id = control->graphics->new3DWindow(0, true, config.width,
                                                        config.height, name);
         if(config.show_cam)
@@ -101,6 +103,11 @@ namespace mars {
           gc->setFrustumFromRad(config.opening_width/180.0*M_PI, config.opening_height/180.0*M_PI, 0.5, 100);
         }
       }
+      
+      if(!this->config.enabled){
+        deactivateRendering();
+      }
+      
     }
 
     CameraSensor::~CameraSensor(void){
@@ -198,11 +205,18 @@ namespace mars {
     }
 
     void CameraSensor::deactivateRendering() {
-      control->graphics->deactivate3DWindow(cam_window_id);
+      if(config.enabled){
+        control->graphics->deactivate3DWindow(cam_window_id);
+        config.enabled = false;
+      }
+
     }
 
     void CameraSensor::activateRendering() {
-      control->graphics->activate3DWindow(cam_window_id);
+      if(!config.enabled){
+        control->graphics->activate3DWindow(cam_window_id);
+        config.enabled = true;
+      }
     }
 
     void CameraSensor::preGraphicsUpdate(void) {
@@ -240,6 +254,9 @@ namespace mars {
     BaseConfig* CameraSensor::parseConfig(ControlCenter *control,
                                           ConfigMap *config) {
 
+      //ConfigMap *config = new ConfigMap();
+      //(*config) = (*config_);
+
       CameraConfigStruct *cfg = new CameraConfigStruct();
 
       unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
@@ -266,14 +283,19 @@ namespace mars {
 
       if((it = config->find("show_cam")) != config->end()){
         cfg->show_cam =  it->second[0].getBool();
+        if(cfg->show_cam) {
+          if((it2 = it->second[0].children.find("hud_idx")) !=
+             it->second[0].children.end())
+            cfg->hud_pos = it2->second[0].getInt();
+        }
       }else{
         cfg->show_cam = false;
       }
-
-      if(cfg->show_cam) {
-        if((it2 = it->second[0].children.find("hud_idx")) !=
-           it->second[0].children.end())
-          cfg->hud_pos = it2->second[0].getInt();
+      
+      if((it = config->find("enabled")) != config->end()){
+        cfg->enabled =  it->second[0].getBool();
+      }else{
+        cfg->enabled = true;
       }
 
       if((it = config->find("hud_size")) != config->end()) {
@@ -322,6 +344,9 @@ namespace mars {
 
       cfg["width"][0] = ConfigItem(config.width);
       cfg["height"][0] = ConfigItem(config.height);
+        
+//      cfg["enabled"][0] = ConfigItem(config.enabled);
+
 
       if(config.show_cam) {
         cfg["show_cam"][0] = ConfigItem(true);
