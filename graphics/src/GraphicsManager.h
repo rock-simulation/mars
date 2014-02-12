@@ -363,7 +363,7 @@ namespace mars {
       cfg_manager::CFGManagerInterface *cfg;
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow, multisamples, noiseProp,
-        brightness, marsShader, backfaceCulling, drawLineLaserProp;
+        brightness, marsShader, backfaceCulling, drawLineLaserProp, drawMainCamera;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;

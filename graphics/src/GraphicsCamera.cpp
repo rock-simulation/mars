@@ -49,7 +49,7 @@ namespace mars {
       mainCamera = _camera;
       hudCamera = 0;
       keyswitchManipulator = 0;
-
+      nodeMask = mainCamera->getNodeMask(); 
       camera = ODE_CAM;
       camType = 1;
       switch_eyes = true;
@@ -869,7 +869,9 @@ namespace mars {
     }
 
     void GraphicsCamera::activateCam() {
-      mainCamera->setNodeMask(nodeMask);
+      if(mainCamera->getNodeMask() == 0){
+          mainCamera->setNodeMask(nodeMask);
+      }
     }
 
   } // end of namespace graphics

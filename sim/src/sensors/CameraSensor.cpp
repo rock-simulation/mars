@@ -105,7 +105,7 @@ namespace mars {
       }
       
       if(!this->config.enabled){
-        deactivateRendering();
+        control->graphics->deactivate3DWindow(cam_window_id);
       }
       
     }
