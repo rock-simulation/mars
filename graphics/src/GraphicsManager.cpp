@@ -550,7 +550,8 @@ namespace mars {
       if(gw == NULL){
         return;
       }
-      viewer->removeView(gw->getView());
+      //viewer->removeView(gw->getView());
+      gw->getCameraInterface()->deactivateCam();
     }
 
     void GraphicsManager::activate3DWindow(unsigned long id) {
@@ -560,7 +561,7 @@ namespace mars {
       if(gw == NULL){
         return;
       }
-      viewer->addView(gw->getView());
+      gw->getCameraInterface()->activateCam();
     }
 
     GraphicsWindowInterface* GraphicsManager::get3DWindow(unsigned long id) const {
@@ -1594,6 +1595,9 @@ namespace mars {
       drawSnow = cfg->getOrCreateProperty("Graphics", "drawSnow", false,
                                           cfgClient);
 
+      drawMainCamera = cfg->getOrCreateProperty("Graphics", "drawMainCamera", true,
+                                          cfgClient);
+
       backfaceCulling = cfg->getOrCreateProperty("Graphics", "backfaceCulling",
                                                  true, cfgClient);
 
@@ -1601,6 +1605,9 @@ namespace mars {
                                 cfgW_width.iValue, cfgW_height.iValue);
       if(drawRain.bValue) showRain(true);
       if(drawSnow.bValue) showSnow(true);
+      if(!drawMainCamera.bValue){
+            deactivate3DWindow(1);
+      }
 
     }
 
@@ -1653,6 +1660,16 @@ namespace mars {
 
       if(_property.paramId == drawSnow.paramId) {
         showSnow(_property.bValue);
+        return;
+      }
+
+      if(_property.paramId == drawMainCamera.paramId) {
+          drawMainCamera.bValue = _property.bValue;
+        if(drawMainCamera.bValue){
+            activate3DWindow(1);
+        }else{
+            deactivate3DWindow(1);
+        }
         return;
       }
 
