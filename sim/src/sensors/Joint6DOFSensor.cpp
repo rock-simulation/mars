@@ -28,6 +28,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <cstring>
 
 #include "Joint6DOFSensor.h"
 
@@ -109,10 +110,10 @@ namespace mars {
       force =  (sensor_data.body_q * sensor_data.force);
       torque = (sensor_data.body_q * sensor_data.torque);
       p = data;
-      sprintf(p, " %10.3f %10.3f %10.3f %10.3f %10.3f %10.3f",
+      sprintf(p, " %10.6g %10.6g %10.6g %10.6g %10.6g %10.6g",
               force.x(), force.y(), force.z(), torque.x(), torque.y(), torque.z());
 
-      return 66;
+      return strlen(p);
     }
 
 
