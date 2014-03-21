@@ -98,6 +98,14 @@ function setupConfig {
                 CORES=6
             fi
             echo "CORES=${CORES}" >> ${configFile}
+            echo -n "Enter build type (debug|release) : "
+            read BUILD_TYPE || return 1
+            pattern='debug|release'
+            if ! [[ ${BUILD_TYPE} =~ ${pattern} ]]; then
+                printBold "error parsing built type. Using default (debug)"
+                BUILD_TYPE=debug
+            fi
+            echo "BUILD_TYPE=${BUILD_TYPE}" >> ${configFile}
         else
             source ${configFile}
         fi
@@ -115,9 +123,9 @@ function setup_env {
         MSYS=false
         unamestr=`uname`
         if [[ "${unamestr}" == 'Linux' ]]; then
-	    platform='linux'
+        platform='linux'
         elif [[ "${unamestr}" == 'Darwin' ]]; then
-	    platform='darwin'
+        platform='darwin'
         fi
     else
         MSYS=true
@@ -163,8 +171,11 @@ function setup_env {
         if $MSYS; then
             echo "#!/bin/bash" > cmake_debug
             echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=DEBUG  -G \"MSYS Makefiles\" \$@" >> cmake_debug
+            echo "#!/bin/bash" > cmake_release
+            echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=RELEASE  -G \"MSYS Makefiles\" \$@" >> cmake_release
         else
             echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=DEBUG \$@" > cmake_debug
+            echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=DEBUG \$@" > cmake_release
         fi
         chmod +x cmake_debug
         cd ${MARS_DEV_ROOT}
@@ -337,7 +348,7 @@ function fetch_minizip() {
     fi
 
     if [ ! -d "minizip" ]; then 
-	unzip unzip11.zip -d minizip
+        unzip unzip11.zip -d minizip
     fi
     cd ..
     popd > /dev/null 2>&1
@@ -453,7 +464,6 @@ function patch_opencv {
     printBold "... done patching external/OpenCV-2.3.0."
 }
 
-
 function patch_eigen {
     patch_package external/eigen3
 }
@@ -490,7 +500,11 @@ function install_package {
     pushd . > /dev/null 2>&1
     mkdir -p ${MARS_DEV_ROOT}/${package}/build
     cd ${MARS_DEV_ROOT}/${package}/build
-    cmake_debug
+    if [[ ${BUILD_TYPE} == "release" ]]; then
+        cmake_release
+    else
+        cmake_debug
+    fi
     make install -j${CORES} || MARS_SCRIPT_ERROR=1
     popd > /dev/null 2>&1
     if [[ x${MARS_SCRIPT_ERROR} == "x1" ]]; then
@@ -516,10 +530,10 @@ function install_ode_mars {
       export CXXFLAGS=-fPIC
       ./configure --enable-double-precision --enable-release --prefix=$prefix --with-drawstuff=none --disable-demos
       if [ "${platform}" = "linux" ]; then
-	  if [ x`which libtool` != x ]; then
-              mv libtool libtool_old
-              ln -s `which libtool` libtool
-	  fi
+        if [ x`which libtool` != x ]; then
+          mv libtool libtool_old
+          ln -s `which libtool` libtool
+        fi
       fi
       make install -j${CORES} || MARS_SCRIPT_ERROR=1
       popd > /dev/null 2>&1
@@ -546,7 +560,11 @@ function install_opencv {
     cd ${MARS_DEV_ROOT}/external/OpenCV-2.3.0
     mkdir -p build; cd build;
     # disable python support for OpenCV on Windows
-    cmake_debug "-DBUILD_NEW_PYTHON_SUPPORT=OFF -DCMAKE_BUILD_TYPE=RELEASE -DWITH_CUDA=OFF";
+    if [[ ${BUILD_TYPE} == "release" ]]; then
+        cmake_release "-DBUILD_NEW_PYTHON_SUPPORT=OFF -DWITH_CUDA=OFF";
+    else
+        cmake_debug "-DBUILD_NEW_PYTHON_SUPPORT=OFF -DWITH_CUDA=OFF";
+    fi
     # on MSYS opencv chokes on build with many CORES
     if ${MSYS}; then
         make install -j2 || MARS_SCRIPT_ERROR=1
@@ -575,8 +593,11 @@ function install_eigen {
     pushd . > /dev/null 2>&1
     cd ${MARS_DEV_ROOT}/external/eigen3
     mkdir -p build; cd build;
-    # disable python support for OpenCV on Windows
-    cmake_debug "-DCMAKE_BUILD_TYPE=DEBUG";
+    if [[ ${BUILD_TYPE} == "release" ]]; then
+        cmake_release
+    else
+        cmake_debug
+    fi
     make install -j${CORES} || MARS_SCRIPT_ERROR=1
     if [[ x${MARS_SCRIPT_ERROR} == "x1" ]]; then
         popd > /dev/null 2>&1
