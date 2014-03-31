@@ -1871,11 +1871,11 @@ namespace mars {
       shadowedScene->removeChild(childTransform);
     }
 
-    void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal) {
+    void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) {
 
       for (DrawObjects::iterator iter = drawObjects_.begin();
            iter != drawObjects_.end(); ++iter) {
-        iter->second->object()->setExperimentalLineLaser(pos, normal);
+        iter->second->object()->setExperimentalLineLaser(pos, normal, color, laserAngle, openingAngle);
       }
     }
 

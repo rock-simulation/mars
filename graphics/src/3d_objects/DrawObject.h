@@ -149,8 +149,20 @@ namespace mars {
       void setUseMARSShader(bool val) {useMARSShader = val;}
       void setUseFog(bool val);
       void setUseNoise(bool val);
+
+        /**
+       * Sets the line laser
+       * @pos: position of the laser
+       * @normal: normalvector of the laser-plane
+       * @color: color of the laser in RGB
+       * @laser: Angle of the laser, as an direction-vector
+       * @openingAngle: Opening angle of the laser; for complete laserLine, choose PI
+       */
       void setExperimentalLineLaser(utils::Vector lineLasePos,
-                                    utils::Vector lineLaserNormal);
+                                    utils::Vector lineLaserNormal,
+                                    utils::Vector lineLaserColor,
+                                    utils::Vector LaserAngle,
+                                    float openingAngle);
 
     protected:
       unsigned long id_;
@@ -179,6 +191,9 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> texScaleUniform;
       osg::ref_ptr<osg::Uniform> lineLaserPosUniform;
       osg::ref_ptr<osg::Uniform> lineLaserNormalUniform;
+      osg::ref_ptr<osg::Uniform> lineLaserColor;
+      osg::ref_ptr<osg::Uniform> lineLaserDirection;
+      osg::ref_ptr<osg::Uniform> lineLaserOpeningAngle;
   
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;

@@ -225,6 +225,9 @@ namespace mars {
       if(drawLineLaser) {
         addUniform( (GLSLUniform) { "vec3", "lineLaserPos" });
         addUniform( (GLSLUniform) { "vec3", "lineLaserNormal" });
+        addUniform( (GLSLUniform) { "vec4", "lineLaserColor" });
+        addUniform( (GLSLUniform) { "vec3", "lineLaserDirection"});
+        addUniform( (GLSLUniform) { "float", "lineLaserOpeningAngle"});
       }
 
 #elif USE_PSSM_SHADOW
@@ -325,9 +328,18 @@ namespace mars {
       // calculate output color
       s << "" << endl;
       s << "    outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);" << endl;
+
       if(drawLineLaser) {
+
         s << "    vec3 lwP = worldPosition - lineLaserPos.xyz;" << endl;
-        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.01) outcol = vec4(1.0, 0.0, 0.0, 1.0);" << endl;
+        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.01){" << endl;
+        s << "		vec3 lwPNorm = normalize(lwP);" << std::endl;
+        s << "		vec3 directionNorm = normalize(lineLaserDirection);" << std::endl;
+        s << "		float v2Laser = acos( dot(directionNorm, lwPNorm) );" << std::endl;
+        s << "		if( v2Laser < (lineLaserOpeningAngle / 2.0f) ){" << std::endl;
+        s << "			outcol = lineLaserColor;" << std::endl;
+        s << "		}" << std::endl;
+        s << "	   }" << std::endl;
       }
       s << "    //outcol = ((gl_FrontLightModelProduct.sceneColor + ambient + diffuse_) * vec4(1) + specular_);" << endl;
       s << "    outcol.a = alpha*base.a;" << endl;

@@ -206,7 +206,15 @@ namespace mars {
       
       virtual void makeChild(unsigned long parentId, unsigned long childId) = 0;
 
-      virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal) = 0;
+      /**
+       * Sets the line laser
+       * @pos: position of the laser
+       * @normal: normalvector of the laser-plane
+       * @color: color of the laser in RGB
+       * @laser: Angle of the laser, as an direction-vector
+       * @openingAngle: Opening angle of the laser; for complete laserLine, choose PI
+       */
+      virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) = 0;
       virtual void deactivate3DWindow(unsigned long id) = 0;
       virtual void activate3DWindow(unsigned long id) = 0;
 

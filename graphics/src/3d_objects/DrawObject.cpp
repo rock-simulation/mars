@@ -120,7 +120,9 @@ namespace mars {
       texScaleUniform = new osg::Uniform("texScale", 1.0f);
       lineLaserPosUniform = new osg::Uniform("lineLaserPos", osg::Vec3f(0.0f, 0.0f, 0.0f));
       lineLaserNormalUniform = new osg::Uniform("lineLaserNormal", osg::Vec3f(1.0f, 0.0f, 0.0f));
-
+      lineLaserColor = new osg::Uniform("lineLaserColor", osg::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
+      lineLaserDirection = new osg::Uniform("lineLaserDirection", osg::Vec3f(0.0f, 0.0f, 1.0f));
+      lineLaserOpeningAngle = new osg::Uniform("lineLaserOpeningAngle", (float)M_PI * 2.0f);
 
       scaleTransform_ = new osg::MatrixTransform();
       scaleTransform_->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
@@ -579,6 +581,9 @@ namespace mars {
           if(drawLineLaser) {
             stateSet->addUniform(lineLaserPosUniform.get());
             stateSet->addUniform(lineLaserNormalUniform.get());
+            stateSet->addUniform(lineLaserColor.get());
+            stateSet->addUniform(lineLaserDirection.get());
+            stateSet->addUniform(lineLaserOpeningAngle.get());
           }
         }
 
@@ -685,10 +690,15 @@ namespace mars {
     void DrawObject::collideSphere(Vector pos, sReal radius) {
     }
 
-    void DrawObject::setExperimentalLineLaser(Vector pos, Vector n) {
+    void DrawObject::setExperimentalLineLaser(Vector pos, Vector n,
+                                              Vector color, Vector laserAngle,
+                                              float openingAngle) {
       if(drawLineLaser) {
         lineLaserPosUniform->set(osg::Vec3f(pos.x(), pos.y(), pos.z()));
         lineLaserNormalUniform->set(osg::Vec3f(n.x(), n.y(), n.z()));
+        lineLaserColor->set(osg::Vec4f(color.x(), color.y(), color.z(), 1.0f ) );
+        lineLaserDirection->set(osg::Vec3f(laserAngle.x(), laserAngle.y(), laserAngle.z()));
+        lineLaserOpeningAngle->set( openingAngle);
       }
     }
 
