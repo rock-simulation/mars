@@ -193,6 +193,19 @@ function setup_env {
     elif [ ! -f "${prefix}/cmake/mars.cmake" ]; then
         cp "$MARS_SCRIPT_DIR/../cmake/mars.cmake" "${prefix}/cmake/"
     fi
+    if [ ! -d "${prefix}/share/mars/cmake" ]; then
+        mkdir -p ${prefix}/share/mars
+        cp -r "$MARS_SCRIPT_DIR/../cmake" "${prefix}/share/mars"
+    elif [ ! -f "${prefix}/share/mars/cmake/mars.cmake" ]; then
+        cp "$MARS_SCRIPT_DIR/../cmake/mars.cmake" "${prefix}/cmake/"
+    fi
+
+    if [ ! -f "${prefix}/share/mars/cmake/mars-config.cmake" ]; then
+        cd ${prefix}/share/mars/cmake
+        echo "list(APPEND CMAKE_MODULE_PATH ${prefix}/share/mars/cmake)" > mars-config.cmake
+        echo "include(mars)" >> mars-config.cmake
+        cd ${MARS_DEV_ROOT}
+    fi
     popd > /dev/null 2>&1
 }
 
