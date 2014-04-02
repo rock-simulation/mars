@@ -2,6 +2,7 @@
     <description brief="data_broker">
       A small library to manage data communication within a software framework.
    </description>
+   <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/mars/common/lib_manager" />
    <depend package="simulation/mars/common/utils" />
     <tags>needs_opt</tags>

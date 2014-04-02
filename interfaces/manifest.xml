@@ -3,6 +3,7 @@
        This library is the base library for the MARS prject and includes the general defines, structs and classes.
     </description>
 
+    <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/common/data_broker" />
     <tags>needs_opt</tags>

@@ -3,6 +3,7 @@
        A library that allows to use MARS scenes for a pure visualization.
     </description>
 
+    <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/common/lib_manager" />
     <depend package="simulation/mars/common/cfg_manager" />
     <depend package="simulation/mars/interfaces" />
