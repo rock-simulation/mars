@@ -1,0 +1,6 @@
+<package>
+    <description brief="osg_text">
+	Text implementation to create 2d opengl (OSG) text with border and background.
+   </description>
+    <tags>needs_opt</tags>
+</package>
