@@ -199,6 +199,7 @@ namespace mars {
                                const data_broker::DataPackage &package,
                                int callbackParam);
 
+      virtual const utils::Vector& getGravity(void);
 
     private:
 

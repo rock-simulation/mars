@@ -1341,6 +1341,11 @@ namespace mars {
       }
     }
 
+    const utils::Vector& Simulator::getGravity(void) {
+      return physics->world_gravity;
+    }
+
+
   } // end of namespace sim
 
   namespace interfaces {

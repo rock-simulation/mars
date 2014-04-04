@@ -95,6 +95,7 @@ namespace mars {
       virtual PhysicsInterface* getPhysics(void) const = 0;
       virtual void handleError(PhysicsError error) = 0;
       virtual void setGravity(const utils::Vector &gravity) = 0;
+      virtual const utils::Vector& getGravity(void) = 0;
       virtual int checkCollisions(void) = 0;
       virtual bool hasSimFault() const = 0;
 
