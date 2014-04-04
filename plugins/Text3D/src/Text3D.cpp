@@ -65,36 +65,36 @@ namespace mars {
           osg_text::TextInterface *text;
           if(map.find("Labels") != map.end()) {
             for(it = map["Labels"].begin(); it!=map["Labels"].end(); ++it) {
-              TextData td;
-              td.name = it->children["name"][0].getString();
-              td.value = it->children["value"][0].getString();
-              td.posX = it->children["posX"][0].getDouble();
-              td.posY = it->children["posY"][0].getDouble();
+              TextData *td = new TextData;
+              td->name = it->children["name"][0].getString();
+              td->value = it->children["value"][0].getString();
+              td->posX = it->children["posX"][0].getDouble();
+              td->posY = it->children["posY"][0].getDouble();
               double fixedWidth = it->children["fixedWidth"][0].getDouble();
-              td.text = textFactory->createText(td.value, 40,
+              td->text = textFactory->createText(td->value, 40,
                                                 osg_text::Color(1.0, 1.0, 1.0, 1.0),
-                                                td.posX, td.posY);
-              td.text->setBackgroundColor(osg_text::Color(0.0, 0.5, 0.0, 0.5));
-              td.text->setBorderColor(osg_text::Color(1.0, 1.0, 1.0, 0.5));
-              td.text->setBorderWidth(4.0);
-              td.text->setPadding(10., 10., 10., 10.);
-              td.text->setFixedWidth(fixedWidth);
+                                                td->posX, td->posY);
+              td->text->setBackgroundColor(osg_text::Color(0.0, 0.5, 0.0, 0.5));
+              td->text->setBorderColor(osg_text::Color(1.0, 1.0, 1.0, 0.5));
+              td->text->setBorderWidth(4.0);
+              td->text->setPadding(10., 10., 10., 10.);
+              td->text->setFixedWidth(fixedWidth);
               example = control->cfg->getOrCreateProperty("Text3D",
-                                                          td.name+"/value",
-                                                          td.value, this);
-              td.vId = example.paramId;
+                                                          td->name+"/value",
+                                                          td->value, this);
+              td->vId = example.paramId;
               example = control->cfg->getOrCreateProperty("Text3D",
-                                                          td.name+"/posX",
-                                                          td.posX, this);
-              td.pxId = example.paramId;
+                                                          td->name+"/posX",
+                                                          td->posX, this);
+              td->pxId = example.paramId;
               example = control->cfg->getOrCreateProperty("Text3D", 
-                                                          td.name+"/posY",
-                                                          td.posY, this);
-              td.pyId = example.paramId;
-              td.hudID = control->graphics->addHUDOSGNode(td.text->getOSGNode());
-              textMap[td.vId] = td;
-              textMap[td.pxId] = td;
-              textMap[td.pyId] = td;
+                                                          td->name+"/posY",
+                                                          td->posY, this);
+              td->pyId = example.paramId;
+              td->hudID = control->graphics->addHUDOSGNode(td->text->getOSGNode());
+              textMap[td->vId] = td;
+              textMap[td->pxId] = td;
+              textMap[td->pyId] = td;
             }
           }
         }
@@ -120,19 +120,19 @@ namespace mars {
       }
   
       void Text3D::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
-        std::map<cfg_manager::cfgParamId, TextData>::iterator it;
+        std::map<cfg_manager::cfgParamId, TextData*>::iterator it;
 
         if((it = textMap.find(_property.paramId)) != textMap.end()) {
-          if(it->second.vId == _property.paramId) {
-            it->second.text->setText(_property.sValue);
+          if(it->second->vId == _property.paramId) {
+            it->second->text->setText(_property.sValue);
           }
-          else if(it->second.pxId == _property.paramId) {
-            it->second.posX = _property.dValue;
-            it->second.text->setPosition(it->second.posX, it->second.posY);
+          else if(it->second->pxId == _property.paramId) {
+            it->second->posX = _property.dValue;
+            it->second->text->setPosition(it->second->posX, it->second->posY);
           }
-          else if(it->second.pyId == _property.paramId) {
-            it->second.posY = _property.dValue;
-            it->second.text->setPosition(it->second.posX, it->second.posY);
+          else if(it->second->pyId == _property.paramId) {
+            it->second->posY = _property.dValue;
+            it->second->text->setPosition(it->second->posX, it->second->posY);
           }
 
         }

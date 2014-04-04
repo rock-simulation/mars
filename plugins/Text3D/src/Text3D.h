@@ -100,7 +100,7 @@ namespace mars {
       private:
         cfg_manager::cfgPropertyStruct example;
         osg_text::TextFactoryInterface *textFactory;
-        std::map<cfg_manager::cfgParamId, TextData> textMap;
+        std::map<cfg_manager::cfgParamId, TextData*> textMap;
 
       }; // end of class definition Text3D
 
