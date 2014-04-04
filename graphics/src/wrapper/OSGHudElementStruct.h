@@ -51,7 +51,8 @@ namespace mars {
       OSGHudElementStruct(
                           const interfaces::hudElementStruct &he,
                           const std::string &config_path,
-                          unsigned int id);
+                          unsigned int id,
+                          osg::Node* node = NULL);
       ~OSGHudElementStruct();
 
       HUDElement *getHUDElement();

@@ -289,6 +289,10 @@ namespace mars {
        */
       virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle);
 
+      virtual void addOSGNode(void* node);
+      virtual void removeOSGNode(void* node);
+      virtual unsigned long addHUDOSGNode(void* node);
+
     private:
 
       mars::interfaces::GraphicData graphicOptions;

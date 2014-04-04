@@ -1265,6 +1265,26 @@ namespace mars {
       }
     }
 
+    unsigned long GraphicsManager::addHUDOSGNode(void* node) {
+      unsigned long id = next_hud_id++;
+      osg::ref_ptr<OSGHudElementStruct> elem;
+
+      hudElementStruct he;
+      he.type = HUD_ELEMENT_OSGNODE;
+      elem = new OSGHudElementStruct(he, resources_path.sValue, id,
+                                     (osg::Node*)node);
+      if (elem) {
+        hudElements.push_back(elem);
+        for (vector<GraphicsWidget*>::iterator iter = graphicsWindows.begin();
+             iter!=graphicsWindows.end(); iter++) {
+          (*iter)->addHUDElement(elem->getHUDElement());
+        }
+        return id;
+      }
+
+      return 0;
+    }
+
     HUDElement* GraphicsManager::findHUDElement(unsigned long id) const {
       HUDElements::const_iterator iter;
       //HUDTexture *elem;
@@ -1879,6 +1899,13 @@ namespace mars {
       }
     }
 
+    void GraphicsManager::addOSGNode(void* node) {
+      scene->addChild((osg::Node*)node);
+    }
+
+    void GraphicsManager::removeOSGNode(void* node) {
+      scene->removeChild((osg::Node*)node);
+    }
   } // end of namespace graphics
 } // end of namespace mars
 

@@ -48,6 +48,7 @@
 #define HUD_ELEMENT_TERMINAL 2
 #define HUD_ELEMENT_TEXTURE  3
 #define HUD_ELEMENT_LINES    4
+#define HUD_ELEMENT_OSGNODE  5
 
 
 namespace mars {

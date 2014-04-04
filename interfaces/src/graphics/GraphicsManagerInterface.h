@@ -218,6 +218,11 @@ namespace mars {
       virtual void deactivate3DWindow(unsigned long id) = 0;
       virtual void activate3DWindow(unsigned long id) = 0;
 
+      // be carful with this method, only add a valid pointer osg::Node*
+      virtual void addOSGNode(void* node) = 0;
+      virtual void removeOSGNode(void* node) = 0;
+      virtual unsigned long addHUDOSGNode(void* node) = 0;
+
     }; // end of class GraphicsManagerInterface
 
   } // end of namespace interfaces

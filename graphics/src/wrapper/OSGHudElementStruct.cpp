@@ -30,6 +30,7 @@
 #include "../2d_objects/HUDLabel.h"
 #include "../2d_objects/HUDLines.h"
 #include "../2d_objects/HUDTexture.h"
+#include "../2d_objects/HUDOSGNode.h"
 
 namespace mars {
   namespace graphics {
@@ -40,7 +41,7 @@ namespace mars {
 
     OSGHudElementStruct::OSGHudElementStruct(const hudElementStruct &he,
                                              const std::string &config_path,
-                                             unsigned int id)
+                                             unsigned int id, osg::Node* node)
       : elem_(NULL)
     {
       switch (he.type) {
@@ -97,6 +98,13 @@ namespace mars {
           myTexture->setBorderWidth(he.border_width);
           myTexture->createBox();
           elem_ = myTexture;
+          break;
+        }
+      case HUD_ELEMENT_OSGNODE:
+        {
+          HUDOSGNode *myNode = new HUDOSGNode(this);
+          myNode->setOSGNode(node);
+          elem_ = myNode;
           break;
         }
       }

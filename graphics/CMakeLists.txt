@@ -122,6 +122,7 @@ set(HEADERS
            src/2d_objects/HUDLines.h
            src/2d_objects/HUDTerminal.h
            src/2d_objects/HUDTexture.h
+           src/2d_objects/HUDOSGNode.h
            
            src/shader/bumpmapping.h
            src/shader/pixellight.h
@@ -172,6 +173,7 @@ set(SOURCES
            src/2d_objects/HUDTerminal.cpp
            src/2d_objects/HUDTexture.cpp
            src/2d_objects/HUDLines.cpp
+           src/2d_objects/HUDOSGNode.cpp
            
            src/shader/bumpmapping.cpp
            src/shader/pixellight.cpp
