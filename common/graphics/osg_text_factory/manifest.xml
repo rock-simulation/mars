@@ -1,0 +1,6 @@
+<package>
+    <description brief="osg_text_factory">
+       This lib wraps osg_text to create 3D text without osg dependency in MARS.
+   </description>
+    <tags>needs_opt</tags>
+</package>
