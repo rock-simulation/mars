@@ -47,11 +47,11 @@ namespace mars {
       std::map<unsigned long, unsigned long> m_indexMapGroupID;
     };
 
-    class SceneLoader : public interfaces::LoadSceneInterface {
+    class URDFLoader : public interfaces::LoadSceneInterface {
       
     public:
-      SceneLoader(lib_manager::LibManager *theManager);
-      ~SceneLoader();
+      URDFLoader(lib_manager::LibManager *theManager);
+      ~URDFLoader();
 
 
       // LibInterface methods

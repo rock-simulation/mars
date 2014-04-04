@@ -604,7 +604,8 @@ namespace mars {
       tmpPath.append("/tmp/");
 
       try {
-        if (! control->loadCenter->loadScene->loadFile(filename.c_str(), tmpPath.c_str(), robotname.c_str())) {
+        std::string suffix = utils::getFilenameSuffix(filename);
+        if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), tmpPath.c_str(), robotname.c_str())) {
           return 0; //failed
         }
       } catch(SceneParseException e) {
@@ -623,7 +624,8 @@ namespace mars {
       string tmpPath = configPath.sValue;
       tmpPath.append("/tmp/");
 
-      if (control->loadCenter->loadScene->saveFile(filename, tmpPath)!=1) {
+      std::string suffix = utils::getFilenameSuffix(filename);
+      if (control->loadCenter->loadScene[suffix]->saveFile(filename, tmpPath)!=1) {
         LOG_ERROR("Simulator: an error somewhere while saving scene");
         return 0;
       }

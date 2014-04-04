@@ -37,7 +37,7 @@ namespace mars {
 
     using namespace std;
 
-    SceneLoader::SceneLoader(lib_manager::LibManager *theManager) :
+    URDFLoader::URDFLoader(lib_manager::LibManager *theManager) :
       interfaces::LoadSceneInterface(theManager), control(NULL) {
       indexMaps_t tmp;
       maps.push_back(tmp);
@@ -46,30 +46,34 @@ namespace mars {
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(marsSim) {
         control = marsSim->getControlCenter();
-        control->loadCenter->loadScene = this;
+        control->loadCenter->loadScene[".scn"] = this;
+        control->loadCenter->loadScene[".scene"] = this;
+        //control->loadCenter->loadScene[".zip"] = this;
       }
     }
 
-    SceneLoader::~SceneLoader() {
+    URDFLoader::~URDFLoader() {
       if(control) {
-        control->loadCenter->loadScene = NULL;
+        control->loadCenter->loadScene.erase(".scn");
+        control->loadCenter->loadScene.erase(".scene");
+        //control->loadCenter->loadScene.erase(".zip");
         libManager->releaseLibrary("mars_sim");
       }
     }
 
-    bool SceneLoader::loadFile(std::string filename, std::string tmpPath,
+    bool URDFLoader::loadFile(std::string filename, std::string tmpPath,
                                std::string robotname) {
       Load loadObject(filename, control, tmpPath,
                       (const std::string&) robotname);
       return loadObject.load();
     }
 
-    int SceneLoader::saveFile(std::string filename, std::string tmpPath) {
+    int URDFLoader::saveFile(std::string filename, std::string tmpPath) {
       Save saveObject(filename.c_str(), control, tmpPath);
       return saveObject.prepare();
     }
 
-    unsigned long SceneLoader::getMappedID(unsigned long id,
+    unsigned long URDFLoader::getMappedID(unsigned long id,
                                            unsigned int indextype,
                                            unsigned int source) const {
       map<unsigned long, unsigned long>::const_iterator it;
@@ -101,7 +105,7 @@ namespace mars {
       return 0;
     }
 
-    unsigned int SceneLoader::setMappedID(unsigned long id_old,
+    unsigned int URDFLoader::setMappedID(unsigned long id_old,
                                           unsigned long id_new,
                                           unsigned int indextype,
                                           unsigned int source) {
@@ -132,13 +136,13 @@ namespace mars {
       return 0;
     }
 
-    void SceneLoader::setMappedSceneName(const std::string &scenename) {
+    void URDFLoader::setMappedSceneName(const std::string &scenename) {
       indexMaps_t tmp;
       tmp.s_Scenename=scenename;
       maps.push_back(tmp);
     }
 
-    unsigned int SceneLoader::getMappedSceneByName(const std::string &scenename) const {
+    unsigned int URDFLoader::getMappedSceneByName(const std::string &scenename) const {
       for (unsigned int i=0; i<maps.size(); i++) {
         if (maps[i].s_Scenename==scenename) {
           return i;
@@ -151,5 +155,5 @@ namespace mars {
   } // end of namespace scene_loader
 } // end of namespace mars
 
-DESTROY_LIB(mars::scene_loader::SceneLoader);
-CREATE_LIB(mars::scene_loader::SceneLoader);
+DESTROY_LIB(mars::scene_loader::URDFLoader);
+CREATE_LIB(mars::scene_loader::URDFLoader);

@@ -81,9 +81,13 @@ namespace mars {
 
 
       /**
-       * Name of the file which should be opened (including the extension .scn or .scene).
+       * Name of the file which should be opened (including the extension .smurf).
        */
       std::string mFileName;
+      /**
+       * File extension of mFileName
+       */
+      std::string mFileSuffix;
 
       /**
        * Name of the robot for the Robotmanager

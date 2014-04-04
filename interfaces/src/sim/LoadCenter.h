@@ -58,12 +58,12 @@ namespace mars {
       LoadCenter(){
         loadMesh = 0;
         loadHeightmap = 0;
-        loadScene = 0;
+        //loadScene = 0;
       }
       
       LoadMeshInterface *loadMesh;
       LoadHeightmapInterface *loadHeightmap;
-      LoadSceneInterface *loadScene;
+      std::map<std::string, LoadSceneInterface*> loadScene;
     };
 
   } // end of namespace interfaces

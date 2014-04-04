@@ -132,7 +132,7 @@ namespace mars {
         out <<"  <jointlist>"<<"\n";
         for(unsigned int i=0; i<param.v_jointList.size(); ++i) {
           if (generate(&param.v_jointList[i], &out, &v_fullfilenames)==0) {
-            LOG_ERROR("Save:: faild gererating joint %s",
+            LOG_ERROR("Save:: failed generating joint %s",
                       param.v_jointList[i].name.c_str());
             return 0;
           }
@@ -144,7 +144,7 @@ namespace mars {
         out <<"  <motorlist>"<<"\n";
         for(unsigned int i=0; i<param.v_motorList.size(); ++i) {
           if (generate(&param.v_motorList[i], &out, &v_fullfilenames)==0) {
-            LOG_ERROR("Save:: faild gererating motor %s",
+            LOG_ERROR("Save:: failed generating motor %s",
                       param.v_motorList[i].name.c_str());
             return 0;
           }
@@ -164,7 +164,7 @@ namespace mars {
         out <<"  <controllerlist>"<<"\n";
         for(unsigned int i=0; i<param.v_controllerList.size(); ++i) {
           if (generate(&param.v_controllerList[i], &out, &v_fullfilenames)==0) {
-            LOG_ERROR("Save:: faild gererating controller %lu",
+            LOG_ERROR("Save:: failed generating controller %lu",
                       param.v_controllerList[i].id);
             return 0;
           }
@@ -176,7 +176,7 @@ namespace mars {
         out <<"  <lightlist>"<<"\n";
         for(unsigned int i=0; i<param.v_lightList.size(); ++i) {
           if (generate(&param.v_lightList[i], &out, &v_fullfilenames)==0) {
-            LOG_ERROR("Save:: faild gererating light %s",
+            LOG_ERROR("Save:: failed generating light %s",
                       param.v_lightList[i].name.c_str());
             return 0;
           }
