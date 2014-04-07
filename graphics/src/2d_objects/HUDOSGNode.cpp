@@ -28,6 +28,7 @@
 #include <osg/PositionAttitudeTransform>
 
 #include "HUDOSGNode.h"
+#include <stdio.h>
 
 namespace mars {
   namespace graphics {
