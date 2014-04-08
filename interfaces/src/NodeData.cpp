@@ -43,7 +43,7 @@
     (*config)[str][0] = ConfigItem(val)
 
 #define SET_OBJECT(str, val, type)                                      \
-  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) {               \
+  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) {               \//FIXME:HACK??!
     (*config)[str][0] = ConfigItem(std::string());                      \
     type##ToConfigItem(&(*config)[str][0], &val);                       \
   }

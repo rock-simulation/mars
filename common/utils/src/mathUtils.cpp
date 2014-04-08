@@ -224,5 +224,12 @@ namespace mars {
       item->children["z"][0] = ConfigItem(q->z());
     }
 
+    void inertiaTensorToConfigItem(ConfigItem *item, double *inertia) {
+      item->children["i0"][0] = ConfigItem(q->w());
+      item->children["i1"][0] = ConfigItem(q->x());
+      item->children["i2"][0] = ConfigItem(q->y());
+      item->children["z"][0] = ConfigItem(q->z());
+    }
+
   } // end of namespace utils
 } /* end of namespace mars */

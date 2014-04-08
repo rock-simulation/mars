@@ -115,19 +115,25 @@ unsigned int Load::unzip(const std::string& destinationDir,
     return 1;
 }
 
-std::vector<double> Load::getPositionFromPose(boost::shared_ptr<urdf::Pose> pose, std::vector<double> &position) {
-	position.push_back(pose->position.x);
-	position.push_back(pose->position.y);
-	position.push_back(pose->position.z);
-	return position;
+void Load::getValuesFromVector3(boost::shared_ptr<urdf::Vector3> vec,
+        std::vector<double> &out) {
+    out.push_back(vec->x);
+    out.push_back(vec->y);
+    out.push_back(vec->z);
 }
 
-std::vector<double> Load::getRotationFromPose(boost::shared_ptr<urdf::Pose> pose, std::vector<double> &rotation) {
-	for (int i = 0; i < 4; ++ i) {
-		rotation.push_back(0.0);
-	}
-	pose->rotation.getQuaternion(rotation[0], rotation[1], rotation[2], rotation[3]);
-	return rotation;
+void Load::getPositionFromPose(boost::shared_ptr<urdf::Pose> pose,
+        std::vector<double> &position) {
+        getValuesFromVector3(pose->position, position);
+}
+
+void Load::getRotationFromPose(boost::shared_ptr<urdf::Pose> pose,
+        std::vector<double> &rotation) {
+    for (int i = 0; i < 4; ++i) {
+        rotation.push_back(0.0);
+    }
+    pose->rotation.getQuaternion(rotation[0], rotation[1], rotation[2],
+            rotation[3]);
 }
 
 void Load::handleLink(boost::shared_ptr<urdf::Link> curlink, int &id) {
@@ -148,13 +154,30 @@ void Load::handleLink(boost::shared_ptr<urdf::Link> curlink, int &id) {
     config["pivot"] = getVectorConfig(curlink->inertial->origin.position);
 
     //handle visual
-    boost::shared_ptr<Visual> tmpVisual = curlink->visual;
-    
+    boost::shared_ptr<urdf::Visual> tmpVisual = curlink->visual;
+    boost::shared_ptr<urdf::Geometry> tmpGeometry = tmpVisual->geometry;
+    switch (tmpGeometry->type) {
+        case urdf::Geometry::SPHERE:
+            config["visualsize"] = tmpGeometry->radius;
+            break;
+        case urdf::Geometry::BOX:
+            config["visualsize"] = tmpGeometry->dim;
+            break;
+        case urdf::Geometry::CYLINDER:
+            config["visualsize"] = tmpGeometry->radius;
+            break;
+        case urdf::Geometry::MESH:
+            config["visualsize"] = tmpGeometry->radius;
+            break;
+        default:
+            break;
+    }
+
     config["filename"]
     config["visualsize"]
 
     config["origname"]
-           config["name"]
+    config["name"]
 
     //handle collision
     config["physicmode"] = collision.type
@@ -171,11 +194,15 @@ void Load::handleLink(boost::shared_ptr<urdf::Link> curlink, int &id) {
     }
     config["relativeid"] = parent_index;
     boost::shared_ptr<urdf::Joint> joint = curlink->parent_joint;
-    config["position"] = getPositionFromPose(parent_joint.parent_to_joint_origin_transform);
-    config["rotation"] = getRotationFromPoseparent_joint.parent_to_joint_origin_transform);
+    config["position"] = getPositionFromPose(
+            parent_joint.parent_to_joint_origin_transform);
+    config["rotation"] =
+            getRotationFromPoseparent_joint.parent_to_joint_origin_transform
+    );
     nodeList.push_back(config);
     for (std::vector<boost::shared_ptr<urdf::Link>>::iterator it =
-            curlink->child_links.begin(); it != curlink->child_links.end(); ++it) {
+            curlink->child_links.begin(); it != curlink->child_links.end();
+            ++it) {
         handleLink(*it, id); //TODO: check if this is correct with shared_ptr
     }
 }
@@ -211,7 +238,6 @@ unsigned int Load::parseScene() {
     boost::shared_ptr<urdf::Link> root = model->getRoot();
     boost::shared_ptr<urdf::Link> link = root;
     handleLink(link, id);
-
 
 //    //This "linear" parsing into MARS format might not be possible or at least not very practical,
 //    //as transformations are safed in joints and there are no groupid, thus we have to traverse
@@ -264,19 +290,19 @@ unsigned int Load::parseScene() {
 //        getGenericConfig(&graphicList, xmlnodelist.at(0).toElement());
 //      }
 
-return 1;
+    return 1;
 }
 
 unsigned int Load::loadScene() {
-for (unsigned int i = 0; i < materialList.size(); ++i)
-    if (!loadMaterial(materialList[i]))
-        return 0;
-for (unsigned int i = 0; i < nodeList.size(); ++i)
-    if (!loadNode(nodeList[i]))
-        return 0;
-for (unsigned int i = 0; i < jointList.size(); ++i)
-    if (!loadJoint(jointList[i]))
-        return 0;
+    for (unsigned int i = 0; i < materialList.size(); ++i)
+        if (!loadMaterial(materialList[i]))
+            return 0;
+    for (unsigned int i = 0; i < nodeList.size(); ++i)
+        if (!loadNode(nodeList[i]))
+            return 0;
+    for (unsigned int i = 0; i < jointList.size(); ++i)
+        if (!loadJoint(jointList[i]))
+            return 0;
 //    for (unsigned int i = 0; i < motorList.size(); ++i)
 //        if (!loadMotor(motorList[i]))
 //            return 0;
@@ -293,196 +319,197 @@ for (unsigned int i = 0; i < jointList.size(); ++i)
 //        if (!loadLight(lightList[i]))
 //            return 0;
 
-return 1;
+    return 1;
 }
 
 unsigned int Load::loadMaterial(utils::ConfigMap config) {
-MaterialData material;
-unsigned long id;
+    MaterialData material;
+    unsigned long id;
 
-int valid = material.fromConfigMap(&config, tmpPath);
-if ((id = config["id"][0].getULong())) {
-    materials[id] = material;
-}
+    int valid = material.fromConfigMap(&config, tmpPath);
+    if ((id = config["id"][0].getULong())) {
+        materials[id] = material;
+    }
 
-return valid;
+    return valid;
 }
 
 unsigned int Load::loadNode(utils::ConfigMap config) {
-NodeData node;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-int valid = node.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid)
-    return 0;
+    NodeData node;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    int valid = node.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid)
+        return 0;
 
 // handle material
-utils::ConfigMap::iterator it;
-if ((it = config.find("material_id")) != config.end()) {
-    unsigned long id = it->second[0].getULong();
-    if (id) {
-        std::map<unsigned long, MaterialData>::iterator it = materials.find(id);
-        if (it != materials.end())
-            node.material = it->second;
+    utils::ConfigMap::iterator it;
+    if ((it = config.find("material_id")) != config.end()) {
+        unsigned long id = it->second[0].getULong();
+        if (id) {
+            std::map<unsigned long, MaterialData>::iterator it = materials.find(
+                    id);
+            if (it != materials.end())
+                node.material = it->second;
+        }
     }
-}
 
 // the group ids could be also handled in the NodeData by the mapIndex
-if (node.groupID)
-    node.groupID += hack_ids * 10000;
+    if (node.groupID)
+        node.groupID += hack_ids * 10000;
 
-NodeId oldId = node.index;
-NodeId newId = control->nodes->addNode(&node);
-if (!newId) {
-    LOG_ERROR("addNode returned 0");
-    return 0;
-}
-control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-        MAP_TYPE_NODE, mapIndex);
+    NodeId oldId = node.index;
+    NodeId newId = control->nodes->addNode(&node);
+    if (!newId) {
+        LOG_ERROR("addNode returned 0");
+        return 0;
+    }
+    control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
+            MAP_TYPE_NODE, mapIndex);
 
-if (mRobotName != "") {
-    control->entities->addNode(mRobotName, node.index, node.name);
-}
-return 1;
+    if (mRobotName != "") {
+        control->entities->addNode(mRobotName, node.index, node.name);
+    }
+    return 1;
 }
 
 unsigned int Load::loadJoint(utils::ConfigMap config) {
-JointData joint;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-int valid = joint.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid) {
-    fprintf(stderr, "Load: error while loading joint\n");
-    return 0;
-}
+    JointData joint;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    int valid = joint.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid) {
+        fprintf(stderr, "Load: error while loading joint\n");
+        return 0;
+    }
 
-JointId oldId = joint.index;
-JointId newId = control->joints->addJoint(&joint);
-if (!newId) {
-    LOG_ERROR("addJoint returned 0");
-    return 0;
-}
-control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-        MAP_TYPE_JOINT, mapIndex);
+    JointId oldId = joint.index;
+    JointId newId = control->joints->addJoint(&joint);
+    if (!newId) {
+        LOG_ERROR("addJoint returned 0");
+        return 0;
+    }
+    control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
+            MAP_TYPE_JOINT, mapIndex);
 
-if (mRobotName != "") {
-    control->entities->addJoint(mRobotName, joint.index, joint.name);
-}
-return true;
+    if (mRobotName != "") {
+        control->entities->addJoint(mRobotName, joint.index, joint.name);
+    }
+    return true;
 }
 
 unsigned int Load::loadMotor(utils::ConfigMap config) {
-MotorData motor;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    MotorData motor;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
-int valid = motor.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid) {
-    fprintf(stderr, "Load: error while loading motor\n");
-    return 0;
-}
+    int valid = motor.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid) {
+        fprintf(stderr, "Load: error while loading motor\n");
+        return 0;
+    }
 
-MotorId oldId = motor.index;
-MotorId newId = control->motors->addMotor(&motor);
-if (!newId) {
-    LOG_ERROR("addMotor returned 0");
-    return 0;
-}
-control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-        MAP_TYPE_MOTOR, mapIndex);
+    MotorId oldId = motor.index;
+    MotorId newId = control->motors->addMotor(&motor);
+    if (!newId) {
+        LOG_ERROR("addMotor returned 0");
+        return 0;
+    }
+    control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
+            MAP_TYPE_MOTOR, mapIndex);
 
-if (mRobotName != "") {
-    control->entities->addMotor(mRobotName, motor.index, motor.name);
-}
-return true;
+    if (mRobotName != "") {
+        control->entities->addMotor(mRobotName, motor.index, motor.name);
+    }
+    return true;
 }
 
 BaseSensor* Load::loadSensor(utils::ConfigMap config) {
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-unsigned long sceneID = config["index"][0].getULong();
-BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
-if (sensor != 0) {
-    control->loadCenter->loadScene[mFileSuffix]->setMappedID(sceneID,
-            sensor->getID(), MAP_TYPE_SENSOR, mapIndex);
-}
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    unsigned long sceneID = config["index"][0].getULong();
+    BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
+    if (sensor != 0) {
+        control->loadCenter->loadScene[mFileSuffix]->setMappedID(sceneID,
+                sensor->getID(), MAP_TYPE_SENSOR, mapIndex);
+    }
 
-return sensor;
+    return sensor;
 }
 
 unsigned int Load::loadController(utils::ConfigMap config) {
-ControllerData controller;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    ControllerData controller;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
-int valid = controller.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid) {
-    fprintf(stderr, "Load: error while loading Controller\n");
-    return 0;
-}
+    int valid = controller.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid) {
+        fprintf(stderr, "Load: error while loading Controller\n");
+        return 0;
+    }
 
-MotorId oldId = controller.id;
-MotorId newId = control->controllers->addController(controller);
-if (!newId) {
-    LOG_ERROR("Load: addController returned 0");
-    return 0;
-}
-control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-        MAP_TYPE_CONTROLLER, mapIndex);
-if (mRobotName != "") {
-    control->entities->addController(mRobotName, newId);
-}
-return 1;
+    MotorId oldId = controller.id;
+    MotorId newId = control->controllers->addController(controller);
+    if (!newId) {
+        LOG_ERROR("Load: addController returned 0");
+        return 0;
+    }
+    control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
+            MAP_TYPE_CONTROLLER, mapIndex);
+    if (mRobotName != "") {
+        control->entities->addController(mRobotName, newId);
+    }
+    return 1;
 }
 
 unsigned int Load::loadGraphic(utils::ConfigMap config) {
-GraphicData graphic;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-int valid = graphic.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid) {
-    fprintf(stderr, "Load: error while loading graphic\n");
-    return 0;
-}
+    GraphicData graphic;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    int valid = graphic.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid) {
+        fprintf(stderr, "Load: error while loading graphic\n");
+        return 0;
+    }
 
-if (control->graphics)
-    control->graphics->setGraphicOptions(graphic);
+    if (control->graphics)
+        control->graphics->setGraphicOptions(graphic);
 
-return 1;
+    return 1;
 }
 
 unsigned int Load::loadLight(utils::ConfigMap config) {
-LightData light;
-config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-int valid = light.fromConfigMap(&config, tmpPath,
-        control->loadCenter->loadScene[mFileSuffix]);
-if (!valid) {
-    fprintf(stderr, "Load: error while loading light\n");
-    return 0;
-}
+    LightData light;
+    config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    int valid = light.fromConfigMap(&config, tmpPath,
+            control->loadCenter->loadScene[mFileSuffix]);
+    if (!valid) {
+        fprintf(stderr, "Load: error while loading light\n");
+        return 0;
+    }
 
-control->sim->addLight(light);
-return true;
+    control->sim->addLight(light);
+    return true;
 }
 
 void Load::getLinkConfig(std::vector<utils::ConfigMap> *configList,
-    const boost::shared_ptr<urdf::Link> link) {
-utils::ConfigMap config;
+        const boost::shared_ptr<urdf::Link> link) {
+    utils::ConfigMap config;
 
-configList->push_back(config);
+    configList->push_back(config);
 }
 
 void Load::getJointConfig(std::vector<utils::ConfigMap> *configList,
-    const boost::shared_ptr<urdf::Joint> joint) {
-utils::ConfigMap config;
+        const boost::shared_ptr<urdf::Joint> joint) {
+    utils::ConfigMap config;
 
-configList->push_back(config);
+    configList->push_back(config);
 }
 
 void Load::getMaterialConfig(std::vector<utils::ConfigMap> *configList,
-    const boost::shared_ptr<urdf::Material> material) {
-utils::ConfigMap config;
+        const boost::shared_ptr<urdf::Material> material) {
+    utils::ConfigMap config;
 
-configList->push_back(config);
+    configList->push_back(config);
 }
 
 //void Load::getGenericConfig(utils::ConfigMap *config, const QDomElement &elementNode) {
@@ -514,5 +541,6 @@ configList->push_back(config);
 //        }
 //    }
 //}
-} // end of namespace urdf_loader
-} // end of namespace mars
+}// end of namespace urdf_loader
+}
+// end of namespace mars

@@ -41,6 +41,7 @@ namespace mars {
   namespace utils {
 
     typedef Eigen::Matrix<double, 3, 1, Eigen::DontAlign> Vector;
+    typedef Eigen::Matrix<double, 3, 3, Eigen::DontAlign> Tensor;
 
   } // end of namespace utils
 } // end of namespace mars

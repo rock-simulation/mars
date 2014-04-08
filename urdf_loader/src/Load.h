@@ -103,10 +103,11 @@ namespace mars {
       unsigned int mapIndex;
 
       void handleLink(boost::shared_ptr<urdf::Link> curlink, int &id);
-      void getVectorConfig(const urdf::Vector3 &v);
-      std::vector<double> getPositionFromPose(boost::shared_ptr<urdf::Pose> pose,
+      void Load::getValuesFromVector3(boost::shared_ptr<urdf::Vector3>,
+              std::vector<double> &position)
+      void getPositionFromPose(boost::shared_ptr<urdf::Pose> pose,
     		  std::vector<double> &position);
-      std::vector<double> getRotationFromPose(boost::shared_ptr<urdf::Pose> pose,
+      void getRotationFromPose(boost::shared_ptr<urdf::Pose> pose,
     		  std::vector<double> &rotation);
 
       unsigned int loadMaterial(utils::ConfigMap config);
