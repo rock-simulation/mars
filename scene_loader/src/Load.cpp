@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -64,11 +64,8 @@ namespace mars {
     }
 
     unsigned int Load::prepareLoad() {
-      LoadSceneInterface *loadScene = NULL;
       std::string filename = mFileName;
 
-
-      if(control) loadScene = control->loadCenter->loadScene[mFileSuffix];
       hack_ids++;
 
       if(mRobotName != ""){
@@ -88,15 +85,10 @@ namespace mars {
       utils::removeFilenamePrefix(&filename);
       utils::removeFilenameSuffix(&filename);
 
-      if(loadScene) {
-        mapIndex = loadScene->getMappedSceneByName(mFileName);
-        if (mapIndex == 0) {
-          loadScene->setMappedSceneName(mFileName);
-          mapIndex = loadScene->getMappedSceneByName(mFileName);
-        }
-      }
-      else {
-        mapIndex = 0;
+      mapIndex = control->loadCenter->getMappedSceneByName(mFileName);
+      if (mapIndex == 0) {
+        control->loadCenter->setMappedSceneName(mFileName);
+        mapIndex = control->loadCenter->getMappedSceneByName(mFileName);
       }
       sceneFilename = tmpPath + filename + ".scene";
       return 1;
@@ -247,7 +239,7 @@ namespace mars {
     unsigned int Load::loadNode(utils::ConfigMap config) {
       NodeData node;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene[mFileSuffix]);
+      int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
       if(!valid) return 0;
 
       // handle material
@@ -271,7 +263,7 @@ namespace mars {
         LOG_ERROR("addNode returned 0");
         return 0;
       }
-      control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
+      control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
 
       if(mRobotName != "") {
         control->entities->addNode(mRobotName, node.index, node.name);
@@ -283,7 +275,7 @@ namespace mars {
       JointData joint;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = joint.fromConfigMap(&config, tmpPath,
-                                      control->loadCenter->loadScene[mFileSuffix]);
+                                      control->loadCenter);
       if(!valid) {
         fprintf(stderr, "Load: error while loading joint\n");
         return 0;
@@ -295,8 +287,8 @@ namespace mars {
         LOG_ERROR("addJoint returned 0");
         return 0;
       }
-      control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-                                                  MAP_TYPE_JOINT, mapIndex);
+      control->loadCenter->setMappedID(oldId, newId,
+                                       MAP_TYPE_JOINT, mapIndex);
 
       if(mRobotName != "") {
         control->entities->addJoint(mRobotName, joint.index, joint.name);
@@ -308,7 +300,7 @@ namespace mars {
       MotorData motor;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
-      int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter->loadScene[mFileSuffix]);
+      int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter);
       if(!valid) {
         fprintf(stderr, "Load: error while loading motor\n");
         return 0;
@@ -320,8 +312,8 @@ namespace mars {
         LOG_ERROR("addMotor returned 0");
         return 0;
       }
-      control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-                                                  MAP_TYPE_MOTOR, mapIndex);
+      control->loadCenter->setMappedID(oldId, newId,
+                                       MAP_TYPE_MOTOR, mapIndex);
 
       if(mRobotName != "") {
         control->entities->addMotor(mRobotName, motor.index, motor.name);
@@ -334,9 +326,9 @@ namespace mars {
       unsigned long sceneID = config["index"][0].getULong();
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
-        control->loadCenter->loadScene[mFileSuffix]->setMappedID(sceneID, sensor->getID(),
-                                                    MAP_TYPE_SENSOR,
-                                                    mapIndex);
+        control->loadCenter->setMappedID(sceneID, sensor->getID(),
+                                         MAP_TYPE_SENSOR,
+                                         mapIndex);
       }
 
       return sensor;
@@ -347,7 +339,7 @@ namespace mars {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
       int valid = controller.fromConfigMap(&config, tmpPath,
-                                           control->loadCenter->loadScene[mFileSuffix]);
+                                           control->loadCenter);
       if(!valid) {
         fprintf(stderr, "Load: error while loading Controller\n");
         return 0;
@@ -359,9 +351,9 @@ namespace mars {
         LOG_ERROR("Load: addController returned 0");
         return 0;
       }
-      control->loadCenter->loadScene[mFileSuffix]->setMappedID(oldId, newId,
-                                                  MAP_TYPE_CONTROLLER,
-                                                  mapIndex);
+      control->loadCenter->setMappedID(oldId, newId,
+                                       MAP_TYPE_CONTROLLER,
+                                       mapIndex);
       if(mRobotName != "") {
         control->entities->addController(mRobotName, newId);
       }
@@ -372,7 +364,7 @@ namespace mars {
       GraphicData graphic;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = graphic.fromConfigMap(&config, tmpPath,
-                                        control->loadCenter->loadScene[mFileSuffix]);
+                                        control->loadCenter);
       if(!valid) {
         fprintf(stderr, "Load: error while loading graphic\n");
         return 0;
@@ -388,7 +380,7 @@ namespace mars {
       LightData light;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = light.fromConfigMap(&config, tmpPath,
-                                      control->loadCenter->loadScene[mFileSuffix]);
+                                      control->loadCenter);
       if(!valid) {
         fprintf(stderr, "Load: error while loading light\n");
         return 0;

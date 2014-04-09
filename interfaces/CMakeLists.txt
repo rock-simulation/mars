@@ -45,6 +45,7 @@ set(HEADERS
 
 set(SOURCES 
     src/sim/ControlCenter.cpp
+    src/sim/LoadCenter.cpp
     src/MaterialData.cpp
     src/NodeData.cpp
     src/JointData.cpp

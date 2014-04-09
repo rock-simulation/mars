@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file LoadCenter.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  *
  */
 
@@ -31,11 +31,25 @@
   #warning "LoaderInterface.h"
 #endif
 
+#include <map>
+#include <string>
+#include <vector>
+
 namespace mars {
   namespace interfaces {
 
     struct NodeData;
     struct terrainStruct;
+
+    struct indexMaps_t {
+      std::string s_Scenename;
+      std::map<unsigned long, unsigned long> m_indexMap;
+      std::map<unsigned long, unsigned long> m_indexMapJoints;
+      std::map<unsigned long, unsigned long> m_indexMapMotors;
+      std::map<unsigned long, unsigned long> m_indexMapSensors;
+      std::map<unsigned long, unsigned long> m_indexMapControllers;
+      std::map<unsigned long, unsigned long> m_indexMapGroupID;
+    };
 
     
     class LoadMeshInterface {
@@ -55,15 +69,27 @@ namespace mars {
 
     class LoadCenter {
     public:
-      LoadCenter(){
-        loadMesh = 0;
-        loadHeightmap = 0;
-        //loadScene = 0;
-      }
+      LoadCenter();
+      ~LoadCenter();
       
+      unsigned int getMappedSceneByName(const std::string &scenename) const;
+      void setMappedSceneName(const std::string &scenename);
+
+      unsigned long getMappedID(unsigned long id,
+                                unsigned int indextype,
+                                unsigned int source) const;
+
+      unsigned int setMappedID(unsigned long id_old,
+                               unsigned long id_new,
+                               unsigned int indextype,
+                               unsigned int source);
+
       LoadMeshInterface *loadMesh;
       LoadHeightmapInterface *loadHeightmap;
       std::map<std::string, LoadSceneInterface*> loadScene;
+
+    private:
+      std::vector<indexMaps_t> maps;
     };
 
   } // end of namespace interfaces

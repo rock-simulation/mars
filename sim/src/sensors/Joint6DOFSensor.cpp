@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -36,7 +36,6 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/sim/LoadCenter.h>
-#include <mars/interfaces/sim/LoadSceneInterface.h>
 
 #include <mars/data_broker/DataBrokerInterface.h>
 
@@ -180,15 +179,15 @@ namespace mars {
       unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
       unsigned long nodeID = (*config)["nodeID"][0].getULong();
       if(mapIndex) {
-        nodeID = control->loadCenter->loadScene->getMappedID(nodeID,
-                                                             interfaces::MAP_TYPE_NODE,
-                                                             mapIndex);
+        nodeID = control->loadCenter->getMappedID(nodeID,
+                                                  interfaces::MAP_TYPE_NODE,
+                                                  mapIndex);
       }
       unsigned long jointID = (*config)["jointID"][0].getULong();
       if(mapIndex) {
-        jointID = control->loadCenter->loadScene->getMappedID(jointID,
-                                                              interfaces::MAP_TYPE_JOINT,
-                                                              mapIndex);
+        jointID = control->loadCenter->getMappedID(jointID,
+                                                   interfaces::MAP_TYPE_JOINT,
+                                                   mapIndex);
       }
 
       cfg->nodeID = nodeID;

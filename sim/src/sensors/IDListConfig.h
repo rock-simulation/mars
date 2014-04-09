@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -38,7 +38,6 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
-#include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 
 namespace mars {
@@ -63,7 +62,7 @@ namespace mars {
         for(it=_ids.begin(); it!=_ids.end(); ++it) {
           if((_id = it->getULong())){
             if(mapIndex) {
-              _id = control->loadCenter->loadScene->getMappedID(_id, mapType, mapIndex);
+              _id = control->loadCenter->getMappedID(_id, mapType, mapIndex);
             }
             ids.push_back(_id);
           }

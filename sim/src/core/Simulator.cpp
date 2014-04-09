@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -586,7 +586,7 @@ namespace mars {
       string tmpPath = configPath.sValue;
         printf("Loading scene internal\n");
 
-      if(!control->loadCenter->loadScene) {
+      if(control->loadCenter->loadScene.empty()) {
         LOG_ERROR("Simulator:: no module to load scene found");
         return 0;
       }
@@ -605,7 +605,14 @@ namespace mars {
 
       try {
         std::string suffix = utils::getFilenameSuffix(filename);
-        if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), tmpPath.c_str(), robotname.c_str())) {
+        if( control->loadCenter->loadScene.find(suffix) !=
+            control->loadCenter->loadScene.end() ) {
+          if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), tmpPath.c_str(), robotname.c_str())) {
+          return 0; //failed
+          }
+        }
+        else {
+          // no scene loader found
           return 0; //failed
         }
       } catch(SceneParseException e) {

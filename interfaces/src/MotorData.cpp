@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,7 +19,7 @@
  */
 
 #include "MotorData.h"
-#include "sim/LoadSceneInterface.h"
+#include "sim/LoadCenter.h"
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
@@ -67,9 +67,9 @@ namespace mars {
 
     bool MotorData::fromConfigMap(ConfigMap *config,
                                   std::string filenamePrefix,
-                                  LoadSceneInterface *loadScene) {
+                                  LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
-      CPP_UNUSED(loadScene);
+      CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
       unsigned int mapIndex;
       GET_VALUE("mapIndex", mapIndex, UInt);
@@ -78,13 +78,13 @@ namespace mars {
       GET_VALUE("index", index, ULong);
       GET_VALUE("jointIndex", jointIndex, ULong);
       GET_VALUE("jointIndex2", jointIndex2, ULong);
-      if(mapIndex && loadScene) {
+      if(mapIndex && loadCenter) {
         if(jointIndex) {
-          jointIndex = loadScene->getMappedID(jointIndex, MAP_TYPE_JOINT,
+          jointIndex = loadCenter->getMappedID(jointIndex, MAP_TYPE_JOINT,
                                               mapIndex);
         }
         if(jointIndex2) {
-          jointIndex2 = loadScene->getMappedID(jointIndex2, MAP_TYPE_JOINT,
+          jointIndex2 = loadCenter->getMappedID(jointIndex2, MAP_TYPE_JOINT,
                                                mapIndex);
         }
       }
