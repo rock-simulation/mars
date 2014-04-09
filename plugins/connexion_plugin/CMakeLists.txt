@@ -20,10 +20,10 @@ ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-			    data_broker
-                            main_gui
-			    mars_interfaces
+            lib_manager
+            data_broker
+            main_gui
+            mars_interfaces
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -43,20 +43,20 @@ else (${Qt5Widgets_FOUND})
   include_directories(${QT_INCLUDE_DIR})
 endif (${Qt5Widgets_FOUND})
 
-set(HEADER 
-	ConnexionPlugin.h
- 	ConnexionWidget.h	
- 	ConnexionHID.h	
+set(HEADER
+    ConnexionPlugin.h
+    ConnexionWidget.h
+    ConnexionHID.h
 )
 
 set(QT_HEADER 
-	ConnexionPlugin.h
- 	ConnexionWidget.h	
+    ConnexionPlugin.h
+    ConnexionWidget.h
 )
 
 set(SOURCES
-	ConnexionPlugin.cpp
- 	ConnexionWidget.cpp
+    ConnexionPlugin.cpp
+    ConnexionWidget.cpp
 )
 
 if(WIN32)
@@ -82,15 +82,15 @@ elseif(UNIX)
 endif(WIN32)
 
 if (${USE_QT5})
-qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_HEADER} )
+  qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_HEADER} )
 else (${USE_QT5})
-qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_HEADER} )
+  qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_HEADER} )
 endif (${USE_QT5})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC})
 
 if (${USE_QT5})
-qt5_use_modules(${PROJECT_NAME} Widgets)
+  qt5_use_modules(${PROJECT_NAME} Widgets)
 endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}

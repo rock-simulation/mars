@@ -10,11 +10,12 @@ mars_defaults()
 define_module_info()
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-                            cfg_manager
-                            main_gui
-			    mars_interfaces
+        lib_manager
+        cfg_manager
+        main_gui
+        mars_interfaces
 )
+
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
@@ -34,27 +35,26 @@ else (${Qt5Widgets_FOUND})
 endif (${Qt5Widgets_FOUND})
 
 include_directories(
-	src
+    src
 )
 
-set(SOURCES 
-	src/ConstraintsPlugin.cpp
-	src/NodeConstraint.cpp
+set(SOURCES
+    src/ConstraintsPlugin.cpp
+    src/NodeConstraint.cpp
 )
 
 set(HEADERS
-	src/ConstraintsPlugin.h
-	src/BaseConstraint.h
-	src/NodeConstraint.h
+    src/ConstraintsPlugin.h
+    src/BaseConstraint.h
+    src/NodeConstraint.h
 )
-
 
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 
 if (${USE_QT5})
-qt5_use_modules(${PROJECT_NAME} Widgets)
+  qt5_use_modules(${PROJECT_NAME} Widgets)
 endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}
@@ -70,9 +70,9 @@ endif(WIN32)
 
 
 set(_INSTALL_DESTINATIONS
-	RUNTIME DESTINATION bin
-	LIBRARY DESTINATION ${LIB_INSTALL_DIR}
-	ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION ${LIB_INSTALL_DIR}
+    ARCHIVE DESTINATION lib
 )
 
 
