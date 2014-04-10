@@ -219,6 +219,13 @@ namespace mars {
         visual_size = ext;
       }
 
+      if((it = config->find("visualscale")) != config->end()) {
+        vectorFromConfigItem(&it->second[0], &visual_scale);
+      }
+      else {
+        visual_scale = Vector(1.0, 1.0, 1.0);
+      }
+
       { // handle contact info
         GET_VALUE("cmax_num_contacts", c_params.max_num_contacts, Int);
         GET_VALUE("cerp", c_params.erp, Double);
@@ -319,6 +326,7 @@ namespace mars {
       SET_OBJECT("visualposition", visual_offset_pos, vector);
       SET_OBJECT("visualrotation", visual_offset_rot, quaternion);
       SET_OBJECT("visualsize", visual_size, vector);
+      SET_OBJECT("visualscale", visual_scale, vector);
 
       SET_VALUE("cmax_num_contacts", c_params.max_num_contacts);
       SET_VALUE("cerp", c_params.erp);
