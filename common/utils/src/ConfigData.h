@@ -59,9 +59,91 @@ namespace mars {
       }
 
       ConfigVectorTemplate& operator<<(const T &item) {
-        push_back(item);
+        this->push_back(item);
         return *this;
       }
+
+      ConfigVectorTemplate& operator+=(const T &item) {
+        this->push_back(item);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(const T &item) {
+        this->clear();
+        this->push_back(item);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(int v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(bool v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(unsigned int v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(double v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(unsigned long v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(std::string v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(const char* v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const int& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const bool& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const unsigned int& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const double &v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const unsigned long& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const std::string& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const char* v) {
+        *this += T(v);
+        return *this;
+      }
+
     }; // end of class ConfigVectorTemplate
 
     class ConfigItem;
@@ -127,6 +209,34 @@ namespace mars {
         return children[name];
       }
 
+      ConfigVector& operator[](const char* name) {
+        return children[name];
+      }
+
+      operator int () {
+        return getInt();
+      }
+
+      operator double () {
+        return getDouble();
+      }
+
+      operator unsigned int () {
+        return getUInt();
+      }
+
+      operator unsigned long () {
+        return getULong();
+      }
+
+      operator std::string () {
+        return getString();
+      }
+
+      operator bool () {
+        return getBool();
+      }
+
       inline ItemType getType() const {
         return type;
       }
@@ -153,7 +263,6 @@ namespace mars {
         else if(type == _type) return true;
         return false;
       }
-
 
       inline int getInt() {
         if(type != UNDEFINED_TYPE && type != INT_TYPE) {
