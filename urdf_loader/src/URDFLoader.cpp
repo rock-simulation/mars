@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,8 +20,8 @@
 
 /**
  *
- * \file SceneLoader.cpp
- * \author Malte Roemmermann
+ * \file URDFLoader.cpp
+ * \author Malte Langosz, Kai von Szadkowski
  */
 
 #include "URDFLoader.h"
@@ -39,14 +39,15 @@ namespace mars {
 
     URDFLoader::URDFLoader(lib_manager::LibManager *theManager) :
       interfaces::LoadSceneInterface(theManager), control(NULL) {
-      indexMaps_t tmp;
-      maps.push_back(tmp);
 
       mars::interfaces::SimulatorInterface *marsSim;
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(marsSim) {
         control = marsSim->getControlCenter();
+        control->loadCenter->loadScene[".zsmurf"] = this;
         control->loadCenter->loadScene[".smurf"] = this;
+        control->loadCenter->loadScene[".urdf"] = this;
+        LOG_INFO("urdf_loader: added urdf loader to loadCenter");
         //control->loadCenter->loadScene[".yaml"] = this;
         //control->loadCenter->loadScene[".yml"] = this;
       }
@@ -54,7 +55,9 @@ namespace mars {
 
     URDFLoader::~URDFLoader() {
       if(control) {
+        control->loadCenter->loadScene.erase(".zsmurf");
         control->loadCenter->loadScene.erase(".smurf");
+        control->loadCenter->loadScene.erase(".urdf");
         //control->loadCenter->loadScene.erase(".yaml");
         //control->loadCenter->loadScene.erase(".yml");
         libManager->releaseLibrary("mars_sim");
@@ -62,7 +65,7 @@ namespace mars {
     }
 
     bool URDFLoader::loadFile(std::string filename, std::string tmpPath,
-                               std::string robotname) {
+                              std::string robotname) {
       Load loadObject(filename, control, tmpPath,
                       (const std::string&) robotname);
       return loadObject.load();
@@ -72,85 +75,6 @@ namespace mars {
       Save saveObject(filename.c_str(), control, tmpPath);
       return saveObject.prepare();
     }
-
-    unsigned long URDFLoader::getMappedID(unsigned long id,
-                                           unsigned int indextype,
-                                           unsigned int source) const {
-      map<unsigned long, unsigned long>::const_iterator it;
-
-      if(id==0) return 0;
-      if(maps.size() <= source) return 0;
-      switch (indextype) {
-      case interfaces::MAP_TYPE_NODE:
-        it = maps[source].m_indexMap.find(id);
-        break;
-      case interfaces::MAP_TYPE_JOINT:
-        it = maps[source].m_indexMapJoints.find(id);
-        break;
-      case interfaces::MAP_TYPE_MOTOR:
-        it = maps[source].m_indexMapMotors.find(id);
-        break;
-      case interfaces::MAP_TYPE_SENSOR:
-        it = maps[source].m_indexMapSensors.find(id);
-        break;
-      case interfaces::MAP_TYPE_CONTROLLER:
-        it = maps[source].m_indexMapControllers.find(id);
-        break;
-      default:
-        return 0;
-        break;
-      }
-      if(it->first == id)
-        return it->second;
-      return 0;
-    }
-
-    unsigned int URDFLoader::setMappedID(unsigned long id_old,
-                                          unsigned long id_new,
-                                          unsigned int indextype,
-                                          unsigned int source) {
-      switch (indextype) {
-      case interfaces::MAP_TYPE_NODE:
-        maps[source].m_indexMap[id_old]=id_new;
-        return 1;
-        break;
-      case interfaces::MAP_TYPE_JOINT:
-        maps[source].m_indexMapJoints[id_old]=id_new;
-        return 1;
-        break;
-      case interfaces::MAP_TYPE_MOTOR:
-        maps[source].m_indexMapMotors[id_old]=id_new;
-        return 1;
-        break;
-      case interfaces::MAP_TYPE_SENSOR:
-        maps[source].m_indexMapSensors[id_old]=id_new;
-        return 1;
-        break;
-      case interfaces::MAP_TYPE_CONTROLLER:
-        maps[source].m_indexMapControllers[id_old]=id_new;
-        return 1;
-        break;
-      default:
-        break;
-      }
-      return 0;
-    }
-
-    void URDFLoader::setMappedSceneName(const std::string &scenename) {
-      indexMaps_t tmp;
-      tmp.s_Scenename=scenename;
-      maps.push_back(tmp);
-    }
-
-    unsigned int URDFLoader::getMappedSceneByName(const std::string &scenename) const {
-      for (unsigned int i=0; i<maps.size(); i++) {
-        if (maps[i].s_Scenename==scenename) {
-          return i;
-        }
-      }
-      return 0;
-    }
-
 
   } // end of namespace urdf_loader
 } // end of namespace mars

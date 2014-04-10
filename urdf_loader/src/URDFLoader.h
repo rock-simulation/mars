@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,8 +19,8 @@
  */
 
 /**
- * \file SceneLoader.h
- * \author Malte Roemmermann
+ * \file URDFLoader.h
+ * \author Malte Langosz
  */
 #ifndef SCENE_LOADER_H
 #define SCENE_LOADER_H
@@ -37,16 +37,6 @@
 namespace mars {
   namespace urdf_loader {
 
-    struct indexMaps_t {
-      std::string s_Scenename;
-      std::map<unsigned long, unsigned long> m_indexMap;
-      std::map<unsigned long, unsigned long> m_indexMapJoints;
-      std::map<unsigned long, unsigned long> m_indexMapMotors;
-      std::map<unsigned long, unsigned long> m_indexMapSensors;
-      std::map<unsigned long, unsigned long> m_indexMapControllers;
-      std::map<unsigned long, unsigned long> m_indexMapGroupID;
-    };
-
     class URDFLoader : public interfaces::LoadSceneInterface {
       
     public:
@@ -56,26 +46,16 @@ namespace mars {
 
       // LibInterface methods
       int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("mars_scene_loader");}
+      const std::string getLibName() const {return std::string("mars_urdf_loader");}
       CREATE_MODULE_INFO();
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
       
       virtual int saveFile(std::string filename, std::string tmpPath);
-      virtual unsigned long getMappedID(unsigned long id,
-                                        unsigned int indextype,
-                                        unsigned int source) const;
-      virtual unsigned int setMappedID(unsigned long id_old,
-                                       unsigned long id_new,
-                                       unsigned int indextype,
-                                       unsigned int source);
-      virtual unsigned int getMappedSceneByName(const std::string &scenename) const;
-      virtual void setMappedSceneName(const std::string &scenename);
 
     private:
       interfaces::ControlCenter *control;
-      std::vector<indexMaps_t> maps;
     };
 
   } // end of namespace urdf_loader

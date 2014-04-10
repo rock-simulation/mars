@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -58,7 +58,6 @@ namespace mars {
       unsigned int parseScene();
       unsigned int loadScene();
 
-      std::map<unsigned long, interfaces::MaterialData> materials;
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;
       std::vector<utils::ConfigMap> jointList;
@@ -69,24 +68,13 @@ namespace mars {
       std::vector<utils::ConfigMap> lightList;
 
     private:
-      // Every new load scene gets a new hack id, which will be multiplied with
-      // 1000 and added to all group_ids to prevent that object loaded from
-      // the same scenefile (file twice loaded) are connected through the
-      // group_ids. This hack is fine as long as one scenefile contains group-
-      // ids less then 1000. Oh, and a scene can only be x times saved without
-      // over running the group_id range (unsigned long).
-      static unsigned long hack_ids;
-
-      unsigned int unzip(const std::string& destinationDir,
-                         const std::string& zipFilename);
-
-      void getLinkConfig(std::vector<utils::ConfigMap> *configList,
-      	const boost::shared_ptr<urdf::Link> link);
-      void getJointConfig(std::vector<utils::ConfigMap> *configList,
-      	const boost::shared_ptr<urdf::Joint> joint);
-      void getMaterialConfig(std::vector<utils::ConfigMap> *configList,
-      	const boost::shared_ptr<urdf::Material> material);
-
+      unsigned long nextGroupID;
+      unsigned long nextNodeID;
+      unsigned long nextJointID;
+      unsigned long nextMaterialID;
+      std::map<std::string, unsigned long> nodeIDMap;
+      std::map<std::string, unsigned long> jointIDMap;
+      std::map<std::string, interfaces::MaterialData> materialMap;
 
       //Name of the smurf main file to be opened (.yaml/.yml).
       std::string mFileName;
@@ -101,23 +89,35 @@ namespace mars {
       std::string sceneFilename;
       std::map<std::string, std::string> smurffiles;
       unsigned int mapIndex;
+      utils::ConfigMap debugMap;
 
-      void handleLink(boost::shared_ptr<urdf::Link> curlink, int &id);
-      void Load::getValuesFromVector3(boost::shared_ptr<urdf::Vector3>,
-              std::vector<double> &position)
-      void getPositionFromPose(boost::shared_ptr<urdf::Pose> pose,
-    		  std::vector<double> &position);
-      void getRotationFromPose(boost::shared_ptr<urdf::Pose> pose,
-    		  std::vector<double> &rotation);
+      void handleInertial(utils::ConfigMap *map,
+                          const boost::shared_ptr<urdf::Link> &link);
+      void calculatePosition(utils::ConfigMap *map,
+                             const boost::shared_ptr<urdf::Link> &link);
+      void handleVisual(utils::ConfigMap *map,
+                        const boost::shared_ptr<urdf::Link> &link);
+      void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
+      void handleMaterial(boost::shared_ptr<urdf::Material> material);
 
       unsigned int loadMaterial(utils::ConfigMap config);
       unsigned int loadNode(utils::ConfigMap config);
-      unsigned int loadJoint(utils::ConfigMap config);
-      unsigned int loadMotor(utils::ConfigMap config);
-      interfaces::BaseSensor* loadSensor(utils::ConfigMap config);
-      unsigned int loadController(utils::ConfigMap config);
-      unsigned int loadGraphic(utils::ConfigMap config);
-      unsigned int loadLight(utils::ConfigMap config);
+      /* unsigned int loadJoint(utils::ConfigMap config); */
+      /* unsigned int loadMotor(utils::ConfigMap config); */
+      /* interfaces::BaseSensor* loadSensor(utils::ConfigMap config); */
+      /* unsigned int loadController(utils::ConfigMap config); */
+      /* unsigned int loadGraphic(utils::ConfigMap config); */
+      /* unsigned int loadLight(utils::ConfigMap config); */
+
+      unsigned int unzip(const std::string& destinationDir,
+                         const std::string& zipFilename);
+
+      /* void getLinkConfig(std::vector<utils::ConfigMap> *configList, */
+      /*                    const boost::shared_ptr<urdf::Link> link); */
+      /* void getJointConfig(std::vector<utils::ConfigMap> *configList, */
+      /*                     const boost::shared_ptr<urdf::Joint> joint); */
+      /* void getMaterialConfig(std::vector<utils::ConfigMap> *configList, */
+      /*                        const boost::shared_ptr<urdf::Material> material); */
 
     };
 
