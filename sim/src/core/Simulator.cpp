@@ -613,6 +613,8 @@ namespace mars {
         }
         else {
           // no scene loader found
+          LOG_ERROR("Simulator: Could not find scene loader for: %s (%s)",
+                    filename.c_str(), suffix.c_str());
           return 0; //failed
         }
       } catch(SceneParseException e) {
