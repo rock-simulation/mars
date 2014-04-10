@@ -142,6 +142,18 @@ namespace mars {
     static void dumpConfigItemToYaml(YAML::Emitter &emitter,
                                      const ConfigItem &item) {
       std::string s = item.toString();
+
+      if(!s.empty() && item.children.size()) {
+        fprintf(stderr, "%s: To dump to yaml file it is not allowed to have a item value and map at the same time.\n",
+                item.getParentName().c_str());
+        assert(false);
+      }
+      else {
+        if(s.empty() && item.children.size() == 0) {
+          emitter << "";
+        }
+      }
+
       if(!s.empty())
         emitter << s;
       if(item.children.size())
@@ -152,6 +164,11 @@ namespace mars {
                                        const ConfigVector &vec) {
       if(vec.size() > 1) {
         emitter << YAML::BeginSeq;
+      }
+      if(!(emitter.good() && 1)) {
+        std::string s = vec.getParentName();
+        fprintf(stderr, "problem with ConfigVector for: %s\n",
+                s.c_str());
       }
       assert(emitter.good() && 1);
       for(unsigned int i = 0; i < vec.size(); ++i) {
