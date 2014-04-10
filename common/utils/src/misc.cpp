@@ -108,11 +108,19 @@ namespace mars {
       size_t pos;
 
       if(file->empty()) return;
-
-      tmp.append("/");
-      if((pos = file->rfind('/')) != std::string::npos) {
-        *file= file->substr(pos+1);
+      if(file->front() == '/') {
+        // we have an absolute path
+        return;
       }
+
+      if(tmp.back() != '/') {
+        tmp.append("/");
+      }
+
+      //if((pos = file->rfind('/')) != std::string::npos) {
+      //  *file= file->substr(pos+1);
+      //}
+
       tmp.append(*file);
       *file = tmp;
     }
