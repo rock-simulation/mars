@@ -776,6 +776,7 @@ namespace mars {
        * \param excludeJointId ?
        */
       virtual void positionNode(NodeId id, utils::Vector pos, unsigned long excludeJointId) = 0;
+      virtual unsigned long getMaxGroupID() = 0;
     };
 
   } // end of namespace interfaces

@@ -61,7 +61,8 @@ namespace mars {
     NodeManager::NodeManager(ControlCenter *c) : next_node_id(1),
                                                  update_all_nodes(false),
                                                  visual_rep(1),
-                                                 control(c) {
+                                                 control(c),
+                                                 maxGroupID(0) {
       if(control->graphics) {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
@@ -133,6 +134,9 @@ namespace mars {
       // to check some preconditions
       if (nodeS->groupID < 0) {
         nodeS->groupID = 0;
+      }
+      else if (nodeS->groupID > maxGroupID) {
+        maxGroupID = nodeS->groupID;
       }
 
       // convert obj to ode mesh
@@ -445,6 +449,9 @@ namespace mars {
           control->graphics->setDrawObjectScale(editedNode->getGraphicsID2(), nodeS->ext);
         }
         editedNode->changeNode(nodeS);
+        if(nodeS->groupID > maxGroupID) {
+          maxGroupID = nodeS->groupID;
+        }
         /*
           if (changes & EDIT_NODE_SIZE) {
           NodeMap nodes = simNodes;

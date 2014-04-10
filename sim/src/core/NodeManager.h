@@ -151,6 +151,7 @@ namespace mars {
                               unsigned long excludeJointId);
       virtual void positionNode(interfaces::NodeId id, utils::Vector pos,
                                 unsigned long excludeJointId);
+      virtual unsigned long getMaxGroupID() { return maxGroupID; }
 
     private:
       interfaces::NodeId next_node_id;
@@ -160,6 +161,7 @@ namespace mars {
       NodeMap simNodesDyn;
       NodeMap nodesToUpdate;
       std::list<interfaces::NodeData> simNodesReload;
+      unsigned long maxGroupID;
 
       mutable utils::Mutex iMutex;
 

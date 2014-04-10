@@ -62,13 +62,10 @@ namespace mars {
       std::vector<utils::ConfigMap> lightList;
 
     private:
-      // Every new load scene gets a new hack id, which will be multiplied with
-      // 1000 and added to all group_ids to prevent that object loaded from
-      // the same scenefile (file twice loaded) are connected through the
-      // group_ids. This hack is fine as long as one scenefile contains group-
-      // ids less then 1000. Oh, and a scene can only be x times saved without
-      // over running the group_id range (unsigned long).
-      static unsigned long hack_ids;
+      // Every new load scene gets an offset, which is added to all group_ids
+      // to prevent that object loaded from the same scenefile (file twice
+      // loaded) are connected through the group_ids.
+      unsigned long groupIDOffset;
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);

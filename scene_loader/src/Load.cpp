@@ -47,8 +47,6 @@ namespace mars {
     using namespace std;
     using namespace interfaces;
 
-    unsigned long Load::hack_ids = 0;
-
     Load::Load(std::string fileName, ControlCenter *c,
                std::string tmpPath_, const std::string &robotname) :
       mFileName(fileName), mRobotName(robotname),
@@ -66,7 +64,7 @@ namespace mars {
     unsigned int Load::prepareLoad() {
       std::string filename = mFileName;
 
-      hack_ids++;
+      groupIDOffset = control->nodes->getMaxGroupID() + 1;
 
       if(mRobotName != ""){
         control->entities->addEntity(mRobotName);
@@ -255,7 +253,7 @@ namespace mars {
 
       // the group ids could be also handled in the NodeData by the mapIndex
       if(node.groupID)
-        node.groupID += hack_ids*10000;
+        node.groupID += groupIDOffset;
 
       NodeId oldId = node.index;
       NodeId newId = control->nodes->addNode(&node);
