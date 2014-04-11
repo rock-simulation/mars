@@ -68,7 +68,7 @@ namespace mars {
       std::vector<utils::ConfigMap> lightList;
 
     private:
-      unsigned long nextGroupID;
+      int nextGroupID;
       unsigned long nextNodeID;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
@@ -93,16 +93,31 @@ namespace mars {
 
       void handleInertial(utils::ConfigMap *map,
                           const boost::shared_ptr<urdf::Link> &link);
-      void calculatePosition(utils::ConfigMap *map,
-                             const boost::shared_ptr<urdf::Link> &link);
+      void calculatePose(utils::ConfigMap *map,
+                         const boost::shared_ptr<urdf::Link> &link);
+      void convertPose(const urdf::Pose &pose,
+                       const boost::shared_ptr<urdf::Link> &link,
+                       utils::Vector *v, utils::Quaternion *q);
+      void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose,
+                       utils::Vector *v, utils::Quaternion *q);
+      bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
+
       void handleVisual(utils::ConfigMap *map,
-                        const boost::shared_ptr<urdf::Link> &link);
+                        const boost::shared_ptr<urdf::Visual> &visual);
+      void handleCollision(utils::ConfigMap *map,
+                           const boost::shared_ptr<urdf::Collision> &c);
+
       void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
+
       void handleMaterial(boost::shared_ptr<urdf::Material> material);
+
+      void createFakeMaterial();
+      void createFakeVisual(utils::ConfigMap *map);
+      void createFakeCollision(utils::ConfigMap *map);
 
       unsigned int loadMaterial(utils::ConfigMap config);
       unsigned int loadNode(utils::ConfigMap config);
-      /* unsigned int loadJoint(utils::ConfigMap config); */
+      unsigned int loadJoint(utils::ConfigMap config);
       /* unsigned int loadMotor(utils::ConfigMap config); */
       /* interfaces::BaseSensor* loadSensor(utils::ConfigMap config); */
       /* unsigned int loadController(utils::ConfigMap config); */
