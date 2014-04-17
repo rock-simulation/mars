@@ -57,7 +57,7 @@ model
 				- [diffuseColor]: (d, d, d, d)
 				- [ambientColor]: (d, d, d, d)
 				- [emissionColor]: (d, d, d, d)
-				- [emissionColorcolor]: (d, d, d, d)
+				- [specularColor]: (d, d, d, d)
 				- transparency: d
 			- {geometry}:
 				- type: str ("box" | "sphere" | "cylinder" | "plane" | "mesh")
@@ -66,6 +66,7 @@ model
 				- radius, height: d, d #cylinder
 				- [size]: (d, d, d) #mesh
 				- [size]: (d, d) #plane
+                - filename: str #mesh
 		- {visual_2}
 			- ...
 		- ...
