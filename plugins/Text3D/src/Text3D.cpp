@@ -41,10 +41,17 @@ namespace mars {
       using namespace mars::interfaces;
 
       Text3D::Text3D(lib_manager::LibManager *theManager)
-        : MarsPluginTemplate(theManager, "Text3D") {
+        : MarsPluginTemplate(theManager, "Text3D"), maskId(0) {
       }
-  
+
       void Text3D::init() {
+
+        // load the mask id form file
+        FILE *f = fopen("./id.txt", "r");
+        if(f) {
+          fscanf(f, "%d", &maskId);
+          fclose(f);
+        }
 
         // Register for node information:
         /*
@@ -87,14 +94,26 @@ namespace mars {
                                                           td->name+"/posX",
                                                           td->posX, this);
               td->pxId = example.paramId;
-              example = control->cfg->getOrCreateProperty("Text3D", 
+              example = control->cfg->getOrCreateProperty("Text3D",
                                                           td->name+"/posY",
                                                           td->posY, this);
               td->pyId = example.paramId;
+              int mask = it->children["mask"][0].getInt();
+              example = control->cfg->getOrCreateProperty("Text3D",
+                                                          td->name+"/mask",
+                                                          mask, this);
+              td->maskId = example.paramId;
+
               td->hudID = control->graphics->addHUDOSGNode(td->text->getOSGNode());
+              td->vis = mask & maskId;
+              if(!td->vis) {
+                control->graphics->switchHUDElementVis(td->hudID);
+              }
+
               textMap[td->vId] = td;
               textMap[td->pxId] = td;
               textMap[td->pyId] = td;
+              textMap[td->maskId] = td;
             }
           }
         }
@@ -118,7 +137,7 @@ namespace mars {
                                int id) {
         // package.get("force1/x", force);
       }
-  
+
       void Text3D::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
         std::map<cfg_manager::cfgParamId, TextData*>::iterator it;
 
@@ -133,6 +152,17 @@ namespace mars {
           else if(it->second->pyId == _property.paramId) {
             it->second->posY = _property.dValue;
             it->second->text->setPosition(it->second->posX, it->second->posY);
+          }
+          else if(it->second->maskId == _property.paramId) {
+            int vis = maskId & _property.iValue;
+            if(vis && !it->second->vis) {
+              it->second->vis = true;
+              control->graphics->switchHUDElementVis(it->second->hudID);
+            }
+            else if(!vis && it->second->vis) {
+              it->second->vis = false;
+              control->graphics->switchHUDElementVis(it->second->hudID);
+            }
           }
 
         }

@@ -60,7 +60,8 @@ namespace mars {
         std::string value;
         unsigned long hudID;
         double posX, posY;
-        cfg_manager::cfgParamId vId, pxId, pyId;
+        cfg_manager::cfgParamId vId, pxId, pyId, maskId;
+        bool vis;
       };
 
       // inherit from MarsPluginTemplateGUI for extending the gui
@@ -101,6 +102,7 @@ namespace mars {
         cfg_manager::cfgPropertyStruct example;
         osg_text::TextFactoryInterface *textFactory;
         std::map<cfg_manager::cfgParamId, TextData*> textMap;
+        int maskId;
 
       }; // end of class definition Text3D
 
