@@ -81,7 +81,7 @@ namespace mars {
               double fixedWidth = it->children["fixedWidth"][0].getDouble();
               double fixedHeight = it->children["fixedHeight"][0].getDouble();
               bool drawFrame = it->children["frame"][0].getBool();
-              td->text = textFactory->createText(td->value, 40,
+              td->text = textFactory->createText(td->value, 20,
                                                 osg_text::Color(1.0, 1.0, 1.0, 1.0),
                                                 td->posX, td->posY);
               if(drawFrame) {

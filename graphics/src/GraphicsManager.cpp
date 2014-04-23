@@ -519,7 +519,7 @@ namespace mars {
 
         HUD *myHUD = new HUD(next_window_id);
         myHUD->init(gw->getGraphicsWindow());
-        myHUD->setViewSize(1920, 1200);
+        myHUD->setViewSize(1050, 1400);
 
         gw->setHUD(myHUD);
 
