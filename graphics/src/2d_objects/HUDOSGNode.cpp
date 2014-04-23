@@ -69,7 +69,7 @@ namespace mars {
     }
 
     void HUDOSGNode::setOSGNode(osg::Node* node) {
-      fprintf(stderr, "add osg node to hud element\n");
+      //fprintf(stderr, "add osg node to hud element\n");
       scaleTransform->addChild(node);
     }
 

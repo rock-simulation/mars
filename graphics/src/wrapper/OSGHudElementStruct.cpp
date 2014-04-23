@@ -103,6 +103,7 @@ namespace mars {
       case HUD_ELEMENT_OSGNODE:
         {
           HUDOSGNode *myNode = new HUDOSGNode(this);
+          myNode->setID(id);
           myNode->setOSGNode(node);
           elem_ = myNode;
           break;
