@@ -66,6 +66,7 @@ namespace osg_text {
                             double bottom) = 0;
     virtual void* getOSGNode() = 0;
     virtual void setFixedWidth(double w) = 0;
+    virtual void setFixedHeight(double h) = 0;
     virtual void setPosition(double x, double y) = 0;
   };
 

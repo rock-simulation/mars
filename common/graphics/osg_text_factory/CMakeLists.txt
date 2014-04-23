@@ -4,7 +4,8 @@ set(PROJECT_DESCRIPTION "This lib wraps osg_text to create 3D text without osg d
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 
-find_package(mars)
+#find_package(mars)
+include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
 mars_defaults()
 define_module_info()

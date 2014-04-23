@@ -51,6 +51,7 @@ namespace mars {
         if(f) {
           fscanf(f, "%d", &maskId);
           fclose(f);
+          maskId = 1 << (maskId - 1);
         }
 
         // Register for node information:
@@ -78,14 +79,24 @@ namespace mars {
               td->posX = it->children["posX"][0].getDouble();
               td->posY = it->children["posY"][0].getDouble();
               double fixedWidth = it->children["fixedWidth"][0].getDouble();
+              double fixedHeight = it->children["fixedHeight"][0].getDouble();
+              bool drawFrame = it->children["frame"][0].getBool();
               td->text = textFactory->createText(td->value, 40,
                                                 osg_text::Color(1.0, 1.0, 1.0, 1.0),
                                                 td->posX, td->posY);
-              td->text->setBackgroundColor(osg_text::Color(0.0, 0.5, 0.0, 0.5));
+              if(drawFrame) {
+                td->text->setBackgroundColor(osg_text::Color(0.0, 0.5, 0.0, 0.5));
+                td->text->setBorderWidth(4.0);
+              }
+              else {
+                td->text->setBackgroundColor(osg_text::Color(0.0, 0.0, 0.0, 0.0));
+                td->text->setBorderWidth(0.0);
+              }
               td->text->setBorderColor(osg_text::Color(1.0, 1.0, 1.0, 0.5));
-              td->text->setBorderWidth(4.0);
+
               td->text->setPadding(10., 10., 10., 10.);
               td->text->setFixedWidth(fixedWidth);
+              td->text->setFixedHeight(fixedHeight);
               example = control->cfg->getOrCreateProperty("Text3D",
                                                           td->name+"/value",
                                                           td->value, this);

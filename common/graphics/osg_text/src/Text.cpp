@@ -45,7 +45,7 @@ namespace osg_text {
                                    pl(paddingL), pt(paddingT),
                                    pr(paddingR), pb(paddingB),
                                    borderWidth(borderWidth),
-                                   fixedWidth(-1) {
+                                   fixedWidth(-1), fixedHeight(-1) {
 
     labelGeode = new osg::Geode();
     std::string timesFont = "fonts/arial.ttf";
@@ -117,6 +117,11 @@ namespace osg_text {
     updateSize();
   }
   
+  void Text::setFixedHeight(double h) {
+     fixedHeight = h;
+     updateSize();
+  }
+
   void Text::setPosition(double x, double y) {
     posX = x;
     posY = y;
@@ -149,6 +154,12 @@ namespace osg_text {
     else {
       w = width;
     }
+    if(fixedHeight > 0.0) {
+      h = fixedHeight;
+    }
+    else {
+      h = height;
+    }
     if(textAlign == ALIGN_LEFT) {
       posXB = posXI = 0.0;
     }     
@@ -167,10 +178,10 @@ namespace osg_text {
   void Text::createBackground(Color bgColor) {
     backgroundGeom = new osg::Geometry;
     backgroundVertices = new osg::Vec3Array;
-    backgroundVertices->push_back(osg::Vec3(posXB-pl, -height+pt, 0.));
+    backgroundVertices->push_back(osg::Vec3(posXB-pl, -h+pt, 0.));
     backgroundVertices->push_back(osg::Vec3(posXB-pl, pt, 0.));
     backgroundVertices->push_back(osg::Vec3(posXB+w-pl, pt, 0.));
-    backgroundVertices->push_back(osg::Vec3(posXB+w-pl, -height+pt, 0.));
+    backgroundVertices->push_back(osg::Vec3(posXB+w-pl, -h+pt, 0.));
     backgroundGeom->setVertexArray(backgroundVertices);
 
     osg::Vec3Array* normals = new osg::Vec3Array;
@@ -201,10 +212,10 @@ namespace osg_text {
   }
 
   void Text::updateBackgroundPos() {
-    (*backgroundVertices)[0] = osg::Vec3(posXB-pl, -height+pt, 0.);
+    (*backgroundVertices)[0] = osg::Vec3(posXB-pl, -h+pt, 0.);
     (*backgroundVertices)[1] = osg::Vec3(posXB-pl, pt, 0.);
     (*backgroundVertices)[2] = osg::Vec3(posXB+w-pl, pt, 0.);
-    (*backgroundVertices)[3] = osg::Vec3(posXB+w-pl, -height+pt, 0.);
+    (*backgroundVertices)[3] = osg::Vec3(posXB+w-pl, -h+pt, 0.);
     //backgroundVertices->dirty();
     //backgroundGeode->dirtyBound();
     backgroundGeom->dirtyDisplayList();
@@ -262,14 +273,14 @@ namespace osg_text {
   }
 
   void Text::updateBorderPos() {
-    (*borderVertices)[0].set(posXB-pl, -height+pt, 0.001);
+    (*borderVertices)[0].set(posXB-pl, -h+pt, 0.001);
     (*borderVertices)[1].set(posXB-pl, pt, 0.001);
     (*borderVertices)[2].set(posXB-pl, pt, 0.001);
     (*borderVertices)[3].set(posXB+w-pl, pt, 0.001);
     (*borderVertices)[4].set(posXB+w-pl, pt, 0.001);
-    (*borderVertices)[5].set(posXB+w-pl, -height+pt, 0.001);
-    (*borderVertices)[6].set(posXB+w-pl, -height+pt, 0.001);
-    (*borderVertices)[7].set(posXB-pl, -height+pt, 0.001);
+    (*borderVertices)[5].set(posXB+w-pl, -h+pt, 0.001);
+    (*borderVertices)[6].set(posXB+w-pl, -h+pt, 0.001);
+    (*borderVertices)[7].set(posXB-pl, -h+pt, 0.001);
     //borderVertices->dirty();
     borderGeom->dirtyDisplayList();
     //borderGeom->setVertexArray(borderVertices);

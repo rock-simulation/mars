@@ -61,6 +61,7 @@ namespace osg_text {
     void setPadding(double left, double top, double right, double bottom);
     void* getOSGNode();
     void setFixedWidth(double w);
+    void setFixedHeight(double h);
     void setPosition(double x, double y);
 
   private:
@@ -78,7 +79,7 @@ namespace osg_text {
     double posX, posXI, posY;
     TextAlign textAlign;
     double pl, pt, pr, pb;
-    double fixedWidth, w, posXB;
+    double fixedWidth, fixedHeight, w, h, posXB;
 
     osg::ref_ptr<osg::Vec4Array> backgroundColor, borderColor;
     double borderWidth;
