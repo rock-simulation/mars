@@ -121,7 +121,7 @@ namespace mars {
      * opens a saved file
      */
     void MenuFile::menu_openSceneFile() {
-      const char *fileTypes = "All supported files (*.scn *.zip *.scene)"
+      const char *fileTypes = "All supported files (*.scn *.zip *.scene *.smurf *.zsmurf *.urdf)"
         ";;MARS zipped scene files (*.scn *.zip)"
 		";;MARS scene files (*.scene)"
     	";;URDF files (*.urdf)"
