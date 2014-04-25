@@ -108,12 +108,12 @@ namespace mars {
       size_t pos;
 
       if(file->empty()) return;
-      if(file->front() == '/') {
+      if(file->at(1) == '/') {
         // we have an absolute path
         return;
       }
 
-      if(tmp.back() != '/') {
+      if(tmp.at(tmp.length()-1) != '/') {
         tmp.append("/");
       }
 
