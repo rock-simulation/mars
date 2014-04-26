@@ -137,6 +137,7 @@ namespace mars {
       }
 
       Text3D::~Text3D() {
+        libManager->releaseLibrary("osg_text_factory");
       }
 
 
