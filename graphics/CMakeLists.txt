@@ -197,7 +197,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
 
 if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
-qt5_use_modules(${PROJECT_NAME} MacExtras)
+#qt5_use_modules(${PROJECT_NAME} MacExtras)
 endif (${USE_QT5})
 
 if(APPLE)

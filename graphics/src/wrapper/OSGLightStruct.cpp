@@ -92,7 +92,7 @@ namespace mars {
 
       lightMarkerGeode = createLightMarker(ls);
 
-      addChild(lightMarkerGeode.get());
+      //addChild(lightMarkerGeode.get());
       setLight(light_.get());
     }
 
