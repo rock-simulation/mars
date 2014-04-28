@@ -46,17 +46,15 @@ namespace mars {
 
     class Load {
     public:
-      Load(std::string fileName, interfaces::ControlCenter *control,
-           std::string tmpPath_, const std::string &robotname="");
+      Load(interfaces::ControlCenter *control, std::string tmpPath,
+           std::string robotname, unsigned int mapIndex);
 
       /**
        * @return 0 on error.
        */
+      unsigned int parseURDF(std::string filename);
       unsigned int load();
-
-      unsigned int prepareLoad();
-      unsigned int parseScene();
-      unsigned int loadScene();
+      void addConfigMap(utils::ConfigMap &config);
 
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;
@@ -72,24 +70,17 @@ namespace mars {
       unsigned long nextNodeID;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
+      unsigned long nextMotorID;
       std::map<std::string, unsigned long> nodeIDMap;
       std::map<std::string, unsigned long> jointIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
 
-      //Name of the smurf main file to be opened (.yaml/.yml).
-      std::string mFileName;
-      //File extension for mFileSuffix
-      std::string mFileSuffix;
-
-      // Name of the robot for the Robotmanager
-      std::string mRobotName;
-
       interfaces::ControlCenter *control;
       std::string tmpPath;
-      std::string sceneFilename;
-      std::map<std::string, std::string> smurffiles;
+      //std::map<std::string, std::string> smurffiles;
       unsigned int mapIndex;
       utils::ConfigMap debugMap;
+      std::string robotname;
 
       void handleInertial(utils::ConfigMap *map,
                           const boost::shared_ptr<urdf::Link> &link);
@@ -118,21 +109,11 @@ namespace mars {
       unsigned int loadMaterial(utils::ConfigMap config);
       unsigned int loadNode(utils::ConfigMap config);
       unsigned int loadJoint(utils::ConfigMap config);
-      /* unsigned int loadMotor(utils::ConfigMap config); */
+      unsigned int loadMotor(utils::ConfigMap config);
       /* interfaces::BaseSensor* loadSensor(utils::ConfigMap config); */
       /* unsigned int loadController(utils::ConfigMap config); */
       /* unsigned int loadGraphic(utils::ConfigMap config); */
       /* unsigned int loadLight(utils::ConfigMap config); */
-
-      unsigned int unzip(const std::string& destinationDir,
-                         const std::string& zipFilename);
-
-      /* void getLinkConfig(std::vector<utils::ConfigMap> *configList, */
-      /*                    const boost::shared_ptr<urdf::Link> link); */
-      /* void getJointConfig(std::vector<utils::ConfigMap> *configList, */
-      /*                     const boost::shared_ptr<urdf::Joint> joint); */
-      /* void getMaterialConfig(std::vector<utils::ConfigMap> *configList, */
-      /*                        const boost::shared_ptr<urdf::Material> material); */
 
     };
 

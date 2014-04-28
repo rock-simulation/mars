@@ -56,6 +56,9 @@ namespace mars {
 
     private:
       interfaces::ControlCenter *control;
+
+      unsigned int unzip(const std::string& destinationDir,
+                         const std::string& zipFilename);
     };
 
   } // end of namespace urdf_loader

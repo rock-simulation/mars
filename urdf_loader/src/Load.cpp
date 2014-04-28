@@ -19,13 +19,13 @@
  */
 
 #include "Load.h"
-#include "zipit.h"
 
 #include <QtXml>
 #include <QDomNodeList>
 
 #include <mars/data_broker/DataBrokerInterface.h>
 
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
@@ -34,7 +34,6 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
-#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
@@ -60,72 +59,26 @@ namespace mars {
     using namespace interfaces;
     using namespace utils;
 
-    Load::Load(std::string fileName, ControlCenter *c, std::string tmpPath_,
-               const std::string &robotname) :
-      mFileName(fileName), mRobotName(robotname),
-      control(c), tmpPath(tmpPath_) {
-
-      mFileSuffix = getFilenameSuffix(mFileName);
-    }
-
-    unsigned int Load::load() {
-
-      if (!prepareLoad())
-        return 0;
-      if (!parseScene())
-        return 0;
-      return loadScene();
-    }
-
-    unsigned int Load::prepareLoad() {
-      std::string filename = mFileName;
+    Load::Load(ControlCenter *c, std::string tmpPath,
+               std::string robotname, unsigned int mapIndex) :
+      control(c), tmpPath(tmpPath), mapIndex(mapIndex), robotname(robotname) {
 
       nextGroupID = control->nodes->getMaxGroupID()+1;
       nextNodeID = 1;
       nextJointID = 1;
       nextMaterialID = 1;
-
-      if (mRobotName != "") {
-        control->entities->addEntity(mRobotName);
-      }
-
-      LOG_INFO("urdf_loader: prepare loading");
-
-      // need to unzip into a temporary directory
-      if (mFileSuffix == ".zsmurf") {
-        if (unzip(tmpPath, mFileName) == 0) {
-          return 0;
-        }
-        mFileSuffix = ".smurf";
-      } else {
-        // can parse file without unzipping
-        tmpPath = getPathOfFile(mFileName);
-      }
-
-      removeFilenamePrefix(&filename);
-      removeFilenameSuffix(&filename);
-
-      mapIndex = control->loadCenter->getMappedSceneByName(mFileName);
-      if (mapIndex == 0) {
-        control->loadCenter->setMappedSceneName(mFileName);
-        mapIndex = control->loadCenter->getMappedSceneByName(mFileName);
-      }
-      sceneFilename = tmpPath + filename + mFileSuffix;
-      return 1;
+      nextMotorID = 1;
     }
 
-    unsigned int Load::unzip(const std::string& destinationDir,
-                             const std::string& zipFilename) {
-      if (!createDirectory(destinationDir))
-        return 0;
-
-      Zipit myZipFile(zipFilename);
-      LOG_INFO("Load: unsmurfing zipped SMURF: %s", zipFilename.c_str());
-
-      if (!myZipFile.unpackWholeZipTo(destinationDir))
-        return 0;
-
-      return 1;
+    void Load::addConfigMap(utils::ConfigMap &config) {
+      utils::ConfigVector::iterator it = config["motors"].begin();
+      for(; it!=config["motors"].end(); ++it) {
+        (*it)["index"] = nextMotorID++;
+        (*it)["axis"] = 1;
+        (*it)["jointIndex"] = jointIDMap[(*it)["joint"][0]];
+        motorList.push_back((*it).children);
+        debugMap["motors"] += (*it).children;
+      }
     }
 
     void Load::handleInertial(ConfigMap *map,
@@ -332,7 +285,7 @@ namespace mars {
       config["diffuseFront"][0]["g"] = 0.0;
       config["diffuseFront"][0]["b"] = 0.0;
       config["texturename"] = "";
-      config["cullMask"] = 0;
+      config["cullMask"] = 1;
       debugMap["materials"] += config;
       materialList.push_back(config);
     }
@@ -343,6 +296,7 @@ namespace mars {
       (*map)["filename"] = "PRIMITIVE";
       (*map)["origname"] = "box";
       (*map)["materialName"] = "_fakeMaterial";
+      (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["visualsize"][0], &size);
       vectorToConfigItem(&(*map)["visualscale"][0], &scale);
     }
@@ -351,6 +305,7 @@ namespace mars {
       Vector size(0.01, 0.01, 0.01);
       (*map)["physicmode"] = "box";
       (*map)["coll_bitmask"] = 0;
+      (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["extend"][0], &size);
     }
 
@@ -373,6 +328,8 @@ namespace mars {
       // todo: if we don't have any joints connected we need some more
       //       special handling and change the handling below
       //       config["movable"] ?!?
+
+      config["movable"] = true;
 
       // we do most of the special case handling here:
       { /** special case handling **/
@@ -548,6 +505,7 @@ namespace mars {
         ConfigMap joint;
         joint["name"] = link->parent_joint->name;
         joint["index"] = nextJointID++;
+        jointIDMap[link->parent_joint->name] = nextJointID-1;
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
         joint["anchorpos"] = 2;
@@ -595,21 +553,21 @@ namespace mars {
     }
 
 
-    unsigned int Load::parseScene() {
+    unsigned int Load::parseURDF(std::string filename) {
       //  HandleFileNames h_filenames;
       vector<string> v_filesToLoad;
       QString xmlErrorMsg = "";
 
       //creating a handle for the xmlfile
-      QFile file(sceneFilename.c_str());
+      QFile file(filename.c_str());
 
       QLocale::setDefault(QLocale::C);
 
-      LOG_INFO("Load: loading scene: %s", sceneFilename.c_str());
+      LOG_INFO("Load: loading scene: %s", filename.c_str());
 
       //test to open the xmlfile
       if (!file.open(QIODevice::ReadOnly)) {
-        std::cout << "Error while opening scene file content " << sceneFilename
+        std::cout << "Error while opening scene file content " << filename
                   << " in Load.cpp->parseScene" << std::endl;
         std::cout << "Make sure your scenefile name corresponds to"
                   << " the name given to the enclosed .scene file" << std::endl;
@@ -618,7 +576,7 @@ namespace mars {
 
 
       boost::shared_ptr<urdf::ModelInterface> model;
-      model = urdf::parseURDFFile(sceneFilename);
+      model = urdf::parseURDFFile(filename);
       if (!model) {
         return 0;
       }
@@ -631,8 +589,6 @@ namespace mars {
 
       handleKinematics(model->root_link_);
 
-
-      debugMap.toYamlFile("debugMap.yml");
 
       //    //the entire tree recursively anyway
       //    std::vector<boost::shared_ptr<urdf::Link>> urdflinklist;
@@ -649,7 +605,8 @@ namespace mars {
       return 1;
     }
 
-    unsigned int Load::loadScene() {
+    unsigned int Load::load() {
+      debugMap.toYamlFile("debugMap.yml");
 
       for (unsigned int i = 0; i < materialList.size(); ++i)
         if(!loadMaterial(materialList[i]))
@@ -660,6 +617,10 @@ namespace mars {
 
       for (unsigned int i = 0; i < jointList.size(); ++i)
         if (!loadJoint(jointList[i]))
+          return 0;
+
+      for (unsigned int i = 0; i < motorList.size(); ++i)
+        if (!loadMotor(motorList[i]))
           return 0;
 
       return 1;
@@ -687,8 +648,8 @@ namespace mars {
         return 0;
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
-      if (mRobotName != "") {
-        control->entities->addNode(mRobotName, node.index, node.name);
+      if (robotname != "") {
+        control->entities->addNode(robotname, node.index, node.name);
       }
       return 1;
     }
@@ -721,11 +682,37 @@ namespace mars {
       control->loadCenter->setMappedID(oldId, newId,
                                        MAP_TYPE_JOINT, mapIndex);
 
-      if(mRobotName != "") {
-        control->entities->addJoint(mRobotName, joint.index, joint.name);
+      if(robotname != "") {
+        control->entities->addJoint(robotname, joint.index, joint.name);
       }
       return true;
     }
+
+    unsigned int Load::loadMotor(utils::ConfigMap config) {
+      MotorData motor;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+
+      int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading motor\n");
+        return 0;
+      }
+
+      MotorId oldId = motor.index;
+      MotorId newId = control->motors->addMotor(&motor);
+      if(!newId) {
+        LOG_ERROR("addMotor returned 0");
+        return 0;
+      }
+      control->loadCenter->setMappedID(oldId, newId,
+                                       MAP_TYPE_MOTOR, mapIndex);
+
+      if(robotname != "") {
+        control->entities->addMotor(robotname, motor.index, motor.name);
+      }
+      return true;
+    }
+
 
   }// end of namespace urdf_loader
 }

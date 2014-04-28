@@ -27,10 +27,14 @@
 #include "URDFLoader.h"
 #include "Load.h"
 #include "Save.h"
+#include "zipit.h"
 
 #include <mars/lib_manager/LibManager.h>
 #include <mars/lib_manager/LibInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/EntityManagerInterface.h>
+#include <mars/utils/misc.h>
+
 
 namespace mars {
   namespace urdf_loader {
@@ -66,14 +70,87 @@ namespace mars {
 
     bool URDFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
-      Load loadObject(filename, control, tmpPath,
-                      (const std::string&) robotname);
+      std::string filename_ = filename;
+
+      if (robotname != "") {
+        control->entities->addEntity(robotname);
+      }
+
+      LOG_INFO("urdf_loader: prepare loading");
+
+      std::string mFileSuffix = utils::getFilenameSuffix(filename);
+
+      // need to unzip into a temporary directory
+      if (mFileSuffix == ".zsmurf") {
+        if (unzip(tmpPath, filename) == 0) {
+          return 0;
+        }
+        mFileSuffix = ".smurf";
+      } else {
+        // can parse file without unzipping
+        tmpPath = utils::getPathOfFile(filename);
+      }
+
+      utils::removeFilenamePrefix(&filename_);
+      utils::removeFilenameSuffix(&filename_);
+
+      unsigned int mapIndex;
+      mapIndex= control->loadCenter->getMappedSceneByName(filename);
+      if (mapIndex == 0) {
+        control->loadCenter->setMappedSceneName(filename);
+        mapIndex = control->loadCenter->getMappedSceneByName(filename);
+      }
+      std::string sceneFilename = tmpPath + filename_ + mFileSuffix;
+
+      Load loadObject(control, tmpPath, robotname, mapIndex);
+
+
+      mFileSuffix = utils::getFilenameSuffix(filename);
+      if(mFileSuffix == ".smurf") {
+        std::string file;
+        utils::ConfigMap map = utils::ConfigMap::fromYamlFile(filename);
+        utils::ConfigVector::iterator it = map["files"].begin();
+        for(; it!=map["files"].end(); ++it) {
+          file = (std::string)(*it);
+          mFileSuffix = utils::getFilenameSuffix(file);
+          if(mFileSuffix == ".urdf") {
+            loadObject.parseURDF(tmpPath + file);
+          }
+          else if(mFileSuffix == ".yml") {
+            utils::ConfigMap m2 = utils::ConfigMap::fromYamlFile(tmpPath+file);
+            loadObject.addConfigMap(m2);            
+          }
+          else {
+            fprintf(stderr, "URDFLoader: %s not yet implemented",
+                    mFileSuffix.c_str());
+          }
+        }
+      }
+      else {
+        loadObject.parseURDF(filename);
+      }
+
       return loadObject.load();
     }
 
     int URDFLoader::saveFile(std::string filename, std::string tmpPath) {
       Save saveObject(filename.c_str(), control, tmpPath);
       return saveObject.prepare();
+    }
+
+
+    unsigned int URDFLoader::unzip(const std::string& destinationDir,
+                                     const std::string& zipFilename) {
+      if (!utils::createDirectory(destinationDir))
+        return 0;
+
+      Zipit myZipFile(zipFilename);
+      LOG_INFO("Load: unsmurfing zipped SMURF: %s", zipFilename.c_str());
+
+      if (!myZipFile.unpackWholeZipTo(destinationDir))
+        return 0;
+
+      return 1;
     }
 
   } // end of namespace urdf_loader
