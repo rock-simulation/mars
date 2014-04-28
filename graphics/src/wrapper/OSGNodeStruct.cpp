@@ -153,7 +153,7 @@ namespace mars {
         drawObject_->setScale(node.visual_scale);
       }
 
-      drawObject_->setPosition(node.pos + node.visual_offset_pos);
+      drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
 
       MaterialData ms = node.material;
