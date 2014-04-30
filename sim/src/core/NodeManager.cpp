@@ -209,7 +209,7 @@ namespace mars {
           physicalRep.visual_size = physicalRep.ext;
 
           if(nodeS->physicMode != NODE_TYPE_TERRAIN) {
-            if(nodeS->filename != "PRIMITIVE") {
+            if(nodeS->physicMode != NODE_TYPE_MESH) {
               physicalRep.filename = "PRIMITIVE";
               //physicalRep.filename = nodeS->filename;
               if(nodeS->physicMode > 0 && nodeS->physicMode < NUMBER_OF_NODE_TYPES){
