@@ -89,7 +89,9 @@ namespace mars {
       void erase(iterator first, iterator last);
       void swap( FIFOMap<Key, T> &other);
       void clear();
-    
+
+      void append(FIFOMap<Key, T> &other);
+
       /* operations */
       iterator find(const Key &x);
       const_iterator find(const Key &x) const
@@ -197,6 +199,14 @@ namespace mars {
       std::cerr << "FIFOMap::swap is untested" << std::endl;
       std::map<Key, T>::swap(other);
       insertOrder.swap(other.insertOrder);
+    }
+
+    template<typename Key, typename T>
+    void FIFOMap<Key, T>::append(FIFOMap<Key, T> &other) {
+      FIFOMap<Key, T>::iterator it = other.begin();
+      for(; it!=other.end(); ++it) {
+        FIFOMap<Key, T>::operator[](it->first) = it->second;
+      }
     }
 
     template<typename Key, typename T>
