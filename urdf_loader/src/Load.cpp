@@ -68,16 +68,117 @@ namespace mars {
       nextJointID = 1;
       nextMaterialID = 1;
       nextMotorID = 1;
+      nextSensorID = 1;
+      nextControllerID = 1;
+    }
+
+    void Load::handleURI(utils::ConfigMap *map, std::string uri) {
+      utils::ConfigMap map2 = utils::ConfigMap::fromYamlFile(uri);
+      handleURIs(&map2);
+      map->append(map2);
+    }
+
+    void Load::handleURIs(utils::ConfigMap *map) {
+      if(map->find("URI") != map->end()) {
+        std::string file = (std::string)(*map)["URI"][0];
+        if(!file.empty() && file[0] != '/') {
+          file = tmpPath + file;
+        }
+        handleURI(map, file);
+      }
+      if(map->find("URIs") != map->end()) {
+        utils::ConfigVector::iterator vIt = (*map)["URIs"].begin();
+        for(; vIt!=(*map)["URIs"].end(); ++vIt) {
+          std::string file = (std::string)(*vIt);
+          if(!file.empty() && file[0] != '/') {
+            file = tmpPath + file;
+          }
+          handleURI(map, file);
+        }
+      }
+    }
+
+    void Load::getSensorIDList(utils::ConfigMap *map) {
+      utils::ConfigVector::iterator it;
+      unsigned long id;
+      if(map->find("link") != map->end()) {
+        (*map)["nodeID"] = nodeIDMap[(std::string)(*map)["link"][0]];
+      }
+      if(map->find("joint") != map->end()) {
+        (*map)["jointID"] = nodeIDMap[(std::string)(*map)["joint"][0]];
+      }
+      for(it=(*map)["links"].begin();
+          it!=(*map)["links"].end(); ++it) {
+        (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string)*it]));
+      }
+      for(it=(*map)["joints"].begin();
+          it!=(*map)["joints"].end(); ++it) {
+        (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string)*it]));
+      }
+      for(it=(*map)["motors"].begin();
+          it!=(*map)["motors"].end(); ++it) {
+        (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string)*it]));
+      }
     }
 
     void Load::addConfigMap(utils::ConfigMap &config) {
-      utils::ConfigVector::iterator it = config["motors"].begin();
-      for(; it!=config["motors"].end(); ++it) {
+      utils::ConfigVector::iterator it;
+      for(it = config["motors"].begin(); it!=config["motors"].end(); ++it) {
+        handleURIs(&it->children);
         (*it)["index"] = nextMotorID++;
+        motorIDMap[(*it)["name"][0]] = nextMotorID-1;
         (*it)["axis"] = 1;
         (*it)["jointIndex"] = jointIDMap[(*it)["joint"][0]];
         motorList.push_back((*it).children);
         debugMap["motors"] += (*it).children;
+      }
+      for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
+        handleURIs(&it->children);
+        (*it)["index"] = nextSensorID++;
+        sensorIDMap[(*it)["name"][0]] = nextSensorID-1;
+        getSensorIDList(&it->children);
+        sensorList.push_back((*it).children);
+        debugMap["sensors"] += (*it).children;
+      }
+      for(it = config["materials"].begin();
+          it!=config["materials"].end(); ++it) {
+        handleURIs(&it->children);
+        std::vector<utils::ConfigMap>::iterator mIt = materialList.begin();
+        for(; mIt!=materialList.end(); ++mIt) {
+          if((std::string)(*mIt)["name"][0] == (std::string)(*it)["name"][0]) {
+            mIt->append(it->children);
+            break;
+          }
+        }
+      }
+      for(it = config["lights"].begin(); it!=config["lights"].end(); ++it) {
+        handleURIs(&it->children);
+        lightList.push_back((*it).children);
+        debugMap["lights"] += (*it).children;
+      }
+      for(it = config["graphics"].begin(); it!=config["graphics"].end(); ++it) {
+        handleURIs(&it->children);
+        graphicList.push_back((*it).children);
+        debugMap["graphics"] += (*it).children;
+      }
+      for(it = config["controllers"].begin();
+          it!=config["controllers"].end(); ++it) {
+        handleURIs(&it->children);
+        (*it)["index"] = nextControllerID++;
+        // convert names to ids
+        utils::ConfigVector::iterator it2;
+        unsigned long id;
+        for(it2=it->children["sensors"].begin();
+            it2!=it->children["sensors"].end(); ++it2) {
+          it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string)*it2]));
+        }
+        for(it2=it->children["motors"].begin();
+            it2!=it->children["motors"].end(); ++it2) {
+          it->children["motorid"].push_back(ConfigItem(motorIDMap[(std::string)*it2]));
+        }
+
+        controllerList.push_back((*it).children);
+        debugMap["controllers"] += (*it).children;
       }
     }
 
@@ -432,7 +533,7 @@ namespace mars {
         }
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
-        childNode["mass"] = 0.0;
+        childNode["mass"] = 0.00;
         childNode["density"] = 0.0;
 
         handleCollision(&childNode, collision);
@@ -623,6 +724,22 @@ namespace mars {
         if (!loadMotor(motorList[i]))
           return 0;
 
+      for (unsigned int i = 0; i < sensorList.size(); ++i)
+        if (!loadSensor(sensorList[i]))
+          return 0;
+
+      for (unsigned int i = 0; i < controllerList.size(); ++i)
+        if (!loadController(controllerList[i]))
+          return 0;
+
+      for (unsigned int i = 0; i < lightList.size(); ++i)
+        if (!loadLight(lightList[i]))
+          return 0;
+
+      for (unsigned int i = 0; i < graphicList.size(); ++i)
+        if (!loadGraphic(graphicList[i]))
+          return 0;
+
       return 1;
     }
 
@@ -713,6 +830,74 @@ namespace mars {
       return true;
     }
 
+    BaseSensor* Load::loadSensor(utils::ConfigMap config) {
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      unsigned long sceneID = config["index"][0].getULong();
+      BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
+      if (sensor != 0) {
+        control->loadCenter->setMappedID(sceneID, sensor->getID(),
+                                         MAP_TYPE_SENSOR,
+                                         mapIndex);
+      }
+
+      return sensor;
+    }
+
+    unsigned int Load::loadGraphic(utils::ConfigMap config) {
+      GraphicData graphic;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      int valid = graphic.fromConfigMap(&config, tmpPath,
+                                        control->loadCenter);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading graphic\n");
+        return 0;
+      }
+
+      if (control->graphics)
+        control->graphics->setGraphicOptions(graphic);
+
+      return 1;
+    }
+
+    unsigned int Load::loadLight(utils::ConfigMap config) {
+      LightData light;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      int valid = light.fromConfigMap(&config, tmpPath,
+                                      control->loadCenter);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading light\n");
+        return 0;
+      }
+
+      control->sim->addLight(light);
+      return true;
+    }
+
+    unsigned int Load::loadController(utils::ConfigMap config) {
+      ControllerData controller;
+      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+
+      int valid = controller.fromConfigMap(&config, tmpPath,
+                                           control->loadCenter);
+      if(!valid) {
+        fprintf(stderr, "Load: error while loading Controller\n");
+        return 0;
+      }
+
+      MotorId oldId = controller.id;
+      MotorId newId = control->controllers->addController(controller);
+      if(!newId) {
+        LOG_ERROR("Load: addController returned 0");
+        return 0;
+      }
+      control->loadCenter->setMappedID(oldId, newId,
+                                       MAP_TYPE_CONTROLLER,
+                                       mapIndex);
+      if(robotname != "") {
+        control->entities->addController(robotname, newId);
+      }
+      return 1;
+    }
 
   }// end of namespace urdf_loader
 }

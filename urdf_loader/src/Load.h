@@ -71,8 +71,12 @@ namespace mars {
       unsigned long nextJointID;
       unsigned long nextMaterialID;
       unsigned long nextMotorID;
+      unsigned long nextSensorID;
+      unsigned long nextControllerID;
       std::map<std::string, unsigned long> nodeIDMap;
       std::map<std::string, unsigned long> jointIDMap;
+      std::map<std::string, unsigned long> sensorIDMap;
+      std::map<std::string, unsigned long> motorIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
 
       interfaces::ControlCenter *control;
@@ -81,6 +85,10 @@ namespace mars {
       unsigned int mapIndex;
       utils::ConfigMap debugMap;
       std::string robotname;
+
+      void handleURI(utils::ConfigMap *map, std::string uri);
+      void handleURIs(utils::ConfigMap *map);
+      void getSensorIDList(utils::ConfigMap *map);
 
       void handleInertial(utils::ConfigMap *map,
                           const boost::shared_ptr<urdf::Link> &link);
@@ -110,11 +118,10 @@ namespace mars {
       unsigned int loadNode(utils::ConfigMap config);
       unsigned int loadJoint(utils::ConfigMap config);
       unsigned int loadMotor(utils::ConfigMap config);
-      /* interfaces::BaseSensor* loadSensor(utils::ConfigMap config); */
-      /* unsigned int loadController(utils::ConfigMap config); */
-      /* unsigned int loadGraphic(utils::ConfigMap config); */
-      /* unsigned int loadLight(utils::ConfigMap config); */
-
+      interfaces::BaseSensor* loadSensor(utils::ConfigMap config);
+      unsigned int loadController(utils::ConfigMap config);
+      unsigned int loadGraphic(utils::ConfigMap config);
+      unsigned int loadLight(utils::ConfigMap config);
     };
 
   } // end of namespace urdf_loader
