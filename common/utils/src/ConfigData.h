@@ -264,7 +264,7 @@ namespace mars {
           sprintf(text, "%d", iValue);
           return text;
         } else if(type == UINT_TYPE) {
-          sprintf(text, "%u", iValue);
+          sprintf(text, "%u", uValue);
           return text;
         } else if(type == DOUBLE_TYPE) {
           sprintf(text, "%g", dValue);
