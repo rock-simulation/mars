@@ -130,6 +130,7 @@ namespace mars {
           if(!movable) needMass = false;
         }
 
+        /* there are valid cases were pyhsical objects have no mass
         if(needMass) {
           if(!check) {
             LOG_WARN("no mass nor density given for node %s.", name.c_str());
@@ -141,6 +142,7 @@ namespace mars {
             density = 0.0;
           }
         }
+        */
       } // handle node mass
 
       { // handle node type
@@ -164,12 +166,14 @@ namespace mars {
           if(origName.empty()) {
             origName = toString(physicMode);
           }
+          /* this is a valid case
           else if(origName != toString(physicMode)) {
             std::string tmp = toString(physicMode);
             LOG_WARN("origname set to \"%s\" for primitive in node \"%s\" with physicMode \"%s\"",
                      origName.c_str(), name.c_str(),
                      tmp.c_str() );
           }
+          */
         }
       } // handle node type
 
