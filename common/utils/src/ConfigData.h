@@ -243,11 +243,10 @@ namespace mars {
                                              sValue(val), parsed(false),
                                              type(UNDEFINED_TYPE) {}
 
-      explicit ConfigItem(ConfigMap map) : luValue(0), iValue(0),
+      explicit ConfigItem(ConfigMap map) : children(map), luValue(0), iValue(0),
                                            uValue(0), dValue(0.0),
                                            sValue(""), parsed(false),
-                                           type(UNDEFINED_TYPE),
-                                           children(map) {}
+                                           type(UNDEFINED_TYPE) {}
 
       ConfigVector& operator[](const std::string &name) {
         return children[name];
