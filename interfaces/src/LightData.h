@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -31,7 +31,7 @@ namespace mars {
   namespace interfaces {
 
     // forward declaration
-    class LoadSceneInterface;
+    class LoadCenter;
 
     /**
      * LightData is a struct to exchange light information between the
@@ -40,7 +40,7 @@ namespace mars {
     class LightData {
     public:
       bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
-                         LoadSceneInterface *loadScene = 0);
+                         LoadCenter *loadCenter = 0);
       void toConfigMap(utils::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);

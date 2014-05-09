@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -37,7 +37,7 @@ namespace mars {
   namespace interfaces {
 
     // forward declaration
-    class LoadSceneInterface;
+    class LoadCenter;
     struct terrainStruct;
 
     /**
@@ -77,6 +77,7 @@ namespace mars {
         visual_offset_pos.setZero();
         visual_offset_rot.setIdentity();
         visual_size.setZero();
+        visual_scale = utils::Vector(1.0, 1.0, 1.0);
         c_params.setZero();
         inertia_set=false;
         for(int i=0;i<3;i++){
@@ -130,7 +131,7 @@ namespace mars {
       }
 
       bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
-                         LoadSceneInterface *loadScene = 0);
+                         LoadCenter *loadCenter = 0);
       void toConfigMap(utils::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
@@ -314,9 +315,17 @@ namespace mars {
        * This vector is used to define the size of the bounding box of the
        * visual representation of a node. The visual object is scaled to fit
        * into it's bounding box and can be set independently of the physical
-       * extent. \verbatim Default value: (0.0, 0.0, 0.0) \endverbatim
+       * extent. If the vector is zero the original size of the loaded mesh is
+       * used. \verbatim Default value: (0.0, 0.0, 0.0) \endverbatim
        */
       utils::Vector visual_size;
+
+      /**
+       * This vector is used to scale the bounding box of the
+       * visual representation of a node.
+       * \verbatim Default value: (1.0, 1.0, 1.0) \endverbatim
+       */
+      utils::Vector visual_scale;
 
       /**
        * The contact params define the physical contact properties of the node.

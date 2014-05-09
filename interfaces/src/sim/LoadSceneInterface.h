@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -48,12 +48,6 @@ namespace mars {
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname) = 0;
       virtual int saveFile(std::string filename, std::string tmpPath) = 0;
-      virtual unsigned long getMappedID(unsigned long id, unsigned int indextype,
-                                        unsigned int source) const = 0;
-      virtual unsigned int setMappedID(unsigned long id_old, unsigned long id_new,
-                                       unsigned int indextype, unsigned int source) = 0;
-      virtual unsigned int getMappedSceneByName(const std::string &scenename) const = 0;
-      virtual void setMappedSceneName(const std::string &scenename) = 0;
     };
 
   } // end of namespace interfaces

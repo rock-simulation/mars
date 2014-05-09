@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012. 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -222,6 +222,18 @@ namespace mars {
       item->children["x"][0] = ConfigItem(q->x());
       item->children["y"][0] = ConfigItem(q->y());
       item->children["z"][0] = ConfigItem(q->z());
+    }
+
+    void inertiaTensorToConfigItem(ConfigItem *item, double *inertia) {
+      item->children["i00"][0] = ConfigItem(inertia[0]);
+      item->children["i01"][0] = ConfigItem(inertia[1]);
+      item->children["i02"][0] = ConfigItem(inertia[2]);
+      item->children["i10"][0] = ConfigItem(inertia[3]);
+      item->children["i11"][0] = ConfigItem(inertia[4]);
+      item->children["i12"][0] = ConfigItem(inertia[5]);
+      item->children["i20"][0] = ConfigItem(inertia[6]);
+      item->children["i21"][0] = ConfigItem(inertia[7]);
+      item->children["i22"][0] = ConfigItem(inertia[8]);
     }
 
   } // end of namespace utils

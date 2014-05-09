@@ -60,11 +60,21 @@ namespace mars {
       if (node.filename.compare("PRIMITIVE") == 0) {
         switch(NodeData::typeFromString(node.origName.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
-          drawObject_ = new CubeDrawObject(node.ext);
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new CubeDrawObject(node.visual_size);
+          }
+          else {
+            drawObject_ = new CubeDrawObject(node.ext);
+          }
           break;
         }
         case mars::interfaces::NODE_TYPE_SPHERE: {
-          drawObject_ = new SphereDrawObject(node.ext.x());
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new SphereDrawObject(node.visual_size.x());
+          }
+          else {
+            drawObject_ = new SphereDrawObject(node.ext.x());
+          }
           break;
         }
         case mars::interfaces::NODE_TYPE_REFERENCE: {
@@ -75,14 +85,32 @@ namespace mars {
         }
         case mars::interfaces::NODE_TYPE_MESH:
         case mars::interfaces::NODE_TYPE_CYLINDER: 
-          drawObject_ = new CylinderDrawObject(node.ext.x(), node.ext.y());
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new CylinderDrawObject(node.visual_size.x(),
+                                                 node.visual_size.y());
+          }
+          else {
+            drawObject_ = new CylinderDrawObject(node.ext.x(), node.ext.y());
+          }
+          break;
           break;
         case mars::interfaces::NODE_TYPE_CAPSULE: {
-          drawObject_ = new CapsuleDrawObject(node.ext.x(), node.ext.y());
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new CapsuleDrawObject(node.visual_size.x(),
+                                                node.visual_size.y());
+          }
+          else {
+            drawObject_ = new CapsuleDrawObject(node.ext.x(), node.ext.y());
+          }
           break;
         }
         case mars::interfaces::NODE_TYPE_PLANE: {
-          drawObject_ = new PlaneDrawObject(node.ext);
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new PlaneDrawObject(node.visual_size);
+          }
+          else {
+            drawObject_ = new PlaneDrawObject(node.ext);
+          }
           break;
         }
         default:
@@ -119,10 +147,13 @@ namespace mars {
         drawObject_ = new LoadDrawObject(info, node.ext);
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, node.pivot);
-        drawObject_->setScaledSize(node.visual_size);
+        drawObject_->setScale(node.visual_scale);
+        if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+          drawObject_->setScaledSize(node.visual_size);
+        }
       }
 
-      drawObject_->setPosition(node.pos + node.visual_offset_pos);
+      drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
 
       MaterialData ms = node.material;

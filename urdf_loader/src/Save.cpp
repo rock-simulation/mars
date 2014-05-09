@@ -62,7 +62,7 @@
 #include <mars/utils/misc.h>
 
 namespace mars {
-  namespace scene_loader {
+  namespace urdf_loader {
 
     using namespace interfaces;
 
@@ -450,5 +450,5 @@ namespace mars {
       return 1;
     }
 
-  } // end of namespace scene_loader
+  } // end of namespace urdf_loader
 } // end of namespace mars

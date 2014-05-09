@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,7 +19,7 @@
  */
 
 #include "ControllerData.h"
-#include "sim/LoadSceneInterface.h"
+#include "sim/LoadCenter.h"
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
@@ -40,9 +40,9 @@ namespace mars {
 
     bool ControllerData::fromConfigMap(utils::ConfigMap *config,
                                        std::string filenamePrefix,
-                                       LoadSceneInterface *loadScene) {
+                                       LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
-      CPP_UNUSED(loadScene);
+      CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
       std::vector<ConfigItem>::iterator it2;
       unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
@@ -57,7 +57,7 @@ namespace mars {
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
           if((_id = it2->getULong())){
             if(mapIndex) {
-              _id = loadScene->getMappedID(_id, MAP_TYPE_SENSOR, mapIndex);
+              _id = loadCenter->getMappedID(_id, MAP_TYPE_SENSOR, mapIndex);
             }
             sensors.push_back(_id);
           }
@@ -69,7 +69,7 @@ namespace mars {
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
           if((_id = it2->getULong())){
             if(mapIndex) {
-              _id = loadScene->getMappedID(_id, MAP_TYPE_MOTOR, mapIndex);
+              _id = loadCenter->getMappedID(_id, MAP_TYPE_MOTOR, mapIndex);
             }
             motors.push_back(_id);
           }
@@ -81,7 +81,7 @@ namespace mars {
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
           if((_id = it2->getULong())){
             if(mapIndex) {
-              _id = loadScene->getMappedID(_id, MAP_TYPE_NODE, mapIndex);
+              _id = loadCenter->getMappedID(_id, MAP_TYPE_NODE, mapIndex);
             }
             sNodes.push_back(_id);
           }

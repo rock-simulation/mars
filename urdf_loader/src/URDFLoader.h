@@ -19,14 +19,14 @@
  */
 
 /**
- * \file SceneLoader.h
- * \author Malte Roemmermann
+ * \file URDFLoader.h
+ * \author Malte Langosz
  */
 #ifndef SCENE_LOADER_H
 #define SCENE_LOADER_H
 
 #ifdef _PRINT_HEADER_
-  #warning "SceneLoader.h"
+  #warning "URDFLoader.h"
 #endif
 
 #include <mars/interfaces/sim/ControlCenter.h>
@@ -35,18 +35,18 @@
 #include "SaveLoadStructs.h"
 
 namespace mars {
-  namespace scene_loader {
+  namespace urdf_loader {
 
-    class SceneLoader : public interfaces::LoadSceneInterface {
+    class URDFLoader : public interfaces::LoadSceneInterface {
       
     public:
-      SceneLoader(lib_manager::LibManager *theManager);
-      ~SceneLoader();
+      URDFLoader(lib_manager::LibManager *theManager);
+      ~URDFLoader();
 
 
       // LibInterface methods
       int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("mars_scene_loader");}
+      const std::string getLibName() const {return std::string("mars_urdf_loader");}
       CREATE_MODULE_INFO();
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
@@ -56,9 +56,12 @@ namespace mars {
 
     private:
       interfaces::ControlCenter *control;
+
+      unsigned int unzip(const std::string& destinationDir,
+                         const std::string& zipFilename);
     };
 
-  } // end of namespace scene_loader
+  } // end of namespace urdf_loader
 } // end of namespace mars
 
 #endif  // SCENE_LOADER_H

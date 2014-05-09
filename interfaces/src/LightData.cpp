@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -44,9 +44,9 @@ namespace mars {
 
     bool LightData::fromConfigMap(utils::ConfigMap *config,
                                   std::string filenamePrefix,
-                                  LoadSceneInterface *loadScene) {
+                                  LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
-      CPP_UNUSED(loadScene);
+      CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
 
       GET_VALUE("name", name, String);

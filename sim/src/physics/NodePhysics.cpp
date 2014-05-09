@@ -73,6 +73,7 @@ namespace mars {
       //node_data.num_ground_collisions = 0;
       node_data.setZero();
       height_data = 0;
+      dMassSetZero(&nMass);
     }
 
     /**
@@ -638,7 +639,7 @@ namespace mars {
         dMassSetBox(&nMass, (dReal)node->density, (dReal)node->ext.x(),
                     (dReal)node->ext.y(),(dReal)node->ext.z());
       }
-      else {
+      else if(node->mass > 0) {
         dMassSetBoxTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x(),
                          (dReal)node->ext.y(),(dReal)node->ext.z());
       }
@@ -672,7 +673,7 @@ namespace mars {
         dMassSetBox(&nMass, (dReal)(node->density), (dReal)(node->ext.x()),
                     (dReal)(node->ext.y()),(dReal)(node->ext.z()));
       }
-      else {
+      else if(node->mass > 0) {
         dReal tempMass =(dReal)(node->mass);
         dMassSetBoxTotal(&nMass, tempMass, (dReal)(node->ext.x()),
                          (dReal)(node->ext.y()),(dReal)(node->ext.z()));
@@ -703,7 +704,7 @@ namespace mars {
       else if(node->density > 0) {
         dMassSetSphere(&nMass, (dReal)node->density, (dReal)node->ext.x());
       }
-      else {
+      else if(node->mass > 0) {
         dMassSetSphereTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x());
       }
       return true;
@@ -735,7 +736,7 @@ namespace mars {
         dMassSetCapsule(&nMass, (dReal)node->density, 3, (dReal)node->ext.x(),
                         (dReal)node->ext.y());
       }
-      else {
+      else if(node->mass > 0) {
         dMassSetCapsuleTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
                              (dReal)node->ext.y());
       }
@@ -768,7 +769,7 @@ namespace mars {
         dMassSetCylinder(&nMass, (dReal)node->density, 3, (dReal)node->ext.x(),
                          (dReal)node->ext.y());
       }
-      else {
+      else if(node->mass > 0) {
         dMassSetCylinderTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
                               (dReal)node->ext.y());
       }
@@ -858,7 +859,7 @@ namespace mars {
         // ## the rotation has to be defined as quanternion or matrix? ##
         dBodySetQuaternion(nBody, tmp);
       }
-      else {
+      else if(node->density > 0 || node->mass > 0) {
         dMass bodyMass;
 
         dBodyGetMass(nBody, &bodyMass);

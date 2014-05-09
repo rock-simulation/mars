@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -22,7 +22,7 @@
 #include "terrainStruct.h"
 #define FORWARD_DECL_ONLY
 #include "sim/ControlCenter.h"
-#include "sim/LoadSceneInterface.h"
+#include "sim/LoadCenter.h"
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/misc.h>
 
@@ -42,8 +42,9 @@
   if(val != defaultNode.val)                             \
     (*config)[str][0] = ConfigItem(val)
 
+//FIXME:HACK??! default value
 #define SET_OBJECT(str, val, type)                                      \
-  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) {               \
+  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) {  \
     (*config)[str][0] = ConfigItem(std::string());                      \
     type##ToConfigItem(&(*config)[str][0], &val);                       \
   }
@@ -97,7 +98,7 @@ namespace mars {
 
     bool NodeData::fromConfigMap(ConfigMap *config,
                                  std::string filenamePrefix,
-                                 LoadSceneInterface *loadScene) {
+                                 LoadCenter *loadCenter) {
       ConfigMap::iterator it;
       bool check = false, massDensity = false;
       bool needMass = true;
@@ -129,6 +130,7 @@ namespace mars {
           if(!movable) needMass = false;
         }
 
+        /* there are valid cases were pyhsical objects have no mass
         if(needMass) {
           if(!check) {
             LOG_WARN("no mass nor density given for node %s.", name.c_str());
@@ -140,6 +142,7 @@ namespace mars {
             density = 0.0;
           }
         }
+        */
       } // handle node mass
 
       { // handle node type
@@ -163,12 +166,14 @@ namespace mars {
           if(origName.empty()) {
             origName = toString(physicMode);
           }
+          /* this is a valid case
           else if(origName != toString(physicMode)) {
             std::string tmp = toString(physicMode);
             LOG_WARN("origname set to \"%s\" for primitive in node \"%s\" with physicMode \"%s\"",
                      origName.c_str(), name.c_str(),
                      tmp.c_str() );
           }
+          */
         }
       } // handle node type
 
@@ -184,9 +189,9 @@ namespace mars {
         if(relative_id) {
           unsigned int mapIndex;
           GET_VALUE("mapIndex", mapIndex, UInt);
-          if(mapIndex && loadScene) {
-            relative_id = loadScene->getMappedID(relative_id, MAP_TYPE_NODE,
-                                                 mapIndex);
+          if(mapIndex && loadCenter) {
+            relative_id = loadCenter->getMappedID(relative_id, MAP_TYPE_NODE,
+                                                  mapIndex);
           }
         }
       }
@@ -216,6 +221,13 @@ namespace mars {
       }
       else {
         visual_size = ext;
+      }
+
+      if((it = config->find("visualscale")) != config->end()) {
+        vectorFromConfigItem(&it->second[0], &visual_scale);
+      }
+      else {
+        visual_scale = Vector(1.0, 1.0, 1.0);
       }
 
       { // handle contact info
@@ -318,6 +330,7 @@ namespace mars {
       SET_OBJECT("visualposition", visual_offset_pos, vector);
       SET_OBJECT("visualrotation", visual_offset_rot, quaternion);
       SET_OBJECT("visualsize", visual_size, vector);
+      SET_OBJECT("visualscale", visual_scale, vector);
 
       SET_VALUE("cmax_num_contacts", c_params.max_num_contacts);
       SET_VALUE("cerp", c_params.erp);

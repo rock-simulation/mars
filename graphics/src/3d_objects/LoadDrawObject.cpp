@@ -91,7 +91,7 @@ namespace mars {
 
         for (unsigned int i = 0; i < readGroup->getNumChildren(); ++i) {
           readNode = readGroup->getChild(i);
-          if (readNode->getName() == info_.objectName) {
+          if (readNode->getName() == info_.objectName || info_.objectName == "") {
             geodes.push_back(readNode->asGeode());
             found = true;
           }

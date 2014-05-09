@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -22,7 +22,7 @@
 #include "utils.h"
 #define FORWARD_DECL_ONLY
 #include "sim/ControlCenter.h"
-#include "sim/LoadSceneInterface.h"
+#include "sim/LoadCenter.h"
 #include <mars/utils/mathUtils.h>
 
 // should add some error handling for ConfigItem::get...()
@@ -85,9 +85,9 @@ namespace mars {
 
     bool JointData::fromConfigMap(ConfigMap *config,
                                   std::string filenamePrefix,
-                                  LoadSceneInterface *loadScene) {
+                                  LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
-      CPP_UNUSED(loadScene);
+      CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
       unsigned int mapIndex;
       GET_VALUE("mapIndex", mapIndex, UInt);
@@ -107,15 +107,15 @@ namespace mars {
       if(!nodeIndex1) {
         LOG_ERROR("JointData: no first node attached to joint");
       }
-      else if(mapIndex && loadScene) {
-          nodeIndex1 = loadScene->getMappedID(nodeIndex1, MAP_TYPE_NODE,
-                                              mapIndex);
+      else if(mapIndex && loadCenter) {
+          nodeIndex1 = loadCenter->getMappedID(nodeIndex1, MAP_TYPE_NODE,
+                                               mapIndex);
       }
 
       GET_VALUE("nodeindex2", nodeIndex2, ULong);
-      if(mapIndex && loadScene) {
-        nodeIndex2 = loadScene->getMappedID(nodeIndex2, MAP_TYPE_NODE,
-                                            mapIndex);
+      if(mapIndex && loadCenter) {
+        nodeIndex2 = loadCenter->getMappedID(nodeIndex2, MAP_TYPE_NODE,
+                                             mapIndex);
       }
       
       { // handle axis 1

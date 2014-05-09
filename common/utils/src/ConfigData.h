@@ -37,14 +37,20 @@
 
 namespace mars {
   namespace utils {
+
+    class ConfigMap;
  
     template <typename T>
     class ConfigVectorTemplate : public std::vector<T>{
     public:
 
+      ConfigVectorTemplate(std::string s) : parentName(s) {}
+      ConfigVectorTemplate() : parentName("") {}
+
       T& operator[](size_t index) {
         if(index == this->size()) {
           this->push_back(T());
+          this->back().setParentName(parentName);
         }
         return std::vector<T>::operator[](index);
       }
@@ -55,13 +61,120 @@ namespace mars {
 
       size_t append(const T &item) {
         push_back(item);
+        this->back().setParentName(parentName);
         return this->size() - 1;
       }
 
       ConfigVectorTemplate& operator<<(const T &item) {
-        push_back(item);
+        this->push_back(item);
+        this->back().setParentName(parentName);
         return *this;
       }
+
+      ConfigVectorTemplate& operator+=(const T &item) {
+        this->push_back(item);
+        this->back().setParentName(parentName);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(const T &item) {
+        this->clear();
+        this->push_back(item);
+        this->back().setParentName(parentName);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(int v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(bool v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(unsigned int v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(double v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(unsigned long v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(std::string v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(const char* v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator=(const ConfigMap &v) {
+        *this = T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const int& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const bool& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const unsigned int& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const double &v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const unsigned long& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const std::string& v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const char* v) {
+        *this += T(v);
+        return *this;
+      }
+
+      ConfigVectorTemplate& operator+=(const ConfigMap &v) {
+        *this += T(v);
+        return *this;
+      }
+
+      inline void setParentName(std::string s) {
+        parentName = s;
+      }
+
+      inline const std::string& getParentName() const {
+        return parentName;
+      }
+
+    private:
+      std::string parentName;
+
     }; // end of class ConfigVectorTemplate
 
     class ConfigItem;
@@ -73,6 +186,13 @@ namespace mars {
 
     class ConfigMap : public FIFOMap<std::string, ConfigVector> {
     public:
+      ConfigVector& operator[](const std::string &name) {
+        if(find(name) == end()) {
+          return FIFOMap::operator[](name) = ConfigVector(name);
+        }
+        return FIFOMap::operator[](name);
+      }
+
       void toYamlStream(std::ostream &out) const;
       void toYamlFile(const std::string &filename) const;
       std::string toYamlString() const;
@@ -123,12 +243,54 @@ namespace mars {
                                              sValue(val), parsed(false),
                                              type(UNDEFINED_TYPE) {}
 
+      explicit ConfigItem(ConfigMap map) : children(map), luValue(0), iValue(0),
+                                           uValue(0), dValue(0.0),
+                                           sValue(""), parsed(false),
+                                           type(UNDEFINED_TYPE) {}
+
       ConfigVector& operator[](const std::string &name) {
         return children[name];
       }
 
+      ConfigVector& operator[](const char* name) {
+        return children[name];
+      }
+
+      operator int () {
+        return getInt();
+      }
+
+      operator double () {
+        return getDouble();
+      }
+
+      operator unsigned int () {
+        return getUInt();
+      }
+
+      operator unsigned long () {
+        return getULong();
+      }
+
+      operator std::string () {
+        return getString();
+      }
+
+      operator bool () {
+        return getBool();
+      }
+
       inline ItemType getType() const {
         return type;
+      }
+
+
+      inline void setParentName(std::string s) {
+        parentName = s;
+      }
+
+      inline const std::string& getParentName() const {
+        return parentName;
       }
 
       inline bool testType(ItemType _type) {
@@ -154,10 +316,12 @@ namespace mars {
         return false;
       }
 
-
       inline int getInt() {
         if(type != UNDEFINED_TYPE && type != INT_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getInt");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getInt: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
 
         if(!parsed) parseInt();
@@ -168,7 +332,10 @@ namespace mars {
 
       inline double getDouble() {
         if(type != UNDEFINED_TYPE && type != DOUBLE_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getDouble");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getDouble: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
         if(!parsed) parseDouble();
         if(parsed) type = DOUBLE_TYPE;
@@ -177,7 +344,10 @@ namespace mars {
 
       inline unsigned int getUInt() {
         if(type != UNDEFINED_TYPE && type != UINT_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getUInt");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getInt: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
 
         if(!parsed) parseUInt();
@@ -188,7 +358,10 @@ namespace mars {
 
       inline unsigned long getULong() {
         if(type != UNDEFINED_TYPE && type != ULONG_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getULong");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getULong: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
         if(!parsed) parseULong();
         if(parsed) type = ULONG_TYPE;
@@ -197,7 +370,10 @@ namespace mars {
 
       inline std::string getString() {
         if(type != UNDEFINED_TYPE && type != STRING_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getString");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getString: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
         if(!parsed) parseString();
         if(parsed) type = STRING_TYPE;
@@ -210,7 +386,10 @@ namespace mars {
 
       inline int getBool() {
         if(type != UNDEFINED_TYPE && type != BOOL_TYPE) {
-          throw std::runtime_error("ConfigItem parsing wrong type getBool");
+          char text[50];
+          sprintf(text, "ConfigItem parsing wrong type getBool: %s - %s",
+                  parentName.c_str(), sValue.c_str());
+          throw std::runtime_error(text);
         }
 
         if(!parsed) parseBool();
@@ -287,6 +466,7 @@ namespace mars {
       unsigned int uValue;
       double dValue;
       std::string sValue;
+      std::string parentName;
       bool parsed;
       ItemType type;
 

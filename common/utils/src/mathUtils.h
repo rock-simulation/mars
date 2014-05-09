@@ -76,6 +76,21 @@ namespace mars {
     bool quaternionFromConfigItem(ConfigItem *item, Quaternion *q);
     void quaternionToConfigItem(ConfigItem *item, Quaternion *q);
 
+    template <typename T>
+    Quaternion quaternionFromMembers(T q) {
+      return Quaternion(q.w, q.x, q.y, q.z);
+    }
+
+    template <typename T>
+    Quaternion quaternionFromXYZWArray(T q) {
+      return Quaternion(q[3], q[0], q[1], q[2]);
+    }
+
+    template <typename T>
+    Quaternion quaternionFromWXYZArray(T q) {
+      return Quaternion(q[0], q[1], q[2], q[3]);
+    }
+
   }; // end of namespace utils
 }; // end of namespace mars
 
