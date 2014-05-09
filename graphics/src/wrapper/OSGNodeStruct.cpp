@@ -147,10 +147,10 @@ namespace mars {
         drawObject_ = new LoadDrawObject(info, node.ext);
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, node.pivot);
+        drawObject_->setScale(node.visual_scale);
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
           drawObject_->setScaledSize(node.visual_size);
         }
-        drawObject_->setScale(node.visual_scale);
       }
 
       drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
