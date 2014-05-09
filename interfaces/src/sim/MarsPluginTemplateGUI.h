@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -18,12 +18,8 @@
  *
  */
 
-#ifdef PLUGIN_WITH_MARS_GUI
-#include "MarsPluginTemplateGUI.h"
-#else
-
-#ifndef MARS_PLUGIN_TEMPLATE_H
-#define MARS_PLUGIN_TEMPLATE_H
+#ifndef MARS_PLUGIN_TEMPLATE_GUI_H
+#define MARS_PLUGIN_TEMPLATE_GUI_H
 
 #include "ControlCenter.h"
 #include "../MARSDefs.h"
@@ -35,15 +31,17 @@
 
 #include <string>
 
+#include <mars/main_gui/GuiInterface.h>
+
 namespace mars {
   namespace interfaces {
 
-    class MarsPluginTemplate : public lib_manager::LibInterface,
+    class MarsPluginTemplateGUI : public lib_manager::LibInterface,
                                public PluginInterface {
 
     public:
   
-        MarsPluginTemplate(lib_manager::LibManager *theManager, std::string libName) : 
+      MarsPluginTemplateGUI(lib_manager::LibManager *theManager, std::string libName) : 
         LibInterface(theManager), PluginInterface(NULL), mars(NULL) {
 
         lib_manager::LibInterface *lib;
@@ -73,6 +71,7 @@ namespace mars {
           }
         }
 
+        gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
         // this part should be the last line of the contructor
         // we can get a timing problem if mars want to use the
         // plugin before the contructor is finished -> so the last part here
@@ -80,9 +79,10 @@ namespace mars {
         if(mars) mars->addPlugin(newplugin);
       }
 
-        ~MarsPluginTemplate() {
-          if(mars) libManager->releaseLibrary("mars_sim");
-        }
+      ~MarsPluginTemplateGUI() {
+        if(mars) libManager->releaseLibrary("mars_sim");
+        if(gui) libManager->releaseLibrary("main_gui");
+      }
 
       private:
         SimulatorInterface *mars;
@@ -90,11 +90,10 @@ namespace mars {
       protected:
         std::string configPath;
         std::string resourcesPath;
+        main_gui::GuiInterface *gui;
       };
 
   } // end of namespace interfaces
 } // end of namespace mars
 
-#endif // MARS_PLUGIN_TEMPLATE_H
-
-#endif
+#endif // MARS_PLUGIN_TEMPLATE_GUI_H
