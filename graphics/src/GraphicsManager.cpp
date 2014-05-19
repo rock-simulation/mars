@@ -271,15 +271,15 @@ namespace mars {
 
         shadowedScene->setShadowTechnique(pssm.get());
 #elif USE_SM_SHADOW
-        shadowMap = new osgShadow::ShadowMap;
+        shadowMap = new ShadowMap;
 
         shadowedScene->setShadowTechnique(shadowMap.get());
 
-        shadowMap->setTextureSize(osg::Vec2s(4096,4096));
-        shadowMap->setTextureUnit(2);
-        shadowMap->clearShaderList();
+        //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
+        //shadowMap->setTextureUnit(2);
+        //shadowMap->clearShaderList();
         //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
-        shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+        //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
 #endif
       }
 
@@ -779,6 +779,11 @@ namespace mars {
         }
         else {
           shadowedScene->addChild(transform);
+        }
+        if(snode.map.find("shadowCenterRadius") != snode.map.end()) {
+          shadowMap->setCenterObject(drawObject->object());
+          utils::ConfigMap m = snode.map;
+          shadowMap->setRadius(m["shadowCenterRadius"][0]);
         }
       }
 

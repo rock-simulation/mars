@@ -24,6 +24,7 @@ include_directories(
       src/hud_elements
       src/draw_objects
       src/glsl
+      src/shadow
 )
 
 OPTION(DEPTH_IMAGES "Compile with Depth image support, might not work on all machines" true)
@@ -130,6 +131,8 @@ set(HEADERS
            src/shader/shader-function.h
            src/shader/shader-types.h
            src/shader/texgen.h
+
+           src/shadow/ShadowMap.h
 )
 
 set(QT_MOC_HEADERS
@@ -181,6 +184,8 @@ set(SOURCES
            src/shader/shader-function.cpp
            src/shader/shader-types.cpp
            src/shader/texgen.cpp
+
+           src/shadow/ShadowMap.cpp
 )
 
 if (${USE_QT5})

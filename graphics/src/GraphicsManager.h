@@ -44,8 +44,10 @@
 #include <osgShadow/LightSpacePerspectiveShadowMap>
 #include <osgShadow/ParallelSplitShadowMap>
 #include <osgShadow/ShadowVolume>
-#include <osgShadow/SoftShadowMap>
-#include <osgShadow/ShadowMap>
+//#include <osgShadow/SoftShadowMap>
+//#include <osgShadow/ShadowMap>
+
+#include "shadow/ShadowMap.h"
 
 #include <osgParticle/PrecipitationEffect>
 
@@ -66,7 +68,7 @@
 
 #define USE_LSPSM_SHADOW 0
 #define USE_PSSM_SHADOW 0
-#define USE_SM_SHADOW 0
+#define USE_SM_SHADOW 1
 #define NUM_PSSM_SPLITS 3
 
 
@@ -363,7 +365,7 @@ namespace mars {
       std::vector<GraphicsWidget*> graphicsWindows;
 
 #if USE_SM_SHADOW==1
-      osg::ref_ptr<osgShadow::ShadowMap> shadowMap;
+      osg::ref_ptr<ShadowMap> shadowMap;
 #endif
 
       /**\brief adds a preview node to the scene */
