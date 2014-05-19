@@ -280,6 +280,7 @@ namespace mars {
         }
       }
 
+      map = *config;
       return true;
     }
 

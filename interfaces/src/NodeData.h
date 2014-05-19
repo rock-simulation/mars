@@ -375,6 +375,12 @@ namespace mars {
 
       bool isShadowCaster;
       bool isShadowReceiver;
+
+      /**
+       * If the data is created from a ConfigMap map the original map is
+       * stored here.
+       */
+      utils::ConfigMap map;
     }; // end of struct NodeData
 
     inline void ZERO_NODE_STRUCT(NodeData &a) {
