@@ -38,8 +38,10 @@ namespace mars {
  
     PixelLightVert::PixelLightVert(vector<string> &args,
                                    vector<LightData*> &lightList,
-                                   bool drawLineLaser)
-      : ShaderFunc("plight", args), drawLineLaser(drawLineLaser) {
+                                   bool drawLineLaser,
+                                   bool marsShadow)
+      : ShaderFunc("plight", args), drawLineLaser(drawLineLaser),
+        marsShadow(marsShadow) {
       stringstream s;
       s << "lightVec[" << max(1,lightList.size()) << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() } );
@@ -118,7 +120,15 @@ namespace mars {
 
         s << "    lightVec[" << lightIndex << "] = normalize(lightVec[" << lightIndex << "]);" << endl;
 
-#if USE_LSPSM_SHADOW or USE_SM_SHADOW
+        if(marsShadow) {
+          s << "    // generate coords for shadow mapping" << endl;
+          s << "    gl_TexCoord[2].s = dot( vec4(eyeVec, 1.0), gl_EyePlaneS[2] );" << endl;
+          s << "    gl_TexCoord[2].t = dot( vec4(eyeVec, 1.0), gl_EyePlaneT[2] );" << endl;
+          s << "    gl_TexCoord[2].p = dot( vec4(eyeVec, 1.0), gl_EyePlaneR[2] );" << endl;
+          s << "    gl_TexCoord[2].q = dot( vec4(eyeVec, 1.0), gl_EyePlaneQ[2] );" << endl;
+        }
+
+#if USE_LSPSM_SHADOW
         s << "    // generate coords for shadow mapping" << endl;
         s << "    gl_TexCoord[2].s = dot( vec4(eyeVec, 1.0), gl_EyePlaneS[2] );" << endl;
         s << "    gl_TexCoord[2].t = dot( vec4(eyeVec, 1.0), gl_EyePlaneT[2] );" << endl;
@@ -185,8 +195,9 @@ namespace mars {
 
     PixelLightFrag::PixelLightFrag(vector<string> &args, bool useFog,
                                    bool useNoise, bool drawLineLaser,
+                                   bool marsShadow,
                                    vector<LightData*> &lightList)
-      : ShaderFunc("plight", args)
+      : ShaderFunc("plight", args), marsShadow(marsShadow)
     {
       stringstream s;
 
@@ -217,11 +228,10 @@ namespace mars {
       addUniform( (GLSLUniform) { "float", "brightness" } );
       addUniform( (GLSLUniform) { "float", "alpha" } );
 
-#if USE_LSPSM_SHADOW
-      addUniform( (GLSLUniform) { "sampler2DShadow", "shadowTexture" });
-#elif USE_SM_SHADOW
-      addUniform( (GLSLUniform) { "sampler2DShadow", "osgShadow_shadowTexture" });
-      addUniform( (GLSLUniform) { "vec2", "osgShadow_ambientBias" });
+      if(marsShadow) {
+        addUniform( (GLSLUniform) { "sampler2DShadow", "osgShadow_shadowTexture" });
+        addUniform( (GLSLUniform) { "vec2", "osgShadow_ambientBias" });
+      }
       if(drawLineLaser) {
         addUniform( (GLSLUniform) { "vec3", "lineLaserPos" });
         addUniform( (GLSLUniform) { "vec3", "lineLaserNormal" });
@@ -230,6 +240,8 @@ namespace mars {
         addUniform( (GLSLUniform) { "float", "lineLaserOpeningAngle"});
       }
 
+#if USE_LSPSM_SHADOW
+      addUniform( (GLSLUniform) { "sampler2DShadow", "shadowTexture" });
 #elif USE_PSSM_SHADOW
       std::stringstream buf;
       for (unsigned int i=0; i < NUM_PSSM_SPLITS; ++i) {
@@ -291,14 +303,16 @@ namespace mars {
         s << "        reflected = normalize( reflect( - lightVec[" << lightIndex << "], n ) );" << endl;
         s << "        rDotE = max(dot( reflected, eye ), 0.0);" << endl << endl;
 
+        if(marsShadow) {
+          s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * osgShadow_ambientBias.y);" << endl;
+        }
+        else {
+          s << "    shadow = 1.0f;" << endl;
+        }
 #if USE_LSPSM_SHADOW
         s << "    shadow = shadow2DProj( shadowTexture, gl_TexCoord[6] ).r;" << endl;
-#elif USE_SM_SHADOW
-        s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * osgShadow_ambientBias.y);" << endl;
 #elif USE_PSSM_SHADOW
         s << "    shadow = pssmAmount();" << endl;
-#else
-        s << "    shadow = 1.0f;" << endl;
 #endif
         // real light still emits some diffuse light in shadowed region
         s << "    diffuseShadow = 0.1 + 0.9 * shadow;" << endl;

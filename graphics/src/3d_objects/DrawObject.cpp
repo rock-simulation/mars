@@ -191,11 +191,13 @@ namespace mars {
 
     // the material struct can also contain a static texture (texture file)
     void DrawObject::setMaterial(const MaterialData &mStruct, bool _useFog,
-                                 bool _useNoise, bool _drawLineLaser) {
+                                 bool _useNoise, bool _drawLineLaser,
+                                 bool _marsShadow) {
       //return;
       useFog = _useFog;
       useNoise = _useNoise;
       drawLineLaser = _drawLineLaser;
+      marsShadow = _marsShadow;
       getLight = mStruct.getLight;
 
       if(mStruct.brightness != 0.0) {
@@ -526,7 +528,7 @@ namespace mars {
 
         args.clear();
         args.push_back("v");
-        PixelLightVert *plightVert = new PixelLightVert(args, lightList, drawLineLaser);
+        PixelLightVert *plightVert = new PixelLightVert(args, lightList, drawLineLaser, marsShadow);
         plightVert->addMainVar( (GLSLVariable)
                                 { "vec4", "v", "gl_ModelViewMatrix * gl_Vertex" } );
         plightVert->addExport( (GLSLExport)
@@ -555,6 +557,7 @@ namespace mars {
         args.push_back("col");
         PixelLightFrag *plightFrag = new PixelLightFrag(args, useFog,
                                                         useNoise, drawLineLaser,
+                                                        marsShadow,
                                                         lightList);
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.

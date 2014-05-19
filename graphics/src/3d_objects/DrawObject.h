@@ -78,7 +78,8 @@ namespace mars {
       // the material struct can also contain a static texture (texture file)
       virtual void setMaterial(const mars::interfaces::MaterialData &mStruct,
                                bool useFog = false, bool useNoise = false,
-                               bool drawLineLaser = false);
+                               bool drawLineLaser = false,
+                               bool marsShadow = false);
       // can be used for dynamic textures
       virtual void setTexture(osg::Texture2D *texture);
       virtual void setNormalMap(const std::string &normalMap);
@@ -201,6 +202,7 @@ namespace mars {
       bool hasShaderSources;
       bool useMARSShader;
       bool drawLineLaser;
+      bool marsShadow;
       utils::Vector lineLasePos, lineLaserNormal;
 
       std::vector<mars::interfaces::LightData*> lastLights;

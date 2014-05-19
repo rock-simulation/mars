@@ -68,7 +68,6 @@
 
 #define USE_LSPSM_SHADOW 0
 #define USE_PSSM_SHADOW 0
-#define USE_SM_SHADOW 1
 #define NUM_PSSM_SPLITS 3
 
 
@@ -364,9 +363,7 @@ namespace mars {
       std::vector<drawMapper> draws; //drawStructs
       std::vector<GraphicsWidget*> graphicsWindows;
 
-#if USE_SM_SHADOW==1
       osg::ref_ptr<ShadowMap> shadowMap;
-#endif
 
       /**\brief adds a preview node to the scene */
       int createPreviewNode(const std::vector<mars::interfaces::NodeData> &allNodes);
@@ -378,7 +375,8 @@ namespace mars {
       cfg_manager::CFGManagerInterface *cfg;
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow, multisamples, noiseProp,
-        brightness, marsShader, backfaceCulling, drawLineLaserProp, drawMainCamera;
+        brightness, marsShader, backfaceCulling, drawLineLaserProp, drawMainCamera,
+        marsShadow;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;

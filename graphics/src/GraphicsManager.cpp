@@ -122,10 +122,6 @@ namespace mars {
       fprintf(stderr, "Delete mars_graphics\n");
     }
 
-#if USE_SM_SHADOW==1
-    // TODO: not use global! but until shadows handled nicely...
-    //osg::ref_ptr<osg::Camera> debugCam;
-#endif
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {
       cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(!cfg) {
@@ -174,8 +170,13 @@ namespace mars {
         drawLineLaserProp = cfg->getOrCreateProperty("Graphics", "drawLineLaser",
                                                      false, this);
         drawLineLaser = drawLineLaserProp.bValue;
-      }
 
+        marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
+                                              false, this);
+      }
+      else {
+        marsShadow.bValue = false;
+      }
       globalStateset->setGlobalDefaults();
 
       // with backface culling backfaces are not processed,
@@ -270,17 +271,16 @@ namespace mars {
         //pssm->setPolygonOffset(osg::Vec2(-1.0,-4.0));
 
         shadowedScene->setShadowTechnique(pssm.get());
-#elif USE_SM_SHADOW
-        shadowMap = new ShadowMap;
-
-        shadowedScene->setShadowTechnique(shadowMap.get());
-
-        //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
-        //shadowMap->setTextureUnit(2);
-        //shadowMap->clearShaderList();
-        //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
-        //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
 #endif
+        if(marsShadow.bValue) {
+          shadowMap = new ShadowMap;
+          shadowedScene->setShadowTechnique(shadowMap.get());
+          //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
+          //shadowMap->setTextureUnit(2);
+          //shadowMap->clearShaderList();
+          //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
+          //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+        }
       }
 
       // TODO: check this out:
@@ -317,14 +317,6 @@ namespace mars {
         globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
       else
         globalStateset->setAttributeAndModes(cull, osg::StateAttribute::OFF);
-
-#if USE_SM_SHADOW==1
-      //GraphicsWidget *gw = graphicsWindows[0];
-      //debugCam = shadowMap->makeDebugHUD();
-      //debugCam->setGraphicsContext(gw->getGraphicsWindow());
-      //debugCam->setViewport(0,0,721,405);
-      //gw->getView()->addSlave(debugCam.get(), false);
-#endif
     }
 
     /**\brief resets scene */
@@ -724,7 +716,7 @@ namespace mars {
 
       getLights(&lightList);
       if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
-      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser);
+      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
       osg::PositionAttitudeTransform *transform = drawObject->object()->getPosTransform();
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
@@ -780,7 +772,7 @@ namespace mars {
         else {
           shadowedScene->addChild(transform);
         }
-        if(snode.map.find("shadowCenterRadius") != snode.map.end()) {
+        if(shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
           shadowMap->setCenterObject(drawObject->object());
           utils::ConfigMap m = snode.map;
           shadowMap->setRadius(m["shadowCenterRadius"][0]);
@@ -1165,7 +1157,7 @@ namespace mars {
 
       if (allNodes[0].filename=="PRIMITIVE") {
         osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser);
+                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
         previewNodes_[nextPreviewID] = drawObject;
         scene->addChild(drawObject->object()->getPosTransform());
       } else {
@@ -1173,7 +1165,7 @@ namespace mars {
         for(DrawObjects::iterator it = previewNodes_.begin();
             it != previewNodes_.end(); ++it) {
           osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser);
+                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
           previewNodes_[nextPreviewID] = drawObject;
           scene->addChild(drawObject->object()->getPosTransform());
         }
