@@ -69,7 +69,7 @@ Other dependencies can be installed by the script "port_get_deb.sh" via macports
   (don't take the msysGit version)
 * When asked how you would like to adjust your PATH environment select the third option "Run Git and include Unix tools from the Windows Command Promt"
 
-![Run Git and include Unix tools from the Windows Command Prompt](../src/images/install/git_for_windows_adjust_PATH.PNG)
+![Run Git and include Unix tools from the Windows Command Prompt](install/git_for_windows_adjust_PATH.PNG)
 
 * When asked how to handle line endings make sure to select the option to "keep the line endings on checkout" and commit as UNIX.
   
