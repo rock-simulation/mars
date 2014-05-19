@@ -47,7 +47,7 @@
 //#include <osgShadow/SoftShadowMap>
 //#include <osgShadow/ShadowMap>
 
-#include "shadow/ShadowMap.h"
+#include "ShadowMap.h"
 
 #include <osgParticle/PrecipitationEffect>
 

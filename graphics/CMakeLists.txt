@@ -25,6 +25,7 @@ include_directories(
       src/draw_objects
       src/glsl
       src/shadow
+      src/3d_objects
 )
 
 OPTION(DEPTH_IMAGES "Compile with Depth image support, might not work on all machines" true)

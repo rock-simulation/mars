@@ -36,7 +36,7 @@
 
 #include <osgShadow/ShadowTechnique>
 
-#include "../3d_objects/DrawObject.h"
+#include "DrawObject.h"
 
 namespace mars {
   namespace graphics {
