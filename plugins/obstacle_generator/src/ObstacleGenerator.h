@@ -20,7 +20,7 @@
 
 /**
  * \file.ObstacleGenerator.h
- * \author Kai (kavo01@dfki.de)
+ * \author Kai von Szadkowski (kavo01@dfki.de)
  * \brief A
  *
  * Version 0.1
@@ -42,6 +42,7 @@
 //#include <mars/common/utils/Vector.h> //we need this for positioning of the obstacle field
 
 #include <string>
+#include <math.h>
 
 namespace mars {
 
@@ -75,6 +76,7 @@ namespace mars {
         void reset();
         void update(mars::interfaces::sReal time_ms);
         void createObstacleField();
+        void clearObstacleField();
 
         // DataBrokerReceiver methods
         virtual void receiveData(const data_broker::DataInfo &info,
@@ -89,15 +91,10 @@ namespace mars {
         // ObstacleGenerator methods
 
       private:
-        cfg_manager::cfgPropertyStruct example;
         std::map<std::string, double> params;
-        // double field_width;
-        // double field_height;
-        // double field_distance;
-        // double mean_obstacle_height;
-        // double std_obstacle_height;
-        // double min_obstacle_height;
-        // double max_obstacle_height;
+        std::map<cfg_manager::cfgParamId, double> paramIds;
+        std::vector<int> oldNodeIDs;
+        double sigma = 0.001
 
       }; // end of class definition ObstacleGenerator
 

@@ -20,7 +20,7 @@
 
 /**
  * \file.ObstacleGenerator.cpp
- * \author Kai (kavo01@dfki.de)
+ * \author Kai von Szadkowski (kavo01@dfki.de)
  * \brief A
  *
  * Version 0.1
@@ -41,20 +41,35 @@ namespace mars {
       ObstacleGenerator::ObstacleGenerator(lib_manager::LibManager *theManager)
         : MarsPluginTemplate(theManager, "ObstacleGenerator") {
         params["field_width"] = 1.0;
-        params["field_height"] = 1.0;
+        params["field_length"] = 1.0;
         params["field_distance"] = 0.0;
+        params["mean_obstacle_radius"] = 0.1;
+        params["std_obstacle_radius"] = 0.1;
+        params["min_obstacle_radius"] = 0.1;
+        params["max_obstacle_radius"] = 0.1;
         params["mean_obstacle_height"] = 0.1;
         params["std_obstacle_height"] = 0.1;
         params["min_obstacle_height"] = 0.01;
         params["max_obstacle_height"] = 1.0;
         params["obstacle_number"] = 20.0;
+        params["incline_angle"] = 0.0;
       }
   
       void ObstacleGenerator::init() {
         //create properties
-        for (iter = params.begin(); iter != params.end(); ++iter) {
-          control->cfg->getOrCreateProperty("obstacle_generator", params->first, params->second, this);
+        cfg_manager::cfgParamIdn id;
+        for (it = params.begin(); it != params.end(); ++it) {
+          id = control->cfg->getOrCreateProperty("obstacle_generator", it->first, it->second, this);
+          paramIds[id, it->first];
         }
+      }
+
+      void ObstacleGenerator::clearObstacleField() {
+        for(std::vector<int>::iterator it = oldNodeIDs.begin(); it != oldNOdeIDs.end(); ++it) {
+          control->nodes->removeNode(it);
+        }
+        oldNodeIDs.clear();
+      }
 
 
 
@@ -85,25 +100,51 @@ namespace mars {
 
       }
 
-      void createObstacleField() {
+      void ObstacleGenerator::createObstacleField() {
         int n = static_cast<int>(params["obstacle_number"]);
+        if params["incline_angle"] > sigma {
+          Vector boxposition = (params["field_distance"] + 0.5 * params["field_length"],
+                0,
+                -0.5 + degToRad(cos(params["incline_angle"])) * 0.5 * params["field_length"]));
+          Vector boxsize = (params["field_length"], params["field_width"], 1.0);
+          Vectpr boxorientation = (0, degToRad(params["incline_angle"]), 0);
+          oldNodeIDs.push_back(control->nodes->createPrimitiveNode(name, NodeType::NODE_TYPE_BOX,
+                                         false, boxposition, boxsize, 1.0, eulerToQuaternion(boxorientation), false));
+        }
         for (int i = 0; i < n; i++) {
           std::string name = "obstacle_";
           std::string numstring = ""
           istringstream(numstring) >> i
           name.append(numstring)
-          std::normal_distribution<double> distribution(params["mean_obstacle_height"],2.0);
-          mars::interfaces::utils::Vector position;
-          mars::interfaces::utils::Vector size;
-          mars::interfaces::utils::Quaternion orientation;
-          control->nodes->createPrimitiveNode(name, mars::interfaces::NodeType::NODE_TYPE_CAPSULE,
-                                         false, position, size, 1.0, orientation, false);
-        }
-      }
 
-      void ObstacleGenerator::reset() {
-        updateParameters();
-        createObstacleField();
+          //init random generators and variables
+          std::default_random_engine generator;
+          std::uniform_real_distribution<double> uni_dis(0.0,1.0);
+          std::normal_distribution<double> height_norm_dis(params["mean_obstacle_height"], params["std_obstacle_height"]);
+          std::normal_distribution<double> radius_norm_dis(params["mean_obstacle_radius"], params["std_obstacle_radius"]);
+          double pos_x=0, pos_y=0, pos_z=0, radius=0, height=0;
+
+          //create position
+          pos_x = params["field_distance"] + uni_dis(generator) * params["field_length"] - 0.5 * params["field_length"];
+          pos_y = uni_dis(generator) * params["field_width"] - 0.5 * params["field_width"];
+          //create size
+          height = height_norm_dis(generator);
+          radius = radius_norm_dis(generator);
+          int n = 0;
+          while ((height < params["min_obstacle_height"]) || (height > params["max_obstacle_height"])) {
+              height = norm_dis(generator);
+              ++n;
+              if (n > 100) { //if there were too many unsuccessful trials; this prevents indefinite loops
+                height = params["mean_obstacle_height"];                
+                break;
+              }
+          }
+          Vector position = (pos_x, pos_y, pos_z);
+          Vector size = (radius, radius, height);
+          Quaternion orientation = (1.0, 0.0, 0.0, 0.0);
+          oldNodeIDs.push_back(control->nodes->createPrimitiveNode(name, NodeType::NODE_TYPE_CAPSULE,
+                                         false, position, size, 1.0, orientation, false));
+        }
       }
 
       ObstacleGenerator::~ObstacleGenerator() {
@@ -122,10 +163,9 @@ namespace mars {
       }
   
       void ObstacleGenerator::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
-
-        if(_property.paramId == example.paramId) {
-          example.dValue = _property.dValue;
-        }
+        params[paramIds[_property.paramId]] = _property.dValue;
+        clearObstacleField();
+        createObstacleField();
       }
 
     } // end of namespace obstacle_generator
