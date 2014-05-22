@@ -36,9 +36,9 @@
 // set define if you want to extend the gui
 //#define PLUGIN_WITH_MARS_GUI
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
-#include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
+#include <mars/interfaces/MARSDefs.h>
 //#include <mars/common/utils/Vector.h> //we need this for positioning of the obstacle field
 
 #include <string>
@@ -65,10 +65,8 @@ namespace mars {
         ~ObstacleGenerator();
 
         // LibInterface methods
-        int getLibVersion() const
-        { return 1; }
-        const std::string getLibName() const
-        { return std::string("obstacle_generator"); }
+        int getLibVersion() const { return 1; }
+        const std::string getLibName() const { return std::string("obstacle_generator"); }
         CREATE_MODULE_INFO();
 
         // MarsPlugin methods
@@ -92,9 +90,12 @@ namespace mars {
 
       private:
         std::map<std::string, double> params;
-        std::map<cfg_manager::cfgParamId, double> paramIds;
-        std::vector<int> oldNodeIDs;
-        double sigma = 0.001
+        std::map<cfg_manager::cfgParamId, std::string> paramIds;
+        std::vector<mars::interfaces::NodeId> oldNodeIDs;
+        std::map<std::string, std::string> textures;
+        double sigma;
+        double random_normal_number(double mean, double std, double min, double max);
+        double random_number(double min, double max);
 
       }; // end of class definition ObstacleGenerator
 
