@@ -52,16 +52,16 @@ namespace mars {
         //create properties
         params["field_width"] = 2.0;
         params["field_length"] = 5.0;
-        params["field_distance"] = 1.0;
-        params["mean_obstacle_aspect_ratio"] = 3.0;
+        params["field_distance"] = 0.5;
+        params["mean_obstacle_aspect_ratio"] = 2.0;
         params["std_obstacle_aspect_ratio"] = 1.0;
         params["min_obstacle_aspect_ratio"] = 1.3;
-        params["max_obstacle_aspect_ratio"] = 5.0;
-        params["mean_obstacle_height"] = 0.1;
+        params["max_obstacle_aspect_ratio"] = 3.0;
+        params["mean_obstacle_height"] = 0.12;
         params["std_obstacle_height"] = 0.1;
-        params["min_obstacle_height"] = 0.01;
-        params["max_obstacle_height"] = 0.3;
-        params["obstacle_number"] = 40.0;
+        params["min_obstacle_height"] = 0.05;
+        params["max_obstacle_height"] = 0.15;
+        params["obstacle_number"] = 100.0;
         params["incline_angle"] = 0.0;
         params["ground_level"] = 0.0;
         textures["ground"] = "ground.jpg";
@@ -85,10 +85,25 @@ namespace mars {
       }
 
       void ObstacleGenerator::reset() {
-        clearObstacleField();
-        paramIds.clear();
-        params.clear();
-        init();
+        //clearObstacleField();
+        //createObstacleField();
+
+        for(std::vector<NodeId>::iterator it=oldNodeIDs.begin();
+	    it!=oldNodeIDs.end(); ++it) {
+          double pos_x=0, pos_y=0, pos_z=params["ground_level"];
+          //create position
+          pos_x = random_number(0, params["field_length"]);
+          pos_y = random_number(-0.5 * params["field_width"],
+				0.5 * params["field_width"]);
+          if ((params["incline_angle"] > sigma) or
+	      (params["incline_angle"] < -sigma)) {
+            pos_z += (params["ground_level"] +
+		      sin(degToRad(params["incline_angle"])) * pos_x);
+            pos_x *= cos(degToRad(params["incline_angle"]));
+          }
+          pos_x += params["field_distance"];
+	  control->nodes->setPosition(*it, Vector(pos_x, pos_y, pos_z));
+	}
       }
 
       void ObstacleGenerator::clearObstacleField() {
@@ -174,7 +189,7 @@ namespace mars {
             }
             box.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
             box.material.tex_scale = params["field_width"]/2.0;
-            control->nodes->addNode(&box);
+            control->nodes->addNode(&box, false);
             oldNodeIDs.push_back(box.index);
             // control->nodes->createPrimitiveNode("incline", NODE_TYPE_BOX,
                                            // false, boxposition, boxsize, 1.0, eulerToQuaternion(boxorientation), false));
@@ -200,7 +215,7 @@ namespace mars {
           }
           platform.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
           platform.material.tex_scale = params["field_width"]/2.0;
-          control->nodes->addNode(&platform);
+          control->nodes->addNode(&platform, false);
           oldNodeIDs.push_back(platform.index);
         }
         // create obstacles
@@ -241,7 +256,7 @@ namespace mars {
           if (textures["obstacle_bump"] != "") {
              obstacle.material.normalmap = textures["obstacle_norm"];
           }
-          control->nodes->addNode(&obstacle);
+          control->nodes->addNode(&obstacle, false);
           oldNodeIDs.push_back(obstacle.index);
         }
       }
