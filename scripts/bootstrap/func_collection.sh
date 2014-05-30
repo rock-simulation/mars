@@ -541,7 +541,8 @@ function install_ode_mars {
       cd ${MARS_DEV_ROOT}/external/ode_mars
       export CFLAGS=-fPIC
       export CXXFLAGS=-fPIC
-      ./configure --enable-double-precision --enable-release --prefix=$prefix --with-drawstuff=none --disable-demos
+      # --enable-release
+      ./configure CPPFLAGS="-DdNODEBUG" CXXFLAGS="-O2 -ffast-math" CFLAGS="-O2 -ffast-math" --enable-double-precision --prefix=$prefix --with-drawstuff=none --disable-demos
       if [ "${platform}" = "linux" ]; then
         if [ x`which libtool` != x ]; then
           mv libtool libtool_old
