@@ -47,7 +47,7 @@ namespace mars {
     protected:
       mars::interfaces::sReal radius_;
       mars::interfaces::sReal height_;
-      osg::Geometry *geom;
+      osg::ref_ptr<osg::Geometry> geom;
 
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry();
     }; // end of class CapsuleDrawObject
