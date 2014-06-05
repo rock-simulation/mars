@@ -64,6 +64,7 @@ namespace mars {
         params["obstacle_number"] = 100.0;
         params["incline_angle"] = 0.0;
         params["ground_level"] = 0.0;
+        params["grid_resolution"] = 10.0;
         textures["ground"] = "ground.jpg";
         textures["ground_bump"] = "";
         textures["ground_norm"] = "";
@@ -79,8 +80,14 @@ namespace mars {
           id = control->cfg->getOrCreateProperty("obstacle_generator", it->first, it->second, this).paramId;
           paramIds[id] = it->first;
         }
-        support_platform = false;
-        control->cfg->getOrCreateProperty("obstacle_generator", "support_platform", support_platform, this);
+        bool_params["support_platform"] = false;
+        bool_params["use_cubes"] = false;
+        //bool_params["use_grid"] = false;
+        //bool_params["incline_obstacles"] = false;
+        for (std::map<std::string, bool>::iterator it = bool_params.begin(); it != bool_params.end(); ++it) {
+          id = control->cfg->getOrCreateProperty("obstacle_generator", it->first, it->second, this).paramId;
+          bool_paramIds[id] = it->first;
+        }
         createObstacleField();
       }
 
@@ -168,8 +175,7 @@ namespace mars {
 
       void ObstacleGenerator::createObstacleField() {
         // create inclined box as slope if an angle is given
-        fprintf(stderr, "support_platform: %d", support_platform);
-        if (support_platform) {
+        if (bool_params["support_platform"]) {
           double platform_length = 0, platform_x_position = 0;
           if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
             Vector boxposition(params["field_distance"] + 0.5 * cos(degToRad(params["incline_angle"])) * params["field_length"] + 0.5 * sin(degToRad(params["incline_angle"])),
@@ -244,10 +250,20 @@ namespace mars {
                   params["min_obstacle_aspect_ratio"], params["max_obstacle_aspect_ratio"]);
           if (height<radius) {height=radius+sigma;}
           Vector position(pos_x, pos_y, pos_z);
-          Vector size(radius, height-radius, 0);
+          Vector size(radius, height-radius, 0);          
+          if (bool_params["use_cubes"]) {
+            size[0] = radius*2.0;
+            size[1] = radius*2.0;
+            size[2] = height*2.0;
+          }
           Quaternion orientation(1.0, 0.0, 0.0, 0.0);
           NodeData obstacle(name, position, orientation);
-          obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
+          if (bool_params["use_cubes"]) {
+              obstacle.initPrimitive(NODE_TYPE_BOX, size, 1.0);
+          }
+          else {
+              obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
+          }
           obstacle.material.texturename = textures["obstacle"];
           obstacle.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
           if (textures["obstacle_bump"] != "") {
@@ -288,7 +304,7 @@ namespace mars {
             textures[paramIds[_property.paramId]] = _property.sValue;
             break;
           case cfg_manager::boolProperty:
-            support_platform = _property.bValue;
+            bool_params[bool_paramIds[_property.paramId]] = _property.bValue;
             break;
         }
         clearObstacleField();

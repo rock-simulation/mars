@@ -93,7 +93,8 @@ namespace mars {
         std::map<cfg_manager::cfgParamId, std::string> paramIds;
         std::vector<mars::interfaces::NodeId> oldNodeIDs;
         std::map<std::string, std::string> textures;
-        bool support_platform;
+        std::map<std::string, bool> bool_params;
+        std::map<cfg_manager::cfgParamId, std::string> bool_paramIds;
         double sigma;
         double random_normal_number(double mean, double std, double min, double max);
         double random_number(double min, double max);
