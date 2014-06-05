@@ -60,7 +60,7 @@ namespace mars {
       }
 
       size_t append(const T &item) {
-        push_back(item);
+        this->push_back(item);
         this->back().setParentName(parentName);
         return this->size() - 1;
       }
@@ -197,8 +197,10 @@ namespace mars {
       void toYamlFile(const std::string &filename) const;
       std::string toYamlString() const;
       static ConfigMap fromYamlStream(std::istream &in);
-      static ConfigMap fromYamlFile(const std::string &filename);
+      static ConfigMap fromYamlFile(const std::string &filename,
+                                    bool loadURI = false);
       static ConfigMap fromYamlString(const std::string &s);
+      static void recursiveLoad(ConfigMap *map, std::string path);
     };
 
     // todo: support vector and quaternion
