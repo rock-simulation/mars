@@ -34,11 +34,15 @@
 
 namespace osg_plot {
   
-  CurveP::CurveP(int c) : maxPoints(500), color(c), yPos(0.0) {
+  CurveP::CurveP(int c) : maxPoints(500), color(c), yPos(0.0),
+                          boundsSet(false) {
 
-    defColors[0] = (Color){1.0, 0.0, 0.0, 1.0};
-    defColors[1] = (Color){1.0, 1.0, 0.0, 1.0};
-    defColors[2] = (Color){0.0, 1.0, 1.0, 1.0};
+    defColors[0] = (Color){0.7, 0.0, 0.0, 1.0};
+    defColors[1] = (Color){0.0, 0.7, 0.0, 1.0};
+    defColors[2] = (Color){0.0, 0.0, 0.7, 1.0};
+    defColors[3] = (Color){0.7, 0.7, 0.0, 1.0};
+    defColors[4] = (Color){0.0, 0.7, 0.7, 1.0};
+    defColors[5] = (Color){0.7, 0.0, 0.7, 1.0};
 
     curveTransform = new osg::MatrixTransform;
 
@@ -76,10 +80,10 @@ namespace osg_plot {
     xLabelText = new  osgText::Text;
     xLabelText->setText("1.0");
     xLabelText->setFont("fonts/arial.ttf");
-    xLabelText->setPosition(osg::Vec3(1.0f, 0.0f, 0.0f));
+    xLabelText->setPosition(osg::Vec3(1.3f, 0.0f, 0.0f));
     xLabelText->setCharacterSize(0.04);
     xLabelText->setAxisAlignment(osgText::Text::XY_PLANE);
-    xLabelText->setAlignment(osgText::Text::LEFT_TOP);
+    xLabelText->setAlignment(osgText::Text::RIGHT_TOP);
     xLabelText->setColor(osg::Vec4(defColors[color].r, defColors[color].g,
                                    defColors[color].b, defColors[color].a));
     textNode->addDrawable(xLabelText.get());
@@ -142,6 +146,14 @@ namespace osg_plot {
         *maxY = it->y();
       }
     }
+    if(boundsSet) {
+      //if(yMin < *minY) {
+        *minY = yMin;
+        //}
+        //if(yMax > *maxY) {
+        *maxY = yMax;
+        //}
+    }
   }
 
   void CurveP::rescale(double minX, double maxX,
@@ -152,7 +164,7 @@ namespace osg_plot {
     //xLabelText->setPosition(osg::Vec3((points->back().x()-minX)/(maxX-minX), 0.0f,
     //                                  (points->back().z()-minY)/(maxY-minY)));
 
-    xLabelText->setPosition(osg::Vec3(1.0f, yPos, 0.0));
+    xLabelText->setPosition(osg::Vec3(1.3f, yPos, 0.0));
     curveTransform->setMatrix(osg::Matrix::translate(-minX, -minY, 0)*
                               osg::Matrix::scale(1/(maxX-minX),
                                                  1/(maxY-minY), 1.0));
