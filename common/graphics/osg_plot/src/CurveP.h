@@ -57,15 +57,22 @@ namespace osg_plot {
     void crop(void);
     void getBounds(double *minX, double *maxX, double *minY, double *maxY);
     void rescale(double minX, double maxX, double minY, double maxY);
+    void setYBounds(double yMin, double yMax) {
+      this->yMin = yMin;
+      this->yMax = yMax;
+      boundsSet = true;
+    }
     void dirty(void);
 
   private:
     unsigned long maxPoints;
     int color;
     float yPos;
+    float yMin, yMax;
+    bool boundsSet;
     std::string title;
 
-    Color defColors[3];
+    Color defColors[6];
     osg::ref_ptr<osg::Vec3Array> points;
     osg::ref_ptr<osg::Geometry> linesGeom;
     osg::ref_ptr<osg::MatrixTransform> curveTransform;

@@ -34,8 +34,8 @@
 #include <cstdio>
 
 namespace osg_plot {
-  
-  Plot::Plot() : numXTicks(8), numYTicks(10) {
+
+  Plot::Plot() : numXTicks(2), numYTicks(10) {
 
     osg::ref_ptr<osg::Geode> xNode = new osg::Geode;
     xGeom = new osg::Geometry;
@@ -53,21 +53,21 @@ namespace osg_plot {
     xLines->push_back(osg::Vec3(0.0, 1.0, 0.0));
 
     background = new osg::Vec3Array();
-    background->push_back(osg::Vec3(-0.2, -0.1, -0.02));
-    background->push_back(osg::Vec3(1.35, -0.1, -0.02));
-    background->push_back(osg::Vec3(1.35, 1.1, -0.02));
-    background->push_back(osg::Vec3(-0.2, 1.1, -0.02));
+    background->push_back(osg::Vec3(-0.2, -0.1, -0.2));
+    background->push_back(osg::Vec3(1.35, -0.1, -0.2));
+    background->push_back(osg::Vec3(1.35, 1.1, -0.2));
+    background->push_back(osg::Vec3(-0.2, 1.1, -0.2));
     bGeom->setVertexArray(background.get());
     bGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
 
     osg::Vec4Array* bColors = new osg::Vec4Array;
-    bColors->push_back(osg::Vec4(0.2, 0.2, 0.2, 1.0));
+    bColors->push_back(osg::Vec4(1.0, 1.0, 1.0, 0.9));
     bGeom->setColorArray(bColors);
     bGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
     bGeom->setNormalArray(normals);
     bGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    
+
     xTicksDiff = 1.0 / (numXTicks-1);
     char text[52];
     for(int i=0; i<numXTicks; ++i) {
@@ -81,7 +81,7 @@ namespace osg_plot {
       label->setCharacterSize(0.04);
       label->setAxisAlignment(osgText::Text::XY_PLANE);
       label->setAlignment(osgText::Text::CENTER_TOP);
-      label->setColor(osg::Vec4(0.0, 1.0, 0.0, 1.0));
+      label->setColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
       xNode->addDrawable(label);
       xLabels.push_back(label);
     }
@@ -98,7 +98,7 @@ namespace osg_plot {
       label->setCharacterSize(0.04);
       label->setAxisAlignment(osgText::Text::XY_PLANE);
       label->setAlignment(osgText::Text::RIGHT_CENTER);
-      label->setColor(osg::Vec4(0.0, 1.0, 0.0, 1.0));
+      label->setColor(osg::Vec4(0.0, 0.0, 0.0, 1.0));
       xNode->addDrawable(label);
       yLabels.push_back(label);
     }
@@ -107,7 +107,7 @@ namespace osg_plot {
     xGeom->setVertexArray(xLines.get());
 
     osg::Vec4Array* xColors = new osg::Vec4Array;
-    xColors->push_back(osg::Vec4(0.0, 1.0, 0.0, 1.0));
+    xColors->push_back(osg::Vec4(0.0, 0.0, 0.0, 1.0));
     xGeom->setColorArray(xColors);
     xGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
@@ -122,6 +122,7 @@ namespace osg_plot {
     xGeom->addPrimitiveSet(xDrawArray.get());
     xNode->addDrawable(xGeom.get());
     xNode->addDrawable(bGeom.get());
+    xGeom->getOrCreateStateSet()->setRenderBinDetails(12, "RenderBin");
 
     this->addChild(xNode.get());
 
@@ -129,12 +130,12 @@ namespace osg_plot {
     linew = new osg::LineWidth(2.0);
     xNode->getOrCreateStateSet()->setAttributeAndModes(linew.get(),
                                                        osg::StateAttribute::ON);
-	
+
     //xNode->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
-    xNode->getOrCreateStateSet()->setRenderBinDetails(10, "RenderBin");	
+    xNode->getOrCreateStateSet()->setRenderBinDetails(10, "RenderBin");
     xNode->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     xNode->getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::OFF);
-    
+
   }
 
   Plot::~Plot(void) {
@@ -182,7 +183,7 @@ namespace osg_plot {
       sprintf(text, "%5.3f", minY + yTicksDiff*i*(maxY-minY));
       (*itT)->setText(text);
     }
-    
+
   }
 
 } // end of namespace: osg_plot

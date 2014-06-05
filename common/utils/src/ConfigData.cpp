@@ -45,9 +45,35 @@ namespace mars {
       return ConfigMap();
     }
 
-    ConfigMap ConfigMap::fromYamlFile(const string &filename) {
+    ConfigMap ConfigMap::fromYamlFile(const string &filename, bool loadURI) {
       std::ifstream fin(filename.c_str());
-      return fromYamlStream(fin);
+      ConfigMap map = fromYamlStream(fin);
+      if(loadURI) {
+        std::string pathToFile = getPathOfFile(filename);
+        recursiveLoad(&map, pathToFile);
+      }
+      return map;
+    }
+
+    void ConfigMap::recursiveLoad(ConfigMap *map, std::string path) {
+      ConfigMap::iterator it = map->begin();
+      for(; it!=map->end(); ++it) {
+        if(it->first == "URI") {
+          fprintf(stderr, "ConfigMap::recursiveLoad: found uri: %s\n",
+                  it->second[0].getString().c_str());
+          std::string subPath, file = (std::string)it->second[0];
+          subPath = getPathOfFile(file);
+          ConfigMap m2 = fromYamlFile(file, true);
+          recursiveLoad(&m2, subPath);
+          map->append(m2);
+        }
+        else {
+          ConfigVector::iterator vIt = it->second.begin();
+          for(;vIt!=it->second.end(); ++vIt) {
+            recursiveLoad(&vIt->children, path);
+          }
+        }
+      }
     }
 
     ConfigMap ConfigMap::fromYamlString(const string &s) {
