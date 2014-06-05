@@ -171,6 +171,14 @@ namespace mars {
                                                      false, this);
         drawLineLaser = drawLineLaserProp.bValue;
 
+        hudWidthProp = cfg->getOrCreateProperty("Graphics", "hudWidth",
+                                                1920, this);
+        hudWidth = hudWidthProp.iValue;
+
+        hudHeightProp = cfg->getOrCreateProperty("Graphics", "hudHeight",
+                                                1080, this);
+        hudHeight = hudHeightProp.iValue;
+
         marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
                                               false, this);
       }
@@ -511,7 +519,7 @@ namespace mars {
 
         HUD *myHUD = new HUD(next_window_id);
         myHUD->init(gw->getGraphicsWindow());
-        myHUD->setViewSize(1920, 1080);
+        myHUD->setViewSize(hudWidth, hudHeight);
 
         gw->setHUD(myHUD);
 

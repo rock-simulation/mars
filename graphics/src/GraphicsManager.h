@@ -342,6 +342,7 @@ namespace mars {
       double tex_x, tex_y;
       unsigned int framecount;
       bool useFog, useNoise, drawLineLaser;
+      int hudWidth, hudHeight;
 
       std::vector<interfaces::GuiEventInterface*> guiHandlerList;
       std::vector<interfaces::GraphicsEventClient*> graphicsEventClientList;
@@ -374,9 +375,10 @@ namespace mars {
       // config stuff
       cfg_manager::CFGManagerInterface *cfg;
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
-      cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow, multisamples, noiseProp,
-        brightness, marsShader, backfaceCulling, drawLineLaserProp, drawMainCamera,
-        marsShadow;
+      cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow,
+        multisamples, noiseProp, brightness, marsShader, backfaceCulling,
+        drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
+        hudHeightProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;
