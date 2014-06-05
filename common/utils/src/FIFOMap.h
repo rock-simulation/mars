@@ -203,7 +203,8 @@ namespace mars {
 
     template<typename Key, typename T>
     void FIFOMap<Key, T>::append(FIFOMap<Key, T> &other) {
-      FIFOMap<Key, T>::iterator it = other.begin();
+      // FIFOMap<Key, T>::iterator it = other.begin();
+      mapIterator it = other.begin();
       for(; it!=other.end(); ++it) {
         FIFOMap<Key, T>::operator[](it->first) = it->second;
       }

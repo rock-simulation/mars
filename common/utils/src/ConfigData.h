@@ -188,9 +188,9 @@ namespace mars {
     public:
       ConfigVector& operator[](const std::string &name) {
         if(find(name) == end()) {
-          return FIFOMap::operator[](name) = ConfigVector(name);
+          return FIFOMap<std::string, ConfigVector>::operator[](name) = ConfigVector(name);
         }
-        return FIFOMap::operator[](name);
+        return FIFOMap<std::string, ConfigVector>::operator[](name);
       }
 
       void toYamlStream(std::ostream &out) const;
