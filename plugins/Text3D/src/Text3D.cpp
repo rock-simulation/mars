@@ -68,31 +68,74 @@ namespace mars {
         textFactory = libManager->getLibraryAs<osg_text::TextFactoryInterface>("osg_text_factory");
         if(textFactory) {
           mars::utils::ConfigMap map;
-          map = mars::utils::ConfigMap::fromYamlFile("Text3DConfig.yml");
+          map = mars::utils::ConfigMap::fromYamlFile("Text3DConfig.yml", true);
           mars::utils::ConfigVector::iterator it;
           osg_text::TextInterface *text;
           if(map.find("Labels") != map.end()) {
+            TextData *td;
+            double fixedWidth, fixedHeight;
+            bool drawFrame;
+            double fontsize;
+            osg_text::TextAlign align;
+
             for(it = map["Labels"].begin(); it!=map["Labels"].end(); ++it) {
-              TextData *td = new TextData;
-              td->name = it->children["name"][0].getString();
-              td->value = it->children["value"][0].getString();
-              td->posX = it->children["posX"][0].getDouble();
-              td->posY = it->children["posY"][0].getDouble();
-              double fixedWidth = it->children["fixedWidth"][0].getDouble();
-              double fixedHeight = it->children["fixedHeight"][0].getDouble();
-              bool drawFrame = it->children["frame"][0].getBool();
-              td->text = textFactory->createText(td->value, 20,
-                                                osg_text::Color(1.0, 1.0, 1.0, 1.0),
-                                                td->posX, td->posY);
+              td = new TextData;
+              td->name = (std::string)it->children["name"][0];
+              td->value = (std::string)it->children["value"][0];
+              td->posX = it->children["posX"][0];
+              td->posY = it->children["posY"][0];
+              fixedWidth = fixedHeight = -1;
+              drawFrame = false;
+              fontsize = 30;
+              align = osg_text::ALIGN_LEFT;
+              osg_text::Color c, bgColor(0.0, 0.5, 0.0, 0.5);
+              osg_text::Color borderColor(1.0, 1.0, 1.0, 0.5);
+              if(it->children.find("fixedWidth") != it->children.end()) {
+                fixedWidth = it->children["fixedWidth"][0];
+              }
+              if(it->children.find("fixedHeight") != it->children.end()) {
+                fixedHeight = it->children["fixedHeight"][0];
+              }
+              if(it->children.find("frame") != it->children.end()) {
+                drawFrame = it->children["frame"][0];
+              }
+              if(it->children.find("fontsize") != it->children.end()) {
+                fontsize = it->children["fontsize"][0];
+              }
+              if(it->children.find("align") != it->children.end()) {
+                std::string sAlign = (std::string)it->children["align"][0];
+                if(sAlign == "right") align = osg_text::ALIGN_RIGHT;
+                else if(sAlign == "center") align = osg_text::ALIGN_CENTER;
+              }
+              if(it->children.find("color") != it->children.end()) {
+                c.a = it->children["color"][0]["a"][0];
+                c.r = it->children["color"][0]["r"][0];
+                c.g = it->children["color"][0]["g"][0];
+                c.b = it->children["color"][0]["b"][0];
+              }
+              if(it->children.find("bgColor") != it->children.end()) {
+                bgColor.a = it->children["bgColor"][0]["a"][0];
+                bgColor.r = it->children["bgColor"][0]["r"][0];
+                bgColor.g = it->children["bgColor"][0]["g"][0];
+                bgColor.b = it->children["bgColor"][0]["b"][0];
+              }
+              if(it->children.find("borderColor") != it->children.end()) {
+                borderColor.a = it->children["borderColor"][0]["a"][0];
+                borderColor.r = it->children["borderColor"][0]["r"][0];
+                borderColor.g = it->children["borderColor"][0]["g"][0];
+                borderColor.b = it->children["borderColor"][0]["b"][0];
+              }
+              td->text = textFactory->createText(td->value, fontsize,
+                                                 c, td->posX, td->posY, align);
               if(drawFrame) {
-                td->text->setBackgroundColor(osg_text::Color(0.0, 0.5, 0.0, 0.5));
+                td->text->setBackgroundColor(bgColor);
                 td->text->setBorderWidth(4.0);
               }
               else {
                 td->text->setBackgroundColor(osg_text::Color(0.0, 0.0, 0.0, 0.0));
                 td->text->setBorderWidth(0.0);
               }
-              td->text->setBorderColor(osg_text::Color(1.0, 1.0, 1.0, 0.5));
+              td->text->setBorderColor(borderColor);
 
               td->text->setPadding(10., 10., 10., 10.);
               td->text->setFixedWidth(fixedWidth);
