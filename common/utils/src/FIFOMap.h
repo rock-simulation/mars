@@ -121,10 +121,10 @@ namespace mars {
       if(this == &other)
         return *this;
       clear();
-      FIFOMap<Key, T>::operator=(other);
+      std::map<Key, T>::operator=(other);
       for(const_iterator it = other.begin(); it != other.end(); ++it) {
         FIFOItem<Key, T> newItem(it->first, 
-                                 FIFOMap<Key, T>::operator[](it->first));
+                                 std::map<Key, T>::operator[](it->first));
         insertOrder.push_back(newItem);
       }
       return *this;
@@ -133,11 +133,11 @@ namespace mars {
     /* element access */
     template<typename Key, typename T>
     T& FIFOMap<Key, T>::operator[](const Key &x) {
-    	typename FIFOMap<Key, T>::iterator it = FIFOMap<Key, T>::find(x);
-      if(it != FIFOMap<Key, T>::end()) {
+      mapIterator it = std::map<Key, T>::find(x);
+      if(it != std::map<Key, T>::end()) {
         return it->second;
       } else {
-        FIFOItem<Key, T> newItem(x, FIFOMap<Key, T>::operator[](x));
+        FIFOItem<Key, T> newItem(x, std::map<Key, T>::operator[](x));
         insertOrder.push_back(newItem);
         return newItem.second;
       }
@@ -147,16 +147,16 @@ namespace mars {
     template<typename Key, typename T>
     std::pair<typename FIFOMap<Key, T>::iterator, bool> FIFOMap<Key, T>::insert(const std::pair<const Key, T> &x) {
       std::cerr << "FIFOMap::insert is untested" << std::endl;
-      typename FIFOMap<Key, T>::iterator it = this->find(x.first);
-      if(it != FIFOMap<Key, T>::end()) {
+      mapIterator it = this->find(x.first);
+      if(it != std::map<Key, T>::end()) {
         return std::make_pair(std::find(insertOrder.begin(), 
                                         insertOrder.end(), 
                                         FIFOItem<Key, T>(it->first,
                                                          it->second)), 
                               false);
       } else {
-        std::pair<typename FIFOMap<Key, T>::iterator, bool> tmp;
-        tmp = FIFOMap<Key, T>::insert(x);
+        std::pair<mapIterator, bool> tmp;
+        tmp = std::map<Key, T>::insert(x);
         insertOrder.push_back(FIFOItem<Key, T>(x.first, tmp.first->second));
         return std::make_pair(--insertOrder.end(), true);
       }
@@ -165,14 +165,14 @@ namespace mars {
     template<typename Key, typename T>
     void FIFOMap<Key, T>::erase(FIFOMap<Key, T>::iterator position) {
       std::cerr << "FIFOMap::erase is untested" << std::endl;
-      FIFOMap<Key, T>::erase(position->first);
+      std::map<Key, T>::erase(position->first);
       insertOrder.erase(position);
     }
 
     template<typename Key, typename T>
     size_t FIFOMap<Key, T>::erase(const Key &x) {
       std::cerr << "FIFOMap::erase is untested" << std::endl;
-      size_t ret = FIFOMap<Key, T>::erase(x);
+      size_t ret = std::map<Key, T>::erase(x);
       if(ret) {
         for(iterator it = begin(); it != end(); ++it) {
           if(it->first == x) {
@@ -189,7 +189,7 @@ namespace mars {
                                 FIFOMap::iterator last) {
       std::cerr << "FIFOMap::erase is untested" << std::endl;
       for(iterator it = first; it != last; /* do nothing */) {
-        FIFOMap<Key, T>::erase(it->first);
+        std::map<Key, T>::erase(it->first);
         it = insertOrder.erase(it);
       }
     }
@@ -197,14 +197,14 @@ namespace mars {
     template<typename Key, typename T>
     void FIFOMap<Key, T>::swap(FIFOMap<Key, T> &other) {
       std::cerr << "FIFOMap::swap is untested" << std::endl;
-      FIFOMap<Key, T>::swap(other);
+      std::map<Key, T>::swap(other);
       insertOrder.swap(other.insertOrder);
     }
 
     template<typename Key, typename T>
     void FIFOMap<Key, T>::append(FIFOMap<Key, T> &other) {
       // FIFOMap<Key, T>::iterator it = other.begin();
-    	typename FIFOMap<Key, T>::iterator it = other.begin();
+      mapIterator it = other.begin();
       for(; it!=other.end(); ++it) {
         FIFOMap<Key, T>::operator[](it->first) = it->second;
       }
@@ -212,15 +212,15 @@ namespace mars {
 
     template<typename Key, typename T>
     void FIFOMap<Key, T>::clear() {
-    	FIFOMap<Key, T>::clear();
+      std::map<Key, T>::clear();
       insertOrder.clear();
     }
     
     /* operations */
     template<typename Key, typename T>
     typename FIFOMap<Key, T>::iterator FIFOMap<Key, T>::find(const Key &x) {
-    	typename FIFOMap<Key, T>::iterator it = FIFOMap<Key, T>::find(x);
-      if(it != FIFOMap<Key, T>::end()) {
+      mapIterator it = std::map<Key, T>::find(x);
+      if(it != std::map<Key, T>::end()) {
         return std::find(insertOrder.begin(), 
                          insertOrder.end(), 
                          FIFOItem<Key, T>(it->first, 
