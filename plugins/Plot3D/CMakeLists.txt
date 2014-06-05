@@ -52,13 +52,15 @@ include_directories(
 set(SOURCES 
 	src/Plot3D.cpp
  	src/MotorPlotConfig.cpp	
-        src/MotorPlot.cpp
+  src/MotorPlot.cpp
+  src/GeneralPlot.cpp
 )
 
 set(HEADERS
 	src/Plot3D.h
  	src/MotorPlotConfig.h	
-        src/MotorPlot.h
+  src/MotorPlot.h
+  src/GeneralPlot.h
 )
 
 set(QT_HEADER 

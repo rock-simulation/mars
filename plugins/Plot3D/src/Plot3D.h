@@ -50,6 +50,7 @@
 
 #include "MotorPlotConfig.h"
 #include "MotorPlot.h"
+#include "GeneralPlot.h"
 
 namespace mars {
 
@@ -70,6 +71,21 @@ namespace mars {
                     public mars::interfaces::GraphicsUpdateInterface {
 
         Q_OBJECT
+
+        class PlotMapData {
+        public:
+          GeneralPlot *plot;
+          int curveIndex;
+          double time, data;
+          bool newTime, newData;
+          std::string dataName;
+        };
+
+        class TimeMap {
+        public:
+          std::string dataName;
+          std::list<int> curveList;
+        };
 
         public:
         Plot3D(mars::lib_manager::LibManager *theManager);
@@ -107,6 +123,12 @@ namespace mars {
         MotorPlotConfig *myWidget;
         unsigned long motorID;
         std::map<unsigned long, MotorPlot*> plotMap;
+        std::map<int, PlotMapData> generalPlotMap;
+        std::map<std::string, int> timeStringMap;
+        std::map<int, TimeMap> timeMap;
+        data_broker::DataPackageMapping dbTimeMapping;
+        data_broker::DataPackageMapping dbNodeMapping;
+        double time, nodeZ;
 
       protected slots:
         void hideWidget(void);
