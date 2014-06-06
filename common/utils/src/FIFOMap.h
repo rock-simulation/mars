@@ -147,7 +147,7 @@ namespace mars {
     template<typename Key, typename T>
     std::pair<typename FIFOMap<Key, T>::iterator, bool> FIFOMap<Key, T>::insert(const std::pair<const Key, T> &x) {
       std::cerr << "FIFOMap::insert is untested" << std::endl;
-      FIFOMap<Key, T>::iterator it = this->find(x.first);
+      mapIterator it = this->find(x.first);
       if(it != std::map<Key, T>::end()) {
         return std::make_pair(std::find(insertOrder.begin(), 
                                         insertOrder.end(), 
@@ -155,7 +155,7 @@ namespace mars {
                                                          it->second)), 
                               false);
       } else {
-        std::pair<FIFOMap<Key, T>::iterator, bool> tmp;
+        std::pair<mapIterator, bool> tmp;
         tmp = std::map<Key, T>::insert(x);
         insertOrder.push_back(FIFOItem<Key, T>(x.first, tmp.first->second));
         return std::make_pair(--insertOrder.end(), true);
@@ -203,8 +203,8 @@ namespace mars {
 
     template<typename Key, typename T>
     void FIFOMap<Key, T>::append(FIFOMap<Key, T> &other) {
-      // FIFOMap<Key, T>::iterator it = other.begin();
-      FIFOMap<Key, T>::iterator it = other.begin();
+      //FIFOMap<Key, T>::iterator it = other.begin();
+      iterator it = other.begin();
       for(; it!=other.end(); ++it) {
         FIFOMap<Key, T>::operator[](it->first) = it->second;
       }
