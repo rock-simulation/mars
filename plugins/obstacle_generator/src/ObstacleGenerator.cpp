@@ -61,7 +61,7 @@ namespace mars {
         params["std_obstacle_height"] = 0.1;
         params["min_obstacle_height"] = 0.05;
         params["max_obstacle_height"] = 0.15;
-        params["obstacle_number"] = 100.0;
+        params["obstacle_number"] = 300.0;
         params["incline_angle"] = 0.0;
         params["ground_level"] = 0.0;
         textures["ground"] = "ground.jpg";
