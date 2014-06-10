@@ -1627,5 +1627,12 @@ namespace mars {
       return false;
     }
 
+    void GraphicsWidget::setHUDViewOffsets(double x1, double y1,
+                                           double x2, double y2) {
+      if(myHUD) {
+        myHUD->setViewOffsets(x1, x2, y1, y2);
+      }
+    }
+
   } // end of namespace graphics
 } // end of namespace mars

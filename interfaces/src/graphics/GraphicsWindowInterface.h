@@ -80,6 +80,10 @@ namespace mars {
       virtual void getRTTDepthData(float **data, int &width, int &height) = 0;      
       virtual osg::Group* getScene() = 0;
       virtual void addGraphicsEventHandler(GraphicsEventInterface *graphicsEventHandler) = 0;
+
+      virtual void setHUDViewOffsets(double x1, double y1,
+                                     double x2, double y2) = 0;
+
     }; // end of class GraphicsWindowInterface
 
   } // end of namespace interfaces

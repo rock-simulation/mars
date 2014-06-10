@@ -45,6 +45,7 @@ namespace mars {
       scaleTransform->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
       scaleTransform->addChild(hudTerminalList.get());
       cull_mask = 0;
+      x1 = x2 = y1 = y2 = 0.0;
     }
 
     HUD::~HUD(void) {
@@ -130,13 +131,27 @@ namespace mars {
         (*iter)->resize(width, height);
         }
       */
+      swidth = width;
+      sheight = height;
       double scale_x = width / view_width;
       double scale_y = height / view_height;
       scaleTransform->setMatrix(osg::Matrix::scale(scale_x, scale_y, 1.0));
 
       hudCamera->setViewport(0, 0, width, height);
-      hudCamera->setProjectionMatrix(osg::Matrix::ortho2D(0,width,0,height));
+      hudCamera->setProjectionMatrix(osg::Matrix::ortho2D(x1, x2+swidth,
+                                                          y1, y2+sheight));
     }
+
+
+    void HUD::setViewOffsets(double x1, double y1, double x2, double y2) {
+      this->x1 = x1;
+      this->x2 = x2;
+      this->y1 = y1;
+      this->y2 = y2;
+      hudCamera->setProjectionMatrix(osg::Matrix::ortho2D(x1, x2+swidth,
+                                                          y1, y2+sheight));
+    }
+
 
     void HUD::setCullMask(unsigned int cull_mask) {
       hudCamera->setCullMask(cull_mask);

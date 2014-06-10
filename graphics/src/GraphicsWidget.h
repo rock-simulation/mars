@@ -195,6 +195,9 @@ namespace mars {
       virtual osg::Group* getScene(){
         return scene;
       }
+
+      virtual void setHUDViewOffsets(double x1, double y1,
+                                     double x2, double y2);
     
     protected:
       // protected for osg reference counter

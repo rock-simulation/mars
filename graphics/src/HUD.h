@@ -65,6 +65,7 @@ namespace mars {
       void removeHUDElement(HUDElement *elem);
       void switchCullElement(int key);
       void switchElementVis(int num_element);
+      void setViewOffsets(double x1, double y1, double x2, double y2);
 
     private:
       osg::ref_ptr<osg::Camera> hudCamera;
@@ -78,6 +79,7 @@ namespace mars {
       mars::utils::Vector myoff;
       unsigned int width, height;
       double view_width, view_height;
+      double x1, x2, y1, y2;
       unsigned int row_index;
       unsigned int cull_mask;
       void initialize(osgViewer::GraphicsWindow* gw);
