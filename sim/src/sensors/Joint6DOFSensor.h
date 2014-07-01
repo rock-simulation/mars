@@ -67,6 +67,13 @@ namespace mars {
 
       virtual int getAsciiData(char* data) const;
       virtual int getSensorData(interfaces::sReal **data) const;
+
+      void getForceData(utils::Vector *force);
+      void getTorqueData(utils::Vector *torque);
+      void getAnchor(utils::Vector *anchor);
+      void getBodyQ(utils::Quaternion* body_q);
+
+
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
