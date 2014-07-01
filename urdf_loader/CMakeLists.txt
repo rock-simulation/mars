@@ -26,6 +26,10 @@ define_module_info()
 #add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating API documentation with Doxygen" VERBATIM)
 #endif(DOXYGEN_FOUND)
 
+find_package(Boost REQUIRED system thread)
+include_directories(${Boost_INCLUDE_DIR})
+link_directories(${Boost_LIBRARY_DIRS})
+
 find_package(Qt5Widgets)
 if (${Qt5Widgets_FOUND})
   set(USE_QT5 1)
