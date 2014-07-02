@@ -61,7 +61,7 @@ namespace osg_plot {
     bGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS, 0, 4));
 
     osg::Vec4Array* bColors = new osg::Vec4Array;
-    bColors->push_back(osg::Vec4(1.0, 1.0, 1.0, 0.9));
+    bColors->push_back(osg::Vec4(1.0, 1.0, 1.0, 1.0));
     bGeom->setColorArray(bColors);
     bGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
 
