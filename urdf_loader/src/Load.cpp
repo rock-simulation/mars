@@ -248,6 +248,21 @@ namespace mars {
       quaternionToConfigItem(&(*map)["rotation"][0], &q);
     }
 
+    urdf::Pose Load::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
+      urdf::Pose globalPose;
+      boost::shared_ptr<urdf::Link> pLink = link->getParent();
+      if(link->parent_joint) {
+        globalPose = link->parent_joint->parent_to_joint_origin_transform;
+      }
+      if(pLink) {
+        urdf::Pose parentPose = getGlobalPose(pLink);
+        globalPose.position = parentPose.rotation * globalPose.position;
+        globalPose.position = globalPose.position + parentPose.position;
+        globalPose.rotation = globalPose.rotation * parentPose.rotation;
+      }
+      return globalPose;
+    }
+
     void Load::handleVisual(ConfigMap *map,
                             const boost::shared_ptr<urdf::Visual> &visual) {
       boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
@@ -623,9 +638,12 @@ namespace mars {
           // we don't support the type yet and use a fixed joint
           joint["type"] = "fixed";
         }
-        v = Vector(link->parent_joint->axis.x,
-                   link->parent_joint->axis.y,
-                   link->parent_joint->axis.z);
+
+        urdf::Pose pose = getGlobalPose(link);
+        pose.position = pose.rotation * link->parent_joint->axis;
+        v = Vector(pose.position.x,
+                   pose.position.y,
+                   pose.position.z);
         vectorToConfigItem(&joint["axis1"][0], &v);
 
         debugMap["joints"] += joint;

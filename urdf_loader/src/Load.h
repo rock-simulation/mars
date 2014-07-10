@@ -122,6 +122,8 @@ namespace mars {
       unsigned int loadController(utils::ConfigMap config);
       unsigned int loadGraphic(utils::ConfigMap config);
       unsigned int loadLight(utils::ConfigMap config);
+
+      urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
     };
 
   } // end of namespace urdf_loader
