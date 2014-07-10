@@ -14,12 +14,11 @@ You may use the provided install shell script.
 
 
 import bpy
-from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, FloatProperty
-import marstools.mtcreateprops as mtcreateprops
 import marstools.mtmaterials as mtmaterials
 import marstools.mtdefs as mtdefs
 import marstools.mtutility as mtutility
+from bpy.types import Operator
+from bpy.props import StringProperty, FloatProperty
 
 def register():
     print("Registering mtsensors...")
@@ -72,7 +71,7 @@ class AddSensorOperator(Operator):
                     i = 1
                     if "Node" in sensor["sensorType"]:
                         for obj in objects:
-                            if obj.MARStype == "body":
+                            if obj.MARStype == "link":
                                 sensor["index"+str(i)] = obj.name
                                 i += 1
                         print("Added nodes to new " + self.sensor_type)

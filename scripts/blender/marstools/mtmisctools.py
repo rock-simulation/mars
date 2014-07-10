@@ -15,66 +15,18 @@ You may use the provided install shell script.
 import bpy
 import math
 from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, FloatVectorProperty
-import marstools.mtcreateprops as mtcreateprops
-import marstools.mt_oldexport as mt_oldexport
+from bpy.props import StringProperty, BoolProperty, FloatVectorProperty, EnumProperty
+import marstools.mtupdate as mtupdate
 import marstools.mtmaterials as mtmaterials
 import marstools.mtutility as mtutility
-import marstools.mtexport as mtexport
+import marstools.mtdefs as mtdefs
 
 
 def register():
     print("Registering mtmisctools...")
-    bpy.types.World.path = StringProperty(name = "path")
-    bpy.types.World.exportBobj = BoolProperty(name = "exportBobj")
-    bpy.types.World.exportMesh = BoolProperty(name = "exportMesh")
-    bpy.types.World.exportSMURF = BoolProperty(name = "exportSMURF")
-    bpy.types.World.exportURDF = BoolProperty(name = "exportURDF")
-    bpy.types.World.exportYAML = BoolProperty(name = "exportYAML")
-    bpy.types.World.gravity = FloatVectorProperty(name = "gravity")
-    #bpy.utils.register_class(ExportModelOperator)
-    #bpy.utils.register_class(ImportModelOperator)
-    #bpy.utils.register_class(CreateMARSPropsOperator)
-    #bpy.utils.register_class(BatchEditPropertyOperator)
-    #bpy.utils.register_class(SmoothenSurfaceOperator)
-    #bpy.utils.register_class(BatchSmoothenSurfaceOperator)
-    #bpy.types.VIEW3D_MT_object.append(add_object_button)
-
 
 def unregister():
     print("Unregistering mtmisctools...")
-    #bpy.utils.unregister_class(ExportModelOperator)
-    #bpy.utils.unregister_class(ImportModelOperator)
-    #bpy.utils.unregister_class(CreateMARSPropsOperator)
-    #bpy.utils.unregister_class(BatchEditPropertyOperator)
-    #bpy.utils.unregister_class(SmoothenSurfaceOperator)
-    #bpy.utils.unregister_class(BatchSmoothenSurfaceOperator)
-    #del bpy.types.VIEW3D_MT_object.append(add_object_button)
-
-
-# class ImportModelOperator(Operator):#
-#     """ExportModelOperator"""
-#     bl_idname = "object.mt_export_robot"
-#     bl_label = "Initialise MARS properties for all objects"
-#     bl_options = {'REGISTER', 'UNDO'}
-#
-#     def execute(self, context):
-#         #add selction of all layers bpy.ops.object.select_all()
-#         mtimport.main()
-
-#TODO: Do we still need this operator? May be covered by AddSensorOperator (mtsensors)
-# class AddObjectsToSensorOperator(Operator):
-#     """AddObjectsToSensorOperator"""
-#     bl_idname = "object.mt_add_to_sensor"
-#     bl_label = "Add selected objects to the list of the selected sensors."
-#     bl_options = {'REGISTER', 'UNDO'}
-#
-#     def execute(self, context):
-#         for obj in bpy.context.selected_objects:
-#             # the problem is that python will mess up the right order, to a simple "for" will not work
-#             # we need to look at the entire tree starting from the root and then check whether or not
-#             # each object is selected
-#         return{'FINISHED'}
 
 
 class CalculateMassOperator(Operator):
@@ -86,7 +38,7 @@ class CalculateMassOperator(Operator):
         mass = 0
         names = ""
         for obj in bpy.context.selected_objects:
-            if obj.MARStype == "body":
+            if obj.MARStype == "link":
                 mass += obj["mass"]
                 names += obj.name + " "
         bpy.ops.error.message('INVOKE_DEFAULT', type="mass of "+names, message=str(mass))
@@ -107,6 +59,46 @@ class NameModelOperator(Operator):
         root = mtutility.getRoot(bpy.context.active_object)
         root["modelname"] = self.modelname
         return {'FINISHED'}
+
+class SelectObjectsByMARSType(Operator):
+    """SelectObjectsByType"""
+    bl_idname = "object.mt_select_objects_by_marstype"
+    bl_label = "Select objects in the scene by MARStype"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    seltype = EnumProperty (
+            items = mtdefs.marstypes,
+            name = "MARStype",
+            default = "link",
+            description = "MARS object type")
+
+    def execute(self, context):
+        objlist = []
+        for obj in bpy.data.objects:
+            if obj.MARStype == self.seltype:
+                objlist.append(obj)
+        mtutility.selectObjects(objlist, True)
+        return {'FINISHED'}
+
+class SelectObjectsByName(Operator):
+    """SelectObjectsByName"""
+    bl_idname = "object.mt_select_objects_by_name"
+    bl_label = "Select objects in the scene by their name"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    namefragment = StringProperty (
+            name = "name contains",
+            default = '',
+            description = "part of a MARS object name")
+
+    def execute(self, context):
+        objlist = []
+        for obj in bpy.data.objects:
+            if self.namefragment in obj.name:
+                objlist.append(obj)
+        mtutility.selectObjects(objlist, True)
+        return {'FINISHED'}
+
 
 class SelectRootOperator(Operator):
     """SelectRootOperator"""
@@ -151,71 +143,46 @@ class SelectModelOperator(Operator):
         return {'FINISHED'}
 
 
-class CheckModelOperator(Operator):
-    """CheckModelOperator"""
-    bl_idname = "object.mt_check_model"
-    bl_label = "Check if the robot model is valid."
-    bl_options = {'REGISTER', 'UNDO'}
-
-    #Todo functions:
-    # - check for duplicate names
-    # - check whether there are two roots
-    # - check whether all indices registered with sensors exist
-    # - check for doubles in registered indices of sensors
-    # - check if all joints have a sensible node2
-
-    def execute(self, context):
-        notifications = ""
-        faulty_objects = []
-        for obj in bpy.context.selected_objects:
-            if obj.MARStype == "body":
-                if not ("mass" in obj):
-                    print('CheckModel: Error, object "' + obj.name + '" has no attribute "mass".')
-                    notifications += 'CheckModel: Error, object "' + obj.name + '" has no attribute "mass".'
-                    faulty_objects.append(obj)
-                else:
-                    if obj["mass"] == 0 or obj["mass"] == 0.0 or obj["mass"] == "0":
-                        print('CheckModel: Error, object "' + obj.name + '" has no mass.')
-                        notifications += 'CheckModel: Error, object "' + obj.name + '" has no mass.\n'
-                        faulty_objects.append(obj)
-        bpy.ops.error.message('INVOKE_DEFAULT', type="Errors", message=notifications)
-
-        #Deselect all objects and select those with errors
-        bpy.ops.object.select_all() # alternatively: for obj in bpy.data.objects: obj.selected = False
-        for obj in faulty_objects:
-            obj.selected = True
-        return {'FINISHED'}
-
-
-class ExportModelOperator(Operator):
-    """ExportModelOperator"""
-    bl_idname = "object.mt_export_robot"
-    bl_label = "Export the selected model(s)"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        #TODO: add selection of all layers bpy.ops.object.select_all()
-        if bpy.data.worlds[0].exportSMURF or bpy.data.worlds[0].exportURDF or bpy.data.worlds[0].exportYAML:
-            mtexport.main(yaml = bpy.data.worlds[0].exportYAML,
-                              urdf = bpy.data.worlds[0].exportURDF,
-                              smurf = bpy.data.worlds[0].exportSMURF)
-        else:
-            mt_oldexport.main()
-        return {'FINISHED'}
-
-
 class UpdateMarsModelsOperator(Operator):
     """UpdateMarsModelsOperator"""
     bl_idname = "object.mt_update_models"
     bl_label = "Update MARS properties for all objects"
     bl_options = {'REGISTER', 'UNDO'}
 
+    property_fix = BoolProperty(
+        name = 'fix',
+        default = False,
+        description = "try to fix detected errors?")
+
     print("MARStools: Updating MARS properties for selected objects...")
 
     def execute(self, context):
-        mtmaterials.createMARSMaterials()
-        mtcreateprops.main(mtutility.getRoots())
+        mtmaterials.createMARSMaterials() #TODO: this should move to initialization
+        mtupdate.updateModels(mtutility.getRoots(), self.property_fix)
         return {'FINISHED'}
+
+
+class ChangeMARStypeOperator(Operator):
+    """Change MARStype Operator"""
+    bl_idname = 'object.mt_change_marstype'
+    bl_label = "Change MARStype of selected objects"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    property_marstype = EnumProperty(
+        name = "mars_type",
+        default = "undefined",
+        description = "MARS type",
+        items = mtdefs.marstypes)
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            obj.MARStype = self.property_marstype
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.active_object
+        return ob is not None and ob.mode == 'OBJECT'
 
 
 class BatchEditPropertyOperator(Operator):
@@ -235,15 +202,89 @@ class BatchEditPropertyOperator(Operator):
         description = "custom property value")
 
     def execute(self, context):
+        value = mtutility.parse_number(self.property_value)
         for obj in bpy.context.selected_objects:
-            obj[self.property_name] = self.property_value
+            obj[self.property_name] = value
         return {'FINISHED'}
 
-    #TODO: Do we need the following?
     @classmethod
     def poll(cls, context):
         ob = context.active_object
         return ob is not None and ob.mode == 'OBJECT'
+
+class SetGeometryType(Operator):
+    """Set Geometry Type Operator"""
+    bl_idname = "object.mt_set_geometry_type"
+    bl_label = "Edit geometry type of selected object(s)"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    geomType = EnumProperty (
+            items = mtdefs.geometrytypes,
+            name = "geometryType",
+            default = "box",
+            description = "MARS geometry type")
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            if obj.MARStype == 'collision' or obj.MARStype == 'visual':
+                obj['geometryType'] = self.geomType
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.active_object
+        return ob is not None and ob.mode == 'OBJECT'
+
+
+class SetMARSType(Operator):
+    """Set MARStype Operator"""
+    bl_idname = "object.mt_set_marstype"
+    bl_label = "Edit MARStype of selected object(s)"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    marstype = EnumProperty (
+            items = mtdefs.marstypes,
+            name = "MARStype",
+            default = "undefined",
+            description = "MARStype")
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            obj.MARStype = self.marstype
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.active_object
+        return ob is not None and ob.mode == 'OBJECT'
+
+class PartialRename(Operator):
+    """Partial Rename Operator"""
+    bl_idname = "object.mt_partial_rename"
+    bl_label = "Replace part of the name of selected object(s)"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    find = StringProperty(
+        name = "find",
+        default = "",
+        description = "find string")
+
+    replace = StringProperty(
+        name = "replace",
+        default = "",
+        description = "replace with")
+
+    def execute(self, context):
+        for obj in bpy.context.selected_objects:
+            obj.name = obj.name.replace(self.find, self.replace)
+        return {'FINISHED'}
+def replaceNameElement(prop, old, new):
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.active_object
+        return ob is not None and ob.mode == 'OBJECT'
+
 
 class SmoothenSurfaceOperator(Operator):
     """SmoothenSurfaceOperator"""
@@ -304,7 +345,7 @@ def duplicateObject(scene, name, copyobj, material, layers):
 
     return ob_new
 
-class addGravityVector(Operator):
+class AddGravityVector(Operator):
     """Add Gravity Operator"""
     bl_idname = "object.mt_add_gravity"
     bl_label = "Add a vector representing gravity in the scene"
@@ -312,7 +353,7 @@ class addGravityVector(Operator):
 
     property_name = FloatVectorProperty(
         name = "gravity_vector",
-        default = "",
+        default = (0, 0, -9.81),
         description = "gravity vector")
 
     def execute(self, context):

@@ -22,7 +22,7 @@
  *  Joint6DOFSensor.cpp
  *  QTVersion
  *
- *  Created by Malte Römmerann
+ *  Created by Malte Rï¿½mmerann
  *
  */
 
@@ -129,6 +129,19 @@ namespace mars {
       (*data)[4] = tmp.y();
       (*data)[5] = tmp.z();
       return 6;
+    }
+
+    void Joint6DOFSensor::getForceData(utils::Vector *force){
+    	*force = (sensor_data.body_q * sensor_data.force);
+    }
+    void Joint6DOFSensor::getTorqueData(utils::Vector *torque){
+    	*torque = (sensor_data.body_q * sensor_data.torque);
+    }
+    void Joint6DOFSensor::getAnchor(utils::Vector *anchor){
+    	*anchor = sensor_data.anchor;
+    }
+    void Joint6DOFSensor::getBodyQ(utils::Quaternion* body_q){
+    	*body_q = sensor_data.body_q;
     }
 
 
