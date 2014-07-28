@@ -15,11 +15,12 @@ You may use the provided install shell script.
 import bpy
 import math
 from bpy.types import Operator
-from bpy.props import StringProperty, BoolProperty, FloatVectorProperty, EnumProperty
+from bpy.props import StringProperty, BoolProperty, FloatVectorProperty, EnumProperty, FloatProperty
 import marstools.mtupdate as mtupdate
 import marstools.mtmaterials as mtmaterials
 import marstools.mtutility as mtutility
 import marstools.mtdefs as mtdefs
+from datetime import datetime as dt
 
 
 def register():
@@ -28,20 +29,155 @@ def register():
 def unregister():
     print("Unregistering mtmisctools...")
 
-
 class CalculateMassOperator(Operator):
     """CalculateMassOperator"""
     bl_idname = "object.mt_calculate_mass"
     bl_label = "Display mass of the selected objects in a pop-up window."
 
     def execute(self, context):
-        mass = 0
-        names = ""
+        mass = mtutility.calculateMass(bpy.context.selected_objects)
+        bpy.ops.error.message('INVOKE_DEFAULT', type="mass", message=str(mass))
+        return {'FINISHED'}
+
+class SetMassOperator(Operator):
+    """SetMassOperator"""
+    bl_idname = "object.mt_set_mass"
+    bl_label = "Sets the mass of the selected object(s)."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    mass = FloatProperty(
+        name = 'mass',
+        default = 0.001,
+        description = 'mass in kg')
+
+    def execute(self, context):
         for obj in bpy.context.selected_objects:
-            if obj.MARStype == "link":
-                mass += obj["mass"]
-                names += obj.name + " "
-        bpy.ops.error.message('INVOKE_DEFAULT', type="mass of "+names, message=str(mass))
+            if obj.MARStype in ['visual', 'collision', 'inertial']:
+                obj['mass'] = self.mass
+                t = dt.now()
+                obj['masschanged'] = t.isoformat()
+        return {'FINISHED'}
+
+class SyncMassesOperator(Operator):
+    """SyncMassesOperator"""
+    bl_idname = "object.mt_sync_masses"
+    bl_label = "Synchronize masses among the selected object(s)."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    synctype = EnumProperty (
+            items = (("vtc", "visual to collision", "visual to collision"),
+                     ("ctv", "collision to visual", "collision to visual"),
+                     ("lto", "latest to oldest", "latest to oldest")),
+            name = "synctype",
+            default = "vtc",
+            description = "MARS object type")
+
+    writeinertial = BoolProperty(
+                name = 'write_inertial',
+                default = True,
+                description = 'write mass to inertial'
+                )
+
+    def execute(self, context):
+        sourcelist = []
+        targetlist = []
+        processed = []
+        links = [obj.name for obj in bpy.context.selected_objects if obj.MARStype == 'link']
+        t = dt.now()
+        objdict = {obj.name: obj for obj in bpy.context.selected_objects}
+        for obj in objdict.keys():
+            if objdict[obj].MARStype in ['visual', 'collision']:
+                basename = obj.replace(objdict[obj].MARStype+'_', '')
+                if (objdict[obj].parent.name in links
+                    and basename not in processed
+                    and 'visual_' + basename in objdict.keys()
+                    and 'collision_' + basename in objdict.keys()): #if both partners are present
+                    processed.append(basename)
+        for basename in processed:
+            if self.synctype == "vtc":
+                sourcelist.append('visual_' + basename)
+                targetlist.append('collision_' + basename)
+            elif self.synctype == "ctv":
+                targetlist.append('visual_' + basename)
+                sourcelist.append('collision_' + basename)
+            else: #latest to oldest
+                tv = mtutility.datetimeFromIso(objdict['visual_'+basename]['masschanged'])
+                tc = mtutility.datetimeFromIso(objdict['collision_'+basename]['masschanged'])
+                if tc < tv: #if collision information is older than visual information
+                    sourcelist.append('visual_' + basename)
+                    targetlist.append('collision_' + basename)
+                else:
+                    targetlist.append('visual_' + basename)
+                    sourcelist.append('collision_' + basename)
+        for i in range(len(sourcelist)):
+            objdict[targetlist[i]]['mass'] = objdict[sourcelist[i]]['mass']
+            objdict[targetlist[i]]['masschanged'] = objdict[sourcelist[i]]['masschanged']
+        if self.writeinertial:
+            for linkname in links:
+                masssum = 0.0
+                collision_children = [obj for obj in mtutility.getImmediateChildren(objdict[linkname], 'collision')]
+                print(collision_children)
+                for coll in collision_children:
+                    masssum += coll['mass']
+                try:
+                    inertial = bpy.data.objects['inertial_' + linkname]
+                    if not 'mass' in inertial or inertial['mass'] != masssum:
+                        inertial['mass'] = masssum
+                        inertial['masschanged'] = t.isoformat()
+                except KeyError:
+                    print("###Warning: no inertial object for link", linkname)
+
+        return {'FINISHED'}
+
+class ShowDistanceOperator(Operator):
+    """ShowDistanceOperator"""
+    bl_idname = "object.mt_show_distance"
+    bl_label = "Shows distance between two selected objects in world coordinates."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    distance = FloatProperty(
+        name = "distance",
+        default = 0.0,
+        description = "distance between objects")
+
+    def execute(self, context):
+        self.distance = mtutility.distance(bpy.context.selected_objects)
+        print(self.distance)
+        return {'FINISHED'}
+
+class SetXRayOperator(Operator):
+    """SetXrayOperator"""
+    bl_idname = "object.mt_set_xray"
+    bl_label = "Shows the selected/chosen objects via X-Ray."
+    bl_options = {'REGISTER', 'UNDO'}
+
+    objects = EnumProperty(
+        name = "objects",
+        default = 'selected',
+        items = (('all',)*3, ('selected',)*3) + mtdefs.marstypes,
+        description = "show objects via x-ray")
+
+    show = BoolProperty(
+        name = "show",
+        default = True,
+        description = "set to")
+
+    namepart = StringProperty(
+        name = "name",
+        default = "",
+        description = "name contains")
+
+    def execute(self, context):
+        if self.objects == 'all':
+            objlist = bpy.data.objects
+        elif self.objects == 'select':
+            objlist = bpy.context.selected_objects
+        elif self.objects == 'by name':
+            objlist = [obj for obj in bpy.data.objects if obj.name.find(self.namepart) > 0]
+        else:
+            objlist = [obj for obj in bpy.data.objects if obj.MARStype == self.objects]
+        for obj in objlist:
+            obj.show_x_ray = self.show
         return {'FINISHED'}
 
 class NameModelOperator(Operator):
@@ -162,21 +298,21 @@ class UpdateMarsModelsOperator(Operator):
         return {'FINISHED'}
 
 
-class ChangeMARStypeOperator(Operator):
-    """Change MARStype Operator"""
-    bl_idname = 'object.mt_change_marstype'
-    bl_label = "Change MARStype of selected objects"
+class SetMARSType(Operator):
+    """Set MARStype Operator"""
+    bl_idname = "object.mt_set_marstype"
+    bl_label = "Edit MARStype of selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
-    property_marstype = EnumProperty(
-        name = "mars_type",
-        default = "undefined",
-        description = "MARS type",
-        items = mtdefs.marstypes)
+    marstype = EnumProperty (
+            items = mtdefs.marstypes,
+            name = "MARStype",
+            default = "undefined",
+            description = "MARStype")
 
     def execute(self, context):
         for obj in bpy.context.selected_objects:
-            obj.MARStype = self.property_marstype
+            obj.MARStype = self.marstype
         return {'FINISHED'}
 
     @classmethod
@@ -203,8 +339,13 @@ class BatchEditPropertyOperator(Operator):
 
     def execute(self, context):
         value = mtutility.parse_number(self.property_value)
-        for obj in bpy.context.selected_objects:
-            obj[self.property_name] = value
+        if value == '':
+            for obj in bpy.context.selected_objects:
+                if self.property_name in obj:
+                    del(obj[self.property_name])
+        else:
+            for obj in bpy.context.selected_objects:
+                obj[self.property_name] = value
         return {'FINISHED'}
 
     @classmethod
@@ -235,28 +376,39 @@ class SetGeometryType(Operator):
         ob = context.active_object
         return ob is not None and ob.mode == 'OBJECT'
 
-
-class SetMARSType(Operator):
-    """Set MARStype Operator"""
-    bl_idname = "object.mt_set_marstype"
-    bl_label = "Edit MARStype of selected object(s)"
+class SetInertia(Operator):
+    """Set Inertia Operator"""
+    bl_idname = "object.mt_set_inertia"
+    bl_label = "Set inertia of selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
-    marstype = EnumProperty (
-            items = mtdefs.marstypes,
-            name = "MARStype",
-            default = "undefined",
-            description = "MARStype")
+    #inertiamatrix = FloatVectorProperty (
+    #        name = "inertia",
+    #        default = [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #        subtype = 'MATRIX',
+    #        size = 9,
+    #        description = "set inertia for a link")
+
+    inertiavector = FloatVectorProperty (
+            name = "inertiavec",
+            default = [0, 0, 0, 0, 0, 0],
+            subtype = 'NONE',
+            size = 6,
+            description = "set inertia for a link"
+            )
 
     def execute(self, context):
-        for obj in bpy.context.selected_objects:
-            obj.MARStype = self.marstype
+        #m = self.inertiamatrix
+        #inertialist = []#[m[0], m[1], m[2], m[4], m[5], m[8]]
+        #obj['inertia'] = ' '.join(inertialist)
+        for obj in context.selected_objects:
+            obj['inertia'] = ' '.join([str(i) for i in self.inertiavector])
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
         ob = context.active_object
-        return ob is not None and ob.mode == 'OBJECT'
+        return ob is not None and ob.mode == 'OBJECT' and ob.MARStype == 'inertial'
 
 class PartialRename(Operator):
     """Partial Rename Operator"""
@@ -293,10 +445,12 @@ class SmoothenSurfaceOperator(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        wm = bpy.context.window_manager
-        total = float(len(bpy.context.selected_objects))
-        wm.progress_begin(0, total)
-        i = 1
+        show_progress = bpy.app.version[0] * 100 + bpy.app.version[1] >= 269;
+        if show_progress:
+            wm = bpy.context.window_manager
+            total = float(len(bpy.context.selected_objects))
+            wm.progress_begin(0, total)
+            i = 1
         for obj in bpy.context.selected_objects:
             if obj.type != 'MESH':
                 continue
@@ -307,9 +461,11 @@ class SmoothenSurfaceOperator(Operator):
             bpy.ops.object.mode_set(mode = 'OBJECT')
             bpy.ops.object.shade_smooth()
             bpy.ops.object.modifier_add(type='EDGE_SPLIT')
-            wm.progress_update(i)
-            i += 1
-        wm.progress_end()
+            if show_progress:
+                wm.progress_update(i)
+                i += 1
+        if show_progress:
+            wm.progress_end()
         return {'FINISHED'}
 
     @classmethod

@@ -21,6 +21,8 @@ import bpy
 import os, glob
 import mathutils
 import marstools.mtutility as mtutility
+import marstools.mtinertia as mtinertia
+from datetime import datetime as dt
 
 #editmode = Blender.Window.EditMode()
 #if editmode: Blender.Window.EditMode(0)
@@ -47,26 +49,48 @@ def updateObject(obj, fix = False):
     notifications = []
     faulty_objects = []
     if obj.MARStype == 'link':
-        mass = 0.0
-        children = mtutility.getChildren(obj)
-        for child in children:
-            if 'mass' in child:
-                mass += child['mass']
+        inertials = mtutility.getImmediateChildren(obj, 'inertial')
+        inertial = None
+        if len(inertials) == 0:
+            notifications.append("Warning, link '" + obj.name + "' has no inertial object.")
+            #if fix:
+            #    mtinertia.createInertial(obj)
+        elif len(inertials) > 1:
+                notifications.append("Error, link '" + obj.name + "' has more than 1 inertial object.")
+        elif len(inertials) == 1:
+            inertial = inertials[0]
+        # checking whether masses add up if we have an inertial by now
+        mass = mtutility.calculateMassOfLink(obj)
         if not mass > 0:
-            mass = 0.001
-        if not 'mass' in obj or not obj['mass'] > 0:
-            notifications.append("Error, object '" + obj.name + "' has no attribute 'mass' or zero mass.")
-            faulty_objects.append(obj)
-            if fix:
-                obj['mass'] = mass
+            notifications.append("Warning, link '" + obj.name + "' has no mass.")
+        if inertial != None:
+            print('Checking inertial: ' + inertial.name)
+            if not 'inertia' in inertial:
+                notifications.append("Error, inertial of link '" + obj.name + "' has no inertia.")
+            if not 'mass' in inertial or not inertial['mass'] > 0:
+                notifications.append("Error, inertial of link '" + obj.name + "' has no attribute 'mass' or zero mass.")
+                faulty_objects.append(obj)
+                #if fix:
+                #    inertial['mass'] = mass
+                #    inertial['masschanged'] = dt.now().isoformat()
     elif obj.MARStype == 'inertial':
-        pass
+        if fix:
+            if not obj.name.startswith('inertial_'):
+                obj.name = 'inertial_' + obj.name
     elif obj.MARStype == 'visual':
         if fix:
             if not "geometryType" in obj:
                 obj["geometryType"] = "mesh"
+            if not obj.name.startswith('visual_'):
+                obj.name = 'visual_' + obj.name
+            if not 'masschanged' in obj:
+                obj['masschanged'] = dt.now().isoformat()
     elif obj.MARStype == 'collision':
-        pass
+        if fix:
+            if not obj.name.startswith('collision_'):
+                obj.name = 'collision_' + obj.name
+            if not 'masschanged' in obj:
+                obj['masschanged'] = dt.now().isoformat()
     elif obj.MARStype == 'sensor':
         pass
     return notifications, faulty_objects

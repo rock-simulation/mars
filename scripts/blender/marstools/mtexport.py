@@ -21,7 +21,7 @@ import bpy
 import sys
 import mathutils
 import os
-import datetime
+from datetime import datetime
 import yaml
 import warnings
 import struct
@@ -161,24 +161,29 @@ def exportObj(path, obj):
                              axis_up='Y', use_selection=True, use_normals=True)
     obj.matrix_world = world_matrix
 
-def collectMaterials():
+def collectMaterials(objectlist):
+    print('\n\nCollecting materials...')
     materials = {}
-    for obj in bpy.data.objects:
+    for obj in objectlist:
         if obj.MARStype == 'visual' and obj.data.materials:
-            mat = obj.data.materials[0]
-            if not mat.name in materials:
-                materials[mat.name] = {'users': 1, 'mat': mat}
+            mat = obj.data.materials[0] #simply grab the first material
+            if mat.name not in materials:
+                materials[mat.name] = deriveMaterial(mat)
+                materials[mat.name]['users'] = 1
             else:
                 materials[mat.name]['users'] += 1
     return materials
 
 def deriveMaterial(mat):
     material = {}
-    material["name"] = mat.name #simply grab the first material
-    material["diffuseColor"] = dict(zip(['r', 'g', 'b'], [mat.diffuse_intensity * num for num in list(mat.diffuse_color)]))
-    material["specularColor"] = dict(zip(['r', 'g', 'b'], [mat.specular_intensity * num for num in list(mat.specular_color)]))
-    material['shininess'] = mat.specular_hardness
-    material["transparency"] = mat.alpha
+    material["name"] = mat.name
+    material["diffuseFront"] = dict(zip(['r', 'g', 'b'], [mat.diffuse_intensity * num for num in list(mat.diffuse_color)]))
+    material["specularFront"] = dict(zip(['r', 'g', 'b'], [mat.specular_intensity * num for num in list(mat.specular_color)]))
+    material['shininess'] = mat.specular_hardness/2
+    if mat.use_transparency:
+        material["transparency"] = 1.0-mat.alpha
+    if mat.texture_slots[0] is not None: # grab the first texture
+        material["texturename"] = mat.texture_slots[0].texture.image.name
     return material
 
 def deriveLink(obj):
@@ -187,17 +192,10 @@ def deriveLink(obj):
     props["collision"] = {}
     props["visual"] = {}
     props["inertial"] = {}
-    if "mass" in props:
-        props["inertial"]["mass"] = props["mass"]
-        del props["mass"]
-    if "inertia" in props:
-        props["inertial"]["inertia"] = props["inertia"]
-        del props["inertia"]
     return props
 
 def deriveJoint(obj):
     props = {'name': 'joint_' + obj.parent.name + '_' + obj.name}
-    #motorprops = {key:props[key] for key in [key if props[key].find('motor/') else None for key in props]}
     props['parent'] = obj.parent.name
     props['child'] = obj.name
     props['jointType'], crot = mtjoints.deriveJointType(obj, True)
@@ -212,7 +210,13 @@ def deriveJoint(obj):
     # - dynamics
     # - mimic
     # - safety_controller
-    return props#, motorprops
+
+    #derive motor data
+    motorprops = {'name': 'motor_' + obj.name, 'joint': 'joint_' + obj.name}
+    for key,value in obj.items():
+        if key.find('motor/') >= 0:
+            motorprops[key.replace('motor/', '')] = value
+    return props, motorprops
 
 def deriveJointState(joint):
     '''Calculates the state of a joint from the state of the link armature.
@@ -228,9 +232,10 @@ def deriveJointState(joint):
 def deriveKinematics(obj):
     link = deriveLink(obj)
     joint = None
+    motor = None
     if obj.parent:
-        joint = deriveJoint(obj)
-    return link, joint
+        joint, motor = deriveJoint(obj)
+    return link, joint, motor
 
 #def deriveMotor(obj):
 #    props = initObjectProperties(obj)
@@ -298,8 +303,8 @@ def deriveSensor(obj):
 
 def deriveController(obj):
     props = initObjectProperties(obj)
-
     return props
+
 def initObjectProperties(obj):
     props = {}
     for key in obj.keys():
@@ -309,7 +314,7 @@ def initObjectProperties(obj):
 
 def cleanObjectProperties(props):
     '''Cleans a predefined list of Blender-specific properties from the dictionary.'''
-    getridof = ['MARStype', '_RNA_UI', 'cycles_visibility', 'startChain', 'endChain']
+    getridof = ['MARStype', '_RNA_UI', 'cycles_visibility', 'startChain', 'endChain', 'masschanged']
     if props:
         for key in getridof:
             if key in props:
@@ -369,6 +374,7 @@ def deriveChainEntry(obj):
     return returnchains
 
 def buildRobotDictionary():
+    objectlist = bpy.context.selected_objects
     #notifications, faulty_objects = mtmisctools.checkModel(bpy.context.selected_objects)
     #print(notifications)
     robot = {'links': {},
@@ -378,9 +384,11 @@ def buildRobotDictionary():
             'controllers': {},
             'materials': {},
             'groups': {},
-            'chains': {}}
+            'chains': {},
+            'simulation': {}
+            }
     #save timestamped version of model
-    robot["date"] = datetime.datetime.now().strftime("%Y%m%d_%H:%M")
+    robot["date"] = datetime.now().strftime("%Y%m%d_%H:%M")
     root = getRoot(bpy.context.selected_objects[0])
     if root.MARStype != 'link':
         raise Exception("Found no 'link' object as root of the robot model.")
@@ -394,10 +402,12 @@ def buildRobotDictionary():
     for obj in bpy.context.selected_objects:
         if obj.MARStype == 'link':
             print('Parsing', obj.MARStype, obj.name, '...')
-            link, joint = deriveKinematics(obj)
+            link, joint, motor = deriveKinematics(obj)
             robot['links'][obj.name] = link
             if joint: #joint can be None if link is a root
                 robot['joints'][joint['name']] = joint
+            if motor:
+                robot['motors'][joint['name']] = motor
             obj.select = False
     # complete link information by parsing visuals and collision objects
     #try:
@@ -411,24 +421,24 @@ def buildRobotDictionary():
             robot['links'][parent.name][obj.MARStype][obj.name] = props
             obj.select = False
     # TODO: change this to not solely depend on the last collision object
-    # recalculate inertial from collision geometry if necessary
-    print('\n\n[MARStools] Calculating inertia from collision and visual objects...')
-    for linkname in robot['links']:
-        link = robot['links'][linkname]
-        print('Checking inertial for link', link['name'])
-        if 'mass' in link['inertial'] and 'inertia' not in link['inertial']:
-                print('Found mass, but no inertia...trying to derive from collision...')
-                for c in link['collision']:
-                    col = link['collision'][c]
-                    if 'geometry' in col:
-                        link['inertial']['inertia'] = mtinertia.calculateInertia(link['inertial']['mass'], col['geometry'])
-                        link['inertial']['pose'] = col['pose']
-                #TODO: check if this really makes sense or if we should not export anything special to let ODE handle the job!!!
-                print('...failed. Inserting dummy inertia...')
-                link['inertial']['inertia'] = mtinertia.getDummyInertia()
-        else:
-            print("###WARNING: link", link['name'], "has no mass.")
-    # parse motors, sensors and controllers
+    ## recalculate inertial from collision geometry if necessary
+    #print('\n\n[MARStools] Calculating inertia from collision objects...')
+    #for linkname in robot['links']:
+    #    link = robot['links'][linkname]
+    #    print('Checking inertial for link', link['name'])
+    #    if 'mass' in link['inertial'] and 'inertia' not in link['inertial']:
+    #            print('Found mass, but no inertia...trying to derive from collision...')
+    #            for c in link['collision']:
+    #                col = link['collision'][c]
+    #                if 'geometry' in col:
+    #                    link['inertial']['inertia'] = mtinertia.calculateInertia(link['inertial']['mass'], col['geometry'])
+    #                    link['inertial']['pose'] = col['pose']
+    #            #TODO: check if this really makes sense or if we should not export anything special to let ODE handle the job!!!
+    #            print('...failed. Inserting dummy inertia...')
+    #            link['inertial']['inertia'] = mtinertia.getDummyInertia()
+    #    else:
+    #        print("###WARNING: link", link['name'], "has no mass.")
+    # parse sensors and controllers
     for obj in bpy.context.selected_objects:
         if obj.MARStype in ['sensor', 'controller']:
             print('Parsing', obj.MARStype, obj.name, '...')
@@ -438,21 +448,13 @@ def buildRobotDictionary():
     #    print("An error occurred when inserting the entry for object", obj.name, sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2])
     #    print(robot)
     # parse materials
-    materials = collectMaterials()
-    for mat in materials:
-        print(mat, materials[mat])
-    for obj in bpy.data.objects: #TODO: check which is the best pointer to selected objects
-        if obj.MARStype == 'visual' and obj.data.materials:
+    robot['materials'] = collectMaterials(objectlist)
+    for obj in objectlist:
+        if obj.MARStype == 'visual' and len(obj.data.materials) > 0:
             mat = obj.data.materials[0]
-            if materials[mat.name]['users'] > 1:
-                if mat.name not in robot['materials']:
-                    robot['materials'][mat.name] = deriveMaterial(mat)
-                else:
-                    robot['links'][obj.parent.name]['visual'][obj.name]['material'] = {'name': mat.name}
-            else:
-                robot['links'][obj.parent.name]['visual'][obj.name]['material'] = deriveMaterial(mat)
-    for mat in robot['materials']:
-        print(mat)
+            if not mat.name in robot['materials']:
+                robot['materials'][mat.name] = deriveMaterial(mat) #this should actually never happen
+            robot['links'][obj.parent.name]['visual'][obj.name]['material'] = mat.name
     # gather information on groups of objects
     for group in bpy.data.groups: #TODO: get rid of the "data" part
         robot['groups'][group.name] = deriveGroupEntry(group)
@@ -469,7 +471,7 @@ def buildRobotDictionary():
 def exportModelToYAML(model, filepath):
     print("MARStools YAML export: Writing model data to", filepath )
     with open(filepath, 'w') as outputfile:
-        outputfile.write('#YAML dump of robot model "'+model['modelname']+'", '+datetime.datetime.now().strftime("%Y%m%d_%H:%M")+"\n\n")
+        outputfile.write('#YAML dump of robot model "'+model['modelname']+'", '+datetime.now().strftime("%Y%m%d_%H:%M")+"\n\n")
         outputfile.write(yaml.dump(model))#, default_flow_style=False)) #last parameter prevents inline formatting for lists and dictionaries
 
 def xmlline(ind, tag, names, values):
@@ -524,13 +526,16 @@ def exportModelToURDF(model, filepath):
                 output.append(xmlline(4, 'origin', ['xyz', 'rpy'], [l2str(vis['pose']['translation']), l2str(vis['pose']['rotation_euler'])]))
                 writeURDFGeometry(output, vis['geometry'])
                 if 'material' in vis:
-                    if 'diffuseColor' in vis['material']:
-                        output.append(indent*4+'<material name="' + vis["material"]["name"] + '">\n')
-                        color = vis['material']['diffuseColor']
-                        output.append(indent*5+'<color rgba="'+l2str([color[num] for num in ['r', 'g', 'b']]) + ' ' + str(vis["material"]["transparency"]) + '"/>\n')
+                    if model['materials'][vis['material']]['users'] == 1:
+                        mat = model['materials'][vis['material']]
+                        output.append(indent*4+'<material name="' + mat['name'] + '">\n')
+                        color = mat['diffuseFront']
+                        output.append(indent*5+'<color rgba="'+l2str([color[num] for num in ['r', 'g', 'b']]) + ' ' + str(mat["transparency"]) + '"/>\n')
+                        if 'texturename' in mat:
+                            output.append(indent*5+'<texture filename="'+mat['texturename']+'"/>\n')
                         output.append(indent*4+'</material>\n')
                     else:
-                        output.append(indent*4+'<material name="' + vis["material"]["name"] + '"/>\n')
+                        output.append(indent*4+'<material name="' + vis["material"] + '"/>\n')
                 output.append(indent*3+'</visual>\n')
         #collision object
         if link['collision']:
@@ -556,10 +561,13 @@ def exportModelToURDF(model, filepath):
         output.append(indent*2+'</joint>\n\n')
     #export material information
     for m in model['materials']:
-        output.append(indent*2+'<material name="' + m + '">\n')
-        color = model['materials'][m]['diffuseColor']
-        output.append(indent*3+'<color rgba="'+l2str([color[num] for num in ['r', 'g', 'b']]) + ' ' + str(model['materials'][m]["transparency"]) + '"/>\n')
-        output.append(indent*2+'</material>\n\n')
+        if model['materials'][m]['users'] > 1:
+            output.append(indent*2+'<material name="' + m + '">\n')
+            color = model['materials'][m]['diffuseFront']
+            output.append(indent*3+'<color rgba="'+l2str([color[num] for num in ['r', 'g', 'b']]) + ' ' + str(model['materials'][m]["transparency"]) + '"/>\n')
+            if 'texturename' in model['materials'][m]:
+                            output.append(indent*3+'<texture filename="'+model['materials'][m]['texturename']+'"/>\n')
+            output.append(indent*2+'</material>\n\n')
     #finish the export
     output.append(urdfFooter)
     with open(filepath, 'w') as outputfile:
@@ -567,107 +575,106 @@ def exportModelToURDF(model, filepath):
     # problem of different joint transformations needed for fixed joints
     print("MARStools URDF export: Writing model data to", filepath )
 
-def exportModelToSMURF(model, path, relative = True):
-    #create all filenames
-    model_filename = os.path.expanduser(path + model['modelname'] + ".smurf")
-    urdf_filename = os.path.expanduser(path + model['modelname'] + ".urdf")
-    semantics_filename = os.path.expanduser(path + model['modelname'] + "_semantics.yml")
-    state_filename = os.path.expanduser(path + model['modelname'] + "_state.yml")
-    materials_filename = os.path.expanduser(path + model['modelname'] + "_materials.yml")
-    sensors_filename = os.path.expanduser(path + model['modelname'] + "_sensors.yml")
-    motors_filename = os.path.expanduser(path + model['modelname'] + "_motors.yml")
-    controllers_filename = os.path.expanduser(path + model['modelname'] + "_controllers.yml")
-    simulation_filename = os.path.expanduser(path + model['modelname'] + "_simulation.yml")
-    if relative:
-        rel_urdf_filename = model['modelname'] + ".urdf"
-        rel_semantics_filename = model['modelname'] + "_semantics.yml"
-        rel_state_filename = model['modelname'] + "_state.yml"
-        rel_materials_filename = model['modelname'] + "_materials.yml"
-        rel_sensors_filename = model['modelname'] + "_sensors.yml"
-        rel_motors_filename = model['modelname'] + "_motors.yml"
-        rel_controllers_filename = model['modelname'] + "_controllers.yml"
-        rel_simulation_filename = model['modelname'] + "_simulation.yml"
+def exportModelToSMURF(model, path):
+    export = {'semantics': model['groups'] != {} or model['chains'] != {},
+              'state': False,#model['state'] != {}, #TODO: handle state
+              'materials': model['materials'] != {},
+              'sensors': model['sensors'] != {},
+              'motors': model['motors'] != {},
+              'controllers': model['controllers'] != {},
+              'simulation': model['simulation'] != {}
+              }
 
+
+    #create all filenames
+    smurf_filename = model['modelname'] + ".smurf"
+    urdf_filename =  model['modelname'] + ".urdf"
+    filenames = {'semantics': model['modelname'] + "_semantics.yml",
+                 'state': model['modelname'] + "_state.yml",
+                 'materials': model['modelname'] + "_materials.yml",
+                 'sensors': model['modelname'] + "_sensors.yml",
+                 'motors': model['modelname'] + "_motors.yml",
+                 'controllers': model['modelname'] + "_controllers.yml",
+                 'simulation': model['modelname'] + "_simulation.yml"
+                 }
 
     infostring = ' definition SMURF file for "'+model['modelname']+'", '+model["date"]+"\n\n"
 
     #write model information
-    print('Writing SMURF information to...\n'+model_filename)
+    print('Writing SMURF information to...\n'+smurf_filename)
     modeldata = {}
     modeldata["date"] = model["date"]
-    if relative:
-        modeldata["files"] = [rel_urdf_filename, rel_semantics_filename, rel_state_filename,
-                              rel_materials_filename, rel_sensors_filename,
-                              rel_motors_filename, rel_controllers_filename,
-                              rel_simulation_filename]
-    else:
-        modeldata["files"] = [urdf_filename, semantics_filename, state_filename,
-                              materials_filename, sensors_filename,
-                              motors_filename, controllers_filename,
-                              simulation_filename]
-    with open(model_filename, 'w') as op:
+    modeldata["files"] = [urdf_filename] + [filenames[f] for f in filenames if export[f]]
+    with open(path + smurf_filename, 'w') as op:
         op.write('#main SMURF file of model "'+model['modelname']+'"\n\n')
         op.write("modelname: "+model['modelname']+"\n")
         op.write(yaml.dump(modeldata, default_flow_style=False))
 
     #write urdf
-    exportModelToURDF(model, urdf_filename)
+    exportModelToURDF(model, path + urdf_filename)
 
     #write semantics (SRDF information in YML format)
-    with open(semantics_filename, 'w') as op:
-        op.write('#semantics'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        semantics = {}
-        if model['groups'] != {}:
-            semantics['groups'] = model['groups']
-        if model['chains'] != {}:
-            semantics['chains'] = model['chains']
-        op.write(yaml.dump(semantics, default_flow_style=False))
+    if export['semantics']:
+        with open(path + filenames['semantics'], 'w') as op:
+            op.write('#semantics'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            semantics = {}
+            if model['groups'] != {}:
+                semantics['groups'] = model['groups']
+            if model['chains'] != {}:
+                semantics['chains'] = model['chains']
+            op.write(yaml.dump(semantics, default_flow_style=False))
 
     #write state (state information of all joints, sensor & motor activity etc.) #TODO: implement everything but joints
-    states = []
-    #gather all states
-    for jointname in model['joints']:
-        joint = model['joints'][jointname]
-        if 'state' in joint: #this should always be the case, but testing doesn't hurt
-            tmpstate = joint['state'].copy()
-            tmpstate['name'] = jointname
-            states.append(joint['state'])
-    with open(state_filename, 'w') as op:
-        op.write('#state'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        op.write(yaml.dump(states))#, default_flow_style=False))
+    if export['state']:
+        states = []
+        #gather all states
+        for jointname in model['joints']:
+            joint = model['joints'][jointname]
+            if 'state' in joint: #this should always be the case, but testing doesn't hurt
+                tmpstate = joint['state'].copy()
+                tmpstate['name'] = jointname
+                states.append(joint['state'])
+        with open(path + filenames['state'], 'w') as op:
+            op.write('#state'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            op.write(yaml.dump(states))#, default_flow_style=False))
 
     #write materials
-    with open(materials_filename, 'w') as op:
-        op.write('#materials'+infostring)
-        op.write(yaml.dump(list(model['materials'].values()), default_flow_style=False))
+    if export['materials']:
+        with open(path + filenames['materials'], 'w') as op:
+            op.write('#materials'+infostring)
+            op.write(yaml.dump({'materials': list(model['materials'].values())}, default_flow_style=False))
 
     #write sensors
-    with open(sensors_filename, 'w') as op:
-        op.write('#sensors'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        op.write(yaml.dump(list(model['sensors'].values()), default_flow_style=False))
+    if export['sensors']:
+        with open(path + filenames['sensors'], 'w') as op:
+            op.write('#sensors'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            op.write(yaml.dump(list(model['sensors'].values()), default_flow_style=False))
 
     #write motors
-    with open(motors_filename, 'w') as op:
-        op.write('#motors'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        op.write(yaml.dump(list(model['motors'].values()), default_flow_style=False))
+    if export['motors']:
+        with open(path + filenames['motors'], 'w') as op:
+            op.write('#motors'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            #op.write("motors:\n")
+            op.write(yaml.dump({'motors': list(model['motors'].values())}, default_flow_style=False))
 
     #write controllers
-    with open(controllers_filename, 'w') as op:
-        op.write('#controllers'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        op.write(yaml.dump(list(model['controllers'].values()), default_flow_style=False))
+    if export['controllers']:
+        with open(path + filenames['controllers'], 'w') as op:
+            op.write('#controllers'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            op.write(yaml.dump(list(model['controllers'].values()), default_flow_style=False))
 
     #write simulation
-    with open(simulation_filename, 'w') as op:
-        op.write('#simulation'+infostring)
-        op.write("modelname: "+model['modelname']+'\n')
-        simulationdata = {}
-        #TODO: handle simulation-specific data
-        op.write(yaml.dump(list(simulationdata.values()), default_flow_style=False))
+    if export['simulation']:
+        with open(path + filenames['simulation'], 'w') as op:
+            op.write('#simulation'+infostring)
+            op.write("modelname: "+model['modelname']+'\n')
+            #TODO: handle simulation-specific data
+            op.write(yaml.dump(list(model['simulation'].values()), default_flow_style=False))
 
 def exportSceneToSMURF(path):
     """Exports all robots in a scene to separate SMURF folders."""
@@ -699,29 +706,42 @@ class ExportModelOperator(Operator):
                 urdf = bpy.data.worlds[0].exportURDF,
                 smurf = bpy.data.worlds[0].exportSMURF,
                 mars = bpy.data.worlds[0].exportMARSscene,
-                obj = bpy.data.worlds[0].exportObj,
-                bobj = bpy.data.worlds[0].exportBobj)
+                objexp = bpy.data.worlds[0].exportObj,
+                bobjexp = bpy.data.worlds[0].exportBobj)
         return {'FINISHED'}
 
-def main(outpath = '', yaml=True, urdf=True, smurf=True, mars=False, obj=False, bobj=False):
+def main(outpath = '', yaml=True, urdf=True, smurf=True, mars=False, objexp=False, bobjexp=False):
+    objectlist = bpy.context.selected_objects
     if yaml or urdf or smurf or mars:
         robot = buildRobotDictionary()
         if yaml:
             exportModelToYAML(robot, outpath + robot["modelname"] + "_dict.yml")
         if mars:
-            exportModelToMARS(robot, outpath + robot["modelname"] + "_mars.scn")
+            exportModelToMARS(robot, outpath + robot["modelname"] + "_mars.scene")
         if smurf:
             exportModelToSMURF(robot, outpath)
         elif urdf:
             exportModelToURDF(robot, outpath + robot["modelname"] + ".urdf")
-    if obj or bobj:
+    selectObjects(objectlist, True)
+    if objexp or bobjexp:
+        show_progress = bpy.app.version[0] * 100 + bpy.app.version[1] >= 269;
+        if show_progress:
+            wm = bpy.context.window_manager
+            total = float(len(objectlist))
+            wm.progress_begin(0, total)
+            i = 1
         for obj in bpy.context.selected_objects:
-            if (obj.MARStype == 'visual' or
-                obj.MARStype == 'collision' and obj['geometryType'] == 'mesh'):
-                if obj:
+            if ((obj.MARStype == 'visual' or
+                obj.MARStype == 'collision') and obj['geometryType'] == 'mesh'):
+                if objexp:
                     exportObj(outpath, obj)
-                if bobj:
+                if bobjexp:
                     exportBobj(outpath, obj)
+            if show_progress:
+                wm.progress_update(i)
+                i += 1
+        if show_progress:
+            wm.progress_end()
 
 #allow manual execution of script in blender
 if __name__ == '__main__':

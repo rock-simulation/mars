@@ -12,10 +12,12 @@ in your preferences to gain instant (virtual) world domination.
 You may use the provided install shell script.
 '''
 
+import re
 import bpy
 import mathutils
 import marstools.mtmaterials as mtmaterials
 import marstools.mtdefs as mtdefs
+from datetime import datetime
 
 def register():
     print("Registering mtutility...")
@@ -158,8 +160,8 @@ def getImmediateChildren(obj, marstype = 'None'):
     children = []
     for child in bpy.data.objects: #TODO: this is not the best list to iterate over (there might be multiple scenes)
         if child.parent == obj:
-            if marstype is not 'None':
-                if marstype == obj.MARStype:
+            if marstype != 'None':
+                if marstype == child.MARStype:
                     children.append(child)
             else:
                 children.append(child)
@@ -214,16 +216,51 @@ def epsilonToZero(data, epsilon, decimals):
     """Recursively loops through a dictionary and sets all floating values
      < epsilon equal to zero."""
     if is_float(data):
-        print('eTZ:float', data)
         return 0 if abs(data) < epsilon else round(data, decimals)
     elif type(data) is list:
-        print('eTZ:list')
         return [epsilonToZero(a, epsilon, decimals) for a in data]
     elif type(data) is dict:
-        print('eTZ:dict')
         return {key: epsilonToZero(value, epsilon, decimals) for key, value in data.items()}
     else: #any other type, such as string
-        print('eTZ:else')
         return data
+
+def datetimeFromIso(iso):
+    """Accepts a date-time string in iso format and returns a datetime object."""
+    return datetime(*[int(a) for a in re.split(":|-|T|\.", iso)])
+
+def calculateMassOfLink(link):
+    objects = (getImmediateChildren(link, 'visual')
+              + getImmediateChildren(link, 'collision'))
+    return calculateMass(objects)
+
+def calculateMass(objects):
+    mass = 0
+    objlist = [obj.name for obj in objects]
+    for obj in objects:
+        if obj.MARStype == 'collision' and 'mass' in obj:
+            mass += obj['mass']
+        elif obj.MARStype == 'visual':
+            collision = obj.name.replace('visual_', 'collision_')
+            if 'mass' in obj and not collision in objlist:
+                mass += obj['mass']
+    return mass
+
+def distance(objects):
+    v = objects[0].matrix_world.to_translation()-objects[1].matrix_world.to_translation()
+    return v.length
+
+
+#def useLegacyNames(data):
+#    if type(data) is str:
+#        print(data, end=': ')
+#        if data in mtdefs.MARSlegacydict:
+#            print(mtdefs.MARSlegacydict[data])
+#            return mtdefs.MARSlegacydict[data]
+#        else:
+#            print(data)
+#            return data
+#    elif type(data) is dict:
+#        tmpdict = {useLegacyNames(key): value for key, value in data.items()}
+#        return {key: useLegacyNames(value) for key, value in tmpdict.items()}
 
 

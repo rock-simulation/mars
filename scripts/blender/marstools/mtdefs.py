@@ -34,6 +34,9 @@ jointtypes = (('revolute',)*3,
               ('floating',)*3,
               ('planar',)*3)
 
+motortypes = (('servo',)*3,
+               ('DC',)*3)
+
 geometrytypes = (('box',)*3,
             ('cylinder',)*3,
             ('sphere',)*3,
@@ -122,10 +125,14 @@ sensorProperties = {"RaySensor": {"width": 144},
 
 #definitions of which elements live on which layers by default
 layerTypes = {
-              "link": 1,
-              'inertial': 2,
-              "visual": 3,
-              "collision": 4,
-              "sensor": 5,
-              "decoration": 6
+              "link": 0,
+              'inertial': 1,
+              "visual": 2,
+              "collision": 3,
+              "sensor": 4,
+              "decoration": 5
               }
+
+MARSlegacydict = {'specularColor': 'specularFront',
+                  'diffuseColor': 'diffuseFront'
+                  }
