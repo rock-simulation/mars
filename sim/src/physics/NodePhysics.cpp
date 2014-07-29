@@ -36,11 +36,13 @@
  */
 
 #include "NodePhysics.h"
+#include "../sensors/RotatingRaySensor.h"
+
+
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/terrainStruct.h>
-#include <mars/sim/RotatingRaySensor.h>
 #include <cmath>
 
 namespace mars {
