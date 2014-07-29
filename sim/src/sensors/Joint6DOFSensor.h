@@ -32,6 +32,7 @@
 #warning "Joint6DOFSensor.h"
 #endif
 
+#include <mars/data_broker/ProducerInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 
@@ -58,6 +59,7 @@ namespace mars {
 
     class Joint6DOFSensor : public interfaces::SensorInterface,
                             public interfaces::BaseSensor,
+                            public data_broker::ProducerInterface,
                             public data_broker::ReceiverInterface{
 
     public:
@@ -74,6 +76,9 @@ namespace mars {
       void getBodyQ(utils::Quaternion* body_q);
 
 
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
+                               int callbackParam);
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -91,6 +96,8 @@ namespace mars {
       long nodeRotIndices[4];
       long jointForceIndices[3];
       long jointTorqueIndices[3];
+      data_broker::DataPackage dbPackage;
+      unsigned long dbPushId;
     };
 
   } // end of namespace sim

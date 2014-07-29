@@ -20,6 +20,7 @@
 
 #include "GraphicsTimer.h"
 #include <mars/utils/misc.h>
+#include <stdlib.h>
 
 namespace mars {
   namespace app {
@@ -37,7 +38,12 @@ namespace mars {
     }
 
     void GraphicsTimer::run() {
-      graphicsTimer->start(10);
+      char* marsTimerStepsize = getenv("MARS_GRAPHICS_UPDATE_TIME");
+      int updateTime = 10;
+      if(marsTimerStepsize) {
+        updateTime = atoi(marsTimerStepsize);
+      }
+      graphicsTimer->start(updateTime);
     }
 
     void GraphicsTimer::stop() {
