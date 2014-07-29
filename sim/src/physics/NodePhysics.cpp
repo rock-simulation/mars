@@ -40,6 +40,8 @@
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/terrainStruct.h>
+#include <mars/sim/RotatingRaySensor.h>
+#include <cmath>
 
 namespace mars {
   namespace sim {
@@ -1337,42 +1339,86 @@ namespace mars {
         //sensor.count_data = sensor.resolution;
         //sensor.data = (sReal*)malloc(sensor.resolution * sizeof(sReal));
 
-        //rad_angle = polarSensor->widthX*; //M_PI*sensor.flare_angle/180;
-        rad_steps = polarSensor->getCols(); //rad_angle/(sReal)(sensor.resolution-1);
-        rad_start = -((rad_steps-1)/2.0)*polarSensor->stepX; //Starting to Left, because 0 is in front and rock convention posive CCW //(M_PI-rad_angle)/2;
-        if(rad_steps == 1){
-          rad_start = 0;
-        }
-        for(i=0; i<rad_steps; i++) {
-          gd = new geom_data;
-          (*gd).setZero();
-          gd->sense_contact_force = 0;
-          (*polarSensor)[i] = gd->value = polarSensor->maxDistance;//sensor.max_distance;
-      
-          gd->ray_sensor = 1;
-          gd->parent_geom = nGeom;
-          gd->parent_body = nBody;
-          sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
-          dGeomSetCollideBits(sle.geom, 32768);
-          dGeomSetCategoryBits(sle.geom, 32768);
-          direction = Vector(cos(rad_start+i*polarSensor->stepX),
-                             sin(rad_start+i*polarSensor->stepX), 0);
-          //direction = QVRotate(sensor.rotation, direction);
-          direction = (polarSensor->getOrientation() * direction);
-          sle.ray_direction = direction;
-          tmp[0] = direction.x();
-          tmp[1] = direction.y();
-          tmp[2] = direction.z();
-          dMULTIPLY0_331(dest, rot, tmp);
-          dGeomRaySet(sle.geom, pos[0], pos[1], pos[2], dest[0], dest[1], dest[2]);
-          sle.gd = gd;
-          sle.index = i;
-          sensor_list.push_back(sle);      
-          dGeomSetData(sle.geom, gd);
-          //dGeomRaySetParams(sle.geom, 1, 1);      
-          dGeomSetCollideBits(sle.geom, COLLIDE_MASK_SENSOR);
-          dGeomSetCategoryBits(sle.geom, COLLIDE_MASK_SENSOR);
-          dGeomDisable(sle.geom);
+        mars::sim::RotatingRaySensor *rotRaySensor = dynamic_cast<RotatingRaySensor*>(sensor);
+        if(rotRaySensor){
+            int N = rotRaySensor->getNRays();
+            double hAngle = 2*M_PI/N;
+            double vAngle = rotRaySensor->config.opening_height/(rotRaySensor->config.height-1);
+            double maxheight = rotRaySensor->config.opening_height/2-rotRaySensor->config.downtilt;
+            int vpos = 0;
+            int inc = rotRaySensor->config.increment;
+            for(i=0; i<N; i++){
+                gd = new geom_data;
+                (*gd).setZero();
+                gd->sense_contact_force = 0;
+                (*polarSensor)[i] = gd->value = polarSensor->maxDistance;//sensor.max_distance;
+                gd->ray_sensor = 1;
+                gd->parent_geom = nGeom;
+                gd->parent_body = nBody;
+                sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
+                dGeomSetCollideBits(sle.geom, 32768);
+                dGeomSetCategoryBits(sle.geom, 32768);
+                direction = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
+                vpos += inc;
+                if (vpos > rotRaySensor->config.height) {
+                    vpos %= rotRaySensor->config.height-1;
+                }
+                //direction = QVRotate(sensor.rotation, direction);
+                //direction = (rotRaySensor->getOrientation() * direction);
+                sle.ray_direction = direction;
+                tmp[0] = direction.x();
+                tmp[1] = direction.y();
+                tmp[2] = direction.z();
+                dMULTIPLY0_331(dest, rot, tmp);
+                dGeomRaySet(sle.geom, pos[0], pos[1], pos[2], dest[0], dest[1], dest[2]);
+                sle.gd = gd;
+                sle.index = i;
+                sensor_list.push_back(sle);
+                dGeomSetData(sle.geom, gd);
+                //dGeomRaySetParams(sle.geom, 1, 1);
+                dGeomSetCollideBits(sle.geom, COLLIDE_MASK_SENSOR);
+                dGeomSetCategoryBits(sle.geom, COLLIDE_MASK_SENSOR);
+                dGeomDisable(sle.geom);
+            }
+        } else {
+
+            //rad_angle = polarSensor->widthX*; //M_PI*sensor.flare_angle/180;
+            rad_steps = polarSensor->getCols(); //rad_angle/(sReal)(sensor.resolution-1);
+            rad_start = -((rad_steps-1)/2.0)*polarSensor->stepX; //Starting to Left, because 0 is in front and rock convention posive CCW //(M_PI-rad_angle)/2;
+            if(rad_steps == 1){
+              rad_start = 0;
+            }
+            for(i=0; i<rad_steps; i++) {
+              gd = new geom_data;
+              (*gd).setZero();
+              gd->sense_contact_force = 0;
+              (*polarSensor)[i] = gd->value = polarSensor->maxDistance;//sensor.max_distance;
+
+              gd->ray_sensor = 1;
+              gd->parent_geom = nGeom;
+              gd->parent_body = nBody;
+              sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
+              dGeomSetCollideBits(sle.geom, 32768);
+              dGeomSetCategoryBits(sle.geom, 32768);
+              direction = Vector(cos(rad_start+i*polarSensor->stepX),
+                                 sin(rad_start+i*polarSensor->stepX), 0);
+              //direction = QVRotate(sensor.rotation, direction);
+              direction = (polarSensor->getOrientation() * direction);
+              sle.ray_direction = direction;
+              tmp[0] = direction.x();
+              tmp[1] = direction.y();
+              tmp[2] = direction.z();
+              dMULTIPLY0_331(dest, rot, tmp);
+              dGeomRaySet(sle.geom, pos[0], pos[1], pos[2], dest[0], dest[1], dest[2]);
+              sle.gd = gd;
+              sle.index = i;
+              sensor_list.push_back(sle);
+              dGeomSetData(sle.geom, gd);
+              //dGeomRaySetParams(sle.geom, 1, 1);
+              dGeomSetCollideBits(sle.geom, COLLIDE_MASK_SENSOR);
+              dGeomSetCategoryBits(sle.geom, COLLIDE_MASK_SENSOR);
+              dGeomDisable(sle.geom);
+            }
         }
       }
   
@@ -1481,13 +1527,17 @@ namespace mars {
       const dReal* pos = dGeomGetPosition(nGeom);
       const dReal* rot = dGeomGetRotation(nGeom);
       dVector3 dest, tmp, posOffset;
+      utils::Quaternion turnrotation;
+      utils::Vector tmpV;
       dReal steps_size = 1.0, length = 0.0;
       bool done = false;
       int steps = 0;
       dReal worldStep = theWorld->getWorldStep();
 
       //New Code
+      int i=0;
       for(iter = sensor_list.begin(); iter != sensor_list.end(); iter++) {
+        i+=1;
         if((double)iter->sensor->updateRate * 0.001 > worldStep) {
           iter->updateTime += worldStep;
           if(iter->updateTime < 0.001*iter->sensor->updateRate) continue;
@@ -1496,13 +1546,24 @@ namespace mars {
         BasePolarIntersectionSensor *polarSensor = dynamic_cast<BasePolarIntersectionSensor*>((*iter).sensor);
         if(polarSensor){
           sensor_list_element elem = *iter;
-        
-          tmp[0] = elem.ray_direction.x();
-          tmp[1] = elem.ray_direction.y();
-          tmp[2] = elem.ray_direction.z();
+
+          tmpV[0] = elem.ray_direction.x();
+          tmpV[1] = elem.ray_direction.y();
+          tmpV[2] = elem.ray_direction.z();
+
+          mars::sim::RotatingRaySensor *rotRaySensor = dynamic_cast<RotatingRaySensor*>((*iter).sensor);
+          if(rotRaySensor){
+              utils::Quaternion turnrotation = utils::angleAxisToQuaternion(rotRaySensor->turn(), utils::Vector(0.0, 0.0, 1.0));
+              //fprintf(stderr, "tmp[%i]: %f, %f, %f\n", i, tmpV.x(), tmpV.y(), tmpV.z());
+              tmpV = turnrotation * tmpV;
+              //fprintf(stderr, "tmp[%i]: %f, %f, %f\n", i, tmpV.x(), tmpV.y(), tmpV.z());
+          }
+          tmp[0] = tmpV.x();//elem.ray_direction.x();
+          tmp[1] = tmpV.y();//elem.ray_direction.y();
+          tmp[2] = tmpV.z();//elem.ray_direction.z();
           dMULTIPLY0_331(dest, rot, tmp);
 
-          if(physics_thread) {    
+          if(physics_thread) {
             steps = 0;
             length = 0.0;
             done = false;

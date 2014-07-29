@@ -46,6 +46,7 @@
 #include "CameraSensor.h"
 #include "NodeVelocitySensor.h"
 #include "RaySensor.h"
+#include "RotatingRaySensor.h"
 #include "RayGridSensor.h"
 #include "NodeAngularVelocitySensor.h"
 #include "MotorCurrentSensor.h"
@@ -76,6 +77,7 @@ namespace mars {
       control = c;
       next_sensor_id = 1;
       addSensorType("RaySensor",&RaySensor::instanciate);
+      addSensorType("RotatingRaySensor",&RotatingRaySensor::instanciate);
       addSensorType("CameraSensor",&CameraSensor::instanciate);
       addSensorType("ScanningSonar",&ScanningSonar::instanciate);
       addSensorType("JointPosition",&JointPositionSensor::instanciate);
@@ -93,6 +95,7 @@ namespace mars {
       addSensorType("NodeAngularVelocity",&NodeAngularVelocitySensor::instanciate);
       addSensorType("MotorCurrent",&MotorCurrentSensor::instanciate);
 
+      addMarsParser("RotatingRaySensor",&RotatingRaySensor::parseConfig);
       addMarsParser("RaySensor",&RaySensor::parseConfig);
       addMarsParser("CameraSensor",&CameraSensor::parseConfig);
       addMarsParser("ScanningSonar",&ScanningSonar::parseConfig);
