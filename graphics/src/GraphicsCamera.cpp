@@ -385,6 +385,8 @@ namespace mars {
                                                bottom, top,
                                                near, far);
 
+      // to disable osg near and far plane caluclation:
+      // mainCamera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
     }
 
 
