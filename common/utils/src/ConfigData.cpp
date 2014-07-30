@@ -31,15 +31,15 @@ namespace mars {
       YAML::Parser parser(in);
       YAML::Node doc, node;
       while(parser.GetNextDocument(doc)) {
-	if(doc.Type() == YAML::NodeType::Map) {
-	  return parseConfigMapFromYamlNode(doc);
-	} else {
-	  fprintf(stderr,
+        if(doc.Type() == YAML::NodeType::Map) {
+          return parseConfigMapFromYamlNode(doc);
+        } else {
+          fprintf(stderr,
                   "CFGManager::ConfigMapFromYaml currently only supports "
                   "mapping types at the root level. please contact the "
                   "developers if you need support for other types.\n");
-	  return ConfigMap();
-	}
+          return ConfigMap();
+        }
       }
       // if there is no valid document return a empty ConfigMap
       return ConfigMap();
@@ -118,8 +118,8 @@ namespace mars {
     static ConfigItem parseConfigItemFromYamlNode(const YAML::Node &n) {
       ConfigItem item;
       if(n.Type() == YAML::NodeType::Scalar) {
-	std::string s;
-	n.GetScalar(s);
+        std::string s;
+        n.GetScalar(s);
         item.setUnparsedString(s);
       }
       return item;
@@ -128,18 +128,18 @@ namespace mars {
     static ConfigVector parseConfigVectorFromYamlNode(const YAML::Node &n) {
       ConfigVector vec;
       if(n.Type() == YAML::NodeType::Sequence) {
-	YAML::Iterator it;
-	for(it = n.begin(); it != n.end(); ++it) {
-	  ConfigItem item;
-	  if(it->Type() == YAML::NodeType::Scalar) {
-	    item = parseConfigItemFromYamlNode(*it);
-	  } else if(it->Type() == YAML::NodeType::Sequence) {
-	    item[""] = parseConfigVectorFromYamlNode(*it);
-	  } else if(it->Type() == YAML::NodeType::Map) {
-	    item.children = parseConfigMapFromYamlNode(*it);
-	  }
-	  vec.push_back(item);
-	}
+        YAML::Iterator it;
+        for(it = n.begin(); it != n.end(); ++it) {
+          ConfigItem item;
+          if(it->Type() == YAML::NodeType::Scalar) {
+            item = parseConfigItemFromYamlNode(*it);
+          } else if(it->Type() == YAML::NodeType::Sequence) {
+            item[""] = parseConfigVectorFromYamlNode(*it);
+          } else if(it->Type() == YAML::NodeType::Map) {
+            item.children = parseConfigMapFromYamlNode(*it);
+          }
+          vec.push_back(item);
+        }
       }
       return vec;
     }
