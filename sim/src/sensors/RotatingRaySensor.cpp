@@ -186,11 +186,6 @@ namespace mars {
       package.get(rotationIndices[3], &orientation.w());
   
       have_update = true;
-
-      for(int i=0; i<data.size(); i++) {
-          utils::Vector tmpvec = orientation_offset * orientation * directions[i];
-          fprintf(stderr, "i: %f, %f, %f, %f\n", data[i], tmpvec.x(), tmpvec.y(), tmpvec.z());
-      }
     }
 
     void RotatingRaySensor::update(std::vector<draw_item>* drawItems) {
