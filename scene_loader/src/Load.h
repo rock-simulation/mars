@@ -104,7 +104,7 @@ namespace mars {
       unsigned int loadController(utils::ConfigMap config);
       unsigned int loadGraphic(utils::ConfigMap config);
       unsigned int loadLight(utils::ConfigMap config);
-
+      void checkEncodings();
     };
 
   } // end of namespace scene_loader

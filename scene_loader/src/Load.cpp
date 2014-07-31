@@ -105,6 +105,7 @@ namespace mars {
     }
 
     unsigned int Load::parseScene() {
+      checkEncodings();
       //  HandleFileNames h_filenames;
       vector<string> v_filesToLoad;
       QString xmlErrorMsg="";
@@ -433,6 +434,39 @@ namespace mars {
       }
 
       // we can or should also iterate over the attributes
+    }
+
+    void Load::checkEncodings(){
+        bool existing = true;
+        QString str("<xml><easter_egg>3.1418</easter_egg></xml>");
+        QString tmpFilename = QString(tmpPath.c_str()) + QString("mars-encoding-check");
+        QFile tmpFile(tmpFilename);
+        if(!QFile::exists(tmpFilename)){
+            tmpFile.open(QIODevice::WriteOnly);
+            QTextStream out(&tmpFile);
+            out << str;
+            tmpFile.close();
+            existing = false;
+        }
+        if(!tmpFile.open(QIODevice::ReadOnly)){
+            LOG_FATAL("Cannot open language checking file\n");
+            exit(-1);
+        }
+        QDomDocument doc;
+        if(!doc.setContent(&tmpFile, false)){
+            LOG_FATAL("Cannot parse language checking file\n");
+            exit(-2);
+        }
+        QDomElement root = doc.documentElement();
+        QDomElement tmpElement;
+        if(root.elementsByTagName(QString("easter_egg")).at(0).toElement().text().toDouble() != 3.1418){
+            LOG_ERROR("Encoding of the system is invalid, therefore Scene loading will fail quitting here to prevent errors later");
+            exit(-3);
+        }
+        tmpFile.close();
+        if(!existing){
+           tmpFile.remove();
+        }
     }
 
   } // end of namespace scene_loader
