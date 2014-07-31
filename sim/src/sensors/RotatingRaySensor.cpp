@@ -34,6 +34,7 @@
 
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <cmath>
 #include <cstdio>
@@ -61,6 +62,13 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
+      double calc_ms = 0.0;
+      control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
+      double nsamples = (1000/fmax(updateRate, calc_ms));
+      if (config.turning_speed <= 0) {
+          config.turning_speed = 1.0/config.width;
+      }
+      turning_step = (config.turning_speed*2*M_PI)/nsamples;
 
       this->attached_node = config.attached_node;
 
@@ -113,7 +121,7 @@ namespace mars {
             tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
             directions.push_back(tmp);
             vpos += inc;
-            if (vpos > config.height) {
+            if (vpos > (config.height-1)) {
                 vpos %= config.height-1;
             }
             tmp = (orientation * tmp);
@@ -127,7 +135,7 @@ namespace mars {
         if(control->graphics)
           control->graphics->addDrawItems(&draw);
         
-    
+        pointcloud.reserve(N*nsamples);
         assert(N == data.size());
       }
     }
@@ -143,6 +151,16 @@ namespace mars {
       for(unsigned int i=0; i<data.size(); i++) {
         result[i] = data[i];
       }
+      return result;
+    }
+
+    std::vector<double> RotatingRaySensor::getPointCloud() {
+      std::vector<double> result = pointcloud;
+      //result.resize(pointcloud.size());
+      //for(unsigned int i=0; i<pointcloud.size(); i++) {
+      //  result[i] = pointcloud[i];
+      //}
+      pointcloud.clear();
       return result;
     }
 
@@ -184,6 +202,10 @@ namespace mars {
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
+
+
+
+      pointcloud.insert(pointcloud.end(), data.begin(), data.end());
   
       have_update = true;
     }
@@ -210,14 +232,13 @@ namespace mars {
     }
 
     double RotatingRaySensor::turn() {
-        turning_offset += config.turning_step;
-        if (turning_offset > 360) {
-            turning_offset -= 360;
+        turning_offset += turning_step;
+        if (turning_offset > 2*M_PI) {
+            turning_offset -= 2*M_PI;
         }
         //fprintf(stderr, "turning_offset: %f\n",turning_offset);
-        double radoffset = turning_offset/180.0*M_PI;
-        orientation_offset = utils::angleAxisToQuaternion(radoffset, utils::Vector(0.0, 0.0, 1.0));
-        return radoffset;
+        orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
+        return turning_offset;
     }
 
     int RotatingRaySensor::getNRays() {
@@ -252,8 +273,10 @@ namespace mars {
         cfg->downtilt = it->second[0].getDouble();
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
-      if((it = config->find("turning_step")) != config->end())
-        cfg->turning_step = it->second[0].getDouble();
+      if((it = config->find("turning_speed")) != config->end())
+        cfg->turning_speed = it->second[0].getDouble();
+      if((it = config->find("increment")) != config->end())
+              cfg->increment = it->second[0].getDouble();
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -289,7 +312,8 @@ namespace mars {
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
       cfg["downtilt"][0] = ConfigItem(config.downtilt);
       cfg["rate"][0] = ConfigItem(config.updateRate);
-      cfg["turning_step"][0] = ConfigItem(config.turning_step);
+      cfg["turning_speed"][0] = ConfigItem(config.turning_speed);
+      cfg["increment"][0] = ConfigItem(config.increment);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);

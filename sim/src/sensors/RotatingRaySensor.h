@@ -56,8 +56,8 @@ namespace mars {
         downtilt = 10/360*2*M_PI;
         attached_node = 0;
         maxDistance = 100.0;
-        turning_step = 0.4; //turning step in degrees
-        increment = 7;
+        turning_speed = 1; //turning speed in Hz
+        increment = 1;
         draw_rays = true;
       }
 
@@ -70,7 +70,7 @@ namespace mars {
       double opening_height;
       double downtilt;
       double maxDistance;
-      double turning_step;
+      double turning_speed;
       int increment;
       bool draw_rays;
     };
@@ -88,6 +88,7 @@ namespace mars {
       ~RotatingRaySensor(void);
   
       std::vector<double> getSensorData() const; 
+      std::vector<double> getPointCloud();
       int getSensorData(double*) const; 
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
@@ -106,11 +107,13 @@ namespace mars {
 
     private:
       std::vector<utils::Vector> directions;
+      std::vector<double> pointcloud;
       bool have_update;
       double turning_offset;
       utils::Quaternion orientation_offset;
       long positionIndices[3];
       long rotationIndices[4];
+      double turning_step;
     };
 
   } // end of namespace sim
