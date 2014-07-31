@@ -147,33 +147,38 @@ namespace mars {
 
     std::vector<double> RotatingRaySensor::getSensorData() const {
       std::vector<double> result;
-      result.resize(data.size());
       for(unsigned int i=0; i<data.size(); i++) {
-        result[i] = data[i];
+        if(data[i] <= config.maxDistance) {
+            utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+            result.push_back(data[i]);
+            result.push_back(tmpvec.x());
+            result.push_back(tmpvec.y());
+            result.push_back(tmpvec.z());
+        }
       }
       return result;
     }
 
     std::vector<double> RotatingRaySensor::getPointCloud() {
-      std::vector<double> result = pointcloud;
-      //result.resize(pointcloud.size());
-      //for(unsigned int i=0; i<pointcloud.size(); i++) {
-      //  result[i] = pointcloud[i];
-      //}
+      std::vector<double> result = pointcloud;      
       pointcloud.clear();
       return result;
     }
 
-    int RotatingRaySensor::getSensorData(double *data_) const {
-      data_ = (double*)malloc(data.size()*4*sizeof(double));
+    int RotatingRaySensor::getSensorData(double** data_) const {
+      *data_ = (double*)malloc(data.size()*4*sizeof(double));
+      int counter = 0;
       for(unsigned int i=0; i<data.size(); i+=4) {
-        utils::Vector tmpvec = orientation_offset * orientation * directions[i];
-        data_[i] = data[i];
-        data_[i+1] = tmpvec.x();
-        data_[i+2] = tmpvec.y();
-        data_[i+3] = tmpvec.z();
+        if(data[i] <= config.maxDistance) {
+            utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+            (*data_)[i] = data[i];
+            (*data_)[i+1] = tmpvec.x();
+            (*data_)[i+2] = tmpvec.y();
+            (*data_)[i+3] = tmpvec.z();
+            counter++;
+        }
       }
-      return data.size();
+      return counter;
     }
 
     void RotatingRaySensor::receiveData(const data_broker::DataInfo &info,
@@ -203,9 +208,14 @@ namespace mars {
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
 
-
-
-      pointcloud.insert(pointcloud.end(), data.begin(), data.end());
+      // Fills the pointcloud vector with (dist_m, x, y, z).
+      for(unsigned int i=0; i<data.size(); i+=4) {
+        utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+        pointcloud.push_back(data[i]);
+        pointcloud.push_back(tmpvec.x());
+        pointcloud.push_back(tmpvec.y());
+        pointcloud.push_back(tmpvec.z());
+      }
   
       have_update = true;
     }

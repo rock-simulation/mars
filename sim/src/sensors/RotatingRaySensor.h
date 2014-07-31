@@ -89,7 +89,7 @@ namespace mars {
   
       std::vector<double> getSensorData() const; 
       std::vector<double> getPointCloud();
-      int getSensorData(double*) const; 
+      int getSensorData(double**) const; 
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
