@@ -108,16 +108,20 @@ namespace mars {
         item.t_width = item.t_height = 0;
         item.get_light = 0.0;
 
-        // now calculate the directions in which the rays point
+        /* The following places the lasers around the scanner as follows:
+         * There are no two lasers on the same horizontal angle. Instead, each successive laser is
+         * placed one horizontal angle step further, with the *increment* determining how many
+         * vertical 'slots' are skipped. Increasing the *increment* up to about half the number of
+         * vertical slots will lead to the laser being more spread out, further increase will
+         * mirror the same patterns as reached before.
+         */
         int N = config.width * config.height;
         double hAngle = 2*M_PI/N;
         double vAngle = config.opening_height/(config.height-1);
         double maxheight = config.opening_height/2-config.downtilt;
         int vpos = 0;
         int inc = config.increment;
-        //fprintf(stderr, "Placing rays...\n");
         for(i=0; i<N; i++){
-            //fprintf(stderr, "%i: %f/%f/%f  vpos:%i, vAngle: %f, z = %f\n", i, cos(i*hAngle), sin(i*hAngle), sin(maxheight-(vpos*vAngle)), vpos, vAngle, maxheight-(vpos*vAngle));
             tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
             directions.push_back(tmp);
             vpos += inc;

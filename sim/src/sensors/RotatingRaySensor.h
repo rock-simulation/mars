@@ -47,8 +47,8 @@ namespace mars {
     public:
       RotatingRayConfig(){
         name = "Unknown RaySensor";
-        width=5; //number of horizontal replicates
-        height=32; //number of lasers
+        width=5; //number of horizontal replicates of vertical laser bands
+        height=32; //number of lasers in vertical dimension
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=2*M_PI; //this means we cover the entire 360 degrees
@@ -57,7 +57,7 @@ namespace mars {
         attached_node = 0;
         maxDistance = 100.0;
         turning_speed = 1; //turning speed in Hz
-        increment = 1;
+        increment = 1; // how many lasers are skipped vertically with every horizontal step
         draw_rays = true;
       }
 
