@@ -81,7 +81,7 @@ namespace mars {
       ~RaySensor(void);
   
       std::vector<double> getSensorData() const; 
-      int getSensorData(double*) const; 
+      int getSensorData(double**) const; 
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
