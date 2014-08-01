@@ -1345,7 +1345,7 @@ namespace mars {
         if(rotRaySensor){
             int N = rotRaySensor->getNRays();
             double hAngle = 2*M_PI/N;
-            double vAngle = rotRaySensor->config.opening_height/(rotRaySensor->config.height-1);
+            double vAngle = rotRaySensor->config.opening_height/(rotRaySensor->config.lasers-1);
             double maxheight = rotRaySensor->config.opening_height/2-rotRaySensor->config.downtilt;
             int vpos = 0;
             int inc = rotRaySensor->config.increment;
@@ -1362,8 +1362,8 @@ namespace mars {
                 dGeomSetCategoryBits(sle.geom, 32768);
                 direction = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
                 vpos += inc;
-                if (vpos > (rotRaySensor->config.height-1)) {
-                    vpos %= rotRaySensor->config.height-1;
+                if (vpos > (rotRaySensor->config.lasers-1)) {
+                    vpos %= rotRaySensor->config.lasers-1;
                 }
                 //direction = QVRotate(sensor.rotation, direction);
                 //direction = (rotRaySensor->getOrientation() * direction);

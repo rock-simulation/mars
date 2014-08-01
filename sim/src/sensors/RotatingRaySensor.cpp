@@ -52,7 +52,7 @@ namespace mars {
     }
 
     RotatingRaySensor::RotatingRaySensor(ControlCenter *control, RotatingRayConfig config):
-      BasePolarIntersectionSensor(config.id, config.name, config.width*config.height,
+      BasePolarIntersectionSensor(config.id, config.name, config.bands*config.lasers,
                                   1, config.opening_width,
                                   config.opening_height),
       SensorInterface(control), config(config) {
@@ -61,11 +61,12 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
+      nsamples = 0;
       double calc_ms = 0.0;
       control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
       double nsamples = (1000/fmax(updateRate, calc_ms));
       if (config.turning_speed <= 0) {
-          config.turning_speed = 1.0/config.width;
+          config.turning_speed = 1.0/config.bands;
       }
       turning_step = (config.turning_speed*2*M_PI)/nsamples;
 
@@ -114,9 +115,9 @@ namespace mars {
          * vertical slots will lead to the laser being more spread out, further increase will
          * mirror the same patterns as reached before.
          */
-        int N = config.width * config.height;
+        int N = getNRays();
         double hAngle = 2*M_PI/N;
-        double vAngle = config.opening_height/(config.height-1);
+        double vAngle = config.opening_height/(config.lasers-1);
         double maxheight = config.opening_height/2-config.downtilt;
         int vpos = 0;
         int inc = config.increment;
@@ -124,8 +125,8 @@ namespace mars {
             tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
             directions.push_back(tmp);
             vpos += inc;
-            if (vpos > (config.height-1)) {
-                vpos %= config.height-1;
+            if (vpos > (config.lasers-1)) {
+                vpos %= config.lasers-1;
             }
             tmp = (orientation * tmp);
             item.start = position;
@@ -246,7 +247,7 @@ namespace mars {
 
     double RotatingRaySensor::turn() {
         turning_offset += turning_step;
-        if (turning_offset > 2*M_PI) {
+        if (turning_offset > (2*M_PI/config.bands)) {
             turning_offset -= 2*M_PI;
         }
         //fprintf(stderr, "turning_offset: %f\n",turning_offset);
@@ -255,7 +256,7 @@ namespace mars {
     }
 
     int RotatingRaySensor::getNRays() {
-        return config.width * config.height;
+        return config.bands * config.lasers;
     }
 
     BaseConfig* RotatingRaySensor::parseConfig(ControlCenter *control,
@@ -270,10 +271,10 @@ namespace mars {
       }
 
       ConfigMap::iterator it;
-      if((it = config->find("width")) != config->end())
-        cfg->width = it->second[0].getInt();
-      if((it = config->find("height")) != config->end())
-        cfg->height = it->second[0].getInt();
+      if((it = config->find("bands")) != config->end())
+        cfg->bands = it->second[0].getInt();
+      if((it = config->find("lasers")) != config->end())
+        cfg->lasers = it->second[0].getInt();
       if((it = config->find("opening_width")) != config->end())
         cfg->opening_width = it->second[0].getDouble();
       if((it = config->find("opening_height")) != config->end())
@@ -289,7 +290,9 @@ namespace mars {
       if((it = config->find("turning_speed")) != config->end())
         cfg->turning_speed = it->second[0].getDouble();
       if((it = config->find("increment")) != config->end())
-              cfg->increment = it->second[0].getDouble();
+              cfg->increment = it->second[0].getULong();
+      if((it = config->find("subresolution")) != config->end())
+              cfg->subresolution = it->second[0].getULong();
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -317,8 +320,8 @@ namespace mars {
       cfg["id"][0] = ConfigItem(config.id);
       cfg["type"][0] = ConfigItem("RaySensor");
       cfg["attached_node"][0] = ConfigItem(config.attached_node);
-      cfg["width"][0] = ConfigItem(config.width);
-      cfg["height"][0] = ConfigItem(config.height);
+      cfg["bands"][0] = ConfigItem(config.bands);
+      cfg["lasers"][0] = ConfigItem(config.lasers);
       cfg["opening_width"][0] = ConfigItem(config.opening_width);
       cfg["opening_height"][0] = ConfigItem(config.opening_height);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
@@ -327,6 +330,7 @@ namespace mars {
       cfg["rate"][0] = ConfigItem(config.updateRate);
       cfg["turning_speed"][0] = ConfigItem(config.turning_speed);
       cfg["increment"][0] = ConfigItem(config.increment);
+      cfg["subresolution"][0] = ConfigItem(config.subresolution);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);
