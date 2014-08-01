@@ -37,6 +37,7 @@
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 
 namespace mars {
@@ -117,6 +118,7 @@ namespace mars {
       long rotationIndices[4];
       double turning_step;
       int nsamples;
+      mars::utils::Mutex mutex_data;
     };
 
   } // end of namespace sim

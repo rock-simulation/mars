@@ -160,6 +160,7 @@ namespace mars {
     }
 
     std::vector<double> RotatingRaySensor::getPointCloud() {
+      mutex_data.lock();
       std::vector<double> result;
       if (full_scan) {
         result.reserve(pointcloud.size());
@@ -167,6 +168,7 @@ namespace mars {
         pointcloud.clear();
         full_scan = false;
       }
+      mutex_data.unlock();
       return result;
     }
 
@@ -213,6 +215,7 @@ namespace mars {
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
 
+      mutex_data.lock();
       // Fills the pointcloud vector with (dist_m, x, y, z).
       for(unsigned int i=0; i<data.size(); i+=4) {
         if (data[i] < config.maxDistance) {
@@ -231,6 +234,7 @@ namespace mars {
           advance(it2,overhead-1);
           pointcloud.erase(it1, it2);
       }
+      mutex_data.unlock();
       fprintf(stderr, "nsamples: %i, getNRays: %i\n", nsamples, getNRays());
       fprintf(stderr, "overhead: %i, nsamples*getNRays: %i\n", overhead, nsamples*getNRays());
       fprintf(stderr, "pointcloud.size: %i\n", (int)pointcloud.size());
