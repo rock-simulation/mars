@@ -444,6 +444,8 @@ namespace mars {
       // todo: if we don't have any joints connected we need some more
       //       special handling and change the handling below
       //       config["movable"] ?!?
+      // TODO: we should also read materials from the visual object here, as URDF does not
+      //         necessarily define them on the top level of the file
 
       config["movable"] = true;
 
