@@ -19,10 +19,9 @@
  */
 
 /*
- *  RaySensor.cpp
- *  QTVersion
+ *  RotatingRaySensor.cpp
  *
- *  Created by Malte Römmerann
+ *  Created by Malte Langosz, Kai von Szadkowski
  *
  */
 

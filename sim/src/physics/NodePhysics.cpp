@@ -1362,7 +1362,7 @@ namespace mars {
                 dGeomSetCategoryBits(sle.geom, 32768);
                 direction = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
                 vpos += inc;
-                if (vpos > rotRaySensor->config.height) {
+                if (vpos > (rotRaySensor->config.height-1)) {
                     vpos %= rotRaySensor->config.height-1;
                 }
                 //direction = QVRotate(sensor.rotation, direction);

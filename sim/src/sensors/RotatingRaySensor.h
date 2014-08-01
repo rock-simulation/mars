@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2014, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,10 +19,9 @@
  */
 
 /*
- *  RaySensor.h
- *  QTVersion
+ *  RotatingRaySensor.h
  *
- *  Created by Malte Roemmermann
+ *  Created by Malte Langosz, Kai von Szadkowski
  *
  */
 
@@ -53,7 +52,7 @@ namespace mars {
         ori_offset.setIdentity();
         opening_width=2*M_PI; //this means we cover the entire 360 degrees
         opening_height=40.0/360.0*2.0*M_PI; //
-        downtilt = 10/360*2*M_PI;
+        downtilt = 10/360*2*M_PI; //how many rads the rays of the sensor is tilted downwards
         attached_node = 0;
         maxDistance = 100.0;
         turning_speed = 1; //turning speed in Hz
