@@ -58,7 +58,7 @@ namespace mars {
         maxDistance = 100.0;
         turning_speed = 1; //turning speed in Hz
         draw_rays = true;
-        subresolution = 0; //factor to increase point cloud resolution through multiple scans
+        subresolution = 1; //factor to increase point cloud resolution through multiple scans
       }
 
       unsigned long attached_node;
@@ -108,8 +108,9 @@ namespace mars {
 
     private:
       std::vector<utils::Vector> directions;
-      std::vector<double> pointcloud;
+      std::list<double> pointcloud;
       bool have_update;
+      bool full_scan;
       double turning_offset;
       utils::Quaternion orientation_offset;
       long positionIndices[3];

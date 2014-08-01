@@ -61,10 +61,9 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
-      nsamples = 0;
       double calc_ms = 0.0;
       control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
-      double nsamples = (1000/fmax(updateRate, calc_ms));
+      nsamples = (1000/fmax(updateRate, calc_ms));
       if (config.turning_speed <= 0) {
           config.turning_speed = 1.0/config.bands;
       }
@@ -75,9 +74,9 @@ namespace mars {
       std::string groupName, dataName;
       drawStruct draw;
       draw_item item;
-      int i;
       Vector tmp;
       have_update = false;
+      full_scan = false;
       for(int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
       for(int i = 0; i < 4; ++i)
@@ -115,13 +114,13 @@ namespace mars {
          * vertical slots will lead to the laser being more spread out, further increase will
          * mirror the same patterns as reached before.
          */
-        int N = getNRays();
+        unsigned int N = getNRays();
         double hAngle = 2*M_PI/N;
         double vAngle = config.opening_height/(config.lasers-1);
         double maxheight = config.opening_height/2-config.downtilt;
         int vpos = 0;
         int inc = config.increment;
-        for(i=0; i<N; i++){
+        for(unsigned int i=0; i<N; i++){
             tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
             directions.push_back(tmp);
             vpos += inc;
@@ -135,11 +134,8 @@ namespace mars {
             draw.drawItems.push_back(item);
         }
 
-    
         if(control->graphics)
           control->graphics->addDrawItems(&draw);
-        
-        pointcloud.reserve(N*nsamples);
         assert(N == data.size());
       }
     }
@@ -164,8 +160,13 @@ namespace mars {
     }
 
     std::vector<double> RotatingRaySensor::getPointCloud() {
-      std::vector<double> result = pointcloud;      
-      pointcloud.clear();
+      std::vector<double> result;
+      if (full_scan) {
+        result.reserve(pointcloud.size());
+        result.insert(result.end(),pointcloud.begin(),pointcloud.end());
+        pointcloud.clear();
+        full_scan = false;
+      }
       return result;
     }
 
@@ -214,12 +215,25 @@ namespace mars {
 
       // Fills the pointcloud vector with (dist_m, x, y, z).
       for(unsigned int i=0; i<data.size(); i+=4) {
-        utils::Vector tmpvec = orientation_offset * orientation * directions[i];
-        pointcloud.push_back(data[i]);
-        pointcloud.push_back(tmpvec.x());
-        pointcloud.push_back(tmpvec.y());
-        pointcloud.push_back(tmpvec.z());
+        if (data[i] < config.maxDistance) {
+          fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
+          utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+          pointcloud.push_back(data[i]);
+          pointcloud.push_back(tmpvec.x());
+          pointcloud.push_back(tmpvec.y());
+          pointcloud.push_back(tmpvec.z());
+        }
       }
+      int overhead = pointcloud.size() - (nsamples*getNRays());
+      if (overhead > 0) {
+          std::list<double>::iterator it1,it2;
+          it1 = it2 = pointcloud.begin();
+          advance(it2,overhead-1);
+          pointcloud.erase(it1, it2);
+      }
+      fprintf(stderr, "nsamples: %i, getNRays: %i\n", nsamples, getNRays());
+      fprintf(stderr, "overhead: %i, nsamples*getNRays: %i\n", overhead, nsamples*getNRays());
+      fprintf(stderr, "pointcloud.size: %i\n", (int)pointcloud.size());
   
       have_update = true;
     }
@@ -248,9 +262,10 @@ namespace mars {
     double RotatingRaySensor::turn() {
         turning_offset += turning_step;
         if (turning_offset > (2*M_PI/config.bands)) {
-            turning_offset -= 2*M_PI;
+            full_scan = true;
+            turning_offset -= (2*M_PI/config.bands) - (turning_step/config.subresolution);
         }
-        //fprintf(stderr, "turning_offset: %f\n",turning_offset);
+        //fprintf(stderr, "turning_offset: %f, %f, %i\n",turning_offset,turning_step,config.subresolution);
         orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
         return turning_offset;
     }
