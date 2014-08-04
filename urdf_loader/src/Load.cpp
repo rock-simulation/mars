@@ -151,6 +151,63 @@ namespace mars {
           }
         }
       }
+      for(it = config["nodes"].begin();
+          it!=config["nodes"].end(); ++it) {
+        handleURIs(&it->children);
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        for(; nIt!=nodeList.end(); ++nIt) {
+          if((std::string)(*nIt)["name"][0] == (std::string)(*it)["name"][0]) {
+            utils::ConfigMap::iterator cIt = it->children.begin();
+            for(; cIt!=it->children.end(); ++cIt) {
+              (*nIt)[cIt->first] = cIt->second;
+            }
+            break;
+          }
+        }
+      }
+
+      for(it = config["visual"].begin();
+          it!=config["visual"].end(); ++it) {
+        handleURIs(&it->children);
+        std::string cmpName = (std::string)(*it)["name"][0];
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        if(visualNameMap.find(cmpName) != visualNameMap.end()) {
+          cmpName = visualNameMap[cmpName];
+          for(; nIt!=nodeList.end(); ++nIt) {
+            if((std::string)(*nIt)["name"][0] == cmpName) {
+              utils::ConfigMap::iterator cIt = it->children.begin();
+              for(; cIt!=it->children.end(); ++cIt) {
+                if(cIt->first != "name") {
+                  (*nIt)[cIt->first] = cIt->second;
+                }
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      for(it = config["collision"].begin();
+          it!=config["collision"].end(); ++it) {
+        handleURIs(&it->children);
+        std::string cmpName = (std::string)(*it)["name"][0];
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        if(collisionNameMap.find(cmpName) != collisionNameMap.end()) {
+          cmpName = collisionNameMap[cmpName];
+          for(; nIt!=nodeList.end(); ++nIt) {
+            if((std::string)(*nIt)["name"][0] == cmpName) {
+              utils::ConfigMap::iterator cIt = it->children.begin();
+              for(; cIt!=it->children.end(); ++cIt) {
+                if(cIt->first != "name") {
+                  (*nIt)[cIt->first] = cIt->second;
+                }
+              }
+              break;
+            }
+          }
+        }
+      }
+
       for(it = config["lights"].begin(); it!=config["lights"].end(); ++it) {
         handleURIs(&it->children);
         lightList.push_back((*it).children);
@@ -213,6 +270,9 @@ namespace mars {
         if(link->getParent()->inertial) {
           parentInertialPose = link->getParent()->inertial->origin;
         }
+        else if(link->getParent()->collision) {
+          parentInertialPose = link->getParent()->collision->origin;
+        }
         unsigned long parentID = nodeIDMap[link->getParent()->name];
         (*map)["relativeid"] = parentID;
       }
@@ -239,8 +299,12 @@ namespace mars {
                            jointPose.rotation * inertialPose.position);
       goalPose.position = (parentInertialPose.rotation.GetInverse()*
                            goalPose.position);
+      /*
       goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
                            inertialPose.rotation*jointPose.rotation);
+      */
+      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
+                           parentInertialPose.rotation.GetInverse());
 
       Vector v(goalPose.position.x, goalPose.position.y, goalPose.position.z);
       vectorToConfigItem(&(*map)["position"][0], &v);
@@ -258,7 +322,7 @@ namespace mars {
         urdf::Pose parentPose = getGlobalPose(pLink);
         globalPose.position = parentPose.rotation * globalPose.position;
         globalPose.position = globalPose.position + parentPose.position;
-        globalPose.rotation = globalPose.rotation * parentPose.rotation;
+        globalPose.rotation = parentPose.rotation * globalPose.rotation;
       }
       return globalPose;
     }
@@ -330,7 +394,7 @@ namespace mars {
       toPose_.position.y *= -1;
       toPose_.position.z *= -1;
       p = pose_.position + toPose_.position;
-      p = toPose_.rotation * p;
+      p = toPose_.rotation.GetInverse() * p;
       r = (toPose_.rotation.GetInverse() *
            pose_.rotation);
       *v = Vector(p.x, p.y, p.z);
@@ -493,6 +557,7 @@ namespace mars {
       calculatePose(&config, link);
 
       if(loadVisual) {
+        visualNameMap[link->visual->name] = link->name;
         handleVisual(&config, link->visual);
         // caculate visual position offset
         convertPose(link->visual->origin, link, &v, &q);
@@ -507,6 +572,7 @@ namespace mars {
       }
 
       if(loadCollision) {
+        collisionNameMap[link->collision->name] = link->name;
         handleCollision(&config, link->collision);
         // the first visual object is loaded
         collisionArrayIndex = 1;
@@ -547,6 +613,7 @@ namespace mars {
         }
         else {
           childNode["name"] = collision->name;
+          collisionNameMap[collision->name] = link->name;
         }
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
@@ -563,6 +630,7 @@ namespace mars {
         collisionArrayIndex++;
 
         if(visual) {
+          visualNameMap[visual->name] = link->name;
           handleVisual(&childNode, visual);
           // convert the pose into the same coordinate system like as the node
           convertPose(visual->origin, link, &v, &q);
@@ -594,6 +662,7 @@ namespace mars {
         }
         else {
           childNode["name"] = visual->name;
+          visualNameMap[visual->name] = visual->name;
         }
         childNode["groupid"] = config["groupid"];
         childNode["noPhysical"] = true;
@@ -626,7 +695,7 @@ namespace mars {
         jointIDMap[link->parent_joint->name] = nextJointID-1;
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
-        joint["anchorpos"] = 2;
+        joint["anchorpos"] = ANCHOR_CUSTOM;
         if(link->parent_joint->type == urdf::Joint::REVOLUTE) {
           joint["type"] = "hinge";
         }
@@ -642,11 +711,17 @@ namespace mars {
         }
 
         urdf::Pose pose = getGlobalPose(link);
-        pose.position = pose.rotation * link->parent_joint->axis;
+        urdf::Pose pose2;
+        pose2.position = pose.rotation * link->parent_joint->axis;
+        v = Vector(pose2.position.x,
+                   pose2.position.y,
+                   pose2.position.z);
+        vectorToConfigItem(&joint["axis1"][0], &v);
+
         v = Vector(pose.position.x,
                    pose.position.y,
                    pose.position.z);
-        vectorToConfigItem(&joint["axis1"][0], &v);
+        vectorToConfigItem(&joint["anchor"][0], &v);
 
         debugMap["joints"] += joint;
         jointList.push_back(joint);
@@ -776,6 +851,9 @@ namespace mars {
         if (it != materialMap.end()) {
           node.material = it->second;
         }
+      }
+      else {
+        node.material.diffuseFront = Color(0.4, 0.4, 0.4, 1.0);
       }
 
       NodeId oldId = node.index;
