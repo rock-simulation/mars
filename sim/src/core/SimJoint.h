@@ -274,7 +274,7 @@ namespace mars {
       utils::Vector f1, f2;
       utils::Vector t1, t2;
       utils::Vector axis1_torque, axis2_torque, joint_load;
-      interfaces::sReal motor_torque;
+      interfaces::sReal motor_torque, invert;
       utils::Vector axis1InNode1;
       utils::Vector node1ToAnchor;
 

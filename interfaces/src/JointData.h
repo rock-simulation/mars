@@ -88,7 +88,7 @@ namespace mars {
       sReal spring_const_constraint_axis2;
       sReal angle1_offset;
       sReal angle2_offset;
-
+      bool invertAxis;
     }; // end of struct JointData
 
   } // end of namespace interfaces
