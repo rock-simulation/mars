@@ -516,7 +516,7 @@ namespace mars {
       // we do most of the special case handling here:
       { /** special case handling **/
         bool needGroupID = false;
-        if(link->visual_array.size() > 1 &&
+        if(link->visual_array.size() > 1 ||
            link->collision_array.size() > 1) {
           needGroupID = true;
         }
@@ -665,19 +665,17 @@ namespace mars {
           visualNameMap[visual->name] = visual->name;
         }
         childNode["groupid"] = config["groupid"];
-        childNode["noPhysical"] = true;
+        childNode["noPhysical"] = false;
         childNode["mass"] = 0.0;
-        childNode["density"] = 0.0;
+        childNode["density"] = 1.0;
+        childNode["movable"] = true;
+        childNode["groupid"] = config["groupid"];
 
         handleVisual(&childNode, visual);
-        // todo: change NodeData.cpp not to need this:
-        if(visual->geometry->type != urdf::Geometry::MESH) {
-          childNode["physicmode"] = childNode["origname"];
-        }
+        childNode["physicmode"] = "box";
 
-        // currently we need to set the extend because MARS uses it
-        // also for primitiv visuals
-        childNode["extend"] = childNode["visualsize"];
+        Vector v(0.001, 0.001, 0.001);
+        vectorToConfigItem(&childNode["extend"][0], &v);
         convertPose(visual->origin, link, &v, &q);
         vectorToConfigItem(&childNode["position"][0], &v);
         quaternionToConfigItem(&childNode["rotation"][0], &q);
@@ -880,6 +878,7 @@ namespace mars {
 
     unsigned int Load::loadJoint(utils::ConfigMap config) {
       JointData joint;
+      joint.invertAxis = true;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = joint.fromConfigMap(&config, tmpPath,
                                       control->loadCenter);
