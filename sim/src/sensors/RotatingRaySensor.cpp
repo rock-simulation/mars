@@ -120,6 +120,7 @@ namespace mars {
         double maxheight = config.opening_height/2-config.downtilt;
         int vpos = 0;
         int inc = config.increment;
+        
         for(unsigned int i=0; i<N; i++){
             tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
             directions.push_back(tmp);
@@ -133,6 +134,8 @@ namespace mars {
             item.end *= data[i];
             draw.drawItems.push_back(item);
         }
+        
+        
 
         if(control->graphics)
           control->graphics->addDrawItems(&draw);
@@ -160,15 +163,21 @@ namespace mars {
     }
 
     std::vector<double> RotatingRaySensor::getPointCloud() {
-      mutex_data.lock();
+      mutex_pointcloud.lock();
       std::vector<double> result;
       if (full_scan) {
-        result.reserve(pointcloud.size());
-        result.insert(result.end(),pointcloud.begin(),pointcloud.end());
+        //result.reserve(pointcloud.size());
+        //result.insert(result.end(),pointcloud.begin(),pointcloud.end());
+        std::list<double>::iterator it = pointcloud.begin();
+        for(; it != pointcloud.end(); it++) {
+            result.push_back(*it);
+        }
+        //result.reserve(pointcloud.size());
+        //result.insert(result.end(),pointcloud.begin(),pointcloud.end());
         pointcloud.clear();
         full_scan = false;
       }
-      mutex_data.unlock();
+      mutex_pointcloud.unlock();
       return result;
     }
 
@@ -215,11 +224,11 @@ namespace mars {
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
 
-      mutex_data.lock();
+      mutex_pointcloud.lock();
       // Fills the pointcloud vector with (dist_m, x, y, z).
       for(unsigned int i=0; i<data.size(); i+=4) {
         if (data[i] < config.maxDistance) {
-          fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
+          //fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
           utils::Vector tmpvec = orientation_offset * orientation * directions[i];
           pointcloud.push_back(data[i]);
           pointcloud.push_back(tmpvec.x());
@@ -227,17 +236,17 @@ namespace mars {
           pointcloud.push_back(tmpvec.z());
         }
       }
-      int overhead = pointcloud.size() - (nsamples*getNRays());
+      int overhead = pointcloud.size() / 4 - (nsamples*getNRays());
       if (overhead > 0) {
           std::list<double>::iterator it1,it2;
           it1 = it2 = pointcloud.begin();
-          advance(it2,overhead-1);
+          advance(it2,overhead*4);
           pointcloud.erase(it1, it2);
       }
-      mutex_data.unlock();
-      fprintf(stderr, "nsamples: %i, getNRays: %i\n", nsamples, getNRays());
-      fprintf(stderr, "overhead: %i, nsamples*getNRays: %i\n", overhead, nsamples*getNRays());
-      fprintf(stderr, "pointcloud.size: %i\n", (int)pointcloud.size());
+      mutex_pointcloud.unlock();
+      //fprintf(stderr, "nsamples: %i, getNRays: %i\n", nsamples, getNRays());
+      //fprintf(stderr, "overhead: %i, nsamples*getNRays: %i\n", overhead, nsamples*getNRays());
+      //fprintf(stderr, "pointcloud.size: %i\n", (int)pointcloud.size());
   
       have_update = true;
     }
@@ -252,12 +261,14 @@ namespace mars {
     
         if(!(*drawItems)[0].draw_state) {
           for(i=0; i<data.size(); i++) {
-            (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
-            (*drawItems)[i].start = position;
-            (*drawItems)[i].end = (orientation_offset * orientation * directions[i]);
-            (*drawItems)[i].end *= data[i];
-            
-            (*drawItems)[i].end += (*drawItems)[i].start;
+            if(data[i] <= config.maxDistance) {
+                (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
+                (*drawItems)[i].start = position;
+                (*drawItems)[i].end = (orientation_offset * orientation * directions[i]);
+                (*drawItems)[i].end *= data[i];
+                
+                (*drawItems)[i].end += (*drawItems)[i].start;
+            } 
           }
         }
       }

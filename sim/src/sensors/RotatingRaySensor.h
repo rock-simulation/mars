@@ -78,8 +78,8 @@ namespace mars {
     };
 
     class RotatingRaySensor :
-      public interfaces::BasePolarIntersectionSensor , 
-      public interfaces::SensorInterface, 
+      public interfaces::BasePolarIntersectionSensor, //->BaseArraySensor ->BaseNodeSensor->BaseSensor
+      public interfaces::SensorInterface, // Stores the ControlCenter* control pointer.
       public data_broker::ReceiverInterface,
       public interfaces::DrawInterface {
 
@@ -89,14 +89,42 @@ namespace mars {
       RotatingRaySensor(interfaces::ControlCenter *control, RotatingRayConfig config);
       ~RotatingRaySensor(void);
   
+      /**
+       * Allocates memory and stores the distance and the direction (dist_m, x, y, z)
+       * for each of the current rays (one scan line).
+       */
       std::vector<double> getSensorData() const; 
+      
+      /**
+       * Returns a complete 360 degree scan and clears the pointcloud afterwards.
+       */
       std::vector<double> getPointCloud();
+      
+      /** 
+       * Inherited from BaseSensor, implemented from BasePolarIntersectionSensor.
+       * Allocates a double array and stores the current scan line in the
+       * (dist_m, x, y, z) format. 
+       * \warning Allocated memory has to be freed manually.
+      void mutex_pointcloud();
+       */
       int getSensorData(double**) const; 
+      
+      /**
+       * Inherited from ReceiverInterface. Method is called by the DataBroker
+       * as soon as the registered event occurs.
+       */
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
+      
+      /**
+       * Inherited from DrawInterface. Draws the passed items.
+       */
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
 
+      /**
+       * Config methods all part of BaseSensor.
+       */
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                                  utils::ConfigMap *config);
       virtual utils::ConfigMap createConfig() const;
@@ -118,7 +146,7 @@ namespace mars {
       long rotationIndices[4];
       double turning_step;
       int nsamples;
-      mars::utils::Mutex mutex_data;
+      mars::utils::Mutex mutex_pointcloud;
     };
 
   } // end of namespace sim
