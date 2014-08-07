@@ -1340,15 +1340,14 @@ namespace mars {
         sle.updateTime = 0.0;
         //sensor.count_data = sensor.resolution;
         //sensor.data = (sReal*)malloc(sensor.resolution * sizeof(sReal));
-
-        mars::sim::RotatingRaySensor *rotRaySensor = dynamic_cast<RotatingRaySensor*>(sensor);
+   
+        mars::sim::RotatingRaySensor* rotRaySensor = dynamic_cast<RotatingRaySensor*>(sensor);
         if(rotRaySensor){
-            int N = rotRaySensor->getNRays();
-            double hAngle = 2*M_PI/N;
-            double vAngle = rotRaySensor->config.opening_height/(rotRaySensor->config.lasers-1);
-            double maxheight = rotRaySensor->config.opening_height/2-rotRaySensor->config.downtilt;
-            int vpos = 0;
-            int inc = rotRaySensor->config.increment;
+            int N = rotRaySensor->getNumberRays();
+            std::vector<utils::Vector>& directions = rotRaySensor->getDirections();
+            assert(N == directions.size());
+            
+            // Requests and adds the single rays using the local sensor frame.
             for(i=0; i<N; i++){
                 gd = new geom_data;
                 (*gd).setZero();
@@ -1360,13 +1359,9 @@ namespace mars {
                 sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
                 dGeomSetCollideBits(sle.geom, 32768);
                 dGeomSetCategoryBits(sle.geom, 32768);
-                direction = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
-                vpos += inc;
-                if (vpos > (rotRaySensor->config.lasers-1)) {
-                    vpos %= rotRaySensor->config.lasers-1;
-                }
-                //direction = QVRotate(sensor.rotation, direction);
-                //direction = (rotRaySensor->getOrientation() * direction);
+                
+                // Use the precalculated ray directions of the sensor. 
+                direction = /*polarSensor->getOrientation() **/ directions[i];
                 sle.ray_direction = direction;
                 tmp[0] = direction.x();
                 tmp[1] = direction.y();
@@ -1383,7 +1378,6 @@ namespace mars {
                 dGeomDisable(sle.geom);
             }
         } else {
-
             //rad_angle = polarSensor->widthX*; //M_PI*sensor.flare_angle/180;
             rad_steps = polarSensor->getCols(); //rad_angle/(sReal)(sensor.resolution-1);
             rad_start = -((rad_steps-1)/2.0)*polarSensor->stepX; //Starting to Left, because 0 is in front and rock convention posive CCW //(M_PI-rad_angle)/2;
@@ -1431,7 +1425,8 @@ namespace mars {
         sle.sensor = sensor;
         sle.updateTime = 0.0;
         int cols, rows;
-        dVector3 dir, xStep, yStep, xOffset, yOffset;
+        dVector3 dir={0,0,0,0}, xStep={0,0,0,0}, 
+            yStep={0,0,0,0}, xOffset={0,0,0,0}, yOffset={0,0,0,0};
 
         cols = polarGridSensor->getCols();
         rows = polarGridSensor->getRows();
@@ -1529,12 +1524,15 @@ namespace mars {
       const dReal* pos = dGeomGetPosition(nGeom);
       const dReal* rot = dGeomGetRotation(nGeom);
       dVector3 dest, tmp, posOffset;
-      utils::Quaternion turnrotation;
-      utils::Vector tmpV;
       dReal steps_size = 1.0, length = 0.0;
       bool done = false;
       int steps = 0;
       dReal worldStep = theWorld->getWorldStep();
+      // RotatingRaySensor
+      utils::Vector tmpV;
+      utils::Quaternion turnrotation;
+      turnrotation.setIdentity();
+      bool rotating_sensor_turned = false;
 
       //New Code
       int i=0;
@@ -1552,10 +1550,15 @@ namespace mars {
           tmpV[0] = elem.ray_direction.x();
           tmpV[1] = elem.ray_direction.y();
           tmpV[2] = elem.ray_direction.z();
-
+          
+          // Applies orientation_offset (z-Rotation) to the laser rays.
           mars::sim::RotatingRaySensor *rotRaySensor = dynamic_cast<RotatingRaySensor*>((*iter).sensor);
           if(rotRaySensor){
-              utils::Quaternion turnrotation = utils::angleAxisToQuaternion(rotRaySensor->turn(), utils::Vector(0.0, 0.0, 1.0));
+              // sensor_list contains each ray independently.
+              if(!rotating_sensor_turned) {
+                turnrotation = rotRaySensor->turn();
+                rotating_sensor_turned = true;
+              }
               //fprintf(stderr, "tmp[%i]: %f, %f, %f\n", i, tmpV.x(), tmpV.y(), tmpV.z());
               tmpV = turnrotation * tmpV;
               //fprintf(stderr, "tmp[%i]: %f, %f, %f\n", i, tmpV.x(), tmpV.y(), tmpV.z());
@@ -1629,7 +1632,7 @@ namespace mars {
           (*polarGridSensor)[elem.index] = elem.gd->value;
           elem.gd->value = polarGridSensor->maxDistance;      
         }
-      }
+      } // end for loop.
     }
 
     /**

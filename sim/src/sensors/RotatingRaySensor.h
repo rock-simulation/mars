@@ -21,7 +21,7 @@
 /*
  *  RotatingRaySensor.h
  *
- *  Created by Malte Langosz, Kai von Szadkowski
+ *  Created by Malte Langosz, Kai von Szadkowski, Stefan Haase
  *
  */
 
@@ -40,6 +40,8 @@
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 
+#include <base/Time.hpp>
+
 namespace mars {
   namespace sim {
 
@@ -53,13 +55,14 @@ namespace mars {
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=2*M_PI; //this means we cover the entire 360 degrees
-        opening_height=40.0/360.0*2.0*M_PI; //
+        opening_height=40.0/180.0*M_PI; //
         downtilt = 10/360*2*M_PI; //how many rads the rays of the sensor is tilted downwards
         attached_node = 0;
         maxDistance = 100.0;
         turning_speed = 1; //turning speed in Hz
         draw_rays = true;
         subresolution = 1; //factor to increase point cloud resolution through multiple scans
+        horizontal_resolution = 0.02;
       }
 
       unsigned long attached_node;
@@ -75,6 +78,7 @@ namespace mars {
       int subresolution;
       int increment;
       bool draw_rays;
+      double horizontal_resolution;
     };
 
     class RotatingRaySensor :
@@ -121,6 +125,15 @@ namespace mars {
        * Inherited from DrawInterface. Draws the passed items.
        */
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
+      
+      /**
+       * Orientation consists of the orientation of the node and the 
+       * orientation of the sensor within the node (orientation_offset / z-Rotation), 
+       * which is changed during each call to handleSensorData() in NodePhysics. 
+       */
+      utils::Quaternion getSensorOrientation() const{
+        return orientation_offset * orientation;
+      }
 
       /**
        * Config methods all part of BaseSensor.
@@ -131,11 +144,16 @@ namespace mars {
 
       const RotatingRayConfig& getConfig() const;
 
-      double turn();
-      int getNRays();
+      utils::Quaternion turn();
+      int getNumberRays();
       RotatingRayConfig config;
+      
+      inline std::vector<utils::Vector>& getDirections() {
+        return directions;
+      }
 
     private:
+      /** Contains the normalized scan directions. */ 
       std::vector<utils::Vector> directions;
       std::list<double> pointcloud;
       bool have_update;
@@ -147,6 +165,8 @@ namespace mars {
       double turning_step;
       int nsamples;
       mars::utils::Mutex mutex_pointcloud;
+      
+      base::Time time_last;
     };
 
   } // end of namespace sim

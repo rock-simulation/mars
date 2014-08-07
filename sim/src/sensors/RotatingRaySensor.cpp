@@ -21,7 +21,7 @@
 /*
  *  RotatingRaySensor.cpp
  *
- *  Created by Malte Langosz, Kai von Szadkowski
+ *  Created by Malte Langosz, Kai von Szadkowski, Stefan Haase
  *
  */
 
@@ -39,6 +39,8 @@
 #include <cstdio>
 #include <cstdlib>
 
+
+
 namespace mars {
   namespace sim {
 
@@ -52,22 +54,30 @@ namespace mars {
     }
 
     RotatingRaySensor::RotatingRaySensor(ControlCenter *control, RotatingRayConfig config):
-      BasePolarIntersectionSensor(config.id, config.name, config.bands*config.lasers,
-                                  1, config.opening_width,
-                                  config.opening_height),
-      SensorInterface(control), config(config) {
+        BasePolarIntersectionSensor(config.id, 
+                                    config.name, 
+                                    config.bands*config.lasers,
+                                    1, 
+                                    config.opening_width,
+                                    config.opening_height),
+        SensorInterface(control), 
+        config(config) {
 
       updateRate = config.updateRate;
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
+      time_last = base::Time::now();
+      full_scan = false;
+      
+        /**
       double calc_ms = 0.0;
       control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
+      std::cout << "calc ms " << calc_ms <<  std::endl;
+    
       nsamples = (1000/fmax(updateRate, calc_ms));
-      if (config.turning_speed <= 0) {
-          config.turning_speed = 1.0/config.bands;
-      }
-      turning_step = (config.turning_speed*2*M_PI)/nsamples;
+      turning_step = (config.turning_speed*2*M_PI)/(nsamples*config.bands);
+      */
 
       this->attached_node = config.attached_node;
 
@@ -82,7 +92,6 @@ namespace mars {
       for(int i = 0; i < 4; ++i)
         rotationIndices[i] = -1;
 
-      control->nodes->addNodeSensor(this);
       bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
       assert(erg);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate)) {
@@ -90,7 +99,7 @@ namespace mars {
 
       position = control->nodes->getPosition(attached_node);
       orientation = control->nodes->getRotation(attached_node);
-      orientation_offset = orientation;
+      orientation_offset.setIdentity();
 
       //Drawing Stuff
       if(config.draw_rays) {
@@ -106,41 +115,79 @@ namespace mars {
         item.texture = "";
         item.t_width = item.t_height = 0;
         item.get_light = 0.0;
+      }
 
-        /* The following places the lasers around the scanner as follows:
-         * There are no two lasers on the same horizontal angle. Instead, each successive laser is
-         * placed one horizontal angle step further, with the *increment* determining how many
-         * vertical 'slots' are skipped. Increasing the *increment* up to about half the number of
-         * vertical slots will lead to the laser being more spread out, further increase will
-         * mirror the same patterns as reached before.
-         */
-        unsigned int N = getNRays();
-        double hAngle = 2*M_PI/N;
-        double vAngle = config.opening_height/(config.lasers-1);
-        double maxheight = config.opening_height/2-config.downtilt;
-        int vpos = 0;
-        int inc = config.increment;
-        
-        for(unsigned int i=0; i<N; i++){
-            tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
-            directions.push_back(tmp);
-            vpos += inc;
-            if (vpos > (config.lasers-1)) {
-                vpos %= config.lasers-1;
-            }
+      /** The following places the lasers around the scanner as follows:
+        * There are no two lasers on the same horizontal angle. Instead, each successive laser is
+        * placed one horizontal angle step further, with the *increment* determining how many
+        * vertical 'slots' are skipped. Increasing the *increment* up to about half the number of
+        * vertical slots will lead to the laser being more spread out, further increase will
+        * mirror the same patterns as reached before.
+        */
+      
+      if(config.bands < 1) {
+        std::cerr << "Number of bands too low("<< config.bands <<"),will be set to 1" << std::endl;
+        config.bands = 1;
+      }
+      if(config.lasers < 1) {
+        std::cerr << "Number of lasers too low("<< config.lasers <<"),will be set to 1" << std::endl;
+        config.lasers = 1;
+      }
+      
+      //double hAngle = 2*M_PI/numberRays;
+      
+      turning_step = config.horizontal_resolution; 
+      double vAngle = 0.0;
+      if(config.lasers <= 1) {
+        vAngle = config.opening_height/2.0;
+      }
+      else { 
+        vAngle = config.opening_height/(config.lasers-1);
+      }
+      //double maxheight = config.opening_height/2-config.downtilt;
+      //int vpos = 0;
+      //int inc = config.increment;
+      
+      for(int i=0; i<getNumberRays(); i++){
+          // Calculates the ray directions (local sensor frame).
+          // Kais solution.
+          //tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
+          tmp = Eigen::AngleAxisd(i*vAngle + config.downtilt, Eigen::Vector3d::UnitY()) * Vector(1,0,0);
+          //tmp = tmp.normalized();
+          directions.push_back(tmp);
+          /*
+          vpos += inc;
+          if (vpos >= (config.lasers)) {
+              vpos %= config.lasers;
+          }
+          */
+          
+          // Add a drawing item for each ray regarding the initial sensor orientation.
+          if(config.draw_rays) {
+            /*
             tmp = (orientation * tmp);
             item.start = position;
             item.end = (orientation * tmp);
             item.end *= data[i];
             draw.drawItems.push_back(item);
-        }
-        
-        
-
-        if(control->graphics)
-          control->graphics->addDrawItems(&draw);
-        assert(N == data.size());
+            */
+            //std::cout << "Data " << i << ": " << data[i] << std::endl;
+            
+            // Initial vector length is set to 1.0
+            item.start = position;
+            item.end = orientation * tmp;
+            draw.drawItems.push_back(item);
+          }
       }
+      
+      // Add sensor after everything has been initialized.
+      control->nodes->addNodeSensor(this);
+      
+      if(control->graphics) {
+        control->graphics->addDrawItems(&draw);
+      }
+      assert(N == data.size());
+      
     }
 
     RotatingRaySensor::~RotatingRaySensor(void) {
@@ -225,8 +272,11 @@ namespace mars {
       package.get(rotationIndices[3], &orientation.w());
 
       mutex_pointcloud.lock();
+      // Counts all rays which have been added while full_scan == true.
+      int overhead = 0;
       // Fills the pointcloud vector with (dist_m, x, y, z).
-      for(unsigned int i=0; i<data.size(); i+=4) {
+      // data[] contains all the measured distances.
+      for(unsigned int i=0; i<data.size(); i++) {
         if (data[i] < config.maxDistance) {
           //fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
           utils::Vector tmpvec = orientation_offset * orientation * directions[i];
@@ -234,13 +284,20 @@ namespace mars {
           pointcloud.push_back(tmpvec.x());
           pointcloud.push_back(tmpvec.y());
           pointcloud.push_back(tmpvec.z());
+          std::cout << "Add ray " << i / 4 << " with orientation offset " << orientation_offset.w() 
+              << " " << orientation_offset.x() << " " << orientation_offset.y() << " " << orientation_offset.z() << std::endl;
+              
+          if(full_scan) {
+            overhead++;
+          }
         }
       }
-      int overhead = pointcloud.size() / 4 - (nsamples*getNRays());
+      
       if (overhead > 0) {
+          std::cout << "Overhead is " << overhead << std::endl;
           std::list<double>::iterator it1,it2;
           it1 = it2 = pointcloud.begin();
-          advance(it2,overhead*4);
+          advance(it2,overhead*4); // Each ray consist of four values (dist,x,y,z).
           pointcloud.erase(it1, it2);
       }
       mutex_pointcloud.unlock();
@@ -252,6 +309,7 @@ namespace mars {
     }
 
     void RotatingRaySensor::update(std::vector<draw_item>* drawItems) {
+      
       unsigned int i;
       if(config.draw_rays) {
         if(have_update) {
@@ -261,31 +319,49 @@ namespace mars {
     
         if(!(*drawItems)[0].draw_state) {
           for(i=0; i<data.size(); i++) {
-            if(data[i] <= config.maxDistance) {
-                (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
-                (*drawItems)[i].start = position;
-                (*drawItems)[i].end = (orientation_offset * orientation * directions[i]);
-                (*drawItems)[i].end *= data[i];
-                
-                (*drawItems)[i].end += (*drawItems)[i].start;
-            } 
+              (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
+              // Updates the rays using the current sensor pose. 
+              (*drawItems)[i].start = position;
+              (*drawItems)[i].end = (orientation_offset * orientation * directions[i]);
+              (*drawItems)[i].end *= data[i];
+              (*drawItems)[i].end += (*drawItems)[i].start;
+              //std::cout << "Ray " << i << " Orientation " << orientation.w() << " " << orientation.x() << " " << orientation.y() << " " << orientation.z() << std::endl;
+              //std::cout << "Ray " << i << " Orientation Offset " << orientation_offset.w() << " " << orientation_offset.x() << " " << orientation_offset.y() << " " << orientation_offset.z() << std::endl;
+              
           }
         }
       }
     }
 
-    double RotatingRaySensor::turn() {
+    utils::Quaternion RotatingRaySensor::turn() {
+      /*
+      base::Time time_now = base::Time::now(); 
+      int64_t time_passed = (time_now - time_last).toMicroseconds();
+      std::cout << "Time " << time_passed << std::endl; 
+      time_last = base::Time::now();
+      */
+      
+        //std::cout << "Turning offset " << turning_offset << "turning_step " << turning_step << std::endl; 
         turning_offset += turning_step;
-        if (turning_offset > (2*M_PI/config.bands)) {
-            full_scan = true;
-            turning_offset -= (2*M_PI/config.bands) - (turning_step/config.subresolution);
+        bool change_full_scan = false;
+        while (turning_offset >= (2*M_PI)) {
+          turning_offset -= 2*M_PI;
+          change_full_scan = true;
+            //turning_offset -= (2*M_PI/config.bands) - (turning_step/config.subresolution);
         }
+        
+        if(change_full_scan) {
+          mutex_pointcloud.lock();
+          full_scan = true;
+          mutex_pointcloud.unlock();
+        }
+        
         //fprintf(stderr, "turning_offset: %f, %f, %i\n",turning_offset,turning_step,config.subresolution);
         orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
-        return turning_offset;
+        return orientation_offset;
     }
 
-    int RotatingRaySensor::getNRays() {
+    int RotatingRaySensor::getNumberRays() {
         return config.bands * config.lasers;
     }
 
@@ -325,22 +401,7 @@ namespace mars {
               cfg->subresolution = it->second[0].getULong();
 
       cfg->attached_node = attachedNodeID;
-#warning Parse stepX stepY cols and rows
-      /*
-        ConfigMap::iterator it;
 
-        if((it = config->find("stepX")) != config->end())
-        cfg->stepX = it->second[0].getDouble();
-
-        if((it = config->find("stepY")) != config->end())
-        cfg->stepY = it->second[0].getDouble();
-
-        if((it = config->find("cols")) != config->end())
-        cfg->cols = it->second[0].getUInt();
-
-        if((it = config->find("rows")) != config->end())
-        cfg->rows = it->second[0].getUInt();
-      */
       return cfg;
     }
 
@@ -361,6 +422,7 @@ namespace mars {
       cfg["turning_speed"][0] = ConfigItem(config.turning_speed);
       cfg["increment"][0] = ConfigItem(config.increment);
       cfg["subresolution"][0] = ConfigItem(config.subresolution);
+      cfg["horizontal_resolution"][0] = ConfigItem(config.horizontal_resolution);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);
