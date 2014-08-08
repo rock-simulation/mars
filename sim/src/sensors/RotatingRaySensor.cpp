@@ -174,40 +174,23 @@ namespace mars {
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
     }
 
-    std::vector<double> RotatingRaySensor::getSensorData() const {
-      std::vector<double> result;
-      for(unsigned int i=0; i<data.size(); i++) {
-        if(data[i] <= config.maxDistance) {
-            utils::Vector tmpvec = orientation * orientation_offset * directions[i];
-            result.push_back(data[i]);
-            result.push_back(tmpvec.x());
-            result.push_back(tmpvec.y());
-            result.push_back(tmpvec.z());
-        }
-      }
-      return result;
-    }
-
-    std::vector<double> RotatingRaySensor::getPointCloud() {
+    std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
       full_scan = false;
       return pointcloud_full;
     }
 
     int RotatingRaySensor::getSensorData(double** data_) const {
-      *data_ = (double*)malloc(data.size()*4*sizeof(double));
-      int counter = 0;
-      for(unsigned int i=0; i<data.size(); i+=4) {
-        if(data[i] <= config.maxDistance) {
-            utils::Vector tmpvec = orientation * orientation_offset * directions[i];
-            (*data_)[i] = data[i];
-            (*data_)[i+1] = tmpvec.x();
-            (*data_)[i+2] = tmpvec.y();
-            (*data_)[i+3] = tmpvec.z();
-            counter++;
+      *data_ = (double*)malloc(pointcloud_full.size()*3*sizeof(double));
+      for(unsigned int i=0; i<pointcloud_full.size(); i++) {
+        if((pointcloud_full[i]).norm() <= config.maxDistance) {
+            int array_pos = i*3;
+            (*data_)[array_pos] = (pointcloud_full[i])[0];
+            (*data_)[array_pos+1] = (pointcloud_full[i])[1];
+            (*data_)[array_pos+2] = (pointcloud_full[i])[2];
         }
       }
-      return counter;
+      return pointcloud.size();
     }
 
     void RotatingRaySensor::receiveData(const data_broker::DataInfo &info,
@@ -250,13 +233,7 @@ namespace mars {
         if (data[i] < config.maxDistance) {
           //fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
           utils::Vector tmpvec = orientation * orientation_offset * directions[i];
-          tmpvec.x() += x;
-          tmpvec.y() += y;
-          tmpvec.z() += z;
-          pointcloud.push_back(data[i]);
-          pointcloud.push_back(tmpvec.x());
-          pointcloud.push_back(tmpvec.y());
-          pointcloud.push_back(tmpvec.z());
+          pointcloud.push_back(tmpvec*data[i]); // Scale normalized vector.
         }
         
         if(full_scan) {
@@ -304,10 +281,9 @@ namespace mars {
       // If the scan is full the pointcloud will be copied.
       mutex_pointcloud.lock();
       turning_offset += turning_step;
-      bool change_full_scan = false;
       if(turning_offset >= turning_end_fullscan) {
         // Copies current full pointcloud to pointcloud_full.
-        std::list<double>::iterator it = pointcloud.begin();
+        std::list<utils::Vector>::iterator it = pointcloud.begin();
         pointcloud_full.resize(pointcloud.size());
         for(int i=0; it != pointcloud.end(); it++, i++) {
             pointcloud_full[i]=(*it);

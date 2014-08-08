@@ -79,6 +79,7 @@ namespace mars {
       int increment;
       bool draw_rays;
       double horizontal_resolution;
+      Eigen::Affine3d gather_pointcloud_start_pose;
     };
 
     class RotatingRaySensor :
@@ -92,17 +93,11 @@ namespace mars {
                                                  interfaces::BaseConfig* config);
       RotatingRaySensor(interfaces::ControlCenter *control, RotatingRayConfig config);
       ~RotatingRaySensor(void);
-  
-      /**
-       * Allocates memory and stores the distance and the direction (dist_m, x, y, z)
-       * for each of the current rays (one scan line).
-       */
-      std::vector<double> getSensorData() const; 
       
       /**
        * Returns a complete 360 degree scan and clears the pointcloud afterwards.
        */
-      std::vector<double> getPointCloud();
+      std::vector<utils::Vector> getPointcloud();
       
       /** 
        * Inherited from BaseSensor, implemented from BasePolarIntersectionSensor.
@@ -155,8 +150,8 @@ namespace mars {
     private:
       /** Contains the normalized scan directions. */ 
       std::vector<utils::Vector> directions;
-      std::list<double> pointcloud; // TODO Replace with array with fix size.
-      std::vector<double> pointcloud_full; // Stores the full scan.
+      std::list<utils::Vector> pointcloud; // TODO Replace with array with fix size.
+      std::vector<utils::Vector> pointcloud_full; // Stores the full scan.
       bool have_update;
       bool full_scan;
       double turning_offset;
