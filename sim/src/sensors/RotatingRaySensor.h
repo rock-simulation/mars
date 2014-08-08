@@ -155,10 +155,13 @@ namespace mars {
     private:
       /** Contains the normalized scan directions. */ 
       std::vector<utils::Vector> directions;
-      std::list<double> pointcloud;
+      std::list<double> pointcloud; // TODO Replace with array with fix size.
+      std::vector<double> pointcloud_full; // Stores the full scan.
       bool have_update;
       bool full_scan;
       double turning_offset;
+      double turning_start_fullscan; // Defines the start of the next full scan.
+      double turning_end_fullscan; // Defines the end of the next full scan.  
       utils::Quaternion orientation_offset;
       long positionIndices[3];
       long rotationIndices[4];

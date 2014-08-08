@@ -34,6 +34,7 @@
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
+#include <mars/utils/MutexLocker.h>
 
 #include <cmath>
 #include <cstdio>
@@ -100,31 +101,8 @@ namespace mars {
       position = control->nodes->getPosition(attached_node);
       orientation = control->nodes->getRotation(attached_node);
       orientation_offset.setIdentity();
-
-      //Drawing Stuff
-      if(config.draw_rays) {
-        draw.ptr_draw = (DrawInterface*)this;
-        item.id = 0;
-        item.type = DRAW_LINE;
-        item.draw_state = DRAW_STATE_CREATE;
-        item.point_size = 1;
-        item.myColor.r = 1;
-        item.myColor.g = 0;
-        item.myColor.b = 0;
-        item.myColor.a = 1;
-        item.texture = "";
-        item.t_width = item.t_height = 0;
-        item.get_light = 0.0;
-      }
-
-      /** The following places the lasers around the scanner as follows:
-        * There are no two lasers on the same horizontal angle. Instead, each successive laser is
-        * placed one horizontal angle step further, with the *increment* determining how many
-        * vertical 'slots' are skipped. Increasing the *increment* up to about half the number of
-        * vertical slots will lead to the laser being more spread out, further increase will
-        * mirror the same patterns as reached before.
-        */
       
+      // Fills the direction array.
       if(config.bands < 1) {
         std::cerr << "Number of bands too low("<< config.bands <<"),will be set to 1" << std::endl;
         config.bands = 1;
@@ -134,57 +112,58 @@ namespace mars {
         config.lasers = 1;
       }
       
-      //double hAngle = 2*M_PI/numberRays;
+      turning_start_fullscan = -config.opening_width / 2.0;
+      turning_end_fullscan = -config.opening_width / 2.0 + config.opening_width / config.bands;
+      turning_offset = turning_start_fullscan;
       
+      std::cout << "Horizontal resolution: " << config.horizontal_resolution << std::endl;
       turning_step = config.horizontal_resolution; 
       double vAngle = 0.0;
-      if(config.lasers <= 1) {
-        vAngle = config.opening_height/2.0;
-      }
-      else { 
-        vAngle = config.opening_height/(config.lasers-1);
-      }
-      //double maxheight = config.opening_height/2-config.downtilt;
-      //int vpos = 0;
-      //int inc = config.increment;
+      double hAngle = 0.0;
+
+      vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
+      hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
       
-      for(int i=0; i<getNumberRays(); i++){
-          // Calculates the ray directions (local sensor frame).
-          // Kais solution.
-          //tmp = Vector(cos(i*hAngle), sin(i*hAngle), sin(maxheight)-sin(vpos*vAngle));
-          tmp = Eigen::AngleAxisd(i*vAngle + config.downtilt, Eigen::Vector3d::UnitY()) * Vector(1,0,0);
-          //tmp = tmp.normalized();
-          directions.push_back(tmp);
-          /*
-          vpos += inc;
-          if (vpos >= (config.lasers)) {
-              vpos %= config.lasers;
-          }
-          */
+      for(int b=0; b<config.bands; ++b) {
+        for(int l=0; l<config.lasers; ++l){
+
+            tmp = Eigen::AngleAxisd(b*hAngle - turning_start_fullscan, Eigen::Vector3d::UnitZ()) * 
+            Eigen::AngleAxisd(l*vAngle + config.downtilt - config.opening_height/2.0, Eigen::Vector3d::UnitY()) *
+                
+                Vector(1,0,0);
+            directions.push_back(tmp);
           
-          // Add a drawing item for each ray regarding the initial sensor orientation.
-          if(config.draw_rays) {
-            /*
-            tmp = (orientation * tmp);
-            item.start = position;
-            item.end = (orientation * tmp);
-            item.end *= data[i];
-            draw.drawItems.push_back(item);
-            */
-            //std::cout << "Data " << i << ": " << data[i] << std::endl;
-            
-            // Initial vector length is set to 1.0
-            item.start = position;
-            item.end = orientation * tmp;
-            draw.drawItems.push_back(item);
-          }
+            // Add a drawing item for each ray regarding the initial sensor orientation.
+            if(config.draw_rays) {
+              draw.ptr_draw = (DrawInterface*)this;
+              item.id = 0;
+              item.type = DRAW_LINE;
+              item.draw_state = DRAW_STATE_CREATE;
+              item.point_size = 1;
+              item.myColor.r = 1;
+              item.myColor.g = 0;
+              item.myColor.b = 0;
+              item.myColor.a = 1;
+              item.texture = "";
+              item.t_width = item.t_height = 0;
+              item.get_light = 0.0;
+              
+              // Initial vector length is set to 1.0
+              item.start = position;
+              item.end = orientation * tmp;
+              draw.drawItems.push_back(item);
+            }
+        }
       }
       
       // Add sensor after everything has been initialized.
       control->nodes->addNodeSensor(this);
       
-      if(control->graphics) {
-        control->graphics->addDrawItems(&draw);
+      // GraphicsManager crashes if default constructor drawStruct is passed.
+      if(config.draw_rays) {
+        if(control->graphics) {
+          control->graphics->addDrawItems(&draw);
+        }
       }
       assert(N == data.size());
       
@@ -199,7 +178,7 @@ namespace mars {
       std::vector<double> result;
       for(unsigned int i=0; i<data.size(); i++) {
         if(data[i] <= config.maxDistance) {
-            utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+            utils::Vector tmpvec = orientation * orientation_offset * directions[i];
             result.push_back(data[i]);
             result.push_back(tmpvec.x());
             result.push_back(tmpvec.y());
@@ -210,22 +189,9 @@ namespace mars {
     }
 
     std::vector<double> RotatingRaySensor::getPointCloud() {
-      mutex_pointcloud.lock();
-      std::vector<double> result;
-      if (full_scan) {
-        //result.reserve(pointcloud.size());
-        //result.insert(result.end(),pointcloud.begin(),pointcloud.end());
-        std::list<double>::iterator it = pointcloud.begin();
-        for(; it != pointcloud.end(); it++) {
-            result.push_back(*it);
-        }
-        //result.reserve(pointcloud.size());
-        //result.insert(result.end(),pointcloud.begin(),pointcloud.end());
-        pointcloud.clear();
-        full_scan = false;
-      }
-      mutex_pointcloud.unlock();
-      return result;
+      mars::utils::MutexLocker lock(&mutex_pointcloud);
+      full_scan = false;
+      return pointcloud_full;
     }
 
     int RotatingRaySensor::getSensorData(double** data_) const {
@@ -233,7 +199,7 @@ namespace mars {
       int counter = 0;
       for(unsigned int i=0; i<data.size(); i+=4) {
         if(data[i] <= config.maxDistance) {
-            utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+            utils::Vector tmpvec = orientation * orientation_offset * directions[i];
             (*data_)[i] = data[i];
             (*data_)[i+1] = tmpvec.x();
             (*data_)[i+2] = tmpvec.y();
@@ -266,6 +232,10 @@ namespace mars {
         package.get(positionIndices[i], &position[i]);
       }
       
+      double x,y,z;
+      package.get(positionIndices[0], &x);
+      package.get(positionIndices[1], &y);
+      package.get(positionIndices[2], &z);
       package.get(rotationIndices[0], &orientation.x());
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
@@ -279,86 +249,77 @@ namespace mars {
       for(unsigned int i=0; i<data.size(); i++) {
         if (data[i] < config.maxDistance) {
           //fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
-          utils::Vector tmpvec = orientation_offset * orientation * directions[i];
+          utils::Vector tmpvec = orientation * orientation_offset * directions[i];
+          tmpvec.x() += x;
+          tmpvec.y() += y;
+          tmpvec.z() += z;
           pointcloud.push_back(data[i]);
           pointcloud.push_back(tmpvec.x());
           pointcloud.push_back(tmpvec.y());
           pointcloud.push_back(tmpvec.z());
-          std::cout << "Add ray " << i / 4 << " with orientation offset " << orientation_offset.w() 
-              << " " << orientation_offset.x() << " " << orientation_offset.y() << " " << orientation_offset.z() << std::endl;
-              
-          if(full_scan) {
-            overhead++;
-          }
+        }
+        
+        if(full_scan) {
+          overhead++;
         }
       }
-      
+      /*
       if (overhead > 0) {
-          std::cout << "Overhead is " << overhead << std::endl;
           std::list<double>::iterator it1,it2;
           it1 = it2 = pointcloud.begin();
           advance(it2,overhead*4); // Each ray consist of four values (dist,x,y,z).
           pointcloud.erase(it1, it2);
       }
+      */
       mutex_pointcloud.unlock();
-      //fprintf(stderr, "nsamples: %i, getNRays: %i\n", nsamples, getNRays());
-      //fprintf(stderr, "overhead: %i, nsamples*getNRays: %i\n", overhead, nsamples*getNRays());
-      //fprintf(stderr, "pointcloud.size: %i\n", (int)pointcloud.size());
-  
+      
       have_update = true;
     }
 
     void RotatingRaySensor::update(std::vector<draw_item>* drawItems) {
       
       unsigned int i;
-      if(config.draw_rays) {
+   
+        std::cout << "In update draw rays" << std::endl;
         if(have_update) {
           control->nodes->updateRay(attached_node);
           have_update = false;
         }
-    
+       if(config.draw_rays) {
         if(!(*drawItems)[0].draw_state) {
           for(i=0; i<data.size(); i++) {
               (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
               // Updates the rays using the current sensor pose. 
               (*drawItems)[i].start = position;
-              (*drawItems)[i].end = (orientation_offset * orientation * directions[i]);
+              (*drawItems)[i].end = (orientation * orientation_offset * directions[i]);
               (*drawItems)[i].end *= data[i];
               (*drawItems)[i].end += (*drawItems)[i].start;
-              //std::cout << "Ray " << i << " Orientation " << orientation.w() << " " << orientation.x() << " " << orientation.y() << " " << orientation.z() << std::endl;
-              //std::cout << "Ray " << i << " Orientation Offset " << orientation_offset.w() << " " << orientation_offset.x() << " " << orientation_offset.y() << " " << orientation_offset.z() << std::endl;
-              
           }
         }
       }
     }
 
-    utils::Quaternion RotatingRaySensor::turn() {
-      /*
-      base::Time time_now = base::Time::now(); 
-      int64_t time_passed = (time_now - time_last).toMicroseconds();
-      std::cout << "Time " << time_passed << std::endl; 
-      time_last = base::Time::now();
-      */
+    utils::Quaternion RotatingRaySensor::turn() {  
       
-        //std::cout << "Turning offset " << turning_offset << "turning_step " << turning_step << std::endl; 
-        turning_offset += turning_step;
-        bool change_full_scan = false;
-        while (turning_offset >= (2*M_PI)) {
-          turning_offset -= 2*M_PI;
-          change_full_scan = true;
-            //turning_offset -= (2*M_PI/config.bands) - (turning_step/config.subresolution);
+      // If the scan is full the pointcloud will be copied.
+      mutex_pointcloud.lock();
+      turning_offset += turning_step;
+      bool change_full_scan = false;
+      if(turning_offset >= turning_end_fullscan) {
+        // Copies current full pointcloud to pointcloud_full.
+        std::list<double>::iterator it = pointcloud.begin();
+        pointcloud_full.resize(pointcloud.size());
+        for(int i=0; it != pointcloud.end(); it++, i++) {
+            pointcloud_full[i]=(*it);
         }
-        
-        if(change_full_scan) {
-          mutex_pointcloud.lock();
-          full_scan = true;
-          mutex_pointcloud.unlock();
-        }
-        
-        //fprintf(stderr, "turning_offset: %f, %f, %i\n",turning_offset,turning_step,config.subresolution);
-        orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
-        return orientation_offset;
+        pointcloud.clear();
+        turning_offset = turning_start_fullscan;
+        full_scan = true;
+      }
+      orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
+      mutex_pointcloud.unlock();
+      
+      return orientation_offset;
     }
 
     int RotatingRaySensor::getNumberRays() {
@@ -396,10 +357,11 @@ namespace mars {
       if((it = config->find("turning_speed")) != config->end())
         cfg->turning_speed = it->second[0].getDouble();
       if((it = config->find("increment")) != config->end())
-              cfg->increment = it->second[0].getULong();
+        cfg->increment = it->second[0].getULong();
       if((it = config->find("subresolution")) != config->end())
-              cfg->subresolution = it->second[0].getULong();
-
+        cfg->subresolution = it->second[0].getULong();
+      if((it = config->find("horizontal_resolution")) != config->end())
+        cfg->horizontal_resolution = it->second[0].getDouble();
       cfg->attached_node = attachedNodeID;
 
       return cfg;
