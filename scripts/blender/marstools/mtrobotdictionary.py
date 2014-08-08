@@ -29,7 +29,6 @@ def register():
 
 
 def collectMaterials(objectlist):
-    print('\n\nCollecting materials...')
     materials = {}
     for obj in objectlist:
         if obj.MARStype == 'visual' and obj.data.materials:
@@ -53,13 +52,15 @@ def deriveMaterial(mat):
     material['shininess'] = mat.specular_hardness/2
     if mat.use_transparency:
         material['transparency'] = 1.0-mat.alpha
-    if mat.texture_slots[0] is not None: # grab the first texture
-        material['texturename'] = mat.texture_slots[0].texture.image.name
+    try:
+        material['texturename'] = mat.texture_slots[0].texture.image.name # grab the first texture
+    except (KeyError, AttributeError):
+        print('None or incomplete texture data for material ' + mat.name + '.')
     return material
 
 
 def deriveLink(obj):
-    props = initObjectProperties(obj)
+    props = initObjectProperties(obj, 'link')
     props["pose"] = deriveObjectPose(obj)
     props["collision"] = {}
     props["visual"] = {}
@@ -68,10 +69,8 @@ def deriveLink(obj):
 
 
 def deriveJoint(obj):
-    #props = {'name': 'joint_' + obj.parent.name + '_' + obj.name}
-    syllables = obj.name.split('_')
-    jointname = syllables[0] + '/joint' + '_'.join(syllables[1:])
-    props = {'name': jointname}
+    props = initObjectProperties(obj, 'joint')
+    props['name'] = obj.name
     props['parent'] = obj.parent.name
     props['child'] = obj.name
     props['jointType'], crot = mtjoints.deriveJointType(obj, True)
@@ -86,13 +85,7 @@ def deriveJoint(obj):
     # - dynamics
     # - mimic
     # - safety_controller
-
-    #derive motor data
-    motorprops = {'name': 'motor_' + obj.name, 'joint': 'joint_' + obj.name}
-    for key,value in obj.items():
-        if key.find('motor/') >= 0:
-            motorprops[key.replace('motor/', '')] = value
-    return props, motorprops
+    return props
 
 
 def deriveJointState(joint):
@@ -107,18 +100,21 @@ def deriveJointState(joint):
     return state
 
 
+def deriveMotor(obj):
+    props = initObjectProperties(obj, 'motor')
+    props['name'] = obj.name
+    props['joint'] = obj.name
+    return props#, obj.parent
+
+
 def deriveKinematics(obj):
     link = deriveLink(obj)
     joint = None
     motor = None
     if obj.parent:
-        joint, motor = deriveJoint(obj)
+        joint = deriveJoint(obj)
+        motor = deriveMotor(obj)
     return link, joint, motor
-
-
-#def deriveMotor(obj):
-#    props = initObjectProperties(obj)
-#    return props, obj.parent
 
 
 def deriveGeometry(obj):
@@ -133,10 +129,10 @@ def deriveGeometry(obj):
         elif gt == 'sphere':
             geometry['radius'] = obj.dimensions[0]/2
         elif gt == 'mesh':
-            filename = obj['filename'] if 'filename' in obj else obj.name
-            geometry['filename'] = filename + (".bobj" if bpy.context.scene.world.exportBobj else ".obj")
+            filename = obj['filename'] if 'filename' in obj else obj.name.replace('/','_')
+            geometry['filename'] = filename + ('.obj' if not (bpy.data.worlds[0].useBobj and not bpy.data.worlds[0].useObj) else '.bobj')
             geometry['scale'] = list(obj.scale)
-            geometry['size'] = list(obj.dimensions) #this is needed to calculate an approximate inertia if collision is inertia
+            geometry['size'] = list(obj.dimensions) #this is needed to calculate an approximate inertia
         return geometry
     else:
         warnings.warn("No geometryType found for object "+obj.name+".")
@@ -146,14 +142,14 @@ def deriveGeometry(obj):
 def deriveInertial(obj):
     '''Derives a dictionary entry of an inertial object.'''
     props = initObjectProperties(obj)
-    inertia = props['inertia'].split()
-    props['inertia'] = list(map(float, inertia))
+    #inertia = props['inertia'].split()
+    #props['inertia'] = list(map(float, inertia))
     props['pose'] = deriveObjectPose(obj)
     return props, obj.parent
 
 
 def deriveObjectPose(obj):
-    '''Derive pose of visual or collision object.'''
+    '''Derive pose of link, visual or collision object.'''
     pose = {}
     pose['matrix'] = [list(vector) for vector in list(obj.matrix_local)]
     pose['translation'] = list(obj.matrix_local.to_translation())
@@ -190,10 +186,15 @@ def deriveController(obj):
     return props
 
 
-def initObjectProperties(obj):
+def initObjectProperties(obj, marstype = None):
     props = {}
-    for key in obj.keys():
-        props[key] = obj[key]
+    if not marstype:
+        for key, value in obj.items():
+            props[key] = value
+    else:
+        for key, value in obj.items():
+            if key.find(marstype+'/') >= 0:
+                props[key.replace(marstype+'/', '')] = value
     props['name'] = obj.name
     return props
 
@@ -209,7 +210,7 @@ def cleanObjectProperties(props):
 
 
 def deriveDictEntry(obj):
-    print("MARStools: Deriving dictionary entry for", obj.MARStype + ': ' + obj.name, )
+    print(obj.name, end=', ')
     props = None
     parent = None
     try:
@@ -290,9 +291,9 @@ def buildRobotDictionary():
             robot['modelname'] = 'unnamed_robot'
 
     # digest all the links to derive link and joint information
+    print('\nParsing links, joints and motors...')
     for obj in bpy.context.selected_objects:
         if obj.MARStype == 'link':
-            print('Parsing', obj.MARStype, obj.name, '...')
             link, joint, motor = deriveKinematics(obj)
             robot['links'][obj.name] = link
             if joint: #joint can be None if link is a root
@@ -302,6 +303,7 @@ def buildRobotDictionary():
             obj.select = False
 
     # add inertial information to link
+    print('\n\nParsing inertials...')
     for l in robot['links']:
         link = bpy.data.objects[l]
         inertials = getImmediateChildren(link, 'inertial')
@@ -310,8 +312,8 @@ def buildRobotDictionary():
             robot['links'][parent.name]['inertial'] = props
             inertials[0].select = False
         elif len(inertials) > 1:
+            mass, com, inertia = mtinertia.fuseInertiaData(inertials)
             parent = inertials[0].parent.name
-            mass, com, inertia = mtinertia.compound_inertia_analysis_3x3(inertials)
             matrix_local = mathutils.Matrix.Translation(mathutils.Vector(com))
             pose = {}
             pose['matrix'] = [list(vector) for vector in list(matrix_local)]
@@ -324,6 +326,7 @@ def buildRobotDictionary():
                 i.select = False
 
     # complete link information by parsing visuals and collision objects
+    print('\n\nParsing visual and collision objects...')
     for obj in bpy.context.selected_objects:
         if obj.MARStype in ['visual', 'collision']:
             props, parent = deriveDictEntry(obj)
@@ -331,13 +334,14 @@ def buildRobotDictionary():
             obj.select = False
 
     # parse sensors and controllers
+    print('\n\nParsing sensors and controllers...')
     for obj in bpy.context.selected_objects:
         if obj.MARStype in ['sensor', 'controller']:
-            print('Parsing', obj.MARStype, obj.name, '...')
             robot[obj.MARStype+'s'][obj.name] = deriveDictEntry(obj)
             obj.select = False
 
     # parse materials
+    print('\n\nParsing materials...')
     robot['materials'] = collectMaterials(objectlist)
     for obj in objectlist:
         if obj.MARStype == 'visual' and len(obj.data.materials) > 0:
@@ -347,10 +351,12 @@ def buildRobotDictionary():
             robot['links'][obj.parent.name]['visual'][obj.name]['material'] = mat.name
 
     # gather information on groups of objects
+    print('\n\nParsing groups...')
     for group in bpy.data.groups: #TODO: get rid of the "data" part
         robot['groups'][group.name] = deriveGroupEntry(group)
 
     # gather information on chains of objects
+    print('\n\nParsing chains...')
     chains = []
     for obj in bpy.data.objects:
         if obj.MARStype == 'link' and 'endChain' in obj:
@@ -359,6 +365,7 @@ def buildRobotDictionary():
         robot['chains'][chain['name']] = chain
 
     #shorten numbers in dictionary to n decimalPlaces and return it
+    print('\n\nRounding numbers...')
     epsilon = 10**(-bpy.data.worlds[0].decimalPlaces) #TODO: implement this separately
     return epsilonToZero(robot, epsilon, bpy.data.worlds[0].decimalPlaces)
 

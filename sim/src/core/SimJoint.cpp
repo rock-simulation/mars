@@ -204,10 +204,9 @@ namespace mars {
       CPP_UNUSED(calc_ms);
       if (my_interface) {
         // update the position and rotation of the node
-        actualAngle1 = (sJoint.angle1_offset + my_interface->getPosition());// *
-        //	57.295779513082322;
-        actualAngle2 = (sJoint.angle2_offset + my_interface->getPosition2());//*
-        //57.295779513082322;
+        actualAngle1 = (sJoint.angle1_offset + invert*my_interface->getPosition());
+        actualAngle2 = (sJoint.angle2_offset + invert*my_interface->getPosition2());
+
         my_interface->getAnchor(&anchor);
         my_interface->getAxis(&axis1);
         my_interface->getAxis2(&axis2);
@@ -219,9 +218,12 @@ namespace mars {
         my_interface->getAxisTorque(&axis1_torque);
         my_interface->getAxis2Torque(&axis2_torque);
         my_interface->getJointLoad(&joint_load);
-        speed1 = my_interface->getVelocity();
-        speed2 = my_interface->getVelocity2();
-        motor_torque = my_interface->getMotorTorque();
+        axis1_torque *= invert;
+        axis2_torque *= invert;
+        joint_load *= invert;
+        speed1 = invert*my_interface->getVelocity();
+        speed2 = invert*my_interface->getVelocity2();
+        motor_torque = invert*my_interface->getMotorTorque();
       }
     }
 
@@ -246,6 +248,12 @@ namespace mars {
       highStop1 = sJoint.highStopAxis1;
       lowStop2 = sJoint.lowStopAxis2;
       highStop2 = sJoint.highStopAxis2;
+      if(sJoint.invertAxis) {
+        invert = -1;
+      }
+      else {
+        invert = 1;
+      }
     }
 
     const JointData SimJoint::getSJoint(void) const {
@@ -276,11 +284,11 @@ namespace mars {
     }
 
     void SimJoint::setVelocity(sReal velocity) {
-      my_interface->setVelocity(velocity);
+      my_interface->setVelocity(velocity*invert);
     }
 
     void SimJoint::setVelocity2(sReal velocity) {
-      my_interface->setVelocity2(velocity);
+      my_interface->setVelocity2(velocity*invert);
     }
 
     sReal SimJoint::getVelocity(void) const {
@@ -292,11 +300,11 @@ namespace mars {
     }
 
     void SimJoint::setTorque(sReal torque) {
-      my_interface->setTorque(torque);
+      my_interface->setTorque(torque*invert);
     }
 
     void SimJoint::setTorque2(sReal torque) {
-      my_interface->setTorque2(torque);
+      my_interface->setTorque2(torque*invert);
     }
 
     void SimJoint::setJointAsMotor(int axis) {
@@ -312,7 +320,7 @@ namespace mars {
       obj->name = sJoint.name;
       obj->groupID = 0;
       obj->pos = anchor;
-      obj->rot = angleAxisToQuaternion(actualAngle1, axis1);
+      obj->rot = angleAxisToQuaternion(actualAngle1*invert, axis1);
     }
 
     const Vector SimJoint::getForce1() const {
@@ -422,12 +430,12 @@ namespace mars {
         Vector axis = snode1->getRotation()*axis1InNode1;
 
         if(sJoint.type == JOINT_TYPE_HINGE) {
-          Quaternion q = angleAxisToQuaternion(-value, axis);
+          Quaternion q = angleAxisToQuaternion(-value*invert, axis);
           control->nodes->rotateNode(snode2->getID(), pivot, q, sJoint.index);
         }
         else if(sJoint.type == JOINT_TYPE_SLIDER) {
           Vector pos2 = snode2->getPosition();
-          axis *= value / axis.norm();
+          axis *= invert*value / axis.norm();
           pos2 += axis;
           control->nodes->positionNode(snode2->getID(), pos2, sJoint.index);
         }
@@ -448,21 +456,21 @@ namespace mars {
 
     void SimJoint::setLowStop(sReal lowStop) {
       this->lowStop1 = lowStop;
-      my_interface->setLowStop(lowStop);
+      my_interface->setLowStop(-lowStop*invert);
     }
     void SimJoint::setHighStop(sReal highStop) {
       this->highStop1 = highStop;
-      my_interface->setHighStop(highStop);
+      my_interface->setHighStop(-highStop*invert);
     }
 
     void SimJoint::setLowStop2(sReal lowStop2) {
       this->lowStop2 = lowStop2;
-      my_interface->setLowStop2(lowStop2);
+      my_interface->setLowStop2(lowStop2*invert);
     }
 
     void SimJoint::setHighStop2(sReal highStop2) {
       this->highStop2 = highStop2;
-      my_interface->setHighStop2(highStop2);
+      my_interface->setHighStop2(highStop2*invert);
     }
 
 

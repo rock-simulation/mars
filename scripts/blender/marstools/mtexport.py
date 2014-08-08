@@ -133,7 +133,7 @@ def exportBobj(path, obj):
             if faceuv:
                 if f_smooth:  # Smoothed, use vertex normals
                     for vi, v in f_v:
-                        out.write(struct.pack('iii', v.index + totverts, totuvco + uv_face_mapping[f_index][vi], globalNormals[veckey3d(v.normal)]))
+                        out.write(struct.pack('iii', v.index + totverts, totuvco + uv_face_mapping[f_index][vi], globalNormals[roundVector(v.normal, 6)]))
                 else:  # No smoothing, face normals
                     no = globalNormals[roundVector(f.normal, 6)]
                     for vi, v in f_v:
@@ -141,7 +141,7 @@ def exportBobj(path, obj):
             else:  # No UV's
                 if f_smooth:  # Smoothed, use vertex normals
                     for vi, v in f_v:
-                        out.write(struct.pack('iii', v.index + totverts, 0, globalNormals[roundVector(f.normal, 6)]))
+                        out.write(struct.pack('iii', v.index + totverts, 0, globalNormals[roundVector(v.normal, 6)]))
                 else:  # No smoothing, face normals
                     no = globalNormals[roundVector(f.normal, 6)]
                     for vi, v in f_v:
@@ -149,14 +149,31 @@ def exportBobj(path, obj):
     out.close()
 
 def exportObj(path, obj):
+    objname = obj.name
+    obj.name = 'tmp_export_666' #surely no one will ever name an object like so
+    tmpobject = createPrimitive(objname, 'box', (2.0, 2.0, 2.0))
+    tmpobject.data = obj.data #copy the mesh here
+    outpath = os.path.join(path, objname) + '.obj'
+    bpy.ops.export_scene.obj(filepath=outpath, use_selection=True, use_normals=True)
     bpy.ops.object.select_all(action='DESELECT')
-    obj.select = True
-    outpath = os.path.join(path, obj.name) + '.obj'
-    world_matrix = obj.matrix_world.copy()
-    obj.matrix_world = mathutils.Matrix.Identity(4)
-    bpy.ops.export_scene.obj(filepath=outpath, axis_forward='-Z',
-                             axis_up='Y', use_selection=True, use_normals=True)
-    obj.matrix_world = world_matrix
+    tmpobject.select = True
+    bpy.ops.object.delete()
+    obj.name = objname
+
+    #This is the old implementation which did not work properly (08.08.2014)
+    #bpy.ops.object.select_all(action='DESELECT')
+    #obj.select = True
+    #outpath = os.path.join(path, obj.name) + '.obj'
+    #world_matrix = obj.matrix_world.copy()
+    ##inverse_local_rotation = obj.matrix_local.to_euler().to_matrix().inverted()
+    ##world_scale = world_matrix.to_scale() TODO: implement scale
+    ## we move the object to the world origin and revert its local rotation
+    ##print(inverse_local_rotation, mathutils.Matrix.Translation((0, 0, 0)))
+    ##obj.matrix_world = inverse_local_rotation.to_4x4() * mathutils.Matrix.Identity(4)
+    #obj.matrix_world = mathutils.Matrix.Identity(4)
+    #bpy.ops.export_scene.obj(filepath=outpath, axis_forward='-Z',
+    #                         axis_up='Y', use_selection=True, use_normals=True)
+    #obj.matrix_world = world_matrix
 
 def exportModelToYAML(model, filepath):
     print("MARStools YAML export: Writing model data to", filepath )
@@ -189,7 +206,7 @@ def writeURDFGeometry(output, element):
         output.append(xmlline(5, 'cylinder', ['radius', 'length'], [element['radius'], element['height']]))
     elif element['geometryType'] == "sphere":
         output.append(xmlline(5, 'sphere', ['radius'], [element['radius']]))
-    elif element['geometryType'] == "mesh":
+    elif element['geometryType'] in ['capsule', 'mesh']: #capsules are not supported in URDF and are emulated using meshes
         output.append(xmlline(5, 'mesh', ['filename', 'scale'], [element['filename'], '1.0 1.0 1.0']))#TODO correct this after implementing scale properly
     output.append(indent*4+'</geometry>\n')
 
@@ -206,7 +223,7 @@ def exportModelToURDF(model, filepath):
             if 'pose' in link['inertial']:
                 output.append(xmlline(4, 'origin', ['xyz', 'rpy'], [l2str(link['inertial']['pose']['translation']), l2str(link['inertial']['pose']['rotation_euler'])]))
             output.append(xmlline(4, 'mass', ['value'], [str(link['inertial']['mass'])]))
-            output.append(xmlline(4, 'inertia', ['ixx', 'ixy', 'ixz', 'iyy', 'iyz', 'izz'], link['inertial']['inertia']))
+            output.append(xmlline(4, 'inertia', ['ixx', 'ixy', 'ixz', 'iyy', 'iyz', 'izz'], ' '.join([str(i) for i in link['inertial']['inertia']])))
             output.append(indent*3+'</inertial>\n')
         #visual object
         if link['visual']:
@@ -247,7 +264,7 @@ def exportModelToURDF(model, filepath):
         if 'axis' in joint:
             output.append(indent*3+'<axis xyz="'+l2str(joint['axis'])+'"/>\n')
         if 'limits' in joint:
-            output.append(xmlline(3, 'limit', ['lower', 'upper', 'velocity', 'effort'], [str(joint['limits'][0]), str(joint['limits'][1]), 1.0, 1.0])) #TODO: effort and velocity
+            output.append(xmlline(3, 'limit', ['lower', 'upper', 'velocity', 'effort'], [str(joint['limits'][0]), str(joint['limits'][1]), joint['maxvelocity'], joint['maxeffort']]))
         output.append(indent*2+'</joint>\n\n')
     #export material information
     for m in model['materials']:
@@ -273,7 +290,7 @@ def exportModelToSMURF(model, path):
               'sensors': model['sensors'] != {},
               'motors': model['motors'] != {},
               'controllers': model['controllers'] != {},
-              'simulation': model['simulation'] != {}
+              'simulation': True#model['simulation'] != {} #TODO: make this a nice test
               }
 
 
@@ -292,7 +309,7 @@ def exportModelToSMURF(model, path):
     infostring = ' definition SMURF file for "'+model['modelname']+'", '+model["date"]+"\n\n"
 
     #write model information
-    print('Writing SMURF information to...\n'+smurf_filename)
+    print('Writing SMURF information to', smurf_filename)
     modeldata = {}
     modeldata["date"] = model["date"]
     modeldata["files"] = [urdf_filename] + [filenames[f] for f in filenames if export[f]]
@@ -331,49 +348,33 @@ def exportModelToSMURF(model, path):
             op.write("modelname: "+model['modelname']+'\n')
             op.write(yaml.dump(states))#, default_flow_style=False))
 
-    #write materials
-    if export['materials']:
-        with open(path + filenames['materials'], 'w') as op:
-            op.write('#materials'+infostring)
-            op.write(yaml.dump({'materials': list(model['materials'].values())}, default_flow_style=False))
-
-    #write sensors
-    if export['sensors']:
-        with open(path + filenames['sensors'], 'w') as op:
-            op.write('#sensors'+infostring)
-            op.write("modelname: "+model['modelname']+'\n')
-            op.write(yaml.dump(list(model['sensors'].values()), default_flow_style=False))
-
-    #write motors
-    if export['motors']:
-        with open(path + filenames['motors'], 'w') as op:
-            op.write('#motors'+infostring)
-            op.write("modelname: "+model['modelname']+'\n')
-            #op.write("motors:\n")
-            op.write(yaml.dump({'motors': list(model['motors'].values())}, default_flow_style=False))
-
-    #write controllers
-    if export['controllers']:
-        with open(path + filenames['controllers'], 'w') as op:
-            op.write('#controllers'+infostring)
-            op.write("modelname: "+model['modelname']+'\n')
-            op.write(yaml.dump(list(model['controllers'].values()), default_flow_style=False))
+    #write materials, sensors, motors & controllers
+    for data in ['materials', 'sensors', 'motors', 'controllers']:
+        if export[data]:
+            with open(path + filenames[data], 'w') as op:
+                op.write('#' + data +infostring)
+                op.write(yaml.dump({data: list(model[data].values())}, default_flow_style=False))
 
     #write simulation
     if export['simulation']:
-        nodes = {}
+        nodes = {'visual': {}, 'collision': {}}
         for link in model['links']:
             for objtype in ['visual', 'collision']:
                 for objname in model['links'][link][objtype]:
-                    obj = model['links'][link]['visual'][objname]
-                    if 'mass' in obj:
-                        nodes[obj['name']] = {'mass': obj['mass']}
+                    props = model['links'][link][objtype][objname]
+                    #for prop in ['name']: #TODO: filter these properties and purge redundant ones
+                    #    del(props[prop])
+                    nodes[objtype][objname] = props
         with open(path + filenames['simulation'], 'w') as op:
             op.write('#simulation'+infostring)
-            op.write("modelname: "+model['modelname']+'\n')
-            #TODO: handle simulation-specific data
-            op.write(yaml.dump(nodes, default_flow_style=False))
-            op.write(yaml.dump(list(model['simulation'].values()), default_flow_style=False))
+            if model['simulation'] != {}:
+                op.write("modelname: "+model['modelname']+'\n')
+                #TODO: handle simulation-specific data
+                op.write(yaml.dump(list(model['simulation'].values()), default_flow_style=False))
+            op.write("\nvisual:\n")
+            op.write(yaml.dump(list(nodes['visual'].values())))
+            op.write("\ncollision:\n")
+            op.write(yaml.dump(list(nodes['collision'].values())))
 
 def exportSceneToSMURF(path):
     """Exports all robots in a scene to separate SMURF folders."""
@@ -395,22 +396,24 @@ class ExportModelOperator(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        #TODO: check if all selected objects are on visible layers (option bpy.ops.object.select_all()?)
-        if bpy.data.worlds[0].relativePath:
-           path = securepath(os.path.expanduser(os.path.join(bpy.path.abspath("//"), bpy.context.scene.world.path)))
-        else:
-            path = securepath(os.path.expanduser(bpy.context.scene.world.path))
-        main(outpath = path,
-                yaml = bpy.data.worlds[0].exportYAML,
-                urdf = bpy.data.worlds[0].exportURDF,
-                smurf = bpy.data.worlds[0].exportSMURF,
-                mars = bpy.data.worlds[0].exportMARSscene,
-                objexp = bpy.data.worlds[0].exportObj,
-                bobjexp = bpy.data.worlds[0].exportBobj)
+        export()
         return {'FINISHED'}
 
-def main(outpath = '', yaml=True, urdf=True, smurf=True, mars=False, objexp=False, bobjexp=False):
+def export():
+    #TODO: check if all selected objects are on visible layers (option bpy.ops.object.select_all()?)
+    if bpy.data.worlds[0].relativePath:
+        outpath = securepath(os.path.expanduser(os.path.join(bpy.path.abspath("//"), bpy.data.worlds[0].path)))
+    else:
+        outpath = securepath(os.path.expanduser(bpy.data.worlds[0].path))
+    yaml = bpy.data.worlds[0].exportYAML
+    urdf = bpy.data.worlds[0].exportURDF
+    smurf = bpy.data.worlds[0].exportSMURF
+    mars = bpy.data.worlds[0].exportMARSscene
+    meshexp = bpy.data.worlds[0].exportMesh
+    objexp = bpy.data.worlds[0].useObj
+    bobjexp = bpy.data.worlds[0].useBobj
     objectlist = bpy.context.selected_objects
+
     if yaml or urdf or smurf or mars:
         robot = mtrobotdictionary.buildRobotDictionary()
         if yaml:
@@ -422,7 +425,7 @@ def main(outpath = '', yaml=True, urdf=True, smurf=True, mars=False, objexp=Fals
         elif urdf:
             exportModelToURDF(robot, outpath + robot["modelname"] + ".urdf")
     selectObjects(objectlist, True)
-    if objexp or bobjexp:
+    if meshexp:
         show_progress = bpy.app.version[0] * 100 + bpy.app.version[1] >= 269;
         if show_progress:
             wm = bpy.context.window_manager
@@ -442,6 +445,3 @@ def main(outpath = '', yaml=True, urdf=True, smurf=True, mars=False, objexp=Fals
         if show_progress:
             wm.progress_end()
 
-#allow manual execution of script in blender
-if __name__ == '__main__':
-    main()

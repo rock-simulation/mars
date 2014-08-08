@@ -78,7 +78,7 @@ namespace mars {
       std::map<std::string, unsigned long> sensorIDMap;
       std::map<std::string, unsigned long> motorIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
-
+      std::map<std::string, std::string> visualNameMap, collisionNameMap;
       interfaces::ControlCenter *control;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;

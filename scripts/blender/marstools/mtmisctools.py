@@ -14,6 +14,7 @@ You may use the provided install shell script.
 
 import bpy
 import math
+import mathutils
 from bpy.types import Operator
 from bpy.props import StringProperty, BoolProperty, FloatVectorProperty, EnumProperty, FloatProperty
 import marstools.mtupdate as mtupdate
@@ -28,8 +29,10 @@ from datetime import datetime as dt
 def register():
     print("Registering mtmisctools...")
 
+
 def unregister():
     print("Unregistering mtmisctools...")
+
 
 class CalculateMassOperator(Operator):
     """CalculateMassOperator"""
@@ -37,9 +40,10 @@ class CalculateMassOperator(Operator):
     bl_label = "Display mass of the selected objects in a pop-up window."
 
     def execute(self, context):
-        mass = mtutility.calculateMass(bpy.context.selected_objects)
+        mass = mtutility.calculateSum(bpy.context.selected_objects, 'mass')
         bpy.ops.error.message('INVOKE_DEFAULT', type="mass", message=str(mass))
         return {'FINISHED'}
+
 
 class SetMassOperator(Operator):
     """SetMassOperator"""
@@ -59,6 +63,7 @@ class SetMassOperator(Operator):
                 t = dt.now()
                 obj['masschanged'] = t.isoformat()
         return {'FINISHED'}
+
 
 class SyncMassesOperator(Operator):
     """SyncMassesOperator"""
@@ -116,7 +121,7 @@ class SyncMassesOperator(Operator):
             objdict[targetlist[i]]['masschanged'] = objdict[sourcelist[i]]['masschanged']
         for linkname in links:
             masssum = 0.0
-            collision_children = mtinertia.getInertiaRelevantObjects(links[linkname])
+            collision_children = mtinertia.getInertiaRelevantObjects(objdict[linkname])
             for coll in collision_children:
                 masssum += coll['mass']
             if self.writeinertial:
@@ -133,6 +138,7 @@ class SyncMassesOperator(Operator):
 
         return {'FINISHED'}
 
+
 class ShowDistanceOperator(Operator):
     """ShowDistanceOperator"""
     bl_idname = "object.mt_show_distance"
@@ -148,6 +154,7 @@ class ShowDistanceOperator(Operator):
         self.distance = mtutility.distance(bpy.context.selected_objects)
         print(self.distance)
         return {'FINISHED'}
+
 
 class SetXRayOperator(Operator):
     """SetXrayOperator"""
@@ -184,6 +191,7 @@ class SetXRayOperator(Operator):
             obj.show_x_ray = self.show
         return {'FINISHED'}
 
+
 class NameModelOperator(Operator):
     """NameModelOperator"""
     bl_idname = "object.mt_name_model"
@@ -199,6 +207,7 @@ class NameModelOperator(Operator):
         root = mtutility.getRoot(bpy.context.active_object)
         root["modelname"] = self.modelname
         return {'FINISHED'}
+
 
 class SelectObjectsByMARSType(Operator):
     """SelectObjectsByType"""
@@ -219,6 +228,11 @@ class SelectObjectsByMARSType(Operator):
                 objlist.append(obj)
         mtutility.selectObjects(objlist, True)
         return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.mode == 'OBJECT'
+
 
 class SelectObjectsByName(Operator):
     """SelectObjectsByName"""
@@ -252,6 +266,7 @@ class SelectRootOperator(Operator):
         mtutility.selectObjects(list(roots), True)
         bpy.context.scene.objects.active = list(roots)[0]
         return {'FINISHED'}
+
 
 class SelectModelOperator(Operator):
     """SelectModelOperator"""
@@ -357,6 +372,39 @@ class BatchEditPropertyOperator(Operator):
         ob = context.active_object
         return ob is not None and ob.mode == 'OBJECT'
 
+
+class CopyCustomProperties(Operator):
+    """Copy Custom Properties Operator"""
+    bl_idname = "object.mt_copy_props"
+    bl_label = "Edit custom property of selected object(s)"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    empty_properties = BoolProperty(
+        name = 'empty',
+        default = False,
+        description = "empty properties?")
+
+    def execute(self, context):
+        slaves = context.selected_objects
+        master = context.active_object
+        print(slaves)
+        slaves.remove(master)
+        print(slaves)
+        props = mtrobotdictionary.cleanObjectProperties(dict(master.items()))
+        for obj in slaves:
+            if self.empty_properties:
+                for key in obj.keys():
+                    del(obj[key])
+            for key in props.keys():
+                obj[key] = props[key]
+        return {'FINISHED'}
+
+    @classmethod
+    def poll(cls, context):
+        ob = context.active_object
+        return ob is not None and ob.mode == 'OBJECT'
+
+
 class SetGeometryType(Operator):
     """Set Geometry Type Operator"""
     bl_idname = "object.mt_set_geometry_type"
@@ -370,6 +418,7 @@ class SetGeometryType(Operator):
             description = "MARS geometry type")
 
     def execute(self, context):
+
         for obj in bpy.context.selected_objects:
             if obj.MARStype == 'collision' or obj.MARStype == 'visual':
                 obj['geometryType'] = self.geomType
@@ -380,10 +429,11 @@ class SetGeometryType(Operator):
         ob = context.active_object
         return ob is not None and ob.mode == 'OBJECT'
 
-class SetInertia(Operator):
-    """Set Inertia Operator"""
-    bl_idname = "object.mt_set_inertia"
-    bl_label = "Set inertia of selected object(s)"
+
+class EditInertia(Operator):
+    """Edit Inertia Operator"""
+    bl_idname = "object.mt_edit_inertia"
+    bl_label = "Edit inertia of selected object(s)"
     bl_options = {'REGISTER', 'UNDO'}
 
     #inertiamatrix = FloatVectorProperty (
@@ -401,18 +451,25 @@ class SetInertia(Operator):
             description = "set inertia for a link"
             )
 
+    def invoke(self, context, event):
+        if 'inertia' in context.active_object:
+            self.inertiavector = mathutils.Vector(context.active_object['inertia'])
+        return self.execute(context)
+
     def execute(self, context):
         #m = self.inertiamatrix
         #inertialist = []#[m[0], m[1], m[2], m[4], m[5], m[8]]
         #obj['inertia'] = ' '.join(inertialist)
         for obj in context.selected_objects:
-            obj['inertia'] = ' '.join([str(i) for i in self.inertiavector])
+            if obj.MARStype == 'inertial':
+                obj['inertia'] = self.inertiavector#' '.join([str(i) for i in self.inertiavector])
         return {'FINISHED'}
 
     @classmethod
     def poll(cls, context):
         ob = context.active_object
         return ob is not None and ob.mode == 'OBJECT' and ob.MARStype == 'inertial'
+
 
 class PartialRename(Operator):
     """Partial Rename Operator"""
@@ -480,34 +537,51 @@ class SmoothenSurfaceOperator(Operator):
 
 class CreateInertialOperator(Operator):
     """CreateInertialOperator"""
-    bl_idname = "object.create_inertial"
-    bl_label = "Adds Bone Constraints to the joint (link)"
+    bl_idname = "object.create_inertial_objects"
+    bl_label = "Creates inertial objects based on existing objects"
     bl_options = {'REGISTER', 'UNDO'}
 
-    writeinertial = BoolProperty(
-                name = 'automate_links',
+    include_children = BoolProperty(
+                name = 'include_children',
                 default = False,
-                description = 'automate links'
+                description = 'use link child objects'
+                )
+
+    auto_compute = BoolProperty(
+                name = 'auto_compute',
+                default = False,
+                description = 'auto-compute inertia'
                 )
 
     def execute(self, context):
         links = []
         viscols = set()
-        for obj in bpy.context.selected_objects:
+        for obj in context.selected_objects:
             if obj.MARStype == 'link':
                 links.append(obj)
             elif obj.MARStype in ['visual', 'collision']:
                 viscols.add(obj)
+        if self.include_children:
+            for link in links:
+                viscols.update(mtinertia.getInertiaRelevantObjects(link)) #union?
+        for obj in viscols:
+            inertial = mtinertia.createInertial(obj)
+            if 'mass' in obj:
+                inertial['mass'] = obj['mass']
+                if self.auto_compute:
+                    geometry = mtrobotdictionary.deriveGeometry(obj)
+                    inertial['inertia'] = mtinertia.calculateInertia(inertial['mass'], geometry)
         for link in links:
-            if self.automate_links:
-                viscols.add(mtinertia.getInertiaRelevantObjects(link))
+            if self.auto_compute:
+                inertial = mtinertia.createInertial(link)
+                mass, com, inertia = mtinertia.fuseInertiaData(mtutility.getImmediateChildren(link, ['inertial']))
+                if mass and com and inertia:
+                    com_translate = mathutils.Matrix.Translation(com)
+                    inertial.matrix_local = com_translate
+                    inertial['mass'] = mass
+                    inertial['inertia'] = mtinertia.inertiaMatrixToList(inertia)
             else:
                 inertial = mtinertia.createInertial(link)
-                inertial['mass'] = link['mass']
-                inertial['inertia'] = mtinertia.calculateInertia(
-                                      link, mtrobotdictionary.deriveGeometry(link))
-        for obj in viscols:
-            mtinertia.createInertial(obj)
         return {'FINISHED'}
 
 

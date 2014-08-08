@@ -132,9 +132,8 @@ def createPrimitive(pname, ptype, psize, player = 0, pmaterial = "None", plocati
         n_layer = int(player)
     except ValueError:
         n_layer = mtdefs.layerTypes[player]
-    if bpy.data.worlds[0]: #TODO: complete this
-        pass
     players = defLayers([n_layer])
+    bpy.context.scene.layers[n_layer] = True #the layer has to be active to prevent problems with object placement
     if ptype == "box":
         bpy.ops.mesh.primitive_cube_add(layers = players, location = plocation, rotation = protation)
         obj = bpy.context.object
@@ -145,15 +144,11 @@ def createPrimitive(pname, ptype, psize, player = 0, pmaterial = "None", plocati
         bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=psize[0], depth=psize[1], layers=players, location = plocation, rotation = protation)
     elif ptype == "cone":
         bpy.ops.mesh.primitive_cone_add(vertices=32,radius=psize[0],depth=psize[1], cap_end=True, layers=players, location=plocation, rotation = protation)
-
     obj = bpy.context.object
     obj.name = pname
     if pmaterial != 'None':
         if pmaterial in bpy.data.materials:
             obj.data.materials.append(bpy.data.materials[pmaterial])
-        else:
-            pass ##HACK: rather provide a standard material
-
     return obj
 
 
@@ -229,13 +224,15 @@ def calcBoundingBoxCenter(boundingbox):
     return c / 8
 
 
-def selectObjects(objects, clear):
-    """Selects all objects provided in list, clears current selection if clear==True"""
+def selectObjects(objects, clear=True, active=-1):
+    '''Selects all objects provided in list, clears current selection if clear is True
+    and sets one of the objects the active objects if a valid index is provided.'''
     if clear:
-        for obj in bpy.context.selected_objects:
-            obj.select = False
+        bpy.ops.object.select_all(action='DESELECT')
     for obj in objects:
         obj.select = True
+    if active >= 0:
+        bpy.context.scene.objects.active = objects[active]
 
 
 def replaceNameElement(prop, old, new):
@@ -263,27 +260,20 @@ def epsilonToZero(data, epsilon, decimals):
         return data
 
 
+def calculateSum(objects, numeric_prop):
+    '''Returns sum of *numeric_prop* in *objects*.'''
+    numsum = 0
+    for obj in objects:
+        try:
+            numsum += obj[numeric_prop]
+        except KeyError:
+            pass
+    return numsum
+
+
 def datetimeFromIso(iso):
     """Accepts a date-time string in iso format and returns a datetime object."""
     return datetime(*[int(a) for a in re.split(":|-|T|\.", iso)])
-
-
-def calculateMassOfLink(link):
-    objects = (getImmediateChildren(link, ['visual', 'collision']))
-    return calculateMass(objects)
-
-
-def calculateMass(objects):
-    mass = 0
-    objlist = [obj.name for obj in objects]
-    for obj in objects:
-        if obj.MARStype == 'collision' and 'mass' in obj:
-            mass += obj['mass']
-        elif obj.MARStype == 'visual':
-            collision = obj.name.replace('visual_', 'collision_')
-            if 'mass' in obj and not collision in objlist:
-                mass += obj['mass']
-    return mass
 
 
 def distance(objects):
