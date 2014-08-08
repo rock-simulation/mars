@@ -21,7 +21,7 @@
 /*
  *  RotatingRaySensor.cpp
  *
- *  Created by Malte Langosz, Kai von Szadkowski, Stefan Haase
+ *  Created by Stefan Haase, Kai von Szadkowski, Malte Langosz
  *
  */
 
@@ -68,8 +68,11 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
-      time_last = base::Time::now();
       full_scan = false;
+      current_pose.setIdentity();
+      
+      num_points = 0;
+      time_start = base::Time::now();
       
         /**
       double calc_ms = 0.0;
@@ -177,10 +180,13 @@ namespace mars {
     std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
       full_scan = false;
+      base::Time time_now = base::Time::now();
+      std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
       return pointcloud_full;
     }
 
     int RotatingRaySensor::getSensorData(double** data_) const {
+      mars::utils::MutexLocker lock(&mutex_pointcloud);
       *data_ = (double*)malloc(pointcloud_full.size()*3*sizeof(double));
       for(unsigned int i=0; i<pointcloud_full.size(); i++) {
         if((pointcloud_full[i]).norm() <= config.maxDistance) {
@@ -215,40 +221,34 @@ namespace mars {
         package.get(positionIndices[i], &position[i]);
       }
       
-      double x,y,z;
-      package.get(positionIndices[0], &x);
-      package.get(positionIndices[1], &y);
-      package.get(positionIndices[2], &z);
+      Eigen::Vector3d position;
+      package.get(positionIndices[0], &position.x());
+      package.get(positionIndices[1], &position.y());
+      package.get(positionIndices[2], &position.z());
       package.get(rotationIndices[0], &orientation.x());
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
+      
+      current_pose.setIdentity();
+      current_pose.rotate(orientation);
+      current_pose.translation() = position;
 
-      mutex_pointcloud.lock();
       // Counts all rays which have been added while full_scan == true.
       int overhead = 0;
       // Fills the pointcloud vector with (dist_m, x, y, z).
       // data[] contains all the measured distances.
       for(unsigned int i=0; i<data.size(); i++) {
         if (data[i] < config.maxDistance) {
-          //fprintf(stderr, "data[i]: %f, maxDistance: %f", data[i], config.maxDistance);
-          utils::Vector tmpvec = orientation * orientation_offset * directions[i];
-          pointcloud.push_back(tmpvec*data[i]); // Scale normalized vector.
-        }
-        
-        if(full_scan) {
-          overhead++;
+          // Calculates the ray/vector within the sensor frame.
+          utils::Vector local_ray = orientation_offset * directions[i] * data[i];
+          // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
+          // This necessitates a back-transformation (world2node) in getPointcloud().
+          utils::Vector tmpvec = current_pose * local_ray;
+          pointcloud.push_back(tmpvec); // Scale normalized vector.
         }
       }
-      /*
-      if (overhead > 0) {
-          std::list<double>::iterator it1,it2;
-          it1 = it2 = pointcloud.begin();
-          advance(it2,overhead*4); // Each ray consist of four values (dist,x,y,z).
-          pointcloud.erase(it1, it2);
-      }
-      */
-      mutex_pointcloud.unlock();
+     num_points += data.size();
       
       have_update = true;
     }
@@ -286,7 +286,8 @@ namespace mars {
         std::list<utils::Vector>::iterator it = pointcloud.begin();
         pointcloud_full.resize(pointcloud.size());
         for(int i=0; it != pointcloud.end(); it++, i++) {
-            pointcloud_full[i]=(*it);
+          // Transforms the pointcloud back from world to current node (see receiveDate()).
+          pointcloud_full[i]= current_pose.inverse() * (*it);
         }
         pointcloud.clear();
         turning_offset = turning_start_fullscan;
@@ -330,12 +331,6 @@ namespace mars {
         cfg->downtilt = it->second[0].getDouble();
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
-      if((it = config->find("turning_speed")) != config->end())
-        cfg->turning_speed = it->second[0].getDouble();
-      if((it = config->find("increment")) != config->end())
-        cfg->increment = it->second[0].getULong();
-      if((it = config->find("subresolution")) != config->end())
-        cfg->subresolution = it->second[0].getULong();
       if((it = config->find("horizontal_resolution")) != config->end())
         cfg->horizontal_resolution = it->second[0].getDouble();
       cfg->attached_node = attachedNodeID;
@@ -357,9 +352,6 @@ namespace mars {
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
       cfg["downtilt"][0] = ConfigItem(config.downtilt);
       cfg["rate"][0] = ConfigItem(config.updateRate);
-      cfg["turning_speed"][0] = ConfigItem(config.turning_speed);
-      cfg["increment"][0] = ConfigItem(config.increment);
-      cfg["subresolution"][0] = ConfigItem(config.subresolution);
       cfg["horizontal_resolution"][0] = ConfigItem(config.horizontal_resolution);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);

@@ -21,7 +21,7 @@
 /*
  *  RotatingRaySensor.h
  *
- *  Created by Malte Langosz, Kai von Szadkowski, Stefan Haase
+ *  Created by Stefan Haase, Kai von Szadkowski, Malte Langosz
  *
  */
 
@@ -49,20 +49,17 @@ namespace mars {
     public:
       RotatingRayConfig(){
         name = "Unknown RaySensor";
-        bands=5; //number of horizontal replicates of vertical laser bands
+        bands=16; //number of horizontal replicates of vertical laser bands
         lasers=32; //number of lasers in vertical dimension
-        increment =1; // how many lasers are skipped vertically with every horizontal step
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=2*M_PI; //this means we cover the entire 360 degrees
-        opening_height=40.0/180.0*M_PI; //
-        downtilt = 10/360*2*M_PI; //how many rads the rays of the sensor is tilted downwards
+        opening_height= (40.0/180.0)*M_PI; //
+        downtilt = (10.67/180.0)*M_PI; //how many rads the rays of the sensor is tilted downwards
         attached_node = 0;
         maxDistance = 100.0;
-        turning_speed = 1; //turning speed in Hz
         draw_rays = true;
-        subresolution = 1; //factor to increase point cloud resolution through multiple scans
-        horizontal_resolution = 0.02;
+        horizontal_resolution = (1.0/180.0)*M_PI;
       }
 
       unsigned long attached_node;
@@ -74,12 +71,8 @@ namespace mars {
       double opening_height;
       double downtilt;
       double maxDistance;
-      double turning_speed;
-      int subresolution;
-      int increment;
       bool draw_rays;
       double horizontal_resolution;
-      Eigen::Affine3d gather_pointcloud_start_pose;
     };
 
     class RotatingRaySensor :
@@ -100,15 +93,18 @@ namespace mars {
       std::vector<utils::Vector> getPointcloud();
       
       /** 
+       * Copies the current full pointcloud to a double array with (x,y,z).
+       * \warning Memory has to be freed manually!
        * Inherited from BaseSensor, implemented from BasePolarIntersectionSensor.
-       * Allocates a double array and stores the current scan line in the
-       * (dist_m, x, y, z) format. 
-       * \warning Allocated memory has to be freed manually.
-      void mutex_pointcloud();
        */
       int getSensorData(double**) const; 
       
       /**
+       * Receives the measured distances, calculates the vectors in the local
+       * sensor frame and transfers them into the world to compensate the
+       * movement during pointcloud gathering.
+       * The points are transformed back to the current node pose
+       * when the pointcloud is requested.
        * Inherited from ReceiverInterface. Method is called by the DataBroker
        * as soon as the registered event occurs.
        */
@@ -117,19 +113,12 @@ namespace mars {
                                int callbackParam);
       
       /**
-       * Inherited from DrawInterface. Draws the passed items.
+       * Uses the current node pose and the current distances to draw 
+       * the laser rays.
+       * Inherited from DrawInterface.
        */
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
       
-      /**
-       * Orientation consists of the orientation of the node and the 
-       * orientation of the sensor within the node (orientation_offset / z-Rotation), 
-       * which is changed during each call to handleSensorData() in NodePhysics. 
-       */
-      utils::Quaternion getSensorOrientation() const{
-        return orientation_offset * orientation;
-      }
-
       /**
        * Config methods all part of BaseSensor.
        */
@@ -139,13 +128,27 @@ namespace mars {
 
       const RotatingRayConfig& getConfig() const;
 
+      /**
+       * Turns the sensor during each simulation step.
+       * As soon as a full scan has been done (depends on the number of bands)
+       * the pointcloud is copied to pointcloud_full and a new scan
+       * is initiated. Runs in the same thread than receiveData, so only the use of 
+       * full_pointcloud (turn(), getPointcloud() and getSensorData()) has to be 
+       * synchronized.
+       */
       utils::Quaternion turn();
-      int getNumberRays();
-      RotatingRayConfig config;
       
+      /** Number of lasers * number of bands. */
+      int getNumberRays();
+      
+      /**
+       * Returns all the ray directions as normalized vectors.
+       */
       inline std::vector<utils::Vector>& getDirections() {
         return directions;
       }
+      
+      RotatingRayConfig config;
 
     private:
       /** Contains the normalized scan directions. */ 
@@ -162,9 +165,11 @@ namespace mars {
       long rotationIndices[4];
       double turning_step;
       int nsamples;
-      mars::utils::Mutex mutex_pointcloud;
+      mutable mars::utils::Mutex mutex_pointcloud;
+      Eigen::Affine3d current_pose;
       
-      base::Time time_last;
+      unsigned int num_points;
+      base::Time time_start;
     };
 
   } // end of namespace sim
