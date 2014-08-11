@@ -40,7 +40,7 @@
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 
-#include <base/Time.hpp>
+//#include <base/Time.hpp>
 
 namespace mars {
   namespace sim {
@@ -169,7 +169,7 @@ namespace mars {
       Eigen::Affine3d current_pose;
       
       unsigned int num_points;
-      base::Time time_start;
+      //base::Time time_start;
     };
 
   } // end of namespace sim

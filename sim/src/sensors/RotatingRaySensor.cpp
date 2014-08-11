@@ -72,7 +72,7 @@ namespace mars {
       current_pose.setIdentity();
       
       num_points = 0;
-      time_start = base::Time::now();
+      //time_start = base::Time::now();
       
         /**
       double calc_ms = 0.0;
@@ -180,8 +180,8 @@ namespace mars {
     std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
       full_scan = false;
-      base::Time time_now = base::Time::now();
-      std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
+      //base::Time time_now = base::Time::now();
+      //std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
       return pointcloud_full;
     }
 
