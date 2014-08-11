@@ -168,7 +168,7 @@ namespace mars {
           control->graphics->addDrawItems(&draw);
         }
       }
-      assert(N == data.size());
+      //assert(N == data.size());
       
     }
 
