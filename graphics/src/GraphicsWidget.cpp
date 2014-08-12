@@ -872,6 +872,9 @@ namespace mars {
                                      1, GL_DEPTH_COMPONENT, GL_FLOAT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
+        
+        std::fill(rttDepthImage->data(), rttDepthImage->data() + g_width * g_height * sizeof(float), 0);
+        
         rttDepthTexture->setImage(rttDepthImage);
 
 
