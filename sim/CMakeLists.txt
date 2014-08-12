@@ -98,6 +98,8 @@ set(SOURCES_H
        src/sensors/NodeVelocitySensor.h
 #       src/sensors/RayGridSensor.h
        src/sensors/RaySensor.h
+       src/sensors/MultiLevelLaserRangeFinder.h
+
        src/sensors/ScanningSonar.h
        
        src/interfaces/sensors/GridSensorInterface.h
@@ -117,6 +119,7 @@ set(TARGET_SRC
        src/core/SimMotor.cpp
        src/core/SimNode.cpp
        src/core/Simulator.cpp
+       src/sensors/MultiLevelLaserRangeFinder.cpp
        src/sensors/RotatingRaySensor.cpp
 
        src/physics/JointPhysics.cpp
