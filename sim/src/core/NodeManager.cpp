@@ -61,8 +61,9 @@ namespace mars {
     NodeManager::NodeManager(ControlCenter *c) : next_node_id(1),
                                                  update_all_nodes(false),
                                                  visual_rep(1),
-                                                 control(c),
-                                                 maxGroupID(0) {
+                                                 maxGroupID(0),
+                                                control(c)
+    {
       if(control->graphics) {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
