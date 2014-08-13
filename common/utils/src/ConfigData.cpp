@@ -211,6 +211,9 @@ namespace mars {
       ConfigMap::const_iterator it;
       for(it = configMap.begin(); it != configMap.end(); ++it) {
         emitter << YAML::Key << it->first;
+        if(!(emitter.good())) {
+          fprintf(stderr, "problem with ConfigMap for: %s\n", it->first.c_str());
+        }
         emitter << YAML::Value;
         dumpConfigVectorToYaml(emitter, it->second);
       }
