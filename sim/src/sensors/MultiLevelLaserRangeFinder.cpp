@@ -6,7 +6,6 @@
 
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/utils/mathUtils.h>
-#include <mars/sim/RaySensor.h>
 #include <base/Float.hpp>
 
 #include <cmath>
