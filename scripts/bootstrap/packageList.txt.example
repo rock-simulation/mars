@@ -9,6 +9,9 @@ external/minizip
 
 external/ode_mars
 
+rock/base-cmake
+rock/base-types
+
 mars/common/lib_manager
 mars/common/utils
 mars/common/cfg_manager

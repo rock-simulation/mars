@@ -53,7 +53,13 @@ function forAllPackagesDo {
         if type -t ${action}_${package_clean##*/} | grep -q 'function'; then
             ${action}_${package_clean##*/}
         else
-            ${action}_package ${package}
+            if [[ ${package} = "rock/base-cmake" ]]; then
+                ${action}_package ${package} "https://github.com/rock-core/base-cmake.git" "https://github.com/rock-core/base-cmake.git"
+            elif [[ ${package} = "rock/base-types" ]]; then
+                ${action}_package ${package} "https://github.com/rock-core/base-types.git" "https://github.com/rock-core/base-types.git"
+            else
+                ${action}_package ${package} "git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git" "git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
+            fi
         fi
         if [[ x${MARS_SCRIPT_ERROR} != x && ${MARS_SCRIPT_ERROR} != 0 ]]; then
             printErr "There was an Error. Please check the above output for more information"
@@ -221,6 +227,8 @@ function setup_env {
 
 function fetch_package {
     package=$1
+    push_addr=$2
+    read_addr=$3
     setupConfig
     printBold "fetching ${package} ..."
     pushd . > /dev/null 2>&1
@@ -238,9 +246,11 @@ function fetch_package {
         mkdir -p ${MARS_DEV_ROOT}/${package%/*}
         cd ${MARS_DEV_ROOT}/${package%/*}
         if ${PUSH}; then
-            CLONE_ADDR="git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git"
+            CLONE_ADDR=${push_addr}
+            #"git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git"
         else
-            CLONE_ADDR="git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
+            CLONE_ADDR=${read_addr}
+            #"git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
         fi
         CLONE_ERROR=0
         git clone ${CLONE_ADDR} || CLONE_ERROR=1;
