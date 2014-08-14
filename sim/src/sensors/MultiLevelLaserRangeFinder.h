@@ -24,8 +24,8 @@ namespace mars {
         name = "Unknown RttRaySensor";
         numRaysVertical=32;
         numRaysHorizontal=1900;
-        rttResolutionX = 640;
-        rttResolutionY = 480;
+        rttResolutionX = 128 * 4;
+        rttResolutionY = 128 * 2;
         verticalOpeningAngle= 40 / 180.0 * M_PI;
         horizontalOpeningAngle= 2 * M_PI * (double (numRaysHorizontal - 1)) / numRaysHorizontal;
         attached_node = 0;
