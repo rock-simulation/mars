@@ -21,7 +21,7 @@
 /**
  * \file Simulator.cpp
  * \author Malte Langosz
- * 
+ *
  */
 
 //Convention:the includes should be defined in the header file
@@ -78,6 +78,10 @@ namespace mars {
       sync_graphics(false), physics_mutex_count(0), physics(0) {
 
       config_dir = DEFAULT_CONFIG_DIR;
+      calc_time = 0;
+      avg_log_time = 0;
+      count = 0;
+      config_dir = ".";
 
       std_port = 1600;
 
@@ -234,7 +238,7 @@ namespace mars {
       }
     */
 
-    void Simulator::runSimulation() {
+    void Simulator::runSimulation(bool startThread) {
 
       if(control->cfg) {
         initCfgParams();
@@ -294,8 +298,8 @@ namespace mars {
         if(control->graphics)
           control->graphics->get3DWindow(1)->getCameraInterface()->changeCameraTypeToOrtho();
       }
-      
-      this->start();
+
+      if(startThread) this->start();
     }
 
      /**
@@ -311,17 +315,11 @@ namespace mars {
        */
     void Simulator::run() {
 
-      std::vector<pluginStruct>::iterator p_iter;
-      sReal calc_time = 0;
-      long time;
-      static double avg_log_time = 0.0;
-      static int count = 0;
-
       while (!kill_sim) {
         stepping_mutex.lock();
         if(simulationStatus == STOPPING)
           simulationStatus = STOPPED;
-        
+
         if(!isSimRunning()) {
           stepping_wc.wait(&stepping_mutex);
           if(kill_sim){
@@ -335,7 +333,7 @@ namespace mars {
             stepping_mutex.unlock();
             continue;
         }
-          
+
         if(simulationStatus == STEPPING){
             simulationStatus = STOPPING;
         }
@@ -349,87 +347,7 @@ namespace mars {
           // it (physics_mutex_count > 0) we sleep so it has a chance.
           msleep(1);
         }
-        physicsThreadLock();
-#ifdef DEBUG_TIME
-        long startTime = getTime();
-
-#endif
-        if(control->dataBroker) {
-          control->dataBroker->trigger("mars_sim/prePhysicsUpdate");
-        }
-        physics->stepTheWorld();
-#ifdef DEBUG_TIME
-        LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
-#endif
-
-        control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
-        control->joints->updateJoints(calc_ms);
-        control->motors->updateMotors(calc_ms);
-        control->controllers->updateControllers(calc_ms);
-
-        if(show_time)
-          time = getTime();
-
-        dbSimTimePackage[0].d += calc_ms;
-        if(control->dataBroker) {
-          control->dataBroker->pushData(dbSimTimeId,
-                                        dbSimTimePackage);
-          control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
-        }
-
-        if(show_time) {
-          avg_log_time += getTimeDiff(time);
-          if(++count > 100) {
-            avg_log_time /= count;
-            count = 0;
-            fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
-            avg_log_time = 0.0;
-          }
-        }
-
-        pluginLocker.lockForRead();
-
-        // It is possible for plugins to call switchPluginUpdateMode during
-        // the update call and get removed from the activePlugins list there.
-        // We use erased_active to notify this loop about an erasure.
-        for(unsigned int i = 0; i < activePlugins.size();) {
-          erased_active = false;
-          if(show_time)
-            time = getTime();
-
-          activePlugins[i].p_interface->update(calc_ms);
-
-          if(!erased_active) {
-            if(show_time) {
-              time = getTimeDiff(time);
-              activePlugins[i].timer += time;
-              activePlugins[i].t_count++;
-              if(activePlugins[i].t_count > 20) {
-                activePlugins[i].timer /= activePlugins[i].t_count;
-                activePlugins[i].t_count = 0;
-                fprintf(stderr, "debug_time: %s: %g\n",
-                        activePlugins[i].name.c_str(),
-                        activePlugins[i].timer);
-                activePlugins[i].timer = 0.0;
-              }
-            }
-            ++i;
-          }
-        }
-        pluginLocker.unlock();
-        if (sync_graphics) {
-          calc_time += calc_ms;
-          if (calc_time >= sync_time) {
-            sync_count = 0;
-            if(control->graphics)
-              this->allowDraw();
-            calc_time = 0;
-          }
-        }
-        if(control->dataBroker) {
-          control->dataBroker->trigger("mars_sim/postPhysicsUpdate");
-        }
-        physicsThreadUnlock();
+        step();
       }
       simulationStatus = STOPPED;
       // here everything of the physical simulation can be closed
@@ -437,7 +355,107 @@ namespace mars {
       //hard_exit(0);
     }
 
-    /** 
+    void Simulator::step(bool setState) {
+      std::vector<pluginStruct>::iterator p_iter;
+      long time;
+
+      Status oldState;
+
+      physicsThreadLock();
+
+      if(setState) {
+        oldState = simulationStatus;
+        simulationStatus = STEPPING;
+      }
+
+#ifdef DEBUG_TIME
+      long startTime = getTime();
+
+#endif
+      if(control->dataBroker) {
+        control->dataBroker->trigger("mars_sim/prePhysicsUpdate");
+      }
+      physics->stepTheWorld();
+#ifdef DEBUG_TIME
+      LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
+#endif
+
+      control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
+      control->joints->updateJoints(calc_ms);
+      control->motors->updateMotors(calc_ms);
+      control->controllers->updateControllers(calc_ms);
+
+      if(show_time)
+        time = getTime();
+
+      dbSimTimePackage[0].d += calc_ms;
+      if(control->dataBroker) {
+        control->dataBroker->pushData(dbSimTimeId,
+                                      dbSimTimePackage);
+        control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
+      }
+
+      if(show_time) {
+        avg_log_time += getTimeDiff(time);
+        if(++count > 100) {
+          avg_log_time /= count;
+          count = 0;
+          fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
+          avg_log_time = 0.0;
+        }
+      }
+
+      pluginLocker.lockForRead();
+
+      // It is possible for plugins to call switchPluginUpdateMode during
+      // the update call and get removed from the activePlugins list there.
+      // We use erased_active to notify this loop about an erasure.
+      for(unsigned int i = 0; i < activePlugins.size();) {
+        erased_active = false;
+        if(show_time)
+          time = getTime();
+
+        activePlugins[i].p_interface->update(calc_ms);
+
+        if(!erased_active) {
+          if(show_time) {
+            time = getTimeDiff(time);
+            activePlugins[i].timer += time;
+            activePlugins[i].t_count++;
+            if(activePlugins[i].t_count > 20) {
+              activePlugins[i].timer /= activePlugins[i].t_count;
+              activePlugins[i].t_count = 0;
+              fprintf(stderr, "debug_time: %s: %g\n",
+                      activePlugins[i].name.c_str(),
+                      activePlugins[i].timer);
+              activePlugins[i].timer = 0.0;
+            }
+          }
+          ++i;
+        }
+      }
+      pluginLocker.unlock();
+      if (sync_graphics) {
+        calc_time += calc_ms;
+        if (calc_time >= sync_time) {
+          sync_count = 0;
+          if(control->graphics)
+            this->allowDraw();
+          calc_time = 0;
+        }
+      }
+      if(control->dataBroker) {
+        control->dataBroker->trigger("mars_sim/postPhysicsUpdate");
+      }
+
+      if(setState) {
+        simulationStatus = oldState;
+      }
+
+      physicsThreadUnlock();
+    }
+
+    /**
      * \return \c true if started, \c false if stopped
      */
     bool Simulator::startStopTrigger() {
@@ -481,7 +499,7 @@ namespace mars {
         return false;
       else
         return true;
-    
+
     }
 
     //consider the case where the time step is smaller than 1 ms
@@ -572,7 +590,7 @@ namespace mars {
             return loadScene_internal(filename,wasrunning, robotname);
         }
 
-        //Loading is handles inside the mars thread itsels later 
+        //Loading is handles inside the mars thread itsels later
         externalMutex.lock();
         LoadOptions lo;
         lo.filename = filename;
@@ -783,7 +801,7 @@ namespace mars {
       }
       if(control->graphics)
         this->allowDraw();
-          
+
       //stepping_wc.wakeAll();
       stepping_mutex.unlock();
     }
@@ -997,7 +1015,7 @@ namespace mars {
     /**
      * If \c true you cannot recover (currently) from this point without restarting the simulation.
      * To extend this, restart the simulator thread and reset the scene (untested).
-     * 
+     *
      * \return \c true if the simulation thread was not interrupted by ODE
      */
     bool Simulator::hasSimFault() const{
@@ -1035,7 +1053,7 @@ namespace mars {
         resetSim();
       } else if("warn" == onError) {
         // warning already happend in message handler
-      } else if("shutdown" == onError){           
+      } else if("shutdown" == onError){
         //Killing the simulation thread, means the simulation gui still runs but the simulation thread get's stopped
         //In this state the the sim_fault is set to true which can be checked externally to react to this fault
         sim_fault = true;
@@ -1121,7 +1139,7 @@ namespace mars {
       sync_graphics = value;
     }
 
-    /** 
+    /**
      * Calls GraphicsManager::update() method to redraw all OSG objects in the simulation.
      */
     void Simulator::updateSim() {
@@ -1129,14 +1147,14 @@ namespace mars {
         control->graphics->update();
     }
 
-    /** 
+    /**
      * This method is used for gui and simulation synchronization.
      */
     void Simulator::allowDraw(void) {
       allow_draw = 1;
     }
-    
-    /** 
+
+    /**
      * \return \c true if no external requests are open.
      */
     bool Simulator::allConcurrencysHandled(){

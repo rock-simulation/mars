@@ -102,7 +102,7 @@ namespace mars {
       // controlling the simulation
       void updateSim(); ///< Updates the graphical simulation.
       void myRealTime(void); ///< control the realtime calculation
-      void runSimulation(); ///< Initiates the simulation
+      void runSimulation(bool startThread = true); ///< Initiates the simulation
 
       virtual void StartSimulation() {
         stepping_mutex.lock();
@@ -201,6 +201,8 @@ namespace mars {
 
       virtual const utils::Vector& getGravity(void);
 
+      virtual void step(bool setState = false);
+
     private:
 
       struct LoadOptions {
@@ -245,6 +247,9 @@ namespace mars {
       utils::Mutex stepping_mutex; ///< Used for preventing active waiting for a single step or start event.
       utils::WaitCondition stepping_wc; ///< Used for preventing active waiting for a single step or start event.
       int physics_mutex_count;
+      double avg_log_time;
+      int count;
+      interfaces::sReal calc_time;
       
       // physics
       interfaces::PhysicsInterface *physics;

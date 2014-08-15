@@ -54,7 +54,8 @@ namespace mars {
       virtual ~SimulatorInterface() {}
       
       // controlling the simulation
-      virtual void runSimulation() = 0;
+      virtual void runSimulation(bool startThread = true) = 0;
+      virtual void step(bool setState = false) = 0;
       virtual void StartSimulation() = 0;
       virtual void StopSimulation() = 0;
       virtual void resetSim(void) = 0;
