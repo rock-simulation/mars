@@ -47,6 +47,10 @@
 #include <getopt.h>
 #include <signal.h>
 
+#ifndef DEFAULT_CONFIG_DIR
+    #define DEFAULT_CONFIG_DIR "."
+#endif
+
 namespace mars {
 
   namespace app {
@@ -79,7 +83,7 @@ namespace mars {
       MARS::control->sim->handleError(interfaces::PHYSICS_DEBUG);
     }
 
-    MARS::MARS() : configDir("."),
+    MARS::MARS() : configDir(DEFAULT_CONFIG_DIR),
                    libManager(new lib_manager::LibManager()),
                    marsGui(NULL), ownLibManager(true) {
       needQApp = true;
@@ -90,7 +94,7 @@ namespace mars {
 #endif //WIN32
     }
 
-    MARS::MARS(lib_manager::LibManager *theManager) : configDir("."),
+    MARS::MARS(lib_manager::LibManager *theManager) : configDir(DEFAULT_CONFIG_DIR),
                    libManager(theManager),
                    marsGui(NULL), ownLibManager(false) {
       needQApp = true;
