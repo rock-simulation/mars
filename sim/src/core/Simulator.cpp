@@ -54,6 +54,10 @@
 #include <time.h>
 #endif
 
+#ifndef DEFAULT_CONFIG_DIR
+    #define DEFAULT_CONFIG_DIR "."
+#endif
+
 namespace mars {
   namespace sim {
 
@@ -73,7 +77,7 @@ namespace mars {
       exit_sim(false), allow_draw(true),
       sync_graphics(false), physics_mutex_count(0), physics(0) {
 
-      config_dir = ".";
+      config_dir = DEFAULT_CONFIG_DIR;
 
       std_port = 1600;
 
