@@ -181,9 +181,10 @@ function setup_env {
             echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=RELEASE  -G \"MSYS Makefiles\" \$@" >> cmake_release
         else
             echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=DEBUG \$@" > cmake_debug
-            echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=DEBUG \$@" > cmake_release
+            echo "cmake .. -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_BUILD_TYPE=RELEASE \$@" > cmake_release
         fi
         chmod +x cmake_debug
+        chmod +x cmake_release
         cd ${MARS_DEV_ROOT}
 
         source env.sh
@@ -198,19 +199,6 @@ function setup_env {
         cp -r "$MARS_SCRIPT_DIR/../cmake" "${prefix}/"
     elif [ ! -f "${prefix}/cmake/mars.cmake" ]; then
         cp "$MARS_SCRIPT_DIR/../cmake/mars.cmake" "${prefix}/cmake/"
-    fi
-    if [ ! -d "${prefix}/share/mars/cmake" ]; then
-        mkdir -p ${prefix}/share/mars
-        cp -r "$MARS_SCRIPT_DIR/../cmake" "${prefix}/share/mars"
-    elif [ ! -f "${prefix}/share/mars/cmake/mars.cmake" ]; then
-        cp "$MARS_SCRIPT_DIR/../cmake/mars.cmake" "${prefix}/cmake/"
-    fi
-
-    if [ ! -f "${prefix}/share/mars/cmake/mars-config.cmake" ]; then
-        cd ${prefix}/share/mars/cmake
-        echo "list(APPEND CMAKE_MODULE_PATH ${prefix}/share/mars/cmake)" > mars-config.cmake
-        echo "include(mars)" >> mars-config.cmake
-        cd ${MARS_DEV_ROOT}
     fi
     popd > /dev/null 2>&1
 }
@@ -537,6 +525,31 @@ function install_package {
     printBold "... done building ${category}/${package}."
 }
 
+# =========================
+# install rock/base-types
+# =========================
+
+function install_base_types {
+    packages=$1;
+    echo
+    printBold "building "${package}" ..."
+    echo
+    pushd . > /dev/null 2>&1
+    mkdir -p ${MARS_DEV_ROOT}/${package}/build
+    cd ${MARS_DEV_ROOT}/${package}/build
+    if [[ ${BUILD_TYPE} == "release" ]]; then
+        cmake_release -DNO_BOOST_DEPENDENCY=1
+    else
+        cmake_debug -DNO_BOOST_DEPENDENCY=1
+    fi
+    make install -j${CORES} || MARS_SCRIPT_ERROR=1
+    popd > /dev/null 2>&1
+    if [[ x${MARS_SCRIPT_ERROR} == "x1" ]]; then
+        return 1
+    fi
+    echo
+    printBold "... done building ${category}/${package}."
+}
 
 # =========================
 # ode install function
@@ -552,7 +565,7 @@ function install_ode_mars {
       export CFLAGS=-fPIC
       export CXXFLAGS=-fPIC
       # --enable-release
-      ./configure CPPFLAGS="-DdNODEBUG" CXXFLAGS="-O2 -ffast-math" CFLAGS="-O2 -ffast-math" --enable-double-precision --prefix=$prefix --with-drawstuff=none --disable-demos
+      ./configure CPPFLAGS="-DdNODEBUG" CXXFLAGS="-O2 -ffast-math -fPIC" CFLAGS="-O2 -ffast-math -fPIC" --enable-double-precision --prefix=$prefix --with-drawstuff=none --disable-demos
       if [ "${platform}" = "linux" ]; then
         if [ x`which libtool` != x ]; then
           mv libtool libtool_old
