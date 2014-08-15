@@ -47,7 +47,15 @@ namespace mars {
       ConfigVectorTemplate(std::string s) : parentName(s) {}
       ConfigVectorTemplate() : parentName("") {}
 
-      T& operator[](size_t index) {
+      T& operator[](short index) {
+        return (*this)[(unsigned long)index];
+      }
+
+      T& operator[](unsigned short index) {
+        return (*this)[(unsigned long)index];
+      }
+
+      T& operator[](unsigned long index) {
         if(index == this->size()) {
           this->push_back(T());
           this->back().setParentName(parentName);
@@ -55,8 +63,32 @@ namespace mars {
         return std::vector<T>::operator[](index);
       }
 
-      const T& operator[](size_t index) const {
+      T& operator[](long index) {
+        return (*this)[(unsigned long)index];
+      }
+
+      T& operator[](int index) {
+        return (*this)[(unsigned long)index];
+      }
+
+      T& operator[](unsigned int index) {
+        return (*this)[(unsigned long)index];
+      }
+
+      const T& operator[](unsigned long index) const {
         return std::vector<T>::operator[](index);
+      }
+
+       ConfigVectorTemplate& operator[](const char *text) {
+        if(0 == this->size()) {
+          this->push_back(T());
+          this->back().setParentName(parentName);
+        }
+        return std::vector<T>::operator[](0)[text];
+      }
+
+      const ConfigVectorTemplate& operator[](const char *text) const {
+        return std::vector<T>::operator[](0)[text];
       }
 
       size_t append(const T &item) {
@@ -162,6 +194,30 @@ namespace mars {
       ConfigVectorTemplate& operator+=(const ConfigMap &v) {
         *this += T(v);
         return *this;
+      }
+
+      operator int () {
+        return (*this)[0].getInt();
+      }
+
+      operator double () {
+        return (*this)[0].getDouble();
+      }
+
+      operator unsigned int () {
+        return (*this)[0].getUInt();
+      }
+
+      operator unsigned long () {
+        return (*this)[0].getULong();
+      }
+
+      operator std::string () {
+        return (std::string)(*this)[0].getString().c_str();
+      }
+
+      operator bool () {
+        return (*this)[0].getBool();
       }
 
       inline void setParentName(std::string s) {
@@ -275,7 +331,7 @@ namespace mars {
       }
 
       operator std::string () {
-        return getString();
+        return (std::string)getString().c_str();
       }
 
       operator bool () {
@@ -428,6 +484,12 @@ namespace mars {
         sValue = value.c_str();
         parsed = true;
         type = STRING_TYPE;
+      }
+
+      inline void setBool(bool value) {
+        iValue = value;
+        parsed = true;
+        type = BOOL_TYPE;
       }
 
       inline void setUnparsedString(const std::string &value) {

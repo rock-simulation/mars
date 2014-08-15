@@ -120,19 +120,17 @@ namespace mars {
                   NodeId id = control->nodes->getID(nodeName);
                   control->nodes->getDataBrokerNames(id, &groupName,
                                                      &dataName);
-                  control->dataBroker->registerTimedReceiver(this, groupName,
-                                                             dataName,
-                                                             "mars_sim/simTimer",
-                                                             10, dataIndex);
+                  control->dataBroker->registerSyncReceiver(this, groupName,
+                                                            dataName,
+                                                            dataIndex);
                 }
                 else {
                   std::string groupName, dataName;
                   groupName = (std::string)it2->children["dbGroupName"][0];
                   dataName = (std::string)it2->children["dbDataName"][0];
-                  control->dataBroker->registerTimedReceiver(this, groupName,
-                                                             dataName,
-                                                             "mars_sim/simTimer",
-                                                             10, dataIndex);
+                  control->dataBroker->registerSyncReceiver(this, groupName,
+                                                            dataName,
+                                                            dataIndex);
                 }
                 std::string groupName, dataName, itemName;
                 if(it2->children.find("timeGroup") != it2->children.end()) {
@@ -148,10 +146,9 @@ namespace mars {
                 std::string timeString = groupName+dataName+itemName;
                 int index = dataIndex++;
                 if(timeStringMap.find(timeString) == timeStringMap.end()) {
-                  control->dataBroker->registerTimedReceiver(this, groupName,
-                                                             dataName,
-                                                             "mars_sim/simTimer",
-                                                             10, dataIndex);
+                  control->dataBroker->registerSyncReceiver(this, groupName,
+                                                            dataName,
+                                                            dataIndex);
                   timeStringMap[timeString] = dataIndex;
                   timeMap[dataIndex] = TimeMap();
                   timeMap[dataIndex].dataName = itemName;

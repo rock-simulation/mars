@@ -151,6 +151,63 @@ namespace mars {
           }
         }
       }
+      for(it = config["nodes"].begin();
+          it!=config["nodes"].end(); ++it) {
+        handleURIs(&it->children);
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        for(; nIt!=nodeList.end(); ++nIt) {
+          if((std::string)(*nIt)["name"][0] == (std::string)(*it)["name"][0]) {
+            utils::ConfigMap::iterator cIt = it->children.begin();
+            for(; cIt!=it->children.end(); ++cIt) {
+              (*nIt)[cIt->first] = cIt->second;
+            }
+            break;
+          }
+        }
+      }
+
+      for(it = config["visual"].begin();
+          it!=config["visual"].end(); ++it) {
+        handleURIs(&it->children);
+        std::string cmpName = (std::string)(*it)["name"][0];
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        if(visualNameMap.find(cmpName) != visualNameMap.end()) {
+          cmpName = visualNameMap[cmpName];
+          for(; nIt!=nodeList.end(); ++nIt) {
+            if((std::string)(*nIt)["name"][0] == cmpName) {
+              utils::ConfigMap::iterator cIt = it->children.begin();
+              for(; cIt!=it->children.end(); ++cIt) {
+                if(cIt->first != "name") {
+                  (*nIt)[cIt->first] = cIt->second;
+                }
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      for(it = config["collision"].begin();
+          it!=config["collision"].end(); ++it) {
+        handleURIs(&it->children);
+        std::string cmpName = (std::string)(*it)["name"][0];
+        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        if(collisionNameMap.find(cmpName) != collisionNameMap.end()) {
+          cmpName = collisionNameMap[cmpName];
+          for(; nIt!=nodeList.end(); ++nIt) {
+            if((std::string)(*nIt)["name"][0] == cmpName) {
+              utils::ConfigMap::iterator cIt = it->children.begin();
+              for(; cIt!=it->children.end(); ++cIt) {
+                if(cIt->first != "name") {
+                  (*nIt)[cIt->first] = cIt->second;
+                }
+              }
+              break;
+            }
+          }
+        }
+      }
+
       for(it = config["lights"].begin(); it!=config["lights"].end(); ++it) {
         handleURIs(&it->children);
         lightList.push_back((*it).children);
@@ -213,6 +270,9 @@ namespace mars {
         if(link->getParent()->inertial) {
           parentInertialPose = link->getParent()->inertial->origin;
         }
+        else if(link->getParent()->collision) {
+          parentInertialPose = link->getParent()->collision->origin;
+        }
         unsigned long parentID = nodeIDMap[link->getParent()->name];
         (*map)["relativeid"] = parentID;
       }
@@ -239,13 +299,32 @@ namespace mars {
                            jointPose.rotation * inertialPose.position);
       goalPose.position = (parentInertialPose.rotation.GetInverse()*
                            goalPose.position);
+      /*
       goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
                            inertialPose.rotation*jointPose.rotation);
+      */
+      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
+                           parentInertialPose.rotation.GetInverse());
 
       Vector v(goalPose.position.x, goalPose.position.y, goalPose.position.z);
       vectorToConfigItem(&(*map)["position"][0], &v);
       Quaternion q = quaternionFromMembers(goalPose.rotation);
       quaternionToConfigItem(&(*map)["rotation"][0], &q);
+    }
+
+    urdf::Pose Load::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
+      urdf::Pose globalPose;
+      boost::shared_ptr<urdf::Link> pLink = link->getParent();
+      if(link->parent_joint) {
+        globalPose = link->parent_joint->parent_to_joint_origin_transform;
+      }
+      if(pLink) {
+        urdf::Pose parentPose = getGlobalPose(pLink);
+        globalPose.position = parentPose.rotation * globalPose.position;
+        globalPose.position = globalPose.position + parentPose.position;
+        globalPose.rotation = parentPose.rotation * globalPose.rotation;
+      }
+      return globalPose;
     }
 
     void Load::handleVisual(ConfigMap *map,
@@ -315,7 +394,7 @@ namespace mars {
       toPose_.position.y *= -1;
       toPose_.position.z *= -1;
       p = pose_.position + toPose_.position;
-      p = toPose_.rotation * p;
+      p = toPose_.rotation.GetInverse() * p;
       r = (toPose_.rotation.GetInverse() *
            pose_.rotation);
       *v = Vector(p.x, p.y, p.z);
@@ -429,13 +508,15 @@ namespace mars {
       // todo: if we don't have any joints connected we need some more
       //       special handling and change the handling below
       //       config["movable"] ?!?
+      // TODO: we should also read materials from the visual object here, as URDF does not
+      //         necessarily define them on the top level of the file
 
       config["movable"] = true;
 
       // we do most of the special case handling here:
       { /** special case handling **/
         bool needGroupID = false;
-        if(link->visual_array.size() > 1 &&
+        if(link->visual_array.size() > 1 ||
            link->collision_array.size() > 1) {
           needGroupID = true;
         }
@@ -476,6 +557,7 @@ namespace mars {
       calculatePose(&config, link);
 
       if(loadVisual) {
+        visualNameMap[link->visual->name] = link->name;
         handleVisual(&config, link->visual);
         // caculate visual position offset
         convertPose(link->visual->origin, link, &v, &q);
@@ -490,6 +572,7 @@ namespace mars {
       }
 
       if(loadCollision) {
+        collisionNameMap[link->collision->name] = link->name;
         handleCollision(&config, link->collision);
         // the first visual object is loaded
         collisionArrayIndex = 1;
@@ -530,6 +613,7 @@ namespace mars {
         }
         else {
           childNode["name"] = collision->name;
+          collisionNameMap[collision->name] = link->name;
         }
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
@@ -546,6 +630,7 @@ namespace mars {
         collisionArrayIndex++;
 
         if(visual) {
+          visualNameMap[visual->name] = link->name;
           handleVisual(&childNode, visual);
           // convert the pose into the same coordinate system like as the node
           convertPose(visual->origin, link, &v, &q);
@@ -577,21 +662,20 @@ namespace mars {
         }
         else {
           childNode["name"] = visual->name;
+          visualNameMap[visual->name] = visual->name;
         }
         childNode["groupid"] = config["groupid"];
-        childNode["noPhysical"] = true;
+        childNode["noPhysical"] = false;
         childNode["mass"] = 0.0;
-        childNode["density"] = 0.0;
+        childNode["density"] = 1.0;
+        childNode["movable"] = true;
+        childNode["groupid"] = config["groupid"];
 
         handleVisual(&childNode, visual);
-        // todo: change NodeData.cpp not to need this:
-        if(visual->geometry->type != urdf::Geometry::MESH) {
-          childNode["physicmode"] = childNode["origname"];
-        }
+        childNode["physicmode"] = "box";
 
-        // currently we need to set the extend because MARS uses it
-        // also for primitiv visuals
-        childNode["extend"] = childNode["visualsize"];
+        Vector v(0.001, 0.001, 0.001);
+        vectorToConfigItem(&childNode["extend"][0], &v);
         convertPose(visual->origin, link, &v, &q);
         vectorToConfigItem(&childNode["position"][0], &v);
         quaternionToConfigItem(&childNode["rotation"][0], &q);
@@ -609,7 +693,7 @@ namespace mars {
         jointIDMap[link->parent_joint->name] = nextJointID-1;
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
-        joint["anchorpos"] = 2;
+        joint["anchorpos"] = ANCHOR_CUSTOM;
         if(link->parent_joint->type == urdf::Joint::REVOLUTE) {
           joint["type"] = "hinge";
         }
@@ -623,10 +707,19 @@ namespace mars {
           // we don't support the type yet and use a fixed joint
           joint["type"] = "fixed";
         }
-        v = Vector(link->parent_joint->axis.x,
-                   link->parent_joint->axis.y,
-                   link->parent_joint->axis.z);
+
+        urdf::Pose pose = getGlobalPose(link);
+        urdf::Pose pose2;
+        pose2.position = pose.rotation * link->parent_joint->axis;
+        v = Vector(pose2.position.x,
+                   pose2.position.y,
+                   pose2.position.z);
         vectorToConfigItem(&joint["axis1"][0], &v);
+
+        v = Vector(pose.position.x,
+                   pose.position.y,
+                   pose.position.z);
+        vectorToConfigItem(&joint["anchor"][0], &v);
 
         debugMap["joints"] += joint;
         jointList.push_back(joint);
@@ -757,6 +850,9 @@ namespace mars {
           node.material = it->second;
         }
       }
+      else {
+        node.material.diffuseFront = Color(0.4, 0.4, 0.4, 1.0);
+      }
 
       NodeId oldId = node.index;
       NodeId newId = control->nodes->addNode(&node);
@@ -782,6 +878,7 @@ namespace mars {
 
     unsigned int Load::loadJoint(utils::ConfigMap config) {
       JointData joint;
+      joint.invertAxis = true;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = joint.fromConfigMap(&config, tmpPath,
                                       control->loadCenter);

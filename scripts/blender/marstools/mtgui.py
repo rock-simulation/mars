@@ -14,7 +14,7 @@ You may use the provided install shell script.
 
 import bpy
 from bpy.types import Operator
-from bpy.props import EnumProperty, BoolProperty, StringProperty
+from bpy.props import EnumProperty, BoolProperty, StringProperty, IntProperty, FloatVectorProperty
 import marstools.mtdefs as mtdefs
 import marstools.mtsensors as mtsensors
 import marstools.mtcontrollers as mtcontrollers
@@ -28,6 +28,10 @@ def register():
             name = "type",
             description = "MARS object type")
     print("    Added 'MARStype' to Object properties.")
+    #bpy.types.Object.lastchanged = StringProperty(
+    #        default = '',
+    #        name = "lastchanged",
+    #        description = "Iso format datetime string of last change event")
 
     bpy.types.World.showBodies = BoolProperty(name = "showBodies", update=SetVisibleLayers)
     bpy.types.World.showJoints = BoolProperty(name = "showJoints", update=SetVisibleLayers)
@@ -37,18 +41,27 @@ def register():
     bpy.types.World.showNames = BoolProperty(name = "showNames", update=SetVisibleLayers)
     bpy.types.World.showDecorations = BoolProperty(name = "showDecorations", update=SetVisibleLayers)
     bpy.types.World.showMotorTypes = BoolProperty(name = "showMotorTypes", update=showMotorTypes)
-    #setWorldView([True, True, True, True, True, False, False])
+    bpy.types.World.manageLayers = BoolProperty(name = "manage layers", update=manageLayers)
+    bpy.types.World.useDefaultLayers = BoolProperty(name = "use default layers", update=useDefaultLayers)
+    bpy.types.World.linkLayer = IntProperty(name = "link", update=manageLayers)
 
-    # These may be optional
-    #bpy.utils.register_class(MARSToolPanel)
-    #bpy.utils.register_class(MARSObjectPanel)
-    #bpy.utils.register_class(MARSWorldPanel)
+    bpy.types.World.path = StringProperty(name = 'path', default='.', update=updateExportPath)
+    bpy.types.World.decimalPlaces = IntProperty(name = "decimalPlaces",
+                                          description = "number of decimal places to export",
+                                          default = 6)
+    bpy.types.World.relativePath = BoolProperty(name='relative path', default=True)
+    bpy.types.World.useBobj = BoolProperty(name = "useBobj", update=updateExportOptions)
+    bpy.types.World.useObj = BoolProperty(name = "useObj", update=updateExportOptions)
+    bpy.types.World.exportMesh = BoolProperty(name = "exportMesh", update=updateExportOptions)
+    bpy.types.World.exportMARSscene = BoolProperty(name = "exportMARSscene", update=updateExportOptions)
+    bpy.types.World.exportSMURF = BoolProperty(name = "exportSMURF", default=True, update=updateExportOptions)
+    bpy.types.World.exportURDF = BoolProperty(name = "exportURDF", default=True, update=updateExportOptions)
+    bpy.types.World.exportYAML = BoolProperty(name = "exportYAML", update=updateExportOptions)
+
+    bpy.types.World.gravity = FloatVectorProperty(name = "gravity")
 
 def unregister():
     print("Unregistering mtgui...")
-    #bpy.utils.unregister_class(MARSToolPanel)
-    #bpy.utils.unregister_class(MARSObjectPanel)
-    #bpy.utils.register_class(MARSWorldPanel)
 
 
 class MessageOperator(bpy.types.Operator):
@@ -81,6 +94,13 @@ class OkOperator(bpy.types.Operator):
     def execute(self, context):
         return {'FINISHED'}
 
+def updateExportOptions(self, context):
+    if bpy.data.worlds[0].exportSMURF and not bpy.data.worlds[0].exportURDF:
+        bpy.data.worlds[0].exportURDF = True
+
+def updateExportPath(self, context):
+    if not bpy.data.worlds[0].path.endswith('/'):
+        bpy.data.worlds[0].path += '/'
 
 def SetVisibleLayers(self, context):
     """Set active Layers according to MARS world data."""
@@ -123,6 +143,14 @@ def applyWorldView():
     layers[6] = bpy.data.worlds[0].showNames
     bpy.context.scene.layers = layers
 
+def manageLayers(self, context):
+    if bpy.data.worlds[0].manageLayers:
+        pass #TODO: not so important
+
+
+def useDefaultLayers(self, context):
+    pass #TODO: not so important
+
 def showMotorTypes(self, context):
     """Changes materials of joints to indicate different motor types."""
     if bpy.data.worlds[0].showMotorTypes:
@@ -149,7 +177,7 @@ def showMotorTypes(self, context):
 class MARSToolPanel(bpy.types.Panel):
     """A Custom Panel in the Viewport Toolbar for MARS options"""
     bl_idname = "TOOLS_PT_MARS"
-    bl_label = "MARStools panel for general functionality"
+    bl_label = "MARStools: Model editing"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
 
@@ -159,24 +187,34 @@ class MARSToolPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        # Edit Properties Menu
-        layout.label(text="Edit MARS Properties:")
-        col_edit = layout.column(align = True)
-
-        col_edit.operator('object.mt_update_models', text = 'Update MARS model', icon = 'FILE_REFRESH')
-        col_edit.operator('object.mt_batch_property', text = 'Edit Custom Property', icon = 'GREASEPENCIL')
-
-        layout.separator()
+        # Robot Model Menu
+        layout.label(text="Robot Model:")
+        inlayout = layout.split()
+        rc1 = inlayout.column(align = True)
+        rc1.operator('object.mt_update_models', text = 'Update MARS model', icon = 'FILE_REFRESH')
+        rc2 = inlayout.column(align = True)
+        rc2.operator('object.mt_name_model', text = 'Name Robot')
 
         # Inspection Menu
+        layout.separator()
         layout.label(text = "Inspect Robot", icon = 'VIEWZOOM')
-        inlayout = layout.split()
-        linspect1 = inlayout.column(align = True)
-        linspect1.operator('object.mt_check_model', text = 'Check model validity')
-        linspect1.operator('object.mt_calculate_mass', text = 'Show Mass')
-        linspect1.operator('object.mt_select_root', text = 'Select Root')
-        linspect1.operator('object.mt_select_model', text = 'Select Robot')
-        linspect1.operator('object.mt_name_model', text = 'Name Robot')
+        iinlayout = layout.split()
+        ic1 = iinlayout.column(align = True)
+        ic1.operator('object.mt_show_distance', text = 'Measure distance')
+        ic2 = iinlayout.column(align = True)
+        ic2.operator('object.mt_set_xray', text = 'Always show objects')
+
+        # Selection Menu
+        layout.separator()
+        layout.label(text = "Selection(s)", icon = 'HAND')
+        sinlayout = layout.split()
+        sc1 = sinlayout.column(align = True)
+        sc1.operator('object.mt_select_root', text = 'Select Root')
+        sc1.operator('object.mt_select_model', text = 'Select Robot')
+        sc2 = sinlayout.column(align = True)
+        sc2.operator('object.mt_select_objects_by_marstype', text = "Select by MARStype")
+        sc2.operator('object.mt_select_objects_by_name', text = "Select by Name")
+
         #for root in mtutility.getRoots():
         #    linspect1.operator('object.mt_select_model', text=root["modelname"]).modelname = \
         #     root["modelname"] if "modelname" in root else root.name
@@ -185,7 +223,7 @@ class MARSToolPanel(bpy.types.Panel):
 class MARSToolModelPanel(bpy.types.Panel):
     """A Custom Panel in the Viewport Toolbar for MARS options"""
     bl_idname = "TOOLS_MODEL_PT_MARS"
-    bl_label = "MARStools panel for Bodies & Joints"
+    bl_label = "MARStools: Object editing"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
 
@@ -193,18 +231,38 @@ class MARSToolModelPanel(bpy.types.Panel):
         self.layout.label(icon = 'MOD_ARMATURE')
 
     def draw(self, context):
-        inlayout = self.layout.split()
+        layout = self.layout
+
+        inlayout = layout.split()
         c1 = inlayout.column(align = True)
-        c1.operator('object.add_joints', text = "Add Joint(s)")
-        c1.operator('object.define_joint_constraints_spheres', text = "Define Joint Constraints")
+        c1.operator('object.mt_set_marstype', text = 'Set MARStype')
+        c1.operator('object.mt_set_geometry_type', text = "Set Geometry Type(s)")
+        c1.operator('object.create_collision_objects', text = "Create Collision Object(s)")
+        c1.operator('object.create_inertial_objects', text = "Create Inertial Object(s)")
+        c1.operator('object.define_joint_constraints', text = "Define Joint Constraints")
         c2 = inlayout.column(align = True)
-        c2.operator('object.derive_joint_spheres', text = "Derive Joint Spheres")
+        c2.operator('object.mt_partial_rename', text = "Partial Rename")
+        c2.operator('object.attach_motor', text = "Attach motor")
         c2.operator('object.mt_smoothen_surface', text = "Smoothen Surface")
+        c2.operator('object.mt_batch_property', text = 'Edit Custom Property', icon = 'GREASEPENCIL')
+        c2.operator('object.mt_copy_props', text = 'Copy Custom Property', icon = 'GREASEPENCIL')
+
+        #Mass Menu
+        layout.separator()
+        layout.label(text = "Masses & Inertia", icon = 'PHYSICS')
+        minlayout = layout.split()
+        mc1 = minlayout.column(align = True)
+        mc1.operator('object.mt_calculate_mass', text = 'Show Mass')
+        mc1.operator('object.mt_set_mass', text = 'Set Mass')
+        mc2 = minlayout.column(align = True)
+        mc2.operator('object.mt_sync_masses', text = 'Sync Masses')
+        mc2.operator('object.mt_edit_inertia', text = 'Edit Inertia')
+
 
 class MARSToolSenConPanel(bpy.types.Panel):
     """A Custom Panel in the Viewport Toolbar for MARS options"""
     bl_idname = "TOOLS_SENCON_PT_MARS"
-    bl_label = "MARStools panel for Sensors & Controllers"
+    bl_label = "MARStools: Sensors & Controllers"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
 
@@ -235,7 +293,7 @@ class MARSToolSenConPanel(bpy.types.Panel):
 class MARSToolVisPanel(bpy.types.Panel):
     """A Custom Panel in the Viewport Toolbar for MARS options"""
     bl_idname = "TOOLS_VIS_PT_MARS"
-    bl_label = "MARStools panel for Visibility"
+    bl_label = "MARStools: Visibility"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
 
@@ -260,7 +318,7 @@ class MARSToolVisPanel(bpy.types.Panel):
 class MARSToolExportPanel(bpy.types.Panel):
     """A Custom Panel in the Viewport Toolbar for MARS options"""
     bl_idname = "TOOLS_ZEXPORT_PT_MARS"
-    bl_label = "MARStools panel for Exporting"
+    bl_label = "MARStools: Export & Import"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'TOOLS'
 
@@ -268,16 +326,38 @@ class MARSToolExportPanel(bpy.types.Panel):
         self.layout.label(icon = 'SMOOTH')
 
     def draw(self, context):
-        group_export = self.layout
+        layout = self.layout
+
         #export robot model options
-        group_export.prop(bpy.data.worlds[0], "path")
-        #group_export.prop(bpy.data.worlds[0], "filename")
-        group_export.prop(bpy.data.worlds[0], "exportBobj")
-        group_export.prop(bpy.data.worlds[0], "exportMesh")
-        group_export.prop(bpy.data.worlds[0], "exportSMURF")
-        group_export.prop(bpy.data.worlds[0], "exportURDF")
-        group_export.prop(bpy.data.worlds[0], "exportYAML")
-        group_export.operator("object.mt_export_robot", text = "Export Robot Model", icon = "PASTEDOWN")
+        self.layout.label(text = "General")
+        self.layout.prop(bpy.data.worlds[0], "path")
+        ginlayout = self.layout.split()
+        g1 = ginlayout.column(align = True)
+        g1.prop(bpy.data.worlds[0], "relativePath")
+        g2 = ginlayout.column(align = True)
+        g2.prop(bpy.data.worlds[0], "decimalPlaces")
+
+        layout.separator()
+
+        inlayout = self.layout.split()
+        c1 = inlayout.column(align = True)
+        c1.label(text = "Mesh export")
+        c1.prop(bpy.data.worlds[0], "exportMesh", text = "export meshes")
+        c1.prop(bpy.data.worlds[0], "useBobj", text = "use .bobj format")
+        c1.prop(bpy.data.worlds[0], "useObj", text = "use .obj format")
+        c1.label(text = ".obj is used" if not (bpy.data.worlds[0].useBobj and not bpy.data.worlds[0].useObj) else '.bobj is used')
+        c2 = inlayout.column(align = True)
+        c2.label(text = "Robot data export")
+        c2.prop(bpy.data.worlds[0], "exportMARSscene", text = "as MARS scene")
+        c2.prop(bpy.data.worlds[0], "exportSMURF", text = "as SMURF")
+        c2.prop(bpy.data.worlds[0], "exportURDF", text = "as URDF")
+        c2.prop(bpy.data.worlds[0], "exportYAML", text = "as YAML dump")
+
+        layout.separator()
+
+        layout.label(text = "Export/Import")
+        layout.operator("object.mt_export_robot", text = "Export Robot Model", icon = "PASTEDOWN")
+        layout.operator("obj.import_robot_model", text = "Import Robot Model", icon = "COPYDOWN")
 
 
 class MARSObjectPanel(bpy.types.Panel):

@@ -3,6 +3,7 @@
        DFKI Robot simulator
     </description>
 
+    <depend package="base/types" />
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/common/lib_manager" />
     <depend package="simulation/mars/common/cfg_manager" />

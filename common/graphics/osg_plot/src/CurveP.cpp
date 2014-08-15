@@ -117,6 +117,11 @@ namespace osg_plot {
   }
 
   void CurveP::appendData(double x, double y) {
+    if(points->back().x() > x) {
+      points->clear();
+      points->push_back(osg::Vec3(0.0, 0.00, 0.0));
+      points->push_back(osg::Vec3(0.00001, 0.0, 0.0));
+    }
     points->push_back(osg::Vec3(x, y, 0.0));
   }
 

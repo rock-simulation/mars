@@ -78,7 +78,7 @@ namespace mars {
       std::map<std::string, unsigned long> sensorIDMap;
       std::map<std::string, unsigned long> motorIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
-
+      std::map<std::string, std::string> visualNameMap, collisionNameMap;
       interfaces::ControlCenter *control;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
@@ -122,6 +122,8 @@ namespace mars {
       unsigned int loadController(utils::ConfigMap config);
       unsigned int loadGraphic(utils::ConfigMap config);
       unsigned int loadLight(utils::ConfigMap config);
+
+      urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
     };
 
   } // end of namespace urdf_loader

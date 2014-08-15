@@ -22,7 +22,7 @@
  *  Joint6DOFSensor.cpp
  *  QTVersion
  *
- *  Created by Malte Römmerann
+ *  Created by Malte Rï¿½mmerann
  *
  */
 
@@ -83,6 +83,22 @@ namespace mars {
                                                  "mars_sim/simTimer",
                                                  config.updateRate,
                                                  CALLBACK_JOINT);
+      dbPackage.add("id", (long)config.id);
+      dbPackage.add("fx", 0.0);
+      dbPackage.add("fy", 0.0);
+      dbPackage.add("fz", 0.0);
+      dbPackage.add("tx", 0.0);
+      dbPackage.add("ty", 0.0);
+      dbPackage.add("tz", 0.0);
+
+      char text[55];
+      sprintf(text, "Sensors/FT_%05lu", config.id);
+      dbPushId = control->dataBroker->pushData("mars_sim", text,
+                                               dbPackage, NULL,
+                                               data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                 "mars_sim/simTimer", 0);
+
       NodeData theNode = control->nodes->getFullNode(sensor_data.body_id);
       JointData theJoint = control->joints->getFullJoint(sensor_data.joint_id);
       sensor_data.anchor = theJoint.anchor;
@@ -96,6 +112,8 @@ namespace mars {
     }
 
     Joint6DOFSensor::~Joint6DOFSensor(void) {
+      control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                   "mars_sim/simTimer");
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
                                                    "mars_sim/simTimer");
     }
@@ -131,6 +149,35 @@ namespace mars {
       return 6;
     }
 
+    void Joint6DOFSensor::getForceData(utils::Vector *force){
+    	*force = (sensor_data.body_q * sensor_data.force);
+    }
+    void Joint6DOFSensor::getTorqueData(utils::Vector *torque){
+    	*torque = (sensor_data.body_q * sensor_data.torque);
+    }
+    void Joint6DOFSensor::getAnchor(utils::Vector *anchor){
+    	*anchor = sensor_data.anchor;
+    }
+    void Joint6DOFSensor::getBodyQ(utils::Quaternion* body_q){
+    	*body_q = sensor_data.body_q;
+    }
+
+
+    void Joint6DOFSensor::produceData(const data_broker::DataInfo &info,
+                                      data_broker::DataPackage *dbPackage,
+                                      int callbackParam) {
+      Vector tmp;
+      dbPackage->set(0, (long)id);
+      tmp = (sensor_data.body_q * sensor_data.force);
+      dbPackage->set(1, tmp.x());
+      dbPackage->set(2, tmp.y());
+      dbPackage->set(3, tmp.z());
+
+      tmp = (sensor_data.body_q * sensor_data.torque);
+      dbPackage->set(4, tmp.x());
+      dbPackage->set(5, tmp.y());
+      dbPackage->set(6, tmp.z());
+    }
 
     void Joint6DOFSensor::receiveData(const data_broker::DataInfo &info,
                                       const data_broker::DataPackage &package,
@@ -140,6 +187,9 @@ namespace mars {
         package.get(nodeRotIndices[1], &sensor_data.body_q.y());
         package.get(nodeRotIndices[2], &sensor_data.body_q.z());
         package.get(nodeRotIndices[3], &sensor_data.body_q.w());
+        sensor_data.body_q.x() = -sensor_data.body_q.x();
+        sensor_data.body_q.y() = -sensor_data.body_q.y();
+        sensor_data.body_q.z() = -sensor_data.body_q.z();
       } else if(jointPackageId == info.dataId) {
         for(int i = 0; i < 3; ++i) {
           package.get(jointForceIndices[i], &sensor_data.force[i]);

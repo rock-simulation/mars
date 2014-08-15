@@ -257,6 +257,9 @@ namespace mars {
       physics->step_size = calc_ms/1000.;
       physics->fast_step = false;
 
+      physics->world_erp = cfgWorldErp.dValue;
+      physics->world_cfm = cfgWorldCfm.dValue;
+
       gravity.x() = cfgGX.dValue;
       gravity.y() = cfgGY.dValue;
       gravity.z() = cfgGZ.dValue;

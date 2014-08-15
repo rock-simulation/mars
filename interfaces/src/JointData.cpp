@@ -81,6 +81,7 @@ namespace mars {
       axis1.setZero();
       axis1.setZero();
       axis2.setZero();
+      invertAxis = false;
     }
 
     bool JointData::fromConfigMap(ConfigMap *config,
@@ -142,6 +143,7 @@ namespace mars {
 
       GET_VALUE("anchorpos", anchorPos, Int);
       GET_OBJECT("anchor", anchor, vector);        
+      GET_VALUE("invertAxis", invertAxis, Bool);
 
       return true;
     }
@@ -185,6 +187,7 @@ namespace mars {
 
       SET_VALUE("anchorpos", anchorPos);
       SET_OBJECT("anchor", anchor, vector);        
+      SET_VALUE("invertAxis", invertAxis);
     }
 
     void JointData::getFilesToSave(std::vector<std::string> *fileList) {

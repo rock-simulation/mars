@@ -859,7 +859,7 @@ namespace mars {
         rttDepthTexture->setResizeNonPowerOfTwoHint(false);
         rttDepthTexture->setDataVariance(osg::Object::DYNAMIC);
         rttDepthTexture->setTextureSize(g_width, g_height);
-        rttDepthTexture->setSourceType(GL_FLOAT);
+        rttDepthTexture->setSourceType(GL_UNSIGNED_INT);
         rttDepthTexture->setSourceFormat(GL_DEPTH_COMPONENT);
         rttDepthTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
         rttDepthTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -869,9 +869,12 @@ namespace mars {
                                    osg::Texture2D::LINEAR);
         rttDepthImage = new osg::Image();
         rttDepthImage->allocateImage(g_width, g_height,
-                                     1, GL_DEPTH_COMPONENT, GL_FLOAT);
+                                     1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
+        
+        std::fill(rttDepthImage->data(), rttDepthImage->data() + g_width * g_height * sizeof(GLuint), 0);
+        
         rttDepthTexture->setImage(rttDepthImage);
 
 
@@ -1029,7 +1032,7 @@ namespace mars {
     void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height)
     {
       if(isRTTWidget) {
-        const float* data2 = (const float*)rttDepthImage->data();
+        GLuint* data2 = (GLuint *)rttDepthImage->data();
         width = rttDepthImage->s();
         height = rttDepthImage->t();
 
@@ -1038,7 +1041,9 @@ namespace mars {
         int d = 0;
         for(int i=height-1; i>=0; --i) {
           for(int k=0; k<width; ++k) {
-            const float dv = data2[i*width+k];
+              GLuint di = data2[i*width+k];
+              
+            const float dv = ((float) di) / std::numeric_limits< GLuint >::max() ;
             // 1.0 is the max depth in the depth buffer, and
             // is represented as a nan in the distance image
             if( dv >= 1.0 )

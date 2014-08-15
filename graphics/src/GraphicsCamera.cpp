@@ -337,12 +337,12 @@ namespace mars {
       // the f_x and f_y paramters are calculated from
       // the fovy parameter we got from osg.
       // We set the scale value such that a 
-      // y value of sin(fovy/2) is equal to height/2.
+      // y value of tan(fovy/2) is equal to height/2.
       //
       // Note that fovy is in radians.
       double fovy_rad = fovy * M_PI / 180.0;
-      s->scale_y = height / (2.0 * sin( fovy_rad / 2.0 ) );
-      s->scale_x = s->scale_y;
+      s->scale_y = height / (2.0 * tan( fovy_rad / 2.0 ) );
+      s->scale_x = width / (2.0 * aspectRatio * tan( fovy_rad / 2.0 ) );
     }
 
     void GraphicsCamera::setCameraView(cameraStruct cs) {
@@ -385,6 +385,8 @@ namespace mars {
                                                bottom, top,
                                                near, far);
 
+      // to disable osg near and far plane caluclation:
+      // mainCamera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
     }
 
 

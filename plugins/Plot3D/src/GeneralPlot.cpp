@@ -91,10 +91,12 @@ namespace mars {
       }
 
       void GeneralPlot::addData(int curve, double time, double data) {
+        mutex.lock();
         if(curve >= 0 && curve < curveVector.size()) {
           dataVector[curve].time.push_back(time);
           dataVector[curve].data.push_back(data);
         }
+        mutex.unlock();
       }
 
 
