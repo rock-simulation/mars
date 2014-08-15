@@ -126,7 +126,7 @@ namespace mars {
 
     }
 
-    void MARS::start(int argc, char **argv) {
+    void MARS::start(int argc, char **argv, bool startThread) {
 
       coreConfigFile = configDir+"/core_libs.txt";
 
@@ -199,7 +199,7 @@ namespace mars {
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
       
-      control->sim->runSimulation();
+      control->sim->runSimulation(startThread);
 
       if(needQApp) {
         graphicsTimer = new mars::app::GraphicsTimer(marsGraphics,

@@ -62,7 +62,7 @@ namespace mars {
       ~MARS();
 
       void readArguments(int argc, char **argv);
-      void start(int argc, char **argv);
+      void start(int argc, char **argv, bool startThread = true);
       int runWoQApp();
       inline lib_manager::LibManager* getLibManager() {return libManager;}
 
