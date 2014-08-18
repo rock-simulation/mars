@@ -644,7 +644,7 @@ namespace mars {
           visualArrayIndex++;
         }
         else {
-          createFakeVisual(&childNode);
+          //createFakeVisual(&childNode, false);
         }
         debugMap["childNodes"] += childNode;
         nodeList.push_back(childNode);
