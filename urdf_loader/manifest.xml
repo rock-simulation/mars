@@ -8,10 +8,13 @@
     <depend package="simulation/mars/interfaces" />
 
     <depend package="external/minizip" />
-    <depend package="external/boost" />
-    <depend package="external/console_bridge" />
     <depend package="external/tinyxml" />
-    <depend package="external/urdfdom/urdf_parser/include/urdf_parser" />
-    <depend package="external/urdfdom_headers" />
+    
+    <depend package="base/console_bridge" />
+    <depend package="control/urdfdom" />
+    <depend package="control/urdfdom_headers" />
+
+    <rosdep name="boost" />
+
     <tags>needs_opt</tags>
 </package>
