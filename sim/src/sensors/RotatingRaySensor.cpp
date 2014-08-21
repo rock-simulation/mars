@@ -128,34 +128,33 @@ namespace mars {
       hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
       
       for(int b=0; b<config.bands; ++b) {
-        for(int l=0; l<config.lasers; ++l){
-
-            tmp = Eigen::AngleAxisd(b*hAngle - turning_start_fullscan, Eigen::Vector3d::UnitZ()) * 
-            Eigen::AngleAxisd(l*vAngle + config.downtilt - config.opening_height/2.0, Eigen::Vector3d::UnitY()) *
-                
-                Vector(1,0,0);
-            directions.push_back(tmp);
-          
-            // Add a drawing item for each ray regarding the initial sensor orientation.
-            if(config.draw_rays) {
-              draw.ptr_draw = (DrawInterface*)this;
-              item.id = 0;
-              item.type = DRAW_LINE;
-              item.draw_state = DRAW_STATE_CREATE;
-              item.point_size = 1;
-              item.myColor.r = 1;
-              item.myColor.g = 0;
-              item.myColor.b = 0;
-              item.myColor.a = 1;
-              item.texture = "";
-              item.t_width = item.t_height = 0;
-              item.get_light = 0.0;
+        for(int l=0; l<config.lasers; ++l) {
+          tmp = Eigen::AngleAxisd(b*hAngle - turning_start_fullscan, Eigen::Vector3d::UnitZ()) * 
+              Eigen::AngleAxisd(l*vAngle + config.downtilt - config.opening_height/2.0, Eigen::Vector3d::UnitY()) *
+              Vector(1,0,0);
               
-              // Initial vector length is set to 1.0
-              item.start = position;
-              item.end = orientation * tmp;
-              draw.drawItems.push_back(item);
-            }
+          directions.push_back(tmp);
+        
+          // Add a drawing item for each ray regarding the initial sensor orientation.
+          if(config.draw_rays) {
+            draw.ptr_draw = (DrawInterface*)this;
+            item.id = 0;
+            item.type = DRAW_LINE;
+            item.draw_state = DRAW_STATE_CREATE;
+            item.point_size = 1;
+            item.myColor.r = 1;
+            item.myColor.g = 0;
+            item.myColor.b = 0;
+            item.myColor.a = 1;
+            item.texture = "";
+            item.t_width = item.t_height = 0;
+            item.get_light = 0.0;
+            
+            // Initial vector length is set to 1.0
+            item.start = position;
+            item.end = orientation * tmp;
+            draw.drawItems.push_back(item);
+          }
         }
       }
       
@@ -190,10 +189,10 @@ namespace mars {
       *data_ = (double*)malloc(pointcloud_full.size()*3*sizeof(double));
       for(unsigned int i=0; i<pointcloud_full.size(); i++) {
         if((pointcloud_full[i]).norm() <= config.maxDistance) {
-            int array_pos = i*3;
-            (*data_)[array_pos] = (pointcloud_full[i])[0];
-            (*data_)[array_pos+1] = (pointcloud_full[i])[1];
-            (*data_)[array_pos+2] = (pointcloud_full[i])[2];
+          int array_pos = i*3;
+          (*data_)[array_pos] = (pointcloud_full[i])[0];
+          (*data_)[array_pos+1] = (pointcloud_full[i])[1];
+          (*data_)[array_pos+2] = (pointcloud_full[i])[2];
         }
       }
       return pointcloud.size();
@@ -234,8 +233,6 @@ namespace mars {
       current_pose.rotate(orientation);
       current_pose.translation() = position;
 
-      // Counts all rays which have been added while full_scan == true.
-      int overhead = 0;
       // Fills the pointcloud vector with (dist_m, x, y, z).
       // data[] contains all the measured distances.
       for(unsigned int i=0; i<data.size(); i++) {
@@ -248,7 +245,7 @@ namespace mars {
           pointcloud.push_back(tmpvec); // Scale normalized vector.
         }
       }
-     num_points += data.size();
+      num_points += data.size();
       
       have_update = true;
     }
@@ -257,12 +254,11 @@ namespace mars {
       
       unsigned int i;
    
-        std::cout << "In update draw rays" << std::endl;
-        if(have_update) {
-          control->nodes->updateRay(attached_node);
-          have_update = false;
-        }
-       if(config.draw_rays) {
+      if(have_update) {
+        control->nodes->updateRay(attached_node);
+        have_update = false;
+      }
+      if(config.draw_rays) {
         if(!(*drawItems)[0].draw_state) {
           for(i=0; i<data.size(); i++) {
               (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
@@ -300,7 +296,7 @@ namespace mars {
     }
 
     int RotatingRaySensor::getNumberRays() {
-        return config.bands * config.lasers;
+      return config.bands * config.lasers;
     }
 
     BaseConfig* RotatingRaySensor::parseConfig(ControlCenter *control,
