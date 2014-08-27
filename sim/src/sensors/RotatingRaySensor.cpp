@@ -70,9 +70,7 @@ namespace mars {
       turning_offset = 0.0;
       full_scan = false;
       current_pose.setIdentity();
-      
       num_points = 0;
-      //time_start = base::Time::now();
       
         /**
       double calc_ms = 0.0;
@@ -97,7 +95,9 @@ namespace mars {
         rotationIndices[i] = -1;
 
       bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
-      assert(erg);
+      if(!erg) { // To remove warning.
+        assert(erg);
+      }
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate)) {
       }
 
@@ -283,7 +283,12 @@ namespace mars {
         pointcloud_full.resize(pointcloud.size());
         for(int i=0; it != pointcloud.end(); it++, i++) {
           // Transforms the pointcloud back from world to current node (see receiveDate()).
-          pointcloud_full[i]= current_pose.inverse() * (*it);
+          // In addition 'transf_sensor_rot_to_sensor' is applied which describes
+          // the orientation of the sensor in the unturned sensor frame.
+          Eigen::Affine3d rot;
+          rot.setIdentity();
+          rot.rotate(config.transf_sensor_rot_to_sensor);
+          pointcloud_full[i]= rot * current_pose.inverse() * (*it);
         }
         pointcloud.clear();
         turning_offset = turning_start_fullscan;
@@ -330,6 +335,26 @@ namespace mars {
       if((it = config->find("horizontal_resolution")) != config->end())
         cfg->horizontal_resolution = it->second[0].getDouble();
       cfg->attached_node = attachedNodeID;
+      
+      ConfigMap::iterator it2;
+      if((it = config->find("rotation_offset")) != config->end()) {
+        if((it2 = it->second[0].children.find("yaw")) !=
+           it->second[0].children.end()) {
+          Vector euler;
+          euler.x() = it->second[0].children["roll"][0].getDouble();
+          euler.y() = it->second[0].children["pitch"][0].getDouble();
+          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          cfg->transf_sensor_rot_to_sensor = eulerToQuaternion(euler);
+        }
+        else {
+          Quaternion q;
+          q.x() = it->second[0].children["x"][0].getDouble();
+          q.y() = it->second[0].children["y"][0].getDouble();
+          q.z() = it->second[0].children["z"][0].getDouble();
+          q.w() = it->second[0].children["w"][0].getDouble();
+          cfg->transf_sensor_rot_to_sensor = q;
+        }
+      }
 
       return cfg;
     }
@@ -349,6 +374,7 @@ namespace mars {
       cfg["downtilt"][0] = ConfigItem(config.downtilt);
       cfg["rate"][0] = ConfigItem(config.updateRate);
       cfg["horizontal_resolution"][0] = ConfigItem(config.horizontal_resolution);
+      //cfg["rotation_offset"][0] = ConfigItem(config.transf_sensor_rot_to_sensor);
       /*
         cfg["stepX"][0] = ConfigItem(config.stepX);
         cfg["stepY"][0] = ConfigItem(config.stepY);

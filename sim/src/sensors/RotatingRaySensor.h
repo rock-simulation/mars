@@ -49,30 +49,35 @@ namespace mars {
     public:
       RotatingRayConfig(){
         name = "Unknown RaySensor";
-        bands=16; //number of horizontal replicates of vertical laser bands
-        lasers=32; //number of lasers in vertical dimension
+        bands=16; 
+        lasers=32; 
         pos_offset.setZero();
         ori_offset.setIdentity();
-        opening_width=2*M_PI; //this means we cover the entire 360 degrees
-        opening_height= (40.0/180.0)*M_PI; //
-        downtilt = (10.67/180.0)*M_PI; //how many rads the rays of the sensor is tilted downwards
+        opening_width=2*M_PI; 
+        opening_height= (40.0/180.0)*M_PI; 
+        downtilt = (10.67/180.0)*M_PI; 
         attached_node = 0;
         maxDistance = 100.0;
         draw_rays = true;
         horizontal_resolution = (1.0/180.0)*M_PI;
+        transf_sensor_rot_to_sensor.setIdentity();
       }
 
       unsigned long attached_node;
-      int bands;
-      int lasers;
+      int bands; //number of horizontal replicates of vertical laser bands
+      int lasers; //number of lasers in vertical dimension
       utils::Vector pos_offset;
       utils::Quaternion ori_offset;
-      double opening_width;
+      double opening_width; //this means we cover the entire 360 degrees
       double opening_height;
-      double downtilt;
+      double downtilt; //how many rads the rays of the sensor is tilted downwards
       double maxDistance;
       bool draw_rays;
       double horizontal_resolution;
+      // Describes the orientation of the sensor in the unturned sensor frame. 
+      // Can be used compensate the node orientation / to define the turning axis.
+      // Pass the node orientation to receive an unturned sensor.
+      utils::Quaternion transf_sensor_rot_to_sensor;
     };
 
     class RotatingRaySensor :
@@ -124,6 +129,10 @@ namespace mars {
        */
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                                  utils::ConfigMap *config);
+      
+      /**
+       * TODO rotation_offset is missing.
+       */
       virtual utils::ConfigMap createConfig() const;
 
       const RotatingRayConfig& getConfig() const;
@@ -160,16 +169,14 @@ namespace mars {
       double turning_offset;
       double turning_start_fullscan; // Defines the start of the next full scan.
       double turning_end_fullscan; // Defines the end of the next full scan.  
-      utils::Quaternion orientation_offset;
+      utils::Quaternion orientation_offset; // Used to turn the sensor during each simulation step.
       long positionIndices[3];
       long rotationIndices[4];
       double turning_step;
       int nsamples;
       mutable mars::utils::Mutex mutex_pointcloud;
       Eigen::Affine3d current_pose;
-      
       unsigned int num_points;
-      //base::Time time_start;
     };
 
   } // end of namespace sim
