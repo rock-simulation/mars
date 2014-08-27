@@ -44,6 +44,8 @@
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/terrainStruct.h>
 #include <cmath>
+#include <set>
+
 
 namespace mars {
   namespace sim {
@@ -1532,7 +1534,7 @@ namespace mars {
       utils::Vector tmpV;
       utils::Quaternion turnrotation;
       turnrotation.setIdentity();
-      bool rotating_sensor_turned = false;
+      std::set<unsigned long> ids_rotating_ray_sensors;
 
       //New Code
       int i=0;
@@ -1554,10 +1556,12 @@ namespace mars {
           // Applies orientation_offset (z-Rotation) to the laser rays.
           mars::sim::RotatingRaySensor *rotRaySensor = dynamic_cast<RotatingRaySensor*>((*iter).sensor);
           if(rotRaySensor){
-              // sensor_list contains each ray independently.
-              if(!rotating_sensor_turned) {
-                turnrotation = rotRaySensor->turn();
-                rotating_sensor_turned = true;
+              std::set<unsigned long>::iterator it = ids_rotating_ray_sensors.find(rotRaySensor->id);
+              // Takes care that each rotating ray sensor is only turned once (sensor_list contains each ray independently).
+              if(it == ids_rotating_ray_sensors.end()) {
+                  //turnrotation.setIdentity(); // If we set it to identity first, receiveSensorData will not be called anymore.. wtf!?
+                  turnrotation = rotRaySensor->turn();
+                  ids_rotating_ray_sensors.insert(rotRaySensor->id);
               }
               //fprintf(stderr, "tmp[%i]: %f, %f, %f\n", i, tmpV.x(), tmpV.y(), tmpV.z());
               tmpV = turnrotation * tmpV;
