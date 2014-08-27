@@ -43,7 +43,7 @@ namespace mars {
 
     class BaseConfig {
     public:
-      BaseConfig() {}
+      BaseConfig() : updateRate(10) {}
       virtual ~BaseConfig() {}
       std::string name;
       unsigned long id;
