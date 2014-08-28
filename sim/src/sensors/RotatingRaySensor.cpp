@@ -68,7 +68,6 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
-      full_scan = false;
       current_pose.setIdentity();
       num_points = 0;
       
@@ -88,7 +87,6 @@ namespace mars {
       draw_item item;
       Vector tmp;
       have_update = false;
-      full_scan = false;
       for(int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
       for(int i = 0; i < 4; ++i)
@@ -115,22 +113,18 @@ namespace mars {
         config.lasers = 1;
       }
       
-      turning_start_fullscan = -config.opening_width / 2.0;
-      turning_end_fullscan = -config.opening_width / 2.0 + config.opening_width / config.bands;
-      turning_offset = turning_start_fullscan;
-      
-      std::cout << "Horizontal resolution: " << config.horizontal_resolution << std::endl;
+      // All bands will be turned from 'turning_offset' to 'turning_end_fullscan' in 'turning_step steps'.
+      turning_offset = 0;
+      turning_end_fullscan = config.opening_width / config.bands;
       turning_step = config.horizontal_resolution; 
-      double vAngle = 0.0;
-      double hAngle = 0.0;
-
-      vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
-      hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
+      
+      double vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
+      double hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
       
       for(int b=0; b<config.bands; ++b) {
         for(int l=0; l<config.lasers; ++l) {
-          tmp = Eigen::AngleAxisd(b*hAngle - turning_start_fullscan, Eigen::Vector3d::UnitZ()) * 
-              Eigen::AngleAxisd(l*vAngle + config.downtilt - config.opening_height/2.0, Eigen::Vector3d::UnitY()) *
+          tmp = Eigen::AngleAxisd(b*hAngle - config.opening_width / 2.0 + config.horizontal_offset, Eigen::Vector3d::UnitZ()) * 
+              Eigen::AngleAxisd(l*vAngle - config.opening_height / 2.0 + config.vertical_offset, Eigen::Vector3d::UnitY()) *
               Vector(1,0,0);
               
           directions.push_back(tmp);
@@ -178,7 +172,6 @@ namespace mars {
 
     std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
-      full_scan = false;
       //base::Time time_now = base::Time::now();
       //std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
       return pointcloud_full;
@@ -291,8 +284,7 @@ namespace mars {
           pointcloud_full[i]= rot * current_pose.inverse() * (*it);
         }
         pointcloud.clear();
-        turning_offset = turning_start_fullscan;
-        full_scan = true;
+        turning_offset = 0;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
@@ -328,8 +320,10 @@ namespace mars {
         cfg->maxDistance = it->second[0].getDouble();
       if((it = config->find("draw_rays")) != config->end())
         cfg->draw_rays = it->second[0].getBool();
-      if((it = config->find("downtilt")) != config->end())
-        cfg->downtilt = it->second[0].getDouble();
+      if((it = config->find("horizontal_offset")) != config->end())
+        cfg->horizontal_offset = it->second[0].getDouble();
+      if((it = config->find("vertical_offset")) != config->end())
+        cfg->vertical_offset = it->second[0].getDouble();
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
       if((it = config->find("horizontal_resolution")) != config->end())
@@ -371,7 +365,8 @@ namespace mars {
       cfg["opening_height"][0] = ConfigItem(config.opening_height);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
-      cfg["downtilt"][0] = ConfigItem(config.downtilt);
+      cfg["vertical_offset"][0] = ConfigItem(config.vertical_offset);
+      cfg["horizontal_offset"][0] = ConfigItem(config.horizontal_offset);
       cfg["rate"][0] = ConfigItem(config.updateRate);
       cfg["horizontal_resolution"][0] = ConfigItem(config.horizontal_resolution);
       //cfg["rotation_offset"][0] = ConfigItem(config.transf_sensor_rot_to_sensor);

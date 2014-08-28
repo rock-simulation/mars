@@ -39,6 +39,7 @@
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
+#include <../../external/ompl/demos/Koules/KoulesConfig.h>
 
 //#include <base/Time.hpp>
 
@@ -54,13 +55,14 @@ namespace mars {
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=2*M_PI; 
-        opening_height= (40.0/180.0)*M_PI; 
-        downtilt = (10.67/180.0)*M_PI; 
+        opening_height= (90.0/180.0)*M_PI; 
         attached_node = 0;
         maxDistance = 100.0;
         draw_rays = true;
         horizontal_resolution = (1.0/180.0)*M_PI;
         transf_sensor_rot_to_sensor.setIdentity();
+        horizontal_offset = 0.0;
+        vertical_offset = 0.0;
       }
 
       unsigned long attached_node;
@@ -70,7 +72,8 @@ namespace mars {
       utils::Quaternion ori_offset;
       double opening_width; //this means we cover the entire 360 degrees
       double opening_height;
-      double downtilt; //how many rads the rays of the sensor is tilted downwards
+      double horizontal_offset; // allows to shift the bands horizontally
+      double vertical_offset; // allows to shift the lasers vertically
       double maxDistance;
       bool draw_rays;
       double horizontal_resolution;
@@ -165,10 +168,8 @@ namespace mars {
       std::list<utils::Vector> pointcloud; // TODO Replace with array with fix size.
       std::vector<utils::Vector> pointcloud_full; // Stores the full scan.
       bool have_update;
-      bool full_scan;
       double turning_offset;
-      double turning_start_fullscan; // Defines the start of the next full scan.
-      double turning_end_fullscan; // Defines the end of the next full scan.  
+      double turning_end_fullscan; // Defines the upper border for the turning_offset. 
       utils::Quaternion orientation_offset; // Used to turn the sensor during each simulation step.
       long positionIndices[3];
       long rotationIndices[4];
