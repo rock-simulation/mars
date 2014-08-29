@@ -39,7 +39,6 @@
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
-#include <../../external/ompl/demos/Koules/KoulesConfig.h>
 
 //#include <base/Time.hpp>
 
