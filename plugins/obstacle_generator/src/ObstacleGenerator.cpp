@@ -100,8 +100,8 @@ namespace mars {
 	    it!=oldNodeIDs.end(); ++it) {
           double pos_x=0, pos_y=0, pos_z=params["ground_level"];
           //create position
-          pos_x = random_number(0, params["field_length"]);
-          pos_y = random_number(-0.5 * params["field_width"],
+          pos_x = random_number(0, params["field_length"], 3);
+          pos_y = random_number(-0.5 * params["field_width"], 3,
 				0.5 * params["field_width"]);
           if ((params["incline_angle"] > sigma) or
 	      (params["incline_angle"] < -sigma)) {
@@ -239,8 +239,8 @@ namespace mars {
               name = name.append(numstring);
 
               //create position
-              double pos_x = random_number(0, params["field_length"]);
-              double pos_y = random_number(-0.5 * params["field_width"], 0.5 * params["field_width"]);
+              double pos_x = random_number(0, params["field_length"], 3);
+              double pos_y = random_number(-0.5 * params["field_width"], 0.5 * params["field_width"], 3);
 
               //create size
               double height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
