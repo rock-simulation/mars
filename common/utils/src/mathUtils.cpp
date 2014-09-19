@@ -22,7 +22,10 @@
 #include "misc.h"
 
 #include <stdexcept>
+#include <cmath>
+#include <algorithm>
 #include <Eigen/Core>
+//#include <stdio.h>
 
 namespace mars {
   namespace utils {
@@ -235,6 +238,28 @@ namespace mars {
       item->children["i21"][0] = ConfigItem(inertia[7]);
       item->children["i22"][0] = ConfigItem(inertia[8]);
     }
+
+    double random_number(double min, double max, int digits) {
+      int range = pow(10, digits);
+      int r = rand() % range;
+      return r / (double)range * (max-min) + min;
+    }
+
+    double random_normal_number(double mean, double std, double low, double high) {
+      // C++11 - does not work on all compilers, yet
+      // std::default_random_engine generator;
+      // std::normal_real_distribution<double> normal_dis(mean, std);
+      //return normal_dis(generator);
+
+      // return a normally distributed random number, restricted to range [min, max]
+      double u1=random_number(0, 1, 3);
+      double u2=random_number(0, 1, 3);
+      double num = cos(2*M_PI*u2)*sqrt(-2.*log(u1)) * std + mean;
+      //fprintf(stderr, "normal num: %f, %f, %f\n", u1, u2, num);
+      return std::min(std::max(num, low), high);
+    }
+
+
 
   } // end of namespace utils
 } /* end of namespace mars */

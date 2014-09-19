@@ -91,6 +91,9 @@ namespace mars {
       return Quaternion(q[0], q[1], q[2], q[3]);
     }
 
+    double random_normal_number(double mean, double std, double min, double max);
+    double random_number(double min, double max, int digits);
+
   }; // end of namespace utils
 }; // end of namespace mars
 
