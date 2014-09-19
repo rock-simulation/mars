@@ -255,21 +255,25 @@ namespace mars {
       }
 
       void ObstacleGenerator::createObstacle(std::string name, double pos_x, double pos_y, double width, double length, double height) {
+          //TODO: if we have an inclination and the obstacles are inclined as well, they might not show the correct height in inclination space
           double pos_z=params["ground_level"];
+          if (bool_params["use_boxes"]) {
+            pos_z = 0.5 * height;
+          }
           if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
               if (bool_params["use_grid"] && !bool_params["support_platform"]) {
                 if (params["incline_angle"] > 0) {
                   height += tan(degToRad(params["incline_angle"])) * pos_x;
-                  pos_z += 0.5 * height;
                 } else {
                   double field_length = length * params["field_length"];
                   height -= tan(degToRad(params["incline_angle"])) * (field_length-pos_x);
-                  pos_z += 0.5 * height + tan(degToRad(params["incline_angle"])) * field_length;
+                  pos_z += tan(degToRad(params["incline_angle"])) * field_length;
                 }
               } else {
                 pos_z += sin(degToRad(params["incline_angle"])) * pos_x;
                 pos_x *= cos(degToRad(params["incline_angle"]));
               }
+              pos_z -= tan(degToRad(params["incline_angle"])) * 0.5 * length;
           }
            pos_x += params["field_distance"];
            Vector position(pos_x, pos_y, pos_z);
