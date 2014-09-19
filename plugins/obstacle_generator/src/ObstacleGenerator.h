@@ -75,6 +75,7 @@ namespace mars {
         void update(mars::interfaces::sReal time_ms);
         void createObstacleField();
         void clearObstacleField();
+        void createObstacle(std::string name, double pos_x, double pos_y, double width, double length, double height);
 
         // DataBrokerReceiver methods
         virtual void receiveData(const data_broker::DataInfo &info,

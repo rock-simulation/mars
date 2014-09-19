@@ -49,29 +49,26 @@ namespace mars {
       }
   
       void ObstacleGenerator::init() {
-          //TODO: we could get rid of grid_length and grid_width by using field_width
-          //      and specifying an explicit width instead of aspect ratios of the obstacles
         //create properties
         params["field_width"] = 2.0;
         params["field_length"] = 5.0;
         params["field_distance"] = 0.5;
-        params["mean_obstacle_aspect_ratio"] = 2.0;
-        params["std_obstacle_aspect_ratio"] = 1.0;
-        params["min_obstacle_aspect_ratio"] = 1.3;
-        params["max_obstacle_aspect_ratio"] = 3.0;
-        params["grid_width"] = 8; // this parameter will be used for random stepping field
-        params["grid_length"] = 20; // this parameter will be used for random stepping field
+        params["mean_obstacle_width"] = 0.12;
+        params["mean_obstacle_length"] = 0.12;
+        params["std_obstacle_width"] = 0.06;
+        params["min_obstacle_width"] = 0.03;
+        params["max_obstacle_width"] = 0.24;
         params["mean_obstacle_height"] = 0.12;
         params["std_obstacle_height"] = 0.1;
         params["min_obstacle_height"] = 0.05;
         params["max_obstacle_height"] = 0.15;
-        params["obstacle_number"] = 300.0;
+        params["obstacle_number"] = 100.0;
         params["incline_angle"] = 0.0;
         params["ground_level"] = 0.0;
-        textures["ground"] = "ground.jpg";
+        textures["ground"] = "moon_surface_small.jpg";
         textures["ground_bump"] = "";
         textures["ground_norm"] = "";
-        textures["obstacle"] = "rocks.jpg";
+        textures["obstacle"] = "rocks_small.jpg";
         textures["obstacle_bump"] = "";
         textures["obstacle_norm"] = "";
         cfg_manager::cfgParamId id = 0;
@@ -84,8 +81,9 @@ namespace mars {
           paramIds[id] = it->first;
         }
         bool_params["support_platform"] = false;
-        bool_params["use_cubes"] = false;
+        bool_params["use_boxes"] = false;
         bool_params["use_grid"] = false;
+        bool_params["incline_obstacles"] = false;
         //bool_params["incline_obstacles"] = false;
         for (std::map<std::string, bool>::iterator it = bool_params.begin(); it != bool_params.end(); ++it) {
           id = control->cfg->getOrCreateProperty("obstacle_generator", it->first, it->second, this).paramId;
@@ -177,27 +175,36 @@ namespace mars {
       }
 
       void ObstacleGenerator::createObstacleField() {
+        // initial calculations
+        double obstacle_length = params["mean_obstacle_length"];
+        if (!bool_params["use_boxes"]) {obstacle_length = params["mean_obstacle_width"];}
+        double field_length = params["field_length"];
+        double field_width = params["field_width"];
+        if (bool_params["use_grid"]) {
+            field_length = obstacle_length * params["field_length"];
+            field_width = params["mean_obstacle_width"] * params["field_width"];
+        }
+
         // create inclined box as slope if an angle is given
         if (bool_params["support_platform"]) {
           double platform_length = 0, platform_x_position = 0;
           if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
-            Vector boxposition(params["field_distance"] + 0.5 * cos(degToRad(params["incline_angle"])) * params["field_length"] + 0.5 * sin(degToRad(params["incline_angle"])),
+            Vector boxposition(params["field_distance"] + 0.5 * cos(degToRad(params["incline_angle"])) * field_length + 0.5 * sin(degToRad(params["incline_angle"])),
                   0,
-                  params["ground_level"] - 0.5 + sin(degToRad(params["incline_angle"])) * 0.5 * params["field_length"] + 0.5 * (1 - cos(degToRad(params["incline_angle"]))));
-            Vector boxsize(params["field_length"], params["field_width"], 1.0);
+                  params["ground_level"] - 0.5 + sin(degToRad(params["incline_angle"])) * 0.5 * field_length + 0.5 * (1 - cos(degToRad(params["incline_angle"]))));
+            Vector boxsize(field_length, field_width, 1.0);
             Vector boxorientation(0, -params["incline_angle"], 0);
-            //fprint(stderr, "f");
             NodeData box("incline", boxposition, eulerToQuaternion(boxorientation));
             box.initPrimitive(NODE_TYPE_BOX, boxsize, 1.0);
             box.material.texturename = textures["ground"];
             if (textures["ground_bump"] != "") {
               box.material.bumpmap = textures["ground_bump"];
-            }                 
+            }
             if (textures["ground_norm"] != "") {
               box.material.normalmap = textures["ground_norm"];
             }
             box.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
-            box.material.tex_scale = params["field_width"]/2.0;
+            box.material.tex_scale = field_width/2.0;
             control->nodes->addNode(&box, false);
             oldNodeIDs.push_back(box.index);
             // control->nodes->createPrimitiveNode("incline", NODE_TYPE_BOX,
@@ -206,11 +213,11 @@ namespace mars {
             platform_x_position = -1.0 + 0.5 * params["field_distance"];
           }
           else { //if there is no inclined surface
-            platform_length = 2.0 + params["field_distance"] + params["field_length"];
-            platform_x_position = -1.0 + 0.5 * (params["field_distance"] + params["field_length"]);
+            platform_length = 2.0 + params["field_distance"] + field_length;
+            platform_x_position = -1.0 + 0.5 * (params["field_distance"] + field_length);
           }
-          
-          Vector platformsize(platform_length, params["field_width"], 1.0);
+
+          Vector platformsize(platform_length, field_width, 1.0);
           Vector platformposition(platform_x_position, 0.0, -0.5 + params["ground_level"]);
           Vector platformorientation(0.0, 0.0, 0.0);
           NodeData platform("platform", platformposition, eulerToQuaternion(platformorientation));
@@ -223,61 +230,29 @@ namespace mars {
             platform.material.normalmap = textures["ground_norm"];
           }
           platform.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
-          platform.material.tex_scale = params["field_width"]/2.0;
+          //platform.material.tex_scale = field_width/2.0;
           control->nodes->addNode(&platform, false);
           oldNodeIDs.push_back(platform.index);
         }
         // create obstacles
         if (bool_params["use_grid"]) {
-            double obstacle_width = params["field_width"] / params["grid_width"];
-            double obstacle_length = params["field_length"] / params["grid_length"];
-            for (int w = 0; w < params["grid_width"]; w++) {
-                for (int l = 0; l < params["grid_length"]; l++) {
+            for (int w = 0; w < params["field_width"]; w++) {
+                for (int l = 0; l < params["field_length"]; l++) {
                     std::string name = "obstacle_";
                     std::string numstring = "";
                     std::istringstream(numstring) >> l >>  w;
                     name = name.append(numstring);
 
-                    //init variables
-                    double pos_x=0, pos_y=0, pos_z=params["ground_level"], radius=0, height=0;
-
                     //create position
-                    pos_x = (0.5+l) * obstacle_length;
-                    pos_y = -0.5 * params["field_width"] + (0.5+w) * obstacle_width;
-                    if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
-                      pos_z += params["ground_level"] + sin(degToRad(params["incline_angle"])) * pos_x;
-                      pos_x *= cos(degToRad(params["incline_angle"]));
-                    }
-                    pos_x += params["field_distance"];
+                    double pos_x = (0.5+l) * obstacle_length;
+                    double pos_y = -0.5 * field_width + (0.5+w) * params["mean_obstacle_width"];
+
                     //create size
-                    height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
+                    double height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
                           params["min_obstacle_height"], params["max_obstacle_height"]);
-                    radius = obstacle_width / 2.0;
-                    Vector position(pos_x, pos_y, pos_z);
-                    Vector size(radius, height-radius, 0);
-                    if (bool_params["use_cubes"]) {
-                      size[0] = obstacle_width;
-                      size[1] = obstacle_length;
-                      size[2] = height*2.0;
-                    }
-                    Quaternion orientation(1.0, 0.0, 0.0, 0.0);
-                    NodeData obstacle(name, position, orientation);
-                    if (bool_params["use_cubes"]) {
-                        obstacle.initPrimitive(NODE_TYPE_BOX, size, 1.0);
-                    }
-                    else {
-                        obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
-                    }
-                    obstacle.material.texturename = textures["obstacle"];
-                    obstacle.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
-                    if (textures["obstacle_bump"] != "") {
-                      obstacle.material.bumpmap = textures["obstacle_bump"];
-                    }
-                    if (textures["obstacle_bump"] != "") {
-                       obstacle.material.normalmap = textures["obstacle_norm"];
-                    }
-                    control->nodes->addNode(&obstacle, false);
-                    oldNodeIDs.push_back(obstacle.index);
+
+                    //create obstacle
+                    createObstacle(name, pos_x, pos_y, params["mean_obstacle_width"], params["mean_obstacle_length"], height);
                     }
                 }
         }
@@ -289,50 +264,76 @@ namespace mars {
               std::istringstream(numstring) >> i;
               name = name.append(numstring);
 
-              //init variables
-              double pos_x=0, pos_y=0, pos_z=params["ground_level"], radius=0, height=0;
-
               //create position
-              pos_x = random_number(0, params["field_length"]);
-              pos_y = random_number(-0.5 * params["field_width"], 0.5 * params["field_width"]);
-              if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
-                pos_z += params["ground_level"] + sin(degToRad(params["incline_angle"])) * pos_x;
-                pos_x *= cos(degToRad(params["incline_angle"]));
-              }
-              pos_x += params["field_distance"];
+              double pos_x = random_number(0, params["field_length"]);
+              double pos_y = random_number(-0.5 * params["field_width"], 0.5 * params["field_width"]);
+
               //create size
-              height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
+              double height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
                     params["min_obstacle_height"], params["max_obstacle_height"]);
-              radius = height / random_normal_number(params["mean_obstacle_aspect_ratio"], params["std_obstacle_aspect_ratio"],
-                      params["min_obstacle_aspect_ratio"], params["max_obstacle_aspect_ratio"]);
-              if (height<radius) {height=radius+sigma;}
-              Vector position(pos_x, pos_y, pos_z);
-              Vector size(radius, height-radius, 0);
-              if (bool_params["use_cubes"]) {
-                size[0] = radius*2.0;
-                size[1] = radius*2.0;
-                size[2] = height*2.0;
-              }
-              Quaternion orientation(1.0, 0.0, 0.0, 0.0);
-              NodeData obstacle(name, position, orientation);
-              if (bool_params["use_cubes"]) {
-                  obstacle.initPrimitive(NODE_TYPE_BOX, size, 1.0);
-              }
-              else {
-                  obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
-              }
-              obstacle.material.texturename = textures["obstacle"];
-              obstacle.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
-              if (textures["obstacle_bump"] != "") {
-                obstacle.material.bumpmap = textures["obstacle_bump"];
-              }
-              if (textures["obstacle_bump"] != "") {
-                 obstacle.material.normalmap = textures["obstacle_norm"];
-              }
-              control->nodes->addNode(&obstacle, false);
-              oldNodeIDs.push_back(obstacle.index);
+              double radius = random_normal_number(params["mean_obstacle_width"], params["std_obstacle_width"],
+                      params["min_obstacle_width"], params["max_obstacle_width"]);
+
+              //create obstacle
+              createObstacle(name, pos_x, pos_y, radius, radius, height);
             }
         }
+      }
+
+      void ObstacleGenerator::createObstacle(std::string name, double pos_x, double pos_y, double width, double length, double height) {
+          double pos_z=params["ground_level"];
+          if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
+              if (bool_params["use_grid"] && !bool_params["support_platform"]) {
+                if (params["incline_angle"] > 0) {
+                  height += tan(degToRad(params["incline_angle"])) * pos_x;
+                  pos_z += 0.5 * height;
+                } else {
+                  double field_length = length * params["field_length"];
+                  height -= tan(degToRad(params["incline_angle"])) * (field_length-pos_x);
+                  pos_z += 0.5 * height + tan(degToRad(params["incline_angle"])) * field_length;
+                }
+              } else {
+                pos_z += sin(degToRad(params["incline_angle"])) * pos_x;
+                pos_x *= cos(degToRad(params["incline_angle"]));
+              }
+          }
+           pos_x += params["field_distance"];
+           Vector position(pos_x, pos_y, pos_z);
+           Vector size(0, 0, 0);
+           if (bool_params["use_boxes"]) {
+               size[0] = length;
+               size[1] = width;
+               size[2] = height;
+           } else {
+               size[0] = width / 2.0;
+               if (height<width) {
+                   size[1] = sigma;
+               } else {
+                   size[1] = height-width;
+               }
+           }
+           Quaternion orientation(1.0, 0.0, 0.0, 0.0);
+           if (bool_params["incline_obstacles"]) {
+               Vector incline(0, -params["incline_angle"], 0);
+               orientation = eulerToQuaternion(incline);
+           }
+           NodeData obstacle(name, position, orientation);
+           if (bool_params["use_boxes"]) {
+               obstacle.initPrimitive(NODE_TYPE_BOX, size, 1.0);
+           }
+           else {
+               obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
+           }
+           obstacle.material.texturename = textures["obstacle"];
+           obstacle.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);
+           if (textures["obstacle_bump"] != "") {
+             obstacle.material.bumpmap = textures["obstacle_bump"];
+           }
+           if (textures["obstacle_bump"] != "") {
+              obstacle.material.normalmap = textures["obstacle_norm"];
+           }
+           control->nodes->addNode(&obstacle, false);
+           oldNodeIDs.push_back(obstacle.index);
       }
 
       ObstacleGenerator::~ObstacleGenerator() {
