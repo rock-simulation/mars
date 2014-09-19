@@ -97,8 +97,6 @@ namespace mars {
         std::map<std::string, bool> bool_params;
         std::map<cfg_manager::cfgParamId, std::string> bool_paramIds;
         double sigma;
-        double random_normal_number(double mean, double std, double min, double max);
-        double random_number(double min, double max);
 
       }; // end of class definition ObstacleGenerator
 

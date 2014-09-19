@@ -148,32 +148,6 @@ namespace mars {
 
         //gui->addGenericMenuAction("../ObstacleGenerator/entry", 1, this);
 
-      double ObstacleGenerator::random_normal_number(double mean, double std, double min, double max) {
-        //std::default_random_engine generator;
-        //std::normal_real_distribution<double> normal_dis(mean, std);
-        //return normal_dis(generator);
-        return random_number(min, max);
-      }
-
-      double ObstacleGenerator::random_number(double min, double max) {
-        // std::default_random_engine generator;
-        // std::uni_distribution<double> uni_dis(min, max);
-        // uni_dis(generator);
-        // int n = 0;
-        //   while ((height < params["min_obstacle_height"]) || (height > params["max_obstacle_height"])) {
-        //       height = random_normal_number(params["mean_obstacle_height"], params["std_obstacle_height"],
-        //         params["min_obstacle_height"], params["max_obstacle_height"]);
-        //       ++n;
-        //       if (n > 100) { //if there were too many unsuccessful trials; this prevents indefinite loops
-        //         height = params["mean_obstacle_height"];                
-        //         break;
-        //       }
-        //   }
-
-        int r = rand() % 1000;
-        return r / 1000.0 * (max-min) + min;        
-      }
-
       void ObstacleGenerator::createObstacleField() {
         // initial calculations
         double obstacle_length = params["mean_obstacle_length"];
