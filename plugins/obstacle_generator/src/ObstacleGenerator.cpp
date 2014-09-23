@@ -210,6 +210,7 @@ namespace mars {
         }
         // create obstacles
         if (bool_params["use_grid"]) {
+            params["obstacle_number"] = params["field_width"]*params["field_length"];
             for (int w = 0; w < params["field_width"]; w++) {
                 for (int l = 0; l < params["field_length"]; l++) {
                     std::string name = "obstacle_";
