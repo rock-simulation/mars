@@ -38,17 +38,18 @@ The six parameters *ground\** and *obstacle\** define the textures, bump maps an
 ## Examples
 
 ![Boxes on a plane](img/og1.png)
+
 ![Capsules on a flat support platform](img/og2.png)
+
 ![Capsules on an inclined support platform](img/og3.png)
+
 ![Inclined boxes on an inclined support platform](img/og4.png)
+
 ![Random stepping field made of boxes on a grid](img/og5.png)
+
 ![Inclined random stepping field](img/og6.png)
+
 ![Inclined random stepping field made from capsules](img/og7.png)
 
-
 \[22.09.2014\]
-
-
-
-
 
