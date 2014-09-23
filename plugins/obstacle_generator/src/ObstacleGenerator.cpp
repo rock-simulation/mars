@@ -248,33 +248,55 @@ namespace mars {
                     params["min_obstacle_height"], params["max_obstacle_height"]);
               double radius = random_normal_number(params["mean_obstacle_width"], params["std_obstacle_width"],
                       params["min_obstacle_width"], params["max_obstacle_width"]);
+              double length = random_normal_number(params["mean_obstacle_length"], params["std_obstacle_width"],
+                                    params["min_obstacle_width"], params["max_obstacle_width"]);
 
               //create obstacle
-              createObstacle(name, pos_x, pos_y, radius, radius, height);
+              createObstacle(name, pos_x, pos_y, radius, length, height);
             }
         }
       }
 
       void ObstacleGenerator::createObstacle(std::string name, double pos_x, double pos_y, double width, double length, double height) {
-          //TODO: if we have an inclination and the obstacles are inclined as well, they might not show the correct height in inclination space
+          Quaternion orientation(1.0, 0.0, 0.0, 0.0);
           double pos_z=params["ground_level"];
-          if (bool_params["use_boxes"]) {
-            pos_z = 0.5 * height;
-          }
+          // NOTE: lots of geometrical problems related to rotation can be avoided if the object
+          // origins are on ground level, thus boxes just as capsules are twice their actual height
+          // thereby placing the origin on the ground. This should be irrelevant for most cases.
+          // Changes that would have to be made are marked with "2H".
+
+          // 2H: raise boxes
+          //if (bool_params["use_boxes"]) {
+          //  pos_z = 0.5 * height;
+          //}
           if ((params["incline_angle"] > sigma) or (params["incline_angle"] < -sigma)) {
-              if (bool_params["use_grid"] && !bool_params["support_platform"]) {
-                if (params["incline_angle"] > 0) {
+              // The following was an experimental implementation to stretch inclined obstacles
+              // without support platform down to the ground level. Not working yet and unnecessary.
+              //if (bool_params["use_grid"] && !bool_params["support_platform"]) {
+              /**double field_length = length * params["field_length"];
+                  if (params["incline_angle"] > 0) {
                   height += tan(degToRad(params["incline_angle"])) * pos_x;
+                  pos_z -= tan(degToRad(params["incline_angle"])) * field_length;
                 } else {
                   double field_length = length * params["field_length"];
                   height -= tan(degToRad(params["incline_angle"])) * (field_length-pos_x);
                   pos_z += tan(degToRad(params["incline_angle"])) * field_length;
                 }
-              } else {
+              } else {*/
                 pos_z += sin(degToRad(params["incline_angle"])) * pos_x;
                 pos_x *= cos(degToRad(params["incline_angle"]));
+              //}
+              if (bool_params["incline_obstacles"]) {
+                  Vector incline(0, -params["incline_angle"], 0);
+                  orientation = eulerToQuaternion(incline);
+                  // 2H correct for height difference of middle to front to avoid floating edges
+                  // pos_z += (height/2.0)/cos(degToRad(params["incline_angle"])) - (height/2.0);
+              } else {
+                  // 2H: correct for height difference due to rotation point not on ground level
+                  //pos_z -= tan(degToRad(params["incline_angle"])) * 0.5 * length;
+                  // 2H: correct for x position due to rotation point not on ground level
+                  // pos_x -= ???
               }
-              pos_z -= tan(degToRad(params["incline_angle"])) * 0.5 * length;
           }
            pos_x += params["field_distance"];
            Vector position(pos_x, pos_y, pos_z);
@@ -282,19 +304,14 @@ namespace mars {
            if (bool_params["use_boxes"]) {
                size[0] = length;
                size[1] = width;
-               size[2] = height;
+               size[2] = height*2;
            } else {
                size[0] = width / 2.0;
                if (height<width) {
                    size[1] = sigma;
                } else {
-                   size[1] = height-width;
+                   size[1] = 2*height-width;
                }
-           }
-           Quaternion orientation(1.0, 0.0, 0.0, 0.0);
-           if (bool_params["incline_obstacles"]) {
-               Vector incline(0, -params["incline_angle"], 0);
-               orientation = eulerToQuaternion(incline);
            }
            NodeData obstacle(name, position, orientation);
            if (bool_params["use_boxes"]) {
