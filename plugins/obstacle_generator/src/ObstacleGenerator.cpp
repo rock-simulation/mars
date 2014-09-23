@@ -59,9 +59,9 @@ namespace mars {
         params["min_obstacle_width"] = 0.03;
         params["max_obstacle_width"] = 0.24;
         params["mean_obstacle_height"] = 0.12;
-        params["std_obstacle_height"] = 0.1;
+        params["std_obstacle_height"] = 0.06;
         params["min_obstacle_height"] = 0.05;
-        params["max_obstacle_height"] = 0.15;
+        params["max_obstacle_height"] = 0.24;
         params["obstacle_number"] = 100.0;
         params["incline_angle"] = 0.0;
         params["ground_level"] = 0.0;
