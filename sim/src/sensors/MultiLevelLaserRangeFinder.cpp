@@ -248,7 +248,8 @@ void MultiLevelLaserRangeFinder::calculateSamplingPixels()
             lookup.sensor = &(*it);
 
             Eigen::Vector3d dirVec;
-            assert(it->distImage.getScenePoint(x, y, dirVec));
+            bool result = it->distImage.getScenePoint(x, y, dirVec);
+            assert(result);
             lookup.directionVector = dirVec;
         }
         
