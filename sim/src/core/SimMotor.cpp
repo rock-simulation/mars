@@ -306,8 +306,11 @@ namespace mars {
 
           switch (sMotor.type) {
           case MOTOR_TYPE_PID:
-            if(desired_position>sMotor.max_val) desired_position = sMotor.max_val;
-            if(desired_position<sMotor.min_val) desired_position = sMotor.min_val;
+          {
+            if(desired_position>sMotor.max_val) 
+                desired_position = sMotor.max_val;
+            if(desired_position<sMotor.min_val) 
+                desired_position = sMotor.min_val;
             /*
               if(desired_position>2*M_PI) desired_position=0;
               else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
@@ -318,15 +321,34 @@ namespace mars {
             if(er > M_PI) er = -2*M_PI+er;
             else if(er < -M_PI) er = 2*M_PI+er;
             integ_error += er*time;
+            
+            //anti wind up, this code limits the integral error
+            //part of the pid to the maximum velocity. This makes
+            //the pid react way faster. This also eleminates the 
+            //overshooting errors seen before in the simulation
+            double iPart = integ_error * sMotor.i;
+            if(iPart > sMotor.maximumVelocity)
+            {
+                iPart = sMotor.maximumVelocity;
+                integ_error = sMotor.maximumVelocity / sMotor.i;
+            }
+
+            if(iPart < -sMotor.maximumVelocity)
+            {
+                iPart = -sMotor.maximumVelocity;
+                integ_error = -sMotor.maximumVelocity / sMotor.i;
+            }
+
             // set desired velocity. @todo add inertia
             vel = desired_velocity;
             // P part of the motor
             vel += er * sMotor.p;
             // I part of the motor
-            vel += integ_error * sMotor.i;
+            vel += iPart;
             // D part of the motor
             vel += ((er - last_error)/time) * sMotor.d;
             last_error = er;
+          }
             break;
           case MOTOR_TYPE_DC:
             vel = actual_velocity;
