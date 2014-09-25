@@ -318,8 +318,12 @@ namespace mars {
               else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
             */
             er = desired_position - actual_position;
-            if(er > M_PI) er = -2*M_PI+er;
-            else if(er < -M_PI) er = 2*M_PI+er;
+            if(er > M_PI) 
+                er = -2*M_PI+er;
+            else 
+                if(er < -M_PI) 
+                    er = 2*M_PI+er;
+                
             integ_error += er*time;
             
             //anti wind up, this code limits the integral error
@@ -375,14 +379,25 @@ namespace mars {
             break;
 
           case MOTOR_TYPE_PID_MODEL:
-            if(desired_position>2*M_PI) desired_position=0;
-            else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
-            else if(desired_position<-2*M_PI) desired_position=0;
-            else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
+            if(desired_position>2*M_PI)
+                desired_position=0;
+            else
+                if(desired_position>M_PI) 
+                    desired_position=-2*M_PI+desired_position;
+                else 
+                    if(desired_position<-2*M_PI) 
+                        desired_position=0;
+                    else 
+                        if(desired_position<-M_PI) 
+                            desired_position=2*M_PI+desired_position;
 
             er = desired_position - actual_position;
-            if(er > M_PI) er = -2*M_PI+er;
-            else if(er < -M_PI) er = 2*M_PI+er;
+            if(er > M_PI) 
+                er = -2*M_PI+er;
+            else 
+                if(er < -M_PI) 
+                    er = 2*M_PI+er;
+                
             integ_error += er*time;
             // P part of the motor
             pwm = er * sMotor.p;
@@ -392,8 +407,12 @@ namespace mars {
             pwm += ((er - last_error)/time) * sMotor.d;
             last_error = er;
 
-            if(pwm > 100) pwm = 100;
-            else if(pwm < -100) pwm = -100;
+            if(pwm > 100) 
+                pwm = 100;
+            else 
+                if(pwm < -100) 
+                    pwm = -100;
+                
             if(sMotor.axis == 1)
               vel = myJoint->getVelocity();
             else
@@ -419,8 +438,11 @@ namespace mars {
             current = i_current;
 
             if(sMotor.max_current > 0.01) {
-              if(current > sMotor.max_current) current = sMotor.max_current;
-              else if(current < -sMotor.max_current) current = -sMotor.max_current;
+              if(current > sMotor.max_current) 
+                  current = sMotor.max_current;
+              else 
+                  if(current < -sMotor.max_current) 
+                      current = -sMotor.max_current;
             }
             break;
           case MOTOR_TYPE_PID_FORCE:
@@ -490,9 +512,13 @@ namespace mars {
             current = (kXY*fabs(torque*joint_velocity) +
                        kX*fabs(torque) +
                        kY*fabs(joint_velocity) + k);
-            if(current < 0.0) current = 0.0;
-            if(vel > sMotor.maximumVelocity) vel = sMotor.maximumVelocity;
-            else if(vel < -sMotor.maximumVelocity) vel = -sMotor.maximumVelocity;
+            if(current < 0.0) 
+                current = 0.0;
+            if(vel > sMotor.maximumVelocity) 
+                vel = sMotor.maximumVelocity;
+            else 
+                if(vel < -sMotor.maximumVelocity) 
+                    vel = -sMotor.maximumVelocity;
 
             if(sMotor.axis == 1) {
               myJoint->setVelocity(vel);
