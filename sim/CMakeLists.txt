@@ -3,6 +3,8 @@ set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "This library ...")
 cmake_minimum_required(VERSION 2.6)
 
+find_package(Rock)
+
 include(FindPkgConfig)
 include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
@@ -28,6 +30,8 @@ if(DOXYGEN_FOUND)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/doc/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
 add_custom_target(doc ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} COMMENT "Generating API documentation with Doxygen" VERBATIM)
 endif(DOXYGEN_FOUND)
+
+rock_find_cmake(Boost)
 
 #Get linker and compiler flags from pkg-config
 pkg_check_modules(PKGCONFIG REQUIRED
