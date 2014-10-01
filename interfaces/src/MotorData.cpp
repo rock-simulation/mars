@@ -51,16 +51,6 @@ namespace mars {
       p = 0;
       i = 0;
       d = 0;
-      Km = 0;
-      Kn = 0;
-      Ra = 0;
-      Lm = 0;
-      Jm = 0;
-      Rm = 0;
-      U = 0;
-      gear = 0;
-      max_current = 0;
-      r_current = 0;
       max_val = M_PI;
       min_val = -M_PI;
     }
@@ -101,16 +91,6 @@ namespace mars {
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
       GET_VALUE("value", value, Double);
-      GET_VALUE("Km", Km, Double);
-      GET_VALUE("Kn", Kn, Double);
-      GET_VALUE("Ra", Ra, Double);
-      GET_VALUE("Lm", Lm, Double);
-      GET_VALUE("Jm", Jm, Double);
-      GET_VALUE("U", U, Double);
-      GET_VALUE("gear", gear, Double);
-      GET_VALUE("max_current", max_current, Double);
-      GET_VALUE("r_current", r_current, Double);
-      GET_VALUE("Rm", Rm, Double);
       GET_VALUE("max_val", max_val, Double);
       GET_VALUE("min_val", min_val, Double);
 
@@ -135,16 +115,6 @@ namespace mars {
       SET_VALUE("i", i);
       SET_VALUE("d", d);
       SET_VALUE("value", value);
-      SET_VALUE("Km", Km);
-      SET_VALUE("Kn", Kn);
-      SET_VALUE("Ra", Ra);
-      SET_VALUE("Lm", Lm);
-      SET_VALUE("Jm", Jm);
-      SET_VALUE("U", U);
-      SET_VALUE("gear", gear);
-      SET_VALUE("max_current", max_current);
-      SET_VALUE("r_current", r_current);
-      SET_VALUE("Rm", Rm);
       SET_VALUE("max_val", max_val);
       SET_VALUE("min_val", min_val);
     }
