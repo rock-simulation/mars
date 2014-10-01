@@ -262,7 +262,6 @@ namespace mars {
     void SimMotor::setSMotor(const MotorData &sMotor) {
       this->sMotor = sMotor;
       if(sMotor.type == MOTOR_TYPE_PID ||
-         sMotor.type == MOTOR_TYPE_PID_MODEL ||
          sMotor.type == MOTOR_TYPE_PID_FORCE) {
         desired_position = sMotor.value;
       }
@@ -271,9 +270,7 @@ namespace mars {
       }
       // we can initialize the motor here
       // but maybe we should implement a function for that later
-      if(myJoint && (sMotor.type != MOTOR_TYPE_DC_MODEL) &&
-         (sMotor.type != MOTOR_TYPE_PID_MODEL) &&
-         (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
+      if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
         // in this first implementation we only set the first axis
         if(sMotor.axis == 1) {
           myJoint->setJointAsMotor(1);
@@ -302,8 +299,7 @@ namespace mars {
       // updates the motor
       // a timing should be added
       sReal er = 0;
-      sReal vel = 0, acc = 0;
-      sReal H;
+      sReal vel = 0;
       time = time_ms;// / 1000;
       sReal play_position = 0.0;
 
