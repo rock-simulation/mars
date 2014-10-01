@@ -53,8 +53,8 @@ namespace mars {
      *  - "current" (double)
      *  - "torque" (double)
      */
-    class SimMotor : public data_broker::ProducerInterface,
-                     /* public data_broker::ReceiverInterface */ {
+    class SimMotor : public data_broker::ProducerInterface ,
+                     public data_broker::ReceiverInterface {
 
     public:
       SimMotor(interfaces::ControlCenter *control,
@@ -283,11 +283,10 @@ namespace mars {
       virtual void produceData(const data_broker::DataInfo &info,
                                data_broker::DataPackage *package,
                                int callbackParam);
-      /*
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
-      */
+
     private:
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
