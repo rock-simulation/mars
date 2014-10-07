@@ -188,7 +188,13 @@ namespace mars {
     
     static void dumpConfigVectorToYaml(YAML::Emitter &emitter,
                                        const ConfigVector &vec) {
-      if(vec.size() > 1) {
+      bool do_sequence = false;
+      if(vec.size() == 1){
+        if (vec.begin()->children.size() > 1){
+          do_sequence = true;
+        }
+      }
+      if(vec.size() > 1 || do_sequence) {
         emitter << YAML::BeginSeq;
       }
       if(!(emitter.good() && 1)) {
@@ -200,7 +206,7 @@ namespace mars {
       for(unsigned int i = 0; i < vec.size(); ++i) {
         dumpConfigItemToYaml(emitter, vec[i]);
       }
-      if(vec.size() > 1) {
+      if(vec.size() > 1 || do_sequence) {
         emitter << YAML::EndSeq;
       }
     }
