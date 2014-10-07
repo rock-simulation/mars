@@ -101,23 +101,32 @@ namespace mars {
     void Load::getSensorIDList(utils::ConfigMap *map) {
       utils::ConfigVector::iterator it;
       unsigned long id;
+
+      // todo: check if objects exists in maps
+
       if(map->find("link") != map->end()) {
         (*map)["nodeID"] = nodeIDMap[(std::string)(*map)["link"][0]];
       }
       if(map->find("joint") != map->end()) {
         (*map)["jointID"] = nodeIDMap[(std::string)(*map)["joint"][0]];
       }
-      for(it=(*map)["links"].begin();
-          it!=(*map)["links"].end(); ++it) {
-        (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string)*it]));
+      if(map->find("links") != map->end()) {
+        for(it=(*map)["links"].begin();
+            it!=(*map)["links"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string)*it]));
+        }
       }
-      for(it=(*map)["joints"].begin();
-          it!=(*map)["joints"].end(); ++it) {
-        (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string)*it]));
+      if(map->find("joints") != map->end()) {
+        for(it=(*map)["joints"].begin();
+            it!=(*map)["joints"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string)*it]));
+        }
       }
-      for(it=(*map)["motors"].begin();
-          it!=(*map)["motors"].end(); ++it) {
-        (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string)*it]));
+      if(map->find("motors") != map->end()) {
+        for(it=(*map)["motors"].begin();
+            it!=(*map)["motors"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string)*it]));
+        }
       }
     }
 
@@ -225,15 +234,18 @@ namespace mars {
         // convert names to ids
         utils::ConfigVector::iterator it2;
         unsigned long id;
-        for(it2=it->children["sensors"].begin();
-            it2!=it->children["sensors"].end(); ++it2) {
-          it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string)*it2]));
+        if(it->children.find("sensors") != it->children.end()) {
+          for(it2=it->children["sensors"].begin();
+              it2!=it->children["sensors"].end(); ++it2) {
+            it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string)*it2]));
+          }
         }
-        for(it2=it->children["motors"].begin();
-            it2!=it->children["motors"].end(); ++it2) {
-          it->children["motorid"].push_back(ConfigItem(motorIDMap[(std::string)*it2]));
+        if(it->children.find("motors") != it->children.end()) {
+          for(it2=it->children["motors"].begin();
+              it2!=it->children["motors"].end(); ++it2) {
+            it->children["motorid"] += ConfigItem(motorIDMap[(std::string)*it2]);
+          }
         }
-
         controllerList.push_back((*it).children);
         debugMap["controllers"] += (*it).children;
       }
@@ -855,6 +867,7 @@ namespace mars {
       }
 
       NodeId oldId = node.index;
+      config.toYamlFile("loadNode.yml");
       NodeId newId = control->nodes->addNode(&node);
       if (!newId) {
         LOG_ERROR("addNode returned 0");

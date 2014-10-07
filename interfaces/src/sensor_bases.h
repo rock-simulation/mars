@@ -235,9 +235,9 @@ namespace mars {
         maxDistance(maxDistance)
       {
         if(cols == 1) stepX = 0;
-        else stepX = angleX / cols;
+        else stepX = angleX / (cols-1);
         if(rows == 1) stepY = 0;
-        else stepY = angleY / rows;
+        else stepY = angleY / (rows-1);
 
         //Must Remain true for correct calculation in Physics
         calcOrientation = true;

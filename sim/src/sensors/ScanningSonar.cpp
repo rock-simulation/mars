@@ -113,8 +113,10 @@ namespace mars {
       ms.maximumVelocity = 10.0;
       ms.motorMaxForce = 6.0;
       ms.p = 1;
+      /*
       ms.Km = 0.007812;
       ms.Ra = 0.007812;
+      */
       ms.jointIndex = jointID[1];
       ms.axis = 1;
       ms.value = 1;

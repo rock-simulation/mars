@@ -64,16 +64,6 @@ namespace mars {
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
-      sReal Km;
-      sReal Kn;
-      sReal Ra;
-      sReal Lm;
-      sReal Jm;
-      sReal Rm;
-      sReal U;
-      sReal gear;
-      sReal max_current;
-      sReal r_current;
       sReal max_val;
       sReal min_val;
     }; // end of class MotorData

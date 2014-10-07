@@ -49,12 +49,8 @@ namespace mars {
       actual_velocity=0;
       joint_velocity = desired_velocity = 0;
       time = 10;
-      pwm = 0;
       current = 0;
       torque = 0;
-      i_current = 0;
-      last_current = 0;
-      last_velocity = 0;
       myJoint = 0;
       myPlayJoint = 0;
       activated = true;
@@ -94,6 +90,16 @@ namespace mars {
                                                  data_broker::DATA_PACKAGE_READ_FLAG);
         control->dataBroker->registerTimedProducer(this, groupName, dataName,
                                                    "mars_sim/simTimer", 0);
+
+        /*
+        mars::data_broker::DataPackage dbPackage;
+        dbPackage.add("value", getValue());
+        std::string name = dataName + "/value";
+        control->dataBroker->pushData(groupName, name, dbPackage,
+                                      this, mars::data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
+        
+        control->dataBroker->registerSyncReceiver(this, groupName, name, 0);
+        */
       }
     }
 
@@ -103,6 +109,7 @@ namespace mars {
       if(control->dataBroker) {
         control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
                                                      "mars_sim/simTimer");
+        control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here
       if(myJoint) myJoint->unsetJointAsMotor(sMotor.axis);
@@ -116,6 +123,14 @@ namespace mars {
       dbPackage->set(dbPositionIndex, getActualPosition());
       dbPackage->set(dbCurrentIndex, getCurrent());
       dbPackage->set(dbTorqueIndex, getTorque());
+    }
+
+    void SimMotor::receiveData(const data_broker::DataInfo& info,
+                               const data_broker::DataPackage& package,
+                               int id) {
+      sReal value;
+      package.get(0, &value);
+      setValue(value);
     }
 
     void SimMotor::attachJoint(SimJoint *joint){
@@ -247,21 +262,15 @@ namespace mars {
     void SimMotor::setSMotor(const MotorData &sMotor) {
       this->sMotor = sMotor;
       if(sMotor.type == MOTOR_TYPE_PID ||
-         sMotor.type == MOTOR_TYPE_PID_MODEL ||
          sMotor.type == MOTOR_TYPE_PID_FORCE) {
         desired_position = sMotor.value;
       }
       else if(sMotor.type == MOTOR_TYPE_DC) {
         actual_velocity = sMotor.value;
       }
-      else if(sMotor.type == MOTOR_TYPE_DC_MODEL) {
-        pwm = sMotor.value;
-      }
       // we can initialize the motor here
       // but maybe we should implement a function for that later
-      if(myJoint && (sMotor.type != MOTOR_TYPE_DC_MODEL) &&
-         (sMotor.type != MOTOR_TYPE_PID_MODEL) &&
-         (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
+      if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
         // in this first implementation we only set the first axis
         if(sMotor.axis == 1) {
           myJoint->setJointAsMotor(1);
@@ -290,8 +299,7 @@ namespace mars {
       // updates the motor
       // a timing should be added
       sReal er = 0;
-      sReal vel = 0, acc = 0;
-      sReal H;
+      sReal vel = 0;
       time = time_ms;// / 1000;
       sReal play_position = 0.0;
 
@@ -360,91 +368,6 @@ namespace mars {
           case MOTOR_TYPE_DX117:
             vel = actual_velocity;
             break;
-          case MOTOR_TYPE_DC_MODEL:
-            if(sMotor.axis == 1)
-              vel = myJoint->getVelocity();
-            else
-              vel = myJoint->getVelocity2();
-            //damping = vel - velocity;
-            actual_velocity = vel;
-            H = actual_velocity * sMotor.gear / sMotor.Kn;
-            current = (((sMotor.U/100)*pwm)-H-current/sMotor.Ra);
-            current /= sMotor.Lm;
-            i_current += current*time;
-            current = i_current;
-            if(sMotor.max_current > 0.01) {
-              if(current > sMotor.max_current) current = sMotor.max_current;
-              else if(current < -sMotor.max_current) current = -sMotor.max_current;
-            }
-            break;
-
-          case MOTOR_TYPE_PID_MODEL:
-            if(desired_position>2*M_PI)
-                desired_position=0;
-            else
-                if(desired_position>M_PI) 
-                    desired_position=-2*M_PI+desired_position;
-                else 
-                    if(desired_position<-2*M_PI) 
-                        desired_position=0;
-                    else 
-                        if(desired_position<-M_PI) 
-                            desired_position=2*M_PI+desired_position;
-
-            er = desired_position - actual_position;
-            if(er > M_PI) 
-                er = -2*M_PI+er;
-            else 
-                if(er < -M_PI) 
-                    er = 2*M_PI+er;
-                
-            integ_error += er*time;
-            // P part of the motor
-            pwm = er * sMotor.p;
-            // I part of the motor
-            pwm += integ_error * sMotor.i;
-            // D part of the motor
-            pwm += ((er - last_error)/time) * sMotor.d;
-            last_error = er;
-
-            if(pwm > 100) 
-                pwm = 100;
-            else 
-                if(pwm < -100) 
-                    pwm = -100;
-                
-            if(sMotor.axis == 1)
-              vel = myJoint->getVelocity();
-            else
-              vel = myJoint->getVelocity2();
-            //damping = vel - velocity;
-
-            //velocity += (vel-last_velocity/2)/2;
-            //last_velocity = vel;
-            actual_velocity = vel;// -  fmod(vel, 0.0001);
-
-            //acc = ((velocity - last_velocity)*1000.0/time);
-            //last_velocity = velocity;
-            H = actual_velocity * sMotor.gear * sMotor.Km;
-            current = (((sMotor.U/100)*pwm)-H-current*sMotor.Ra);
-            //current = (((sMotor.U/100)*pwm)-H)/sMotor.Ra;
-            current /= sMotor.Lm;
-
-            //last_current = (last_current + current*time/1000.0)/2;
-            //i_current += last_current;
-            acc = (current - last_current)/2;
-            i_current += acc*time/1000;
-            last_current = current;
-            current = i_current;
-
-            if(sMotor.max_current > 0.01) {
-              if(current > sMotor.max_current) 
-                  current = sMotor.max_current;
-              else 
-                  if(current < -sMotor.max_current) 
-                      current = -sMotor.max_current;
-            }
-            break;
           case MOTOR_TYPE_PID_FORCE:
             if(desired_position>2*M_PI) desired_position=0;
             else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
@@ -475,34 +398,6 @@ namespace mars {
             }
             else if(sMotor.axis == 2) {
               myJoint->setTorque2(torque);
-            }
-          }
-          else if(sMotor.type == MOTOR_TYPE_DC_MODEL ||
-                  sMotor.type == MOTOR_TYPE_PID_MODEL) {
-            if(sMotor.axis == 1) {
-              if(current > sMotor.r_current)
-                torque = (current-sMotor.r_current)*sMotor.Km*sMotor.gear;
-              else if(current < -sMotor.r_current)
-                torque = (current+sMotor.r_current)*sMotor.Km*sMotor.gear;
-              else
-                torque = (current)*sMotor.Km*sMotor.gear;
-
-              //torque += torque>0.0?-fabs(acc*sMotor.Jm):fabs(acc*sMotor.Jm);
-              //torque -= acc*sMotor.Jm;
-              //myJoint->setTorque(torque);
-              if(torque < 0) myJoint->setVelocity(-1000);
-              else myJoint->setVelocity(1000);
-              torque = fabs(torque);// - fabs(acc)*sMotor.Jm;
-              //torque -= fmod(torque, 0.001);
-              torque = torque>0.0?torque:0.000000000001;
-              myJoint->setForceLimit(torque);//-fabs(acc)*sMotor.Jm);
-            }
-            else if(sMotor.axis == 2) {
-              /// \bug not implemented for axis2
-              //myJoint->setTorque2(current*sMotor.Km*sMotor.gear);
-              myJoint->setForceLimit2(fabs(torque));
-              if(torque < 0) myJoint->setVelocity2(-1000);
-              else myJoint->setVelocity2(1000);
             }
           }
           else {
@@ -542,12 +437,6 @@ namespace mars {
       case MOTOR_TYPE_DC:
         actual_velocity = value;
         break;
-      case MOTOR_TYPE_DC_MODEL:
-        pwm = value;
-        break;
-      case MOTOR_TYPE_PID_MODEL:
-        desired_position = value;
-        break;
       case MOTOR_TYPE_PID_FORCE:
         desired_position = value;
         break;
@@ -564,12 +453,6 @@ namespace mars {
         break;
       case MOTOR_TYPE_DC:
         return actual_velocity;
-        break;
-      case MOTOR_TYPE_DC_MODEL:
-        return pwm;
-        break;
-      case MOTOR_TYPE_PID_MODEL:
-        return desired_position;
         break;
       case MOTOR_TYPE_PID_FORCE:
         return desired_position;
@@ -597,8 +480,6 @@ namespace mars {
         //the information are not relevant for this type
         break;
       case MOTOR_TYPE_DX117:
-      case MOTOR_TYPE_DC_MODEL:
-      case MOTOR_TYPE_PID_MODEL:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -623,12 +504,6 @@ namespace mars {
         break;
       case MOTOR_TYPE_DC:
         obj->value = actual_velocity;
-        break;
-      case MOTOR_TYPE_DC_MODEL:
-        obj->value = current;
-        break;
-      case MOTOR_TYPE_PID_MODEL:
-        obj->value = current;
         break;
       case MOTOR_TYPE_PID_FORCE:
         obj->value = actual_position;

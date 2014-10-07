@@ -28,6 +28,7 @@
 #include "SimJoint.h"
 
 #include <mars/data_broker/ProducerInterface.h>
+#include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/interfaces/MotorData.h>
 
@@ -52,7 +53,8 @@ namespace mars {
      *  - "current" (double)
      *  - "torque" (double)
      */
-    class SimMotor : public data_broker::ProducerInterface {
+    class SimMotor : public data_broker::ProducerInterface ,
+                     public data_broker::ReceiverInterface {
 
     public:
       SimMotor(interfaces::ControlCenter *control,
@@ -280,6 +282,9 @@ namespace mars {
   
       virtual void produceData(const data_broker::DataInfo &info,
                                data_broker::DataPackage *package,
+                               int callbackParam);
+      virtual void receiveData(const data_broker::DataInfo &info,
+                               const data_broker::DataPackage &package,
                                int callbackParam);
 
     private:

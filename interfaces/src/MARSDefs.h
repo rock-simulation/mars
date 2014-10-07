@@ -89,8 +89,6 @@ namespace mars {
       MOTOR_TYPE_PID,
       MOTOR_TYPE_DC,
       MOTOR_TYPE_DX117,
-      MOTOR_TYPE_DC_MODEL,
-      MOTOR_TYPE_PID_MODEL,
       MOTOR_TYPE_PID_FORCE,
     };
 
