@@ -30,6 +30,8 @@ MultiLevelLaserRangeFinder::MultiLevelLaserRangeFinder(ControlCenter *control, M
     SensorInterface(control), config(config) 
 {
 
+    config.updateRate = 100;
+    
     updateRate = config.updateRate;
     long attached_node = config.attached_node;
 
@@ -162,6 +164,7 @@ void MultiLevelLaserRangeFinder::preGraphicsUpdate(void )
 }
 
 const std::vector<double> &MultiLevelLaserRangeFinder::getSensorData() const {
+    newData = false;
     return rayValues;
 }
 
@@ -177,6 +180,9 @@ void MultiLevelLaserRangeFinder::receiveData(const data_broker::DataInfo &info,
                             int callbackParam) {
     CPP_UNUSED(info);
     CPP_UNUSED(callbackParam);
+    
+    estimatedGlobalTime = estimatedGlobalTime + base::Time::fromMilliseconds(updateRate);
+    
     long id;
     package.get(0, &id);
 
@@ -201,7 +207,7 @@ void MultiLevelLaserRangeFinder::receiveData(const data_broker::DataInfo &info,
 
 void MultiLevelLaserRangeFinder::calculateSamplingPixels()
 {
-    const double verticalStartAngle = -config.verticalOpeningAngle / 2.0;
+    const double verticalStartAngle = config.verticalStartAngle;
     const double scansVertical = config.numRaysVertical;
     const double scansHorizontal = config.numRaysHorizontal;
     
@@ -209,7 +215,7 @@ void MultiLevelLaserRangeFinder::calculateSamplingPixels()
     double stepVertical = config.verticalOpeningAngle / (scansVertical - 1);
     
     
-    double curHorAngle = 0;
+    double curHorAngle = config.horizontalStartAngle;
     
     std::vector<RaySubSensor>::iterator it = subSensors.begin();
     
@@ -270,11 +276,20 @@ void MultiLevelLaserRangeFinder::calculateSamplingPixels()
     
 }
 
-
+bool MultiLevelLaserRangeFinder::gotNewData() const
+{
+    return newData;
+}
 
 void MultiLevelLaserRangeFinder::update(std::vector<draw_item>* drawItems) {
     
-//     std::cout << "Update Called " << std::endl;
+    if(estimatedGlobalTime - lastUpdateTime < base::Time::fromMicroseconds(updateRate))
+        return;
+    
+    lastUpdateTime = estimatedGlobalTime;
+    newData = true;
+    
+    //     std::cout << "Update Called " << std::endl;
     
     //update distance images
     for(std::vector<RaySubSensor>::iterator it = subSensors.begin(); it != subSensors.end();it++)
@@ -341,8 +356,12 @@ BaseConfig* MultiLevelLaserRangeFinder::parseConfig(ControlCenter *control,
     
     if((it = config->find("verticalOpeningAngle")) != config->end())
         cfg->verticalOpeningAngle = it->second[0].getDouble();
+    if((it = config->find("verticalStartAngle")) != config->end())
+        cfg->verticalStartAngle = it->second[0].getDouble();
     if((it = config->find("horizontalOpeningAngle")) != config->end())
         cfg->horizontalOpeningAngle = it->second[0].getDouble();
+    if((it = config->find("horizontalStartAngle")) != config->end())
+        cfg->horizontalStartAngle = it->second[0].getDouble();
     if((it = config->find("maxDistance")) != config->end())
         cfg->maxDistance = it->second[0].getDouble();
 
@@ -361,7 +380,9 @@ ConfigMap MultiLevelLaserRangeFinder::createConfig() const {
     cfg["rttResolutionY"][0] = ConfigItem(config.rttResolutionY);
     cfg["max_distance"][0] = ConfigItem(config.maxDistance);
     cfg["verticalOpeningAngle"][0] = ConfigItem(config.verticalOpeningAngle);
+    cfg["verticalStartAngle"][0] = ConfigItem(config.verticalStartAngle);
     cfg["horizontalOpeningAngle"][0] = ConfigItem(config.horizontalOpeningAngle);
+    cfg["horizontalStartAngle"][0] = ConfigItem(config.horizontalStartAngle);
     cfg["rate"][0] = ConfigItem(config.updateRate);
     cfg["maxDistance"][0] = ConfigItem(config.maxDistance);
     return cfg;

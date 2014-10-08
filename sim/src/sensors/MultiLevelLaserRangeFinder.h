@@ -27,9 +27,12 @@ namespace mars {
         rttResolutionX = 128 * 4;
         rttResolutionY = 128 * 2;
         verticalOpeningAngle= 40 / 180.0 * M_PI;
+        verticalStartAngle = -30.67 / 180 * M_PI;
         horizontalOpeningAngle= 2 * M_PI * (double (numRaysHorizontal - 1)) / numRaysHorizontal;
+        horizontalStartAngle = 0;
         attached_node = 0;
         maxDistance = 100.0;
+        updateRate = 100;
       }
 
       unsigned long attached_node;
@@ -38,7 +41,9 @@ namespace mars {
       int rttResolutionX;
       int rttResolutionY;
       double verticalOpeningAngle;
+      double verticalStartAngle;
       double horizontalOpeningAngle;
+      double horizontalStartAngle;
       double maxDistance;
     };
 
@@ -72,7 +77,14 @@ namespace mars {
 
         const MultiLevelLaserRangeFinderConfig& getConfig() const;
 
+        bool gotNewData() const;
+        
     private:
+        
+        base::Time lastUpdateTime;
+        base::Time estimatedGlobalTime;
+        
+        mutable bool newData;
         
         void calculateSamplingPixels();
         
