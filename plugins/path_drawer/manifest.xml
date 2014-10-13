@@ -1,0 +1,10 @@
+<package>
+    <description brief="path_drawer">
+      draws
+   </description>
+    <depend package="simulation/mars/scripts/cmake" />
+    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/interfaces" />
+    <tags>needs_opt</tags>
+</package>
