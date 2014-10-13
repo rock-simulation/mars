@@ -39,7 +39,7 @@
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
-
+ 
 #include <string>
 
 namespace mars {

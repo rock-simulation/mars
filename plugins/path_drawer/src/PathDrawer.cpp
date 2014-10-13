@@ -30,7 +30,9 @@
 #include "PathDrawer.h"
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/data_broker/DataPackage.h>
-
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <osg_lines/LinesFactory.h>
+ 
 #include <fstream>
 
 namespace mars {
@@ -47,8 +49,9 @@ namespace mars {
   
       void PathDrawer::init() {
 
-        // read the points from an obj file
-        vector<Vector> point_list;
+        // read the points from an obj file and pass them to the OSG Line Interface
+        osg_lines::LinesFactory lF;
+        osg_lines::Lines *l = lF.createLines();
         ifstream file;
         file.open ("blender_export_waypoints.obj");
         if (file.is_open()){
@@ -56,14 +59,14 @@ namespace mars {
           while ( getline (file, line) ) {
             //printf("%s\n", line.c_str());
             if(int start = line.find("v ", 0, 2) != string::npos){
-              Vector v;
+              double v[3];
               start += 1;
               int end_first = line.find(" ", start) + 1;
               int end_second = line.find(" ", end_first) + 1;
               v[0] = (sReal) atof((line.substr(start, end_first-start)).c_str());
               v[1] = (sReal) atof((line.substr(end_first, end_second-end_first)).c_str());
               v[2] = (sReal) atof((line.substr(end_second).c_str()));
-              point_list.push_back(v);
+              l->appendData(osg_lines::Vector(v[0], v[1], v[2]));
             }
           }
           file.close();
@@ -71,8 +74,10 @@ namespace mars {
           printf("[PathDrawer] Error: Unable to open file\n"); 
         }
 
-        // pass the point list to the OSG drawer
-
+        l->setColor(osg_lines::Color(0.0, 1.0, 0.0, 1.0));
+        l->setLineWidth(4);
+        control->graphics->addOSGNode(l->getOSGNode());
+        control->graphics->hideCoords();
       }
 
       void PathDrawer::reset() {
