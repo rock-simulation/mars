@@ -39,7 +39,8 @@
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
- 
+#include <osg_lines/LinesFactory.h>
+
 #include <string>
 
 namespace mars {
@@ -87,7 +88,10 @@ namespace mars {
         // PathDrawer methods
 
       private:
-        cfg_manager::cfgPropertyStruct example;
+        cfg_manager::cfgPropertyStruct obj_file_struct;
+        osg_lines::Lines *l;
+
+        void addVectorsFromObjFile(std::string file_name);
 
       }; // end of class definition PathDrawer
 

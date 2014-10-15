@@ -1,6 +1,6 @@
 <package>
     <description brief="path_drawer">
-      draws
+     It draws a path based on an .obj file which contains the position vectors of the waypoint 
    </description>
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/common/lib_manager" />
