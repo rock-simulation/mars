@@ -52,6 +52,7 @@ namespace mars {
         myTextEdit.setTextColor(color);
       }
 
+      void setMaxLines(int maxLines);
     public slots:
       void append(const QString &text) {
         myTextEdit.append(text);
@@ -68,8 +69,10 @@ namespace mars {
     private:
       QCheckBox buttons[5];
       QTextEdit myTextEdit;
+      QTextDocument myText;
       QHBoxLayout buttonLayout;
       QVBoxLayout mainLayout;
+      int maxLines;
 
     }; // end of class ConsoleGUI
 

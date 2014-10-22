@@ -175,16 +175,19 @@ def convertMdToHtml(linklist, f):
             url = altLine[url_start:url_end]
             image_filename = "../" + url.replace("../", "")
             #print image_filename
-            im = Image.open(image_filename)
-            width, height = im.size
-            ratio = height*1.0 / width*1.0
-            img_width = 900
-            if width > img_width:
-                output_width = img_width
-            else:
-                output_width = width
-            #print output_width, ratio, int(output_width*ratio)
-            altLine = altLine.replace("<img src=", "<img " + 'width="' + str(int(output_width)) + '" height="' +str(int(ratio*output_width)) + '" src=')
+            try:
+                im = Image.open(image_filename)
+                width, height = im.size
+                ratio = height*1.0 / width*1.0
+                img_width = 900
+                if width > img_width:
+                    output_width = img_width
+                else:
+                    output_width = width
+                #print output_width, ratio, int(output_width*ratio)
+                altLine = altLine.replace("<img src=", "<img " + 'width="' + str(int(output_width)) + '" height="' +str(int(ratio*output_width)) + '" src=')
+            except IOError:
+                print "Image could not be loaded:", fileName, "-", image_filename
             altLine = altLine.replace(url, "../" * (n_level) + url.replace("../",""))
         alt_bodyString += altLine+"\n"
 

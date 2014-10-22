@@ -460,6 +460,15 @@ def writeSensor(sensor):
         out.write('      <orientation_offset yaw="'+str(sensor["orientation_offset_yaw"])+
                 '" pitch="'+str(sensor["orientation_offset_pitch"])+
                 '" roll="'+str(sensor["orientation_offset_roll"])+'"/>\n')
+    elif sensorType == "MultiLevelLaserRangeFinder":
+        nodeID = getID(sensor["attached_node"])
+        out.write('      <attached_node>'+str(nodeID)+'</attached_node>\n')
+        out.write('      <position_offset x="'+str(sensor["position_offset_x"])+
+                '" y="'+str(sensor["position_offset_y"])+
+                '" z="'+str(sensor["position_offset_z"])+'"/>\n')
+        out.write('      <orientation_offset yaw="'+str(sensor["orientation_offset_yaw"])+
+                '" pitch="'+str(sensor["orientation_offset_pitch"])+
+                '" roll="'+str(sensor["orientation_offset_roll"])+'"/>\n')
     out.write('    </sensor>\n')
 
 

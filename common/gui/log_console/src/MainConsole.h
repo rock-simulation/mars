@@ -102,7 +102,7 @@ namespace mars {
       std::vector<con_data> messages;
       // geometry config
       cfg_manager::CFGManagerInterface *cfg;
-      cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width, showOnStdError;
+      cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width, showOnStdError, maxMessages;
       void setupCFG(void);
       bool set_window_prop;
       int ignore_next_resize;

@@ -29,6 +29,7 @@ namespace mars {
   namespace log_console {
 
     ConsoleGUI::ConsoleGUI(QWidget *parent) : QWidget(parent) {
+      maxLines = -1;
       QPalette palette;
       QBrush brush(QColor(0, 0, 0, 255));
       brush.setStyle(Qt::SolidPattern);
@@ -115,12 +116,19 @@ namespace mars {
       mainLayout.addLayout(&buttonLayout);
       mainLayout.addWidget(&myTextEdit);
       setLayout(&mainLayout);
+      myText.setParent(&myTextEdit);
+      myTextEdit.setDocument(&myText);
     }
 
     ConsoleGUI::~ConsoleGUI(void) {
     }
 
-  
+
+    void ConsoleGUI::setMaxLines(int maxLines) {
+      this->maxLines = maxLines;
+      myText.setMaximumBlockCount(maxLines);
+    }
+
     void ConsoleGUI::paintEvent(QPaintEvent *event) {
       QWidget::paintEvent(event);
       emit geometryChanged();

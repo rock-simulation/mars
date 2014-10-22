@@ -74,6 +74,9 @@ namespace mars {
         showOnStdError = cfg->getOrCreateProperty("log_console",
                                                   "showOnStdError",
                                                   false, this);
+        maxMessages = cfg->getOrCreateProperty("log_console",
+                                               "maxLines",
+                                               -1, this);
       }
 
 
@@ -286,6 +289,11 @@ namespace mars {
 
       else if(_property.paramId == showOnStdError.paramId) {
         showOnStdError.bValue = _property.bValue;
+      }
+
+      else if(_property.paramId == maxMessages.paramId) {
+        maxMessages.iValue = _property.iValue;
+        consoleWidget->setMaxLines(maxMessages.iValue);
       }
   
       if(change_view) {
