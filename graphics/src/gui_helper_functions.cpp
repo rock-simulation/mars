@@ -40,6 +40,8 @@
 #include "3d_objects/MarsVBOGeom.h"
 #endif
 
+#include <mars/utils/mathUtils.h>
+
 namespace mars {
   namespace graphics {
 
@@ -272,6 +274,10 @@ namespace mars {
         osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
         completeNode->setStateSet(stateset.get());
         myCreatedGroup->addChild(completeNode.get());
+        // add an additional rotation of -90.0 degree due to wrong definition
+        // of which direction is up within .stl (for .stl -Y is up and in MARS
+        // Z is up)
+        node->visual_offset_rot *= mars::utils::eulerToQuaternion(Vector(-90.0,0.0,0.0));
       }
 
       osg::ComputeBoundsVisitor cbbv;
