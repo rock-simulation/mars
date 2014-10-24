@@ -68,13 +68,14 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
+      full_scan = false;
+      full_scan_mlls = false;
       current_pose.setIdentity();
       num_points = 0;
       
-        /**
+      /**
       double calc_ms = 0.0;
       control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
-      std::cout << "calc ms " << calc_ms <<  std::endl;
     
       nsamples = (1000/fmax(updateRate, calc_ms));
       turning_step = (config.turning_speed*2*M_PI)/(nsamples*config.bands);
@@ -87,6 +88,7 @@ namespace mars {
       draw_item item;
       Vector tmp;
       have_update = false;
+      
       for(int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
       for(int i = 0; i < 4; ++i)
@@ -120,11 +122,23 @@ namespace mars {
       
       double vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
       double hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
+      vertical_resolution = config.lasers <= 1 ? 0 : config.opening_height/(config.lasers-1);
+      
+      double h_angle_cur = 0.0;
+      double v_angle_cur = 0.0;
       
       for(int b=0; b<config.bands; ++b) {
+        h_angle_cur = b*hAngle - config.opening_width / 2.0 + config.horizontal_offset;
+        mlls_band_angles_lookup.push_back(h_angle_cur);
+      
         for(int l=0; l<config.lasers; ++l) {
-          tmp = Eigen::AngleAxisd(b*hAngle - config.opening_width / 2.0 + config.horizontal_offset, Eigen::Vector3d::UnitZ()) * 
-              Eigen::AngleAxisd(l*vAngle - config.opening_height / 2.0 + config.vertical_offset, Eigen::Vector3d::UnitY()) *
+          v_angle_cur = l*vAngle - config.opening_height / 2.0 + config.vertical_offset;
+          if(b == 0) {
+            mlls_laser_angles_lookup.push_back(v_angle_cur);
+          } 
+        
+          tmp = Eigen::AngleAxisd(h_angle_cur, Eigen::Vector3d::UnitZ()) * 
+              Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
               Vector(1,0,0);
               
           directions.push_back(tmp);
@@ -152,6 +166,10 @@ namespace mars {
         }
       }
       
+      // Initiate MultilevelLaserScan
+      mlls.max_range = config.maxDistance * 1000;
+      mlls.min_range = config.minDistance * 1000;
+      
       // Add sensor after everything has been initialized.
       control->nodes->addNodeSensor(this);
       
@@ -170,11 +188,26 @@ namespace mars {
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
     }
 
-    std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
+    bool RotatingRaySensor::getPointcloud(std::vector<utils::Vector>& pcloud) {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
-      //base::Time time_now = base::Time::now();
-      //std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
-      return pointcloud_full;
+      if(full_scan) {
+        full_scan = false;
+        pcloud =  pointcloud_full;
+        return true;
+      } else {
+          return false;
+      }
+    }
+
+    bool RotatingRaySensor::getMultiLevelLaserScan(velodyne_lidar::MultilevelLaserScan& scan) {
+      mars::utils::MutexLocker lock(&mutex_pointcloud);
+      if(full_scan_mlls) {
+        full_scan_mlls = false;
+        scan = mlls_full;
+        return true;
+      } else {
+        return false;
+      }
     }
 
     int RotatingRaySensor::getSensorData(double** data_) const {
@@ -228,15 +261,54 @@ namespace mars {
 
       // Fills the pointcloud vector with (dist_m, x, y, z).
       // data[] contains all the measured distances.
-      for(unsigned int i=0; i<data.size(); i++) {
-        if (data[i] < config.maxDistance) {
-          // Calculates the ray/vector within the sensor frame.
-          utils::Vector local_ray = orientation_offset * directions[i] * data[i];
-          // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
-          // This necessitates a back-transformation (world2node) in getPointcloud().
-          utils::Vector tmpvec = current_pose * local_ray;
-          pointcloud.push_back(tmpvec); // Scale normalized vector.
+      utils::Vector local_ray, tmpvec;
+      
+      // MultilevelLaserScan
+      velodyne_lidar::MultilevelLaserScan::SingleScan single_scan;
+      double dist_mm;
+      base::Angle h_angle, v_angle;
+      assert((int)data.size() == config.bands * config.lasers);
+      
+      // Fills the pointcloud vector with (dist_m, x, y, z).
+      // data[] contains all the measured distances according to the define directions.
+      int i = 0; // data_counter
+      for(int b=0; b<config.bands; ++b) { 
+        velodyne_lidar::MultilevelLaserScan::VerticalMultilevelScan vertical_scan;
+        vertical_scan.time = base::Time::now();
+        base::Orientation base_orientation;
+        base_orientation.x() = orientation_offset.x();
+        base_orientation.y() = orientation_offset.y();
+        base_orientation.z() = orientation_offset.z();
+        base_orientation.w() = orientation_offset.w();
+        
+        h_angle.rad = mlls_band_angles_lookup[b] + base::getYaw(base_orientation);
+        vertical_scan.horizontal_angle = h_angle;
+        v_angle.rad = mlls_laser_angles_lookup[0];
+        vertical_scan.vertical_start_angle = v_angle; 
+        vertical_scan.vertical_angular_resolution = vertical_resolution;
+        
+        for(int l=0; l<config.lasers; ++l, ++i){
+          if (data[i] < config.maxDistance && data[i] > config.minDistance) {
+            // Calculates the ray/vector within the sensor frame.
+            local_ray = orientation_offset * directions[i] * data[i];
+            // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
+            // This necessitates a back-transformation (world2node) in getPointcloud().
+            tmpvec = current_pose * local_ray;
+            pointcloud.push_back(tmpvec); // Scale normalized vector.
+          }
+            
+          // Fill the MultilevelLaserScan format.
+          if(data[i] < config.minDistance) {
+            dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_NEAR;
+          } else if(data[i] > config.maxDistance) {
+            dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_FAR;
+          } else {
+            dist_mm = data[i] * 1000;
+          }
+          single_scan.range = dist_mm;
+          vertical_scan.vertical_scans.push_back(single_scan);
         }
+        mlls.horizontal_scans.push_back(vertical_scan);
       }
       num_points += data.size();
       
@@ -285,6 +357,15 @@ namespace mars {
         }
         pointcloud.clear();
         turning_offset = 0;
+        full_scan = true;
+        
+        // Copy MultilevelLaserScan.
+        mlls.time = base::Time::now();
+        mlls_full = mlls;
+        mlls.horizontal_scans.clear();
+        
+        turning_offset = turning_start_fullscan;
+        full_scan_mlls = true;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
@@ -318,6 +399,8 @@ namespace mars {
         cfg->opening_height = it->second[0].getDouble();
       if((it = config->find("max_distance")) != config->end())
         cfg->maxDistance = it->second[0].getDouble();
+      if((it = config->find("min_distance")) != config->end())
+        cfg->minDistance = it->second[0].getDouble();
       if((it = config->find("draw_rays")) != config->end())
         cfg->draw_rays = it->second[0].getBool();
       if((it = config->find("horizontal_offset")) != config->end())
@@ -364,6 +447,7 @@ namespace mars {
       cfg["opening_width"][0] = ConfigItem(config.opening_width);
       cfg["opening_height"][0] = ConfigItem(config.opening_height);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
+      cfg["min_distance"][0] = ConfigItem(config.minDistance);
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
       cfg["vertical_offset"][0] = ConfigItem(config.vertical_offset);
       cfg["horizontal_offset"][0] = ConfigItem(config.horizontal_offset);
