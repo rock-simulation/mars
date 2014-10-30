@@ -363,8 +363,6 @@ namespace mars {
         mlls.time = base::Time::now();
         mlls_full = mlls;
         mlls.horizontal_scans.clear();
-        
-        turning_offset = turning_start_fullscan;
         full_scan_mlls = true;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
