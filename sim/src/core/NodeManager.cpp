@@ -967,7 +967,7 @@ namespace mars {
     }
 
     void NodeManager::rotateNode(NodeId id, Vector pivot, Quaternion q,
-                                 unsigned long excludeJointId) {
+                                 unsigned long excludeJointId, bool includeConnected) {
       std::vector<int> gids;
       NodeMap::iterator iter = simNodes.find(id);
       if(iter == simNodes.end()) {
@@ -979,24 +979,25 @@ namespace mars {
       SimNode *editedNode = iter->second;
       editedNode->rotateAtPoint(pivot, q, true);
 
-      std::vector<SimJoint*> joints = control->joints->getSimJoints();
-      std::vector<SimJoint*>::iterator jter;
-      for(jter=joints.begin(); jter!=joints.end(); ++jter) {
-        if((*jter)->getIndex() == excludeJointId) {
-          joints.erase(jter);
-          break;
+      if (includeConnected) {
+        std::vector<SimJoint*> joints = control->joints->getSimJoints();
+        std::vector<SimJoint*>::iterator jter;
+        for(jter=joints.begin(); jter!=joints.end(); ++jter) {
+          if((*jter)->getIndex() == excludeJointId) {
+            joints.erase(jter);
+            break;
+          }
         }
+
+        if(editedNode->getGroupID())
+          gids.push_back(editedNode->getGroupID());
+
+        NodeMap nodes = simNodes;
+        nodes.erase(nodes.find(editedNode->getID()));
+
+        rotateNodeRecursive(id, pivot, q, &joints,
+                            &gids, &nodes);
       }
-
-      if(editedNode->getGroupID())
-        gids.push_back(editedNode->getGroupID());
-
-      NodeMap nodes = simNodes;
-      nodes.erase(nodes.find(editedNode->getID()));
-
-      rotateNodeRecursive(id, pivot, q, &joints,
-                          &gids, &nodes);
-
       update_all_nodes = true;
       updateDynamicNodes(0, false);
     }
