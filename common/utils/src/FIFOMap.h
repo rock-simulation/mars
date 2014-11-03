@@ -91,6 +91,7 @@ namespace mars {
       void clear();
 
       void append(FIFOMap<Key, T> &other);
+      void append(const FIFOMap<Key, T> &other);
 
       /* operations */
       iterator find(const Key &x);
@@ -205,6 +206,15 @@ namespace mars {
     void FIFOMap<Key, T>::append(FIFOMap<Key, T> &other) {
       //FIFOMap<Key, T>::iterator it = other.begin();
       iterator it = other.begin();
+      for(; it!=other.end(); ++it) {
+        FIFOMap<Key, T>::operator[](it->first) = it->second;
+      }
+    }
+
+    template<typename Key, typename T>
+    void FIFOMap<Key, T>::append(const FIFOMap<Key, T> &other) {
+      //FIFOMap<Key, T>::const_iterator it = other.begin();
+      const_iterator it = other.begin();
       for(; it!=other.end(); ++it) {
         FIFOMap<Key, T>::operator[](it->first) = it->second;
       }
