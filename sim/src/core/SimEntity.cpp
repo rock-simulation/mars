@@ -19,6 +19,7 @@
  */
 
 #include "SimEntity.h"
+#include <mars/utils/ConfigData.h>
 #include <iostream>
 
 #include <iterator> // ostream_iterator
@@ -26,9 +27,29 @@
 namespace mars {
   namespace sim {
 
-    SimEntity::SimEntity(const std::string &_name)
+    SimEntity::SimEntity(const std::string &name)
     {
-      robotName = _name;
+      this->name = name;
+      selected = false;
+    }
+
+    SimEntity::SimEntity(const utils::ConfigMap& parameters) {
+        config = parameters;
+        this->name = (std::string)config["name"];
+        this->selected = false;
+    }
+
+    void SimEntity::appendConfig(const utils::ConfigMap& parameters) {
+    	utils::ConfigMap map = parameters;
+    	config.append(map);
+    }
+
+    void SimEntity::removeEntity() {
+//        for (std::vector<NodeId>::iterator it = oldNodeIDs.begin();
+//                it != oldNodeIDs.end(); ++it) {
+//            control->nodes->removeNode(*it);
+//        }
+//        oldNodeIDs.clear();
     }
 
     void SimEntity::addNode(unsigned long nodeId, const std::string& name)
@@ -49,6 +70,11 @@ namespace mars {
     void SimEntity::addJoint(long unsigned int jointId, const std::string& name)
     {
       jointIds[jointId] = name;
+    }
+
+    void SimEntity::addSensor(long unsigned int sensorId, const std::string& name)
+    {
+      sensorIds[sensorId] = name;
     }
 
 
@@ -119,7 +145,7 @@ namespace mars {
 
     void SimEntity::printNodes()
     {
-      std::cout << "Nodes of Robot " << robotName << "with id: " << ":\n";
+      std::cout << "Nodes of Robot " << name << "with id: " << ":\n";
       for ( std::map< unsigned long, std::string>::const_iterator iter = nodeIds.begin(); iter != nodeIds.end(); ++iter ){
         std::cout << iter->first << '\t' << iter->second << '\n';
       }
@@ -128,7 +154,7 @@ namespace mars {
 
     void SimEntity::printMotors()
     {
-      std::cout << "Motors of Robot " << robotName << ":\n";
+      std::cout << "Motors of Robot " << name << ":\n";
       for ( std::map< unsigned long, std::string>::const_iterator iter = motorIds.begin(); iter != motorIds.end(); ++iter ){
         std::cout << iter->first << '\t' << iter->second << '\n';
       }
@@ -137,9 +163,9 @@ namespace mars {
 
     void SimEntity::printControllers()
     {
-      std::cout << "Controllers of Robot " << robotName << ":\n";
+      std::cout << "Controllers of Robot " << name << ":\n";
       for(size_t i = 0; i < controllerIds.size(); i++){
-        std::cout << controllerIds.at(i) << std::endl; 
+        std::cout << controllerIds.at(i) << std::endl;
       }
     }
 
