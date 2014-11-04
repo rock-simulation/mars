@@ -538,9 +538,9 @@ function install_base_types {
     mkdir -p ${MARS_DEV_ROOT}/${package}/build
     cd ${MARS_DEV_ROOT}/${package}/build
     if [[ ${BUILD_TYPE} == "release" ]]; then
-        cmake_release -DNO_BOOST_DEPENDENCY=1
+        cmake_release -DINSTALL_BOOST_IF_REQUIRED=1
     else
-        cmake_debug -DNO_BOOST_DEPENDENCY=1
+        cmake_debug -DINSTALL_BOOST_IF_REQUIRED=1
     fi
     make install -j${CORES} || MARS_SCRIPT_ERROR=1
     popd > /dev/null 2>&1
