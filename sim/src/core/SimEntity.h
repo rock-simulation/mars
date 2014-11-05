@@ -25,7 +25,6 @@
  *
  */
 
-
 #ifndef SIMENTITY_H
 #define SIMENTITY_H
 
@@ -39,8 +38,7 @@ namespace mars {
 
   namespace sim {
 
-    class SimEntity
-    {
+    class SimEntity {
     public:
       SimEntity(const std::string& name);
       SimEntity(const utils::ConfigMap& parameters);
@@ -77,10 +75,14 @@ namespace mars {
       bool deSelect(unsigned long nodeId);
 
       // returns the name of the robot
-      std::string getName(){return name;}
+      std::string getName() {
+        return name;
+      }
 
       // returns true if the robot is selected
-      bool isSelected(){return selected;}
+      bool isSelected() {
+        return selected;
+      }
 
       // returns true if the node is part of the robot
       bool belongsToRobot(unsigned long nodeId);
@@ -106,7 +108,6 @@ namespace mars {
       unsigned long getJoint(const std::string &name);
 
       std::string getJoint(unsigned long id);
-
 
       //debug functions
       void printNodes();

@@ -27,21 +27,20 @@
 namespace mars {
   namespace sim {
 
-    SimEntity::SimEntity(const std::string &name)
-    {
+    SimEntity::SimEntity(const std::string &name) {
       this->name = name;
       selected = false;
     }
 
     SimEntity::SimEntity(const utils::ConfigMap& parameters) {
-        config = parameters;
-        this->name = (std::string)config["name"];
-        this->selected = false;
+      config = parameters;
+      this->name = (std::string) config["name"];
+      this->selected = false;
     }
 
     void SimEntity::appendConfig(const utils::ConfigMap& parameters) {
-    	utils::ConfigMap map = parameters;
-    	config.append(map);
+      utils::ConfigMap map = parameters;
+      config.append(map);
     }
 
     void SimEntity::removeEntity() {
@@ -52,119 +51,106 @@ namespace mars {
 //        oldNodeIDs.clear();
     }
 
-    void SimEntity::addNode(unsigned long nodeId, const std::string& name)
-    {
+    void SimEntity::addNode(unsigned long nodeId, const std::string& name) {
       nodeIds[nodeId] = name;
     }
 
-    void SimEntity::addMotor(unsigned long motorId, const std::string& name)
-    {
+    void SimEntity::addMotor(unsigned long motorId, const std::string& name) {
       motorIds[motorId] = name;
     }
 
-    void SimEntity::addController(long unsigned int controllerId)
-    {
+    void SimEntity::addController(long unsigned int controllerId) {
       controllerIds.push_back(controllerId);
     }
 
-    void SimEntity::addJoint(long unsigned int jointId, const std::string& name)
-    {
+    void SimEntity::addJoint(long unsigned int jointId, const std::string& name) {
       jointIds[jointId] = name;
     }
 
-    void SimEntity::addSensor(long unsigned int sensorId, const std::string& name)
-    {
+    void SimEntity::addSensor(long unsigned int sensorId, const std::string& name) {
       sensorIds[sensorId] = name;
     }
 
-
-    bool SimEntity::select(unsigned long nodeId)
-    {
+    bool SimEntity::select(unsigned long nodeId) {
       //check if the node belongs to the robot
       //   std::map<unsigned long, std::string>::iterator it = nodeIds.find(nodeId);
       //node belongs to the robot
-      if(nodeIds.count(nodeId)){
+      if (nodeIds.count(nodeId)) {
         //no need to check if it has been previously selected as std::set does that
         selectedNodes.insert(nodeId);
         return true;
-      }else{
+      } else {
         return false;
       }
     }
 
-    long unsigned int SimEntity::getNode(const std::string& name)
-    {
-      for ( std::map< unsigned long, std::string>::const_iterator iter = nodeIds.begin(); iter != nodeIds.end(); ++iter ){
-        if(iter->second == name)
+    long unsigned int SimEntity::getNode(const std::string& name) {
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        if (iter->second == name)
           return iter->first;
       }
       return 0;
     }
 
-
-    std::string SimEntity::getNode(long unsigned int id)
-    {
+    std::string SimEntity::getNode(long unsigned int id) {
       //TODO problem if node does not exist
       return nodeIds.find(id)->second;
     }
 
-    long unsigned int SimEntity::getMotor(const std::string& name)
-    {
-      for ( std::map< unsigned long, std::string>::const_iterator iter = motorIds.begin(); iter != motorIds.end(); ++iter ){
-        if(iter->second == name)
+    long unsigned int SimEntity::getMotor(const std::string& name) {
+      for (std::map<unsigned long, std::string>::const_iterator iter = motorIds.begin();
+          iter != motorIds.end(); ++iter) {
+        if (iter->second == name)
           return iter->first;
       }
       return 0;
     }
 
-    std::string SimEntity::getMotor(long unsigned int id)
-    {
+    std::string SimEntity::getMotor(long unsigned int id) {
       //TODO problem if node does not exist
       return motorIds.find(id)->second;
     }
 
-    long unsigned int SimEntity::getJoint(const std::string& name)
-    {
-      for ( std::map< unsigned long, std::string>::const_iterator iter = jointIds.begin(); iter != jointIds.end(); ++iter ){
-        if(iter->second == name)
+    long unsigned int SimEntity::getJoint(const std::string& name) {
+      for (std::map<unsigned long, std::string>::const_iterator iter = jointIds.begin();
+          iter != jointIds.end(); ++iter) {
+        if (iter->second == name)
           return iter->first;
       }
       return 0;
     }
 
-    std::string SimEntity::getJoint(long unsigned int id)
-    {
+    std::string SimEntity::getJoint(long unsigned int id) {
       //TODO problem if node does not exist
       return jointIds.find(id)->second;
     }
 
-    std::vector< unsigned long > SimEntity::getControllerList()
-    {
+    std::vector<unsigned long> SimEntity::getControllerList() {
       return controllerIds;
     }
 
-    void SimEntity::printNodes()
-    {
+    void SimEntity::printNodes() {
       std::cout << "Nodes of Robot " << name << "with id: " << ":\n";
-      for ( std::map< unsigned long, std::string>::const_iterator iter = nodeIds.begin(); iter != nodeIds.end(); ++iter ){
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
         std::cout << iter->first << '\t' << iter->second << '\n';
       }
       std::cout << std::endl;
     }
 
-    void SimEntity::printMotors()
-    {
+    void SimEntity::printMotors() {
       std::cout << "Motors of Robot " << name << ":\n";
-      for ( std::map< unsigned long, std::string>::const_iterator iter = motorIds.begin(); iter != motorIds.end(); ++iter ){
+      for (std::map<unsigned long, std::string>::const_iterator iter = motorIds.begin();
+          iter != motorIds.end(); ++iter) {
         std::cout << iter->first << '\t' << iter->second << '\n';
       }
       std::cout << std::endl;
     }
 
-    void SimEntity::printControllers()
-    {
+    void SimEntity::printControllers() {
       std::cout << "Controllers of Robot " << name << ":\n";
-      for(size_t i = 0; i < controllerIds.size(); i++){
+      for (size_t i = 0; i < controllerIds.size(); i++) {
         std::cout << controllerIds.at(i) << std::endl;
       }
     }
