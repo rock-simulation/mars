@@ -96,12 +96,6 @@ set(HEADERS
            src/PostDrawCallback.h
            src/QtOsgMixGraphicsWidget.h
            
-           src/wrapper/OSGDrawItem.h
-           src/wrapper/OSGHudElementStruct.h
-           src/wrapper/OSGLightStruct.h
-           src/wrapper/OSGMaterialStruct.h
-           src/wrapper/OSGNodeStruct.h
-           
            src/3d_objects/AxisPrimitive.h
            src/3d_objects/CapsuleDrawObject.h
            src/3d_objects/Clouds.h
@@ -117,15 +111,9 @@ set(HEADERS
            src/3d_objects/TerrainDrawObject.h
            src/3d_objects/VertexBufferTerrain.h
            src/3d_objects/MarsVBOGeom.h
+
            src/3d_objects/MultiResHeightMapRenderer.h
-           src/2d_objects/HUDElement.h
-           src/2d_objects/HUDNode.h
-           src/2d_objects/HUDLabel.h
-           src/2d_objects/HUDLines.h
-           src/2d_objects/HUDTerminal.h
-           src/2d_objects/HUDTexture.h
-           src/2d_objects/HUDOSGNode.h
-           
+
            src/shader/bumpmapping.h
            src/shader/pixellight.h
            src/shader/shader-generator.h
@@ -134,6 +122,25 @@ set(HEADERS
            src/shader/texgen.h
 
            src/shadow/ShadowMap.h
+)
+
+set(HEADERS_2D
+           src/2d_objects/HUDElement.h
+           src/2d_objects/HUDNode.h
+           src/2d_objects/HUDLabel.h
+           src/2d_objects/HUDLines.h
+           src/2d_objects/HUDTerminal.h
+           src/2d_objects/HUDTexture.h
+           src/2d_objects/HUDOSGNode.h
+           
+)
+
+set(HEADERS_WRAPPER
+           src/wrapper/OSGDrawItem.h
+           src/wrapper/OSGHudElementStruct.h
+           src/wrapper/OSGLightStruct.h
+           src/wrapper/OSGMaterialStruct.h
+           src/wrapper/OSGNodeStruct.h
 )
 
 set(QT_MOC_HEADERS
@@ -245,6 +252,8 @@ install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/graphics)
+install(FILES ${HEADERS_2D} DESTINATION include/mars/graphics/2d_objects)
+install(FILES ${HEADERS_WRAPPER} DESTINATION include/mars/graphics/wrapper)
 
 # Prepare and install necessary files to support finding of the library 
 # using pkg-config
