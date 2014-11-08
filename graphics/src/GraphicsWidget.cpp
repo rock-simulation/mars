@@ -1077,6 +1077,12 @@ namespace mars {
       mouseX = ea.getX();
       mouseY = ea.getY();
 
+      /*
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
+      }
+      */
+
       // wrap events to class methods
       switch (ea.getEventType()) {
       case osgGA::GUIEventAdapter::KEYDOWN :
@@ -1090,6 +1096,8 @@ namespace mars {
         return handleKeyUpEvent(ea);
       case osgGA::GUIEventAdapter::PUSH :
         return handlePushEvent(ea);
+      case osgGA::GUIEventAdapter::MOVE :
+        return handleMoveEvent(ea);
       case osgGA::GUIEventAdapter::DRAG :
         return handleDragEvent(ea);
       case osgGA::GUIEventAdapter::SCROLL:
@@ -1135,6 +1143,12 @@ namespace mars {
     bool GraphicsWidget::handleReleaseEvent(const osgGA::GUIEventAdapter& ea,
                                             osgGA::GUIActionAdapter& aa) {
       // *** Picking ***
+
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->mouseRelease(ea.getX(), ea.getY(),
+                                              ea.getButtonMask());
+      }
+
 
       if(!isMouseMoving) {
         for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
@@ -1270,6 +1284,11 @@ namespace mars {
 
       unsigned int modKey = ea.getModKeyMask();
 
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->mousePress(ea.getX(), ea.getY(),
+                                            ea.getButtonMask());
+      }
+
       // we already are in camera move mode and therefore
       // do not want to enter pick mode
       if(isMouseButtonDown == true) {
@@ -1289,10 +1308,21 @@ namespace mars {
     }
 
     bool GraphicsWidget::handleDragEvent(const osgGA::GUIEventAdapter &ea) {
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
+      }
+
       if (isMouseButtonDown && pickmode == DISABLED) {
         graphicsCamera->mouseDrag(ea.getButtonMask(),
                                   (int)ea.getX(), (int)ea.getY());
         isMouseMoving = true;
+      }
+      return false;
+    }
+
+    bool GraphicsWidget::handleMoveEvent(const osgGA::GUIEventAdapter &ea) {
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
       }
       return false;
     }

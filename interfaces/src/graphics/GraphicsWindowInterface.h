@@ -79,6 +79,7 @@ namespace mars {
       virtual void getRTTDepthData(float *buffer, int &width, int &height) = 0;
       virtual void getRTTDepthData(float **data, int &width, int &height) = 0;      
       virtual osg::Group* getScene() = 0;
+      virtual void setScene(osg::Group *scene) = 0;
       virtual void addGraphicsEventHandler(GraphicsEventInterface *graphicsEventHandler) = 0;
 
       virtual void setHUDViewOffsets(double x1, double y1,

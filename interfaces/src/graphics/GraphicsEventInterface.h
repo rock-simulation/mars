@@ -45,6 +45,10 @@ namespace mars {
                                       int left, int top,
                                       int width, int height) {}
       virtual void emitPickEvent(int x, int y) {}
+      virtual void mouseMove(int x, int y) {}
+      virtual void mousePress(int x, int y, int button) {}
+      virtual void mouseRelease(int x, int y, int button) {}
+
     }; // end of class GraphicsEventInterface
 
   } // end of namespace interfaces

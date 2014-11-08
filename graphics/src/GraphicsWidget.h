@@ -195,6 +195,9 @@ namespace mars {
       virtual osg::Group* getScene(){
         return scene;
       }
+      virtual void setScene(osg::Group *s) {
+        scene = s;
+      }
 
       virtual void setHUDViewOffsets(double x1, double y1,
                                      double x2, double y2);
@@ -302,6 +305,7 @@ namespace mars {
 
       bool handleKeyUpEvent(const osgGA::GUIEventAdapter &ea);
       bool handlePushEvent(const osgGA::GUIEventAdapter &ea);
+      bool handleMoveEvent(const osgGA::GUIEventAdapter &ea);
       bool handleDragEvent(const osgGA::GUIEventAdapter &ea);
       bool handleScrollEvent(const osgGA::GUIEventAdapter &ea);
 
