@@ -58,7 +58,7 @@ function forAllPackagesDo {
             elif [[ ${package} = "rock/base-types" ]]; then
                 ${action}_package ${package} "https://github.com/rock-core/base-types.git" "https://github.com/rock-core/base-types.git"
             else
-                ${action}_package ${package} "git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git" "git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
+                ${action}_package ${package} "git@git.hb.dfki.de:mars/${package##*/}.git" "git://git.hb.dfki.de/mars/${package##*/}.git"
             fi
         fi
         if [[ x${MARS_SCRIPT_ERROR} != x && ${MARS_SCRIPT_ERROR} != 0 ]]; then
@@ -235,10 +235,10 @@ function fetch_package {
         cd ${MARS_DEV_ROOT}/${package%/*}
         if ${PUSH}; then
             CLONE_ADDR=${push_addr}
-            #"git@spacegit.dfki.uni-bremen.de:mars/${package##*/}.git"
+            #"git@git.hb.dfki.de:mars/${package##*/}.git"
         else
             CLONE_ADDR=${read_addr}
-            #"git://spacegit.dfki.uni-bremen.de/mars/${package##*/}.git"
+            #"git://git.hb.dfki.de/mars/${package##*/}.git"
         fi
         CLONE_ERROR=0
         git clone ${CLONE_ADDR} || CLONE_ERROR=1;
