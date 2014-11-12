@@ -88,10 +88,11 @@ namespace mars {
         // PathDrawer methods
 
       private:
-        cfg_manager::cfgPropertyStruct obj_file_struct;
+        cfg_manager::cfgPropertyStruct obj_file_struct, svg_file_struct;
         osg_lines::Lines *l;
 
         void addVectorsFromObjFile(std::string file_name);
+        void addVectorsFromSvgFile(std::string file_name);
 
       }; // end of class definition PathDrawer
 
