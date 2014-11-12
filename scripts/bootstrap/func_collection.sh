@@ -378,11 +378,12 @@ function fetch_opencv() {
     mkdir -p ${MARS_DEV_ROOT}/external
     cd ${MARS_DEV_ROOT}/external
     if $MSYS; then
-        if [ ! -e "OpenCV-2.3.0-win-src.zip" ]; then
-            wget http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3/OpenCV-2.3.0-win-src.zip
+        if [ ! -e "opencv-2.3.0.zip" ]; then
+            #wget http://sourceforge.net/projects/opencvlibrary/files/opencv-win/2.3/OpenCV-2.3.0-win-src.zip
+			wget --no-check-certificate --output-document=opencv-2.3.0.zip https://github.com/Itseez/opencv/archive/2.3.0.zip
         fi
-        if [ ! -d "OpenCV-2.3.0" ]; then 
-            unzip OpenCV-2.3.0-win-src.zip
+        if [ ! -d "opencv-2.3.0.zip" ]; then 
+            unzip opencv-2.3.0.zip
         fi
     #wget http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.3.1/OpenCV-2.3.1a.tar.bz2/download
     #tar -xjvf OpenCV-2.3.1a.tar.bz2
@@ -472,7 +473,7 @@ function patch_opencv {
     setScriptDir
     setupConfig
     patch -N -p0 -d ${MARS_DEV_ROOT}/external -i ${MARS_SCRIPT_DIR}/patches/OpenCV-2.3.0.patch
-    printBold "... done patching external/OpenCV-2.3.0."
+    printBold "... done patching external/OpenCV-2.3.0"
 }
 
 function patch_eigen {
@@ -604,7 +605,7 @@ function install_opencv {
     fi
     # on MSYS opencv chokes on build with many CORES
     if ${MSYS}; then
-        make install -j2 || MARS_SCRIPT_ERROR=1
+        make install -j1 || MARS_SCRIPT_ERROR=1
     else
         make install -j${CORES} || MARS_SCRIPT_ERROR=1
     fi
