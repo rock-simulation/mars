@@ -54,7 +54,7 @@ namespace mars {
         // get or create the cfg property
         string def_name = "path/path.obj";
         obj_file_struct = control->cfg->getOrCreateProperty("PathDrawer", "obj_file", def_name, this);
-        printf("[path drawer] obj: %s\n", obj_file_struct.sValue.c_str());
+        printf("[PathDrawer] init: obj: %s\n", obj_file_struct.sValue.c_str());
 
         if(obj_file_struct.sValue == ""){
           addVectorsFromObjFile(def_name);
@@ -65,7 +65,7 @@ namespace mars {
         // get or create the cfg property
         def_name = "obstacle_course/config_obstacle_course.svg";
         svg_file_struct = control->cfg->getOrCreateProperty("PathDrawer", "svg_file", def_name, this);
-        printf("[path drawer] svg: %s\n", svg_file_struct.sValue.c_str());
+        printf("[PathDrawer] init: svg: %s\n", svg_file_struct.sValue.c_str());
 
         if(svg_file_struct.sValue == ""){
           addVectorsFromSvgFile(def_name);
