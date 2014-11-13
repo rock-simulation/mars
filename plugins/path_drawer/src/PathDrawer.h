@@ -93,6 +93,7 @@ namespace mars {
 
         void addVectorsFromObjFile(std::string file_name);
         void addVectorsFromSvgFile(std::string file_name);
+        mars::interfaces::sReal getHeightFromScene(mars::interfaces::sReal x, mars::interfaces::sReal y);
 
       }; // end of class definition PathDrawer
 

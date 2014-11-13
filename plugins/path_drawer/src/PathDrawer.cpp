@@ -152,7 +152,7 @@ namespace mars {
           bool in_path = false;
           bool search_for_size = true;
           sReal size[2] = {0.0, 0.0};
-
+          bool path_found = false;
           while ( getline (file, line) ) {
             //printf("%s\n", line.c_str());
 
@@ -198,6 +198,7 @@ namespace mars {
                 if(   min( start, min( points, label ) ) == start
                   &&  max( end, max( points, label ) ) == end){
                   // we found what we were looking for
+                  path_found = true;
                   break;
                 }
               }
@@ -208,6 +209,10 @@ namespace mars {
             }
 
             ++line_cnt;
+          }
+
+          if(!path_found){
+            return;
           }
 
           // get the path information
@@ -270,7 +275,7 @@ namespace mars {
               }else if(ignore){
                 //printf("ignoring '%c'\n", *it);
               }else if(*it == 'e'){
-                ignore = true;
+                ignore = true;  // this indicates a very small number, so ignore the rest and handle it
               }else if(*it == 'L'){
                 absolute_coordinates = true;
               }else if(*it == 'l'){
@@ -290,7 +295,7 @@ namespace mars {
                     v[0] += x;
                     v[1] -= y;
                   }
-                  v[2] = 0.0;
+                  v[2] = getHeightFromScene(v[0], v[1]);
                   //printf("adding point %g / %g\n", v[0], v[1]);
                   l->appendData(osg_lines::Vector(v[0], v[1], v[2]));
 
@@ -312,6 +317,14 @@ namespace mars {
         control->graphics->addOSGNode(l->getOSGNode());
       }
 
+      sReal PathDrawer::getHeightFromScene(sReal x, sReal y){
+        PhysicsInterface* physics = control->sim->getPhysics();
+        const utils::Vector ray_origin(x, y, 10.0);
+        const utils::Vector ray_vector(0.0, 0.0, -20);
+        sReal value = 10.0 - physics->getVectorCollision(ray_origin, ray_vector);
+
+        return value;
+      }
     } // end of namespace path_drawer
   } // end of namespace plugins
 } // end of namespace mars
