@@ -139,7 +139,8 @@ namespace mars {
       }
 
       void PathDrawer::addVectorsFromSvgFile(string file_name){
-        printf("parsing svg file '%s'\n", file_name.c_str());
+        printf("[PathDrawer] parsing svg file '%s'\n", file_name.c_str());
+        sReal m_above_ground = 0.1;
         ifstream file;
         file.open (file_name.c_str());
         if (file.is_open()){
@@ -171,7 +172,7 @@ namespace mars {
 
               if(size[0] > 0.001 && size[1] > 0.001){
                 search_for_size = false;
-                printf("[PathDrawer] svg width %g, height %g\n", size[0], size[1]);
+                //printf("[PathDrawer] svg width %g, height %g\n", size[0], size[1]);
               }
             }
 
@@ -212,22 +213,25 @@ namespace mars {
           }
 
           if(!path_found){
+            fprintf(stderr, "[PathDrawer] no path 'path_to_follow' in svg file\n");
             return;
           }
 
           // get the path information
           sReal v[3], offset[2];
+          bool absolute_coordinates = false;
           unsigned offset_pos_start = line_to_parse.find("d=\"m") + 5;
           if(offset_pos_start < 6 || offset_pos_start > 15){  // valid range
             printf("searching fro M\n");
             offset_pos_start = line_to_parse.find("d=\"M") + 5;
+            absolute_coordinates = true;
           }
 
           unsigned offset_pos_end = line_to_parse.find(" ", offset_pos_start);
           unsigned offset_delimiter = line_to_parse.find(",", offset_pos_start);
           printf("[PathDrawer] SVG line offset pos start %d, delimiter %d, end %d\n", offset_pos_start, offset_delimiter, offset_pos_end);
-          printf("[PathDrawer] SVG OffsetX = %s\n", line_to_parse.substr(offset_pos_start, offset_delimiter-offset_pos_start).c_str());
-          printf("[PathDrawer] SVG OffsetY = %s\n", line_to_parse.substr(offset_delimiter+1, offset_pos_end-offset_delimiter-1).c_str());
+          //printf("[PathDrawer] SVG OffsetX = %s\n", line_to_parse.substr(offset_pos_start, offset_delimiter-offset_pos_start).c_str());
+          //printf("[PathDrawer] SVG OffsetY = %s\n", line_to_parse.substr(offset_delimiter+1, offset_pos_end-offset_delimiter-1).c_str());
 
           offset[0] = (sReal) atof(line_to_parse.substr(offset_pos_start, offset_delimiter-offset_pos_start).c_str());
           offset[1] = (sReal) atof(line_to_parse.substr(offset_delimiter+1, offset_pos_end-offset_delimiter-1).c_str());
@@ -235,18 +239,17 @@ namespace mars {
           // draw the first point
           v[0] = offset[0];
           v[1] = size[1]- offset[1];
-          v[2] = 0.0;
+          v[2] = getHeightFromScene(v[0], v[1]) + m_above_ground;
           l->appendData(osg_lines::Vector(v[0], v[1], v[2]));
 
           string val_str = line_to_parse.substr(offset_pos_end);
-          printf("%s\n", val_str.c_str());
+          //printf("%s\n", val_str.c_str());
           bool x_read = false;
           bool y_read = false;
           string x_str = "";
           string y_str = "";
           string* p = &x_str;
           bool ignore = false;
-          bool absolute_coordinates = true;
           // go through the line and get all points
           for(string::iterator it = val_str.begin() + 1; it != val_str.end(); ++it){
             //printf("%c\n", *it);
@@ -295,7 +298,7 @@ namespace mars {
                     v[0] += x;
                     v[1] -= y;
                   }
-                  v[2] = getHeightFromScene(v[0], v[1]);
+                  v[2] = getHeightFromScene(v[0], v[1]) + m_above_ground;
                   //printf("adding point %g / %g\n", v[0], v[1]);
                   l->appendData(osg_lines::Vector(v[0], v[1], v[2]));
 
