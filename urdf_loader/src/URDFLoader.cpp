@@ -48,89 +48,130 @@ namespace mars {
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(marsSim) {
         control = marsSim->getControlCenter();
-        control->loadCenter->loadScene[".zsmurf"] = this;
-        control->loadCenter->loadScene[".smurf"] = this;
-        control->loadCenter->loadScene[".urdf"] = this;
-        LOG_INFO("urdf_loader: added urdf loader to loadCenter");
-        //control->loadCenter->loadScene[".yaml"] = this;
-        //control->loadCenter->loadScene[".yml"] = this;
+        control->loadCenter->loadScene[".zsmurf"] = this; // zipped smurf model
+        control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
+        control->loadCenter->loadScene[".smurf"] = this; // smurf model
+        control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
+        control->loadCenter->loadScene[".urdf"] = this; // urdf model
+        LOG_INFO("urdf_loader: added SMURF loader to loadCenter");
       }
     }
 
     URDFLoader::~URDFLoader() {
       if(control) {
         control->loadCenter->loadScene.erase(".zsmurf");
+        control->loadCenter->loadScene.erase(".zsmurfs");
         control->loadCenter->loadScene.erase(".smurf");
+        control->loadCenter->loadScene.erase(".smurfs");
         control->loadCenter->loadScene.erase(".urdf");
-        //control->loadCenter->loadScene.erase(".yaml");
-        //control->loadCenter->loadScene.erase(".yml");
         libManager->releaseLibrary("mars_sim");
       }
     }
 
+    /**
+       * Loads a URDF, SMURF or SMURFS (SMURF scene) file.
+       * @param filename The name of the file to be loaded as a full path.
+       * @param tmpPath The path to the temporary directory to which files should be unzipped
+       *        if the file format requires it.
+       * @param robotname This parameter is obsolete with URDF and SMURF and was only
+       *        needed for MARS scenes. It may be removed in the future.
+       * @return 1 if the file was successfully loaded, 0 otherwise
+       */
+    //TODO: remove parameter "robotname"
     bool URDFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
-      std::string filename_ = filename;
-
-      if (robotname != "") {
-        control->entities->addEntity(robotname);
-      }
-
       LOG_INFO("urdf_loader: prepare loading");
 
-      std::string mFileSuffix = utils::getFilenameSuffix(filename);
+      // split up filename in path + _filename and retrieve file extension
+      std::string file_extension = utils::getFilenameSuffix(filename);
+      std::string path = utils::getPathOfFile(filename);
+      std::string _filename = filename;
+      utils::removeFilenamePrefix(&_filename);
 
       // need to unzip into a temporary directory
-      if (mFileSuffix == ".zsmurf") {
+      if (file_extension == ".zsmurf" or file_extension == ".zsmurfs") {
         if (unzip(tmpPath, filename) == 0) {
+          path = tmpPath;
           return 0;
         }
-        mFileSuffix = ".smurf";
-      } else {
-        // can parse file without unzipping
-        tmpPath = utils::getPathOfFile(filename);
       }
-
-      utils::removeFilenamePrefix(&filename_);
-      utils::removeFilenameSuffix(&filename_);
 
       unsigned int mapIndex;
-      mapIndex= control->loadCenter->getMappedSceneByName(filename);
+      mapIndex= control->loadCenter->getMappedSceneByName(path+_filename);
       if (mapIndex == 0) {
-        control->loadCenter->setMappedSceneName(filename);
-        mapIndex = control->loadCenter->getMappedSceneByName(filename);
+        control->loadCenter->setMappedSceneName(path+_filename);
+        mapIndex = control->loadCenter->getMappedSceneByName(path+_filename);
       }
-      std::string sceneFilename = tmpPath + filename_ + mFileSuffix;
 
-      Load loadObject(control, tmpPath, robotname, mapIndex);
-
-
-      mFileSuffix = utils::getFilenameSuffix(filename);
-      if(mFileSuffix == ".smurf") {
+      if (file_extension != ".urdf") { // if suffix is "smurf" or "smurfs"
+        std::vector<utils::ConfigMap> smurfs; // a list of the smurfs found in a smurf scene
         std::string file;
-        utils::ConfigMap map = utils::ConfigMap::fromYamlFile(filename);
-        utils::ConfigVector::iterator it = map["files"].begin();
-        for(; it!=map["files"].end(); ++it) {
-          file = (std::string)(*it);
-          mFileSuffix = utils::getFilenameSuffix(file);
-          if(mFileSuffix == ".urdf") {
-            loadObject.parseURDF(tmpPath + file);
+        utils::ConfigMap map;
+        utils::ConfigVector::iterator it;
+        fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
+        if(file_extension == ".smurfs") {
+          // retrieve all smurfs from a smurf scene file
+          map = utils::ConfigMap::fromYamlFile(path+_filename);
+          for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
+            smurfs.push_back((*it).children);
           }
-          else if(mFileSuffix == ".yml") {
-            utils::ConfigMap m2 = utils::ConfigMap::fromYamlFile(tmpPath+file);
-            loadObject.addConfigMap(m2);            
+        } else if(file_extension == ".smurf") {
+          // if we have only one smurf, only one with rudimentary data is added to the smurf list
+            map["URI"] = _filename;
+            map["name"] = "";
+            smurfs.push_back(map);
+        }
+        fprintf(stderr, "Reading in smurfs...\n");
+        for (std::vector<utils::ConfigMap>::iterator sit = smurfs.begin();
+            sit != smurfs.end(); ++sit) {
+          utils::ConfigMap entitydata = *sit;
+          fprintf(stderr, "Reading smurf from path: %s\n", (path+(std::string)entitydata["URI"]).c_str());
+          map = utils::ConfigMap::fromYamlFile(path + (std::string)entitydata["URI"]);
+          map.toYamlFile("smuf_debugmap.yml");
+          // if we only load one smurf, we use the name provided in the .smurf file
+          fprintf(stderr, "map_name: %s\n", ((std::string)map["name"]).c_str());
+          if ((std::string)entitydata["name"] == "") {
+            entitydata["name"] = (std::string)map["modelname"];
           }
-          else {
-            fprintf(stderr, "URDFLoader: %s not yet implemented",
-                    mFileSuffix.c_str());
+          fprintf(stderr, "  ...creating smurf %s.\n", ((std::string)entitydata["name"]).c_str());
+          robotname = (std::string)entitydata["name"];
+          fprintf(stderr, "  ...creating entity \"%s\".\n", (robotname).c_str());
+          control->entities->addEntity(robotname);
+          // create a load object with the correct relative path
+          Load loadObject(control, path, robotname, mapIndex);
+          loadObject.setEntityConfig(entitydata);
+          std::string urdfpath = "";
+          for(it = map["files"].begin(); it!=map["files"].end(); ++it) {
+            file = (std::string)(*it);
+            file_extension = utils::getFilenameSuffix(file);
+            if(file_extension == ".urdf") {
+              urdfpath = path + file;
+            }
+            else if(file_extension == ".yml") {
+              utils::ConfigMap m2 = utils::ConfigMap::fromYamlFile(path+file);
+              loadObject.addConfigMap(m2);
+            }
+            else {
+              fprintf(stderr, "URDFLoader: %s not yet implemented",
+                      file_extension.c_str());
+            }
           }
+          if (urdfpath != "") {
+            fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
+            loadObject.parseURDF(urdfpath);
+          }
+          loadObject.load();
         }
       }
-      else {
+      else { // if file_extension is "urdf"
+        //todo create entity and get real robotname
+        robotname="";
+        Load loadObject(control, path, robotname, mapIndex);
         loadObject.parseURDF(filename);
+        loadObject.load();
       }
 
-      return loadObject.load();
+      return 1; //TODO: check number of successfully loaded entities before returning 1
     }
 
     int URDFLoader::saveFile(std::string filename, std::string tmpPath) {
