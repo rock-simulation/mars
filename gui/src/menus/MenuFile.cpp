@@ -121,11 +121,14 @@ namespace mars {
      * opens a saved file
      */
     void MenuFile::menu_openSceneFile() {
-      const char *fileTypes = "All supported files (*.scn *.zip *.scene *.smurf *.zsmurf *.urdf)"
+      const char *fileTypes = "All supported files (*.scn *.zip *.scene *.smurf *smurfs *.zsmurf *.zsmurfs *.urdf)"
         ";;MARS zipped scene files (*.scn *.zip)"
 		";;MARS scene files (*.scene)"
     	";;URDF files (*.urdf)"
 	    ";;SMURF files (*.smurf)"
+      ";;zipped SMURF files (*.zsmurf)"
+      ";;SMURF scene files (*.smurfs)"
+      ";;zipped SMURF scene files (*.smurfs)"
 		";;YAML files (*.yaml *.yml)"
         ";;All files (*.*)";
       QString fileName = QFileDialog::getOpenFileName(0, "Open Scene", ".", 
