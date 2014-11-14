@@ -50,7 +50,7 @@ scale.  You will notice that the scale in "object mode" is back to (1,
 1, 1).  Alternatively you can select this option from the menu
 object->apply->scale
 
-![Object Menu](screenshots/object_menu.png)
+![Object Menu](../images/tutorials/basic_modeling/object_menu.png)
 
 ## Building the Model
 
@@ -61,12 +61,12 @@ object->apply->scale
 2. Rename the object (e.g. "Body") this can be done in the object
    property window.
 
-   ![Renaming an object](screenshots/rename_object2.png)
+   ![Renaming an object](../images/tutorials/basic_modeling/rename_object2.png)
 
 3. Choose a color by selecting a diffuse and/or specular color in the
    material property window.
 
-   ![Material properties](screenshots/material.png)
+   ![Material properties](../images/tutorials/basic_modeling/material.png)
 
 4. It is convenient to have the model on a different layer than the
    camera and lights.  Therefore we move it to a different layer by
@@ -77,7 +77,7 @@ object->apply->scale
 5. Create a sphere that will serve as a wheel.  In the Menu select
    "Add->Mesh->UV Sphere" and name the object (e.g., "Wheel.000").
 
-   ![Create Sphere](screenshots/create_sphere2.png)
+   ![Create Sphere](../images/tutorials/basic_modeling/create_sphere2.png)
 
 6. Scale the sphere to an appropriate size (we used 0.1 in all
    dimensions)
@@ -88,7 +88,7 @@ object->apply->scale
 8. Create a new material by pressing "new" in the material property
    window
 
-   ![New Material](screenshots/new_material.png)
+   ![New Material](../images/tutorials/basic_modeling/new_material.png)
 
 9. Set material properties for the wheel/sphere.
 
@@ -109,7 +109,7 @@ object->apply->scale
     object.  Create two custom properties in the "object property"
     window.
     
-    ![Joint](images/screenshots/joint.png)
+    ![Joint](../images/tutorials/basic_modeling/joint.png)
 
     For the first custom property press edit to set the "property
     name" to "type" and the "property value" to "joint" for the second
@@ -128,7 +128,7 @@ object->apply->scale
 
 13. Turn the timeline into a text editor
 
-    ![Text Editor](screenshots/text_editor.png)
+    ![Text Editor](../images/tutorials/basic_modeling/text_editor.png)
 
 14. By selecting the menu "text->Open Text Block" in the text editor
     open the "create_mars_props.py" script from
@@ -165,7 +165,7 @@ object->apply->scale
     should be an empty directory because bside the .scn file the .obj
     and .scene files are also exported for debuging purposes.
 
-    ![World Properties](screenshots/world_properties.png)
+    ![World Properties](../images/tutorials/basic_modeling/world_properties.png)
 
 21. Load the "relative_mars_export.py" from
     ~/devel/mars/scripts/blender/ in the text editor window.
@@ -196,7 +196,7 @@ existing scene.
     move it to the middle of the body ("g" for grab; "x" to constrain
     the movement to the x-axis; "0.25" to move it to the middle)
 
-    ![New Wheels](screenshots/new_wheels.png)
+    ![New Wheels](../images/tutorials/basic_modeling/new_wheels.png)
 
 26. Adjust the custom property "node2" of the new joint helper objects
     to let them point to the new wheels.

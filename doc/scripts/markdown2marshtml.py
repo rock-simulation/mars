@@ -173,10 +173,11 @@ def convertMdToHtml(linklist, f):
             url_start = altLine.find('src="') + 5
             url_end = altLine.find('"', url_start)
             url = altLine[url_start:url_end]
-            image_filename = "../" + url.replace("../", "")
+            image_filename = url.replace("../", "../src/")
             #print image_filename
             try:
                 im = Image.open(image_filename)
+                print "Rescaling image:", image_filename
                 width, height = im.size
                 ratio = height*1.0 / width*1.0
                 img_width = 900
@@ -188,7 +189,7 @@ def convertMdToHtml(linklist, f):
                 altLine = altLine.replace("<img src=", "<img " + 'width="' + str(int(output_width)) + '" height="' +str(int(ratio*output_width)) + '" src=')
             except IOError:
                 print "Image could not be loaded:", fileName, "-", image_filename
-            altLine = altLine.replace(url, "../" * (n_level) + url.replace("../",""))
+            altLine = altLine.replace(url, "../" * (n_level) + image_filename.replace("../",""))
         alt_bodyString += altLine+"\n"
 
     #output
