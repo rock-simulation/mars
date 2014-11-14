@@ -27,12 +27,14 @@ def safe_mkdir(path):
         os.makedirs(path)
 
 doxygen_list = []
+liblist = []
 print "Detecting *.md files describing sub-projects..."
 for root, dirs, files in os.walk("../../"):
     for d in dirs:
         if d == "doc":
             for f in os.listdir(os.path.join(root, d)):
                 if f.endswith(".md") and f[0:-3] == os.path.basename(root):
+                    # set up doxgen
                     print root
                     subproject = os.path.basename(root)
                     safe_mkdir(root+"/doc/doxygen")
@@ -40,14 +42,24 @@ for root, dirs, files in os.walk("../../"):
                     shutil.copy("../src/css/mars_doxygen.css", root+"/doc/src/css")
                     configfile_path = root+"/doc/doxygen/"+subproject+"_doxyconf"
                     shutil.copyfile("../src/subproject_doxygen_template/subproject_doxyconf", configfile_path )
-                    with open(configfile_path, 'r') as f:
-                        doxy_cfg = f.read()
+                    with open(configfile_path, 'r') as cf:
+                        doxy_cfg = cf.read()
                     subproject_title = subproject.replace("_", " ").title()
                     doxy_cfg = doxy_cfg.replace("@subproject_title", '"'+subproject_title+'"')                    
                     doxy_cfg = doxy_cfg.replace("@subproject", subproject)
-                    with open(configfile_path, 'w') as f:
-                        f.write(doxy_cfg)
-                    doxygen_list.append(configfile_path)   
+                    with open(configfile_path, 'w') as cf:
+                        cf.write(doxy_cfg)
+                    doxygen_list.append(configfile_path)
+                    # include markdown in mars doxygen
+                    with open(os.path.join(root, d, f), 'r') as docfile:
+                        docheader = docfile.readline()
+                        liblist.append(docheader[docheader.find('{')+2 : docheader.find('}')])
+# create library overview
+with open("../src/libraries.md", 'w') as libfile:
+    libfile.write("MARS Libraries {#libraries}\n==============\n\n")
+    for libname in liblist:
+        libfile.write("* \subpage " + libname + "\n")
+# handle doxygen
 print "\n", len(doxygen_list), "doxygen configurations were created:"
 for d in doxygen_list:
     print d
