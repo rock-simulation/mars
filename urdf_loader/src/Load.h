@@ -55,6 +55,7 @@ namespace mars {
       unsigned int parseURDF(std::string filename);
       unsigned int load();
       void addConfigMap(utils::ConfigMap &config);
+      void setEntityConfig(const utils::ConfigMap &config);
 
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;
@@ -84,6 +85,7 @@ namespace mars {
       //std::map<std::string, std::string> smurffiles;
       unsigned int mapIndex; // index of loaded scenes
       utils::ConfigMap debugMap;
+      utils::ConfigMap entityconfig;
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
 

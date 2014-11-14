@@ -130,6 +130,10 @@ namespace mars {
       }
     }
 
+    void Load::setEntityConfig(const utils::ConfigMap &config) {
+      entityconfig = config;
+    }
+
     void Load::addConfigMap(utils::ConfigMap &config) {
       utils::ConfigVector::iterator it;
       for(it = config["motors"].begin(); it!=config["motors"].end(); ++it) {
