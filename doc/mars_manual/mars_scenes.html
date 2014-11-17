@@ -17,7 +17,8 @@
                      <li><a href="../mars_manual/index.html">Home</a></li>
                      <li>Common</li>
 <ul>
-  <li><a href="../mars_manual/common/data_broker/data_broker.html">Data Broker</a></li>
+  <li><a href="../mars_manual/common/utils/utils.html">Utils</a></li>
+    <li><a href="../mars_manual/common/data_broker/data_broker.html">Data Broker</a></li>
     <li><a href="../mars_manual/common/lib_manager/lib_manager.html">Lib Manager</a></li>
 </ul>
     <li><a href="../mars_manual/libraries.html">Libraries</a></li>
@@ -37,10 +38,14 @@
 <li><a href="../mars_manual/installation.html">Installation</a></li>
 <li>Tutorials</li>
 <ul>
-  <li><a href="../mars_manual/tutorials/plugin_tutorial.html">Plugin Tutorial</a></li>
+  <li><a href="../mars_manual/tutorials/plugins.html">Plugins</a></li>
   <li><a href="../mars_manual/tutorials/building_mars.html">Building Mars</a></li>
   <li><a href="../mars_manual/tutorials/advanced_modeling.html">Advanced Modeling</a></li>
   <li><a href="../mars_manual/tutorials/basic_modeling.html">Basic Modeling</a></li>
+  <li>Plugins</li>
+  <ul>
+    <li><a href="../mars_manual/plugins/obstacle_generator/obstacle_generator.html">Obstacle Generator</a></li>
+</ul>
 </ul>
 
                    </ol>
@@ -861,7 +866,13 @@
     &lt;b&gt;            
   &lt;transparency&gt;
   &lt;shininess&gt;
-  &lt;texturename&gt;</code></pre>
+  &lt;texturename&gt;
+  &lt;reflect&gt;
+  &lt;bumpmap&gt;
+  &lt;tex_scale&gt;
+  &lt;brightness&gt;
+  &lt;getLight&gt;
+  &lt;cullMask&gt;</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -968,8 +979,8 @@
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">fogend</td>
-<td align="left">distance where the fod ends</td>
+<td align="left">fogEnd</td>
+<td align="left">distance where the fog ends</td>
 <td align="left"></td>
 </tr>
 <tr class="even">
