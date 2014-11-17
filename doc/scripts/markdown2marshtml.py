@@ -6,28 +6,42 @@ import subprocess
 #import re #regular expressions
 from PIL import Image    
 
+def compareLists(a, b):
+    lena = len(a)
+    lenb = len(b)
+    different = 0
+    for i in range(min(lena, lenb)):
+        if a[i] != b[i]:
+            different += 1
+    return different + abs(lena-lenb)
+    
+
 def createHeader(relPath, linklist, fileName, local_links):
     # create linklist
     li_list = ""
     indent = 0
+    prevdirs = []
     for f in linklist:
         if f["fileName"] == "index.md" or f["outPath"].find("/groups/") >= 0:
             continue
         
-        n_subfolders = f["outPath"][3:].count("/")-1
-        #print f["outPath"], f["fileName"], indent, n_subfolders
+        dirs = f["outPath"][3:].split("/")[:-1]
+        n_subfolders = len(dirs)
+        print prevdirs, dirs, compareLists(dirs, prevdirs)
+        diff = compareLists(dirs, prevdirs)
+        if diff > 1 and dirs != []:
+            li_list += '</ul>\n'
         if n_subfolders > indent:
             if (n_subfolders-indent) == 1:
-                dirs = f["outPath"][3:].split("/")[:-1]
                 li_list += '  '*indent+ '<li>' + dirs[n_subfolders-indent].title() + '</li>\n'                
             if (n_subfolders-indent) > 1:
-                dirs = f["outPath"][3:].split("/")[:-1]
                 li_list += '  '*indent+ '<li>' + dirs[n_subfolders-indent-1].title() + '</li>\n'
             li_list += '  '*indent+'<ul>\n  '#*(n_subfolders-indent)
         elif n_subfolders < indent:
             li_list += '</ul>\n'*(indent-n_subfolders-1)
         li_list += '  '*indent + '<li><a href="' + relPath + os.path.join(f["outPath"][2:], f["fileName"][:-3]+".html") + '">' + f["fileName"][:-3].title().replace("_", " ") + '</a></li>\n'
         indent = n_subfolders
+        prevdirs = dirs
         if f["fileName"] == fileName: #if we have to add the local links:
             level = 1
             for ll in local_links:
