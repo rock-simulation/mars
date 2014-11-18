@@ -148,7 +148,7 @@ namespace mars {
       virtual void unlock() {iMutex.unlock();}
       virtual void rotateNode(interfaces::NodeId id, utils::Vector pivot,
                               utils::Quaternion q,
-                              unsigned long excludeJointId);
+                              unsigned long excludeJointId, bool includeConnected = true);
       virtual void positionNode(interfaces::NodeId id, utils::Vector pos,
                                 unsigned long excludeJointId);
       virtual unsigned long getMaxGroupID() { return maxGroupID; }

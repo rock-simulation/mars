@@ -32,6 +32,7 @@
 
 #include <string>
 #include <vector>
+#include <sstream>
 
 namespace mars {
   namespace utils {
@@ -56,6 +57,13 @@ namespace mars {
     inline float degToRad(const float &d)
     { return d * 0.017453292519943295769236907685f; }
 
+    template <typename T>
+      std::string numToStr ( T Number )
+      {
+         std::ostringstream ss;
+         ss << Number;
+         return ss.str();
+      }
 
     /**
      * @return current time in milliseconds

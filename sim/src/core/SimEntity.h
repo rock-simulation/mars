@@ -25,31 +25,42 @@
  *
  */
 
-
 #ifndef SIMENTITY_H
 #define SIMENTITY_H
+
+#include <mars/utils/ConfigData.h>
 #include <string>
 #include <set>
 #include <map>
 #include <vector>
 
 namespace mars {
+
   namespace sim {
 
-    class SimEntity
-    {
+    class SimEntity {
     public:
-      SimEntity(const std::string& _name);
+      SimEntity(const std::string& name);
+      SimEntity(const utils::ConfigMap& parameters);
 
-      /**adds a node to the robot*/
-      void addNode(unsigned long nodeId, const std::string &name);
+      void appendConfig(const utils::ConfigMap& parameters);
 
-      /**adds a moto to the robot*/
+      void removeEntity();
+
+      // adds a node to the robot
+      void addNode(unsigned long nodeId, const std::string& name);
+
+      // adds a joint to the robot
+      void addJoint(long unsigned int jointId, const std::string& name);
+
+      // adds a motor to the robot
       void addMotor(unsigned long motorId, const std::string& name);
 
+      // adds a controller to the robot
       void addController(unsigned long controllerId);
 
-      void addJoint(long unsigned int jointId, const std::string& name);
+      // adds a sensor to the robot
+      void addSensor(unsigned long sensorId, const std::string& name);
 
       /**notify the robot that a node has been selected
        * the robot will check if the node belongs to it
@@ -63,13 +74,17 @@ namespace mars {
        */
       bool deSelect(unsigned long nodeId);
 
-      /**returns the name of the robot*/
-      std::string getName(){return robotName;}
+      // returns the name of the robot
+      std::string getName() {
+        return name;
+      }
 
-      /**returns true if the robot is selected*/
-      bool isSelected(){return bSelected;}
+      // returns true if the robot is selected
+      bool isSelected() {
+        return selected;
+      }
 
-      /**returns true if the node is part of the robot*/
+      // returns true if the node is part of the robot
       bool belongsToRobot(unsigned long nodeId);
 
       /**returns the id of the node with the given name
@@ -77,7 +92,7 @@ namespace mars {
        */
       unsigned long getNode(const std::string &name);
 
-      /**returns the name of the node with the given id*/
+      // returns the name of the node with the given id
       std::string getNode(unsigned long id);
 
       /**returns the id of the motor with the given name
@@ -85,7 +100,7 @@ namespace mars {
        */
       unsigned long getMotor(const std::string &name);
 
-      /**returns the name of the motor with the given id*/
+      // returns the name of the motor with the given id
       std::string getMotor(long unsigned int id);
 
       std::vector<unsigned long> getControllerList();
@@ -94,31 +109,36 @@ namespace mars {
 
       std::string getJoint(unsigned long id);
 
-
       //debug functions
       void printNodes();
       void printMotors();
       void printControllers();
 
     private:
-      std::string robotName;
+      std::string name;
 
-      /**stores the ids of the nodes belonging to the robot*/
+      utils::ConfigMap config;
+
+      // stores the ids of the nodes belonging to the robot
       std::map<unsigned long, std::string> nodeIds;
 
-      /**stores the ids of the motors belonging to the robot*/
+      // stores the ids of the motors belonging to the robot
       std::map<unsigned long, std::string> motorIds;
 
+      // stores the ids of the controllers belonging to the robot
       std::vector<unsigned long> controllerIds;
 
-      /**stores the ids of the motors belonging to the robot*/
+      // stores the ids of the sensors belonging to the robot
+      std::map<unsigned long, std::string> sensorIds;
+
+      // stores the ids of the joints belonging to the robot
       std::map<unsigned long, std::string> jointIds;
 
-      /**the nodes that are currently selected*/
+      // the nodes that are currently selected
       std::set<unsigned long> selectedNodes;
 
-      /**the selection state of the robot; true if selected, false otherwise*/
-      bool bSelected;
+      // the selection state of the robot; true if selected, false otherwise
+      bool selected;
 
     };
 

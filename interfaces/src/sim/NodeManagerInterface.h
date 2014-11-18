@@ -768,7 +768,8 @@ namespace mars {
        * \param q The utils::Quaternion defining the rotation vector and angle.
        * \param excludeJointId ?
        */
-      virtual void rotateNode(NodeId id, utils::Vector pivot, utils::Quaternion q, unsigned long excludeJointId) = 0;
+      virtual void rotateNode(NodeId id, utils::Vector pivot, utils::Quaternion q,
+          unsigned long excludeJointId, bool includeConnected = true) = 0;
 
       /** Positions the node according to the provided vector.
        * \param id The \c id of the node to be moved.
