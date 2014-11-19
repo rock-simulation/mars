@@ -311,12 +311,12 @@ namespace mars {
                            jointPose.rotation * inertialPose.position);
       goalPose.position = (parentInertialPose.rotation.GetInverse()*
                            goalPose.position);
-      /*
+
       goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
                            inertialPose.rotation*jointPose.rotation);
-      */
-      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
-                           parentInertialPose.rotation.GetInverse());
+
+      //goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
+      //                     parentInertialPose.rotation.GetInverse());
 
       Vector v(goalPose.position.x, goalPose.position.y, goalPose.position.z);
       vectorToConfigItem(&(*map)["position"][0], &v);
