@@ -631,6 +631,7 @@ namespace mars {
         // we add a collision node without mass
         childNode["mass"] = 0.00;
         childNode["density"] = 0.0;
+        childNode["movable"] = true;
 
         handleCollision(&childNode, collision);
         convertPose(collision->origin, link, &v, &q);
