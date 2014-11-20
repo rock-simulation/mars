@@ -1072,10 +1072,7 @@ namespace mars {
                                 const osgGA::GUIEventAdapter& ea,
                                 osgGA::GUIActionAdapter& aa)
     {
-
       // remember position for mouse/camera interaction
-      mouseX = ea.getX();
-      mouseY = ea.getY();
 
       /*
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
@@ -1169,7 +1166,7 @@ namespace mars {
       }
 
       // Mouse didn't move
-      if(mouseX==ea.getX() || mouseY==ea.getY()) {
+      if(mouseX==(int)ea.getX() || mouseY==(int)ea.getY()) {
         if(pick(mouseX, mouseY)) {
           if(graphicsEventHandler.size() > 0) {
             graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)this->pickmode);
@@ -1282,6 +1279,8 @@ namespace mars {
 
     bool GraphicsWidget::handlePushEvent(const osgGA::GUIEventAdapter& ea) {
 
+      mouseX = ea.getX();
+      mouseY = ea.getY();
       unsigned int modKey = ea.getModKeyMask();
 
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
