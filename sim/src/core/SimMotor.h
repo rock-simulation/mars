@@ -116,6 +116,7 @@ namespace mars {
        *
        * @return maximal force this motor can produce
        */
+      interfaces::sReal getMaxEffort() const;
       interfaces::sReal getMotorMaxForce() const;
 		
       /**
@@ -164,7 +165,8 @@ namespace mars {
        *
        * @param force maximal force this motor can produce
        */
-      void setMotorMaxForce(interfaces::sReal force);
+      void setMaxEffort(interfaces::sReal force);
+      void setMotorMaxForce(interfaces::sReal force); //deprecated
 		
       /**
        * sets a name for the motor
@@ -233,14 +235,16 @@ namespace mars {
        *
        * @param value maximum velocity of the motor
        */
-      void setMaximumVelocity(interfaces::sReal value);
+      void setMaxSpeed(interfaces::sReal value);
+      void setMaximumVelocity(interfaces::sReal value); // deprecated
 		
       /** 
        * gets the maximum velocity allowed for this motor
        *
        * @return maximum velocity allowed for this motor
        */
-      interfaces::sReal getMaximumVelocity() const;
+      interfaces::sReal getMaxSpeed() const;
+      interfaces::sReal getMaximumVelocity() const; // deprecated
 		
       /**
        * set the actual velocity of the motor
@@ -290,7 +294,7 @@ namespace mars {
     private:
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
-      interfaces::sReal motorForce, motorMaxForce, actualAngle1, actualAngle2;
+      interfaces::sReal motorForce, maxEffort, actualAngle1, actualAngle2;
       interfaces::sReal p, i, d;
       int axis, type;
       interfaces::sReal time;

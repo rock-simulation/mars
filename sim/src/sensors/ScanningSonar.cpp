@@ -110,8 +110,8 @@ namespace mars {
 
       s.str(""); s << config.name << "_motor";
       MotorData ms(s.str(),MOTOR_TYPE_DC);
-      ms.maximumVelocity = 10.0;
-      ms.motorMaxForce = 6.0;
+      ms.maxSpeed = 10.0;
+      ms.maxEffort= 6.0;
       ms.p = 1;
       /*
       ms.Km = 0.007812;
