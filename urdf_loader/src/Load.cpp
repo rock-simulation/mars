@@ -208,7 +208,11 @@ namespace mars {
               utils::ConfigMap::iterator cIt = it->children.begin();
               for(; cIt!=it->children.end(); ++cIt) {
                 if(cIt->first != "name") {
-                  (*nIt)[cIt->first] = cIt->second;
+                  if(cIt->first == "bitmask") {
+                    (*nIt)["coll_bitmask"] = (int)cIt->second;
+                  } else {
+                    (*nIt)[cIt->first] = cIt->second;
+                  }
                 }
               }
               break;
@@ -626,8 +630,9 @@ namespace mars {
         }
         else {
           childNode["name"] = collision->name;
-          collisionNameMap[collision->name] = link->name;
         }
+        // add nodes created with collision names to name map
+        collisionNameMap[collision->name] = collision->name;
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
         childNode["mass"] = 0.001;
@@ -684,6 +689,7 @@ namespace mars {
         childNode["density"] = 0.0;
         childNode["movable"] = true;
         childNode["groupid"] = config["groupid"];
+        childNode["coll_bitmask"] = 0;
 
         handleVisual(&childNode, visual);
         childNode["physicmode"] = "box";
