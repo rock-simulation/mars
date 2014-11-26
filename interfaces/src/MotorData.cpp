@@ -119,9 +119,13 @@ namespace mars {
       GET_VALUE("maxSpeed", maxSpeed, Double);
       GET_VALUE("maxEffort", maxEffort, Double);
 
-      int tmp;
-      GET_VALUE("type", tmp, Int);
-      type = (MotorType)tmp;
+      std::string tmpmotortype;
+      GET_VALUE("type", tmpmotortype, String);
+      if (tmpmotortype=="1" || tmpmotortype=="PID") {
+        type = (MotorType)1ul;
+      } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
+        type = (MotorType)2ul;
+      }
 
       GET_VALUE("p", p, Double);
       GET_VALUE("i", i, Double);
