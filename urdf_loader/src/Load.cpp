@@ -254,6 +254,7 @@ namespace mars {
     void Load::handleInertial(ConfigMap *map,
                               const boost::shared_ptr<urdf::Link> &link) {
       if(link->inertial) {
+        (*map)["density"] = 0.0;
         (*map)["mass"] = link->inertial->mass;
         // handle inertial
         (*map)["i00"] = link->inertial->ixx;
@@ -629,7 +630,7 @@ namespace mars {
         }
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
-        childNode["mass"] = 0.00;
+        childNode["mass"] = 0.001;
         childNode["density"] = 0.0;
         childNode["movable"] = true;
 
@@ -679,8 +680,8 @@ namespace mars {
         }
         childNode["groupid"] = config["groupid"];
         childNode["noPhysical"] = false;
-        childNode["mass"] = 0.0;
-        childNode["density"] = 1.0;
+        childNode["mass"] = 0.001;
+        childNode["density"] = 0.0;
         childNode["movable"] = true;
         childNode["groupid"] = config["groupid"];
 
