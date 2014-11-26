@@ -88,7 +88,6 @@ namespace mars {
       MOTOR_TYPE_UNDEFINED=0,
       MOTOR_TYPE_PID,
       MOTOR_TYPE_DC,
-      MOTOR_TYPE_DX117,
       MOTOR_TYPE_PID_FORCE,
     };
 

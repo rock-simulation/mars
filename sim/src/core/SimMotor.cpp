@@ -381,9 +381,6 @@ namespace mars {
           case MOTOR_TYPE_DC:
             vel = actual_velocity;
             break;
-          case MOTOR_TYPE_DX117:
-            vel = actual_velocity;
-            break;
           case MOTOR_TYPE_PID_FORCE:
             if(desired_position>2*M_PI) desired_position=0;
             else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
@@ -456,7 +453,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         desired_position = value;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -473,7 +469,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         return desired_position;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -495,7 +490,6 @@ namespace mars {
       case MOTOR_TYPE_DC:
         //the information are not relevant for this type
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -524,7 +518,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         obj->value = actual_position;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
