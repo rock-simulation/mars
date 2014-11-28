@@ -714,8 +714,10 @@ namespace mars {
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
         joint["anchorpos"] = ANCHOR_CUSTOM;
-        joint["lowStopAxis1"] = link->parent_joint->limits->lower;
-        joint["highStopAxis1"] = link->parent_joint->limits->upper;
+        if (link->parent_joint->limits) {
+          joint["lowStopAxis1"] = link->parent_joint->limits->lower;
+          joint["highStopAxis1"] = link->parent_joint->limits->upper;
+        }
         // FIXME: we do not at this point read the joint "maxeffort" and "maxvelocity"
         // limits as they are effectively motor values and should be used only
         // if there are no explicit motor values defined
