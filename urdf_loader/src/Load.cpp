@@ -143,11 +143,31 @@ namespace mars {
       }
       for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
         handleURIs(&it->children);
+        utils::ConfigMap tmpmap = it->children;
+        tmpmap["attached_node"] = (ulong)nodeIDMap[(std::string)tmpmap["link"]];
+        tmpmap["mapIndex"] = 1u;//(uint)nodeIDMap[(std::string)tmpmap["link"]];
+        if ((std::string)tmpmap["type"] == "Joint6DOF") {
+          std::string linkname = (std::string)tmpmap["link"];
+          std::string jointname = model->getLink(linkname)->parent_joint->name;
+          tmpmap["nodeID"] = (ulong)nodeIDMap[linkname];
+          tmpmap["jointID"] = (ulong)jointIDMap[jointname];
+        }
+        if (tmpmap.find("id")!=tmpmap.end()) {
+          utils::ConfigVector tmpids;
+          bool jointsensor = (((std::string)tmpmap["type"]).find("Joint") != std::string::npos);
+          for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
+            if (jointsensor)
+              tmpids.push_back(ConfigItem((ulong)jointIDMap[(std::string)(*idit)]));
+            else
+              tmpids.push_back(ConfigItem((ulong)nodeIDMap[(std::string)(*idit)]));
+          }
+          tmpmap["id"] = tmpids;
+        }
         (*it)["index"] = nextSensorID++;
         sensorIDMap[(*it)["name"][0]] = nextSensorID-1;
         getSensorIDList(&it->children);
-        sensorList.push_back((*it).children);
-        debugMap["sensors"] += (*it).children;
+        sensorList.push_back(tmpmap);
+        debugMap["sensors"] += tmpmap;
       }
       for(it = config["materials"].begin();
           it!=config["materials"].end(); ++it) {
