@@ -714,7 +714,8 @@ namespace mars {
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
         joint["anchorpos"] = ANCHOR_CUSTOM;
-        if(link->parent_joint->type == urdf::Joint::REVOLUTE) {
+        if(link->parent_joint->type == urdf::Joint::REVOLUTE ||
+            link->parent_joint->type == urdf::Joint::CONTINUOUS){
           joint["type"] = "hinge";
         }
         else if(link->parent_joint->type == urdf::Joint::PRISMATIC) {
