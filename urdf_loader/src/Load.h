@@ -82,9 +82,10 @@ namespace mars {
       interfaces::ControlCenter *control;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
-      unsigned int mapIndex;
+      unsigned int mapIndex; // index of loaded scenes
       utils::ConfigMap debugMap;
       std::string robotname;
+      boost::shared_ptr<urdf::ModelInterface> model;
 
       void handleURI(utils::ConfigMap *map, std::string uri);
       void handleURIs(utils::ConfigMap *map);

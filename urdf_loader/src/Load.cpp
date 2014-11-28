@@ -796,8 +796,6 @@ namespace mars {
         return 0;
       }
 
-
-      boost::shared_ptr<urdf::ModelInterface> model;
       model = urdf::parseURDFFile(filename);
       if (!model) {
         return 0;
