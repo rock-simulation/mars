@@ -1,7 +1,7 @@
 Advanced Modeling {#tutorial_advanced_modeling}
 =================
 
-![](tutorials/advanced_modeling/robot.png)
+![](../images/tutorials/advanced_modeling/robot.png)
 
 
 ## Introduction
@@ -27,13 +27,13 @@ Let's implement all these elements in a model with a slighty more complex hierar
 
 As a starting point, we model a main body (we chose a flat cylinder) and attach limbs to it that each possess two segments. Remember to use the *Add -> Mesh* menu in Blender. Via joints, we connect the main body with the upper segment and the upper segment with the lower one:
 
-![](tutorials/advanced_modeling/building_arm.png)
+![](../images/tutorials/advanced_modeling/building_arm.png)
 
 MARS does not take into account how far apart objects connected by joints are, thus to properly visually represent a joint, it is often helpful to add another object to "hide" that the objects are seemingly connected only by air. In our robot, we chose spheres for that purpose.
 
 What is important now is to get the hierarchy in this system right. Since the lower leg is connected to the upper one, it has to be moved as well when the upper leg rotates around its joint to the main body. This can by setting the upper leg the *parent* of the lower leg, and the main body the *parent* of the upper leg. This effectively creates a hierarchy as shown here:
 
-![](tutorials/advanced_modeling/hierarchy.png)
+![](../images/tutorials/advanced_modeling/hierarchy.png)
 
 Create the custom properties for the joints:
 
@@ -45,11 +45,11 @@ Also, you can add a nice ball-shaped feet that will make collision-detection mor
 
 Now duplicate the leg (*Shift + D*) and rearrange the copies nicely around your body:
 
-![](tutorials/advanced_modeling/overview.png)
+![](../images/tutorials/advanced_modeling/overview.png)
 
 Don't forget to again change the *node2* custom properties of the joints after duplicating the legs. If everything worked according to plan, you should have a hierarchy of objects in Blender looking somewhat like this, with the joint helper objects named "H.*":
 
-![](tutorials/advanced_modeling/blender_model_structure.png)
+![](../images/tutorials/advanced_modeling/blender_model_structure.png)
 
 
 ## Collision

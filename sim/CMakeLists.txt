@@ -40,6 +40,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    data_broker
 			    cfg_manager
 			    mars_interfaces
+                mars_utils
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

@@ -51,7 +51,7 @@ namespace mars {
         myMotor = control->motors->getFullMotor(myMotorIndex);
       else {
         myMotor.name = "NewMotor" + QString::number(local_ind++).toStdString();
-        myMotor.maximumVelocity = myMotor.motorMaxForce = 999.0;
+        myMotor.maxSpeed = myMotor.maxEffort = 999.0;
         myMotor.p = 1.0;
         pDialog->setPropertyColor(topLevelMotor, previewColor);
       }
@@ -124,9 +124,9 @@ namespace mars {
       type = pDialog->addGenericProperty("../"+motorName+"/Type", QtVariantPropertyManager::enumTypeId(),
                                          m_type, NULL, &enumNames);
       velocity = pDialog->addGenericProperty("../"+motorName+"/Maximum Velocity", 
-                                             QVariant::Double, myMotor.maximumVelocity);
+                                             QVariant::Double, myMotor.maxSpeed);
       force = pDialog->addGenericProperty("../"+motorName+"/Maximum Force", 
-                                          QVariant::Double, myMotor.motorMaxForce);
+                                          QVariant::Double, myMotor.maxEffort);
       p_value = pDialog->addGenericProperty("../"+motorName+"/P", 
                                             QVariant::Double, myMotor.p, &attr);
       i_value = pDialog->addGenericProperty("../"+motorName+"/I", 
@@ -212,8 +212,8 @@ namespace mars {
     void MotorHandler::updateMotor() {
       myMotor.name = name->value().toString().toStdString();
       myMotor.axis = axis->value().toInt()+1;
-      myMotor.maximumVelocity = velocity->value().toDouble();
-      myMotor.motorMaxForce = force->value().toDouble();
+      myMotor.maxSpeed = velocity->value().toDouble();
+      myMotor.maxEffort = force->value().toDouble();
       myMotor.p = p_value->value().toDouble();
       myMotor.i = i_value->value().toDouble();
       myMotor.d = d_value->value().toDouble();

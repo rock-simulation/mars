@@ -61,8 +61,8 @@ namespace mars {
         if(it->first == "URI") {
           fprintf(stderr, "ConfigMap::recursiveLoad: found uri: %s\n",
                   it->second[0].getString().c_str());
-          std::string subPath, file = (std::string)it->second[0];
-          subPath = getPathOfFile(file);
+          std::string file = path + (std::string)it->second[0];
+          std::string subPath = getPathOfFile(file);
           ConfigMap m2 = fromYamlFile(file, true);
           recursiveLoad(&m2, subPath);
           map->append(m2);

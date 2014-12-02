@@ -39,14 +39,15 @@ namespace mars {
       explicit MotorData(const std::string& name = "",
                          MotorType type = MOTOR_TYPE_UNDEFINED);
 
+//      MotorData& operator= (const MotorData& other);
+
       /** 
        * @brief initialize motor struct with zero values.
        *
        * mainly kept for compatibility with ZERO_MOTOR_STRUCT macro
        */
-      void init(const std::string& name = "",
-                MotorType type = MOTOR_TYPE_UNDEFINED);
-    
+      void init(const std::string& name = "", MotorType type = MOTOR_TYPE_UNDEFINED);
+
       bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
                          LoadCenter *loadCenter = 0);
       void toConfigMap(utils::ConfigMap *config,
@@ -58,14 +59,24 @@ namespace mars {
       unsigned long jointIndex, jointIndex2; // index of the joint the motor moves
       int axis; // index of the joints axis the motor moves
       sReal value;
-      sReal maximumVelocity; // maximum velocity the motor can reach
-      sReal motorMaxForce;   // maximum force the motor can produce
+      sReal maxSpeed; //maximum speed the motor can reach
+//      sReal& maximumVelocity; // deprecated, reference to maxSpeed
+      sReal maxEffort; // maximum force/torque [F/Nm] the motor can apply
+//      sReal& motorMaxForce; // deprecated, reference to maxEffort
       MotorType type; // motor type
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
       sReal max_val;
       sReal min_val;
+      static std::map<std::string, std::string> legacynames;
+
+      static std::map<std::string, std::string> init_legacynames() {
+        std::map<std::string, std::string> tmpmap;
+        tmpmap["maxEffort"] = "motorMaxForce";
+        tmpmap["maxSpeed"] = "maximumVelocity";
+        return tmpmap;
+      }
     }; // end of class MotorData
 
   } // end of namespace interfaces

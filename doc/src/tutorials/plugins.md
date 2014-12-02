@@ -1,7 +1,7 @@
 Basic Plugin {#tutorial_basic_plugin}
 ============
 
-![](robo.jpg)
+![](../images/tutorials/plugin/robo.jpg)
 
 ## Introduction
 

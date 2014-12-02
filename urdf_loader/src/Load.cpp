@@ -143,11 +143,31 @@ namespace mars {
       }
       for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
         handleURIs(&it->children);
+        utils::ConfigMap tmpmap = it->children;
+        tmpmap["attached_node"] = (ulong)nodeIDMap[(std::string)tmpmap["link"]];
+        tmpmap["mapIndex"] = 1u;//(uint)nodeIDMap[(std::string)tmpmap["link"]];
+        if ((std::string)tmpmap["type"] == "Joint6DOF") {
+          std::string linkname = (std::string)tmpmap["link"];
+          std::string jointname = model->getLink(linkname)->parent_joint->name;
+          tmpmap["nodeID"] = (ulong)nodeIDMap[linkname];
+          tmpmap["jointID"] = (ulong)jointIDMap[jointname];
+        }
+        if (tmpmap.find("id")!=tmpmap.end()) {
+          utils::ConfigVector tmpids;
+          bool jointsensor = (((std::string)tmpmap["type"]).find("Joint") != std::string::npos);
+          for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
+            if (jointsensor)
+              tmpids.push_back(ConfigItem((ulong)jointIDMap[(std::string)(*idit)]));
+            else
+              tmpids.push_back(ConfigItem((ulong)nodeIDMap[(std::string)(*idit)]));
+          }
+          tmpmap["id"] = tmpids;
+        }
         (*it)["index"] = nextSensorID++;
         sensorIDMap[(*it)["name"][0]] = nextSensorID-1;
         getSensorIDList(&it->children);
-        sensorList.push_back((*it).children);
-        debugMap["sensors"] += (*it).children;
+        sensorList.push_back(tmpmap);
+        debugMap["sensors"] += tmpmap;
       }
       for(it = config["materials"].begin();
           it!=config["materials"].end(); ++it) {
@@ -208,7 +228,11 @@ namespace mars {
               utils::ConfigMap::iterator cIt = it->children.begin();
               for(; cIt!=it->children.end(); ++cIt) {
                 if(cIt->first != "name") {
-                  (*nIt)[cIt->first] = cIt->second;
+                  if(cIt->first == "bitmask") {
+                    (*nIt)["coll_bitmask"] = (int)cIt->second;
+                  } else {
+                    (*nIt)[cIt->first] = cIt->second;
+                  }
                 }
               }
               break;
@@ -254,6 +278,7 @@ namespace mars {
     void Load::handleInertial(ConfigMap *map,
                               const boost::shared_ptr<urdf::Link> &link) {
       if(link->inertial) {
+        (*map)["density"] = 0.0;
         (*map)["mass"] = link->inertial->mass;
         // handle inertial
         (*map)["i00"] = link->inertial->ixx;
@@ -311,12 +336,12 @@ namespace mars {
                            jointPose.rotation * inertialPose.position);
       goalPose.position = (parentInertialPose.rotation.GetInverse()*
                            goalPose.position);
-      /*
+
       goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
-                           inertialPose.rotation*jointPose.rotation);
-      */
-      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
-                           parentInertialPose.rotation.GetInverse());
+                           jointPose.rotation*inertialPose.rotation);
+
+//      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
+//                           parentInertialPose.rotation.GetInverse());
 
       Vector v(goalPose.position.x, goalPose.position.y, goalPose.position.z);
       vectorToConfigItem(&(*map)["position"][0], &v);
@@ -625,12 +650,14 @@ namespace mars {
         }
         else {
           childNode["name"] = collision->name;
-          collisionNameMap[collision->name] = link->name;
         }
+        // add nodes created with collision names to name map
+        collisionNameMap[collision->name] = collision->name;
         childNode["groupid"] = config["groupid"];
         // we add a collision node without mass
-        childNode["mass"] = 0.00;
+        childNode["mass"] = 0.001;
         childNode["density"] = 0.0;
+        childNode["movable"] = true;
 
         handleCollision(&childNode, collision);
         convertPose(collision->origin, link, &v, &q);
@@ -678,10 +705,11 @@ namespace mars {
         }
         childNode["groupid"] = config["groupid"];
         childNode["noPhysical"] = false;
-        childNode["mass"] = 0.0;
-        childNode["density"] = 1.0;
+        childNode["mass"] = 0.001;
+        childNode["density"] = 0.0;
         childNode["movable"] = true;
         childNode["groupid"] = config["groupid"];
+        childNode["coll_bitmask"] = 0;
 
         handleVisual(&childNode, visual);
         childNode["physicmode"] = "box";
@@ -706,7 +734,15 @@ namespace mars {
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
         joint["anchorpos"] = ANCHOR_CUSTOM;
-        if(link->parent_joint->type == urdf::Joint::REVOLUTE) {
+        if (link->parent_joint->limits) {
+          joint["lowStopAxis1"] = link->parent_joint->limits->lower;
+          joint["highStopAxis1"] = link->parent_joint->limits->upper;
+        }
+        // FIXME: we do not at this point read the joint "maxeffort" and "maxvelocity"
+        // limits as they are effectively motor values and should be used only
+        // if there are no explicit motor values defined
+        if(link->parent_joint->type == urdf::Joint::REVOLUTE ||
+            link->parent_joint->type == urdf::Joint::CONTINUOUS){
           joint["type"] = "hinge";
         }
         else if(link->parent_joint->type == urdf::Joint::PRISMATIC) {
@@ -780,8 +816,6 @@ namespace mars {
         return 0;
       }
 
-
-      boost::shared_ptr<urdf::ModelInterface> model;
       model = urdf::parseURDFFile(filename);
       if (!model) {
         return 0;

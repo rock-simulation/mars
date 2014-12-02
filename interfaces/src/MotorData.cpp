@@ -20,10 +20,14 @@
 
 #include "MotorData.h"
 #include "sim/LoadCenter.h"
+//#include <initializer_list>
 
-#define GET_VALUE(str, val, type)                    \
-  if((it = config->find(str)) != config->end())      \
-    val = it->second[0].get##type()
+#define GET_VALUE(str, val, type)                                        \
+  if((it = config->find(str)) != config->end()) {                         \
+    val = it->second[0].get##type();                                      \
+  } else if ((it = config->find(legacynames[str])) != config->end()) {   \
+    val = it->second[0].get##type();                                      \
+  }
 
 #define SET_VALUE(str, val)                              \
   if(val != defaultMotor.val)                             \
@@ -34,9 +38,41 @@ namespace mars {
 
     using namespace mars::utils;
 
-    MotorData::MotorData(const std::string& name, MotorType type) {
+    std::map<std::string, std::string> MotorData::legacynames = init_legacynames();
+
+//    C++ 11:
+//     MotorData::legacynames = {{"maxEffort", "motorMaxForce"},
+//        {"maxSpeed", "maximumVelocity"}};
+
+    MotorData::MotorData(const std::string& name, MotorType type){
       init( name, type );
     }
+
+//    MotorData::MotorData(const std::string& name, MotorType type): maximumVelocity(maxSpeed),
+//        motorMaxForce(maxEffort) {
+//      init( name, type );
+//    }
+
+//    MotorData& MotorData::operator=(const MotorData& other){
+//      if (&other==this) {
+//        return *this;
+//      } else {
+//          this->name = other.name;
+//          this->index = other.index;
+//          this->jointIndex = other.jointIndex;
+//          this->jointIndex2 = other.jointIndex2;
+//          this->axis = other.axis;
+//          this->value = other.value;
+//          this->maxSpeed = other.maxSpeed;
+//          this->maxEffort = 333;//other.maxEffort;
+//          this->type = type;
+//          this->p = other.p;
+//          this->i = other.i;
+//          this->d = other.d;
+//          this->max_val = other.max_val;
+//          this->min_val = other.min_val;
+//        }
+//    }
 
     void MotorData::init(const std::string& name, MotorType type) {
       this->name = name;
@@ -45,8 +81,8 @@ namespace mars {
       jointIndex2 = 0;
       axis = 0;
       value = 0;
-      maximumVelocity = 0;
-      motorMaxForce = 0;
+      maxSpeed = 0;
+      maxEffort = 0;
       this->type = type;
       p = 0;
       i = 0;
@@ -80,12 +116,16 @@ namespace mars {
       }
 
       GET_VALUE("axis", axis, Int);
-      GET_VALUE("maximumVelocity", maximumVelocity, Double);
-      GET_VALUE("motorMaxForce", motorMaxForce, Double);
+      GET_VALUE("maxSpeed", maxSpeed, Double);
+      GET_VALUE("maxEffort", maxEffort, Double);
 
-      int tmp;
-      GET_VALUE("type", tmp, Int);
-      type = (MotorType)tmp;
+      std::string tmpmotortype;
+      GET_VALUE("type", tmpmotortype, String);
+      if (tmpmotortype=="1" || tmpmotortype=="PID") {
+        type = (MotorType)1ul;
+      } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
+        type = (MotorType)2ul;
+      }
 
       GET_VALUE("p", p, Double);
       GET_VALUE("i", i, Double);
@@ -106,8 +146,8 @@ namespace mars {
       SET_VALUE("jointIndex", jointIndex);
       SET_VALUE("jointIndex2", jointIndex2);
       SET_VALUE("axis", axis);
-      SET_VALUE("maximumVelocity", maximumVelocity);
-      SET_VALUE("motorMaxForce", motorMaxForce);
+      SET_VALUE("maxSpeed", maxSpeed);
+      SET_VALUE("maxEffort", maxEffort);
 
       (*config)["type"][0] = ConfigItem((int)type);
 

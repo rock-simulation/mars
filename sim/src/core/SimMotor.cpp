@@ -179,18 +179,26 @@ namespace mars {
       return desired_position;
     }
 
-    void SimMotor::setMotorMaxForce(sReal force) {
-      sMotor.motorMaxForce = force;
+    void SimMotor::setMaxEffort(sReal force) {
+      sMotor.maxEffort = force;
       if(sMotor.axis == 1) {
-        myJoint->setForceLimit(sMotor.motorMaxForce);
+        myJoint->setForceLimit(sMotor.maxEffort);
       }
       else if(sMotor.axis == 2) {
-        myJoint->setForceLimit2(sMotor.motorMaxForce);
+        myJoint->setForceLimit2(sMotor.maxEffort);
       }
     }
 
+    void SimMotor::setMotorMaxForce(sReal force) { // deprecated
+      setMaxEffort(force);
+    }
+
+    sReal SimMotor::getMaxEffort() const {
+      return maxEffort;
+    }
+
     sReal SimMotor::getMotorMaxForce() const {
-      return motorMaxForce;
+      return maxEffort;
     }
 
     sReal SimMotor::getActualAngle() const {
@@ -201,12 +209,20 @@ namespace mars {
       actualAngle1 = angle;
     }
 
+    void SimMotor::setMaxSpeed(sReal value) {
+      sMotor.maxSpeed = fabs(value);
+    }
+
     void SimMotor::setMaximumVelocity(sReal value) {
-      sMotor.maximumVelocity = fabs(value);
+      setMaxSpeed(value);
+    }
+
+    sReal SimMotor::getMaxSpeed() const {
+      return sMotor.maxSpeed;
     }
 
     sReal SimMotor::getMaximumVelocity() const {
-      return sMotor.maximumVelocity;
+      return sMotor.maxSpeed;
     }
 
 
@@ -274,12 +290,12 @@ namespace mars {
         // in this first implementation we only set the first axis
         if(sMotor.axis == 1) {
           myJoint->setJointAsMotor(1);
-          myJoint->setForceLimit(sMotor.motorMaxForce);
+          myJoint->setForceLimit(sMotor.maxEffort);
         }
         else if(sMotor.axis == 2) {
           // the same things for the second axis
           myJoint->setJointAsMotor(2);
-          myJoint->setForceLimit2(sMotor.motorMaxForce);
+          myJoint->setForceLimit2(sMotor.maxEffort);
         }
         else
           {
@@ -339,16 +355,16 @@ namespace mars {
             //the pid react way faster. This also eleminates the 
             //overshooting errors seen before in the simulation
             double iPart = integ_error * sMotor.i;
-            if(iPart > sMotor.maximumVelocity)
+            if(iPart > sMotor.maxSpeed)
             {
-                iPart = sMotor.maximumVelocity;
-                integ_error = sMotor.maximumVelocity / sMotor.i;
+                iPart = sMotor.maxSpeed;
+                integ_error = sMotor.maxSpeed / sMotor.i;
             }
 
-            if(iPart < -sMotor.maximumVelocity)
+            if(iPart < -sMotor.maxSpeed)
             {
-                iPart = -sMotor.maximumVelocity;
-                integ_error = -sMotor.maximumVelocity / sMotor.i;
+                iPart = -sMotor.maxSpeed;
+                integ_error = -sMotor.maxSpeed / sMotor.i;
             }
 
             // set desired velocity. @todo add inertia
@@ -363,9 +379,6 @@ namespace mars {
           }
             break;
           case MOTOR_TYPE_DC:
-            vel = actual_velocity;
-            break;
-          case MOTOR_TYPE_DX117:
             vel = actual_velocity;
             break;
           case MOTOR_TYPE_PID_FORCE:
@@ -385,8 +398,8 @@ namespace mars {
             // D part of the motor
             torque += ((er - last_error)/time) * sMotor.d;
             last_error = er;
-            if(torque > sMotor.motorMaxForce) torque = sMotor.motorMaxForce;
-            else if(torque < -sMotor.motorMaxForce) torque = -sMotor.motorMaxForce;
+            if(torque > sMotor.maxEffort) torque = sMotor.maxEffort;
+            else if(torque < -sMotor.maxEffort) torque = -sMotor.maxEffort;
             break;
           case MOTOR_TYPE_UNDEFINED:
             break;
@@ -409,11 +422,11 @@ namespace mars {
                        kY*fabs(joint_velocity) + k);
             if(current < 0.0) 
                 current = 0.0;
-            if(vel > sMotor.maximumVelocity) 
-                vel = sMotor.maximumVelocity;
+            if(vel > sMotor.maxSpeed)
+                vel = sMotor.maxSpeed;
             else 
-                if(vel < -sMotor.maximumVelocity) 
-                    vel = -sMotor.maximumVelocity;
+                if(vel < -sMotor.maxSpeed)
+                    vel = -sMotor.maxSpeed;
 
             if(sMotor.axis == 1) {
               myJoint->setVelocity(vel);
@@ -440,7 +453,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         desired_position = value;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -457,7 +469,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         return desired_position;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -479,7 +490,6 @@ namespace mars {
       case MOTOR_TYPE_DC:
         //the information are not relevant for this type
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
@@ -508,7 +518,6 @@ namespace mars {
       case MOTOR_TYPE_PID_FORCE:
         obj->value = actual_position;
         break;
-      case MOTOR_TYPE_DX117:
       case MOTOR_TYPE_UNDEFINED:
         break;
       }
