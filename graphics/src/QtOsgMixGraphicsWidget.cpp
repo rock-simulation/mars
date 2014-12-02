@@ -184,9 +184,9 @@ namespace mars {
     void QtOsgMixGraphicsWidget::resizeEvent( QResizeEvent * event ) {
       const QSize & geometrySize = event->size();
       if(graphicsWindow) {
-        graphicsWindow->resized(
-                                window()->geometry().x(), window()->geometry().y(),
-                                geometrySize.width(), geometrySize.height());
+        graphicsWindow->getEventQueue()->windowResize(
+                                                      window()->geometry().x(), window()->geometry().y(),
+                                                      window()->width(), window()->height());
         graphicsCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
