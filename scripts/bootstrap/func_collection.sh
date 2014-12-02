@@ -34,11 +34,11 @@ function printErr {
 function forAllPackagesDo {
     action=$1
     setScriptDir
-    if [[ ! -f ${MARS_SCRIPT_DIR}/packageList.txt ]]; then
-        printErr "No packageList.txt"
+    if [[ ! -f ${MARS_SCRIPT_DIR}/${PACKAGE_FILE} ]]; then
+        printErr "No ${PACKAGE_FILE}"
         return 1
     fi
-#    for package in $(cat ${MARS_SCRIPT_DIR}/packageList.txt); do
+#    for package in $(cat ${MARS_SCRIPT_DIR}/${PACKAGE_FILE}); do
     while read package; do
         # remove leading and trailing whitespaces
         read -rd '' package <<< "${package}"
@@ -67,7 +67,7 @@ function forAllPackagesDo {
             MARS_SCRIPT_ERROR=0
             return 1;
         fi
-    done < ${MARS_SCRIPT_DIR}/packageList.txt
+    done < ${MARS_SCRIPT_DIR}/${PACKAGE_FILE}
 #    done
 }
 

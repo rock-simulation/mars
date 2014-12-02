@@ -6,10 +6,17 @@ for i in $*; do
     if [ "$i" = "+w" ]; then
         PUSH=true
     fi
+    LAST=$i
 done
 
-pushd . > /dev/null 2>&1
+PACKAGE_FILE="packageList.txt"
 
+if [[ -f ${LAST} ]]; then
+    PACKAGE_FILE=$LAST
+fi
+
+
+pushd . > /dev/null 2>&1
 
 function setScriptDir {
     if [[ x"${MARS_SCRIPT_DIR}" == "x" ]]; then
@@ -65,7 +72,9 @@ for arg in $*; do
         +w)
             ;;
         *)
-            printErr "unsupported argument \"${arg}\"."
+            if ! [ "${arg}" = "${PACKAGE_FILE}" ]; then
+                printErr "unsupported argument \"${arg}\"."
+            fi
             ;;
     esac
 done
