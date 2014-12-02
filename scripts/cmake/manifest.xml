@@ -1,0 +1,8 @@
+<package>
+    <description brief="mars_cmake">
+       CMake helper tools for building mars 
+    </description>
+    <depend package="autotools" />
+    <depend package="cmake" />
+    <tags>stable</tags>
+</package>
