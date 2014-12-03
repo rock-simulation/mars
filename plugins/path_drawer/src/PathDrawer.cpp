@@ -54,7 +54,7 @@ namespace mars {
         // get or create the cfg property
         string def_name = "path/path.obj";
         obj_file_struct = control->cfg->getOrCreateProperty("PathDrawer", "obj_file", def_name, this);
-        printf("[PathDrawer] init: obj: %s\n", obj_file_struct.sValue.c_str());
+        //printf("[PathDrawer] init: obj: %s\n", obj_file_struct.sValue.c_str());
 
         if(obj_file_struct.sValue == ""){
           addVectorsFromObjFile(def_name);
@@ -63,9 +63,9 @@ namespace mars {
         }
 
         // get or create the cfg property
-        def_name = "obstacle_course/config_obstacle_course.svg";
+        def_name = "obstacle_course/obstacle_course.svg";
         svg_file_struct = control->cfg->getOrCreateProperty("PathDrawer", "svg_file", def_name, this);
-        printf("[PathDrawer] init: svg: %s\n", svg_file_struct.sValue.c_str());
+        //printf("[PathDrawer] init: svg: %s\n", svg_file_struct.sValue.c_str());
 
         if(svg_file_struct.sValue == ""){
           addVectorsFromSvgFile(def_name);
@@ -130,7 +130,7 @@ namespace mars {
           }
           file.close();
         }else{
-          fprintf(stderr, "[PathDrawer] Error: Unable to open file '%s'\n", file_name.c_str());
+          fprintf(stderr, "[PathDrawer] Warning: Unable to open file '%s'\n", file_name.c_str());
         }
 
         l->setColor(osg_lines::Color(0.0, 1.0, 0.0, 1.0));
@@ -194,7 +194,7 @@ namespace mars {
               if( line.find("</path>") != string::npos){
                 end = line_cnt;
                 in_path = false;
-                printf("found vectors in line %d (start %d, d= %d, end %d)\n", points, start, label, end);
+                //printf("found vectors in line %d (start %d, d= %d, end %d)\n", points, start, label, end);
 
                 if(   min( start, min( points, label ) ) == start
                   &&  max( end, max( points, label ) ) == end){
@@ -206,14 +206,14 @@ namespace mars {
             }
 
             if(start == string::npos || end == string::npos){
-              fprintf(stderr, "[PathDrawer] there is no path specified\n");
+              fprintf(stderr, "[PathDrawer] Error: there is no path specified\n");
             }
 
             ++line_cnt;
           }
 
           if(!path_found){
-            fprintf(stderr, "[PathDrawer] no path 'path_to_follow' in svg file\n");
+            fprintf(stderr, "[PathDrawer] Error: no path 'path_to_follow' in svg file\n");
             return;
           }
 
@@ -222,14 +222,14 @@ namespace mars {
           bool absolute_coordinates = false;
           unsigned offset_pos_start = line_to_parse.find("d=\"m") + 5;
           if(offset_pos_start < 6 || offset_pos_start > 15){  // valid range
-            printf("searching fro M\n");
+            //printf("searching for M\n");
             offset_pos_start = line_to_parse.find("d=\"M") + 5;
             absolute_coordinates = true;
           }
 
           unsigned offset_pos_end = line_to_parse.find(" ", offset_pos_start);
           unsigned offset_delimiter = line_to_parse.find(",", offset_pos_start);
-          printf("[PathDrawer] SVG line offset pos start %d, delimiter %d, end %d\n", offset_pos_start, offset_delimiter, offset_pos_end);
+          //printf("[PathDrawer] SVG line offset pos start %d, delimiter %d, end %d\n", offset_pos_start, offset_delimiter, offset_pos_end);
           //printf("[PathDrawer] SVG OffsetX = %s\n", line_to_parse.substr(offset_pos_start, offset_delimiter-offset_pos_start).c_str());
           //printf("[PathDrawer] SVG OffsetY = %s\n", line_to_parse.substr(offset_delimiter+1, offset_pos_end-offset_delimiter-1).c_str());
 
@@ -284,7 +284,7 @@ namespace mars {
               }else if(*it == 'l'){
                 absolute_coordinates = false;
               }else{
-                printf("[PathDrawer] no handle for '%c'\n", *it);
+                printf("[PathDrawer] Error: no handle for '%c'\n", *it);
               }
 
               // add the relative x and y information and draw the point
