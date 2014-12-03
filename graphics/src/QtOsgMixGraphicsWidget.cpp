@@ -185,8 +185,10 @@ namespace mars {
       const QSize & geometrySize = event->size();
       if(graphicsWindow) {
         graphicsWindow->getEventQueue()->windowResize(
-                                                      window()->geometry().x(), window()->geometry().y(),
-                                                      window()->width(), window()->height());
+                                                      window()->geometry().x(),
+                                                      window()->geometry().y(),
+                                                      geometrySize.width(),
+                                                      geometrySize.height());
         graphicsCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
