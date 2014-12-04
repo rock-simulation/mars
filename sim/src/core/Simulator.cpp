@@ -389,7 +389,6 @@ namespace mars {
       if(show_time)
         time = utils::getTime();
 
-
       getTimeMutex.lock();
       dbSimTimePackage[0].d += calc_ms;
       getTimeMutex.unlock();
