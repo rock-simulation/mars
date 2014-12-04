@@ -111,6 +111,12 @@ namespace mars {
       virtual void removePlugin(PluginInterface *pl) = 0;
       virtual void switchPluginUpdateMode(int mode, PluginInterface *pl) = 0;
       virtual void sendDataToPlugin(int plugin_index, void* data) = 0;
+
+      /*
+       *  returns the calculated simulation time + the start timestamp
+       */
+      virtual unsigned long getTime() = 0;
+
     };
 
 
