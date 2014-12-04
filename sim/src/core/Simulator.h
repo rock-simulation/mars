@@ -203,6 +203,11 @@ namespace mars {
 
       virtual void step(bool setState = false);
 
+      /*
+       * returns the real startTimestamp plus the calculated simulation time
+       */
+      virtual unsigned long getTime();
+
     private:
 
       struct LoadOptions {
@@ -246,6 +251,7 @@ namespace mars {
       utils::Mutex physicsCountMutex;
       utils::Mutex stepping_mutex; ///< Used for preventing active waiting for a single step or start event.
       utils::WaitCondition stepping_wc; ///< Used for preventing active waiting for a single step or start event.
+      utils::Mutex getTimeMutex;
       int physics_mutex_count;
       double avg_log_time;
       int count;
@@ -259,6 +265,7 @@ namespace mars {
       utils::Vector gravity;
       unsigned long dbPhysicsUpdateId;
       unsigned long dbSimTimeId;
+      unsigned long realStartTime;
 
       // plugins
       std::vector<interfaces::pluginStruct> allPlugins;
@@ -283,6 +290,7 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgVisRep;
       cfg_manager::cfgPropertyStruct cfgSyncTime;
       cfg_manager::cfgPropertyStruct configPath;
+      cfg_manager::cfgPropertyStruct cfgUseNow;
       
       // data
       data_broker::DataPackage dbPhysicsUpdatePackage;

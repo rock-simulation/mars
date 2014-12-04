@@ -145,6 +145,9 @@ namespace mars {
         }
       }
 
+      getTimeMutex.lock();
+      realStartTime = utils::getTime();
+      getTimeMutex.unlock();
     }
 
     Simulator::~Simulator() {
@@ -188,10 +191,12 @@ namespace mars {
         if(control->dataBroker) {
           ControlCenter::theDataBroker = control->dataBroker;
           // create streams
+          getTimeMutex.lock();
           dbSimTimeId = control->dataBroker->pushData("mars_sim", "simTime",
                                                       dbSimTimePackage,
                                                       NULL,
                                                       data_broker::DATA_PACKAGE_READ_FLAG);
+          getTimeMutex.unlock();
           control->dataBroker->createTimer("mars_sim/simTimer");
           control->dataBroker->createTrigger("mars_sim/prePhysicsUpdate");
           control->dataBroker->createTrigger("mars_sim/postPhysicsUpdate");
@@ -388,7 +393,10 @@ namespace mars {
       if(show_time)
         time = getTime();
 
+
+      getTimeMutex.lock();
       dbSimTimePackage[0].d += calc_ms;
+      getTimeMutex.unlock();
       if(control->dataBroker) {
         control->dataBroker->pushData(dbSimTimeId,
                                       dbSimTimePackage);
@@ -1324,6 +1332,9 @@ namespace mars {
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
 
+      cfgUseNow = control->cfg->getOrCreateProperty("Simulator", "getTime:useNow",
+                                                    (bool)false, this);
+
       control->cfg->getOrCreateProperty("Simulator", "onPhysicsError",
                                         "abort", this);
       show_time = cfgDebugTime.bValue;
@@ -1379,6 +1390,19 @@ namespace mars {
 
     const utils::Vector& Simulator::getGravity(void) {
       return physics->world_gravity;
+    }
+
+    unsigned long Simulator::getTime() {
+      unsigned long returnTime;
+      getTimeMutex.lock();
+      if(cfgUseNow.bValue) {
+        returnTime = realStartTime+dbSimTimePackage[0].d;
+      }
+      else {
+        returnTime = realStartTime+dbSimTimePackage[0].d;
+      }
+      getTimeMutex.unlock();
+      return returnTime;
     }
 
 
