@@ -204,6 +204,7 @@ namespace mars {
       if(full_scan_mlls) {
         full_scan_mlls = false;
         scan = mlls_full;
+        scan.time.microseconds = getTime() * 1000;
         return true;
       } else {
         return false;
