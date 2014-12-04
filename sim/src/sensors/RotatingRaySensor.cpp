@@ -204,7 +204,7 @@ namespace mars {
       if(full_scan_mlls) {
         full_scan_mlls = false;
         scan = mlls_full;
-        scan.time.microseconds = getTime() * 1000;
+        scan.time = base::Time::fromMilliseconds(control->sim->getTime());
         return true;
       } else {
         return false;
