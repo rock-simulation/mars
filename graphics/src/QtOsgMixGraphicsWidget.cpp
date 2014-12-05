@@ -184,8 +184,11 @@ namespace mars {
     void QtOsgMixGraphicsWidget::resizeEvent( QResizeEvent * event ) {
       const QSize & geometrySize = event->size();
       if(graphicsWindow) {
-        graphicsWindow->getEventQueue()->windowResize(
-                                                      window()->geometry().x(),
+        graphicsWindow->resized(window()->geometry().x(),
+                                window()->geometry().y(),
+                                geometrySize.width(),
+                                geometrySize.height());
+        graphicsWindow->getEventQueue()->windowResize(window()->geometry().x(),
                                                       window()->geometry().y(),
                                                       geometrySize.width(),
                                                       geometrySize.height());
