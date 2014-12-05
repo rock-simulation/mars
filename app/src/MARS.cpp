@@ -185,12 +185,17 @@ namespace mars {
         if( (marsGraphics = dynamic_cast<mars::interfaces::GraphicsManagerInterface*>(lib)) ) {
           // init osg
           //initialize graphicsFactory
-          marsGraphics->initializeOSG(NULL);
-          void *widget = marsGraphics->getQTWidget(1);
-          if (widget && mainGui) {
-            mainGui->mainWindow_p()->setCentralWidget((QWidget*)widget);
+          if(mainGui) {
+            marsGraphics->initializeOSG(NULL);
+            void *widget = marsGraphics->getQTWidget(1);
+            if (widget && mainGui) {
+              mainGui->mainWindow_p()->setCentralWidget((QWidget*)widget);
+            }
+            if(widget) ((QWidget*)widget)->show();
           }
-          if(widget) ((QWidget*)widget)->show();
+          else {
+            marsGraphics->initializeOSG(NULL, false);
+          }
         }
       }
 
