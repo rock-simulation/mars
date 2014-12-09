@@ -148,14 +148,18 @@ namespace mars {
         tmpmap["mapIndex"] = 1u;//(uint)nodeIDMap[(std::string)tmpmap["link"]];
         if ((std::string)tmpmap["type"] == "Joint6DOF") {
           std::string linkname = (std::string)tmpmap["link"];
+          fprintf(stderr, "addConfig: %s\n", linkname.c_str());
           std::string jointname = model->getLink(linkname)->parent_joint->name;
+          fprintf(stderr, "addConfig: %s\n", jointname.c_str());
           tmpmap["nodeID"] = (ulong)nodeIDMap[linkname];
           tmpmap["jointID"] = (ulong)jointIDMap[jointname];
+          fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong)tmpmap["nodeID"], (ulong)tmpmap["jointID"]);
         }
         if (tmpmap.find("id")!=tmpmap.end()) {
           utils::ConfigVector tmpids;
           bool jointsensor = (((std::string)tmpmap["type"]).find("Joint") != std::string::npos);
           for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
+            //(*idit) = (ulong)nodeIDMap[idit->getString()];
             if (jointsensor)
               tmpids.push_back(ConfigItem((ulong)jointIDMap[(std::string)(*idit)]));
             else
@@ -683,7 +687,7 @@ namespace mars {
           visualArrayIndex++;
         }
         else {
-          //createFakeVisual(&childNode, false);
+          createFakeVisual(&childNode);
         }
         debugMap["childNodes"] += childNode;
         nodeList.push_back(childNode);
@@ -724,7 +728,7 @@ namespace mars {
         nodeList.push_back(childNode);
       }
 
-      // todo:  complete handle joint information
+      // TODO:  complete handle joint information
       if(link->parent_joint) {
         unsigned long id;
         ConfigMap joint;
@@ -986,6 +990,8 @@ namespace mars {
     BaseSensor* Load::loadSensor(utils::ConfigMap config) {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       unsigned long sceneID = config["index"][0].getULong();
+//      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
+//          ((std::string)config["type"]).c_str());
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
         control->loadCenter->setMappedID(sceneID, sensor->getID(),
