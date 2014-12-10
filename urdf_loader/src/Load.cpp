@@ -101,9 +101,7 @@ namespace mars {
 
     void Load::getSensorIDList(utils::ConfigMap *map) {
       utils::ConfigVector::iterator it;
-      unsigned long id;
-
-      // todo: check if objects exists in maps
+#warning check if objects exists in maps
 
       if(map->find("link") != map->end()) {
         (*map)["nodeID"] = nodeIDMap[(std::string)(*map)["link"][0]];
@@ -258,7 +256,6 @@ namespace mars {
         (*it)["index"] = nextControllerID++;
         // convert names to ids
         utils::ConfigVector::iterator it2;
-        unsigned long id;
         if(it->children.find("sensors") != it->children.end()) {
           for(it2=it->children["sensors"].begin();
               it2!=it->children["sensors"].end(); ++it2) {
@@ -530,9 +527,9 @@ namespace mars {
     void Load::handleKinematics(boost::shared_ptr<urdf::Link> link) {
       ConfigMap config;
       // holds the index of the next visual object to load
-      int visualArrayIndex = 0;
+      size_t visualArrayIndex = 0;
       // holds the index of the next collision object to load
-      int collisionArrayIndex = 0;
+      size_t collisionArrayIndex = 0;
       bool loadVisual = link->visual;
       bool loadCollision = link->collision;
       Vector v;
@@ -727,7 +724,6 @@ namespace mars {
 
       // todo:  complete handle joint information
       if(link->parent_joint) {
-        unsigned long id;
         ConfigMap joint;
         joint["name"] = link->parent_joint->name;
         joint["index"] = nextJointID++;
