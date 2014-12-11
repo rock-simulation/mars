@@ -142,6 +142,7 @@ namespace mars {
         debugMap["motors"] += (*it).children;
       }
       std::map<std::string, unsigned long> * idmap;
+      std::map<std::string, std::string> * namemap;
       for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
         handleURIs(&it->children);
         utils::ConfigMap tmpmap = it->children;
@@ -157,6 +158,7 @@ namespace mars {
           fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong)tmpmap["nodeID"], (ulong)tmpmap["jointID"]);
         }
         idmap = 0;
+        namemap = 0;
         if (tmpmap.find("id")!=tmpmap.end()) {
           utils::ConfigVector tmpids;
           if (((std::string)tmpmap["type"]).find("Joint") != std::string::npos) {
@@ -164,14 +166,20 @@ namespace mars {
           }
           if (((std::string)tmpmap["type"]).find("Node") != std::string::npos) {
             idmap = &nodeIDMap;
+            if (((std::string)tmpmap["type"]).find("Contact") != std::string::npos)
+              namemap = &collisionNameMap;
         }
           if (((std::string)tmpmap["type"]).find("Motor") != std::string::npos) {
             idmap = &motorIDMap;
       }
           for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
             if (idmap) {
-            //(*idit) = (ulong)nodeIDMap[idit->getString()];
-            tmpids.push_back(ConfigItem((ulong)(*idmap)[(std::string)(*idit)]));
+              //(*idit) = (ulong)nodeIDMap[idit->getString()];
+              if (namemap) {
+                tmpids.push_back(ConfigItem((ulong)(*idmap)[(*namemap)[(std::string)(*idit)]]));
+              } else {
+                tmpids.push_back(ConfigItem((ulong)(*idmap)[(std::string)(*idit)]));
+              }
             } else {
               fprintf(stderr, "Found sensor with id list, but of no known category.\n");
             }
@@ -659,9 +667,12 @@ namespace mars {
         }
 
         childNode["index"] = nextNodeID++;
+        std::string childNodeName = ((std::string)config["name"][0])+"_child";
+        nodeIDMap[childNodeName] = nextNodeID-1;
+        nodeIDMap[collision->name] = nextNodeID-1; //FIXME: can we simply duplicate this?
         childNode["relativeid"] = config["index"];
         if(collision->name.empty()) {
-          childNode["name"] = ((std::string)config["name"][0])+"_child";
+          childNode["name"] = childNodeName;
         }
         else {
           childNode["name"] = collision->name;
