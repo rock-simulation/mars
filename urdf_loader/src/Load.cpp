@@ -108,7 +108,7 @@ namespace mars {
         (*map)["nodeID"] = nodeIDMap[(std::string)(*map)["link"][0]];
       }
       if(map->find("joint") != map->end()) {
-        (*map)["jointID"] = nodeIDMap[(std::string)(*map)["joint"][0]];
+        (*map)["jointID"] = jointIDMap[(std::string)(*map)["joint"][0]];
       }
       if(map->find("links") != map->end()) {
         for(it=(*map)["links"].begin();
@@ -141,6 +141,7 @@ namespace mars {
         motorList.push_back((*it).children);
         debugMap["motors"] += (*it).children;
       }
+      std::map<std::string, unsigned long> * idmap;
       for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
         handleURIs(&it->children);
         utils::ConfigMap tmpmap = it->children;
@@ -155,21 +156,31 @@ namespace mars {
           tmpmap["jointID"] = (ulong)jointIDMap[jointname];
           fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong)tmpmap["nodeID"], (ulong)tmpmap["jointID"]);
         }
+        idmap = 0;
         if (tmpmap.find("id")!=tmpmap.end()) {
           utils::ConfigVector tmpids;
-          bool jointsensor = (((std::string)tmpmap["type"]).find("Joint") != std::string::npos);
+          if (((std::string)tmpmap["type"]).find("Joint") != std::string::npos) {
+            idmap = &jointIDMap;
+          }
+          if (((std::string)tmpmap["type"]).find("Node") != std::string::npos) {
+            idmap = &nodeIDMap;
+        }
+          if (((std::string)tmpmap["type"]).find("Motor") != std::string::npos) {
+            idmap = &motorIDMap;
+      }
           for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
+            if (idmap) {
             //(*idit) = (ulong)nodeIDMap[idit->getString()];
-            if (jointsensor)
-              tmpids.push_back(ConfigItem((ulong)jointIDMap[(std::string)(*idit)]));
-            else
-              tmpids.push_back(ConfigItem((ulong)nodeIDMap[(std::string)(*idit)]));
+            tmpids.push_back(ConfigItem((ulong)(*idmap)[(std::string)(*idit)]));
+            } else {
+              fprintf(stderr, "Found sensor with id list, but of no known category.\n");
+            }
           }
           tmpmap["id"] = tmpids;
         }
-        (*it)["index"] = nextSensorID++;
-        sensorIDMap[(*it)["name"][0]] = nextSensorID-1;
-        getSensorIDList(&it->children);
+        tmpmap["index"] = nextSensorID++;
+        sensorIDMap[tmpmap["name"][0]] = nextSensorID-1;
+        getSensorIDList(&tmpmap);
         sensorList.push_back(tmpmap);
         debugMap["sensors"] += tmpmap;
       }
@@ -989,12 +1000,12 @@ namespace mars {
 
     BaseSensor* Load::loadSensor(utils::ConfigMap config) {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      unsigned long sceneID = config["index"][0].getULong();
 //      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
 //          ((std::string)config["type"]).c_str());
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
-        control->loadCenter->setMappedID(sceneID, sensor->getID(),
+        control->loadCenter->setMappedID((ulong)config["index"],
+                                         sensor->getID(),
                                          MAP_TYPE_SENSOR,
                                          mapIndex);
       }
