@@ -288,6 +288,7 @@ namespace mars {
         vertical_scan.vertical_start_angle = v_angle; 
         vertical_scan.vertical_angular_resolution = vertical_resolution;
         
+        // If min/max are exceeded distance will be set to min/max.
         for(int l=0; l<config.lasers; ++l, ++i){
           if (data[i] < config.maxDistance && data[i] > config.minDistance) {
             // Calculates the ray/vector within the sensor frame.
@@ -299,9 +300,9 @@ namespace mars {
           }
             
           // Fill the MultilevelLaserScan format.
-          if(data[i] < config.minDistance) {
+          if(data[i] <= config.minDistance) {
             dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_NEAR;
-          } else if(data[i] > config.maxDistance) {
+          } else if(data[i] >= config.maxDistance) {
             dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_FAR;
           } else {
             dist_mm = data[i] * 1000;
@@ -361,7 +362,7 @@ namespace mars {
         full_scan = true;
         
         // Copy MultilevelLaserScan.
-        mlls.time = base::Time::now();
+        mlls.time = base::Time::fromMilliseconds(control->sim->getTime());
         mlls_full = mlls;
         mlls.horizontal_scans.clear();
         full_scan_mlls = true;
