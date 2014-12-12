@@ -44,6 +44,7 @@
 #include <mars/interfaces/graphics/draw_structs.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/logging/Logging.hpp>
 
 namespace mars {
   namespace sim {

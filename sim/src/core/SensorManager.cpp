@@ -57,6 +57,7 @@
 
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/utils/MutexLocker.h>
+#include <mars/logging/Logging.hpp>
 
 #include <cstdio>
 #include <stdexcept>

@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <mars/data_broker/DataPackage.h>
 
 namespace mars {
   namespace sim {

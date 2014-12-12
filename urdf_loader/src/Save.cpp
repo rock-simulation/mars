@@ -56,6 +56,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/utils.h>
+#include <mars/logging/Logging.hpp>
 
 #include <QFile>
 
@@ -70,9 +71,8 @@ namespace mars {
       control(c), s_tmpDirectory(tmpPath) {
 
       if(!utils::pathExists(s_tmpDirectory)) {
-        LOG_WARN("Save:: given tmp dir \"%s\" does not exist! Use /tmp",
-                  s_tmpDirectory.c_str());
-        s_tmpDirectory = "/tmp";
+        LOG_FATAL("Save:: given tmp dir \"%s\" does not exist!", s_tmpDirectory.c_str());
+        throw std::runtime_error("Invalid path for Saveis given at __FILE__:__LINE__");
       }
       s_filename = filename;
       utils::removeFilenamePrefix(&s_filename);

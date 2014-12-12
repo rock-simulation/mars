@@ -25,7 +25,7 @@
 #include "sim/LoadCenter.h"
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/misc.h>
-
+#include <mars/logging/Logging.hpp>
 #include <iostream>
 #include <cstdio>
 

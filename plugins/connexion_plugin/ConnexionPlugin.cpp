@@ -29,7 +29,7 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
-
+#include <mars/logging/Logging.hpp>
 #include <cstdio>
 /*
 #define printError(msg, ...) (LOG_ERROR(name + std::string(": ") + msg, ##__VA_ARGS__))

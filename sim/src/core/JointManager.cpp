@@ -39,6 +39,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/MutexLocker.h>
+#include <mars/logging/Logging.hpp>
 #include <mars/data_broker/DataBrokerInterface.h>
 
 namespace mars {

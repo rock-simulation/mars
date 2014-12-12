@@ -34,7 +34,7 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/utils/misc.h>
-
+#include <mars/logging/Logging.hpp>
 
 namespace mars {
   namespace urdf_loader {

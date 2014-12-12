@@ -36,6 +36,7 @@
 #include <mars/utils/ConfigData.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
+#include <mars/data_broker/DataPackage.h>
 
 #include "IDListConfig.h"
 

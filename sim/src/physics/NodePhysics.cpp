@@ -38,7 +38,7 @@
 #include "NodePhysics.h"
 #include "../sensors/RotatingRaySensor.h"
 
-
+#include <mars/logging/Logging.hpp>
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>

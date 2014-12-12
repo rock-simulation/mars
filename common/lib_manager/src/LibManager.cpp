@@ -37,6 +37,7 @@
 
 #include <cstdio>
 #include <stdlib.h>
+#include <mars/logging/Logging.hpp>
 
 namespace mars {
   namespace lib_manager {
