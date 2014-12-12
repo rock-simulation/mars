@@ -104,6 +104,11 @@ namespace mars {
       void myRealTime(void); ///< control the realtime calculation
       void runSimulation(bool startThread = true); ///< Initiates the simulation
 
+      /**
+       * Returns the tmp path for temprary files, on linux /tmp/mars on windows the current config_dir
+       */
+      std::string getTmpPath() const;
+
       virtual void StartSimulation() {
         stepping_mutex.lock();
         simulationStatus = RUNNING;
@@ -220,7 +225,7 @@ namespace mars {
       void processRequests();
       void reloadWorld(void);      
 
-      int arg_actual, arg_no_gui, arg_run, arg_grid, arg_ortho;
+      int arg_no_gui, arg_run, arg_grid, arg_ortho;
       bool reloadSim;
       short running;
       char was_running;

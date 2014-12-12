@@ -77,7 +77,7 @@ namespace mars {
 
       if(libMap.size() > 0) {
         for(it = libMap.begin(); it != libMap.end(); ++it) {
-          fprintf(stderr, "LibManager: [%s] not deleted correctly! "
+          LOG_ERROR("LibManager: [%s] not deleted correctly! "
                   "%d references remain.\n"
                   "      NOTE: The semantics of the LibManager has changed. To correctly\n"
                   "            dispose of a library acquired by a call to getLibrary(libName)\n"
@@ -86,9 +86,9 @@ namespace mars {
                   it->first.c_str(), it->second.useCount);
         }
       } else {
-        fprintf(stderr, "LibManager: successfully deleted all libraries!\n");
+        LOG_DEBUG("LibManager: successfully deleted all libraries!\n");
       }
-      fprintf(stderr, "Delete lib_manager\n");
+      LOG_DEBUG("Delete lib_manager\n");
     }
 
     /**
@@ -102,7 +102,7 @@ namespace mars {
         finished = true;
         for(it = libMap.begin(); it != libMap.end(); ++it) {
           if(it->second.useCount == 0) {
-            fprintf(stderr, "LibManager: delete [%s] !\n", it->first.c_str() );
+            LOG_DEBUG("LibManager: delete [%s] !\n", it->first.c_str() );
             if(it->second.destroy) {
               it->second.destroy(it->second.libInterface);
             }
@@ -171,7 +171,7 @@ namespace mars {
       const char sep = ':';
       const char *env = "LD_LIBRARY_PATH";
 #endif
-      fprintf(stderr, "lib_manager: load plugin: %s\n", libPath.c_str());
+      LOG_INFO("lib_manager: load plugin: %s\n", libPath.c_str());
 
       //try to locate the library somewhere by checking at various path positions
       FILE *testFile = fopen(libPath.c_str(), "r");
@@ -196,7 +196,7 @@ namespace mars {
             if(testFile) {
               fclose(testFile);
               filepath = actual_lib_path;
-              fprintf(stderr, "lib_manager: found plugin at: %s\n",
+              LOG_DEBUG("lib_manager: found plugin at: %s\n",
                       filepath.c_str());
               break;
             }
@@ -263,7 +263,7 @@ namespace mars {
      */
     LibInterface* LibManager::acquireLibrary(const string &libName) {
       if(libMap.find(libName) == libMap.end()) {
-        fprintf(stderr, "LibManager: could not find \"%s\"\n", libName.c_str());
+        LOG_ERROR("LibManager: could not find \"%s\"\n", libName.c_str());
         return 0;
       }
       libStruct *theLib = &(libMap[libName]);
@@ -299,7 +299,7 @@ namespace mars {
       libStruct *theLib = &(libMap[libName]);
       theLib->wasUnloaded = true;
       if(theLib->useCount <= 0) {
-        fprintf(stderr, "LibManager: unload delete [%s]\n", libName.c_str());
+        LOG_ERROR("LibManager: unload delete [%s]\n", libName.c_str());
         if(theLib->destroy) {
           theLib->destroy(theLib->libInterface);
         }
@@ -322,7 +322,7 @@ namespace mars {
 
       plugin_config = fopen(config_file.c_str() , "r");
       if(!plugin_config) {
-        fprintf(stderr, "LibManager::loadConfigFile: file \"%s\" not found.\n",
+        LOG_ERROR("LibManager::loadConfigFile: file \"%s\" not found.\n",
                 config_file.c_str());
         return;
       }
@@ -455,7 +455,7 @@ namespace mars {
 #endif
       if(!libHandle) {
         string errorMsg = getErrorStr();
-        fprintf(stderr, "ERROR: lib_manager cannot load library:\n       %s\n",
+        LOG_ERROR("ERROR: lib_manager cannot load library:\n       %s\n",
                 errorMsg.c_str());
       }
       return libHandle;
@@ -471,7 +471,7 @@ namespace mars {
 #endif
       if(!func) {
         string err = getErrorStr();
-        fprintf(stderr, 
+        LOG_ERROR( 
                 "ERROR: lib_manager cannot load library symbol \"%s\"\n"
                 "       %s\n", name.c_str(), err.c_str());
       }
