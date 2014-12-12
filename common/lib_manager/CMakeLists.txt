@@ -26,7 +26,7 @@ link_directories(${PKGCONFIG_LIBDIR})
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 add_library(${PROJECT_NAME}_static STATIC ${SOURCES})
     
-target_link_libraries(${PKGCONFIG_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${PKGCONFIG_LIBRARIES})
 
 if(UNIX)
     target_link_libraries(${PROJECT_NAME} dl)
