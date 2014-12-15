@@ -1361,6 +1361,15 @@ namespace mars {
       iMutex.unlock();
     }
 
+    void NodeManager::getContactIDs(const interfaces::NodeId &id,
+                                    std::list<interfaces::NodeId> *ids) const {
+      MutexLocker locker(&iMutex);
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if (iter != simNodes.end()) {
+        iter->second->getContactIDs(ids);
+      }
+    }
+
     void NodeManager::updateRay(NodeId id) {
       MutexLocker locker(&iMutex);
       NodeMap::iterator iter = simNodes.find(id);

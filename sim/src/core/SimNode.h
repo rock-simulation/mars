@@ -120,6 +120,7 @@ namespace mars {
       bool getGroundContact(void) const;      
       void getMass(interfaces::sReal *mass, interfaces::sReal *inertia) const;
       void getContactPoints(std::vector<utils::Vector> *contact_points) const;
+      void getContactIDs(std::list<interfaces::NodeId> *ids) const;
       int getVisualRep(void) const;
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
       double getCollisionDepth(void) const;

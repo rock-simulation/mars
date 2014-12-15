@@ -790,6 +790,13 @@ namespace mars {
       }
     }
 
+    void SimNode::getContactIDs(std::list<interfaces::NodeId> *ids) const {
+      MutexLocker locker(&iMutex);
+      if(my_interface) {
+        my_interface->getContactIDs(ids);
+      }
+    }
+
     const Vector SimNode::getContactForce(void) const {
       MutexLocker locker(&iMutex);
       if(my_interface) {
