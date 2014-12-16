@@ -66,6 +66,7 @@ namespace mars {
       contactForceIndex = -1;
       fieldwidth = config.cols * config.stepX;
       fieldheight = config.rows * config.stepY;
+      forces.resize(config.cols*config.rows, 0.0);
 
       control->nodes->addNodeSensor(this); //register sensor with NodePhysics
 
@@ -74,6 +75,19 @@ namespace mars {
       control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
       control->dataBroker->registerTimedReceiver(this, groupName, dataName, "mars_sim/simTimer",
           updateRate);
+      dbPackage.add("id", (long) config.id);
+      char nametag[7];
+      for (int c = 0; c < config.cols; c++) {
+        for (int r = 0; r < config.rows; r++) {
+          sprintf(nametag, "%3d/%3d", c, r);
+          dbPackage.add(nametag, 0.0);
+        }
+      }
+      char text[55];
+      sprintf(text, "Sensors/HF_%05lu", config.id);
+      dbPushId = control->dataBroker->pushData("mars_sim", text, dbPackage, NULL,
+          data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, "mars_sim", text, "mars_sim/simTimer", 0);
 
       position = control->nodes->getPosition(attached_node) + Vector(0, 0, 1);
       orientation = control->nodes->getRotation(attached_node);
@@ -122,6 +136,7 @@ namespace mars {
     HapticFieldSensor::~HapticFieldSensor(void) {
       control->graphics->removeDrawItems((DrawInterface*) this);
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+      control->dataBroker->unregisterTimedProducer(this, "*", "*", "mars_sim/simTimer");
     }
 
     int HapticFieldSensor::getAsciiData(char* data) const {
@@ -183,6 +198,18 @@ namespace mars {
       package.get(rotationIndices[3], &orientation.w());
 
       haveUpdate = true;
+    }
+
+    void HapticFieldSensor::produceData(const data_broker::DataInfo &info,
+        data_broker::DataPackage *dbPackage, int callbackParam) {
+      Vector tmp;
+      dbPackage->set(0, (long) id);
+//      fprintf(stderr, "  HapticFieldSensor: ");
+      for (int i = 0; i < forces.size(); ++i) {
+        dbPackage->set(i + 1, forces.at(i));
+//        fprintf(stderr, "%g, ", forces.at(i));
+      }
+//      fprintf(stderr, "\n");
     }
 
     void HapticFieldSensor::update(std::vector<draw_item>* drawItems) {

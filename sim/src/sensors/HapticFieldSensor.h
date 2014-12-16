@@ -92,6 +92,9 @@ namespace mars {
       virtual int getSensorData(interfaces::sReal** data) const;
       virtual void receiveData(const data_broker::DataInfo &info,
           const data_broker::DataPackage &package, int callbackParam);
+      virtual void produceData(const data_broker::DataInfo &info,
+                                     data_broker::DataPackage *package,
+                                     int callbackParam);
 
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
 
@@ -116,6 +119,8 @@ namespace mars {
       std::vector<double> forces;
       double fieldwidth, fieldheight;
       HapticFieldConfig config;
+      data_broker::DataPackage dbPackage;
+      unsigned long dbPushId;
     };
 
   } // end of namespace sim
