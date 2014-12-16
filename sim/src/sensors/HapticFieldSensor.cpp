@@ -30,6 +30,8 @@
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/PhysicsInterface.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
 #include <cstdio>
@@ -67,8 +69,9 @@ namespace mars {
       fieldwidth = config.cols * config.stepX;
       fieldheight = config.rows * config.stepY;
       forces.resize(config.cols*config.rows, 0.0);
+      weights.resize(config.cols*config.rows, 1.0);
 
-      control->nodes->addNodeSensor(this); //register sensor with NodePhysics
+      //control->nodes->addNodeSensor(this); //register sensor with NodePhysics
 
       // register with DataBroker
       std::string groupName, dataName;
@@ -89,18 +92,26 @@ namespace mars {
           data_broker::DATA_PACKAGE_READ_FLAG);
       control->dataBroker->registerTimedProducer(this, "mars_sim", text, "mars_sim/simTimer", 0);
 
-      position = control->nodes->getPosition(attached_node) + Vector(0, 0, 1);
+      position = control->nodes->getPosition(attached_node);
       orientation = control->nodes->getRotation(attached_node);
+      ray = Vector(0, 0, maxDistance);
+      Vector offset;
+      for (int c = 0; c < config.cols; c++) {
+        for (int r = 0; r < config.rows; r++) {
+          offset = Vector(-0.5 * fieldwidth + c * config.stepX,
+              -0.5 * fieldheight + r * config.stepY, -0.5*maxDistance);
+          sensorpoints.push_back(offset);
+        }
+      }
 
       drawStruct draw;
       draw_item item;
-      Vector tmp;
-      Vector offset;
       haveUpdate = false;
       for (int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
       for (int i = 0; i < 4; ++i)
         rotationIndices[i] = -1;
+
       //Drawing Stuff (taken from RaySensor)
       if (config.drawRays) {
         draw.ptr_draw = (DrawInterface*) this;
@@ -115,19 +126,11 @@ namespace mars {
         item.texture = "";
         item.t_width = item.t_height = 0;
         item.get_light = 0.0;
-
-        for (int c = 0; c < config.cols; c++) {
-          for (int r = 0; r < config.rows; r++) {
-            tmp = (orientation * Vector(0, 0, 1));
-            offset = Vector(-0.5 * fieldwidth + c * config.stepX, -0.5 * fieldheight + r * config.stepY, 0);
-            sensorpoints.push_back(tmp);
+          for(int i=0; i<sensorpoints.size(); ++i) {
             item.start = position + offset;
-            item.end = (orientation * tmp);
-            item.end *= data[c + (config.cols * r)];
+            item.end = item.start + orientation * ray;
             draw.drawItems.push_back(item); // TEST
           }
-        }
-
         if (control->graphics)
           control->graphics->addDrawItems(&draw);
       }
@@ -170,7 +173,7 @@ namespace mars {
         contactIndex = package.getIndexByName("contact");
       }
       package.get(contactForceIndex, &contactForce);
-      package.get(contact, &contact);
+      package.get(contactIndex, &contact);
       if (contact) {
         computeForces();
       } else {
@@ -213,27 +216,17 @@ namespace mars {
     }
 
     void HapticFieldSensor::update(std::vector<draw_item>* drawItems) {
-      unsigned int i;
+      unsigned int i = 0;
       if (config.drawRays) {
         if (haveUpdate) {
           control->nodes->updateRay(attached_node);
           haveUpdate = false;
         }
-
-        fprintf(stderr, "HapticFieldSensor::drawItems: %i\n", drawItems->size());
-        Vector offset;
         if (!(*drawItems)[0].draw_state) {
-          for (int c = 0; c < config.cols; c++) {
-            for (int r = 0; r < config.rows; r++) {
-              offset = Vector(-0.5 * fieldwidth + c * config.stepX, -0.5 * fieldheight + r * config.stepY, 0);
-              i = c + (config.cols * r);
+          for (int i = 0; i < sensorpoints.size(); ++i) {
               (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
-              (*drawItems)[i].start = position + offset;
-              (*drawItems)[i].end = (orientation * sensorpoints[i]);
-              (*drawItems)[i].end *= data[i];
-
-              (*drawItems)[i].end += (*drawItems)[i].start;
-            }
+              (*drawItems)[i].start = position + orientation*(sensorpoints[i]);
+              (*drawItems)[i].end = (*drawItems)[i].start + (1-weights.at(i))*(orientation * ray);
           }
         }
       }
@@ -260,14 +253,28 @@ namespace mars {
 
     void HapticFieldSensor::computeForces() {
       // FIXME: add mutex here?
-      double distanceSum = 0;
-      for (std::vector<double>::iterator it = data.begin(); it < data.end(); ++it) {
-        *it = maxDistance - *it;
-        distanceSum += *it;
+      double weightSum = 0;
+      double weight = 0;
+      double distance = 0;
+      Vector pos, ray;
+      int i = 0;
+      //fprintf(stderr, "weights:\n");
+      for (int c = 0; c < config.cols; ++c) {
+        for (int r = 0; r < config.rows; ++r) {
+          i = c*config.rows+r;
+          pos = position + orientation*(sensorpoints.at(i));
+          ray = orientation*this->ray;
+          distance = control->sim->getPhysics()->getVectorCollision(pos, ray);
+          weight = 1 - distance/maxDistance; // = (maxDistance-distance)/maxDistance
+          weights.at(c*config.rows+r) = weight;
+//          fprintf(stderr, "%6g ", weight);
+          weightSum += weight;
+        }
+//        fprintf(stderr, "\n");
       }
-      double forceQuant = contactForce / distanceSum;
+      double forceQuant = contactForce / weightSum;
       for (int i = 0; i < forces.size(); ++i) {
-        forces.at(i) = data.at(i) * forceQuant;
+        forces.at(i) = weights.at(i) * forceQuant;
       }
     }
 

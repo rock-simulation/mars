@@ -106,7 +106,6 @@ namespace mars {
     private:
 
       void computeForces();
-      unsigned long sensor_node_id; // id of the node representing the sensor pad
       //std::map<unsigned long, double> contact_forces; // <id of node in contact, force exerted by said node>
       interfaces::drawStruct draw;
       int contactForceIndex, contactIndex;
@@ -116,7 +115,9 @@ namespace mars {
       long positionIndices[3];
       long rotationIndices[4];
       std::vector<utils::Vector> sensorpoints;
+      utils::Vector ray;
       std::vector<double> forces;
+      std::vector<double> weights;
       double fieldwidth, fieldheight;
       HapticFieldConfig config;
       data_broker::DataPackage dbPackage;
