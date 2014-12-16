@@ -374,7 +374,7 @@ namespace mars {
       }
 
 #ifdef DEBUG_TIME
-      long startTime = getTime();
+      long startTime = utils::getTime();
 
 #endif
       if(control->dataBroker) {
@@ -391,7 +391,7 @@ namespace mars {
       control->controllers->updateControllers(calc_ms);
 
       if(show_time)
-        time = getTime();
+        time = utils::getTime();
 
 
       getTimeMutex.lock();
@@ -421,7 +421,7 @@ namespace mars {
       for(unsigned int i = 0; i < activePlugins.size();) {
         erased_active = false;
         if(show_time)
-          time = getTime();
+          time = utils::getTime();
 
         activePlugins[i].p_interface->update(calc_ms);
 
@@ -551,7 +551,7 @@ namespace mars {
           throw std::runtime_error("clock_gettime(CLOCK_MONOTONIC, ...) failed");
         }
 #else
-      static long myTime = getTime();
+      static long myTime = utils::getTime();
       long timeDiff = getTimeDiff(myTime);
 
       if(show_time) {
@@ -560,7 +560,7 @@ namespace mars {
       if(timeDiff < calc_ms) {
         long valSleep = calc_ms - timeDiff;
         msleep(valSleep);
-        myTime = getTime();
+        myTime = utils::getTime();
         if(show_time) {
           fprintf(stderr, "sleep time: %ld\n", valSleep);
         }
@@ -752,7 +752,7 @@ namespace mars {
       pluginLocker.lockForRead();
       for (unsigned int i=0; i<guiPlugins.size(); i++) {
         if(show_time)
-          time = getTime();
+          time = utils::getTime();
 
         guiPlugins[i].p_interface->update(0);
 
