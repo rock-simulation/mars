@@ -50,6 +50,7 @@
 namespace mars {
   namespace graphics {
 
+    class GraphicsManager;
     class HUD;
     class HUDElement;
     const unsigned int MASK_2D = 0xF0000000;
@@ -63,7 +64,7 @@ namespace mars {
     public:
       GraphicsWidget(void *parent, osg::Group *scene,
                      unsigned long id, bool hasRTTWidget = 0,
-                     int f=0);
+                     int f=0, GraphicsManager *gm=0);
       ~GraphicsWidget();
       void initializeOSG(void *data = 0, GraphicsWidget* shared = 0,
                          int width = 0, int height = 0);
@@ -291,7 +292,7 @@ namespace mars {
       std::vector<osg::Node*> pickedObjects;
       enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE };
       PickMode pickmode;
-
+      GraphicsManager *gm;
 
       virtual void initialize() = 0;
       virtual osg::ref_ptr<osg::GraphicsContext> createWidgetContext(

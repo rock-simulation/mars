@@ -500,12 +500,14 @@ namespace mars {
 
       if (graphicsWindows.size() > 0) {
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
-                                                    next_window_id++, rtt);
+                                                    next_window_id++, rtt,
+                                                    0, this);
         gw->initializeOSG(myQTWidget, graphicsWindows[0], width, height);
       }
       else {
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
-                                                    next_window_id++);
+                                                    next_window_id++, 0,
+                                                    0, this);
         gw->initializeOSG(myQTWidget, 0, width, height);
       }
 
@@ -592,8 +594,18 @@ namespace mars {
 
       for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
         if((*iter)->getID() == id) {
-          viewer->removeView((*iter)->getView());
           delete (*iter);
+          break;
+        }
+      }
+    }
+
+    void GraphicsManager::removeGraphicsWidget(unsigned long id) {
+      std::vector<GraphicsWidget*>::iterator iter;
+
+      for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
+        if((*iter)->getID() == id) {
+          viewer->removeView((*iter)->getView());
           graphicsWindows.erase(iter);
           break;
         }

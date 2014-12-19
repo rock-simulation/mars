@@ -21,6 +21,7 @@
 #include "QtOsgMixGraphicsWidget.h"
 #include "GraphicsWidget.h"
 #include "HUD.h"
+#include "GraphicsManager.h"
 
 #include <mars/utils/Color.h>
 
@@ -62,8 +63,9 @@ namespace mars {
 
     GraphicsWidget::GraphicsWidget(void *parent,
                                    osg::Group* scene, unsigned long id,
-                                   bool isRTTWidget, int f):_osgWidgetWindowManager(0),_osgWidgetWindowCnt(0)
-    {
+                                   bool isRTTWidget, int f,
+                                   GraphicsManager *gm):
+      _osgWidgetWindowManager(0), _osgWidgetWindowCnt(0), gm(gm) {
       (void)f;
       (void)parent;
 
@@ -88,6 +90,12 @@ namespace mars {
     }
 
     GraphicsWidget::~GraphicsWidget() {
+      /* if the destructor is called from somewhere else than osg
+       * (e.g. from the QWidget) we have to increment the referece counter
+       * to prevent osg from calling the destructor one more time.
+       */
+      this->ref();
+      if(gm) gm->removeGraphicsWidget(widgetID);
       delete graphicsCamera;
       delete myHUD;
     }

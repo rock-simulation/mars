@@ -51,9 +51,10 @@
   #include <osgViewer/api/X11/GraphicsWindowX11>
 #endif
 
-
 namespace mars {
   namespace graphics {
+
+    class GraphicsManager;
 
 #ifdef USE_COCOA
     typedef QMacCocoaViewContainer MarsQtWidget;
@@ -85,13 +86,13 @@ namespace mars {
     public:
       QtOsgMixGraphicsWidget(void *parent, osg::Group *scene,
                              unsigned long id, bool rtt_widget = 0,
-                             Qt::WindowFlags f=0)
+                             Qt::WindowFlags f=0, GraphicsManager *gm = 0)
 #ifdef __APPLE__
         : MarsQtWidget(0, (QWidget*) parent),
 #else
         : MarsQtWidget((QWidget*) parent, f),
 #endif
-          GraphicsWidget(parent, scene, id, rtt_widget, f)
+        GraphicsWidget(parent, scene, id, rtt_widget, f, gm)
       {};
 
       // Prevent flicker on Windows Qt
@@ -127,7 +128,8 @@ namespace mars {
                                                     osg::Group *scene,
                                                     unsigned long id,
                                                     bool rtt_widget = 0,
-                                                    Qt::WindowFlags f=0);
+                                                    Qt::WindowFlags f=0,
+                                                    GraphicsManager *gm = 0);
 
     protected:
       virtual ~QtOsgMixGraphicsWidget() {};
