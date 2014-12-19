@@ -123,7 +123,8 @@ namespace mars {
 
       void deactivateRendering();
       void activateRendering();
-      
+      unsigned long getWindowID() const {return cam_window_id;}
+
     private:
       CameraConfigStruct config;
       interfaces::BaseCameraSensor<double> depthCamera;
