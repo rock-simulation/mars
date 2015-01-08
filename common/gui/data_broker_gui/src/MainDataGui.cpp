@@ -37,8 +37,8 @@ namespace mars {
 
     using namespace cfg_manager;
 
-    MainDataGui::MainDataGui(mars::lib_manager::LibManager *theManager) :
-      mars::lib_manager::LibInterface(theManager),
+    MainDataGui::MainDataGui(lib_manager::LibManager *theManager) :
+      lib_manager::LibInterface(theManager),
       gui(NULL), cfg(NULL), dataBroker(NULL), dataWidget(NULL) {
 
       // setup GUI with default path

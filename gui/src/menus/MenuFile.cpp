@@ -29,7 +29,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/main_gui/GuiInterface.h>
-#include <mars/lib_manager/LibManager.h>
+#include <lib_manager/LibManager.hpp>
 #include <QtGui>
 
 #include <QMessageBox>

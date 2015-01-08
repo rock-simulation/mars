@@ -39,11 +39,11 @@
 #include "../graphics/draw_structs.h"
 #include "../LightData.h"
 
-namespace mars {
+namespace lib_manager {
+  class LibManager;
+}
 
-  namespace lib_manager {
-    class LibManager;
-  }
+namespace mars {
 
   namespace interfaces {
 

@@ -47,10 +47,6 @@ class QWidget;
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace plugins {
     namespace lib_manager_gui {
 

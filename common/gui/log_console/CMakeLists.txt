@@ -4,9 +4,9 @@ set(PROJECT_DESCRIPTION "The library provides a console module.")
 cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-mars_defaults()
+find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 IF (APPLE)

@@ -28,8 +28,8 @@
 
 #include "GraphicsTimer.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibManager.hpp>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/main_gui/MainGUI.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/gui/MarsGuiInterface.h>
@@ -180,7 +180,7 @@ namespace mars {
       mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
 
       mars::interfaces::GraphicsManagerInterface *marsGraphics = NULL;
-      mars::lib_manager::LibInterface *lib= libManager->getLibrary("mars_graphics");
+      lib_manager::LibInterface *lib= libManager->getLibrary("mars_graphics");
       if(lib) {
         if( (marsGraphics = dynamic_cast<mars::interfaces::GraphicsManagerInterface*>(lib)) ) {
           // init osg

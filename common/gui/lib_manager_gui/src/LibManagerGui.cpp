@@ -50,7 +50,7 @@ namespace mars {
       };
 
       LibManagerGui::LibManagerGui(lib_manager::LibManager *theManager)
-        : mars::lib_manager::LibInterface(theManager)
+        : lib_manager::LibInterface(theManager)
         , mars::main_gui::MenuInterface()
         , widget(NULL)
         , cfg(NULL)

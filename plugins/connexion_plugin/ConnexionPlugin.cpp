@@ -40,7 +40,7 @@ namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
-      using namespace mars::lib_manager;
+      using namespace lib_manager;
       using namespace mars::interfaces;
       using namespace mars::utils;
       using namespace mars::sim;
