@@ -4,4 +4,5 @@
 	This library manages the loading and use of other libraries.
     </description>
     <tags>needs_opt</tags>
+    <depend package="simulation/mars/scripts/cmake"/>
 </package>
