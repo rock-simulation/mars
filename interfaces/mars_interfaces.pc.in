@@ -7,7 +7,7 @@ Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@PROJECT_NAME@
-Requires: mars_utils
+Requires: mars_utils @LIB_DEPS@ 
 
 Cflags: -I${includedir} @MARS_CORE_EIGEN_DEFINITIONS@
 

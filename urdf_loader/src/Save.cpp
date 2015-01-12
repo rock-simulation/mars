@@ -56,7 +56,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/utils.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 
 #include <QFile>
 

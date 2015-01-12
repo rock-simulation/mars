@@ -37,7 +37,7 @@
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 

@@ -29,13 +29,9 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 #include <cstdio>
-/*
-#define printError(msg, ...) (LOG_ERROR(name + std::string(": ") + msg, ##__VA_ARGS__))
-#define printWarning(msg, ...) (LOG_WARN(name + std::string(": ") + msg, ##__VA_ARGS__))
-#define printMessage(msg, ...) (LOG_INFO(name + std::string(": ") + msg, ##__VA_ARGS__))
-*/
+
 namespace mars {
   namespace plugins {
     namespace connexion_plugin {
@@ -93,7 +89,7 @@ namespace mars {
           run_thread = false;
         }
 
-        LOG_INFO("%s: loaded",name);
+        LOG_INFO("%s: loaded",name.c_str());
         if (is_init) {
           run_thread = true;
           LOG_INFO("%s: starting ...",name.c_str());

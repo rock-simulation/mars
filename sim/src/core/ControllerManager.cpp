@@ -37,7 +37,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/utils/MutexLocker.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 
 #include <stdexcept>
 

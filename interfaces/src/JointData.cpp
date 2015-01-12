@@ -21,7 +21,7 @@
 #include "JointData.h"
 #include "utils.h"
 #define FORWARD_DECL_ONLY
-#include <mars/logging/Logging.hpp>
+#include "Logging.hpp"
 #include "sim/ControlCenter.h"
 
 #include "sim/LoadCenter.h"

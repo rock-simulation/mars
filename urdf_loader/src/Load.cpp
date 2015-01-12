@@ -33,7 +33,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/utils/misc.h>

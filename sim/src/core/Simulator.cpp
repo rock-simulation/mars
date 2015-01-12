@@ -43,7 +43,7 @@
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/lib_manager/LibInterface.h>
-#include <mars/logging/Logging.hpp>
+#include <mars/interfaces/Logging.hpp>
 
 #include <signal.h>
 #include <getopt.h>
