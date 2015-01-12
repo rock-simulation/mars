@@ -35,6 +35,9 @@
   #warning "ControlCenter.h"
 #endif
 
+//Backward compatibility remove this include as soon as possible
+#include <mars/interfaces/Logging.hpp>
+
 #ifndef LOG_ERROR
 #define LOG_ERROR(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
 #define LOG_DEBUG(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
