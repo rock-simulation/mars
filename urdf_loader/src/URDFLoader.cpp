@@ -164,10 +164,11 @@ namespace mars {
         }
       }
       else { // if file_extension is "urdf"
-        //todo create entity and get real robotname
         robotname="";
         Load loadObject(control, path, robotname, mapIndex);
         loadObject.parseURDF(filename);
+        control->entities->addEntity(loadObject.getRobotname());
+        //TODO: do we need to call loadObject.setEntityConfig here?
         loadObject.load();
       }
 

@@ -56,6 +56,7 @@ namespace mars {
       unsigned int load();
       void addConfigMap(utils::ConfigMap &config);
       void setEntityConfig(const utils::ConfigMap &config);
+      std::string getRobotname();
 
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;

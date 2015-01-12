@@ -850,6 +850,10 @@ namespace mars {
         return 0;
       }
 
+      if (robotname == "") {
+        robotname = model.get()->name_;
+      }
+
       createFakeMaterial();
       std::map<std::string, boost::shared_ptr<urdf::Material> >::iterator it;
       for(it=model->materials_.begin(); it!=model->materials_.end(); ++it) {
@@ -1084,6 +1088,10 @@ namespace mars {
         control->entities->addController(robotname, newId);
       }
       return 1;
+    }
+
+    std::string Load::getRobotname() {
+      return robotname;
     }
 
   }// end of namespace urdf_loader
