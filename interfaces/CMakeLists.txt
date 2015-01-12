@@ -10,10 +10,7 @@ mars_defaults()
 define_module_info()
 
 #This adds base-lib to the package-config as dep.
-if(WIN32)
-else()
-    set(LIB_DEPS "base-lib")
-endif()
+set(LIB_DEPS "base-lib")
 
 pkg_check_modules(PKGCONFIG REQUIRED
         mars_utils
