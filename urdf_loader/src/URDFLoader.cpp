@@ -127,9 +127,9 @@ namespace mars {
           utils::ConfigMap entitydata = *sit;
           fprintf(stderr, "Reading smurf from path: %s\n", (path+(std::string)entitydata["URI"]).c_str());
           map = utils::ConfigMap::fromYamlFile(path + (std::string)entitydata["URI"]);
-          map.toYamlFile("smuf_debugmap.yml");
+          map.toYamlFile("smurf_debugmap.yml");
           // if we only load one smurf, we use the name provided in the .smurf file
-          fprintf(stderr, "map_name: %s\n", ((std::string)map["name"]).c_str());
+          fprintf(stderr, "map_name: %s\n", ((std::string)entitydata["name"]).c_str());
           if ((std::string)entitydata["name"] == "") {
             entitydata["name"] = (std::string)map["modelname"];
           }
