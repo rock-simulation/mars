@@ -34,6 +34,7 @@
 
 #include <mars/data_broker/ProducerInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
+#include <mars/data_broker/DataPackage.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 
 namespace mars {

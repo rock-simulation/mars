@@ -46,6 +46,9 @@ macro(mars_defaults)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
   endif()
+  if(ROCK)
+      add_definitions("-DROCK")
+  endif(ROCK)
 endmacro(mars_defaults)
 
 

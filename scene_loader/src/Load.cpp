@@ -38,6 +38,7 @@
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/utils/misc.h>
+#include <mars/interfaces/Logging.hpp>
 
 //#define DEBUG_PARSE_SENSOR 1
 

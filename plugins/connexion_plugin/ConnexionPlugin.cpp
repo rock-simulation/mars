@@ -29,13 +29,9 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
-
+#include <mars/interfaces/Logging.hpp>
 #include <cstdio>
-/*
-#define printError(msg, ...) (LOG_ERROR(name + std::string(": ") + msg, ##__VA_ARGS__))
-#define printWarning(msg, ...) (LOG_WARN(name + std::string(": ") + msg, ##__VA_ARGS__))
-#define printMessage(msg, ...) (LOG_INFO(name + std::string(": ") + msg, ##__VA_ARGS__))
-*/
+
 namespace mars {
   namespace plugins {
     namespace connexion_plugin {
@@ -85,24 +81,24 @@ namespace mars {
 
         camReset();
         if (initConnexionHID(0)) {
-          LOG_INFO(name+": Device registered");
-          LOG_INFO(name+"running ...");
+          LOG_INFO("%s: Device registered",name.c_str());
+          LOG_INFO("%s: running ...",name.c_str());
           is_init = true;
         } else {
-          LOG_ERROR(name+"not able to register Device.");
+          LOG_ERROR("%s: not able to register Device.",name.c_str());
           run_thread = false;
         }
 
-        LOG_INFO(name+"loaded");
+        LOG_INFO("%s: loaded",name.c_str());
         if (is_init) {
           run_thread = true;
-          LOG_INFO(name+"starting ...");
+          LOG_INFO("%s: starting ...",name.c_str());
           this->start();
         }
         else {
           run_thread = false;
           thread_closed = true;
-          LOG_ERROR(name+"init not successful.");
+          LOG_ERROR("%s: init not successful.",name.c_str());
         }
 
         // set update to gui update
@@ -265,7 +261,7 @@ namespace mars {
 
           msleep(20);
         }
-        LOG_INFO(name+"... stopped");
+        LOG_INFO("%s: ... stopped",name.c_str());
 
         thread_closed = true;
       }

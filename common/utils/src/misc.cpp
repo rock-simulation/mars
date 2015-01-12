@@ -45,6 +45,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <dirent.h>
+#include <stdio.h>
 #endif
 
 namespace mars {
@@ -105,7 +106,6 @@ namespace mars {
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix) {
       std::string tmp = prefix;
-      size_t pos;
 
       if(file->empty()) return;
       if(file->at(1) == '/') {
@@ -184,7 +184,32 @@ namespace mars {
 #ifdef WIN32
       int result = mkdir(dir.c_str());
 #else
-      int result = mkdir(dir.c_str(), mode);
+      char tmp[FILENAME_MAX];
+      char *p=0;
+      snprintf(tmp,sizeof(tmp),"%s",dir.c_str());
+      size_t len = strlen(tmp);
+      if(tmp[len-1] == '/'){
+        tmp[len-1] = 0;
+      }
+      int result=0;
+      struct stat info;
+      for(p=tmp+1;*p;p++){
+        if(*p == '/'){
+            *p=0;
+            if(stat(tmp, &info) == 0 && S_ISDIR(info.st_mode)){
+                //Directory already exists, assuming this is a first already existing part of the path
+            }else{
+                result = mkdir(tmp,mode);
+            }
+            if(result == -1){
+                break; 
+            }
+            *p='/';
+        }
+      }
+      if(result != -1){
+          result = mkdir(tmp, mode);
+      }
 #endif
       if(result == -1) {
         fprintf(stderr, "misc:: could not create dir: %s\n", dir.c_str());

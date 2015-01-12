@@ -43,6 +43,7 @@
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/lib_manager/LibInterface.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <signal.h>
 #include <getopt.h>
@@ -52,6 +53,7 @@
 
 #ifdef __linux__
 #include <time.h>
+#include <unistd.h> //for getpid()
 #endif
 
 #ifndef DEFAULT_CONFIG_DIR
@@ -100,7 +102,6 @@ namespace mars {
       sync_count = 0;
       load_option = OPEN_INITIAL;
       reloadSim = false;
-      arg_actual = OPEN_INITIAL;
       arg_run    = 0;
       arg_grid   = 0;
       arg_ortho  = 0;
@@ -579,6 +580,17 @@ namespace mars {
       return b_SceneChanged;
     }
 
+    std::string Simulator::getTmpPath() const{
+#ifdef __linux__
+        std::stringstream str;
+        str << "/tmp/mars/" << (int) getpid() << "/";
+        return str.str();
+#else
+        return configPath.sValue + std::string("/tmp/");
+#endif
+        
+    }
+
     void Simulator::sceneHasChanged(bool reseted) {
       if (reseted) {
         b_SceneChanged = false;
@@ -616,31 +628,18 @@ namespace mars {
     int Simulator::loadScene_internal(const std::string &filename,
                              bool wasrunning, const std::string &robotname) {
 
-      string tmpPath = configPath.sValue;
-        printf("Loading scene internal\n");
+      LOG_DEBUG("Loading scene internal\n");
 
       if(control->loadCenter->loadScene.empty()) {
         LOG_ERROR("Simulator:: no module to load scene found");
         return 0;
       }
 
-      // Check if path is relative, if so make it absolute
-      // since otherwise included terrains cannot be handled
-      if(configPath.sValue.empty()) {
-        throw std::runtime_error("Configuration path cannot be empty");
-      } else if(configPath.sValue.at(0) != '/') {
-        // Path is relative
-        tmpPath = utils::getCurrentWorkingDir();
-        tmpPath += "/" + configPath.sValue;
-      }
-
-      tmpPath.append("/tmp/");
-
       try {
         std::string suffix = utils::getFilenameSuffix(filename);
         if( control->loadCenter->loadScene.find(suffix) !=
             control->loadCenter->loadScene.end() ) {
-          if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), tmpPath.c_str(), robotname.c_str())) {
+          if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), getTmpPath().c_str(), robotname.c_str())) {
           return 0; //failed
           }
         }
@@ -663,11 +662,8 @@ namespace mars {
     }
 
     int Simulator::saveScene(const std::string &filename, bool wasrunning) {
-      string tmpPath = configPath.sValue;
-      tmpPath.append("/tmp/");
-
       std::string suffix = utils::getFilenameSuffix(filename);
-      if (control->loadCenter->loadScene[suffix]->saveFile(filename, tmpPath)!=1) {
+      if (control->loadCenter->loadScene[suffix]->saveFile(filename, getTmpPath())!=1) {
         LOG_ERROR("Simulator: an error somewhere while saving scene");
         return 0;
       }
@@ -827,30 +823,22 @@ namespace mars {
       int option_index = 0;
       int psflag = 0;
       int pgflag = 0;
-      int ptflag = 0;
       int psvflag = 0;
       int pdflag = 0;
 
       static struct option long_options[] = {
         {"help",no_argument,0,'h'},
-        {"actual",no_argument,0,'a'},
         {"run",no_argument,0,'r'},
         {"show_grid",no_argument,0,'g'},
         {"ortho",no_argument,0,'o'},
         {"scenename", 1, 0, 's'},
         {"config_dir", required_argument, 0, 'C'},
         {"c_port",1,0,'c'},
-        {"path",1,0,'p'},
-        {"stuffpath",1,&psflag,1},
-        {"guipath",1,&pgflag,1},
-        {"tmppath",1,&ptflag,1},
-        {"savepath",1,&psvflag,1},
-        {"debugpath",1,&pdflag,1},
         {0, 0, 0, 0}
       };
 
       while (1) {
-        c = getopt_long(argc, argv, "hargos:c:C:p:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hrgos:C:p:", long_options, &option_index);
         if (c == -1)
           break;
         switch (c) {
@@ -863,14 +851,11 @@ namespace mars {
                 arg_v_scene_name.push_back(tmp_v_s[i]);
               }
               else {
-                printf("The given scene file does not exists: %s\n",
+                LOG_ERROR("The given scene file does not exists: %s\n",
                        tmp_v_s[i].c_str());
               }
             }
           }
-          break;
-        case 'a':
-          arg_actual = OPEN_ACTUAL;
           break;
         case 'C':
           if(pathExists(optarg)) config_dir = optarg;
@@ -888,16 +873,12 @@ namespace mars {
         case 'o':
           arg_ortho = 1;
           break;
-        case 'p':
-
-          break;
         case 'h':
         default:
           printf("\naccepted parameters are:\n");
           printf("=======================================\n");
           printf("-h             this screen:\n");
           printf("-s <filename>  filename for scene to load\n");
-          printf("-a             load actual position information of scene\n");
           printf("-r             start directly the simulation\n");
           printf("-c             set standard controller port\n");
           printf("-C             path to Configuration\n");

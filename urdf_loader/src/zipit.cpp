@@ -22,6 +22,7 @@
 
 #include <mars/utils/misc.h>
 #include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <cstdlib>
 #include <cassert>

@@ -30,6 +30,7 @@
 #define MARS_INTERFACES_ENTITYMANAGER_INTERFACE_H
 
 #include <string>
+#include <vector>
 
 namespace mars {
   

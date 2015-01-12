@@ -34,6 +34,7 @@
 #endif
 
 #include "JointArraySensor.h"
+#include <mars/data_broker/DataPackage.h>
 
 namespace mars {
   namespace sim {

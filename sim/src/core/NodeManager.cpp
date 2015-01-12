@@ -35,6 +35,7 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/terrainStruct.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <mars/interfaces/utils.h>
 #include <mars/utils/mathUtils.h>

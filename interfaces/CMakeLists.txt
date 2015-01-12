@@ -9,6 +9,8 @@ include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 mars_defaults()
 define_module_info()
 
+#This adds base-lib to the package-config as dep.
+set(LIB_DEPS "base-lib")
 
 pkg_check_modules(PKGCONFIG REQUIRED
         mars_utils
@@ -22,6 +24,7 @@ include_directories(src)
 
 
 set(HEADERS
+    src/Logging.hpp
     src/cameraStruct.h
     src/contact_params.h
     src/ControllerData.h

@@ -15,12 +15,22 @@ set(HEADERS
 	src/LibManager.h
 )
 
+include(FindPkgConfig)
+pkg_check_modules(PKGCONFIG REQUIRED
+    mars_logging
+)
+
+include_directories(${PKGCONFIG_INCLUDE_DIRS})
+link_directories(${PKGCONFIG_LIBDIR})
+
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 add_library(${PROJECT_NAME}_static STATIC ${SOURCES})
+    
+target_link_libraries(${PROJECT_NAME} ${PKGCONFIG_LIBRARIES})
 
 if(UNIX)
-  target_link_libraries(${PROJECT_NAME} dl)
-  target_link_libraries(${PROJECT_NAME}_static dl)
+    target_link_libraries(${PROJECT_NAME} dl)
+    target_link_libraries(${PROJECT_NAME}_static dl)
 endif(UNIX)
 
 if(WIN32)
