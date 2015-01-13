@@ -118,6 +118,8 @@ namespace mars {
       void createFakeVisual(utils::ConfigMap *map);
       void createFakeCollision(utils::ConfigMap *map);
 
+      void setPose();
+
       unsigned int loadMaterial(utils::ConfigMap config);
       unsigned int loadNode(utils::ConfigMap config);
       unsigned int loadJoint(utils::ConfigMap config);

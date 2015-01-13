@@ -913,7 +913,37 @@ namespace mars {
         if (!loadGraphic(graphicList[i]))
           return 0;
 
+      setPose();
+
       return 1;
+    }
+
+    void Load::setPose() {
+      core_objects_exchange node;
+      uint nodeid = control->loadCenter->getMappedID(nodeIDMap[model->root_link_->name],
+          MAP_TYPE_NODE, mapIndex);
+      fprintf(stderr, "placing: %s, %d\n", (model->root_link_->name).c_str(), nodeid);
+      control->nodes->getNodeExchange(nodeid, &node);
+      Quaternion tmpQ;
+      Vector tmpR;
+      Vector tmpV;
+      tmpV[0] = entityconfig["position"][0];
+      tmpV[1] = entityconfig["position"][1];
+      tmpV[2] = entityconfig["position"][2];
+      fprintf(stderr, "entityposition_x: %f\n", (double)entityconfig["position"][0]);
+      fprintf(stderr, "entityposition_y: %f\n", (double)entityconfig["position"][1]);
+      fprintf(stderr, "entityposition_z: %f\n", (double)entityconfig["position"][2]);
+      tmpR[0] = entityconfig["rotation"][0];
+      tmpR[1] = entityconfig["rotation"][1];
+      tmpR[2] = entityconfig["rotation"][2];
+      tmpQ = eulerToQuaternion(tmpR);
+
+      NodeData my_node;
+      my_node.index = nodeid;
+      my_node.pos = tmpV;
+      my_node.rot = tmpQ;
+      control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
+      control->nodes->editNode(&my_node, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
     }
 
     unsigned int Load::loadNode(utils::ConfigMap config) {
