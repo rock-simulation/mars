@@ -146,6 +146,8 @@ namespace mars {
             file_extension = utils::getFilenameSuffix(file);
             if(file_extension == ".urdf") {
               urdfpath = path + file;
+              fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
+              loadObject.parseURDF(urdfpath);
             }
             else if(file_extension == ".yml") {
               utils::ConfigMap m2 = utils::ConfigMap::fromYamlFile(path+file);
@@ -155,10 +157,6 @@ namespace mars {
               fprintf(stderr, "URDFLoader: %s not yet implemented",
                       file_extension.c_str());
             }
-          }
-          if (urdfpath != "") {
-            fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-            loadObject.parseURDF(urdfpath);
           }
           loadObject.load();
         }
