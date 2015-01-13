@@ -952,7 +952,7 @@ namespace mars {
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
       if (robotname != "") {
-        control->entities->addNode(robotname, node.index, robotname+"/"+node.name);
+        control->entities->addNode(robotname, node.index, node.name);
       }
       return 1;
     }
@@ -987,7 +987,7 @@ namespace mars {
                                        MAP_TYPE_JOINT, mapIndex);
 
       if(robotname != "") {
-        control->entities->addJoint(robotname, joint.index, robotname+"/"+joint.name);
+        control->entities->addJoint(robotname, joint.index, joint.name);
       }
       return true;
     }
@@ -1012,7 +1012,7 @@ namespace mars {
                                        MAP_TYPE_MOTOR, mapIndex);
 
       if(robotname != "") {
-        control->entities->addMotor(robotname, motor.index, robotname+"/"+motor.name);
+        control->entities->addMotor(robotname, motor.index, motor.name);
       }
       return true;
     }
@@ -1021,7 +1021,6 @@ namespace mars {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 //      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
 //          ((std::string)config["type"]).c_str());
-      config["name"] = robotname+"/"+(std::string)config["name"];
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
         control->loadCenter->setMappedID((ulong)config["index"],
@@ -1058,14 +1057,12 @@ namespace mars {
         fprintf(stderr, "Load: error while loading light\n");
         return 0;
       }
-      light.name = robotname+"/"+light.name;
       control->sim->addLight(light);
       return true;
     }
 
     unsigned int Load::loadController(utils::ConfigMap config) {
       ControllerData controller;
-      config["name"] = robotname+"/"+(std::string)config["name"];
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
       int valid = controller.fromConfigMap(&config, tmpPath,
