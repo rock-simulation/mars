@@ -33,6 +33,7 @@
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/plugins/entity_generation/EntityFactoryInterface.h>
+#include <mars/plugins/entity_generation/EntityFactoryManager.h>
 #include "SaveLoadStructs.h"
 
 namespace mars {
@@ -61,6 +62,7 @@ namespace mars {
 
     private:
       interfaces::ControlCenter *control;
+      plugins::entity_generation::EntityFactoryManager* factoryManager;
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);

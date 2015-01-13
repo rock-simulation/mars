@@ -173,6 +173,7 @@ namespace mars {
         for (std::vector<utils::ConfigMap>::iterator sit = smurfs.begin();
             sit != smurfs.end(); ++sit) {
           createEntity(*sit);
+          factoryManager->createEntity(it->children);
         }
       }
       else { // if file_extension is "urdf"
