@@ -607,7 +607,7 @@ namespace mars {
         }
         if(needGroupID) {
           // we need to group mars nodes
-          config["groupid"] = (int)control->nodes->getMaxGroupID()+1;
+          config["groupid"] = nextGroupID++;
         }
         else {
           config["groupid"] = 0;
