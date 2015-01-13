@@ -32,12 +32,14 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
+#include <mars/plugins/entity_generation/EntityFactoryInterface.h>
 #include "SaveLoadStructs.h"
 
 namespace mars {
   namespace urdf_loader {
 
-    class URDFLoader : public interfaces::LoadSceneInterface {
+    class URDFLoader : public interfaces::LoadSceneInterface,
+      public mars::plugins::entity_generation::EntityFactoryInterface {
       
     public:
       URDFLoader(lib_manager::LibManager *theManager);
@@ -48,6 +50,9 @@ namespace mars {
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_urdf_loader");}
       CREATE_MODULE_INFO();
+
+      //compatibility with entity factory
+      sim::SimEntity* createEntity(const utils::ConfigMap& parameters);
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);

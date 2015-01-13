@@ -52,6 +52,8 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_interfaces
                             urdfdom
                             tinyxml
+                            entity_generation
+                            mars_sim
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
