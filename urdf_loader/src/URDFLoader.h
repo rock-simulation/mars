@@ -40,7 +40,7 @@ namespace mars {
   namespace urdf_loader {
 
     class URDFLoader : public interfaces::LoadSceneInterface,
-      public mars::plugins::entity_generation::EntityFactoryInterface {
+      public plugins::entity_generation::EntityFactoryInterface {
       
     public:
       URDFLoader(lib_manager::LibManager *theManager);

@@ -58,7 +58,7 @@ namespace mars {
         LOG_INFO("urdf_loader: added SMURF loader to loadCenter");
       }
 
-      mars::plugins::entity_generation::EntityFactoryManager* factoryManager =
+      factoryManager =
             theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
                 "entity_factory_manager");
         factoryManager->registerFactory("urdf", this);
@@ -161,6 +161,7 @@ namespace mars {
           map.toYamlFile("smurfs_debugmap.yml");
           for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
             (*it)["path"] = path;
+            (*it)["type"] = "smurf";
             smurfs.push_back((*it).children);
           }
         } else if(file_extension == ".smurf") {
@@ -172,8 +173,7 @@ namespace mars {
         fprintf(stderr, "Reading in smurfs...\n");
         for (std::vector<utils::ConfigMap>::iterator sit = smurfs.begin();
             sit != smurfs.end(); ++sit) {
-          createEntity(*sit);
-          factoryManager->createEntity(it->children);
+          factoryManager->createEntity(*sit);
         }
       }
       else { // if file_extension is "urdf"
