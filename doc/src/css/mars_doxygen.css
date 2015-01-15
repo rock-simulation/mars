@@ -19,7 +19,7 @@ h1.groupheader {
 
 h2.groupheader {
 	border-bottom: 1px solid #DEC5C1;
-	color: #B77E75;
+	color: #000000;
 	font-size: 150%;
 	font-weight: normal;
 	margin-top: 1.75em;
@@ -106,7 +106,7 @@ div.navtab {
 /* @group Link Styling */
 
 a {
-	color: #BE8A82;
+	color: #57493f;
 	font-weight: normal;
 	text-decoration: none;
 }
@@ -216,11 +216,11 @@ span.lineno {
         white-space: pre;
 }
 span.lineno a {
-	background-color: #D8D8D8;
+	background-color: #57493f;
 }
 
 span.lineno a:hover {
-	background-color: #C8C8C8;
+	background-color: #57493f;
 }
 
 div.ah {
