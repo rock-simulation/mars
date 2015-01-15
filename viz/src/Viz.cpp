@@ -26,8 +26,8 @@
 
 #include "Viz.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibManager.hpp>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/utils/misc.h>
 #include <mars/cfg_manager/CFGManager.h>
 #include <mars/graphics/GraphicsManager.h>
