@@ -22,8 +22,12 @@ if resp == "y" or resp == "Y":
     # http://doxygen.10944.n7.nabble.com/Images-not-copied-when-using-markdown-caption-image-foo-syntax-td509.html
     print ("Copying images to Doxygen folder...")
     os.chdir("../")
-    call(["cp", "-r", "src/images", "doxygen/images"])
-    os.chdir("doxygen")
-    call(["doxygen", "mars_doxyconf"])
-    call(["ln", "-s", "doxygen/html/index.html", "../mars_doxygen_index.html"])
+    #if not os.path.exists("build"):
+    #    os.makedirs("build")
+    #call(["cp", "-r", "src/images", "doxygen_build/images"])
+    #os.chdir("doxygen")
+    #call(["doxygen", "mars_doxyconf"])
+    #call(["ln", "-s", "doxygen_build/html/index.html", "../mars_doxygen_index.html"])
+    call(["make", "clean"])
+    call(["make"])
 print "\n Mars documentation up to date."
