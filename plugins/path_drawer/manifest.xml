@@ -3,7 +3,7 @@
      It draws a path based on an .obj file which contains the position vectors of the waypoint 
    </description>
     <depend package="simulation/mars/scripts/cmake" />
-    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/common/graphics/osg_lines" />
