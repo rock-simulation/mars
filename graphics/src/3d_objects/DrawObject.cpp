@@ -238,7 +238,8 @@ namespace mars {
       }
 
       if (mStruct.texturename != "") {
-        osg::ref_ptr<osg::Image> textureImage = osgDB::readImageFile(mStruct.texturename);
+        osg::ref_ptr<osg::Image> textureImage = GuiHelper::loadImage(mStruct.texturename);
+        //osgDB::readImageFile(mStruct.texturename);
         if(!textureImage.valid()){
           // do not fail silently, at least give error msg for now
           // TODO: not sure if colorMap_ is expected to be not null
@@ -246,12 +247,17 @@ namespace mars {
           cerr << "failed to load " << mStruct.texturename  << endl;
         }
 
+        /*
         colorMap_ = new osg::Texture2D;
         colorMap_->setImage(textureImage.get());
         colorMap_->setWrap(osg::Texture2D::WRAP_R, osg::Texture2D::REPEAT);
         colorMap_->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::REPEAT);
         colorMap_->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::REPEAT);
 
+        state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
+                                           osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+        */
+        colorMap_ = GuiHelper::loadTexture(mStruct.texturename);
         state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
                                            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
 
