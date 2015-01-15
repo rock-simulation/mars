@@ -72,6 +72,11 @@ namespace mars {
       osg::ref_ptr<osg::Texture2D> texture;
     }; // end of struct textureFileStruct
 
+    struct imageFileStruct {
+      std::string fileName;
+      osg::ref_ptr<osg::Image> image;
+    }; // end of struct imageFileStruct
+
     osg::Vec4 toOSGVec4(const mars::utils::Color &col);
     osg::Vec4 toOSGVec4(const mars::utils::Vector &v, float w);
 
@@ -118,6 +123,7 @@ namespace mars {
       static osg::ref_ptr<osg::Node> readNodeFromFile(std::string fileName);
       static osg::ref_ptr<osg::Node> readBobjFromFile(const std::string &filename);
       static osg::ref_ptr<osg::Texture2D> loadTexture(std::string filename);
+      static osg::ref_ptr<osg::Image> loadImage(std::string filename);
 
     private:
       osg::Geometry *my_geo;
@@ -129,6 +135,8 @@ namespace mars {
       static std::vector<nodeFileStruct> nodeFiles;
       // vector to prevent double load of textures
       static std::vector<textureFileStruct> textureFiles;
+      // vector to prevent double load of images
+      static std::vector<imageFileStruct> imageFiles;
     }; // end of class GuiHelper
 
   } // end of namespace graphics
