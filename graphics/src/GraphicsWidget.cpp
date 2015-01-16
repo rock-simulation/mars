@@ -719,6 +719,37 @@ namespace mars {
 
     }
 
+    osg::ref_ptr<osg::GraphicsContext> GraphicsWidget::createWidgetContext(
+                                                                           void* parent,
+                                                                           osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
+      //traits->windowDecoration = false;
+
+      osg::DisplaySettings* ds = osg::DisplaySettings::instance();
+      if (ds->getStereo()) {
+        switch(ds->getStereoMode()) {
+        case(osg::DisplaySettings::QUAD_BUFFER):
+          traits->quadBufferStereo = true;
+          break;
+        case(osg::DisplaySettings::VERTICAL_INTERLACE):
+        case(osg::DisplaySettings::CHECKERBOARD):
+        case(osg::DisplaySettings::HORIZONTAL_INTERLACE):
+          traits->stencil = 8;
+          break;
+        default: break;
+        }
+      }
+
+      osg::ref_ptr<osg::GraphicsContext> gc =
+        osg::GraphicsContext::createGraphicsContext(traits.get());
+
+      traits->x = 0;
+      traits->y = 0;
+      traits->width = 1920;
+      traits->height = 1080;
+
+      return gc;
+    }
+
     void GraphicsWidget::initializeOSG(void* data,
                                        GraphicsWidget* shared, int width, int height) {
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator;
@@ -1141,7 +1172,6 @@ namespace mars {
         graphicsEventHandler[0]->emitGeometryChange(widgetID,
                                                     ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
       }
-
       return true;
     }
 

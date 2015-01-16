@@ -508,6 +508,12 @@ namespace mars {
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
                                                     next_window_id++, 0,
                                                     0, this);
+
+        /* this will open an osg widget without qt wrapping
+        gw = new GraphicsWidget(myQTWidget, scene.get(),
+                                next_window_id++, 0,
+                                                    0, this);
+        */
         gw->initializeOSG(myQTWidget, 0, width, height);
       }
 

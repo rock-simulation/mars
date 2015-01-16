@@ -74,9 +74,9 @@ namespace mars {
       /**\brief returns actual mouse position */
       mars::utils::Vector getMousePos();
 
-      virtual void setWGeometry(int top, int left, int width, int height) = 0;
+      virtual void setWGeometry(int top, int left, int width, int height) {};
       virtual void getWGeometry(int *top, int *left,
-                                int *width, int *height) const = 0;
+                                int *width, int *height) {};
       void setFullscreen(bool val, int display = 1);
 
       osgViewer::View* getView(void);
@@ -108,8 +108,8 @@ namespace mars {
       void setGrabFrames(bool grab);
       void setSaveFrames(bool grab);
 
-      virtual void* getWidget() = 0;
-      virtual void showWidget() = 0;
+      virtual void* getWidget() {return NULL;}
+      virtual void showWidget() {};
 
       virtual void updateView();
 
@@ -294,9 +294,9 @@ namespace mars {
       PickMode pickmode;
       GraphicsManager *gm;
 
-      virtual void initialize() = 0;
+      virtual void initialize() {};
       virtual osg::ref_ptr<osg::GraphicsContext> createWidgetContext(
-                                                                     void* parent, osg::ref_ptr<osg::GraphicsContext::Traits> traits) = 0;
+                                                                     void* parent, osg::ref_ptr<osg::GraphicsContext::Traits> traits);
       void createContext(void* parent, GraphicsWidget* shared, int width, int height);
 
       // implements osgGA::GUIEventHandler::handle
@@ -318,7 +318,7 @@ namespace mars {
 
       bool pick(const double x, const double y);
 
-      virtual void setWidgetFullscreen(bool val) = 0;
+      virtual void setWidgetFullscreen(bool val) {};
 
       void grabFocus();
     }; // end of class GraphicsWidget
