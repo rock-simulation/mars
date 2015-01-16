@@ -1,0 +1,56 @@
+==========================
+ MARS installation guide
+==========================
+---------------
+ Version 0.1.0
+---------------
+
+
+0. Ubuntu
+==========
+ 1. cmake, git, QT, OpenSceneGraph, libz, opencv:
+    - sh apt_get_dep.sh
+
+ 2. Get and install MARS:
+    - . install_all_mars.sh
+
+
+1. Mac OS X
+============
+ Using macports (http://www.macports.org) is a nice way for most of the dependencies needed.
+ 1. cmake, git, pkgconfig, opencv:
+    - sh port_get_dep.sh
+ 2. Qt:
+    - install the Qt SDK from http://qt.nokia.com/products/
+ 3. OpenSceneGraph:
+    - Precompiled Frameworks are available at "research/projects/all/MARS/development/software/OSG Frameworks OSX 10.6 Cocoa" and can be copied into "/Library/Frameworks".
+    - The "OSG-Plugins" folder from that location can be copied into "/Library/Application Support/OSG/".
+    - Finally, a environment variable have to be set: OSG_LIBRARY_PATH="/Library/Application Support/OSG/"
+ 4. Get and install MARS:
+    - . install_all_mars.sh
+
+
+2. Windows 7
+=============
+ 1. cmake:
+    - download and install the cmake Win32 Installer from http://www.cmake.org/cmake/resources/software.html
+    - add the installed bin folder to your environment PATH
+ 2. git:
+    - download and install git for windows
+    - add the installed bin folder to your environment PATH
+    a more detailed description will be added here soon
+ 3. Qt:
+    - install the Qt 2010.04 SDK from ftp://ftp.qt.nokia.com/
+    - set QTDIR environment variable to your Qt intallation like QTDIR=C:\Qt\2010.04\qt
+ 4. MSYS:
+    - download and install MSYS version from http://www.mingw.org/wiki/MSYS
+ 5. OpenSceneGraph:
+    - A precompiled OSG version can be found at "research/projects/all/MARS/development/software/Win32_install"
+    - unzip the OpenSceneGraph-2.8.3-install.zip e.g. into C:\Developer\
+    - set a OSGDIR environment variable to your OpenSceneGraph installation like OSGDIR=C:\Developer\OpenSceneGraph-2.8.3-install
+ 6. MinGW update:
+    - unpack the mingw_lib_update.zip from "research/projects/all/MARS/development/software/Win32_install" into the Qt mingw folder e.g. C:\Qt\2010.04
+      WARNING: don't remove the old folder just extend it with the zipped one
+ 7. Get and install MARS:
+    - open a msys terminal
+    - and use the install script within your dev folder ". install_all_mars.sh"
