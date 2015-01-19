@@ -152,6 +152,7 @@ namespace mars {
 
       if (file_extension != ".urdf") { // if suffix is "smurf" or "smurfs"
         std::vector<utils::ConfigMap> smurfs; // a list of the smurfs found in a smurf scene
+        std::string file;
         utils::ConfigMap map;
         utils::ConfigVector::iterator it;
         fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
