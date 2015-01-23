@@ -19,14 +19,14 @@
  */
 
 /**
- * \file URDFLoader.h
- * \author Malte Langosz
+ * \file SMURFLoader.h
+ * \author Malte Langosz, Kai von Szadkowski
  */
-#ifndef SCENE_LOADER_H
-#define SCENE_LOADER_H
+#ifndef SMURF_LOADER_H
+#define SMURF_LOADER_H
 
 #ifdef _PRINT_HEADER_
-  #warning "URDFLoader.h"
+  #warning "SMURFLoader.h"
 #endif
 
 #include <mars/interfaces/sim/ControlCenter.h>
@@ -37,19 +37,17 @@
 #include "SaveLoadStructs.h"
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf {
 
-    class URDFLoader : public interfaces::LoadSceneInterface,
-      public plugins::entity_generation::EntityFactoryInterface {
-      
+    class SMURFLoader : public interfaces::LoadSceneInterface {
+
     public:
-      URDFLoader(lib_manager::LibManager *theManager);
-      ~URDFLoader();
-
+      SMURFLoader(lib_manager::LibManager *theManager);
+      ~SMURFLoader();
 
       // LibInterface methods
       int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("mars_urdf_loader");}
+      const std::string getLibName() const {return std::string("mars_smurf_loader");}
       CREATE_MODULE_INFO();
 
       //compatibility with entity factory
@@ -68,7 +66,7 @@ namespace mars {
                          const std::string& zipFilename);
     };
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
-#endif  // SCENE_LOADER_H
+#endif  // SMURF_LOADER_H

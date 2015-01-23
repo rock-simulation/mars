@@ -42,7 +42,7 @@
  */
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf {
 
     enum ZipitError {
       ZIPIT_SUCCESS = 0,
@@ -137,7 +137,7 @@ namespace mars {
       std::string zipFileName;
     };
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
 #endif

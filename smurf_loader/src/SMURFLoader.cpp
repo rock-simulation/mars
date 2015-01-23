@@ -20,13 +20,11 @@
 
 /**
  *
- * \file URDFLoader.cpp
+ * \file SMURFLoader.cpp
  * \author Malte Langosz, Kai von Szadkowski
  */
 
-#include "URDFLoader.h"
-#include "Load.h"
-#include "Save.h"
+#include "SMURFLoader.h"
 #include "zipit.h"
 
 #include <mars/lib_manager/LibManager.h>
@@ -38,13 +36,12 @@
 
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf {
 
     using namespace std;
 
-    URDFLoader::URDFLoader(lib_manager::LibManager *theManager) :
-      interfaces::LoadSceneInterface(theManager), control(NULL),
-      mars::plugins::entity_generation::EntityFactoryInterface("smurf, urdf"){
+    SMURFLoader::SMURFLoader(lib_manager::LibManager *theManager) :
+      interfaces::LoadSceneInterface(theManager), control(NULL){
 
       mars::interfaces::SimulatorInterface *marsSim;
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
@@ -65,7 +62,7 @@ namespace mars {
         factoryManager->registerFactory("smurf", this);
     }
 
-    URDFLoader::~URDFLoader() {
+    SMURFLoader::~SMURFLoader() {
       if(control) {
         control->loadCenter->loadScene.erase(".zsmurf");
         control->loadCenter->loadScene.erase(".zsmurfs");
@@ -132,7 +129,7 @@ namespace mars {
        * @return 1 if the file was successfully loaded, 0 otherwise
        */
     //TODO: remove parameter "robotname"
-    bool URDFLoader::loadFile(std::string filename, std::string tmpPath,
+    bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
       LOG_INFO("urdf_loader: prepare loading");
 
@@ -190,13 +187,12 @@ namespace mars {
       return 1; //TODO: check number of successfully loaded entities before returning 1
     }
 
-    int URDFLoader::saveFile(std::string filename, std::string tmpPath) {
-      Save saveObject(filename.c_str(), control, tmpPath);
-      return saveObject.prepare();
+    int SMURFLoader::saveFile(std::string filename, std::string tmpPath) {
+      return 0;
     }
 
 
-    unsigned int URDFLoader::unzip(const std::string& destinationDir,
+    unsigned int SMURFLoader::unzip(const std::string& destinationDir,
                                      const std::string& zipFilename) {
       if (!utils::createDirectory(destinationDir))
         return 0;
@@ -210,8 +206,8 @@ namespace mars {
       return 1;
     }
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
-DESTROY_LIB(mars::urdf_loader::URDFLoader);
-CREATE_LIB(mars::urdf_loader::URDFLoader);
+DESTROY_LIB(mars::smurf::SMURFLoader);
+CREATE_LIB(mars::smurf::SMURFLoader);

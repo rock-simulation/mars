@@ -18,7 +18,7 @@
  *
  */
 
-#include "Load.h"
+#include "smurf.h"
 
 #include <QtXml>
 #include <QDomNodeList>
@@ -53,15 +53,14 @@
  */
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf_loader {
 
     using namespace std;
     using namespace interfaces;
     using namespace utils;
 
-    Load::Load(ControlCenter *c, std::string tmpPath,
-               std::string robotname, unsigned int mapIndex) :
-      control(c), tmpPath(tmpPath), mapIndex(mapIndex), robotname(robotname) {
+    SMURF::SMURF(lib_manager::LibManager *theManager): MarsPluginTemplate(theManager, "SMURF"),
+        plugins::entity_generation::EntityFactoryInterface("smurf, urdf") {
 
       nextGroupID = control->nodes->getMaxGroupID()+1;
       nextNodeID = 1;
@@ -71,15 +70,18 @@ namespace mars {
       nextSensorID = 1;
       nextControllerID = 1;
     }
+    
+    SMURF::~SMURF(){
+    }
 
-    void Load::handleURI(utils::ConfigMap *map, std::string uri) {
+    void SMURF::handleURI(utils::ConfigMap *map, std::string uri) {
       utils::ConfigMap map2 = utils::ConfigMap::fromYamlFile(uri);
       handleURIs(&map2);
       map->append(map2);
     }
 
-    void Load::handleURIs(utils::ConfigMap *map) {
       if(map->find("URI") != map->end()) {
+    void SMURF::handleURIs(utils::ConfigMap *map) {
         std::string file = (std::string)(*map)["URI"][0];
         if(!file.empty() && file[0] != '/') {
           file = tmpPath + file;
@@ -98,7 +100,7 @@ namespace mars {
       }
     }
 
-    void Load::getSensorIDList(utils::ConfigMap *map) {
+    void SMURF::getSensorIDList(utils::ConfigMap *map) {
       utils::ConfigVector::iterator it;
       unsigned long id;
 
@@ -130,11 +132,11 @@ namespace mars {
       }
     }
 
-    void Load::setEntityConfig(const utils::ConfigMap &config) {
       entityconfig = config;
+    sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
     }
 
-    void Load::addConfigMap(utils::ConfigMap &config) {
+    void SMURF::addConfigMap(utils::ConfigMap &config) {
       utils::ConfigVector::iterator it;
       for(it = config["motors"].begin(); it!=config["motors"].end(); ++it) {
         handleURIs(&it->children);
@@ -302,9 +304,8 @@ namespace mars {
       }
     }
 
-    void Load::handleInertial(ConfigMap *map,
-                              const boost::shared_ptr<urdf::Link> &link) {
       if(link->inertial) {
+    void SMURF::handleInertial(ConfigMap *map, const boost::shared_ptr<urdf::Link> &link) {
         (*map)["density"] = 0.0;
         (*map)["mass"] = link->inertial->mass;
         // handle inertial
@@ -324,8 +325,7 @@ namespace mars {
       }
     }
 
-    void Load::calculatePose(ConfigMap *map,
-                             const boost::shared_ptr<urdf::Link> &link) {
+    void SMURF::calculatePose(ConfigMap *map, const boost::shared_ptr<urdf::Link> &link) {
       urdf::Pose jointPose, parentInertialPose, inertialPose;
       urdf::Pose goalPose;
 
@@ -376,7 +376,7 @@ namespace mars {
       quaternionToConfigItem(&(*map)["rotation"][0], &q);
     }
 
-    urdf::Pose Load::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
+    urdf::Pose SMURF::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
       urdf::Pose globalPose;
       boost::shared_ptr<urdf::Link> pLink = link->getParent();
       if(link->parent_joint) {
@@ -391,9 +391,8 @@ namespace mars {
       return globalPose;
     }
 
-    void Load::handleVisual(ConfigMap *map,
-                            const boost::shared_ptr<urdf::Visual> &visual) {
       boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
+    void SMURF::handleVisual(ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual) {
       Vector size(0.0, 0.0, 0.0);
       Vector scale(1.0, 1.0, 1.0);
       urdf::Vector3 v;
@@ -427,9 +426,8 @@ namespace mars {
       (*map)["materialName"] = visual->material_name;
     }
 
-    void Load::convertPose(const urdf::Pose &pose,
-                           const boost::shared_ptr<urdf::Link> &link,
-                           Vector *v, Quaternion *q) {
+    void SMURF::convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
+        Vector *v, Quaternion *q) {
       urdf::Pose toPose;
 
       if(link->inertial) {
@@ -445,9 +443,8 @@ namespace mars {
       convertPose(pose, toPose, v, q);
     }
 
-    void Load::convertPose(const urdf::Pose &pose,
-                           const urdf::Pose &toPose,
-                           Vector *v, Quaternion *q) {
+    void SMURF::convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, Vector *v,
+        Quaternion *q) {
       urdf::Pose pose_ = pose;
       urdf::Pose toPose_ = toPose;
       urdf::Vector3 p;
@@ -465,7 +462,7 @@ namespace mars {
       *q = quaternionFromMembers(r);
     }
 
-    bool Load::isEqualPos(const urdf::Pose &p1, const urdf::Pose p2) {
+    bool SMURF::isEqualPos(const urdf::Pose &p1, const urdf::Pose p2) {
       bool equal = true;
       double epsilon = 0.00000000001;
       if(fabs(p1.position.x - p2.position.x) > epsilon) equal = false;
@@ -478,9 +475,8 @@ namespace mars {
       return equal;
     }
 
-    void Load::handleCollision(ConfigMap *map,
-                               const boost::shared_ptr<urdf::Collision> &c) {
-      boost::shared_ptr<urdf::Geometry> tmpGeometry = c->geometry;
+    void SMURF::handleCollision(ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c) {
+      boost::shared_ptr < urdf::Geometry > tmpGeometry = c->geometry;
       Vector size(0.0, 0.0, 0.0);
       Vector scale(1.0, 1.0, 1.0);
       urdf::Vector3 v;
@@ -518,7 +514,7 @@ namespace mars {
       }
     }
 
-    void Load::createFakeMaterial() {
+    void SMURF::createFakeMaterial() {
       ConfigMap config;
 
       config["id"] = nextMaterialID++;
@@ -534,7 +530,7 @@ namespace mars {
       materialList.push_back(config);
     }
 
-    void Load::createFakeVisual(ConfigMap *map) {
+    void SMURF::createFakeVisual(ConfigMap *map) {
       Vector size(0.01, 0.01, 0.01);
       Vector scale(1.0, 1.0, 1.0);
       (*map)["filename"] = "PRIMITIVE";
@@ -545,7 +541,7 @@ namespace mars {
       vectorToConfigItem(&(*map)["visualscale"][0], &scale);
     }
 
-    void Load::createFakeCollision(ConfigMap *map) {
+    void SMURF::createFakeCollision(ConfigMap *map) {
       Vector size(0.01, 0.01, 0.01);
       (*map)["physicmode"] = "box";
       (*map)["coll_bitmask"] = 0;
@@ -553,7 +549,7 @@ namespace mars {
       vectorToConfigItem(&(*map)["extend"][0], &size);
     }
 
-    void Load::handleKinematics(boost::shared_ptr<urdf::Link> link) {
+    void SMURF::handleKinematics(boost::shared_ptr<urdf::Link> link) {
       ConfigMap config;
       // holds the index of the next visual object to load
       int visualArrayIndex = 0;
@@ -808,7 +804,7 @@ namespace mars {
       }
     }
 
-    void Load::handleMaterial(boost::shared_ptr<urdf::Material> material) {
+    void SMURF::handleMaterial(boost::shared_ptr<urdf::Material> material) {
       ConfigMap config;
 
       config["id"] = nextMaterialID++;
@@ -824,7 +820,7 @@ namespace mars {
     }
 
 
-    unsigned int Load::parseURDF(std::string filename) {
+    unsigned int SMURF::parseURDF(std::string filename) {
       //  HandleFileNames h_filenames;
       vector<string> v_filesToLoad;
       QString xmlErrorMsg = "";
@@ -878,8 +874,8 @@ namespace mars {
       return 1;
     }
 
-    unsigned int Load::load() {
       fprintf(stderr, "Loading robot: %s...\n", robotname.c_str());
+    unsigned int SMURF::load() {
       debugMap.toYamlFile("debugMap.yml");
 
       for (unsigned int i = 0; i < materialList.size(); ++i)
@@ -918,7 +914,7 @@ namespace mars {
       return 1;
     }
 
-    void Load::setPose() {
+    void SMURF::setPose() {
       core_objects_exchange node;
       uint nodeid = control->loadCenter->getMappedID(nodeIDMap[model->root_link_->name],
           MAP_TYPE_NODE, mapIndex);
@@ -946,7 +942,7 @@ namespace mars {
       control->nodes->editNode(&my_node, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
     }
 
-    unsigned int Load::loadNode(utils::ConfigMap config) {
+    unsigned int SMURF::loadNode(utils::ConfigMap config) {
       NodeData node;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
@@ -987,7 +983,7 @@ namespace mars {
       return 1;
     }
 
-    unsigned int Load::loadMaterial(utils::ConfigMap config) {
+    unsigned int SMURF::loadMaterial(utils::ConfigMap config) {
       MaterialData material;
 
       int valid = material.fromConfigMap(&config, tmpPath);
@@ -996,7 +992,7 @@ namespace mars {
       return valid;
     }
 
-    unsigned int Load::loadJoint(utils::ConfigMap config) {
+    unsigned int SMURF::loadJoint(utils::ConfigMap config) {
       JointData joint;
       joint.invertAxis = true;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
@@ -1022,7 +1018,7 @@ namespace mars {
       return true;
     }
 
-    unsigned int Load::loadMotor(utils::ConfigMap config) {
+    unsigned int SMURF::loadMotor(utils::ConfigMap config) {
       MotorData motor;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
@@ -1047,7 +1043,7 @@ namespace mars {
       return true;
     }
 
-    BaseSensor* Load::loadSensor(utils::ConfigMap config) {
+    BaseSensor* SMURF::loadSensor(utils::ConfigMap config) {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 //      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
 //          ((std::string)config["type"]).c_str());
@@ -1062,7 +1058,7 @@ namespace mars {
       return sensor;
     }
 
-    unsigned int Load::loadGraphic(utils::ConfigMap config) {
+    unsigned int SMURF::loadGraphic(utils::ConfigMap config) {
       GraphicData graphic;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = graphic.fromConfigMap(&config, tmpPath,
@@ -1078,7 +1074,7 @@ namespace mars {
       return 1;
     }
 
-    unsigned int Load::loadLight(utils::ConfigMap config) {
+    unsigned int SMURF::loadLight(utils::ConfigMap config) {
       LightData light;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
       int valid = light.fromConfigMap(&config, tmpPath,
@@ -1091,7 +1087,7 @@ namespace mars {
       return true;
     }
 
-    unsigned int Load::loadController(utils::ConfigMap config) {
+    unsigned int SMURF::loadController(utils::ConfigMap config) {
       ControllerData controller;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
@@ -1117,10 +1113,10 @@ namespace mars {
       return 1;
     }
 
-    std::string Load::getRobotname() {
+    std::string SMURF::getRobotname() {
       return robotname;
     }
 
-  }// end of namespace urdf_loader
+  }        // end of namespace smurf
 }
 // end of namespace mars

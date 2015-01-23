@@ -18,11 +18,11 @@
  *
  */
 
-#ifndef LOAD_H
-#define LOAD_H
+#ifndef SMURF_H
+#define SMURF_H
 
 #ifdef _PRINT_HEADER_
-  #warning "Load.h"
+#warning "smurf.h"
 #endif
 
 #include <map>
@@ -42,12 +42,15 @@
 #include <urdf_model/pose.h>
 
 namespace mars {
-  namespace urdf_loader {
 
-    class Load {
+  namespace smurf_loader {
+
+    class SMURF: public interfaces::MarsPluginTemplate,
+        public mars::plugins::entity_generation::EntityFactoryInterface {
+
     public:
-      Load(interfaces::ControlCenter *control, std::string tmpPath,
-           std::string robotname, unsigned int mapIndex);
+      SMURF(lib_manager::LibManager *theManager);
+      ~SMURF();
 
       /**
        * @return 0 on error.
@@ -132,7 +135,7 @@ namespace mars {
       urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
     };
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
-#endif  // LOAD_H
+#endif  // SMURF_H
