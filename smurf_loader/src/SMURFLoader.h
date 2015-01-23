@@ -29,11 +29,14 @@
   #warning "SMURFLoader.h"
 #endif
 
+#include <QtXml>
+#include <QDomNodeList>
+
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/plugins/entity_generation/EntityFactoryManager.h>
-#include "SaveLoadStructs.h"
+#include <mars/utils/ConfigData.h>
 
 namespace mars {
   namespace smurf {
@@ -51,12 +54,27 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
-      
       virtual int saveFile(std::string filename, std::string tmpPath);
 
+      // SMURF-Loader specific functions
+      void getGenericConfig(std::vector<utils::ConfigMap> *configList,
+          const QDomElement &elementNode);
+      void getGenericConfig(utils::ConfigMap *config, const QDomElement &elementNode);
+      void checkEncodings();
+      unsigned int parseSVG(std::vector<utils::ConfigMap> *configList,
+          std::string sceneFilename);
+
     private:
+      std::string tmpPath;
+      double global_width;
+      double global_length;
+      std::map<std::string, std::string> params;
+      std::vector<utils::ConfigMap> entityList;
+      utils::ConfigMap courseconfig;
+
       interfaces::ControlCenter *control;
       plugins::entity_generation::EntityFactoryManager* factoryManager;
+      std::vector<utils::ConfigMap> entitylist; // a list of the entities to be loaded
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
