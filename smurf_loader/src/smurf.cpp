@@ -60,11 +60,12 @@ namespace mars {
     using namespace interfaces;
     using namespace utils;
 
-    SMURF::SMURF(lib_manager::LibManager *theManager): MarsPluginTemplate(theManager, "SMURF"),
-        plugins::entity_generation::EntityFactoryInterface("smurf, urdf") {
+    SMURF::SMURF(lib_manager::LibManager *theManager) :
+        MarsPluginTemplate(theManager, "SMURF"), plugins::entity_generation::EntityFactoryInterface(
+            "smurf, urdf") {
       plugins::entity_generation::EntityFactoryManager* factoryManager =
-          theManager->acquireLibraryAs < mars::plugins::entity_generation::EntityFactoryManager
-              > ("entity_factory_manager");
+          theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
+              "entity_factory_manager");
       factoryManager->registerFactory("smurf", this);
 
       mapIndex = 666;
@@ -77,16 +78,16 @@ namespace mars {
       nextSensorID = 1;
       nextControllerID = 1;
     }
-    
-    SMURF::~SMURF(){
+
+    SMURF::~SMURF() {
     }
-    
+
     void SMURF::init() {
     }
-    
+
     void SMURF::reset() {
     }
-    
+
     void SMURF::update(sReal time_ms) {
     }
 
@@ -96,19 +97,19 @@ namespace mars {
       map->append(map2);
     }
 
-      if(map->find("URI") != map->end()) {
     void SMURF::handleURIs(utils::ConfigMap *map) {
-        std::string file = (std::string)(*map)["URI"][0];
-        if(!file.empty() && file[0] != '/') {
+      if (map->find("URI") != map->end()) {
+        std::string file = (std::string) (*map)["URI"][0];
+        if (!file.empty() && file[0] != '/') {
           file = tmpPath + file;
         }
         handleURI(map, file);
       }
-      if(map->find("URIs") != map->end()) {
+      if (map->find("URIs") != map->end()) {
         utils::ConfigVector::iterator vIt = (*map)["URIs"].begin();
-        for(; vIt!=(*map)["URIs"].end(); ++vIt) {
-          std::string file = (std::string)(*vIt);
-          if(!file.empty() && file[0] != '/') {
+        for (; vIt != (*map)["URIs"].end(); ++vIt) {
+          std::string file = (std::string) (*vIt);
+          if (!file.empty() && file[0] != '/') {
             file = tmpPath + file;
           }
           handleURI(map, file);
@@ -122,28 +123,25 @@ namespace mars {
 
       // todo: check if objects exists in maps
 
-      if(map->find("link") != map->end()) {
-        (*map)["nodeID"] = nodeIDMap[(std::string)(*map)["link"][0]];
+      if (map->find("link") != map->end()) {
+        (*map)["nodeID"] = nodeIDMap[(std::string) (*map)["link"][0]];
       }
-      if(map->find("joint") != map->end()) {
-        (*map)["jointID"] = jointIDMap[(std::string)(*map)["joint"][0]];
+      if (map->find("joint") != map->end()) {
+        (*map)["jointID"] = jointIDMap[(std::string) (*map)["joint"][0]];
       }
-      if(map->find("links") != map->end()) {
-        for(it=(*map)["links"].begin();
-            it!=(*map)["links"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string)*it]));
+      if (map->find("links") != map->end()) {
+        for (it = (*map)["links"].begin(); it != (*map)["links"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string) *it]));
         }
       }
-      if(map->find("joints") != map->end()) {
-        for(it=(*map)["joints"].begin();
-            it!=(*map)["joints"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string)*it]));
+      if (map->find("joints") != map->end()) {
+        for (it = (*map)["joints"].begin(); it != (*map)["joints"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string) *it]));
         }
       }
-      if(map->find("motors") != map->end()) {
-        for(it=(*map)["motors"].begin();
-            it!=(*map)["motors"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string)*it]));
+      if (map->find("motors") != map->end()) {
+        for (it = (*map)["motors"].begin(); it != (*map)["motors"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string) *it]));
         }
       }
     }
@@ -151,36 +149,33 @@ namespace mars {
     sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
       entityconfig.append(config);
       sim::SimEntity* entity = new sim::SimEntity(entityconfig);
-      std::string path = (std::string)entityconfig["path"];
-      if ((std::string)entityconfig["name"] == "") {
-              entityconfig["name"] = (std::string)entityconfig["modelname"];
-            }
+      std::string path = (std::string) entityconfig["path"];
+      if ((std::string) entityconfig["name"] == "") {
+        entityconfig["name"] = (std::string) entityconfig["modelname"];
+      }
       // TODO: we should have a system that first loads the URDF and then the other files in
       //   order of priority (or sort the contents in a way as to avoid errors upon loading).
       std::string file;
       std::string file_extension;
       std::string urdfpath = "";
-      if((std::string)entityconfig["type"] == "SMURF") {
+      if ((std::string) entityconfig["type"] == "SMURF") {
         utils::ConfigVector::iterator it;
-        for(it = entityconfig["files"].begin(); it!=entityconfig["files"].end(); ++it) {
-          file = (std::string)(*it);
+        for (it = entityconfig["files"].begin(); it != entityconfig["files"].end(); ++it) {
+          file = (std::string) (*it);
           file_extension = utils::getFilenameSuffix(file);
-          if(file_extension == ".urdf") {
+          if (file_extension == ".urdf") {
             urdfpath = path + file;
             fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
             parseURDF(urdfpath);
-          }
-          else if(file_extension == ".yml") {
-            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path+file);
+          } else if (file_extension == ".yml") {
+            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path + file);
             addConfigMap(tmpconfig);
-          }
-          else {
-            fprintf(stderr, "SMURFLoader: %s not yet implemented",
-                    file_extension.c_str());
+          } else {
+            fprintf(stderr, "SMURFLoader: %s not yet implemented", file_extension.c_str());
           }
         }
       } else { // if type is URDF
-        urdfpath = path + (std::string)entityconfig["URI"];
+        urdfpath = path + (std::string) entityconfig["URI"];
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
         parseURDF(urdfpath);
       }
@@ -191,53 +186,55 @@ namespace mars {
 
     void SMURF::addConfigMap(utils::ConfigMap &config) {
       utils::ConfigVector::iterator it;
-      for(it = config["motors"].begin(); it!=config["motors"].end(); ++it) {
+      for (it = config["motors"].begin(); it != config["motors"].end(); ++it) {
         handleURIs(&it->children);
         (*it)["index"] = nextMotorID++;
-        motorIDMap[(*it)["name"][0]] = nextMotorID-1;
+        motorIDMap[(*it)["name"][0]] = nextMotorID - 1;
         (*it)["axis"] = 1;
         (*it)["jointIndex"] = jointIDMap[(*it)["joint"][0]];
         motorList.push_back((*it).children);
         debugMap["motors"] += (*it).children;
       }
       std::map<std::string, unsigned long> * idmap;
-      std::map<std::string, std::string> * namemap;
-      for(it = config["sensors"].begin(); it!=config["sensors"].end(); ++it) {
+      std::map<std::string, std::string> *namemap;
+      for (it = config["sensors"].begin(); it != config["sensors"].end(); ++it) {
         handleURIs(&it->children);
         utils::ConfigMap tmpmap = it->children;
-        tmpmap["attached_node"] = (ulong)nodeIDMap[(std::string)tmpmap["link"]];
-        tmpmap["mapIndex"] = 1u;//(uint)nodeIDMap[(std::string)tmpmap["link"]];
-        if ((std::string)tmpmap["type"] == "Joint6DOF") {
-          std::string linkname = (std::string)tmpmap["link"];
+        tmpmap["attached_node"] = (ulong) nodeIDMap[(std::string) tmpmap["link"]];
+        //FIXME: tmpmap["mapIndex"] = mapIndex;
+        if ((std::string) tmpmap["type"] == "Joint6DOF") {
+          std::string linkname = (std::string) tmpmap["link"];
           fprintf(stderr, "addConfig: %s\n", linkname.c_str());
           std::string jointname = model->getLink(linkname)->parent_joint->name;
           fprintf(stderr, "addConfig: %s\n", jointname.c_str());
-          tmpmap["nodeID"] = (ulong)nodeIDMap[linkname];
-          tmpmap["jointID"] = (ulong)jointIDMap[jointname];
-          fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong)tmpmap["nodeID"], (ulong)tmpmap["jointID"]);
+          tmpmap["nodeID"] = (ulong) nodeIDMap[linkname];
+          tmpmap["jointID"] = (ulong) jointIDMap[jointname];
+          fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong) tmpmap["nodeID"],
+              (ulong) tmpmap["jointID"]);
         }
         idmap = 0;
         namemap = 0;
-        if (tmpmap.find("id")!=tmpmap.end()) {
+        if (tmpmap.find("id") != tmpmap.end()) {
           utils::ConfigVector tmpids;
-          if (((std::string)tmpmap["type"]).find("Joint") != std::string::npos) {
+          if (((std::string) tmpmap["type"]).find("Joint") != std::string::npos) {
             idmap = &jointIDMap;
           }
-          if (((std::string)tmpmap["type"]).find("Node") != std::string::npos) {
+          if (((std::string) tmpmap["type"]).find("Node") != std::string::npos) {
             idmap = &nodeIDMap;
-            if (((std::string)tmpmap["type"]).find("Contact") != std::string::npos)
+            if (((std::string) tmpmap["type"]).find("Contact") != std::string::npos)
               namemap = &collisionNameMap;
-        }
-          if (((std::string)tmpmap["type"]).find("Motor") != std::string::npos) {
+          }
+          if (((std::string) tmpmap["type"]).find("Motor") != std::string::npos) {
             idmap = &motorIDMap;
-      }
-          for(utils::ConfigVector::iterator idit=tmpmap["id"].begin(); idit!=tmpmap["id"].end(); ++idit) {
+          }
+          for (utils::ConfigVector::iterator idit = tmpmap["id"].begin();
+              idit != tmpmap["id"].end(); ++idit) {
             if (idmap) {
               //(*idit) = (ulong)nodeIDMap[idit->getString()];
               if (namemap) {
-                tmpids.push_back(ConfigItem((ulong)(*idmap)[(*namemap)[(std::string)(*idit)]]));
+                tmpids.push_back(ConfigItem((ulong) (*idmap)[(*namemap)[(std::string) (*idit)]]));
               } else {
-                tmpids.push_back(ConfigItem((ulong)(*idmap)[(std::string)(*idit)]));
+                tmpids.push_back(ConfigItem((ulong) (*idmap)[(std::string) (*idit)]));
               }
             } else {
               fprintf(stderr, "Found sensor with id list, but of no known category.\n");
@@ -246,30 +243,28 @@ namespace mars {
           tmpmap["id"] = tmpids;
         }
         tmpmap["index"] = nextSensorID++;
-        sensorIDMap[tmpmap["name"][0]] = nextSensorID-1;
+        sensorIDMap[tmpmap["name"][0]] = nextSensorID - 1;
         getSensorIDList(&tmpmap);
         sensorList.push_back(tmpmap);
         debugMap["sensors"] += tmpmap;
       }
-      for(it = config["materials"].begin();
-          it!=config["materials"].end(); ++it) {
+      for (it = config["materials"].begin(); it != config["materials"].end(); ++it) {
         handleURIs(&it->children);
         std::vector<utils::ConfigMap>::iterator mIt = materialList.begin();
-        for(; mIt!=materialList.end(); ++mIt) {
-          if((std::string)(*mIt)["name"][0] == (std::string)(*it)["name"][0]) {
+        for (; mIt != materialList.end(); ++mIt) {
+          if ((std::string) (*mIt)["name"][0] == (std::string) (*it)["name"][0]) {
             mIt->append(it->children);
             break;
           }
         }
       }
-      for(it = config["nodes"].begin();
-          it!=config["nodes"].end(); ++it) {
+      for (it = config["nodes"].begin(); it != config["nodes"].end(); ++it) {
         handleURIs(&it->children);
         std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
-        for(; nIt!=nodeList.end(); ++nIt) {
-          if((std::string)(*nIt)["name"][0] == (std::string)(*it)["name"][0]) {
+        for (; nIt != nodeList.end(); ++nIt) {
+          if ((std::string) (*nIt)["name"][0] == (std::string) (*it)["name"][0]) {
             utils::ConfigMap::iterator cIt = it->children.begin();
-            for(; cIt!=it->children.end(); ++cIt) {
+            for (; cIt != it->children.end(); ++cIt) {
               (*nIt)[cIt->first] = cIt->second;
             }
             break;
@@ -277,18 +272,17 @@ namespace mars {
         }
       }
 
-      for(it = config["visual"].begin();
-          it!=config["visual"].end(); ++it) {
+      for (it = config["visual"].begin(); it != config["visual"].end(); ++it) {
         handleURIs(&it->children);
-        std::string cmpName = (std::string)(*it)["name"][0];
+        std::string cmpName = (std::string) (*it)["name"][0];
         std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
-        if(visualNameMap.find(cmpName) != visualNameMap.end()) {
+        if (visualNameMap.find(cmpName) != visualNameMap.end()) {
           cmpName = visualNameMap[cmpName];
-          for(; nIt!=nodeList.end(); ++nIt) {
-            if((std::string)(*nIt)["name"][0] == cmpName) {
+          for (; nIt != nodeList.end(); ++nIt) {
+            if ((std::string) (*nIt)["name"][0] == cmpName) {
               utils::ConfigMap::iterator cIt = it->children.begin();
-              for(; cIt!=it->children.end(); ++cIt) {
-                if(cIt->first != "name") {
+              for (; cIt != it->children.end(); ++cIt) {
+                if (cIt->first != "name") {
                   (*nIt)[cIt->first] = cIt->second;
                 }
               }
@@ -298,20 +292,19 @@ namespace mars {
         }
       }
 
-      for(it = config["collision"].begin();
-          it!=config["collision"].end(); ++it) {
+      for (it = config["collision"].begin(); it != config["collision"].end(); ++it) {
         handleURIs(&it->children);
-        std::string cmpName = (std::string)(*it)["name"][0];
+        std::string cmpName = (std::string) (*it)["name"][0];
         std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
-        if(collisionNameMap.find(cmpName) != collisionNameMap.end()) {
+        if (collisionNameMap.find(cmpName) != collisionNameMap.end()) {
           cmpName = collisionNameMap[cmpName];
-          for(; nIt!=nodeList.end(); ++nIt) {
-            if((std::string)(*nIt)["name"][0] == cmpName) {
+          for (; nIt != nodeList.end(); ++nIt) {
+            if ((std::string) (*nIt)["name"][0] == cmpName) {
               utils::ConfigMap::iterator cIt = it->children.begin();
-              for(; cIt!=it->children.end(); ++cIt) {
-                if(cIt->first != "name") {
-                  if(cIt->first == "bitmask") {
-                    (*nIt)["coll_bitmask"] = (int)cIt->second;
+              for (; cIt != it->children.end(); ++cIt) {
+                if (cIt->first != "name") {
+                  if (cIt->first == "bitmask") {
+                    (*nIt)["coll_bitmask"] = (int) cIt->second;
                   } else {
                     (*nIt)[cIt->first] = cIt->second;
                   }
@@ -323,33 +316,30 @@ namespace mars {
         }
       }
 
-      for(it = config["lights"].begin(); it!=config["lights"].end(); ++it) {
+      for (it = config["lights"].begin(); it != config["lights"].end(); ++it) {
         handleURIs(&it->children);
         lightList.push_back((*it).children);
         debugMap["lights"] += (*it).children;
       }
-      for(it = config["graphics"].begin(); it!=config["graphics"].end(); ++it) {
+      for (it = config["graphics"].begin(); it != config["graphics"].end(); ++it) {
         handleURIs(&it->children);
         graphicList.push_back((*it).children);
         debugMap["graphics"] += (*it).children;
       }
-      for(it = config["controllers"].begin();
-          it!=config["controllers"].end(); ++it) {
+      for (it = config["controllers"].begin(); it != config["controllers"].end(); ++it) {
         handleURIs(&it->children);
         (*it)["index"] = nextControllerID++;
         // convert names to ids
         utils::ConfigVector::iterator it2;
         unsigned long id;
-        if(it->children.find("sensors") != it->children.end()) {
-          for(it2=it->children["sensors"].begin();
-              it2!=it->children["sensors"].end(); ++it2) {
-            it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string)*it2]));
+        if (it->children.find("sensors") != it->children.end()) {
+          for (it2 = it->children["sensors"].begin(); it2 != it->children["sensors"].end(); ++it2) {
+            it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string) *it2]));
           }
         }
-        if(it->children.find("motors") != it->children.end()) {
-          for(it2=it->children["motors"].begin();
-              it2!=it->children["motors"].end(); ++it2) {
-            it->children["motorid"] += ConfigItem(motorIDMap[(std::string)*it2]);
+        if (it->children.find("motors") != it->children.end()) {
+          for (it2 = it->children["motors"].begin(); it2 != it->children["motors"].end(); ++it2) {
+            it->children["motorid"] += ConfigItem(motorIDMap[(std::string) *it2]);
           }
         }
         controllerList.push_back((*it).children);
@@ -357,8 +347,8 @@ namespace mars {
       }
     }
 
-      if(link->inertial) {
     void SMURF::handleInertial(ConfigMap *map, const boost::shared_ptr<urdf::Link> &link) {
+      if (link->inertial) {
         (*map)["density"] = 0.0;
         (*map)["mass"] = link->inertial->mass;
         // handle inertial
@@ -372,8 +362,7 @@ namespace mars {
         (*map)["i21"] = link->inertial->iyz;
         (*map)["i22"] = link->inertial->izz;
         (*map)["inertia"] = true;
-      }
-      else {
+      } else {
         (*map)["inertia"] = false;
       }
     }
@@ -382,26 +371,24 @@ namespace mars {
       urdf::Pose jointPose, parentInertialPose, inertialPose;
       urdf::Pose goalPose;
 
-      if(link->parent_joint) {
+      if (link->parent_joint) {
         jointPose = link->parent_joint->parent_to_joint_origin_transform;
-        if(link->getParent()->inertial) {
+        if (link->getParent()->inertial) {
           parentInertialPose = link->getParent()->inertial->origin;
-        }
-        else if(link->getParent()->collision) {
+        } else if (link->getParent()->collision) {
           parentInertialPose = link->getParent()->collision->origin;
         }
         unsigned long parentID = nodeIDMap[link->getParent()->name];
         (*map)["relativeid"] = parentID;
-      }
-      else {
+      } else {
         (*map)["relativeid"] = 0ul;
       }
 
-      if(link->inertial) {
+      if (link->inertial) {
         inertialPose = link->inertial->origin;
       }
       /** special case handling **/
-      else if(link->collision) {
+      else if (link->collision) {
         // if we don't have an inertial but a collision (standard for MARS)
         // we place the node at the position of the collision
         inertialPose = link->collision->origin;
@@ -412,13 +399,11 @@ namespace mars {
       parentInertialPose.position.z *= -1;
 
       goalPose.position = jointPose.position + parentInertialPose.position;
-      goalPose.position = (goalPose.position +
-                           jointPose.rotation * inertialPose.position);
-      goalPose.position = (parentInertialPose.rotation.GetInverse()*
-                           goalPose.position);
+      goalPose.position = (goalPose.position + jointPose.rotation * inertialPose.position);
+      goalPose.position = (parentInertialPose.rotation.GetInverse() * goalPose.position);
 
-      goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
-                           jointPose.rotation*inertialPose.rotation);
+      goalPose.rotation = (parentInertialPose.rotation.GetInverse() * jointPose.rotation
+          * inertialPose.rotation);
 
 //      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
 //                           parentInertialPose.rotation.GetInverse());
@@ -432,10 +417,10 @@ namespace mars {
     urdf::Pose SMURF::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
       urdf::Pose globalPose;
       boost::shared_ptr<urdf::Link> pLink = link->getParent();
-      if(link->parent_joint) {
+      if (link->parent_joint) {
         globalPose = link->parent_joint->parent_to_joint_origin_transform;
       }
-      if(pLink) {
+      if (pLink) {
         urdf::Pose parentPose = getGlobalPose(pLink);
         globalPose.position = parentPose.rotation * globalPose.position;
         globalPose.position = globalPose.position + parentPose.position;
@@ -444,31 +429,31 @@ namespace mars {
       return globalPose;
     }
 
-      boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
     void SMURF::handleVisual(ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual) {
+      boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
       Vector size(0.0, 0.0, 0.0);
       Vector scale(1.0, 1.0, 1.0);
       urdf::Vector3 v;
       (*map)["filename"] = "PRIMITIVE";
       switch (tmpGeometry->type) {
       case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*)tmpGeometry.get())->radius;
-        (*map)["origname"] ="sphere";
+        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        (*map)["origname"] = "sphere";
         break;
       case urdf::Geometry::BOX:
-        v = ((urdf::Box*)tmpGeometry.get())->dim;
+        v = ((urdf::Box*) tmpGeometry.get())->dim;
         size = Vector(v.x, v.y, v.z);
         (*map)["origname"] = "box";
         break;
       case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*)tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*)tmpGeometry.get())->length;
+        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
         (*map)["origname"] = "cylinder";
         break;
       case urdf::Geometry::MESH:
-        v = ((urdf::Mesh*)tmpGeometry.get())->scale;
+        v = ((urdf::Mesh*) tmpGeometry.get())->scale;
         scale = Vector(v.x, v.y, v.z);
-        (*map)["filename"] = ((urdf::Mesh*)tmpGeometry.get())->filename;
+        (*map)["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
         (*map)["origname"] = "";
         break;
       default:
@@ -483,11 +468,11 @@ namespace mars {
         Vector *v, Quaternion *q) {
       urdf::Pose toPose;
 
-      if(link->inertial) {
+      if (link->inertial) {
         toPose = link->inertial->origin;
       }
       /** special case handling **/
-      else if(link->collision) {
+      else if (link->collision) {
         // if we don't have an inertial but a collision (standard for MARS)
         // we place the node at the position of the collision
         toPose = link->collision->origin;
@@ -509,8 +494,7 @@ namespace mars {
       toPose_.position.z *= -1;
       p = pose_.position + toPose_.position;
       p = toPose_.rotation.GetInverse() * p;
-      r = (toPose_.rotation.GetInverse() *
-           pose_.rotation);
+      r = (toPose_.rotation.GetInverse() * pose_.rotation);
       *v = Vector(p.x, p.y, p.z);
       *q = quaternionFromMembers(r);
     }
@@ -518,40 +502,47 @@ namespace mars {
     bool SMURF::isEqualPos(const urdf::Pose &p1, const urdf::Pose p2) {
       bool equal = true;
       double epsilon = 0.00000000001;
-      if(fabs(p1.position.x - p2.position.x) > epsilon) equal = false;
-      if(fabs(p1.position.y - p2.position.y) > epsilon) equal = false;
-      if(fabs(p1.position.z - p2.position.z) > epsilon) equal = false;
-      if(fabs(p1.rotation.x - p2.rotation.x) > epsilon) equal = false;
-      if(fabs(p1.rotation.y - p2.rotation.y) > epsilon) equal = false;
-      if(fabs(p1.rotation.z - p2.rotation.z) > epsilon) equal = false;
-      if(fabs(p1.rotation.w - p2.rotation.w) > epsilon) equal = false;
+      if (fabs(p1.position.x - p2.position.x) > epsilon)
+        equal = false;
+      if (fabs(p1.position.y - p2.position.y) > epsilon)
+        equal = false;
+      if (fabs(p1.position.z - p2.position.z) > epsilon)
+        equal = false;
+      if (fabs(p1.rotation.x - p2.rotation.x) > epsilon)
+        equal = false;
+      if (fabs(p1.rotation.y - p2.rotation.y) > epsilon)
+        equal = false;
+      if (fabs(p1.rotation.z - p2.rotation.z) > epsilon)
+        equal = false;
+      if (fabs(p1.rotation.w - p2.rotation.w) > epsilon)
+        equal = false;
       return equal;
     }
 
     void SMURF::handleCollision(ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c) {
-      boost::shared_ptr < urdf::Geometry > tmpGeometry = c->geometry;
+      boost::shared_ptr<urdf::Geometry> tmpGeometry = c->geometry;
       Vector size(0.0, 0.0, 0.0);
       Vector scale(1.0, 1.0, 1.0);
       urdf::Vector3 v;
       switch (tmpGeometry->type) {
       case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*)tmpGeometry.get())->radius;
-        (*map)["physicmode"] ="sphere";
+        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        (*map)["physicmode"] = "sphere";
         break;
       case urdf::Geometry::BOX:
-        v = ((urdf::Box*)tmpGeometry.get())->dim;
+        v = ((urdf::Box*) tmpGeometry.get())->dim;
         size = Vector(v.x, v.y, v.z);
         (*map)["physicmode"] = "box";
         break;
       case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*)tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*)tmpGeometry.get())->length;
+        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
         (*map)["physicmode"] = "cylinder";
         break;
       case urdf::Geometry::MESH:
-        v = ((urdf::Mesh*)tmpGeometry.get())->scale;
+        v = ((urdf::Mesh*) tmpGeometry.get())->scale;
         scale = Vector(v.x, v.y, v.z);
-        (*map)["filename"] = ((urdf::Mesh*)tmpGeometry.get())->filename;
+        (*map)["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
         (*map)["origname"] = "";
         (*map)["physicmode"] = "mesh";
         break;
@@ -562,7 +553,7 @@ namespace mars {
       vectorToConfigItem(&(*map)["scale"][0], &scale);
       // todo: we need to deal correctly with the scale and size in MARS
       //       if we have a mesh here, as a first hack we use the scale as size
-      if(tmpGeometry->type == urdf::Geometry::MESH) {
+      if (tmpGeometry->type == urdf::Geometry::MESH) {
         vectorToConfigItem(&(*map)["extend"][0], &scale);
       }
     }
@@ -604,9 +595,9 @@ namespace mars {
 
     void SMURF::handleKinematics(boost::shared_ptr<urdf::Link> link) {
       ConfigMap config;
-      // holds the index of the next visual object to load
+      // holds the index of the next visual object to SMURF
       int visualArrayIndex = 0;
-      // holds the index of the next collision object to load
+      // holds the index of the next collision object to SMURF
       int collisionArrayIndex = 0;
       bool loadVisual = link->visual;
       bool loadCollision = link->collision;
@@ -616,7 +607,7 @@ namespace mars {
       config["name"] = link->name;
       config["index"] = nextNodeID++;
 
-      nodeIDMap[link->name] = nextNodeID-1;
+      nodeIDMap[link->name] = nextNodeID - 1;
 
       // todo: if we don't have any joints connected we need some more
       //       special handling and change the handling below
@@ -629,36 +620,33 @@ namespace mars {
       // we do most of the special case handling here:
       { /** special case handling **/
         bool needGroupID = false;
-        if(link->visual_array.size() > 1 ||
-           link->collision_array.size() > 1) {
+        if (link->visual_array.size() > 1 || link->collision_array.size() > 1) {
           needGroupID = true;
         }
-        if(link->collision && link->inertial) {
-          if(!isEqualPos(link->collision->origin, link->inertial->origin)) {
+        if (link->collision && link->inertial) {
+          if (!isEqualPos(link->collision->origin, link->inertial->origin)) {
             loadCollision = false;
             needGroupID = true;
           }
         }
-        if(link->visual && link->collision) {
-          if(loadCollision && link->collision->geometry->type == urdf::Geometry::MESH) {
-            if(link->visual->geometry->type != urdf::Geometry::MESH) {
+        if (link->visual && link->collision) {
+          if (loadCollision && link->collision->geometry->type == urdf::Geometry::MESH) {
+            if (link->visual->geometry->type != urdf::Geometry::MESH) {
               loadVisual = false;
               needGroupID = true;
-            }
-            else {
-              if(((urdf::Mesh*)link->collision->geometry.get())->filename !=
-                 ((urdf::Mesh*)link->visual->geometry.get())->filename) {
+            } else {
+              if (((urdf::Mesh*) link->collision->geometry.get())->filename
+                  != ((urdf::Mesh*) link->visual->geometry.get())->filename) {
                 loadVisual = false;
                 needGroupID = true;
               }
             }
           }
         }
-        if(needGroupID) {
+        if (needGroupID) {
           // we need to group mars nodes
           config["groupid"] = nextGroupID++;
-        }
-        else {
+        } else {
           config["groupid"] = 0;
         }
       }
@@ -669,28 +657,26 @@ namespace mars {
       // calculates the pose including all case handling
       calculatePose(&config, link);
 
-      if(loadVisual) {
+      if (loadVisual) {
         visualNameMap[link->visual->name] = link->name;
         handleVisual(&config, link->visual);
         // caculate visual position offset
         convertPose(link->visual->origin, link, &v, &q);
         vectorToConfigItem(&config["visualposition"][0], &v);
         quaternionToConfigItem(&config["visualrotation"][0], &q);
-        // the first visual object is loaded
+        // the first visual object is SMURFed
         visualArrayIndex = 1;
-      }
-      else {
+      } else {
         // we need a fake visual for the node
         createFakeVisual(&config);
       }
 
-      if(loadCollision) {
+      if (loadCollision) {
         collisionNameMap[link->collision->name] = link->name;
         handleCollision(&config, link->collision);
-        // the first visual object is loaded
+        // the first visual object is SMURFed
         collisionArrayIndex = 1;
-      }
-      else {
+      } else {
         createFakeCollision(&config);
       }
 
@@ -699,35 +685,33 @@ namespace mars {
 
       // now we have all information for the main node and can create additional
       // nodes for the collision and visual array
-      while(collisionArrayIndex < link->collision_array.size()) {
+      while (collisionArrayIndex < link->collision_array.size()) {
         ConfigMap childNode;
         boost::shared_ptr<urdf::Collision> collision;
         boost::shared_ptr<urdf::Visual> visual;
         collision = link->collision_array[collisionArrayIndex];
-        if(visualArrayIndex < link->visual_array.size()) {
+        if (visualArrayIndex < link->visual_array.size()) {
           visual = link->visual_array[visualArrayIndex];
-          // check wether we can load visual and collision together
+          // check wether we can SMURF visual and collision together
           /** special case handling **/
-          if(collision->geometry->type == urdf::Geometry::MESH) {
-            if(visual->geometry->type != urdf::Geometry::MESH) {
+          if (collision->geometry->type == urdf::Geometry::MESH) {
+            if (visual->geometry->type != urdf::Geometry::MESH) {
               visual.reset();
-            }
-            else if(((urdf::Mesh*)collision->geometry.get())->filename !=
-                    ((urdf::Mesh*)visual->geometry.get())->filename) {
+            } else if (((urdf::Mesh*) collision->geometry.get())->filename
+                != ((urdf::Mesh*) visual->geometry.get())->filename) {
               visual.reset();
             }
           }
         }
 
         childNode["index"] = nextNodeID++;
-        std::string childNodeName = ((std::string)config["name"][0])+"_child";
-        nodeIDMap[childNodeName] = nextNodeID-1;
-        nodeIDMap[collision->name] = nextNodeID-1; //FIXME: can we simply duplicate this?
+        std::string childNodeName = ((std::string) config["name"][0]) + "_child";
+        nodeIDMap[childNodeName] = nextNodeID - 1;
+        nodeIDMap[collision->name] = nextNodeID - 1; //FIXME: can we simply duplicate this?
         childNode["relativeid"] = config["index"];
-        if(collision->name.empty()) {
+        if (collision->name.empty()) {
           childNode["name"] = childNodeName;
-        }
-        else {
+        } else {
           childNode["name"] = collision->name;
         }
         // add nodes created with collision names to name map
@@ -747,7 +731,7 @@ namespace mars {
         p1.rotation = urdf::Rotation(q.x(), q.y(), q.z(), q.w());
         collisionArrayIndex++;
 
-        if(visual) {
+        if (visual) {
           visualNameMap[visual->name] = link->name;
           handleVisual(&childNode, visual);
           // convert the pose into the same coordinate system like as the node
@@ -760,25 +744,23 @@ namespace mars {
           vectorToConfigItem(&childNode["visualposition"][0], &v);
           quaternionToConfigItem(&childNode["visualrotation"][0], &q);
           visualArrayIndex++;
-        }
-        else {
+        } else {
           createFakeVisual(&childNode);
         }
         debugMap["childNodes"] += childNode;
         nodeList.push_back(childNode);
       }
 
-      while(visualArrayIndex < link->visual_array.size()) {
+      while (visualArrayIndex < link->visual_array.size()) {
         ConfigMap childNode;
         boost::shared_ptr<urdf::Visual> visual;
         visual = link->visual_array[visualArrayIndex];
 
         childNode["index"] = nextNodeID++;
         childNode["relativeid"] = config["index"];
-        if(visual->name.empty()) {
-          childNode["name"] = ((std::string)config["name"][0])+"_child";
-        }
-        else {
+        if (visual->name.empty()) {
+          childNode["name"] = ((std::string) config["name"][0]) + "_child";
+        } else {
           childNode["name"] = visual->name;
           visualNameMap[visual->name] = visual->name;
         }
@@ -803,12 +785,12 @@ namespace mars {
       }
 
       // TODO:  complete handle joint information
-      if(link->parent_joint) {
+      if (link->parent_joint) {
         unsigned long id;
         ConfigMap joint;
         joint["name"] = link->parent_joint->name;
         joint["index"] = nextJointID++;
-        jointIDMap[link->parent_joint->name] = nextJointID-1;
+        jointIDMap[link->parent_joint->name] = nextJointID - 1;
         joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
         joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
         joint["anchorpos"] = ANCHOR_CUSTOM;
@@ -819,17 +801,14 @@ namespace mars {
         // FIXME: we do not at this point read the joint "maxeffort" and "maxvelocity"
         // limits as they are effectively motor values and should be used only
         // if there are no explicit motor values defined
-        if(link->parent_joint->type == urdf::Joint::REVOLUTE ||
-            link->parent_joint->type == urdf::Joint::CONTINUOUS){
+        if (link->parent_joint->type == urdf::Joint::REVOLUTE
+            || link->parent_joint->type == urdf::Joint::CONTINUOUS) {
           joint["type"] = "hinge";
-        }
-        else if(link->parent_joint->type == urdf::Joint::PRISMATIC) {
+        } else if (link->parent_joint->type == urdf::Joint::PRISMATIC) {
           joint["type"] = "slider";
-        }
-        else if(link->parent_joint->type == urdf::Joint::FIXED) {
+        } else if (link->parent_joint->type == urdf::Joint::FIXED) {
           joint["type"] = "fixed";
-        }
-        else {
+        } else {
           // we don't support the type yet and use a fixed joint
           joint["type"] = "fixed";
         }
@@ -837,22 +816,18 @@ namespace mars {
         urdf::Pose pose = getGlobalPose(link);
         urdf::Pose pose2;
         pose2.position = pose.rotation * link->parent_joint->axis;
-        v = Vector(pose2.position.x,
-                   pose2.position.y,
-                   pose2.position.z);
+        v = Vector(pose2.position.x, pose2.position.y, pose2.position.z);
         vectorToConfigItem(&joint["axis1"][0], &v);
 
-        v = Vector(pose.position.x,
-                   pose.position.y,
-                   pose.position.z);
+        v = Vector(pose.position.x, pose.position.y, pose.position.z);
         vectorToConfigItem(&joint["anchor"][0], &v);
 
         debugMap["joints"] += joint;
         jointList.push_back(joint);
       }
 
-      for (std::vector<boost::shared_ptr<urdf::Link> >::iterator it =
-             link->child_links.begin(); it != link->child_links.end(); ++it) {
+      for (std::vector<boost::shared_ptr<urdf::Link> >::iterator it = link->child_links.begin();
+          it != link->child_links.end(); ++it) {
         handleKinematics(*it); //TODO: check if this is correct with shared_ptr
       }
     }
@@ -863,15 +838,14 @@ namespace mars {
       config["id"] = nextMaterialID++;
       config["name"] = material->name;
       config["exists"] = true;
-      config["diffuseFront"][0]["a"] = (double)material->color.a;
-      config["diffuseFront"][0]["r"] = (double)material->color.r;
-      config["diffuseFront"][0]["g"] = (double)material->color.g;
-      config["diffuseFront"][0]["b"] = (double)material->color.b;
+      config["diffuseFront"][0]["a"] = (double) material->color.a;
+      config["diffuseFront"][0]["r"] = (double) material->color.r;
+      config["diffuseFront"][0]["g"] = (double) material->color.g;
+      config["diffuseFront"][0]["b"] = (double) material->color.b;
       config["texturename"] = material->texture_filename;
       debugMap["materials"] += config;
       materialList.push_back(config);
     }
-
 
     unsigned int SMURF::parseURDF(std::string filename) {
       QString xmlErrorMsg = "";
@@ -881,14 +855,14 @@ namespace mars {
 
       QLocale::setDefault(QLocale::C);
 
-      LOG_INFO("Load: loading scene: %s", filename.c_str());
+      LOG_INFO("SMURF: smurfing scene: %s", filename.c_str());
 
       //test to open the xmlfile
       if (!file.open(QIODevice::ReadOnly)) {
         std::cout << "Error while opening scene file content " << filename
-                  << " in Load.cpp->parseScene" << std::endl;
+            << " in SMURF.cpp->parseScene" << std::endl;
         std::cout << "Make sure your scenefile name corresponds to"
-                  << " the name given to the enclosed .scene file" << std::endl;
+            << " the name given to the enclosed .scene file" << std::endl;
         return 0;
       }
 
@@ -903,12 +877,11 @@ namespace mars {
 
       createFakeMaterial();
       std::map<std::string, boost::shared_ptr<urdf::Material> >::iterator it;
-      for(it=model->materials_.begin(); it!=model->materials_.end(); ++it) {
+      for (it = model->materials_.begin(); it != model->materials_.end(); ++it) {
         handleMaterial(it->second);
       }
 
       handleKinematics(model->root_link_);
-
 
       //    //the entire tree recursively anyway
       //    std::vector<boost::shared_ptr<urdf::Link>> urdflinklist;
@@ -921,16 +894,15 @@ namespace mars {
       //        getGenericConfig(&jointList, it);
       //    }
 
-
       return 1;
     }
 
-      fprintf(stderr, "Loading robot: %s...\n", robotname.c_str());
     unsigned int SMURF::load() {
+      fprintf(stderr, "smurfing robot: %s...\n", robotname.c_str());
       debugMap.toYamlFile("debugMap.yml");
 
       for (unsigned int i = 0; i < materialList.size(); ++i)
-        if(!loadMaterial(materialList[i]))
+        if (!loadMaterial(materialList[i]))
           return 0;
       for (unsigned int i = 0; i < nodeList.size(); ++i)
         if (!loadNode(nodeList[i]))
@@ -977,9 +949,9 @@ namespace mars {
       tmpV[0] = entityconfig["position"][0];
       tmpV[1] = entityconfig["position"][1];
       tmpV[2] = entityconfig["position"][2];
-      fprintf(stderr, "entityposition_x: %f\n", (double)entityconfig["position"][0]);
-      fprintf(stderr, "entityposition_y: %f\n", (double)entityconfig["position"][1]);
-      fprintf(stderr, "entityposition_z: %f\n", (double)entityconfig["position"][2]);
+      fprintf(stderr, "entityposition_x: %f\n", (double) entityconfig["position"][0]);
+      fprintf(stderr, "entityposition_y: %f\n", (double) entityconfig["position"][1]);
+      fprintf(stderr, "entityposition_z: %f\n", (double) entityconfig["position"][2]);
       tmpR[0] = entityconfig["rotation"][0];
       tmpR[1] = entityconfig["rotation"][1];
       tmpR[2] = entityconfig["rotation"][2];
@@ -1000,14 +972,13 @@ namespace mars {
       if (!valid)
         return 0;
 
-      if((std::string)config["materialName"][0] != std::string("")) {
+      if ((std::string) config["materialName"][0] != std::string("")) {
         std::map<std::string, MaterialData>::iterator it;
         it = materialMap.find(config["materialName"][0]);
         if (it != materialMap.end()) {
           node.material = it->second;
         }
-      }
-      else {
+      } else {
         node.material.diffuseFront = Color(0.4, 0.4, 0.4, 1.0);
       }
 
@@ -1017,11 +988,11 @@ namespace mars {
         // add an additional rotation of -90.0 degree due to wrong definition
         // of which direction is up within .stl (for .stl -Y is up and in MARS
         // Z is up)
-        node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0,0.0,0.0));
+        node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
       }
 
       NodeId oldId = node.index;
-      config.toYamlFile("loadNode.yml");
+      config.toYamlFile("SMURFNode.yml");
       NodeId newId = control->nodes->addNode(&node);
       if (!newId) {
         LOG_ERROR("addNode returned 0");
@@ -1047,23 +1018,21 @@ namespace mars {
       JointData joint;
       joint.invertAxis = true;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      int valid = joint.fromConfigMap(&config, tmpPath,
-                                      control->loadCenter);
-      if(!valid) {
-        fprintf(stderr, "Load: error while loading joint\n");
+      int valid = joint.fromConfigMap(&config, tmpPath, control->loadCenter);
+      if (!valid) {
+        fprintf(stderr, "SMURF: error while smurfing joint\n");
         return 0;
       }
 
       JointId oldId = joint.index;
       JointId newId = control->joints->addJoint(&joint);
-      if(!newId) {
+      if (!newId) {
         LOG_ERROR("addJoint returned 0");
         return 0;
       }
-      control->loadCenter->setMappedID(oldId, newId,
-                                       MAP_TYPE_JOINT, mapIndex);
+      control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_JOINT, mapIndex);
 
-      if(robotname != "") {
+      if (robotname != "") {
         control->entities->addJoint(robotname, joint.index, joint.name);
       }
       return true;
@@ -1074,21 +1043,20 @@ namespace mars {
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
       int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter);
-      if(!valid) {
-        fprintf(stderr, "Load: error while loading motor\n");
+      if (!valid) {
+        fprintf(stderr, "SMURF: error while smurfing motor\n");
         return 0;
       }
 
       MotorId oldId = motor.index;
       MotorId newId = control->motors->addMotor(&motor);
-      if(!newId) {
+      if (!newId) {
         LOG_ERROR("addMotor returned 0");
         return 0;
       }
-      control->loadCenter->setMappedID(oldId, newId,
-                                       MAP_TYPE_MOTOR, mapIndex);
+      control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_MOTOR, mapIndex);
 
-      if(robotname != "") {
+      if (robotname != "") {
         control->entities->addMotor(robotname, motor.index, motor.name);
       }
       return true;
@@ -1100,10 +1068,8 @@ namespace mars {
 //          ((std::string)config["type"]).c_str());
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
-        control->loadCenter->setMappedID((ulong)config["index"],
-                                         sensor->getID(),
-                                         MAP_TYPE_SENSOR,
-                                         mapIndex);
+        control->loadCenter->setMappedID((ulong) config["index"], sensor->getID(), MAP_TYPE_SENSOR,
+            mapIndex);
       }
 
       return sensor;
@@ -1112,10 +1078,9 @@ namespace mars {
     unsigned int SMURF::loadGraphic(utils::ConfigMap config) {
       GraphicData graphic;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      int valid = graphic.fromConfigMap(&config, tmpPath,
-                                        control->loadCenter);
-      if(!valid) {
-        fprintf(stderr, "Load: error while loading graphic\n");
+      int valid = graphic.fromConfigMap(&config, tmpPath, control->loadCenter);
+      if (!valid) {
+        fprintf(stderr, "SMURF: error while smurfing graphic\n");
         return 0;
       }
 
@@ -1128,10 +1093,9 @@ namespace mars {
     unsigned int SMURF::loadLight(utils::ConfigMap config) {
       LightData light;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
-      int valid = light.fromConfigMap(&config, tmpPath,
-                                      control->loadCenter);
-      if(!valid) {
-        fprintf(stderr, "Load: error while loading light\n");
+      int valid = light.fromConfigMap(&config, tmpPath, control->loadCenter);
+      if (!valid) {
+        fprintf(stderr, "SMURF: error while smurfing light\n");
         return 0;
       }
       control->sim->addLight(light);
@@ -1142,23 +1106,20 @@ namespace mars {
       ControllerData controller;
       config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
 
-      int valid = controller.fromConfigMap(&config, tmpPath,
-                                           control->loadCenter);
-      if(!valid) {
-        fprintf(stderr, "Load: error while loading Controller\n");
+      int valid = controller.fromConfigMap(&config, tmpPath, control->loadCenter);
+      if (!valid) {
+        fprintf(stderr, "SMURF: error while smurfing Controller\n");
         return 0;
       }
 
       MotorId oldId = controller.id;
       MotorId newId = control->controllers->addController(controller);
-      if(!newId) {
-        LOG_ERROR("Load: addController returned 0");
+      if (!newId) {
+        LOG_ERROR("SMURF: addController returned 0");
         return 0;
       }
-      control->loadCenter->setMappedID(oldId, newId,
-                                       MAP_TYPE_CONTROLLER,
-                                       mapIndex);
-      if(robotname != "") {
+      control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_CONTROLLER, mapIndex);
+      if (robotname != "") {
         control->entities->addController(robotname, newId);
       }
       return 1;

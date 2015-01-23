@@ -85,6 +85,7 @@ namespace mars {
 
     private:
       int nextGroupID;
+      unsigned int mapIndex; // index to map nodes of a single entity
       unsigned long nextNodeID;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
@@ -99,7 +100,6 @@ namespace mars {
       std::map<std::string, std::string> visualNameMap, collisionNameMap;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
-      unsigned int mapIndex; // index of loaded scenes
       utils::ConfigMap debugMap;
       utils::ConfigMap entityconfig;
       std::string robotname;
@@ -109,21 +109,16 @@ namespace mars {
       void handleURIs(utils::ConfigMap *map);
       void getSensorIDList(utils::ConfigMap *map);
 
-      void handleInertial(utils::ConfigMap *map,
-                          const boost::shared_ptr<urdf::Link> &link);
-      void calculatePose(utils::ConfigMap *map,
-                         const boost::shared_ptr<urdf::Link> &link);
-      void convertPose(const urdf::Pose &pose,
-                       const boost::shared_ptr<urdf::Link> &link,
-                       utils::Vector *v, utils::Quaternion *q);
-      void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose,
-                       utils::Vector *v, utils::Quaternion *q);
+      void handleInertial(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void calculatePose(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
+          utils::Vector *v, utils::Quaternion *q);
+      void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, utils::Vector *v,
+          utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
 
-      void handleVisual(utils::ConfigMap *map,
-                        const boost::shared_ptr<urdf::Visual> &visual);
-      void handleCollision(utils::ConfigMap *map,
-                           const boost::shared_ptr<urdf::Collision> &c);
+      void handleVisual(utils::ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual);
+      void handleCollision(utils::ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c);
 
       void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
 
