@@ -333,52 +333,6 @@ namespace mars {
       }
     }
 
-    sim::SimEntity* URDFLoader::createEntity(const utils::ConfigMap& parameters) {
-      mars::utils::ConfigMap config;
-      config.append(parameters);
-      sim::SimEntity* entity = new sim::SimEntity(config);
-      std::string path = (std::string)config["path"];
-      if ((std::string)config["name"] == "") {
-              config["name"] = (std::string)config["modelname"];
-            }
-      std::string robotname = (std::string)config["name"];
-
-      // create a load object with the correct relative path
-      unsigned int mapIndex;
-      mapIndex= control->loadCenter->getMappedSceneByName(robotname);
-      if (mapIndex == 0) {
-        control->loadCenter->setMappedSceneName(robotname);
-        mapIndex = control->loadCenter->getMappedSceneByName(robotname);
-      }
-      Load loadObject(control, path, robotname, mapIndex);
-      loadObject.setEntityConfig(config);
-      std::string urdfpath = "";
-
-      utils::ConfigVector::iterator it;
-      std::string file;
-      std::string file_extension;
-      for(it = config["files"].begin(); it!=config["files"].end(); ++it) {
-        file = (std::string)(*it);
-        file_extension = utils::getFilenameSuffix(file);
-        if(file_extension == ".urdf") {
-          urdfpath = path + file;
-          fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-          loadObject.parseURDF(urdfpath);
-        }
-        else if(file_extension == ".yml") {
-          utils::ConfigMap m2 = utils::ConfigMap::fromYamlFile(path+file);
-          loadObject.addConfigMap(m2);
-        }
-        else {
-          fprintf(stderr, "URDFLoader: %s not yet implemented",
-                  file_extension.c_str());
-        }
-      }
-      loadObject.load();
-
-      return entity;
-    }
-
     /**
        * Loads a URDF, SMURF or SMURFS (SMURF scene) file.
        * @param filename The name of the file to be loaded as a full path.
@@ -407,41 +361,55 @@ namespace mars {
         }
       }
 
-      if (file_extension != ".urdf") { // if suffix is "smurf" or "smurfs"
-        std::vector<utils::ConfigMap> smurfs; // a list of the smurfs found in a smurf scene
-        std::string file;
-        utils::ConfigMap map;
+      // read in the provided file - .smurfs / .smurf / .urdf
+      utils::ConfigMap map;
+      fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
+      if(file_extension == ".smurfs") {
         utils::ConfigVector::iterator it;
-        fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
-        if(file_extension == ".smurfs") {
-          // retrieve all smurfs from a smurf scene file
-          map = utils::ConfigMap::fromYamlFile(path+_filename, true);
-          map.toYamlFile("smurfs_debugmap.yml");
-          for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
-            (*it)["path"] = path;
-            (*it)["type"] = "smurf";
-            smurfs.push_back((*it).children);
-          }
-        } else if(file_extension == ".smurf") {
-          // if we have only one smurf, only one with rudimentary data is added to the smurf list
-            map["URI"] = _filename;
-            map["name"] = "";
-            smurfs.push_back(map);
+        map = utils::ConfigMap::fromYamlFile(path+_filename, true);
+        map.toYamlFile("smurfs_debugmap.yml");
+        for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
+          (*it)["path"] = path;
+          entitylist.push_back((*it).children);
         }
-        fprintf(stderr, "Reading in smurfs...\n");
-        for (std::vector<utils::ConfigMap>::iterator sit = smurfs.begin();
-            sit != smurfs.end(); ++sit) {
-          factoryManager->createEntity(*sit);
+      } else if(file_extension == ".smurf") {
+        // if we have only one smurf, only one with rudimentary data is added to the smurf list
+          //map["URI"] = _filename;
+          map = utils::ConfigMap::fromYamlFile(path+_filename, true);
+          map["path"] = path;
+          map["type"] = "smurf";
+          map["name"] = "";
+          entitylist.push_back(map);
+      } else if(file_extension == ".urdf") {
+          map["URI"] = _filename;
+          map["path"] = path;
+          map["name"] = "";
+          map["type"] = "URDF";
+          entitylist.push_back(map);
+      } else if(file_extension == ".svg") {
+        /* A smurf svg can contain multiple entities, thus we have to loop over them.
+         * Each svg object must contain a "file" property, specifying the yaml file in
+         * which the missing parameters are defined, so we have to append that.
+         */
+        std::vector<utils::ConfigMap> svg_entities;
+        parseSVG(&svg_entities, path+_filename);
+        for(std::vector<utils::ConfigMap>::iterator it = svg_entities.begin();
+            it!=svg_entities.end(); ++it) {
+          map = *it;
+          map.append(ConfigMap::fromYamlFile((std::string)map["file"], true)); //FIXME: path?
+          fprintf(stderr, "Loading config for svg entity: %s", ((std::string)map["file"]).c_str());
+          entitylist.push_back(map);
         }
       }
-      else { // if file_extension is "urdf"
-        uint mapIndex = 666;
-        robotname="";
-        Load loadObject(control, path, robotname, mapIndex);
-        loadObject.parseURDF(filename);
-        control->entities->addEntity(loadObject.getRobotname());
-        //TODO: do we need to call loadObject.setEntityConfig here?
-        loadObject.load();
+
+      //load assembled smurfs
+      fprintf(stderr, "Creating simulation entities...\n");
+      for (std::vector<utils::ConfigMap>::iterator sit = entitylist.begin();
+          sit != entitylist.end(); ++sit) {
+        utils::ConfigMap tmpmap;
+        tmpmap = *sit;
+        tmpmap.toYamlFile("blub.yml");
+        factoryManager->createEntity(tmpmap);
       }
 
       return 1; //TODO: check number of successfully loaded entities before returning 1
