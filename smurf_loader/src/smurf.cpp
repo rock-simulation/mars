@@ -33,8 +33,9 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/sim/SimEntity.h>
+#include <mars/plugins/entity_generation/EntityFactoryManager.h>
 
-#include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
 
@@ -61,8 +62,14 @@ namespace mars {
 
     SMURF::SMURF(lib_manager::LibManager *theManager): MarsPluginTemplate(theManager, "SMURF"),
         plugins::entity_generation::EntityFactoryInterface("smurf, urdf") {
+      plugins::entity_generation::EntityFactoryManager* factoryManager =
+          theManager->acquireLibraryAs < mars::plugins::entity_generation::EntityFactoryManager
+              > ("entity_factory_manager");
+      factoryManager->registerFactory("smurf", this);
 
-      nextGroupID = control->nodes->getMaxGroupID()+1;
+      mapIndex = 666;
+
+      nextGroupID = control->nodes->getMaxGroupID() + 1;
       nextNodeID = 1;
       nextJointID = 1;
       nextMaterialID = 1;
@@ -72,6 +79,15 @@ namespace mars {
     }
     
     SMURF::~SMURF(){
+    }
+    
+    void SMURF::init() {
+    }
+    
+    void SMURF::reset() {
+    }
+    
+    void SMURF::update(sReal time_ms) {
     }
 
     void SMURF::handleURI(utils::ConfigMap *map, std::string uri) {

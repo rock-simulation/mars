@@ -29,10 +29,12 @@
 
 #include <yaml-cpp/yaml.h>
 
-//#include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/ConfigData.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/MaterialData.h>
+
+#include <mars/interfaces/sim/MarsPluginTemplate.h>
+#include <mars/plugins/entity_generation/EntityFactoryInterface.h>
 
 #include <urdf_parser/urdf_parser.h>
 #include <boost/function.hpp>
@@ -42,6 +44,10 @@
 #include <urdf_model/pose.h>
 
 namespace mars {
+
+  namespace lib_manager {
+    class LibManager;
+  }
 
   namespace smurf_loader {
 
@@ -60,6 +66,14 @@ namespace mars {
       void addConfigMap(utils::ConfigMap &config);
       void setEntityConfig(const utils::ConfigMap &config);
       std::string getRobotname();
+
+      // EntityFactoryInterface
+      virtual sim::SimEntity* createEntity(const utils::ConfigMap& config) = 0;
+
+      // MarsPlugin methods
+      void init();
+      void reset();
+      void update(mars::interfaces::sReal time_ms);
 
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;
@@ -84,7 +98,6 @@ namespace mars {
       std::map<std::string, unsigned long> motorIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
       std::map<std::string, std::string> visualNameMap, collisionNameMap;
-      interfaces::ControlCenter *control;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
       unsigned int mapIndex; // index of loaded scenes

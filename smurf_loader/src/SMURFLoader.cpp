@@ -58,8 +58,6 @@ namespace mars {
       factoryManager =
             theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
                 "entity_factory_manager");
-        factoryManager->registerFactory("urdf", this);
-        factoryManager->registerFactory("smurf", this);
     }
 
     SMURFLoader::~SMURFLoader() {

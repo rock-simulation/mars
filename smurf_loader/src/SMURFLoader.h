@@ -32,7 +32,6 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
-#include <mars/plugins/entity_generation/EntityFactoryInterface.h>
 #include <mars/plugins/entity_generation/EntityFactoryManager.h>
 #include "SaveLoadStructs.h"
 
@@ -49,9 +48,6 @@ namespace mars {
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_smurf_loader");}
       CREATE_MODULE_INFO();
-
-      //compatibility with entity factory
-      sim::SimEntity* createEntity(const utils::ConfigMap& parameters);
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
