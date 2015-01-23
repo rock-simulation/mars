@@ -1,4 +1,4 @@
-project(mars_urdf_loader)
+project(mars_smurf_loader)
 set(PROJECT_VERSION 1.0)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 cmake_minimum_required(VERSION 2.6)
@@ -50,10 +50,10 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    minizip
 			    mars_utils
 			    mars_interfaces
-                            urdfdom
-                            tinyxml
-                            entity_generation
-                            mars_sim
+			    urdfdom
+			    tinyxml
+			    entity_generation
+			    mars_sim
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -67,18 +67,13 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR} )
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set(SOURCES_H
-       src/Load.h
-       src/URDFLoader.h
-       src/Save.h
-       src/SaveLoadStructs.h
+       src/SMURFLoader.h
        src/zipit.h
     )
 
 set(TARGET_SRC ${SOURCES_H_MOC}
-       src/URDFLoader.cpp
-       src/Load.cpp
-       src/Save.cpp
-       src/zipit.cpp       
+       src/SMURFLoader.cpp
+       src/zipit.cpp
 )
 
 add_library(${PROJECT_NAME} SHARED ${TARGET_SRC})
@@ -120,7 +115,7 @@ set(_INSTALL_DESTINATIONS
 install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
-install(FILES ${SOURCES_H} DESTINATION include/mars/urdf_loader)
+install(FILES ${SOURCES_H} DESTINATION include/mars/smurf_loader)
 
 configure_file(${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)

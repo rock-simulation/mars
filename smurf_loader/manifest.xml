@@ -1,6 +1,6 @@
 <package>
-    <description brief="mars_urdf_loader">
-       Plugin to load and save URDF files.
+    <description brief="mars_smurf_loader">
+       Plugin to load SMURF and URDF files.
     </description>
 
     <depend package="simulation/mars/common/lib_manager" />
