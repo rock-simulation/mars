@@ -148,8 +148,45 @@ namespace mars {
       }
     }
 
-      entityconfig = config;
     sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
+      entityconfig.append(config);
+      sim::SimEntity* entity = new sim::SimEntity(entityconfig);
+      std::string path = (std::string)entityconfig["path"];
+      if ((std::string)entityconfig["name"] == "") {
+              entityconfig["name"] = (std::string)entityconfig["modelname"];
+            }
+      // TODO: we should have a system that first loads the URDF and then the other files in
+      //   order of priority (or sort the contents in a way as to avoid errors upon loading).
+      std::string file;
+      std::string file_extension;
+      std::string urdfpath = "";
+      if((std::string)entityconfig["type"] == "SMURF") {
+        utils::ConfigVector::iterator it;
+        for(it = entityconfig["files"].begin(); it!=entityconfig["files"].end(); ++it) {
+          file = (std::string)(*it);
+          file_extension = utils::getFilenameSuffix(file);
+          if(file_extension == ".urdf") {
+            urdfpath = path + file;
+            fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
+            parseURDF(urdfpath);
+          }
+          else if(file_extension == ".yml") {
+            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path+file);
+            addConfigMap(tmpconfig);
+          }
+          else {
+            fprintf(stderr, "SMURFLoader: %s not yet implemented",
+                    file_extension.c_str());
+          }
+        }
+      } else { // if type is URDF
+        urdfpath = path + (std::string)entityconfig["URI"];
+        fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
+        parseURDF(urdfpath);
+      }
+      load();
+
+      return entity;
     }
 
     void SMURF::addConfigMap(utils::ConfigMap &config) {
@@ -837,8 +874,6 @@ namespace mars {
 
 
     unsigned int SMURF::parseURDF(std::string filename) {
-      //  HandleFileNames h_filenames;
-      vector<string> v_filesToLoad;
       QString xmlErrorMsg = "";
 
       //creating a handle for the xmlfile

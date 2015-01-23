@@ -64,7 +64,6 @@ namespace mars {
       unsigned int parseURDF(std::string filename);
       unsigned int load();
       void addConfigMap(utils::ConfigMap &config);
-      void setEntityConfig(const utils::ConfigMap &config);
       std::string getRobotname();
 
       // EntityFactoryInterface
