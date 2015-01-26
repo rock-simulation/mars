@@ -133,6 +133,10 @@ namespace mars {
 
     void QtOsgMixGraphicsWidget::setWGeometry(int top, int left, int width, int height) {
       window()->setGeometry(left, top, width, height);
+      widgetX = left;
+      widgetY = top;
+      widgetWidth = width;
+      widgetHeight = height;
     }
 
     void QtOsgMixGraphicsWidget::getWGeometry(int *top, int *left, int *width, int *height) const {

@@ -204,6 +204,9 @@ namespace mars {
                                      double x2, double y2);
     
     protected:
+      // the widget size
+      int widgetWidth, widgetHeight, widgetX, widgetY;
+
       // protected for osg reference counter
   
       bool manageClickEvent(osgWidget::Event& event);
@@ -259,8 +262,6 @@ namespace mars {
     private:
       // the widget id
       unsigned long widgetID;
-      // the widget size
-      int widgetWidth, widgetHeight;
 
       // toggle for fullscreen display
       bool isFullscreen;
@@ -321,6 +322,9 @@ namespace mars {
       virtual void setWidgetFullscreen(bool val) {};
 
       void grabFocus();
+
+      void applyResize();
+
     }; // end of class GraphicsWidget
 
   } // end of namespace graphics 
