@@ -70,9 +70,9 @@ function forAllPackagesDo {
             echo ${p}
             if [[ x${!p} = x ]]; then
                 if [[ ${action} = "fetch" ]]; then
-                    ${action}_package "mars" "mars" "https://github.com/rock-simulation/mars.git -b extern_lib_manager" "https://github.com/rock-simulation/mars.git -b extern_lib_manager"
+                    ${action}_package "mars" "mars" "https://github.com/rock-simulation/mars.git" "https://github.com/rock-simulation/mars.git"
                 else
-                    ${action}_package ${package} "." "https://github.com/rock-simulation/mars.git -b extern_lib_manager" "https://github.com/rock-simulation/mars.git -b extern_lib_manager"
+                    ${action}_package ${package} "." "https://github.com/rock-simulation/mars.git" "https://github.com/rock-simulation/mars.git"
                 fi
             else
                 if [[ ${action} = "fetch" ]]; then
