@@ -33,14 +33,14 @@ target_link_libraries(... ${LIB_MANAGER_LIBRARIES} ...)
 A library interface that inherits from \emph{LibInterface} and deals with the manager has to be provided:
 
 \begin{lstlisting}
-class myLibraryInterface : public mars::lib_manager::LibInterface;
+class myLibraryInterface : public lib_manager::LibInterface;
 \end{lstlisting}
 
 Its constructor needs to initialize the \emph{LibInterface} with the \emph{LibManager} instance passed to it. For example:
 
 \begin{lstlisting}
-myLubraryInterface(mars::lib_manager::LibManager *manager) : 
-  mars::lib_manager::LibInterface(manager) {}
+myLubraryInterface(lib_manager::LibManager *manager) : 
+  lib_manager::LibInterface(manager) {}
 \end{lstlisting}
 
 Upon creating an instance of a library (interface) one needs to add it to the already existing \emph{LibManager} instance
@@ -48,21 +48,21 @@ via the \emph{addLibrary} method:
 
 \begin{lstlisting}
 LibManagerInstance->addLibrary(
-dynamic_cast<mars::lib_manager::LibInterface*>(myLibraryInstance));
+dynamic_cast<lib_manager::LibInterface*>(myLibraryInstance));
 \end{lstlisting}
 
 In addition, in the implementation of each class that inherits from \emph{myLibraryInterface}, the following functions need 
 be included:
 
 \begin{lstlisting}
-extern "C" void *destroy_c(mars::lib_manager::LibInterface *sp) {
+extern "C" void *destroy_c(lib_manager::LibInterface *sp) {
   delete (dynamic_cast<myLibraryClass*>(sp));
 }
 
-extern "C" mars::lib_manager::LibInterface* 
-create_c(mars::lib_manager::LibManager *theManager) {
+extern "C" lib_manager::LibInterface* 
+create_c(lib_manager::LibManager *theManager) {
   myLibraryClass* myLibrary = new myLibraryClass(theManager);
-  return dynamic_cast<mars::lib_manager::LibInterface*>(myLibrary);
+  return dynamic_cast<lib_manager::LibInterface*>(myLibrary);
 }
 \end{lstlisting}
 
@@ -366,7 +366,7 @@ mars::cfg_manager_gui::MainGuiCfg *mainGuiCfg =
   new mars::cfg_manager_gui::MainGuiCfg(libManager);
 mainGuiCfg->setupGui(dummy_string)
 libManager->
-addLibrary(dynamic_cast<mars::lib_manager::LibInterface*>(mainGuiCfg));
+addLibrary(dynamic_cast<lib_manager::LibInterface*>(mainGuiCfg));
 ...
 \end{lstlisting}
 
