@@ -32,21 +32,28 @@
 #warning "NodeContactForceSensor.h"
 #endif
 
+#include <mars/data_broker/ProducerInterface.h>
+
 #include "NodeArraySensor.h"
 
 namespace mars {
   namespace sim {
 
-    class NodeContactForceSensor : public NodeArraySensor {
+    class NodeContactForceSensor : public NodeArraySensor,
+                                   public data_broker::ProducerInterface {
 
     public:
       NodeContactForceSensor(interfaces::ControlCenter *control, IDListConfig config);
-      ~NodeContactForceSensor(void) {}
+      ~NodeContactForceSensor(void);
 
       virtual int getAsciiData(char* data) const;
       virtual int getSensorData(interfaces::sReal** data) const;
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
+                               int callbackParam);
+
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
                                int callbackParam);
 
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,

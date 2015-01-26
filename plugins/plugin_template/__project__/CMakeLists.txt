@@ -3,8 +3,8 @@ set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "__description__")
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
+find_package(mars)
 mars_defaults()
 define_module_info()
 

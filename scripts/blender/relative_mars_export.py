@@ -203,11 +203,12 @@ def getChildren(parent):
 
 def fillList(obj):
     if "type" in obj:
+        print ("da : " + str(obj["type"]))
         if obj["type"] == "body":
             objList.append(obj)
         elif obj["type"] == "joint":
             jointList.append(obj)
-        elif obj["type"] == "sensor":
+        elif obj["type"] == sensor:
             sensorList.append(obj)
     obj.select = False
 

@@ -36,7 +36,7 @@
 #include "CFGDefs.h"
 #include "CFGClient.h"
 
-#include <mars/lib_manager/LibManager.h>
+#include <lib_manager/LibManager.hpp>
 
 #include <string>
 #include <vector>

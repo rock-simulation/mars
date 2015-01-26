@@ -47,10 +47,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace plugins {
     namespace Text3D {
 
@@ -72,7 +68,7 @@ namespace mars {
                     public mars::cfg_manager::CFGClient {
 
       public:
-        Text3D(mars::lib_manager::LibManager *theManager);
+        Text3D(lib_manager::LibManager *theManager);
         ~Text3D();
 
         // LibInterface methods

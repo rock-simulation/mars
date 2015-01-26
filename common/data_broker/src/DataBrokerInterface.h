@@ -77,7 +77,7 @@
 #include "DataPackage.h"
 #include "DataInfo.h"
 
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 
 #include <cstdarg>
 #include <string>
@@ -85,9 +85,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
 
   namespace data_broker {
 
@@ -105,14 +102,14 @@ namespace mars {
     };
 
     /** \brief The interface every DataBroker should implement. */
-    class DataBrokerInterface : public mars::lib_manager::LibInterface {
+    class DataBrokerInterface : public lib_manager::LibInterface {
 
     public:
       /**
        * \brief Constructor takes no arguments.
        */
-      DataBrokerInterface(mars::lib_manager::LibManager *theManager)
-        : mars::lib_manager::LibInterface(theManager)
+      DataBrokerInterface(lib_manager::LibManager *theManager)
+        : lib_manager::LibInterface(theManager)
       {}
       virtual ~DataBrokerInterface() {}
 

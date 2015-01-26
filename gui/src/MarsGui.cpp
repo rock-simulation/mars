@@ -28,10 +28,6 @@
 #include <mars/main_gui/MainGUI.h>
 #include <mars/main_gui/MyQMainWindow.h>
 
-#include <mars/lib_manager/LibManager.h>
-
-//#include "MarsStyle.h"
-
 #include "MenuFile.h"
 #include "MenuSimulation.h"
 #include "MenuWindow.h"

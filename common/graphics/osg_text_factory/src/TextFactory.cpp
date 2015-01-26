@@ -30,7 +30,7 @@
 
 namespace osg_text {
   
-  TextFactory::TextFactory(mars::lib_manager::LibManager *theManager) :
+  TextFactory::TextFactory(lib_manager::LibManager *theManager) :
     TextFactoryInterface(theManager) {
   }
 

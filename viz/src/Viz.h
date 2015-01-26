@@ -37,10 +37,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace interfaces {
     class GraphicsManagerInterface;
   }

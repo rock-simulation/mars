@@ -357,7 +357,6 @@ namespace mars {
                            jointPose.rotation * inertialPose.position);
       goalPose.position = (parentInertialPose.rotation.GetInverse()*
                            goalPose.position);
-
       goalPose.rotation = (parentInertialPose.rotation.GetInverse()*
                            jointPose.rotation*inertialPose.rotation);
 

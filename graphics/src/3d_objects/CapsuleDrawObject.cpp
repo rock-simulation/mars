@@ -55,17 +55,19 @@ namespace mars {
       osg::Vec3 sphereBottomOffset(0.0f, 0.0f, -0.5*height_ + 0.0018f);
       SphereDrawObject::createGeometry(
                                        vertices, normals, uv,
-                                       radius_, sphereTopOffset, sphereBottomOffset, false, 4);
+                                       radius_, sphereTopOffset, sphereBottomOffset, false, 2);
 
       geom->setVertexArray(vertices.get());
       geom->setNormalArray(normals.get());
       geom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
-      geom->setTexCoordArray(DEFAULT_UV_UNIT, uv);
+      geom->setTexCoordArray(DEFAULT_UV_UNIT, uv.get());
       geom->addPrimitiveSet(new osg::DrawArrays(
                                                 osg::PrimitiveSet::TRIANGLES,
                                                 0, // index of first vertex
                                                 vertices->size()));
 
+      geom->setUseDisplayList(false);
+      geom->setUseVertexBufferObjects(true);
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->addDrawable(geom);
       geodes.push_back(geode);

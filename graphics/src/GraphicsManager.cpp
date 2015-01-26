@@ -28,6 +28,8 @@
 #include "GraphicsManager.h"
 #include "config.h"
 
+#include <osgUtil/Optimizer>
+
 #include <osgDB/WriteFile>
 #include <osg/Fog>
 #include <osg/LightModel>
@@ -331,7 +333,7 @@ namespace mars {
     void GraphicsManager::reset(){
       //remove graphics stuff & rearrange light numbers
       for (unsigned int i = 0; i<myLights.size(); i++) {
-        removeLight(i);
+        //removeLight(i);
       }
       for (DrawObjects::iterator iter = drawObjects_.begin();
            iter != drawObjects_.end(); iter = drawObjects_.begin()) {
@@ -505,9 +507,17 @@ namespace mars {
         gw->initializeOSG(myQTWidget, graphicsWindows[0], width, height);
       }
       else {
+        
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
                                                     next_window_id++, 0,
                                                     0, this);
+        
+        // this will open an osg widget without qt wrapping
+        /*
+        gw = new GraphicsWidget(myQTWidget, scene.get(),
+                                next_window_id++, 0,
+                                                    0, this);
+        */
         gw->initializeOSG(myQTWidget, 0, width, height);
       }
 
@@ -798,7 +808,9 @@ namespace mars {
           shadowMap->setRadius(m["shadowCenterRadius"][0]);
         }
       }
-
+      osgUtil::Optimizer optimizer;
+      optimizer.optimize(shadowedScene.get());
+      
       return id;
     }
 

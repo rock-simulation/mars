@@ -18,6 +18,11 @@
  *
  */
 
+/*
+ * ToDo: ConfigItem = ConfigMap
+ *
+ */
+
 #ifndef MARS_UTILS_CONFIG_DATA_H
 #define MARS_UTILS_CONFIG_DATA_H
 

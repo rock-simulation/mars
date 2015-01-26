@@ -4,8 +4,6 @@ set(PROJECT_DESCRIPTION "This library provides a 3d visualization through simple
 cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
-
 include(CheckIncludeFileCXX)
 
 CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
@@ -15,7 +13,8 @@ else(${USE_TR1})
     ADD_DEFINITIONS(-DNO_TR1)
 endif()
 
-mars_defaults()
+find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 include_directories(
@@ -32,7 +31,6 @@ OPTION(DEPTH_IMAGES "Compile with Depth image support, might not work on all mac
 if(DEPTH_IMAGES)
     ADD_DEFINITIONS(-DDEPTH_IMAGES)
 endif()
-
 
 set(USE_VERTEX_BUFFER 0)
 if(USE_VERTEX_BUFFER)

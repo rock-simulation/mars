@@ -81,7 +81,8 @@ namespace mars {
       if (!_shadowedScene) return;
 
       texture = new osg::Texture2D;
-      texture->setTextureSize(2048, 2048);
+      //texture->setTextureSize(2048, 2048);
+      texture->setTextureSize(4096, 4096);
       texture->setInternalFormat(GL_DEPTH_COMPONENT);
       texture->setShadowComparison(true);
       texture->setShadowTextureMode(osg::Texture2D::LUMINANCE);
@@ -104,7 +105,8 @@ namespace mars {
         camera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
         camera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
         // set viewport
-        camera->setViewport(0, 0, 2048, 2048);
+        //camera->setViewport(0, 0, 2048, 2048);
+        camera->setViewport(0, 0, 4096, 4096);
         // set the camera to render before the main camera.
         camera->setRenderOrder(osg::Camera::PRE_RENDER);
         // tell the camera to use OpenGL frame buffer object where supported.

@@ -45,6 +45,11 @@ namespace mars {
       geometrySize_.x() = geometrySize_.y() = geometrySize_.z() = radius_*2;
     }
 
+
+    SphereDrawObject::~SphereDrawObject() {
+
+    }
+
     std::vector<SphereFace>* makeSphere(unsigned int levelOfDetail) {
       vector<SphereFace> *faces = new vector<SphereFace>(pow(4.0,(int)levelOfDetail) * 8);
       vector<SphereFace> &f = *faces;
@@ -213,17 +218,19 @@ namespace mars {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
 
       createGeometry(vertices, normals, uv,
-                     radius_, zero, zero, false, 4);
+                     radius_, zero, zero, false, 2);
 
       geom->setVertexArray(vertices.get());
       geom->setNormalArray(normals.get());
-      geom->setTexCoordArray(DEFAULT_UV_UNIT, uv);
+      geom->setTexCoordArray(DEFAULT_UV_UNIT, uv.get());
       geom->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
       geom->addPrimitiveSet(new osg::DrawArrays(
                                                 osg::PrimitiveSet::TRIANGLES,
                                                 0, // index of first vertex
                                                 vertices->size()));
 
+      geom->setUseDisplayList(false);
+      geom->setUseVertexBufferObjects(true);
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->addDrawable(geom);
       geodes.push_back(geode);

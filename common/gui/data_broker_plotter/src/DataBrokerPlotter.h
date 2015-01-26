@@ -34,11 +34,17 @@ namespace data_broker_plotter {
     QVector<double> xValues;
     QVector<double> yValues;
     mars::data_broker::DataPackage dpPackage;
-    int dpId;
+    int dpId, gotNewData;
     bool gotData;
     QMutex mutex;
     mars::cfg_manager::cfgPropertyStruct xRange, yScale, sTime, yOffset;
     std::map<mars::cfg_manager::cfgParamId, mars::cfg_manager::cfgPropertyStruct*> cfgParamIdProp;
+  };
+
+  class PackageData {
+  public:
+    mars::data_broker::DataPackage dp;
+    int callbackParam;
   };
 
   class DataBrokerPlotter : public mars::main_gui::BaseWidget,
@@ -69,6 +75,7 @@ namespace data_broker_plotter {
     QCustomPlot *qcPlot;
     QMutex dataLock;
     std::string name;
+    std::list<PackageData> packageList;
 
     void shiftDown( QRect &rect, int offset ) const;
 

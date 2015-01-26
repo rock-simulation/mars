@@ -40,6 +40,7 @@ namespace mars {
 
     public:
       SphereDrawObject(mars::interfaces::sReal radius);
+      ~SphereDrawObject();
 
       static void createGeometry(osg::Vec3Array *vertices,
                                  osg::Vec3Array *normals,

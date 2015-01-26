@@ -137,6 +137,8 @@ namespace mars {
                                                 0, // index of first vertex
                                                 vertices->size()));
 
+      geom->setUseDisplayList(false);
+      geom->setUseVertexBufferObjects(true);
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->addDrawable(geom);
       geodes.push_back(geode);

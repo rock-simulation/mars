@@ -71,7 +71,29 @@ namespace mars {
         // group
         readGeode = loadedNode->asGeode();
         if(!readGeode.valid()) {
-          std::cerr << "LoadDrawObject: no geode found" << std::endl;
+          std::cerr << "LoadDrawObject: no geode found " << info_.fileName << std::endl;
+          osg::ref_ptr<osg::Group> readGroup = loadedNode->asGroup();
+          if(!readGroup.valid()) {
+            std::cerr << "LoadDrawObject: no group found" << std::endl;
+            return geodes; // TODO: error message
+          }
+
+          for (unsigned int i = 0; i < readGroup->getNumChildren(); ++i) {
+            readNode = readGroup->getChild(i);
+            if (readNode->getName() == info_.objectName || info_.objectName == "") {
+              geodes.push_back(readNode->asGeode());
+              found = true;
+            }
+          }
+
+          std::list< osg::ref_ptr< osg::Geode > >::iterator it=geodes.begin();
+          for(;it!=geodes.end(); ++it) {
+            for(unsigned int i=0; i<(*it)->getNumDrawables(); ++i) {
+              (*it)->getDrawable(i)->setUseDisplayList(false);
+              (*it)->getDrawable(i)->setUseVertexBufferObjects(true);
+            }
+          }
+
           return geodes; // TODO: error message
         }
         geodes.push_back(readGeode);
@@ -102,6 +124,15 @@ namespace mars {
                     << "' from file '" << info_.fileName << "'" << endl;
         }
       }
+
+      std::list< osg::ref_ptr< osg::Geode > >::iterator it=geodes.begin();
+      for(;it!=geodes.end(); ++it) {
+        for(unsigned int i=0; i<(*it)->getNumDrawables(); ++i) {
+          (*it)->getDrawable(i)->setUseDisplayList(false);
+          (*it)->getDrawable(i)->setUseVertexBufferObjects(true);
+        }
+      }
+
       return geodes;
     }
 
