@@ -158,12 +158,15 @@ namespace mars {
 
       graphics->initializeOSG(NULL, createWindow);
       graphics->hideCoords();
+
+      control = new ControlCenter();
+      control->loadCenter = new LoadCenter();
     }
 
     void Viz::loadScene(std::string filename) {
 
       std::string tmpPath = "./tmp/";
-      scene_loader::Load load(filename, NULL, tmpPath, "");
+      scene_loader::Load load(filename, control, tmpPath, "");
       load.prepareLoad();
       load.parseScene();
 

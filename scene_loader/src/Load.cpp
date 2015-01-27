@@ -65,7 +65,12 @@ namespace mars {
     unsigned int Load::prepareLoad() {
       std::string filename = mFileName;
 
-      groupIDOffset = control->nodes->getMaxGroupID() + 1;
+      if(control->nodes) {
+        groupIDOffset = control->nodes->getMaxGroupID() + 1;
+      }
+      else {
+        groupIDOffset = 0;
+      }
 
       if(mRobotName != ""){
         control->entities->addEntity(mRobotName);
