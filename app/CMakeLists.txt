@@ -139,6 +139,10 @@ add_plugin_if_availible("data_broker_gui")
 add_plugin_if_availible("cfg_manager_gui")
 add_plugin_if_availible("lib_manager_gui")
 
+if(NOT ROCK)
+    add_plugin_if_availible("log_console")
+endif()
+
 
 if(ADDITIONAL_LIBS)
 string(REGEX REPLACE " " "
