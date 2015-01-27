@@ -4,10 +4,9 @@ set(PROJECT_DESCRIPTION "This plugin loads text elements for the hud from a conf
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
-#find_package(mars)
+find_package(lib_manager)
 
-mars_defaults()
+lib_defaults()
 define_module_info()
 
 include(CheckIncludeFileCXX)
