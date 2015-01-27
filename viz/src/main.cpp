@@ -23,7 +23,6 @@
 #include "MyApp.h"
 
 #include <signal.h>
-#include <QPlastiqueStyle>
 #include <QWidget>
 
 #include <stdexcept>
@@ -66,7 +65,6 @@ int main(int argc, char *argv[]) {
   mars::viz::Viz *viz = new mars::viz::Viz();
 
   mars::viz::MyApp *app = new mars::viz::MyApp(argc, argv);
-  app->setStyle(new QPlastiqueStyle);
 
   viz->init();
 
