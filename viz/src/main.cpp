@@ -23,7 +23,6 @@
 #include "MyApp.h"
 
 #include <signal.h>
-#include <QWidget>
 
 #include <stdexcept>
 
@@ -57,10 +56,6 @@ int main(int argc, char *argv[]) {
   signal(SIGTERM, qtExitHandler);
   signal(SIGINT, qtExitHandler);
 
-  if(argc < 2) {
-    fprintf(stderr, "mars_viz_app: no scene file given to visualize\n");
-    exit(0);
-  }
 
   mars::viz::Viz *viz = new mars::viz::Viz();
 
@@ -68,14 +63,12 @@ int main(int argc, char *argv[]) {
 
   viz->init();
 
-  void *widget = viz->graphics->getQTWidget(1);
-  if(widget) ((QWidget*)widget)->show();
-
   mars::viz::GraphicsTimer *graphicsTimer = new mars::viz::GraphicsTimer(viz->graphics);
   graphicsTimer->run();
 
-  viz->loadScene(argv[1]);
-  viz->setJointValue("leg4_joint4", -0.03);
+  if(argc > 1) {
+    viz->loadScene(argv[1]);
+  }
 
   int state;
   state = app->exec();

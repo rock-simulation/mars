@@ -24,7 +24,8 @@ pkg_check_modules(PKGCONFIG
   mars_interfaces
   mars_graphics
   cfg_manager
-        mars_scene_loader
+  mars_scene_loader
+  main_gui
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

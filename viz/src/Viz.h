@@ -32,23 +32,11 @@
   #warning "Viz.h"
 #endif
 
+#include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/NodeData.h>
 
 namespace mars {
-
-  namespace interfaces {
-    class GraphicsManagerInterface;
-  }
-
-  namespace graphics {
-    class GraphicsManager;
-  }
-
-  namespace cfg_manager {
-    class CFGManager;
-  }
-
 
   namespace viz {
 
@@ -64,17 +52,20 @@ namespace mars {
       std::string name;
     };
 
-    class GraphicsTimer;
-
     void exit_main(int signal);
 
-    class Viz {
+    class Viz : public lib_manager::LibInterface {
     public:
       Viz();
       Viz(lib_manager::LibManager *theManager);
-      ~Viz();
+      virtual ~Viz();
 
-      static interfaces::ControlCenter *control;
+      // LibInterface methods
+      virtual int getLibVersion() const
+      { return 1; }
+      virtual const std::string getLibName() const
+      { return "mars_viz"; }
+      CREATE_MODULE_INFO();
 
       void init(bool createWindow=true);
 
@@ -94,15 +85,13 @@ namespace mars {
 
     private:
       std::string configDir;
-      lib_manager::LibManager *libManager;
 
       std::map<unsigned long, interfaces::NodeData> nodeMapById;
       std::map<std::string, interfaces::NodeData> nodeMapByName;
       std::map<std::string, ForwardTransform> jointMapByName;
       std::map<unsigned long, ForwardTransform*> jointMapById;
       std::vector<ForwardTransform*> jointByControllerIdx;
-      graphics::GraphicsManager *gM;
-      cfg_manager::CFGManager *c;
+      interfaces::ControlCenter *control;
 
       void setJointValue(ForwardTransform *joint, double value);
 

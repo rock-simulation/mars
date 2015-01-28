@@ -29,8 +29,8 @@
 #include <lib_manager/LibManager.hpp>
 #include <lib_manager/LibInterface.hpp>
 #include <mars/utils/misc.h>
-#include <mars/cfg_manager/CFGManager.h>
-#include <mars/graphics/GraphicsManager.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/scene_loader/Load.h>
 #include <mars/interfaces/utils.h>
 #include <mars/interfaces/JointData.h>
@@ -38,6 +38,8 @@
 #include <mars/interfaces/ControllerData.h>
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/utils/mathUtils.h>
+#include <QWidget>
+#include <mars/main_gui/MainGUI.h>
 
 #ifdef WIN32
   #include <Windows.h>
@@ -51,8 +53,6 @@ namespace mars {
   using namespace interfaces;
 
   namespace viz {
-
-    mars::interfaces::ControlCenter* Viz::control = NULL;
 
     void exit_main(int signal) {
 #ifndef WIN32
@@ -70,23 +70,20 @@ namespace mars {
       }
     }
 
-    Viz::Viz() : configDir("."),
-                 libManager(new lib_manager::LibManager()) {
+    Viz::Viz() : lib_manager::LibInterface(new lib_manager::LibManager()),
+                 configDir(".") {
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
-      c = NULL;
-      gM = NULL;
     }
 
-    Viz::Viz(lib_manager::LibManager *theManager) : configDir(".") {
+    Viz::Viz(lib_manager::LibManager *theManager) : lib_manager::LibInterface(theManager),
+                                                    configDir("."){
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
 #endif //WIN32
-      c = NULL;
-      gM = NULL;
     }
 
     Viz::~Viz() {
@@ -97,8 +94,6 @@ namespace mars {
       libManager->releaseLibrary("cfg_manager");
 
       libManager->clearLibraries();
-      if(gM) delete gM;
-      if(c) delete c;
 
       delete libManager;
 
@@ -128,14 +123,18 @@ namespace mars {
       }
 
       // load the simulation core_libs:
+      libManager->addLibrary(this);
       libManager->loadConfigFile(coreConfigFile);
 
       mars::cfg_manager::CFGManagerInterface *cfg;
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
       if(!cfg) {
-        c = new cfg_manager::CFGManager(libManager);
-        libManager->addLibrary(c);
-        cfg = c;
+        libManager->loadLibrary("cfg_manager");
+        cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+        if(!cfg) {
+          fprintf(stderr, "can not load needed library \"cfg_manager\".\n");
+          exit(-1);
+        }
       }
       if(cfg) {
         cfg_manager::cfgPropertyStruct prop;
@@ -145,22 +144,46 @@ namespace mars {
         cfg->setProperty(prop);
         cfg->getOrCreateProperty("Graphics", "backfaceCulling", false);
         cfg->getOrCreateProperty("Graphics", "num multisamples", 0);
+        std::string configFile = configDir+"/mars_Preferences.yaml";
+        cfg->loadConfig(configFile.c_str());
       }
-
-      // then get the simulation
 
       graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
       if(!graphics) {
-        gM = new graphics::GraphicsManager(libManager);
-        libManager->addLibrary(gM);
-        graphics = gM;
+        libManager->loadLibrary("cfg_manager");
+        graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+        if(!graphics) {
+          fprintf(stderr, "can not load needed library \"mars_graphics\".\n");
+          exit(-1);
+        }
       }
 
       graphics->initializeOSG(NULL, createWindow);
       graphics->hideCoords();
 
+      coreConfigFile = configDir+"/other_libs.txt";
       control = new ControlCenter();
       control->loadCenter = new LoadCenter();
+
+      control->dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
+      if(control->dataBroker) {
+        ControlCenter::theDataBroker = control->dataBroker;
+      }
+
+      libManager->loadConfigFile(coreConfigFile);
+
+      mars::main_gui::MainGUI *mainGui = NULL;
+      mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
+
+      void *widget = graphics->getQTWidget(1);
+      if(widget) {
+        if(mainGui) {
+          mainGui->mainWindow_p()->setCentralWidget((QWidget*)widget);
+        }
+        ((QWidget*)widget)->show();
+      }
+      if(mainGui) mainGui->show();
+
     }
 
     void Viz::loadScene(std::string filename) {
