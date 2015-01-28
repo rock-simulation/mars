@@ -6,6 +6,7 @@ includedir=${prefix}/include/
 Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator Application
 Requires.private: lib_manager main_gui mars_interfaces
+Requires: @PUBLIC_DEPENDENCIES@
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -lmars
 

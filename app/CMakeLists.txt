@@ -40,10 +40,12 @@ if (${Qt5Widgets_FOUND})
   add_definitions(-DUSE_QT5)
   add_definitions(${Qt5Widgets_DEFINITIONS})
   set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+  set(PUBLIC_DEPENDENCIES Qt5Widgets)
 else (${Qt5Widgets_FOUND})
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
   include_directories(${QT_INCLUDE_DIR})
+  set(PUBLIC_DEPENDENCIES QtCore)
 endif (${Qt5Widgets_FOUND})
 
 set(SOURCES
