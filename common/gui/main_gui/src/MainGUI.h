@@ -74,7 +74,7 @@ namespace mars {
       /**
        * \biref The constructor initializes the library manager.
        */
-      MainGUI(lib_manager::LibManager *theManager);
+      MainGUI(lib_manager::LibManager *theManager=0);
 
       /**
        * \brief A destructor.

@@ -151,7 +151,7 @@ namespace mars {
                        public mars::utils::Thread {
 
     public:
-      DataBroker(lib_manager::LibManager *theManager);
+      DataBroker(lib_manager::LibManager *theManager=0);
       virtual ~DataBroker();
 
       bool createTimer(const std::string &timerName);

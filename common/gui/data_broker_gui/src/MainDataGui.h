@@ -58,7 +58,7 @@ namespace mars {
       Q_OBJECT;
       
     public:
-      MainDataGui(lib_manager::LibManager* theManager);
+      MainDataGui(lib_manager::LibManager* theManager=0);
       void setupGUI(std::string path = std::string("."));
       
       virtual ~MainDataGui(void);

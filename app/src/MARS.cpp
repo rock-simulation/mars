@@ -32,6 +32,7 @@
 #include <lib_manager/LibInterface.hpp>
 #include <mars/main_gui/MainGUI.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+//#include <mars/sim/Simulator.h>
 #include <mars/interfaces/gui/MarsGuiInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/Thread.h>
@@ -106,6 +107,7 @@ namespace mars {
     }
 
     MARS::~MARS() {
+        std::cerr << "Mars is destructing" << std::endl;
       //! close simulation
       exit_main(0);
 
@@ -158,10 +160,14 @@ namespace mars {
                                               configDir);
         configPath.sValue = configDir;
         cfg->setProperty(configPath);
+      }else{
+        std::cerr << "!!!! Cannot get cfgManagerInterface" << std::endl;
       }
 
       // then get the simulation
       mars::interfaces::SimulatorInterface *marsSim;
+      //mars::sim::Simulator *marsSim;
+      //marsSim = libManager->getLibraryAs<mars::sim::Simulator>("mars_sim");
       marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
       if(!marsSim) {
         fprintf(stderr, "main: error while casting simulation lib\n\n");
@@ -174,6 +180,8 @@ namespace mars {
       marsGui = libManager->getLibraryAs<mars::interfaces::MarsGuiInterface>("mars_gui");
       if(marsGui) {
         marsGui->setupGui();
+      }else{
+        std::cerr << "!!!!!!---- Cannot get mars_gui" << std::endl;
       }
 
       mars::main_gui::MainGUI *mainGui = NULL;

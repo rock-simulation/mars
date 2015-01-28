@@ -35,7 +35,7 @@ namespace data_broker_plotter {
     Q_OBJECT
 
     public:
-    DataBrokerPlotterLib(lib_manager::LibManager* theManager);
+    DataBrokerPlotterLib(lib_manager::LibManager* theManager=0);
     void setupGUI(std::string rPath = std::string("."));
    
     virtual ~DataBrokerPlotterLib(void);

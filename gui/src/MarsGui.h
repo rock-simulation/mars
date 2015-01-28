@@ -49,7 +49,7 @@ namespace mars {
                     public cfg_manager::CFGClient {
 
     public:
-      MarsGui(lib_manager::LibManager *theManager);
+      MarsGui(lib_manager::LibManager *theManager=0);
       virtual ~MarsGui();
   
       // LibInterface methods

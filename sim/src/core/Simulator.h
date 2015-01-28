@@ -78,7 +78,7 @@ namespace mars {
         STEPPING=3
       };
 
-      Simulator(lib_manager::LibManager *theManager); ///< Constructor of the \c class Simulator.
+      Simulator(lib_manager::LibManager *theManager=0); ///< Constructor of the \c class Simulator.
       virtual ~Simulator();
       static Simulator *activeSimulator;
 

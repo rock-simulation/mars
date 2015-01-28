@@ -40,7 +40,7 @@ namespace mars {
     class URDFLoader : public interfaces::LoadSceneInterface {
       
     public:
-      URDFLoader(lib_manager::LibManager *theManager);
+      URDFLoader(lib_manager::LibManager *theManager=0);
       ~URDFLoader();
 
 

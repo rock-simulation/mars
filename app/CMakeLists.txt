@@ -9,6 +9,10 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+
+find_package(PkgConfig)
+FIND_PACKAGE( Boost COMPONENTS system REQUIRED )
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
 set(DEFAULT_CONFIG_DIR "." CACHE STRING "The Default config dir to load")
@@ -96,6 +100,7 @@ target_link_libraries(mars
             ${QT_LIBRARIES}
             ${WIN_LIBS}
             ${PKGCONFIG_LIBRARIES}
+            ${Boost_LIBRARIES}
 )
 
 target_link_libraries(${PROJECT_NAME} mars)

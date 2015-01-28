@@ -67,7 +67,7 @@ namespace mars {
       Q_OBJECT;
 
     public:
-      MainConsole(lib_manager::LibManager *theManager);
+      MainConsole(lib_manager::LibManager *theManager=0);
       void setupGUI();
       void getConsoleGeometry(int *top, int *left, int *w, int *h);
   

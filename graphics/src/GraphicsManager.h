@@ -108,7 +108,7 @@ namespace mars {
                             public cfg_manager::CFGClient {
 
     public:
-      GraphicsManager(lib_manager::LibManager *theManager, void *QTWidget = 0);
+      GraphicsManager(lib_manager::LibManager *theManager=0, void *QTWidget = 0);
       ~GraphicsManager();
 
       CREATE_MODULE_INFO();

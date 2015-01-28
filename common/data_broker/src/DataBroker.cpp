@@ -1415,3 +1415,8 @@ namespace mars {
 
 DESTROY_LIB(mars::data_broker::DataBroker);
 CREATE_LIB(mars::data_broker::DataBroker);
+
+
+CLASS_LOADER_REGISTER_CLASS(mars::data_broker::DataBroker, lib_manager::LibInterface);
+
+

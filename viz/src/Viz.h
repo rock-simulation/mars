@@ -71,7 +71,7 @@ namespace mars {
     class Viz {
     public:
       Viz();
-      Viz(lib_manager::LibManager *theManager);
+      //Viz(lib_manager::LibManager *theManager=0);
       ~Viz();
 
       static interfaces::ControlCenter *control;

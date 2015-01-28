@@ -58,7 +58,7 @@ namespace mars {
         Q_OBJECT;
 
       public:
-        LibManagerGui(lib_manager::LibManager *theManager);
+        LibManagerGui(lib_manager::LibManager *theManager=0);
         ~LibManagerGui();
 
         // LibInterface methods

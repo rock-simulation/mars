@@ -40,7 +40,7 @@ namespace mars {
     class SceneLoader : public interfaces::LoadSceneInterface {
       
     public:
-      SceneLoader(lib_manager::LibManager *theManager);
+      SceneLoader(lib_manager::LibManager *theManager=0);
       ~SceneLoader();
 
 

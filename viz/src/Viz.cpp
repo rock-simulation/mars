@@ -69,7 +69,6 @@ namespace mars {
         fprintf(stderr, "################################\n\n");
       }
     }
-
     Viz::Viz() : configDir("."),
                  libManager(new lib_manager::LibManager()) {
 #ifdef WIN32
@@ -80,6 +79,7 @@ namespace mars {
       gM = NULL;
     }
 
+#if 0
     Viz::Viz(lib_manager::LibManager *theManager) : configDir(".") {
 #ifdef WIN32
       // request a scheduler of 1ms
@@ -88,6 +88,7 @@ namespace mars {
       c = NULL;
       gM = NULL;
     }
+#endif
 
     Viz::~Viz() {
       //! close simulation

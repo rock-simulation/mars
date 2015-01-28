@@ -58,7 +58,7 @@ namespace mars {
     class CFGManager : public CFGManagerInterface {
 
     public:
-      CFGManager(lib_manager::LibManager *theManager,
+      CFGManager(lib_manager::LibManager *theManager=0,
           const char *filename = "mars_default.yaml");
       ~CFGManager();
 

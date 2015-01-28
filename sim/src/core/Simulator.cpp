@@ -79,6 +79,11 @@ namespace mars {
       exit_sim(false), allow_draw(true),
       sync_graphics(false), physics_mutex_count(0), physics(0) {
 
+      if(!libManager){
+        std::cerr << "Lib manager is null CRITICAL" << std::endl;
+        exit(-1);
+      }
+
       config_dir = DEFAULT_CONFIG_DIR;
       calc_time = 0;
       avg_log_time = 0;

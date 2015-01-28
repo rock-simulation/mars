@@ -65,7 +65,7 @@ namespace mars {
         Q_OBJECT
 
         public:
-        ConnexionPlugin(lib_manager::LibManager *theManager);
+        ConnexionPlugin(lib_manager::LibManager *theManager=0);
         ~ConnexionPlugin(void);
 
         // LibInterface methods
