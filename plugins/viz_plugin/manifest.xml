@@ -3,7 +3,7 @@
       Example to use only visualization part of MARS
     </description>
 
-    <depend package="simulation/lib_manager" />
+
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/common/cfg_manager" />
     <depend package="simulation/mars/interfaces" />

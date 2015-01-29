@@ -7,9 +7,9 @@ cmake_minimum_required(VERSION 2.6)
 #set(CMAKE_BUILD_TYPE Debug)
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
+#find_package(lib_manager)
+#lib_defaults()
+#define_module_info()
 
 MACRO(CMAKE_USE_FULL_RPATH install_rpath)
     SET(CMAKE_SKIP_BUILD_RPATH  FALSE)

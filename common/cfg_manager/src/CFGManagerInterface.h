@@ -36,7 +36,7 @@
 #include "CFGDefs.h"
 #include "CFGClient.h"
 
-#include <lib_manager/LibManager.hpp>
+#include <mars/utils/Singleton.hpp>
 
 #include <string>
 #include <vector>
@@ -44,11 +44,10 @@
 namespace mars {
   namespace cfg_manager {
 
-    class CFGManagerInterface : public lib_manager::LibInterface {
+    class CFGManagerInterface : public singleton::Interface {
 
     public:
-      CFGManagerInterface(lib_manager::LibManager *theManager) :
-        lib_manager::LibInterface(theManager) {}
+      CFGManagerInterface(){};
       ~CFGManagerInterface() {}
 
       // LibInterface methods

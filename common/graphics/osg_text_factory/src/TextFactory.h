@@ -41,7 +41,7 @@ namespace osg_text {
   class TextFactory : public TextFactoryInterface {
 
   public:
-    TextFactory(lib_manager::LibManager *theManager);
+    TextFactory();
 
     ~TextFactory();
 

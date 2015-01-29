@@ -34,7 +34,7 @@
 #include "MenuInterface.h"
 
 #include <string>
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 
 namespace mars {
   namespace main_gui {
@@ -43,13 +43,12 @@ namespace mars {
     /** \brief The abstract GuiInterface class provides the menu and 
      *  docking functionality of the GUI. Inherits from LibInterface.
      */
-    class GuiInterface : public lib_manager::LibInterface {
+    class GuiInterface : public singleton::Interface {
 
     public:
 
       /** \biref The constructor initializes the library manager.*/
-      GuiInterface(lib_manager::LibManager *theManager) : 
-        lib_manager::LibInterface(theManager) {}
+      GuiInterface(){}
 
       /** \brief A destructor. */
       virtual ~GuiInterface() {}

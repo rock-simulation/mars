@@ -34,7 +34,7 @@
 #include "CfgWidget.h"
 #include <mars/main_gui/GuiInterface.h>
 #include <mars/main_gui/MenuInterface.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <mars/utils/Singleton.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 #include <string>
@@ -47,13 +47,13 @@ namespace mars {
   namespace cfg_manager_gui {
 
     class MainCfgGui : public QObject,
-                       public lib_manager::LibInterface,
+                       public singleton::Interface,
                        public main_gui::MenuInterface,
                        public cfg_manager::CFGClient {
       Q_OBJECT
 
       public:
-      MainCfgGui(lib_manager::LibManager* theManager);
+      MainCfgGui();
       void setupGUI(std::string path = ".");
    
       virtual ~MainCfgGui(void);
@@ -64,7 +64,7 @@ namespace mars {
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("cfg_manager_gui");}
-      CREATE_MODULE_INFO();
+//      CREATE_MODULE_INFO();
 
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _propertyS);
       virtual void cfgParamCreated(cfg_manager::cfgParamId _id);

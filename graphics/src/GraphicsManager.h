@@ -108,10 +108,10 @@ namespace mars {
                             public cfg_manager::CFGClient {
 
     public:
-      GraphicsManager(lib_manager::LibManager *theManager, void *QTWidget = 0);
+      GraphicsManager(void *QTWidget = 0);
       ~GraphicsManager();
 
-      CREATE_MODULE_INFO();
+//      CREATE_MODULE_INFO();
 
       virtual void initializeOSG(void *data, bool createWindow=true);
 

@@ -32,7 +32,7 @@
   #warning "Viz.h"
 #endif
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/NodeData.h>
 
@@ -54,10 +54,10 @@ namespace mars {
 
     void exit_main(int signal);
 
-    class Viz : public lib_manager::LibInterface {
+    class Viz : public singleton::Interface {
     public:
       Viz();
-      Viz(lib_manager::LibManager *theManager);
+      Viz();
       virtual ~Viz();
 
       // LibInterface methods

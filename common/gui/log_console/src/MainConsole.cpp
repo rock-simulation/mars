@@ -39,8 +39,8 @@ namespace mars {
 
   namespace log_console {
 
-    MainConsole::MainConsole(lib_manager::LibManager *theManager) :
-      lib_manager::LibInterface(theManager), gui(NULL),
+    MainConsole::MainConsole() :
+      , gui(NULL),
       consoleWidget(NULL), cfg(NULL), set_window_prop(false) {
 
       setupGUI();
@@ -367,5 +367,5 @@ namespace mars {
 } // end of namespace mars
 
 
-DESTROY_LIB(mars::log_console::MainConsole);
-CREATE_LIB(mars::log_console::MainConsole);
+CLASS_LOADER_REGISTER_CLASS(mars::log_console::MainConsole, singleton::Interface );
+;

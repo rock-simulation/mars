@@ -37,8 +37,7 @@ namespace mars {
 
     using namespace cfg_manager;
 
-    MainDataGui::MainDataGui(lib_manager::LibManager *theManager) :
-      lib_manager::LibInterface(theManager),
+    MainDataGui::MainDataGui() :
       gui(NULL), cfg(NULL), dataBroker(NULL), dataWidget(NULL) {
 
       // setup GUI with default path
@@ -47,9 +46,8 @@ namespace mars {
 
     void MainDataGui::setupGUI(std::string path) {
 
-      if(libManager == NULL) return;
 
-      cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
+//      cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager"); //TODO
       if(cfg) {
         cfg_manager::cfgPropertyStruct r_path;
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
@@ -59,11 +57,11 @@ namespace mars {
         fprintf(stderr, "******* data_broker_gui: couldn't find cfg_manager\n");
       }
 
-      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
+//      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui"); //TODO
       if (gui == NULL)
         return;
 
-      dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
+//      dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker"); //TODO
 
       std::string path2 = path;
       path2.append("/mars/data_broker_gui/resources/images/data_broker_symbol.png");
@@ -81,11 +79,10 @@ namespace mars {
 
 
     MainDataGui::~MainDataGui() {
-      if(libManager == NULL) return;
 
-      if(cfg) libManager->releaseLibrary("cfg_manager");
-      if(gui) libManager->releaseLibrary("main_gui");
-      if(dataBroker) libManager->releaseLibrary("data_broker");
+//      if(cfg) libManager->releaseLibrary("cfg_manager"); //TODO
+//      if(gui) libManager->releaseLibrary("main_gui"); //TODO
+//      if(dataBroker) libManager->releaseLibrary("data_broker"); //TODO
       fprintf(stderr, "Delete MainDataGui\n");
     }
 
@@ -132,5 +129,5 @@ namespace mars {
 
 } // end of namespace mars
 
-DESTROY_LIB(mars::data_broker_gui::MainDataGui);
-CREATE_LIB(mars::data_broker_gui::MainDataGui);
+CLASS_LOADER_REGISTER_CLASS(mars::data_broker_gui::MainDataGui, singleton::Interface );
+;

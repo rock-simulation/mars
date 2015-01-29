@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
+#find_package(lib_manager)
+#lib_defaults()
+#define_module_info()
 
 # Widgets finds its own dependencies (QtGui and QtCore).
 find_package(Qt5Widgets)
@@ -34,7 +34,7 @@ else (${Qt5Widgets_FOUND})
 endif (${Qt5Widgets_FOUND})
 
 
-pkg_check_modules(LIB_MANAGER "lib_manager")
+pkg_check_modules(LIB_MANAGER "mars-utils")
 include_directories(${LIB_MANAGER_INCLUDE_DIRS})
 link_directories(${LIB_MANAGER_LIBRARY_DIRS})
 

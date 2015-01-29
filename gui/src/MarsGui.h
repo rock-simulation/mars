@@ -45,17 +45,18 @@ namespace mars {
     /**
      * \brief Sets up the main gui of the simulation and handles various generic gui options.
      */
-    class MarsGui : public interfaces::MarsGuiInterface,
-                    public cfg_manager::CFGClient {
+    class MarsGui : public interfaces::MarsGuiInterface
+                    ,public cfg_manager::CFGClient 
+      {
 
     public:
-      MarsGui(lib_manager::LibManager *theManager);
+      MarsGui();
       virtual ~MarsGui();
   
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_gui");}
-      CREATE_MODULE_INFO();
+      //CREATE_MODULE_INFO();
 
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
 

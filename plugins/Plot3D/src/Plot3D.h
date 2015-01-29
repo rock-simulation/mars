@@ -88,7 +88,7 @@ namespace mars {
         };
 
         public:
-        Plot3D(lib_manager::LibManager *theManager);
+        Plot3D();
         ~Plot3D();
 
         // LibInterface methods

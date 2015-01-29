@@ -47,9 +47,8 @@ namespace mars {
 
     using namespace std;
 
-    CFGManager::CFGManager(lib_manager::LibManager *theManager,
-                           const char *filename)
-      : CFGManagerInterface(theManager),
+    CFGManager::CFGManager(const char *filename):
+      //: CFGManagerInterface(theManager),
         mutexCFGParams(utils::MUTEX_TYPE_RECURSIVE),
         mutexVecClients(utils::MUTEX_TYPE_RECURSIVE) {
       //cout << "create CFGManager" << endl;
@@ -944,5 +943,4 @@ namespace mars {
 } // end of namespace mars
 
 
-DESTROY_LIB(mars::cfg_manager::CFGManager);
-CREATE_LIB(mars::cfg_manager::CFGManager);
+CLASS_LOADER_REGISTER_CLASS(mars::cfg_manager::CFGManager, singleton::Interface )

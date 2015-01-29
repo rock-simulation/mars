@@ -13,7 +13,7 @@
 
 #include <mars/main_gui/GuiInterface.h>
 #include <mars/main_gui/MenuInterface.h>
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
@@ -29,7 +29,7 @@ namespace data_broker_plotter {
   class DataBrokerPlotter;
 
   class DataBrokerPlotterLib : public QObject,
-                           public lib_manager::LibInterface,
+                           public singleton::Interface,
                            public mars::main_gui::MenuInterface {
 
     Q_OBJECT

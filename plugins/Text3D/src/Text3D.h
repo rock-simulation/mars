@@ -68,7 +68,7 @@ namespace mars {
                     public mars::cfg_manager::CFGClient {
 
       public:
-        Text3D(lib_manager::LibManager *theManager);
+        Text3D();
         ~Text3D();
 
         // LibInterface methods

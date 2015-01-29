@@ -49,8 +49,8 @@ namespace mars {
         CALLBACK_LOAD,
       };
 
-      LibManagerGui::LibManagerGui(lib_manager::LibManager *theManager)
-        : lib_manager::LibInterface(theManager)
+      LibManagerGui::LibManagerGui()
+        : 
         , mars::main_gui::MenuInterface()
         , widget(NULL)
         , cfg(NULL)
@@ -166,5 +166,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::lib_manager_gui::LibManagerGui);
-CREATE_LIB(mars::plugins::lib_manager_gui::LibManagerGui);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::lib_manager_gui::LibManagerGui, singleton::Interface );
+;

@@ -61,7 +61,7 @@ namespace mars {
                                public main_gui::MenuInterface {
 
       public:
-        ConstraintsPlugin(lib_manager::LibManager *theManager);
+        ConstraintsPlugin();
         ~ConstraintsPlugin();
 
         // LibInterface methods

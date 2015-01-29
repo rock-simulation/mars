@@ -5,12 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
-
 pkg_check_modules(DEPS REQUIRED
-	lib_manager
 	yaml-cpp
 	mars_utils
 )

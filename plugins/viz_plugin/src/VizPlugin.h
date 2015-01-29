@@ -32,13 +32,13 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/viz/Viz.h>
 
-class VizPlugin : public lib_manager::LibInterface,
+class VizPlugin : public singleton::Interface,
                   public mars::interfaces::GraphicsUpdateInterface,
                   public mars::data_broker::ReceiverInterface,
                   public mars::cfg_manager::CFGClient {
  
 public:
-  VizPlugin(lib_manager::LibManager *theManager);
+  VizPlugin();
   ~VizPlugin(void);
 
   // LibInterface methods

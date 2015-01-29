@@ -283,5 +283,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::Plot3D::Plot3D);
-CREATE_LIB(mars::plugins::Plot3D::Plot3D);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::Plot3D::Plot3D, singleton::Interface );
+;

@@ -53,5 +53,5 @@ namespace osg_text {
 
 } // end of namespace: osg_text
 
-DESTROY_LIB(osg_text::TextFactory);
-CREATE_LIB(osg_text::TextFactory);
+CLASS_LOADER_REGISTER_CLASS(osg_text::TextFactory, singleton::Interface );
+;

@@ -6,10 +6,7 @@ set(PROJECT_DESCRIPTION "This Library contains several useful utilities like a M
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
 
-lib_defaults()
-define_module_info()
 
 pkg_check_modules(PKGCONFIG REQUIRED
         eigen3
@@ -36,6 +33,7 @@ set(HEADERS
     src/Color.h
     src/ConfigData.h
     src/FIFOMap.h
+    src/Singleton.hpp
     src/Mutex.h
     src/MutexLocker.h
     src/Quaternion.h

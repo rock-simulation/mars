@@ -29,7 +29,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/main_gui/GuiInterface.h>
-#include <lib_manager/LibManager.hpp>
+//#include <lib_manager/LibManager.hpp>
 #include <QtGui>
 
 #include <QMessageBox>
@@ -42,9 +42,8 @@ namespace mars {
      * \brief MenuFile creates the menus and menu items in the File menu of the simulation.
      */
     MenuFile::MenuFile(interfaces::ControlCenter *c,
-                       main_gui::GuiInterface *gui, std::string resPath,
-                       lib_manager::LibManager *theManager)
-      : libManager(theManager), mainGui(gui), control(c) {
+                       main_gui::GuiInterface *gui, std::string resPath)
+      : mainGui(gui), control(c) {
   
       std::string tmp1;
 

@@ -33,7 +33,7 @@
 
 #include "DataWidget.h"
 #include "DataConnWidget.h"
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 #include <mars/main_gui/GuiInterface.h>
@@ -53,12 +53,12 @@ namespace mars {
   
   namespace data_broker_gui {
     
-    class MainDataGui : public QObject, public lib_manager::LibInterface,
+    class MainDataGui : public QObject, public singleton::Interface,
                         public mars::main_gui::MenuInterface {
       Q_OBJECT;
       
     public:
-      MainDataGui(lib_manager::LibManager* theManager);
+      MainDataGui();
       void setupGUI(std::string path = std::string("."));
       
       virtual ~MainDataGui(void);
@@ -71,7 +71,7 @@ namespace mars {
       { return 1; }
       const std::string getLibName() const
       { return std::string("data_broker_gui"); }
-      CREATE_MODULE_INFO();
+//      CREATE_MODULE_INFO();
       
     private:
       mars::main_gui::GuiInterface* gui;

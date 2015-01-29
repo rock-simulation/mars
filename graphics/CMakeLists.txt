@@ -13,9 +13,9 @@ else(${USE_TR1})
     ADD_DEFINITIONS(-DNO_TR1)
 endif()
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
+#find_package(lib_manager)
+#lib_defaults()
+#define_module_info()
 
 include_directories(
       src 

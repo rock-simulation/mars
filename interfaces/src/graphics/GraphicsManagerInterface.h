@@ -37,7 +37,7 @@
 #include "../MaterialData.h"
 #include "../sim/LoadCenter.h"
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
 
@@ -51,16 +51,14 @@ namespace mars {
     class LoadHeightfieldInterface;
 
 
-    class GraphicsManagerInterface : public lib_manager::LibInterface {
+    class GraphicsManagerInterface : public singleton::Interface {
 
     public:
 
       virtual void* getWindowManager(int id) =0;
       // virtual void* getCameraInterface(int id);
       
-      GraphicsManagerInterface(lib_manager::LibManager *theManager)
-        : lib_manager::LibInterface(theManager)
-      {}
+      GraphicsManagerInterface(){}
       virtual ~GraphicsManagerInterface()
       {}
 

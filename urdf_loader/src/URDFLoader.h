@@ -40,14 +40,14 @@ namespace mars {
     class URDFLoader : public interfaces::LoadSceneInterface {
       
     public:
-      URDFLoader(lib_manager::LibManager *theManager);
+      URDFLoader();
       ~URDFLoader();
 
 
       // LibInterface methods
       int getLibVersion() const {return 1;}
       const std::string getLibName() const {return std::string("mars_urdf_loader");}
-      CREATE_MODULE_INFO();
+//      CREATE_MODULE_INFO();
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);

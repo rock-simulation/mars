@@ -33,7 +33,7 @@
 using namespace mars::utils;
 
 VizPlugin::VizPlugin(lib_manager::LibManager *theManager) :
-  lib_manager::LibInterface(theManager) {
+   {
 
   cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
   graphics = libManager->getLibraryAs<mars::interfaces::GraphicsManagerInterface>("mars_graphics");
@@ -114,5 +114,5 @@ void VizPlugin::cfgUpdateProperty(mars::cfg_manager::cfgPropertyStruct _property
 }
 
 
-CREATE_LIB(VizPlugin);
-DESTROY_LIB(VizPlugin);
+;
+CLASS_LOADER_REGISTER_CLASS(VizPlugin, singleton::Interface );

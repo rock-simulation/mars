@@ -28,8 +28,6 @@
 #include "Load.h"
 #include "Save.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 
 namespace mars {
@@ -37,11 +35,11 @@ namespace mars {
 
     using namespace std;
 
-    SceneLoader::SceneLoader(lib_manager::LibManager *theManager) :
-      interfaces::LoadSceneInterface(theManager), control(NULL) {
+    SceneLoader::SceneLoader() :
+      interfaces::LoadSceneInterface(), control(NULL) {
 
       mars::interfaces::SimulatorInterface *marsSim;
-      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
+//      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim"); //TODO
       if(marsSim) {
         control = marsSim->getControlCenter();
         control->loadCenter->loadScene[".scn"] = this;
@@ -55,7 +53,7 @@ namespace mars {
         control->loadCenter->loadScene.erase(".scn");
         control->loadCenter->loadScene.erase(".scene");
         //control->loadCenter->loadScene.erase(".zip");
-        libManager->releaseLibrary("mars_sim");
+//        libManager->releaseLibrary("mars_sim"); //TODO
       }
     }
 
@@ -74,5 +72,5 @@ namespace mars {
   } // end of namespace scene_loader
 } // end of namespace mars
 
-DESTROY_LIB(mars::scene_loader::SceneLoader);
-CREATE_LIB(mars::scene_loader::SceneLoader);
+CLASS_LOADER_REGISTER_CLASS(mars::scene_loader::SceneLoader, singleton::Interface );
+;

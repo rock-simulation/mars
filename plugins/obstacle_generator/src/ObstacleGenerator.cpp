@@ -370,5 +370,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::obstacle_generator::ObstacleGenerator);
-CREATE_LIB(mars::plugins::obstacle_generator::ObstacleGenerator);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::obstacle_generator::ObstacleGenerator, singleton::Interface );
+;

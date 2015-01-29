@@ -27,7 +27,7 @@
 #include "Viz.h"
 
 #include <lib_manager/LibManager.hpp>
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/utils/misc.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
@@ -78,7 +78,7 @@ namespace mars {
 #endif //WIN32
     }
 
-    Viz::Viz(lib_manager::LibManager *theManager) : lib_manager::LibInterface(theManager),
+    Viz::Viz(lib_manager::LibManager *theManager) : ,
                                                     configDir("."){
 #ifdef WIN32
       // request a scheduler of 1ms

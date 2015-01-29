@@ -37,9 +37,6 @@
 
 #include <string>
 
-namespace lib_manager {
-  class LibManager;
-}
 
 namespace mars {
 
@@ -62,7 +59,7 @@ namespace mars {
 
       /** \brief The constructor adds the actions to the File menu */
       MenuFile(interfaces::ControlCenter *c, main_gui::GuiInterface *gui,
-               std::string resPath, lib_manager::LibManager *theManager);
+               std::string resPath);
       ~MenuFile();
 
       /**
@@ -75,7 +72,6 @@ namespace mars {
 
     private:
  
-      lib_manager::LibManager *libManager;
       main_gui::GuiInterface *mainGui;
       interfaces::ControlCenter *control;
 

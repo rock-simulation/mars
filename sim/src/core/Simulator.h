@@ -64,7 +64,7 @@ namespace mars {
     class Simulator : public utils::Thread,
                       public interfaces::SimulatorInterface,
                       public interfaces::GraphicsUpdateInterface,
-                      public lib_manager::LibInterface,
+                      public singleton::Interface,
                       public cfg_manager::CFGClient,
                       public data_broker::ReceiverInterface {
 
@@ -78,7 +78,7 @@ namespace mars {
         STEPPING=3
       };
 
-      Simulator(lib_manager::LibManager *theManager); ///< Constructor of the \c class Simulator.
+      Simulator(); ///< Constructor of the \c class Simulator.
       virtual ~Simulator();
       static Simulator *activeSimulator;
 
@@ -93,7 +93,7 @@ namespace mars {
       }
 
       void newLibLoaded(const std::string &libName);
-      CREATE_MODULE_INFO();
+      //CREATE_MODULE_INFO();
       void checkOptionalDependency(const std::string &libName);
 
 
@@ -231,7 +231,7 @@ namespace mars {
       char was_running;
       bool kill_sim;
       bool show_time; ///< Bool to enable output of the calculation time.
-      interfaces::ControlCenter *control; ///< Pointer to instance of ControlCenter (created in Simulator::Simulator(lib_manager::LibManager *theManager))
+      interfaces::ControlCenter *control; ///< Pointer to instance of ControlCenter (created in Simulator::Simulator())
       std::vector<LoadOptions> filesToLoad;
       bool sim_fault;
       bool exit_sim;

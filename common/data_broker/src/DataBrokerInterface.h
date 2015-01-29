@@ -77,7 +77,7 @@
 #include "DataPackage.h"
 #include "DataInfo.h"
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 
 #include <cstdarg>
 #include <string>
@@ -102,15 +102,13 @@ namespace mars {
     };
 
     /** \brief The interface every DataBroker should implement. */
-    class DataBrokerInterface : public lib_manager::LibInterface {
+    class DataBrokerInterface : public singleton::Interface {
 
     public:
       /**
        * \brief Constructor takes no arguments.
        */
-      DataBrokerInterface(lib_manager::LibManager *theManager)
-        : lib_manager::LibInterface(theManager)
-      {}
+      DataBrokerInterface(){}
       virtual ~DataBrokerInterface() {}
 
       // LibInterface methods
@@ -118,7 +116,7 @@ namespace mars {
       { return 1; }
       virtual const std::string getLibName() const
       { return "data_broker"; }
-      CREATE_MODULE_INFO();
+//      CREATE_MODULE_INFO();
 
       /**
        * \brief creates a new timer with the given name

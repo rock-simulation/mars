@@ -441,5 +441,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::constraints_plugin::ConstraintsPlugin);
-CREATE_LIB(mars::plugins::constraints_plugin::ConstraintsPlugin);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::constraints_plugin::ConstraintsPlugin, singleton::Interface );
+;

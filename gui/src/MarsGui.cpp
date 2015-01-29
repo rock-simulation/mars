@@ -37,8 +37,7 @@ using namespace std;
 namespace mars {
   namespace gui {
 
-    MarsGui::MarsGui(lib_manager::LibManager *theManager) : MarsGuiInterface(theManager), 
-                                                            control(NULL), gui(NULL) {
+    MarsGui::MarsGui() : control(NULL), gui(NULL) {
 
     }
 
@@ -123,11 +122,11 @@ namespace mars {
 
         }
     
-        libManager->releaseLibrary("mars_sim");
+        //libManager->releaseLibrary("mars_sim"); //TODO
       }
   
       if(gui) {
-        libManager->releaseLibrary("main_gui");
+//        libManager->releaseLibrary("main_gui"); //TODO
       }
   
       fprintf(stderr, "Delete mars_gui\n");
@@ -136,12 +135,12 @@ namespace mars {
 
     void MarsGui::setupGui() {
       interfaces::SimulatorInterface *sim;
-      sim =libManager->getLibraryAs<interfaces::SimulatorInterface>("mars_sim");
+//      sim =libManager->getLibraryAs<interfaces::SimulatorInterface>("mars_sim"); //TODO
       if(sim) {
         control = sim->getControlCenter();
       }
 
-      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
+//      gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui"); //TODO
       if(!gui) {
         fprintf(stderr, "No main_gui lib found!\n");
       }
@@ -246,7 +245,7 @@ namespace mars {
           */
         }
 
-        new MenuFile(control, gui, resourcesPath.sValue, libManager);
+        new MenuFile(control, gui, resourcesPath.sValue);
         new MenuWindow(control, gui);
         new MenuSimulation(control, gui, resourcesPath.sValue);
     
@@ -295,6 +294,5 @@ namespace mars {
   } // end of namespace gui
 } // end of namespace mars
 
-DESTROY_LIB(mars::gui::MarsGui);
-CREATE_LIB(mars::gui::MarsGui);
+CLASS_LOADER_REGISTER_CLASS( mars::gui::MarsGui, singleton::Interface )
 

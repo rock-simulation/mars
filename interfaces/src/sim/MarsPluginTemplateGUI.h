@@ -26,7 +26,7 @@
 #include "PluginInterface.h"
 #include "SimulatorInterface.h"
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <string>
@@ -36,16 +36,16 @@
 namespace mars {
   namespace interfaces {
 
-    class MarsPluginTemplateGUI : public lib_manager::LibInterface,
+    class MarsPluginTemplateGUI : public singleton::Interface,
                                public PluginInterface {
 
     public:
   
-      MarsPluginTemplateGUI(lib_manager::LibManager *theManager, std::string libName) : 
-        LibInterface(theManager), PluginInterface(NULL), mars(NULL) {
+      MarsPluginTemplateGUI(std::string libName) : 
+        PluginInterface(NULL), mars(NULL) {
 
-        lib_manager::LibInterface *lib;
-        lib = libManager->getLibrary("mars_sim");
+        singleton::Interface *lib;
+        //lib = libManager->getLibrary("mars_sim"); //TODO
         pluginStruct newplugin;
         if(lib) {
           if( (mars = dynamic_cast<SimulatorInterface*>(lib)) ) {
@@ -71,7 +71,7 @@ namespace mars {
           }
         }
 
-        gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
+//        gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui"); //TODO
         // this part should be the last line of the contructor
         // we can get a timing problem if mars want to use the
         // plugin before the contructor is finished -> so the last part here
@@ -80,8 +80,8 @@ namespace mars {
       }
 
       ~MarsPluginTemplateGUI() {
-        if(mars) libManager->releaseLibrary("mars_sim");
-        if(gui) libManager->releaseLibrary("main_gui");
+//        if(mars) libManager->releaseLibrary("mars_sim"); //TODO
+//        if(gui) libManager->releaseLibrary("main_gui"); //TODO
       }
 
       private:

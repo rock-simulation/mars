@@ -55,7 +55,7 @@ namespace mars {
         public mars::cfg_manager::CFGClient {
 
       public:
-        __classname__(lib_manager::LibManager *theManager);
+        __classname__();
         ~__classname__();
 
         // LibInterface methods

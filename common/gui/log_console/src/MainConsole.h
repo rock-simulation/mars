@@ -59,7 +59,7 @@ namespace mars {
       data_broker::MessageType type;
     };
 
-    class MainConsole : public QObject, public lib_manager::LibInterface,
+    class MainConsole : public QObject, public singleton::Interface,
                         public main_gui::MenuInterface, 
                         public ConsoleInterface, 
                         public cfg_manager::CFGClient, 
@@ -67,7 +67,7 @@ namespace mars {
       Q_OBJECT;
 
     public:
-      MainConsole(lib_manager::LibManager *theManager);
+      MainConsole();
       void setupGUI();
       void getConsoleGeometry(int *top, int *left, int *w, int *h);
   

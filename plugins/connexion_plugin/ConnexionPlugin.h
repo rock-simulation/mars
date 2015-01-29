@@ -34,7 +34,7 @@
 
 #include "ConnexionWidget.h"
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
@@ -65,13 +65,13 @@ namespace mars {
         Q_OBJECT
 
         public:
-        ConnexionPlugin(lib_manager::LibManager *theManager);
+        ConnexionPlugin();
         ~ConnexionPlugin(void);
 
         // LibInterface methods
         int getLibVersion() const {return 1;}
         const std::string getLibName() const {return std::string("ConnexionPlugin");}
-        CREATE_MODULE_INFO();
+        //CREATE_MODULE_INFO();
 
         void update(mars::interfaces::sReal time_ms) { (void) time_ms; }
         virtual void reset(void) {}

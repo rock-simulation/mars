@@ -80,9 +80,7 @@ namespace mars {
     static int CastsShadowTraversalMask = 0xffff;
 
 
-    GraphicsManager::GraphicsManager(lib_manager::LibManager *theManager,
-                                     void *myQTWidget)
-      : GraphicsManagerInterface(theManager),
+    GraphicsManager::GraphicsManager(void *myQTWidget):
         osgWidget(NULL),
         guiHelper(new GuiHelper(this)),
         next_hud_id(1),
@@ -110,7 +108,6 @@ namespace mars {
 
       // first check if we have the cfg_manager lib
 
-      if(libManager == NULL) return;
 
     }
 
@@ -119,13 +116,13 @@ namespace mars {
         string saveFile = configPath.sValue;
         saveFile.append("/mars_Graphics.yaml");
         cfg->writeConfig(saveFile.c_str(), "Graphics");
-        libManager->releaseLibrary("cfg_manager");
+        //libManager->releaseLibrary("cfg_manager"); //TODO
       }
       fprintf(stderr, "Delete mars_graphics\n");
     }
 
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {
-      cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
+      //cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager"); //TODO
       if(!cfg) {
         fprintf(stderr, "******* mars_graphics: couldn't find cfg_manager\n");
         return;
@@ -1938,5 +1935,5 @@ namespace mars {
   } // end of namespace graphics
 } // end of namespace mars
 
-DESTROY_LIB(mars::graphics::GraphicsManager);
-CREATE_LIB(mars::graphics::GraphicsManager);
+CLASS_LOADER_REGISTER_CLASS(mars::graphics::GraphicsManager, singleton::Interface );
+;

@@ -58,8 +58,7 @@ namespace mars {
     class CFGManager : public CFGManagerInterface {
 
     public:
-      CFGManager(lib_manager::LibManager *theManager,
-          const char *filename = "mars_default.yaml");
+      CFGManager(const char *filename = "mars_default.yaml");
       ~CFGManager();
 
       // LibInterface methods
@@ -67,7 +66,7 @@ namespace mars {
       { return 1; }
       virtual const std::string getLibName() const
       { return "cfg_manager"; }
-      CREATE_MODULE_INFO();
+      //CREATE_MODULE_INFO();
 
       // CFGInterface methods
       virtual bool loadConfigFromStream(std::istream &in, const char *group);

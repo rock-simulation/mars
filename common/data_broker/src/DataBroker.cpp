@@ -47,6 +47,7 @@
 
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/misc.h>
+#include <mars/utils/Singleton.hpp>
 
 #include <cstdio>
 #include <cerrno>
@@ -89,8 +90,8 @@ namespace mars {
       return 0;
     }
 
-    DataBroker::DataBroker(lib_manager::LibManager *theManager) :
-      DataBrokerInterface(theManager),
+    DataBroker::DataBroker() :
+//      DataBrokerInterface(theManager),
       mars::utils::Thread(),
       next_id(1), thread_running(false), stop_thread(false),
       realtimeThreadRunning(false), startingRealtimeThread(false) {
@@ -1413,5 +1414,5 @@ namespace mars {
   } // end of namespace data_broker
 } // end of namespace mars
 
-DESTROY_LIB(mars::data_broker::DataBroker);
-CREATE_LIB(mars::data_broker::DataBroker);
+CLASS_LOADER_REGISTER_CLASS(mars::data_broker::DataBroker, singleton::Interface )
+

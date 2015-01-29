@@ -227,5 +227,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::Text3D::Text3D);
-CREATE_LIB(mars::plugins::Text3D::Text3D);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::Text3D::Text3D, singleton::Interface );
+;

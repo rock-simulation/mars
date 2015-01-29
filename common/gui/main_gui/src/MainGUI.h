@@ -74,7 +74,7 @@ namespace mars {
       /**
        * \biref The constructor initializes the library manager.
        */
-      MainGUI(lib_manager::LibManager *theManager);
+      MainGUI();
 
       /**
        * \brief A destructor.
@@ -124,7 +124,7 @@ namespace mars {
        * \see LibInterface::getLibName(void)
        */
       const std::string getLibName() const;
-      CREATE_MODULE_INFO();
+      //CREATE_MODULE_INFO();
 
 
     protected slots:

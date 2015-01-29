@@ -33,7 +33,7 @@
 #warning "LibManagerGui.h"
 #endif
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 
 #include <mars/main_gui/MenuInterface.h>
 #include <mars/main_gui/GuiInterface.h>
@@ -52,13 +52,13 @@ namespace mars {
       class LibManagerWidget;
 
       class LibManagerGui : public QObject,
-                            public lib_manager::LibInterface,
+                            public singleton::Interface,
                             public mars::main_gui::MenuInterface {
 
         Q_OBJECT;
 
       public:
-        LibManagerGui(lib_manager::LibManager *theManager);
+        LibManagerGui();
         ~LibManagerGui();
 
         // LibInterface methods

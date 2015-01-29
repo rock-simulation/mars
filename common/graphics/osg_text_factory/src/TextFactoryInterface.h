@@ -31,17 +31,17 @@
 #warning "TextFactoryInterface.h"
 #endif
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/osg_text/TextInterface.h>
 #include <string>
 
 namespace osg_text {
 
-  class TextFactoryInterface : public lib_manager::LibInterface {
+  class TextFactoryInterface : public singleton::Interface {
 
   public:
-  TextFactoryInterface(lib_manager::LibManager *theManager) :
-    lib_manager::LibInterface(theManager) {}
+  TextFactoryInterface() :
+     {}
 
     virtual ~TextFactoryInterface() {}
 

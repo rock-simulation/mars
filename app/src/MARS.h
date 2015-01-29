@@ -34,7 +34,8 @@
 
 #include <iostream>
 #include <string>
-
+#include <class_loader/multi_library_class_loader.h>
+#include <mars/utils/Singleton.hpp>
 namespace lib_manager {
   class LibManager;
 }
@@ -59,13 +60,12 @@ namespace mars {
     class MARS {
     public:
       MARS();
-      MARS(lib_manager::LibManager *theManager);
       ~MARS();
 
       void readArguments(int argc, char **argv);
       void start(int argc, char **argv, bool startThread = true);
       int runWoQApp();
-      inline lib_manager::LibManager* getLibManager() {return libManager;}
+//      inline lib_manager::LibManager* getLibManager() {return libManager;}
 
       static interfaces::ControlCenter *control;
       static bool quit;
@@ -74,11 +74,13 @@ namespace mars {
       bool needQApp;
 
     private:
-      lib_manager::LibManager *libManager;
+      //lib_manager::LibManager *libManager;
+      class_loader::MultiLibraryClassLoader *loader;
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;
       bool ownLibManager;
-
+      boost::shared_ptr<singleton::Interface> cfg_lib; 
+      boost::shared_ptr<singleton::Interface> sim_lib; 
     };
 
   } // end of namespace app

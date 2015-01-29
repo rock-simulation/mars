@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
+#find_package(lib_manager)
+#lib_defaults()
+#define_module_info()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -23,14 +23,16 @@ ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
-        lib_manager
+#        lib_manager
         main_gui
+        class_loader 
         mars_interfaces
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
+pkg_check_modules(LOADER class_loader REQUIRED)
 
 find_package(Qt5Widgets)
 if (${Qt5Widgets_FOUND})
@@ -98,13 +100,19 @@ IF (WIN32)
   SET_TARGET_PROPERTIES(${PROJECT_NAME} PROPERTIES LINK_FLAGS -Wl,--stack,0x1000000)
 ENDIF (WIN32)
 
+FIND_PACKAGE( Boost COMPONENTS system REQUIRED )
+INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+
 target_link_libraries(mars
             ${QT_LIBRARIES}
             ${WIN_LIBS}
             ${PKGCONFIG_LIBRARIES}
+            ${Boost_LIBRARIES}
+            ${LOADER_LIBRARIES}
 )
 
 target_link_libraries(${PROJECT_NAME} mars)
+
 
 INSTALL(TARGETS ${PROJECT_NAME} mars
     RUNTIME DESTINATION bin

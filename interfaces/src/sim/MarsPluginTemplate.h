@@ -30,7 +30,7 @@
 #include "PluginInterface.h"
 #include "SimulatorInterface.h"
 
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <string>
@@ -38,16 +38,16 @@
 namespace mars {
   namespace interfaces {
 
-    class MarsPluginTemplate : public lib_manager::LibInterface,
+    class MarsPluginTemplate : public singleton::Interface,
                                public PluginInterface {
 
     public:
   
-        MarsPluginTemplate(lib_manager::LibManager *theManager, std::string libName) : 
-        LibInterface(theManager), PluginInterface(NULL), mars(NULL) {
+        MarsPluginTemplate(std::string libName) : 
+        PluginInterface(NULL), mars(NULL) {
 
-        lib_manager::LibInterface *lib;
-        lib = libManager->getLibrary("mars_sim");
+        singleton::Interface *lib;
+        //lib = libManager->getLibrary("mars_sim"); //TODO
         pluginStruct newplugin;
         if(lib) {
           if( (mars = dynamic_cast<SimulatorInterface*>(lib)) ) {

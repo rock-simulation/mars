@@ -13,8 +13,8 @@ namespace data_broker_plotter {
 
   using namespace mars::cfg_manager;
 
-  DataBrokerPlotterLib::DataBrokerPlotterLib(lib_manager::LibManager* theManager) :
-    lib_manager::LibInterface(theManager), gui(NULL),
+  DataBrokerPlotterLib::DataBrokerPlotterLib() :
+    , gui(NULL),
     cfg(NULL), dataBroker(NULL), num(0) {
 
     // setup GUI with default path
@@ -137,5 +137,5 @@ namespace data_broker_plotter {
 
 } // end of namespace: data_broker_plotter
 
-DESTROY_LIB(data_broker_plotter::DataBrokerPlotterLib);
-CREATE_LIB(data_broker_plotter::DataBrokerPlotterLib);
+CLASS_LOADER_REGISTER_CLASS(data_broker_plotter::DataBrokerPlotterLib, singleton::Interface );
+;

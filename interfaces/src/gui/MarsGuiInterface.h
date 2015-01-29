@@ -26,20 +26,17 @@
 #ifndef MARS_GUI_INTERFACE_H
 #define MARS_GUI_INTERFACE_H
 
-#include <lib_manager/LibInterface.hpp>
-
 namespace mars {
   namespace interfaces {
 
     /**
      * \brief Sets up the main gui of the simulation and handles various generic gui options.
      */
-    class MarsGuiInterface : public lib_manager::LibInterface {
+    class MarsGuiInterface{
 
     public:
-      MarsGuiInterface(lib_manager::LibManager *theManager) : lib_manager::LibInterface(theManager) {}
+      MarsGuiInterface(){}
       virtual ~MarsGuiInterface() {}
-  
       virtual void setupGui() = 0;
     };
 

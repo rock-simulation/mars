@@ -41,9 +41,9 @@ namespace mars {
       using namespace mars::utils;
       using namespace mars::sim;
 
-      ConnexionPlugin::ConnexionPlugin(LibManager *theManager)
+      ConnexionPlugin::ConnexionPlugin()
         : QThread(),
-          MarsPluginTemplateGUI(theManager, std::string("ConnexionPlugin")) {
+          MarsPluginTemplateGUI(std::string("ConnexionPlugin")) {
 
         thread_closed = false;
         myWidget = NULL;
@@ -402,5 +402,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::connexion_plugin::ConnexionPlugin);
-CREATE_LIB(mars::plugins::connexion_plugin::ConnexionPlugin);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::connexion_plugin::ConnexionPlugin, singleton::Interface );
+;

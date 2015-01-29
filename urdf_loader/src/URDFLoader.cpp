@@ -29,8 +29,6 @@
 #include "Save.h"
 #include "zipit.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/utils/misc.h>
@@ -41,11 +39,11 @@ namespace mars {
 
     using namespace std;
 
-    URDFLoader::URDFLoader(lib_manager::LibManager *theManager) :
-      interfaces::LoadSceneInterface(theManager), control(NULL) {
+    URDFLoader::URDFLoader() :
+      control(NULL) {
 
       mars::interfaces::SimulatorInterface *marsSim;
-      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
+      //marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim"); //TODO
       if(marsSim) {
         control = marsSim->getControlCenter();
         control->loadCenter->loadScene[".zsmurf"] = this;
@@ -64,7 +62,7 @@ namespace mars {
         control->loadCenter->loadScene.erase(".urdf");
         //control->loadCenter->loadScene.erase(".yaml");
         //control->loadCenter->loadScene.erase(".yml");
-        libManager->releaseLibrary("mars_sim");
+        //libManager->releaseLibrary("mars_sim"); //TODO
       }
     }
 
@@ -156,5 +154,5 @@ namespace mars {
   } // end of namespace urdf_loader
 } // end of namespace mars
 
-DESTROY_LIB(mars::urdf_loader::URDFLoader);
-CREATE_LIB(mars::urdf_loader::URDFLoader);
+CLASS_LOADER_REGISTER_CLASS(mars::urdf_loader::URDFLoader, singleton::Interface );
+;

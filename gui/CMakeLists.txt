@@ -5,9 +5,9 @@ cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
+#find_package(lib_manager)
+#lib_defaults()
+#define_module_info()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
@@ -21,7 +21,7 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
+    #			    lib_manager
 			    data_broker
 			    main_gui
 			    cfg_manager

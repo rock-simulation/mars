@@ -41,8 +41,8 @@ using namespace std;
 namespace mars {
   namespace main_gui {
 
-    MainGUI::MainGUI(lib_manager::LibManager *theManager) :
-      GuiInterface(theManager) {
+    MainGUI::MainGUI() :
+      GuiInterface() {
       allow_toolbar = true;
 
       mainWindow = new MyQMainWindow();
@@ -307,5 +307,5 @@ namespace mars {
   } // end namespace main_gui
 } // end namespace mars
 
-DESTROY_LIB(mars::main_gui::MainGUI);
-CREATE_LIB(mars::main_gui::MainGUI);
+CLASS_LOADER_REGISTER_CLASS(mars::main_gui::MainGUI, singleton::Interface );
+;

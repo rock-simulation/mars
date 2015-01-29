@@ -97,5 +97,5 @@ namespace mars {
   } // end of namespace plugins
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::__namespace__::__classname__);
-CREATE_LIB(mars::plugins::__namespace__::__classname__);
+CLASS_LOADER_REGISTER_CLASS(mars::plugins::__namespace__::__classname__, singleton::Interface );
+;

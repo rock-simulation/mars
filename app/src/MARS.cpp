@@ -28,8 +28,7 @@
 
 #include "GraphicsTimer.h"
 
-#include <lib_manager/LibManager.hpp>
-#include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Singleton.hpp>
 #include <mars/main_gui/MainGUI.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/gui/MarsGuiInterface.h>
@@ -37,7 +36,6 @@
 #include <mars/utils/Thread.h>
 #include <mars/utils/misc.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
-
 #include <QDir>
 
 #ifdef WIN32
@@ -83,20 +81,9 @@ namespace mars {
       MARS::control->sim->handleError(interfaces::PHYSICS_DEBUG);
     }
 
-    MARS::MARS() : configDir(DEFAULT_CONFIG_DIR),
-                   libManager(new lib_manager::LibManager()),
-                   marsGui(NULL), ownLibManager(true) {
-      needQApp = true;
-      graphicsTimer = NULL;
-#ifdef WIN32
-      // request a scheduler of 1ms
-      timeBeginPeriod(1);
-#endif //WIN32
-    }
 
-    MARS::MARS(lib_manager::LibManager *theManager) : configDir(DEFAULT_CONFIG_DIR),
-                   libManager(theManager),
-                   marsGui(NULL), ownLibManager(false) {
+    MARS::MARS() : configDir(DEFAULT_CONFIG_DIR),
+                   marsGui(NULL){
       needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
@@ -111,13 +98,14 @@ namespace mars {
 
       if(graphicsTimer) delete graphicsTimer;
 
+#if 0 //TODO libMaanager
       libManager->releaseLibrary("mars_sim");
       if(marsGui) libManager->releaseLibrary("mars_gui");
       if(control->graphics) libManager->releaseLibrary("mars_graphics");
       libManager->releaseLibrary("main_gui");
       libManager->releaseLibrary("cfg_manager");
+#endif
 
-      if(ownLibManager) delete libManager;
 
 #ifdef WIN32
       // end scheduler of 1ms
@@ -148,10 +136,36 @@ namespace mars {
       }
 
       // load the simulation core_libs:
-      libManager->loadConfigFile(coreConfigFile);
+//      libManager->loadConfigFile(coreConfigFile); //TODO
+        loader = new class_loader::MultiLibraryClassLoader(false);
 
-      mars::cfg_manager::CFGManagerInterface *cfg;
-      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libdata_broker.so");
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libcfg_manager.so");
+//        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmain_gui.so");
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmars_graphics.so");
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmars_sim.so");
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmars_scene_loader.so");
+        loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmars_urdf_loader.so");
+ //       loader->loadLibrary("/home/matthias/dev-mars/install/lib/libmars_gui.so");
+        
+        std::vector<std::string> av_cl = loader->getAvailableClasses<singleton::Interface>();
+        for(int i=0;i<av_cl.size();i++){
+            fprintf(stdout,"Class (1) availible: %s\n",av_cl[i].c_str());
+        }
+/*
+        class_loader::ClassLoader test("/home/matthias/dev-mars/install/lib/libcfg_manager.so");
+        std::vector<std::string> test2 = test.getAvailableClasses<singleton::Interface>();
+        for(int i=0;i<test2.size();i++){
+            fprintf(stdout,"Class (2) availible: %s\n",test2[i].c_str());
+        }
+        */
+
+
+        cfg_lib = loader->createInstance<singleton::Interface>("mars::cfg_manager::CFGManager");
+        singleton::instances.push_back(cfg_lib);
+
+        mars::cfg_manager::CFGManagerInterface *cfg = dynamic_cast<mars::cfg_manager::CFGManagerInterface*>(cfg_lib.get());
       if(cfg) {
         cfg_manager::cfgPropertyStruct configPath;
         configPath = cfg->getOrCreateProperty("Config", "config_path",
@@ -161,8 +175,9 @@ namespace mars {
       }
 
       // then get the simulation
-      mars::interfaces::SimulatorInterface *marsSim;
-      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
+        sim_lib = loader->createInstance<singleton::Interface>("mars::sim::Simulator");
+        singleton::instances.push_back(sim_lib);
+      mars::interfaces::SimulatorInterface *marsSim = dynamic_cast<mars::interfaces::SimulatorInterface*>(sim_lib.get());
       if(!marsSim) {
         fprintf(stderr, "main: error while casting simulation lib\n\n");
         exit(2);
@@ -171,16 +186,17 @@ namespace mars {
       // then read the simulation arguments
       control->sim->readArguments(argc, argv);
 
-      marsGui = libManager->getLibraryAs<mars::interfaces::MarsGuiInterface>("mars_gui");
+//      marsGui = libManager->getLibraryAs<mars::interfaces::MarsGuiInterface>("mars_gui"); //TODO
       if(marsGui) {
         marsGui->setupGui();
       }
 
       mars::main_gui::MainGUI *mainGui = NULL;
-      mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
+//      mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui"); //TODO
 
       mars::interfaces::GraphicsManagerInterface *marsGraphics = NULL;
-      lib_manager::LibInterface *lib= libManager->getLibrary("mars_graphics");
+      singleton::Interface *lib=0;
+//      //libManager->getLibrary("mars_graphics"); //TODO
       if(lib) {
         if( (marsGraphics = dynamic_cast<mars::interfaces::GraphicsManagerInterface*>(lib)) ) {
           // init osg
@@ -199,7 +215,7 @@ namespace mars {
         }
       }
 
-      libManager->loadConfigFile(configDir+"/other_libs.txt");
+      //libManager->loadConfigFile(configDir+"/other_libs.txt"); //TODO
 
       // if we have a main gui, show it
       if(mainGui) mainGui->show();

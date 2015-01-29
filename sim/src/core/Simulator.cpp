@@ -42,7 +42,7 @@
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <mars/utils/Singleton.hpp>
 #include <mars/interfaces/Logging.hpp>
 
 #include <signal.h>
@@ -74,8 +74,7 @@ namespace mars {
 
     Simulator *Simulator::activeSimulator = 0;
 
-    Simulator::Simulator(lib_manager::LibManager *theManager) :
-      lib_manager::LibInterface(theManager),
+    Simulator::Simulator() :
       exit_sim(false), allow_draw(true),
       sync_graphics(false), physics_mutex_count(0), physics(0) {
 
@@ -176,10 +175,11 @@ namespace mars {
         control->cfg->writeConfig(saveFile.c_str(), "Simulator");
       }
       // TODO: do we need to delete control?
-      libManager->releaseLibrary("mars_graphics");
-      libManager->releaseLibrary("cfg_manager");
-      libManager->releaseLibrary("data_broker");
-      libManager->releaseLibrary("log_console");
+      //TODO HIER 
+//      libManager->releaseLibrary("mars_graphics");
+//      libManager->releaseLibrary("cfg_manager");
+//      libManager->releaseLibrary("data_broker");
+//      libManager->releaseLibrary("log_console");
     }
 
     void Simulator::newLibLoaded(const std::string &libName) {
@@ -187,8 +187,9 @@ namespace mars {
     }
 
     void Simulator::checkOptionalDependency(const string &libName) {
+#if 0
       if(libName == "data_broker") {
-        control->dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
+//        control->dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker"); //TODO
         if(control->dataBroker) {
           ControlCenter::theDataBroker = control->dataBroker;
           // create streams
@@ -206,9 +207,9 @@ namespace mars {
           fprintf(stderr, "ERROR: could not get DataBroker!\n");
         }
       } else if(libName == "cfg_manager") {
-        control->cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
+//        control->cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager"); //TODO
       } else if(libName == "mars_graphics") {
-        control->graphics = libManager->getLibraryAs<interfaces::GraphicsManagerInterface>("mars_graphics");
+//        control->graphics = libManager->getLibraryAs<interfaces::GraphicsManagerInterface>("mars_graphics"); //TODO
         if(control->graphics) {
           control->loadCenter->loadMesh = control->graphics->getLoadMeshInterface();
           control->loadCenter->loadHeightmap = control->graphics->getLoadHeightmapInterface();
@@ -234,6 +235,7 @@ namespace mars {
           }
         }
       }
+#endif
     }
 
     /*
@@ -1388,14 +1390,15 @@ namespace mars {
 
 
   } // end of namespace sim
-
+/*
   namespace interfaces {
-      SimulatorInterface* SimulatorInterface::getInstance(lib_manager::LibManager *libManager) {
-      return new sim::Simulator(libManager);
+      SimulatorInterface* SimulatorInterface::getInstance() {
+      return new sim::Simulator();
     }
   } // end of namespace interfaces
+*/
 
 } // end of namespace mars
 
-DESTROY_LIB(mars::sim::Simulator);
-CREATE_LIB(mars::sim::Simulator);
+CLASS_LOADER_REGISTER_CLASS(mars::sim::Simulator, singleton::Interface );
+;

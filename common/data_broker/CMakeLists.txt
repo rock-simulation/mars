@@ -5,9 +5,6 @@ cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
 
-find_package(lib_manager)
-lib_defaults()
-define_module_info()
 
 #IF (APPLE)
 #  EXEC_PROGRAM(uname ARGS -v  OUTPUT_VARIABLE DARWIN_VERSION)

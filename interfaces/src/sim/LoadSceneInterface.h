@@ -33,16 +33,15 @@
 
 #include <string>
 
-#include <mars/lib_manager/LibInterface.h>
+#include <mars/utils/Singleton.hpp>
 
 namespace mars {
 
   namespace interfaces {
 
-    class LoadSceneInterface : public lib_manager::LibInterface {
+    class LoadSceneInterface : public singleton::Interface {
     public:
-      LoadSceneInterface(lib_manager::LibManager *theManager) :
-        lib_manager::LibInterface(theManager) {}
+      LoadSceneInterface(){}
       virtual ~LoadSceneInterface() {}
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
