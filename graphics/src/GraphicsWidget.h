@@ -76,7 +76,7 @@ namespace mars {
 
       virtual void setWGeometry(int top, int left, int width, int height) {};
       virtual void getWGeometry(int *top, int *left,
-                                int *width, int *height) {};
+                                int *width, int *height) const {};
       void setFullscreen(bool val, int display = 1);
 
       osgViewer::View* getView(void);
