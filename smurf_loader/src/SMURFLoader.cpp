@@ -384,7 +384,7 @@ namespace mars {
           map["URI"] = _filename;
           map["path"] = path;
           map["name"] = "";
-          map["type"] = "URDF";
+          map["type"] = "urdf";
           entitylist.push_back(map);
       } else if(file_extension == ".svg") {
         /* A smurf svg can contain multiple entities, thus we have to loop over them.

@@ -66,6 +66,7 @@ namespace mars {
           theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
               "entity_factory_manager");
       factoryManager->registerFactory("smurf", this);
+      factoryManager->registerFactory("urdf", this);
     }
 
     SMURF::~SMURF(){
@@ -196,7 +197,7 @@ namespace mars {
             fprintf(stderr, "SMURFLoader: %s not yet implemented", file_extension.c_str());
           }
         }
-      } else { // if type is URDF
+      } else { // if type is "urdf"
         urdfpath = path + (std::string) entityconfig["URI"];
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
         parseURDF(urdfpath);
