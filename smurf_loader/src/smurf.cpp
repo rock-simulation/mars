@@ -102,25 +102,11 @@ namespace mars {
       materialMap.clear();
       collisionNameMap.clear();
 
-      fprintf(stderr, "blub1");
-
-      nodeIndexMap.clear();
-      jointIndexMap.clear();
-      motorIndexMap.clear();
-      sensorsIndexMap.clear();
-      controllerIndexMap.clear();
-      groupIndexMap.clear();
-
-      fprintf(stderr, "blub2");
-
       robotname = "";
       model.reset();
 
-      fprintf(stderr, "blub3");
-
       entityconfig.clear();
       debugMap.clear();
-      fprintf(stderr, "blub4");
     }
 
     void SMURF::update(sReal time_ms) {
