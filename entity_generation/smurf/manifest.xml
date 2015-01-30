@@ -1,0 +1,14 @@
+<package>
+    <description brief="smurf">
+      A
+   </description>
+    <depend package="simulation/mars/scripts/cmake" />
+    <depend package="simulation/mars/common/lib_manager" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/common/utils" />    
+    <depend package="simulation/mars/sim" />    
+    <depend package="simulation/mars/entity_generation/smurf" />
+
+    <tags>needs_opt</tags>
+</package>
