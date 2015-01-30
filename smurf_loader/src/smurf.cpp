@@ -60,16 +60,24 @@ namespace mars {
     using namespace interfaces;
     using namespace utils;
 
-    SMURF::SMURF(lib_manager::LibManager *theManager) :
-        MarsPluginTemplate(theManager, "SMURF"), plugins::entity_generation::EntityFactoryInterface(
-            "smurf, urdf") {
+    SMURF::SMURF(lib_manager::LibManager *theManager): MarsPluginTemplate(theManager, "SMURF"),
+        plugins::entity_generation::EntityFactoryInterface("smurf, urdf") {
       plugins::entity_generation::EntityFactoryManager* factoryManager =
           theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
               "entity_factory_manager");
       factoryManager->registerFactory("smurf", this);
+    }
 
-      mapIndex = 666;
+    SMURF::~SMURF(){
+    }
 
+    void SMURF::init() {
+      control->sim->switchPluginUpdateMode(0, this);
+
+      reset();
+    }
+
+    void SMURF::reset() {
       nextGroupID = control->nodes->getMaxGroupID() + 1;
       nextNodeID = 1;
       nextJointID = 1;
@@ -77,15 +85,42 @@ namespace mars {
       nextMotorID = 1;
       nextSensorID = 1;
       nextControllerID = 1;
-    }
 
-    SMURF::~SMURF() {
-    }
+      nodeList.clear();
+      jointList.clear();
+      motorList.clear();
+      sensorList.clear();
+      controllerList.clear();
+      materialList.clear();
+      lightList.clear();
+      graphicList.clear();
 
-    void SMURF::init() {
-    }
+      nodeIDMap.clear();
+      jointIDMap.clear();
+      sensorIDMap.clear();
+      motorIDMap.clear();
+      materialMap.clear();
+      collisionNameMap.clear();
 
-    void SMURF::reset() {
+      fprintf(stderr, "blub1");
+
+      nodeIndexMap.clear();
+      jointIndexMap.clear();
+      motorIndexMap.clear();
+      sensorsIndexMap.clear();
+      controllerIndexMap.clear();
+      groupIndexMap.clear();
+
+      fprintf(stderr, "blub2");
+
+      robotname = "";
+      model.reset();
+
+      fprintf(stderr, "blub3");
+
+      entityconfig.clear();
+      debugMap.clear();
+      fprintf(stderr, "blub4");
     }
 
     void SMURF::update(sReal time_ms) {
@@ -119,7 +154,6 @@ namespace mars {
 
     void SMURF::getSensorIDList(utils::ConfigMap *map) {
       utils::ConfigVector::iterator it;
-      unsigned long id;
 
       // todo: check if objects exists in maps
 
@@ -147,18 +181,18 @@ namespace mars {
     }
 
     sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
+      reset();
       entityconfig.append(config);
+      debugMap.append(config);
       sim::SimEntity* entity = new sim::SimEntity(entityconfig);
-      std::string path = (std::string) entityconfig["path"];
-      if ((std::string) entityconfig["name"] == "") {
-        entityconfig["name"] = (std::string) entityconfig["modelname"];
-      }
+      std::string path = (std::string)entityconfig["path"];
+      tmpPath = path;
       // TODO: we should have a system that first loads the URDF and then the other files in
       //   order of priority (or sort the contents in a way as to avoid errors upon loading).
       std::string file;
       std::string file_extension;
       std::string urdfpath = "";
-      if ((std::string) entityconfig["type"] == "SMURF") {
+      if((std::string)entityconfig["type"] == "smurf") {
         utils::ConfigVector::iterator it;
         for (it = entityconfig["files"].begin(); it != entityconfig["files"].end(); ++it) {
           file = (std::string) (*it);
@@ -166,9 +200,11 @@ namespace mars {
           if (file_extension == ".urdf") {
             urdfpath = path + file;
             fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-            parseURDF(urdfpath);
-          } else if (file_extension == ".yml") {
-            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path + file);
+            fprintf(stderr, "parsing model: %d", parseURDF(urdfpath));
+          }
+          else if(file_extension == ".yml") {
+            fprintf(stderr, "  ...loading yml data from %s.\n", (path+file).c_str());
+            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path+file);
             addConfigMap(tmpconfig);
           } else {
             fprintf(stderr, "SMURFLoader: %s not yet implemented", file_extension.c_str());
@@ -179,6 +215,17 @@ namespace mars {
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
         parseURDF(urdfpath);
       }
+      // node mapping and name checking
+      std::string robotname = (std::string)entityconfig["name"];
+      if (robotname == "") {
+              entityconfig["name"] = "blub";//(std::string)entityconfig["modelname"];
+            }
+      if(control->loadCenter->getMappedSceneByName(robotname) == 0) {
+        control->loadCenter->setMappedSceneName(robotname);
+      }
+      mapIndex = control->loadCenter->getMappedSceneByName(robotname);
+      fprintf(stderr, "mapIndex: %d\n", mapIndex);
+
       load();
 
       return entity;
@@ -331,7 +378,6 @@ namespace mars {
         (*it)["index"] = nextControllerID++;
         // convert names to ids
         utils::ConfigVector::iterator it2;
-        unsigned long id;
         if (it->children.find("sensors") != it->children.end()) {
           for (it2 = it->children["sensors"].begin(); it2 != it->children["sensors"].end(); ++it2) {
             it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string) *it2]));
@@ -786,7 +832,6 @@ namespace mars {
 
       // TODO:  complete handle joint information
       if (link->parent_joint) {
-        unsigned long id;
         ConfigMap joint;
         joint["name"] = link->parent_joint->name;
         joint["index"] = nextJointID++;
@@ -1129,6 +1174,6 @@ namespace mars {
       return robotname;
     }
 
-  }        // end of namespace smurf
+  }        // end of namespace smurf_loader
 }
 // end of namespace mars
