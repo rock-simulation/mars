@@ -28,8 +28,8 @@
 #include "Load.h"
 #include "Save.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibManager.hpp>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 
 namespace mars {
