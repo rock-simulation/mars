@@ -34,7 +34,7 @@
 #include "ConsoleGUI.h"
 #include "ConsoleInterface.h"
 
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>

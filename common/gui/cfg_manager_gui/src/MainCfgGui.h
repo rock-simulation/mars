@@ -34,7 +34,7 @@
 #include "CfgWidget.h"
 #include <mars/main_gui/GuiInterface.h>
 #include <mars/main_gui/MenuInterface.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 #include <string>
