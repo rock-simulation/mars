@@ -1164,3 +1164,6 @@ namespace mars {
   }        // end of namespace smurf
 }
 // end of namespace mars
+
+DESTROY_LIB(mars::smurf::SMURF);
+CREATE_LIB(mars::smurf::SMURF);
