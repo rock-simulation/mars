@@ -45,9 +45,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
 
   namespace smurf_loader {
 

@@ -27,8 +27,8 @@
 #include "SMURFLoader.h"
 #include "zipit.h"
 
-#include <mars/lib_manager/LibManager.h>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibManager.hpp>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/sim/SimEntity.h>
