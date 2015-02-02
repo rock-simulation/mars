@@ -33,9 +33,10 @@
 #warning "LibManagerGui.h"
 #endif
 
+#include <lib_manager/LibInterface.hpp>
+
 #include <mars/main_gui/MenuInterface.h>
 #include <mars/main_gui/GuiInterface.h>
-#include <mars/lib_manager/LibInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <QObject>
@@ -45,23 +46,19 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace plugins {
     namespace lib_manager_gui {
 
       class LibManagerWidget;
 
       class LibManagerGui : public QObject,
-                            public mars::lib_manager::LibInterface,
+                            public lib_manager::LibInterface,
                             public mars::main_gui::MenuInterface {
 
         Q_OBJECT;
 
       public:
-        LibManagerGui(mars::lib_manager::LibManager *theManager);
+        LibManagerGui(lib_manager::LibManager *theManager);
         ~LibManagerGui();
 
         // LibInterface methods

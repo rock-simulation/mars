@@ -133,6 +133,7 @@ namespace mars {
       std::string groupName, dataName;
       //bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
       bool erg = control->nodes->getDataBrokerNames(nodeID[1], &groupName, &dataName);
+      (void)erg;
       assert(erg);
       control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",config.updateRate);
 

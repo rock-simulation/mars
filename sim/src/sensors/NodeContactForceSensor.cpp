@@ -52,6 +52,25 @@ namespace mars {
 
       contactForceIndex = -1;
       typeName = "NodeContactForce";
+
+      data_broker::DataPackage dbPackage;
+
+      dbPackage.add("contactForce", 0.0);
+      std::string groupName = "mars_sim";
+      std::string dataName = "sensors/"+name;
+      control->dataBroker->pushData(groupName, dataName,
+                                    dbPackage, NULL,
+                                    data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                 "mars_sim/simTimer",
+                                                 updateRate);
+    }
+
+    NodeContactForceSensor::~NodeContactForceSensor() {
+      std::string groupName = "mars_sim";
+      std::string dataName = "sensors/"+name;
+      control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer");
     }
 
     // this function should be overwritten by the special sensor to
@@ -85,6 +104,18 @@ namespace mars {
         contactForceIndex = package.getIndexByName("contactForce");
       }
       package.get(contactForceIndex, &doubleArray[callbackParam]);
+    }
+
+    void NodeContactForceSensor::produceData(const data_broker::DataInfo &info,
+                                             data_broker::DataPackage *package,
+                                             int callbackParam) {
+      sReal contact = 0;
+      std::vector<double>::const_iterator iter;
+
+      for(iter = doubleArray.begin(); iter != doubleArray.end(); iter++) {
+        contact += *iter;;
+      }
+      package->set(0, contact);
     }
 
   } // end of namespace sim

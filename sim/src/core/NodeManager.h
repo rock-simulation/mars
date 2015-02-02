@@ -119,6 +119,8 @@ namespace mars {
       virtual void exportGraphicNodesByID(const std::string &folder) const;
       virtual void getContactPoints(std::vector<interfaces::NodeId> *ids,
                                     std::vector<utils::Vector> *contact_points) const;
+      virtual void getContactIDs(const interfaces::NodeId &id,
+                                 std::list<interfaces::NodeId> *ids) const;
       virtual void updateRay(interfaces::NodeId id);
       virtual interfaces::NodeId getDrawID(interfaces::NodeId id) const;
       virtual void setVisualRep(interfaces::NodeId id, int val);

@@ -35,15 +35,15 @@
   #warning "ControlCenter.h"
 #endif
 
-#ifndef ROCK
-#include <mars/data_broker/DataBrokerInterface.h>
-// use pushMessage() rather than pushError et al because pushMessage 
-// can also take a va_list.
-#define LOG_FATAL(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushMessage(mars::data_broker::DB_MESSAGE_TYPE_FATAL, __VA_ARGS__))
-#define LOG_ERROR(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushMessage(mars::data_broker::DB_MESSAGE_TYPE_ERROR, __VA_ARGS__))
-#define LOG_WARN(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushMessage(mars::data_broker::DB_MESSAGE_TYPE_WARNING, __VA_ARGS__))
-#define LOG_INFO(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushMessage(mars::data_broker::DB_MESSAGE_TYPE_INFO, __VA_ARGS__))
-#define LOG_DEBUG(...) if(mars::interfaces::ControlCenter::theDataBroker) (mars::interfaces::ControlCenter::theDataBroker->pushMessage(mars::data_broker::DB_MESSAGE_TYPE_DEBUG, __VA_ARGS__))
+//Backward compatibility remove this include as soon as possible
+#include "../Logging.hpp"
+
+#ifndef LOG_ERROR
+#define LOG_ERROR(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
+#define LOG_DEBUG(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
+#define LOG_FATAL(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
+#define LOG_INFO(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
+#define LOG_WARN(...) typedef int Deprication_Error_If_you_need_LOG_XXXX_from_mars_please_include_mars_logging_Logging_hpp[-1]
 #endif
 
 

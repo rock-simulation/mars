@@ -44,6 +44,7 @@
 #include <mars/interfaces/graphics/draw_structs.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/Logging.hpp>
 
 namespace mars {
   namespace sim {
@@ -250,6 +251,7 @@ namespace mars {
         for(i=0; i<dSpaceGetNumGeoms(space); i++) {
           data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
           data->num_ground_collisions = 0;
+          data->contact_ids.clear();
           data->contact_points.clear();
           data->ground_feedbacks.clear();
         }
@@ -708,6 +710,8 @@ namespace mars {
             contact_point.y() = contact[i].geom.pos[1];
             contact_point.z() = contact[i].geom.pos[2];
 
+            geom_data1->contact_ids.push_back(geom_data2->id);
+            geom_data2->contact_ids.push_back(geom_data1->id);
             geom_data1->contact_points.push_back(contact_point);
             geom_data2->contact_points.push_back(contact_point);
             //if(dGeomGetClass(o1) == dPlaneClass) {

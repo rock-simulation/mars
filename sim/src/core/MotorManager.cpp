@@ -451,6 +451,14 @@ namespace mars {
         iter->second->setMotorMaxForce(maxTorque);
     }
 
+    void MotorManager::setMaxSpeed(unsigned long id, sReal maxSpeed) {
+      MutexLocker locker(&iMutex);
+      map<unsigned long, SimMotor*>::const_iterator iter;
+      iter = simMotors.find(id);
+      if (iter != simMotors.end())
+        iter->second->setMaxSpeed(maxSpeed);
+    }
+
 
     /**
      * \brief Detaches the joint with the given index from all motors that act on

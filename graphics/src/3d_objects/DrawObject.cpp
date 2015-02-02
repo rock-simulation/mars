@@ -81,7 +81,6 @@ namespace mars {
         stateFilename_(""),
         selected_(false),
         selectable_(true),
-        lastProgram(NULL),
         normalMapUniform(NULL),
         bumpMapUniform(NULL),
         baseImageUniform(NULL),
@@ -238,7 +237,8 @@ namespace mars {
       }
 
       if (mStruct.texturename != "") {
-        osg::ref_ptr<osg::Image> textureImage = osgDB::readImageFile(mStruct.texturename);
+        osg::ref_ptr<osg::Image> textureImage = GuiHelper::loadImage(mStruct.texturename);
+        //osgDB::readImageFile(mStruct.texturename);
         if(!textureImage.valid()){
           // do not fail silently, at least give error msg for now
           // TODO: not sure if colorMap_ is expected to be not null
@@ -246,12 +246,17 @@ namespace mars {
           cerr << "failed to load " << mStruct.texturename  << endl;
         }
 
+        /*
         colorMap_ = new osg::Texture2D;
         colorMap_->setImage(textureImage.get());
         colorMap_->setWrap(osg::Texture2D::WRAP_R, osg::Texture2D::REPEAT);
         colorMap_->setWrap(osg::Texture2D::WRAP_S, osg::Texture2D::REPEAT);
         colorMap_->setWrap(osg::Texture2D::WRAP_T, osg::Texture2D::REPEAT);
 
+        state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
+                                           osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+        */
+        colorMap_ = GuiHelper::loadTexture(mStruct.texturename);
         state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
                                            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
 
@@ -280,7 +285,7 @@ namespace mars {
         }
         setNormalMap(mStruct.normalmap);
       } else {
-        if(lastProgram) updateShader(lastLights, true);
+        if(lastProgram.valid()) updateShader(lastLights, true);
       }
     }
 
@@ -306,7 +311,7 @@ namespace mars {
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
                                          osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setBumpMap(const std::string &bumpMap) {
@@ -335,7 +340,7 @@ namespace mars {
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(NORMAL_MAP_UNIT, normalMap_,
                                          osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
 
@@ -575,8 +580,9 @@ namespace mars {
           glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
         }
 
-        if(lastProgram) {
-          stateSet->setAttributeAndModes(lastProgram, osg::StateAttribute::OFF);
+        if(lastProgram.valid()) {
+          stateSet->setAttributeAndModes(lastProgram.get(),
+					 osg::StateAttribute::OFF);
         } else {
           stateSet->addUniform(brightnessUniform.get());
           stateSet->addUniform(transparencyUniform.get());
@@ -653,8 +659,8 @@ namespace mars {
           }
 
         osg::StateSet *stateSet = getObject()->getOrCreateStateSet();
-        if(lastProgram) {
-          stateSet->setAttributeAndModes(lastProgram, osg::StateAttribute::OFF);
+        if(lastProgram.valid()) {
+          stateSet->setAttributeAndModes(lastProgram.get(), osg::StateAttribute::OFF);
         }
         stateSet->setAttributeAndModes(glslProgram, osg::StateAttribute::ON);
         lastProgram = glslProgram;
@@ -678,12 +684,12 @@ namespace mars {
 
     void DrawObject::setUseFog(bool val) {
       useFog = val;
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setUseNoise(bool val) {
       useNoise = val;
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setBrightness(float val) {

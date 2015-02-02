@@ -15,7 +15,6 @@ if [[ -f ${LAST} ]]; then
     PACKAGE_FILE=$LAST
 fi
 
-
 pushd . > /dev/null 2>&1
 
 function setScriptDir {
@@ -37,6 +36,15 @@ fi
 
 setupConfig || exit 1
 
+SOURCES_FILE="sources.txt"
+
+while read source_file; do
+    source_file=${source_file/\#*/}
+    if [[ x${source_file} = x ]]; then
+        continue
+    fi
+    eval $(parse_yaml "${source_file}" "")
+done < ${MARS_SCRIPT_DIR}/${SOURCES_FILE}
 
 for arg in $*; do
     case ${arg} in
@@ -78,5 +86,13 @@ for arg in $*; do
             ;;
     esac
 done
+
+printBold ""
+printBold "*******************************************************************"
+printBold "* WARNING: These scripts are deprecated and will be removed soon! *"
+printBold "* Please checkout and use the following scripts instead:          *"
+printBold "* https://github.com/rock-simulation/mars_install_scripts.git     *"
+printBold "*******************************************************************"
+printBold ""
 
 popd > /dev/null 2>&1

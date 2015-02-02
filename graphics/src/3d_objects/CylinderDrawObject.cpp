@@ -126,20 +126,21 @@ namespace mars {
       osg::Geometry *geom = new osg::Geometry();
       std::list< osg::ref_ptr< osg::Geode > > geodes;
 
+      double step = 0.4;
       // top cap geom
       createCircleGeometry(
                            vertices, normals, uv,
-                           radius_, 0.085,
+                           radius_, step,
                            osg::Vec3(0.0f, 0.0f, 0.5*height_),
                            true);
       // cylinder shell geom
       CylinderDrawObject::createShellGeometry(
                                               vertices, normals, uv,
-                                              radius_, height_, 0.085);
+                                              radius_, height_, step);
       // bottom cap geom
       createCircleGeometry(
                            vertices, normals, uv,
-                           radius_, 0.085,
+                           radius_, step,
                            osg::Vec3(0.0f, 0.0f, -0.5*height_),
                            false);
 
@@ -152,6 +153,8 @@ namespace mars {
                                                 0, // index of first vertex
                                                 vertices->size()));
 
+      geom->setUseDisplayList(false);
+      geom->setUseVertexBufferObjects(true);
       osg::ref_ptr<osg::Geode> geode = new osg::Geode;
       geode->addDrawable(geom);
       geodes.push_back(geode);

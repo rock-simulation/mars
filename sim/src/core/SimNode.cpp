@@ -27,6 +27,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <iostream>
 #include <cstdlib>
@@ -787,6 +788,13 @@ namespace mars {
       MutexLocker locker(&iMutex);
       if(my_interface) {
         my_interface->getContactPoints(contact_points);
+      }
+    }
+
+    void SimNode::getContactIDs(std::list<interfaces::NodeId> *ids) const {
+      MutexLocker locker(&iMutex);
+      if(my_interface) {
+        my_interface->getContactIDs(ids);
       }
     }
 

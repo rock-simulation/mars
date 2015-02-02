@@ -44,10 +44,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace plugins {
     namespace __namespace__ {
 
@@ -59,7 +55,7 @@ namespace mars {
         public mars::cfg_manager::CFGClient {
 
       public:
-        __classname__(mars::lib_manager::LibManager *theManager);
+        __classname__(lib_manager::LibManager *theManager);
         ~__classname__();
 
         // LibInterface methods

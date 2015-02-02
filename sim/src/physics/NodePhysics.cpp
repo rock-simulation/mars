@@ -38,7 +38,7 @@
 #include "NodePhysics.h"
 #include "../sensors/RotatingRaySensor.h"
 
-
+#include <mars/interfaces/Logging.hpp>
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
@@ -198,6 +198,7 @@ namespace mars {
           else
             dGeomSetQuaternion(nGeom, tmp);
         }
+        node_data.id = node->index;
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);
@@ -1202,6 +1203,14 @@ namespace mars {
           contact_points->push_back((*iter));
       }
     }
+
+    void NodePhysics::getContactIDs(std::list<interfaces::NodeId> *ids) const {
+      ids->clear();
+      if(nGeom) {
+        *ids = node_data.contact_ids;
+      }
+    }
+
 
     sReal NodePhysics::getGroundContactForce(void) const {
       std::vector<dJointFeedback*>::const_iterator iter;

@@ -294,6 +294,8 @@ namespace mars {
       virtual void removeOSGNode(void* node);
       virtual unsigned long addHUDOSGNode(void* node);
 
+      void removeGraphicsWidget(unsigned long id);
+
     private:
 
       mars::interfaces::GraphicData graphicOptions;

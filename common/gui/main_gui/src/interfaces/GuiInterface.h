@@ -34,7 +34,7 @@
 #include "MenuInterface.h"
 
 #include <string>
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 
 namespace mars {
   namespace main_gui {

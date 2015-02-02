@@ -30,7 +30,7 @@
 #include "PluginInterface.h"
 #include "SimulatorInterface.h"
 
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
 #include <string>

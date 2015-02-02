@@ -37,6 +37,10 @@
 
 #include <string>
 
+namespace lib_manager {
+  class LibManager;
+}
+
 namespace mars {
 
   namespace interfaces {
@@ -45,10 +49,6 @@ namespace mars {
 
   namespace main_gui {
     class GuiInterface;
-  }
-
-  namespace lib_manager {
-    class LibManager;
   }
 
   namespace gui {

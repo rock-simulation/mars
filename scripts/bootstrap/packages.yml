@@ -1,0 +1,46 @@
+##########################################################################
+# This file contains specifications for the packages to install.
+#
+# For this file replace '-' with '_' if included in package_name.
+#
+#
+# possible options
+#
+# package_name:
+#   path: from Where to install relative to dev_root.
+#   fetch_path: Where to clone the package if the install path is a
+#               subfolder of the package. If fetch_path is not set
+#               the path is used.
+#    read_address: git read url
+#    write_address: git write url, if not set the read address is used
+##########################################################################
+
+yaml_cpp:
+  path: external
+
+minizip:
+  path: external
+
+base_types:
+  path: rock
+  read_address: https://github.com/rock-core/base-types.git
+
+base_cmake:
+  path: rock
+  read_address: https://github.com/rock-core/base-cmake.git
+
+lib_manager:
+  path: .
+  read_address: https://github.com/rock-simulation/lib_manager.git
+
+console_bridge:
+  path: external/ros
+  read_address: https://github.com/ros/console_bridge.git
+
+urdfdom_headers:
+  path: external/ros
+  read_address: https://github.com/ros/urdfdom_headers.git
+
+urdfdom:
+  path: external/ros
+  read_address: https://github.com/ros/urdfdom.git

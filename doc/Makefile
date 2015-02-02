@@ -1,9 +1,10 @@
 all:
+	mkdir build
+	cp -r src/images build/images
 	$(MAKE) -C doxygen
 
 doc: all
 
 clean:
-	rm -r doxygen/html
-	rm -r doxygen/images
+	rm -r build
 

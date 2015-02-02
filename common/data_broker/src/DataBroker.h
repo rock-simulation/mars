@@ -46,10 +46,6 @@
 
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
-
   namespace data_broker {
 
     class ReceiverInterface;
@@ -155,7 +151,7 @@ namespace mars {
                        public mars::utils::Thread {
 
     public:
-      DataBroker(mars::lib_manager::LibManager *theManager);
+      DataBroker(lib_manager::LibManager *theManager);
       virtual ~DataBroker();
 
       bool createTimer(const std::string &timerName);

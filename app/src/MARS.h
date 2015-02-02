@@ -35,11 +35,12 @@
 #include <iostream>
 #include <string>
 
+namespace lib_manager {
+  class LibManager;
+}
+
 namespace mars {
 
-  namespace lib_manager {
-    class LibManager;
-  }
 
   namespace interfaces {
     class ControlCenter;

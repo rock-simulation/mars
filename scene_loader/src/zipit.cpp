@@ -22,6 +22,7 @@
 
 #include <mars/utils/misc.h>
 #include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <cstdlib>
 #include <cassert>
@@ -223,7 +224,7 @@ namespace mars {
               fclose(pOutFile);
             }
           } else {
-            fclose(pOutFile);
+            LOG_ERROR("Could not open file: %s\n",v_whereToStore[i].c_str());
             closeUnZipHandle();
             zipError(ZIPIT_NO_BUFFER);
             return ZIPIT_NO_BUFFER;

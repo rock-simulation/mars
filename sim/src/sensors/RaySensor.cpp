@@ -75,6 +75,7 @@ namespace mars {
 
       control->nodes->addNodeSensor(this);
       bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
+      (void)erg;
       assert(erg);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate)) {
       }

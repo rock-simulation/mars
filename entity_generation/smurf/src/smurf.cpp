@@ -35,6 +35,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/sim/SimEntity.h>
 #include <mars/plugins/entity_generation/EntityFactoryManager.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
@@ -141,8 +142,7 @@ namespace mars {
 
     void SMURF::getSensorIDList(utils::ConfigMap *map) {
       utils::ConfigVector::iterator it;
-
-      // todo: check if objects exists in maps
+#warning check if objects exists in maps
 
       if (map->find("link") != map->end()) {
         (*map)["nodeID"] = nodeIDMap[(std::string) (*map)["link"][0]];
@@ -628,10 +628,10 @@ namespace mars {
 
     void SMURF::handleKinematics(boost::shared_ptr<urdf::Link> link) {
       ConfigMap config;
-      // holds the index of the next visual object to SMURF
-      int visualArrayIndex = 0;
-      // holds the index of the next collision object to SMURF
-      int collisionArrayIndex = 0;
+      // holds the index of the next visual object to load
+      size_t visualArrayIndex = 0;
+      // holds the index of the next collision object to load
+      size_t collisionArrayIndex = 0;
       bool loadVisual = link->visual;
       bool loadCollision = link->collision;
       Vector v;

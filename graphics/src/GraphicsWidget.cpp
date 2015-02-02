@@ -21,6 +21,7 @@
 #include "QtOsgMixGraphicsWidget.h"
 #include "GraphicsWidget.h"
 #include "HUD.h"
+#include "GraphicsManager.h"
 
 #include <mars/utils/Color.h>
 
@@ -62,8 +63,9 @@ namespace mars {
 
     GraphicsWidget::GraphicsWidget(void *parent,
                                    osg::Group* scene, unsigned long id,
-                                   bool isRTTWidget, int f):_osgWidgetWindowManager(0),_osgWidgetWindowCnt(0)
-    {
+                                   bool isRTTWidget, int f,
+                                   GraphicsManager *gm):
+      _osgWidgetWindowManager(0), _osgWidgetWindowCnt(0), gm(gm) {
       (void)f;
       (void)parent;
 
@@ -73,6 +75,10 @@ namespace mars {
       isStereoDisplay = isFullscreen = false;
       isMouseMoving = isMouseButtonDown = false;
       isHUDShown = true;
+      widgetX = 20;
+      widgetY = 50;
+      widgetWidth = 720;
+      widgetHeight = 405;
 
       graphicsWindow = 0;
       myHUD = 0;
@@ -88,6 +94,12 @@ namespace mars {
     }
 
     GraphicsWidget::~GraphicsWidget() {
+      /* if the destructor is called from somewhere else than osg
+       * (e.g. from the QWidget) we have to increment the referece counter
+       * to prevent osg from calling the destructor one more time.
+       */
+      this->ref();
+      if(gm) gm->removeGraphicsWidget(widgetID);
       delete graphicsCamera;
       delete myHUD;
     }
@@ -711,17 +723,48 @@ namespace mars {
 
     }
 
+    osg::ref_ptr<osg::GraphicsContext> GraphicsWidget::createWidgetContext(
+                                                                           void* parent,
+                                                                           osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
+      //traits->windowDecoration = false;
+
+      osg::DisplaySettings* ds = osg::DisplaySettings::instance();
+      if (ds->getStereo()) {
+        switch(ds->getStereoMode()) {
+        case(osg::DisplaySettings::QUAD_BUFFER):
+          traits->quadBufferStereo = true;
+          break;
+        case(osg::DisplaySettings::VERTICAL_INTERLACE):
+        case(osg::DisplaySettings::CHECKERBOARD):
+        case(osg::DisplaySettings::HORIZONTAL_INTERLACE):
+          traits->stencil = 8;
+          break;
+        default: break;
+        }
+      }
+
+      osg::ref_ptr<osg::GraphicsContext> gc =
+        osg::GraphicsContext::createGraphicsContext(traits.get());
+
+      traits->x = 0;
+      traits->y = 0;
+      traits->width = 1920;
+      traits->height = 1080;
+
+      return gc;
+    }
+
     void GraphicsWidget::initializeOSG(void* data,
                                        GraphicsWidget* shared, int width, int height) {
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator;
 
-      if(width <= 0) width = height = 256;
-      if(height <= 0) height = 256;
+      if(width > 0) widgetWidth = width;
+      if(height > 0) widgetHeight = height;
 
       // do not use osg default lighting
       view->setLightingMode(osg::View::NO_LIGHT);
 
-      createContext(data, shared, width, height);
+      createContext(data, shared, widgetWidth, widgetHeight);
       if(!isRTTWidget) {
         graphicsWindow->setWindowName("3D Environment");
 
@@ -749,6 +792,8 @@ namespace mars {
     void GraphicsWidget::createContext(void* parent,
                                        GraphicsWidget* shared, int g_width, int g_height) {
       (void)parent;
+      (void)g_width;
+      (void)g_height;
 
       osg::ref_ptr<osg::Camera> osgCamera;
 
@@ -761,17 +806,17 @@ namespace mars {
         traits->readDISPLAY();
         if (traits->displayNum < 0)
           traits->displayNum = 0;
-        traits->x = 20;
-        traits->y = 50;
-        widgetWidth = traits->width = 720;
-        widgetHeight = traits->height = 405;
+        traits->x = widgetX;
+        traits->y = widgetY;
+        traits->width = widgetWidth;
+        traits->height = widgetHeight;
         traits->windowDecoration = true;
         traits->doubleBuffer = true;
         traits->alpha = ds->getMinimumNumAlphaBits();
         traits->stencil = ds->getMinimumNumStencilBits();
         traits->sampleBuffers = ds->getMultiSamples();
         traits->samples = ds->getNumMultiSamples();
-        //traits->vsync = false;
+        traits->vsync = false;
         if (shared) {
           traits->sharedContext = shared->getGraphicsWindow();
         } else {
@@ -783,7 +828,7 @@ namespace mars {
         graphicsWindow = dynamic_cast<osgViewer::GraphicsWindow*>(gc.get());
         osgCamera = new osg::Camera();
         osgCamera->setGraphicsContext(gc.get());
-        osgCamera->setViewport(0, 0, 720, 405);
+        osgCamera->setViewport(0, 0, widgetWidth, widgetHeight);
         GLenum buffer = traits->doubleBuffer ? GL_BACK : GL_FRONT;
         osgCamera->setDrawBuffer(buffer);
         osgCamera->setReadBuffer(buffer);
@@ -812,8 +857,8 @@ namespace mars {
           traits->samples = ds->getNumMultiSamples();
           traits->x = 0;
           traits->y = 0;
-          widgetWidth = traits->width = g_width;
-          widgetHeight = traits->height = g_height;
+          traits->width = widgetWidth;
+          traits->height = widgetHeight;
           traits->doubleBuffer = false;
           //traits->pbuffer = true;
           traits->windowDecoration = false;
@@ -829,7 +874,7 @@ namespace mars {
         osg::DisplaySettings* ds = osg::DisplaySettings::instance();
         osg::DisplaySettings* ds2 = new osg::DisplaySettings(*ds);
         osgCamera->setDisplaySettings(ds2);
-        osgCamera->setViewport(0, 0, g_width, g_height);
+        osgCamera->setViewport(0, 0, widgetWidth, widgetHeight);
         view->setCamera(osgCamera.get());
 
         osgCamera->setRenderOrder(osg::Camera::PRE_RENDER);
@@ -839,7 +884,7 @@ namespace mars {
         rttTexture = new osg::Texture2D();
         rttTexture->setResizeNonPowerOfTwoHint(false);
         rttTexture->setDataVariance(osg::Object::DYNAMIC);
-        rttTexture->setTextureSize(g_width, g_height);
+        rttTexture->setTextureSize(widgetWidth, widgetHeight);
         rttTexture->setInternalFormat(GL_RGBA);
         rttTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
         rttTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
@@ -849,7 +894,7 @@ namespace mars {
 
 
         rttImage = new osg::Image();
-        rttImage->allocateImage(g_width, g_height,
+        rttImage->allocateImage(widgetWidth, widgetHeight,
                                 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
         osgCamera->attach(osg::Camera::COLOR_BUFFER, rttImage.get());
         rttTexture->setImage(rttImage);
@@ -858,7 +903,7 @@ namespace mars {
         rttDepthTexture = new osg::Texture2D();
         rttDepthTexture->setResizeNonPowerOfTwoHint(false);
         rttDepthTexture->setDataVariance(osg::Object::DYNAMIC);
-        rttDepthTexture->setTextureSize(g_width, g_height);
+        rttDepthTexture->setTextureSize(widgetWidth, widgetHeight);
         rttDepthTexture->setSourceType(GL_UNSIGNED_INT);
         rttDepthTexture->setSourceFormat(GL_DEPTH_COMPONENT);
         rttDepthTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -868,18 +913,18 @@ namespace mars {
         rttDepthTexture->setFilter(osg::Texture2D::MAG_FILTER,
                                    osg::Texture2D::LINEAR);
         rttDepthImage = new osg::Image();
-        rttDepthImage->allocateImage(g_width, g_height,
+        rttDepthImage->allocateImage(widgetWidth, widgetHeight,
                                      1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
         
-        std::fill(rttDepthImage->data(), rttDepthImage->data() + g_width * g_height * sizeof(GLuint), 0);
+        std::fill(rttDepthImage->data(), rttDepthImage->data() + widgetWidth * widgetHeight * sizeof(GLuint), 0);
         
         rttDepthTexture->setImage(rttDepthImage);
 
 
       }
-      graphicsCamera = new GraphicsCamera(osgCamera, g_width, g_height);
+      graphicsCamera = new GraphicsCamera(osgCamera, widgetWidth, widgetHeight);
     }
 
     unsigned long GraphicsWidget::getID(void) {
@@ -891,6 +936,13 @@ namespace mars {
     }
 
     void GraphicsWidget::updateView(void) {
+      // this hack solves temporary the initial window scaling problem
+      static int initialResizeCount = 1;
+      if(initialResizeCount > 0) {
+        applyResize();
+        --initialResizeCount;
+      }
+
       graphicsCamera->update();
     }
 
@@ -1120,9 +1172,7 @@ namespace mars {
       }
     }
 
-    bool GraphicsWidget::handleResizeEvent(const osgGA::GUIEventAdapter& ea) {
-      widgetWidth = ea.getWindowWidth();
-      widgetHeight = ea.getWindowHeight();
+    void GraphicsWidget::applyResize() {
       postDrawCallback->setSize(widgetWidth, widgetHeight);
       graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       graphicsCamera->changeCameraTypeToPerspective();
@@ -1131,9 +1181,17 @@ namespace mars {
 
       if(graphicsEventHandler.size() > 0) {
         graphicsEventHandler[0]->emitGeometryChange(widgetID,
-                                                    ea.getWindowX(), ea.getWindowY(), widgetWidth, widgetHeight);
+                                                    widgetX, widgetY,
+                                                    widgetWidth, widgetHeight);
       }
+    }
 
+    bool GraphicsWidget::handleResizeEvent(const osgGA::GUIEventAdapter& ea) {
+      widgetWidth = ea.getWindowWidth();
+      widgetHeight = ea.getWindowHeight();
+      widgetX = ea.getWindowX();
+      widgetY = ea.getWindowY();
+      applyResize();
       return true;
     }
 

@@ -35,6 +35,7 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/terrainStruct.h>
+#include <mars/interfaces/Logging.hpp>
 
 #include <mars/interfaces/utils.h>
 #include <mars/utils/mathUtils.h>
@@ -1359,6 +1360,15 @@ namespace mars {
         }
       }
       iMutex.unlock();
+    }
+
+    void NodeManager::getContactIDs(const interfaces::NodeId &id,
+                                    std::list<interfaces::NodeId> *ids) const {
+      MutexLocker locker(&iMutex);
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if (iter != simNodes.end()) {
+        iter->second->getContactIDs(ids);
+      }
     }
 
     void NodeManager::updateRay(NodeId id) {

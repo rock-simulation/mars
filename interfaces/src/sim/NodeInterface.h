@@ -71,6 +71,7 @@ namespace mars {
       virtual void addTorque(const utils::Vector &t) = 0;
       virtual bool getGroundContact(void) const = 0;
       virtual void getContactPoints(std::vector<utils::Vector> *contact_points) const = 0;
+      virtual void getContactIDs(std::list<interfaces::NodeId> *ids) const = 0;
       virtual sReal getGroundContactForce(void) const = 0;
       virtual void setContactParams(contact_params &c_params) = 0;
       virtual void addSensor(BaseSensor *s_cfg) = 0;

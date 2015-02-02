@@ -11,9 +11,9 @@ function printBold {
       echo -e "\033[0m"
       echo
   else
-      echo -e "\033[32;1m"
-      echo "$@"
-      echo -e "\033[0m"
+      printf "\033[32;1m"
+      printf "%s\n" "$@"
+      printf "\033[0m"
   fi
 }
 
@@ -50,19 +50,43 @@ function forAllPackagesDo {
         # replace dash (-) by underscore (_) for function call
         # leave unchanged for generic version
         package_clean=${package//-/_}
-        if type -t ${action}_${package_clean##*/} | grep -q 'function'; then
-            ${action}_${package_clean##*/}
+        p="${package_clean}_path"
+
+        p_fetch="${package_clean}_fetch_path"
+        if [[ x${!p_fetch} = x ]]; then
+            p_fetch=${!p}/${package}
         else
-            if [[ ${package} = "rock/base-cmake" ]]; then
-                ${action}_package ${package} "https://github.com/rock-core/base-cmake.git" "https://github.com/rock-core/base-cmake.git"
-            elif [[ ${package} = "rock/base-types" ]]; then
-                ${action}_package ${package} "https://github.com/rock-core/base-types.git" "https://github.com/rock-core/base-types.git"
+            p_fetch=${!p_fetch}
+        fi
+        p_read="${package_clean}_read_address"
+
+        p_write="${package_clean}_write_address"
+        if [[ x${!p_write} = x ]]; then
+            p_write=${p_read}
+        fi
+        if type -t ${action}_${package_clean##*/} | grep -q 'function'; then
+            ${action}_${package_clean##*/} ${!p}
+        else
+            echo ${p}
+            if [[ x${!p} = x ]]; then
+                if [[ ${action} = "fetch" ]]; then
+                    ${action}_package "mars" "mars" "https://github.com/rock-simulation/mars.git" "https://github.com/rock-simulation/mars.git"
+                else
+                    ${action}_package ${package} "." "https://github.com/rock-simulation/mars.git" "https://github.com/rock-simulation/mars.git"
+                fi
             else
-                ${action}_package ${package} "git@git.hb.dfki.de:mars/${package##*/}.git" "git://git.hb.dfki.de/mars/${package##*/}.git"
+                if [[ ${action} = "fetch" ]]; then
+                    ${action}_package ${package} ${p_fetch} ${!p_read} ${!p_write}
+                else
+                    ${action}_package ${package} ${!p} ${!p_read} ${!p_write}
+                fi
             fi
         fi
         if [[ x${MARS_SCRIPT_ERROR} != x && ${MARS_SCRIPT_ERROR} != 0 ]]; then
             printErr "There was an Error. Please check the above output for more information"
+
+            printBold "*** WARNING: These scripts are deprecated and will be removed soon! Please checkout and use https://github.com/rock-simulation/mars_install_scripts.git instead. ***"
+
             # clear script error
             MARS_SCRIPT_ERROR=0
             return 1;
@@ -90,10 +114,14 @@ function setupConfig {
         if [[ ! -a ${configFile} ]]; then
             echo "You must set a root directory where all repositories will be checked out and all packages will be installed"
             echo "On Windows you should use the mingw path and not the windows path and avoid trailing slashes (e.g. /c/dev/mars-git)"
-            echo -n "Enter root directory: "
-            read MARS_DEV_ROOT || return 1
-            # expand ~ by using eval
-            eval MARS_DEV_ROOT=${MARS_DEV_ROOT}
+            echo -n "Enter root directory or nothing for \"${MARS_SCRIPT_DIR%/*}\": "
+            read MARS_DEV_ROOT
+            if [[ x${MARS_DEV_ROOT} = x ]]; then
+                MARS_DEV_ROOT=${MARS_SCRIPT_DIR%/*}
+            else
+                # expand ~ by using eval
+                eval MARS_DEV_ROOT=${MARS_DEV_ROOT}
+            fi
             echo "MARS_DEV_ROOT=\"${MARS_DEV_ROOT}\"" > ${configFile}
             echo "You can specify the number of CORES you want to use when compiling packages."
             echo -n "Enter number of CORES: "
@@ -204,6 +232,26 @@ function setup_env {
 }
 
 
+# =========================================================
+# function copied from https://gist.github.com/8665367.git
+# ========================================================
+
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
 
 ##############################
 # fetch functions
@@ -215,15 +263,16 @@ function setup_env {
 
 function fetch_package {
     package=$1
-    push_addr=$2
-    read_addr=$3
+    path=$2
+    push_addr=$3
+    read_addr=$4
     setupConfig
     printBold "fetching ${package} ..."
     pushd . > /dev/null 2>&1
-    if [ -d ${MARS_DEV_ROOT}/${package} ]; then
-        if [ -d ${MARS_DEV_ROOT}/${package}/.git ]; then
+    if [ -d ${MARS_DEV_ROOT}/${path} ]; then
+        if [ -d ${MARS_DEV_ROOT}/${path}/.git ]; then
             printBold "${package} seems to already exist. updating..."
-            cd ${MARS_DEV_ROOT}/${package}
+            cd ${MARS_DEV_ROOT}/${path}
             git pull | egrep "Already up-to-date|Fast-forward" || MARS_SCRIPT_ERROR=1;
         else
             printBold "${package} exists but doesn't seem to be a git repo!"
@@ -231,8 +280,10 @@ function fetch_package {
         fi
     else
         printBold "cloning ${package}"
-        mkdir -p ${MARS_DEV_ROOT}/${package%/*}
-        cd ${MARS_DEV_ROOT}/${package%/*}
+        path=${MARS_DEV_ROOT}/${path}
+        #${path%/*}
+        mkdir -p ${path}
+        cd ${path}
         if ${PUSH}; then
             CLONE_ADDR=${push_addr}
             #"git@git.hb.dfki.de:mars/${package##*/}.git"
@@ -241,7 +292,7 @@ function fetch_package {
             #"git://git.hb.dfki.de/mars/${package##*/}.git"
         fi
         CLONE_ERROR=0
-        git clone ${CLONE_ADDR} || CLONE_ERROR=1;
+        git clone ${CLONE_ADDR} . || CLONE_ERROR=1;
         if [[ ${CLONE_ERROR} != 0 ]]; then
             printErr "Error: Could not clone package from \"${CLONE_ADDR}\"!"
             MARS_SCRIPT_ERROR=1;
@@ -402,17 +453,18 @@ function fetch_opencv() {
 function update_package {
     category=${1%/*}
     package=${1##*/}
+    path=$2
     setupConfig
     printBold "updating ${category}/${package} ..."
     pushd . > /dev/null 2>&1
-    cd ${MARS_DEV_ROOT}/${category}/${package} || MARS_SCRIPT_ERROR=1
+    cd ${MARS_DEV_ROOT}/${path}/${category}/${package} || MARS_SCRIPT_ERROR=1
     if [[ x${MARS_SCRIPT_ERROR} == x1 ]]; then
         popd > /dev/null 2>&1
         return 1
     fi
     git pull
     popd > /dev/null 2>&1
-    printBold "... done updateing ${category}/${package}."
+    printBold "... done updateing ${path}/${category}/${package}."
 };
 
 function update_yaml_cpp {
@@ -447,11 +499,14 @@ function update_minizip {
 
 function patch_package {
     package=$1
+    path=${MARS_DEV_ROOT}/$2
+    echo ${path}
+    echo ${MARS_SCRIPT_DIR}/patches/${package##*/}.patch
     setScriptDir
     setupConfig
     if [[ -f ${MARS_SCRIPT_DIR}/patches/${package##*/}.patch ]]; then
         printBold "patching ${package} ..."
-        patch -N -p0 -d ${MARS_DEV_ROOT}/${package%%/*} -i ${MARS_SCRIPT_DIR}/patches/${package##*/}.patch
+        patch -N -p0 -d ${path} -i ${MARS_SCRIPT_DIR}/patches/${package##*/}.patch
         printBold "... done patching ${package}."
     fi
 }
@@ -477,7 +532,7 @@ function patch_opencv {
 }
 
 function patch_eigen {
-    patch_package external/eigen3
+    patch_package eigen3 external
 }
 
 function patch_ode_mars {
@@ -506,12 +561,13 @@ function patch_ode_mars {
 
 function install_package {
     packages=$1;
+    path=$2;
     echo
     printBold "building "${package}" ..."
     echo
     pushd . > /dev/null 2>&1
-    mkdir -p ${MARS_DEV_ROOT}/${package}/build
-    cd ${MARS_DEV_ROOT}/${package}/build
+    mkdir -p ${MARS_DEV_ROOT}/${path}/${package}/build
+    cd ${MARS_DEV_ROOT}/${path}/${package}/build
     if [[ ${BUILD_TYPE} == "release" ]]; then
         cmake_release
     else
@@ -531,13 +587,13 @@ function install_package {
 # =========================
 
 function install_base_types {
-    packages=$1;
+    path=$1;
     echo
     printBold "building "${package}" ..."
     echo
     pushd . > /dev/null 2>&1
-    mkdir -p ${MARS_DEV_ROOT}/${package}/build
-    cd ${MARS_DEV_ROOT}/${package}/build
+    mkdir -p ${MARS_DEV_ROOT}/${path}/base-types/build
+    cd ${MARS_DEV_ROOT}/${path}/base-types/build
     if [[ ${BUILD_TYPE} == "release" ]]; then
         cmake_release -DINSTALL_BOOST_IF_REQUIRED=1
     else
@@ -659,10 +715,11 @@ function install_eigen {
 
 function clean_package {
     package=$1
+    path=$2
     setupConfig
     printBold "cleaning "${package}"..."
     pushd . > /dev/null 2>&1
-    cd ${MARS_DEV_ROOT}/${package}
+    cd ${MARS_DEV_ROOT}/${path}/${package}
     rm -rf build
     popd > /dev/null 2>&1
     printBold "...cleaning "${package}" done!"
@@ -693,15 +750,16 @@ function clean_opencv {
 
 function uninstall_package {
     package=$1
+    path=$2
     setupConfig
     printBold "uninstalling ${package}..."
     pushd . > /dev/null 2>&1
-    if [[ ! -d ${MARS_DEV_ROOT}/${package}/build ]]; then
+    if [[ ! -d ${MARS_DEV_ROOT}/${path}/${package}/build ]]; then
         printErr "Cannot uninstall ${package} because the build directory is missing!"
         MARS_SCRIPT_ERROR=1
         return 1
     else
-        cd ${MARS_DEV_ROOT}/${package}/build
+        cd ${MARS_DEV_ROOT}/${path}/${package}/build
         if [[ -f install_manifest.txt ]]; then
             if $MSYS; then
                 dos2unix install_manifest.txt

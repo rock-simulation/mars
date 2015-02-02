@@ -34,7 +34,7 @@
 
 #include "ConnexionWidget.h"
 
-#include <mars/lib_manager/LibInterface.h>
+#include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
@@ -65,7 +65,7 @@ namespace mars {
         Q_OBJECT
 
         public:
-        ConnexionPlugin(mars::lib_manager::LibManager *theManager);
+        ConnexionPlugin(lib_manager::LibManager *theManager);
         ~ConnexionPlugin(void);
 
         // LibInterface methods

@@ -50,6 +50,7 @@
 namespace mars {
   namespace graphics {
 
+    class GraphicsManager;
     class HUD;
     class HUDElement;
     const unsigned int MASK_2D = 0xF0000000;
@@ -63,7 +64,7 @@ namespace mars {
     public:
       GraphicsWidget(void *parent, osg::Group *scene,
                      unsigned long id, bool hasRTTWidget = 0,
-                     int f=0);
+                     int f=0, GraphicsManager *gm=0);
       ~GraphicsWidget();
       void initializeOSG(void *data = 0, GraphicsWidget* shared = 0,
                          int width = 0, int height = 0);
@@ -73,9 +74,9 @@ namespace mars {
       /**\brief returns actual mouse position */
       mars::utils::Vector getMousePos();
 
-      virtual void setWGeometry(int top, int left, int width, int height) = 0;
+      virtual void setWGeometry(int top, int left, int width, int height) {};
       virtual void getWGeometry(int *top, int *left,
-                                int *width, int *height) const = 0;
+                                int *width, int *height) const {};
       void setFullscreen(bool val, int display = 1);
 
       osgViewer::View* getView(void);
@@ -107,8 +108,8 @@ namespace mars {
       void setGrabFrames(bool grab);
       void setSaveFrames(bool grab);
 
-      virtual void* getWidget() = 0;
-      virtual void showWidget() = 0;
+      virtual void* getWidget() {return NULL;}
+      virtual void showWidget() {};
 
       virtual void updateView();
 
@@ -203,6 +204,9 @@ namespace mars {
                                      double x2, double y2);
     
     protected:
+      // the widget size
+      int widgetWidth, widgetHeight, widgetX, widgetY;
+
       // protected for osg reference counter
   
       bool manageClickEvent(osgWidget::Event& event);
@@ -258,8 +262,6 @@ namespace mars {
     private:
       // the widget id
       unsigned long widgetID;
-      // the widget size
-      int widgetWidth, widgetHeight;
 
       // toggle for fullscreen display
       bool isFullscreen;
@@ -291,11 +293,11 @@ namespace mars {
       std::vector<osg::Node*> pickedObjects;
       enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE };
       PickMode pickmode;
+      GraphicsManager *gm;
 
-
-      virtual void initialize() = 0;
+      virtual void initialize() {};
       virtual osg::ref_ptr<osg::GraphicsContext> createWidgetContext(
-                                                                     void* parent, osg::ref_ptr<osg::GraphicsContext::Traits> traits) = 0;
+                                                                     void* parent, osg::ref_ptr<osg::GraphicsContext::Traits> traits);
       void createContext(void* parent, GraphicsWidget* shared, int width, int height);
 
       // implements osgGA::GUIEventHandler::handle
@@ -317,9 +319,12 @@ namespace mars {
 
       bool pick(const double x, const double y);
 
-      virtual void setWidgetFullscreen(bool val) = 0;
+      virtual void setWidgetFullscreen(bool val) {};
 
       void grabFocus();
+
+      void applyResize();
+
     }; // end of class GraphicsWidget
 
   } // end of namespace graphics 

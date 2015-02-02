@@ -4,9 +4,9 @@ set(PROJECT_DESCRIPTION "This is ...")
 cmake_minimum_required(VERSION 2.6)
 
 include(FindPkgConfig)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-mars_defaults()
+find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
@@ -40,10 +40,16 @@ if (${Qt5Widgets_FOUND})
   add_definitions(-DUSE_QT5)
   add_definitions(${Qt5Widgets_DEFINITIONS})
   set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+IF (NOT APPLE)
+set(PUBLIC_DEPENDENCIES Qt5Widgets)
+ENDIF (NOT APPLE)
 else (${Qt5Widgets_FOUND})
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
   include_directories(${QT_INCLUDE_DIR})
+IF (NOT APPLE)
+  set(PUBLIC_DEPENDENCIES QtCore)
+ENDIF (NOT APPLE)
 endif (${Qt5Widgets_FOUND})
 
 set(SOURCES
@@ -138,6 +144,10 @@ add_plugin_if_availible("connexion_plugin")
 add_plugin_if_availible("data_broker_gui")
 add_plugin_if_availible("cfg_manager_gui")
 add_plugin_if_availible("lib_manager_gui")
+
+if(NOT ROCK)
+    add_plugin_if_availible("log_console")
+endif()
 
 
 if(ADDITIONAL_LIBS)

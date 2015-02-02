@@ -61,7 +61,7 @@ namespace mars {
         public mars::cfg_manager::CFGClient {
 
       public:
-        ObstacleGenerator(mars::lib_manager::LibManager *theManager);
+        ObstacleGenerator(lib_manager::LibManager *theManager);
         ~ObstacleGenerator();
 
         // LibInterface methods

@@ -53,6 +53,7 @@ namespace mars {
 
     vector<nodeFileStruct> GuiHelper::nodeFiles;
     vector<textureFileStruct> GuiHelper::textureFiles;
+    vector<imageFileStruct> GuiHelper::imageFiles;
 
     /////////////
 
@@ -581,11 +582,29 @@ namespace mars {
       newTextureFile.texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
       newTextureFile.texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
 
-      osg::Image* textureImage = osgDB::readImageFile(filename);
+      osg::Image* textureImage = loadImage(filename);
       newTextureFile.texture->setImage(textureImage);
       textureFiles.push_back(newTextureFile);
 
       return newTextureFile.texture;
+    }
+
+    osg::ref_ptr<osg::Image> GuiHelper::loadImage(string filename) {
+      std::vector<imageFileStruct>::iterator iter;
+
+      for (iter = imageFiles.begin();
+           iter != imageFiles.end(); iter++) {
+        if ((*iter).fileName == filename) {
+          return (*iter).image;
+        }
+      }
+      imageFileStruct newImageFile;
+      newImageFile.fileName = filename;
+      osg::Image* image = osgDB::readImageFile(filename);
+      newImageFile.image = image;
+      imageFiles.push_back(newImageFile);
+
+      return newImageFile.image;
     }
 
   } // end of namespace graphics

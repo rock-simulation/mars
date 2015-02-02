@@ -60,8 +60,10 @@ namespace mars {
       geom_data(){
         setZero();
       }
+      unsigned long id;
       int num_ground_collisions;
       std::vector<utils::Vector> contact_points;
+      std::list<unsigned long> contact_ids;
       std::vector<dJointFeedback*> ground_feedbacks;
       bool node1;
       interfaces::contact_params c_params;
@@ -113,6 +115,7 @@ namespace mars {
       virtual void addTorque(const utils::Vector &t);
       virtual bool getGroundContact(void) const;
       virtual void getContactPoints(std::vector<utils::Vector> *contact_points) const;
+      virtual void getContactIDs(std::list<interfaces::NodeId> *ids) const;
       virtual interfaces::sReal getGroundContactForce(void) const;
       virtual void setContactParams(interfaces::contact_params &c_params);
       virtual void addSensor(interfaces::BaseSensor *sensor);

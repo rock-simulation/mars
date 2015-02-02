@@ -346,7 +346,7 @@ namespace mars {
       if(drawLineLaser) {
 
         s << "    vec3 lwP = worldPosition - lineLaserPos.xyz;" << endl;
-        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.01){" << endl;
+        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.002){" << endl;
         s << "		vec3 lwPNorm = normalize(lwP);" << std::endl;
         s << "		vec3 directionNorm = normalize(lineLaserDirection);" << std::endl;
         s << "		float v2Laser = acos( dot(directionNorm, lwPNorm) );" << std::endl;

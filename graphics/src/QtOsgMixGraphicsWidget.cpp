@@ -34,6 +34,7 @@
 
 #include "QtOsgMixGraphicsWidget.h"
 #include "HUD.h"
+#include "GraphicsManager.h"
 
 // X defines these macros, and they conflict with QTEvent namespace
 // evil macros get replaced pre compiling and result for example in: QEvent::6
@@ -51,19 +52,19 @@ namespace mars {
 
     QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::createInstance(
                                                                    void *parent, osg::Group *scene, unsigned long id, bool rtt_widget,
-                                                                   Qt::WindowFlags f) {
+                                                                   Qt::WindowFlags f, GraphicsManager *gm) {
 
       if(parent) {
-        return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, f);
+        return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, f, gm);
       }
 
       //#ifdef USE_COCOA
       QWidget *newWidget = new QWidget();
       //newWidget->setGeometry(0, 0, 500, 500);
       //newWidget->show();
-      return new QtOsgMixGraphicsWidget(newWidget, scene, id, rtt_widget, f);  
+      return new QtOsgMixGraphicsWidget(newWidget, scene, id, rtt_widget, f, gm);
       //#else
-      return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, f);
+      return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, f, gm);
       //#endif
 
     }
@@ -132,6 +133,10 @@ namespace mars {
 
     void QtOsgMixGraphicsWidget::setWGeometry(int top, int left, int width, int height) {
       window()->setGeometry(left, top, width, height);
+      widgetX = left;
+      widgetY = top;
+      widgetWidth = width;
+      widgetHeight = height;
     }
 
     void QtOsgMixGraphicsWidget::getWGeometry(int *top, int *left, int *width, int *height) const {

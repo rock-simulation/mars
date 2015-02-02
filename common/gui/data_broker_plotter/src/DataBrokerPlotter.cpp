@@ -34,7 +34,7 @@ namespace data_broker_plotter {
             qcPlot->xAxis2, SLOT(setRange(QCPRange)));
     connect(qcPlot->yAxis, SIGNAL(rangeChanged(QCPRange)),
             qcPlot->yAxis2, SLOT(setRange(QCPRange)));
-    qcPlot->setInteraction(QCustomPlot::iSelectPlottables);
+    //qcPlot->setInteraction(QCustomPlot::iSelectPlottables);
 
     QVBoxLayout *vLayout = new QVBoxLayout();
     vLayout->addWidget(qcPlot);
@@ -52,12 +52,78 @@ namespace data_broker_plotter {
 
   void DataBrokerPlotter::update() {
     std::vector<Plot*>::iterator it;
-    bool onlyEnlarge = false;
+    Plot *p;
+    double x;
+    int ix;
+    double xmin;
+    double sTime, xRange;
+
+    // first handle panding dataPackages
     dataLock.lock();
+    while(!packageList.empty()) {
+      mars::data_broker::DataPackage &dataPackage = packageList.front().dp;
+      int callbackParam = packageList.front().callbackParam;
+      for(it=plots.begin(); it!=plots.end(); ++it) {
+        if((*it)->dpId == callbackParam/10) {
+          p = *it;
+
+          if(dataPackage[0].type == mars::data_broker::DOUBLE_TYPE)
+            dataPackage.get(0, &x);
+          else if(dataPackage[0].type == mars::data_broker::INT_TYPE) {
+            dataPackage.get(0, &ix);
+            x = (double)ix;
+          }
+
+          if(callbackParam % 10) {
+            x = x*p->yScale.dValue+p->yOffset.dValue;
+            p->yValues.push_back(x);
+            p->gotNewData |= 1;
+          }
+          else {
+            p->xValues.push_back(x);
+            if((xRange = fabs(p->xRange.dValue)) < 0.000001)
+              xRange = fabs(plots[0]->xRange.dValue);
+            if(xRange > 0.0000001) {
+              xmin = x-xRange;
+              while(!p->xValues.empty() && p->xValues.front() < xmin) {
+                p->xValues.pop_front();
+                p->yValues.pop_front();
+              }
+            }
+            p->gotNewData |= 2;
+          }
+          /*
+          if((sTime = fabs(p->sTime.dValue)) < 0.000001) {
+            sTime = fabs(plots[0]->sTime.dValue);
+          }
+          if(sTime > 0.00000001) {
+            if(x-p->xValues.back() < sTime) {
+              dataLock.unlock();
+              return;
+            }
+          }
+          */
+
+        
+          if(!p->gotData) {
+            p->gotData = true;
+            createNewPlot();
+          }
+
+          break;
+        }
+      }
+      packageList.pop_front();
+    }
+
+    bool onlyEnlarge = false;
     for(it=plots.begin(); it!=plots.end(); ++it) {
-      (*it)->curve->setData((*it)->xValues, (*it)->yValues);
-      (*it)->curve->rescaleAxes(onlyEnlarge);
-      onlyEnlarge = true;
+      if((*it)->gotNewData == 3) {
+        (*it)->curve->setData((*it)->xValues, (*it)->yValues);
+        (*it)->curve->rescaleAxes(onlyEnlarge);
+        onlyEnlarge = true;
+        (*it)->gotNewData = 0;
+      }
     }
     qcPlot->replot();
     dataLock.unlock();
@@ -66,63 +132,11 @@ namespace data_broker_plotter {
   void DataBrokerPlotter::receiveData(const mars::data_broker::DataInfo &info,
                                   const mars::data_broker::DataPackage &dataPackage,
                                   int callbackParam) {
-    std::vector<Plot*>::iterator it;
-    Plot *p;
-    double x, y;
-    int ix, iy;
-    double xmin;
-    double sTime, xRange;
 
     dataLock.lock();
 
-    for(it=plots.begin(); it!=plots.end(); ++it) {
-      if((*it)->dpId == callbackParam) {
-        p = *it;
+    packageList.push_back((PackageData){dataPackage, callbackParam});
 
-        if(dataPackage[0].type == mars::data_broker::DOUBLE_TYPE)
-          dataPackage.get(0, &x);
-        else if(dataPackage[0].type == mars::data_broker::INT_TYPE) {
-          dataPackage.get(0, &ix);
-          x = (double)ix;
-        }
-        if(dataPackage[1].type == mars::data_broker::DOUBLE_TYPE)
-          dataPackage.get(1, &y);
-        else if(dataPackage[1].type == mars::data_broker::INT_TYPE) {
-          dataPackage.get(1, &iy);
-          y = (double)iy;
-        }
-        y = y*p->yScale.dValue+p->yOffset.dValue;
-
-        if((sTime = fabs(p->sTime.dValue)) < 0.000001) {
-          sTime = fabs(plots[0]->sTime.dValue);
-        }
-        if(sTime > 0.00000001) {
-          if(x-p->xValues.back() < sTime) {
-            dataLock.unlock();
-            return;
-          }
-        }
-
-        p->xValues.push_back(x);
-        p->yValues.push_back(y);
-        if((xRange = fabs(p->xRange.dValue)) < 0.000001)
-          xRange = fabs(plots[0]->xRange.dValue);
-        if(xRange > 0.0000001) {
-          xmin = x-xRange;
-          while(!p->xValues.empty() && p->xValues.front() < xmin) {
-            p->xValues.pop_front();
-            p->yValues.pop_front();
-          }
-        }
-        
-        if(!p->gotData) {
-          p->gotData = true;
-          createNewPlot();
-        }
-
-        break;
-      }
-    }
     dataLock.unlock();
   }
   
@@ -152,20 +166,31 @@ namespace data_broker_plotter {
     plots.push_back(newPlot);
 
     // add datapackage for first plot
-    mars::data_broker::DataPackage *dbPackage = new mars::data_broker::DataPackage;
-    dbPackage->add("xvalue", (double)0.0);
-    dbPackage->add("yvalue", (double)0.0);
+    mars::data_broker::DataPackage dbPackageX;// = new mars::data_broker::DataPackage;
+    mars::data_broker::DataPackage dbPackageY;// = new mars::data_broker::DataPackage;
+    dbPackageX.add("xvalue", (double)0.0);
+    dbPackageY.add("yvalue", (double)0.0);
+    //dbPackage->add("yvalue", (double)0.0);
 
     tmpString = name;
     tmpString.append("/");
     tmpString.append(text);
-
+    tmpString.append("/xvalue");
     dataBroker->pushData("data_broker_plotter", tmpString,
-                         *dbPackage, this,
+                         dbPackageX, this,
                          mars::data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
     dataBroker->registerSyncReceiver(this, "data_broker_plotter",
-                                     tmpString, newPlot->dpId);
-    newPlot->gotData = false;
+                                     tmpString, newPlot->dpId*10);
+    tmpString = name;
+    tmpString.append("/");
+    tmpString.append(text);
+    tmpString.append("/yvalue");
+    dataBroker->pushData("data_broker_plotter", tmpString,
+                         dbPackageY, this,
+                         mars::data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
+    dataBroker->registerSyncReceiver(this, "data_broker_plotter",
+                                     tmpString, newPlot->dpId*10+1);
+    newPlot->gotData = 0;
     
     tmpString = cfgName;
     tmpString.append("sTime");

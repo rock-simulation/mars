@@ -179,6 +179,7 @@ namespace mars {
        * \param maxTorque The new maximum torque for the motor.
        */
       virtual void setMaxTorque(unsigned long id, interfaces::sReal maxTorque);
+      virtual void setMaxSpeed(unsigned long id, interfaces::sReal maxSpeed);
 
       /**
        * \brief Sets the desired speed of a motor.
