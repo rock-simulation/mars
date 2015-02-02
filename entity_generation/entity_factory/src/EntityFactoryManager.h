@@ -47,8 +47,8 @@ namespace mars {
       class EntityFactoryInterface;
 
 // inherit from MarsPluginTemplateGUI for extending the gui
-      class EntityFactoryManager: public mars::interfaces::MarsPluginTemplate,
-          public mars::cfg_manager::CFGClient {
+      class EntityFactoryManager: public interfaces::MarsPluginTemplate,
+          public cfg_manager::CFGClient {
 
       public:
         EntityFactoryManager(lib_manager::LibManager *theManager);
@@ -67,7 +67,7 @@ namespace mars {
         // MarsPlugin methods
         void init();
         void reset();
-        void update(mars::interfaces::sReal time_ms);
+        void update(interfaces::sReal time_ms);
 
         // CFGClient methods
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
