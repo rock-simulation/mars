@@ -64,7 +64,7 @@ namespace mars {
       std::string getRobotname();
 
       // EntityFactoryInterface
-      virtual sim::SimEntity* createEntity(const utils::ConfigMap& config) = 0;
+      virtual sim::SimEntity* createEntity(const utils::ConfigMap& config);
 
       // MarsPlugin methods
       void init();
