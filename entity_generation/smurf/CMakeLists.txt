@@ -16,9 +16,9 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
-include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
+#include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-mars_defaults()
+find_package(mars)
 define_module_info()
 
 find_package(Boost REQUIRED system thread)
