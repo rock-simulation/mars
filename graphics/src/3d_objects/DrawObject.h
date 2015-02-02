@@ -174,7 +174,7 @@ namespace mars {
       bool useFog, useNoise;
       bool getLight;
       float brightness_;
-      osg::Program *lastProgram;
+      osg::ref_ptr<osg::Program> lastProgram;
       osg::Uniform *normalMapUniform, *bumpMapUniform, *baseImageUniform;
 
       osg::ref_ptr<osg::Group> group_;

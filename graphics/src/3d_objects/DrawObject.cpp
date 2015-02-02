@@ -81,7 +81,6 @@ namespace mars {
         stateFilename_(""),
         selected_(false),
         selectable_(true),
-        lastProgram(NULL),
         normalMapUniform(NULL),
         bumpMapUniform(NULL),
         baseImageUniform(NULL),
@@ -286,7 +285,7 @@ namespace mars {
         }
         setNormalMap(mStruct.normalmap);
       } else {
-        if(lastProgram) updateShader(lastLights, true);
+        if(lastProgram.valid()) updateShader(lastLights, true);
       }
     }
 
@@ -312,7 +311,7 @@ namespace mars {
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
                                          osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setBumpMap(const std::string &bumpMap) {
@@ -341,7 +340,7 @@ namespace mars {
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(NORMAL_MAP_UNIT, normalMap_,
                                          osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
 
@@ -581,8 +580,9 @@ namespace mars {
           glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
         }
 
-        if(lastProgram) {
-          stateSet->setAttributeAndModes(lastProgram, osg::StateAttribute::OFF);
+        if(lastProgram.valid()) {
+          stateSet->setAttributeAndModes(lastProgram.get(),
+					 osg::StateAttribute::OFF);
         } else {
           stateSet->addUniform(brightnessUniform.get());
           stateSet->addUniform(transparencyUniform.get());
@@ -659,8 +659,8 @@ namespace mars {
           }
 
         osg::StateSet *stateSet = getObject()->getOrCreateStateSet();
-        if(lastProgram) {
-          stateSet->setAttributeAndModes(lastProgram, osg::StateAttribute::OFF);
+        if(lastProgram.valid()) {
+          stateSet->setAttributeAndModes(lastProgram.get(), osg::StateAttribute::OFF);
         }
         stateSet->setAttributeAndModes(glslProgram, osg::StateAttribute::ON);
         lastProgram = glslProgram;
@@ -684,12 +684,12 @@ namespace mars {
 
     void DrawObject::setUseFog(bool val) {
       useFog = val;
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setUseNoise(bool val) {
       useNoise = val;
-      if(lastProgram) updateShader(lastLights, true);
+      if(lastProgram.valid()) updateShader(lastLights, true);
     }
 
     void DrawObject::setBrightness(float val) {
