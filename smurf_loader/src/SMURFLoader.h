@@ -35,7 +35,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
-#include <mars/plugins/entity_generation/EntityFactoryManager.h>
+#include <mars/plugins/entity_factory/EntityFactoryManager.h>
 #include <mars/utils/ConfigData.h>
 
 namespace mars {

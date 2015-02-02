@@ -52,7 +52,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_interfaces
 			    urdfdom
 			    tinyxml
-			    entity_generation
+			    entity_factory
 			    mars_sim
 )
 

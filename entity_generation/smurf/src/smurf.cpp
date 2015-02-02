@@ -34,7 +34,7 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/sim/SimEntity.h>
-#include <mars/plugins/entity_generation/EntityFactoryManager.h>
+#include <mars/plugins/entity_factory/EntityFactoryManager.h>
 #include <mars/interfaces/Logging.hpp>
 
 #include <mars/utils/misc.h>
