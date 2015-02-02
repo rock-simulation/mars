@@ -55,7 +55,7 @@
  */
 
 namespace mars {
-  namespace smurf_loader {
+  namespace smurf {
 
     using namespace std;
     using namespace interfaces;
@@ -1161,6 +1161,6 @@ namespace mars {
       return robotname;
     }
 
-  }        // end of namespace smurf_loader
+  }        // end of namespace smurf
 }
 // end of namespace mars

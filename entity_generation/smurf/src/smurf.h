@@ -45,8 +45,7 @@
 
 namespace mars {
 
-
-  namespace smurf_loader {
+  namespace smurf {
 
     class SMURF: public interfaces::MarsPluginTemplate,
         public mars::plugins::entity_generation::EntityFactoryInterface {
