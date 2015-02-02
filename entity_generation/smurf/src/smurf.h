@@ -55,6 +55,11 @@ namespace mars {
       SMURF(lib_manager::LibManager *theManager);
       ~SMURF();
 
+      // LibInterface methods
+      int getLibVersion() const {return 1;}
+      const std::string getLibName() const {return std::string("SMURF");}
+      CREATE_MODULE_INFO();
+
       /**
        * @return 0 on error.
        */
