@@ -130,12 +130,12 @@ namespace mars {
        * Config methods all part of BaseSensor.
        */
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                                 utils::ConfigMap *config);
+                                                 configmaps::ConfigMap *config);
       
       /**
        * TODO rotation_offset is missing.
        */
-      virtual utils::ConfigMap createConfig() const;
+      virtual configmaps::ConfigMap createConfig() const;
 
       const RotatingRayConfig& getConfig() const;
 

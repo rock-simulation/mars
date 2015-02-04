@@ -22,7 +22,7 @@
 #define MARS_INTERFACES_LIGHT_DATA_H
 
 #include <mars/utils/Color.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/utils/Vector.h>
 
 #include <string>
@@ -39,9 +39,9 @@ namespace mars {
      */
     class LightData {
     public:
-      bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
+      bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix,
                          LoadCenter *loadCenter = 0);
-      void toConfigMap(utils::ConfigMap *config,
+      void toConfigMap(configmaps::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 

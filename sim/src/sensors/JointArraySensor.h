@@ -33,7 +33,7 @@
 #warning "JointArraySensor.h"
 #endif
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataPackage.h>
@@ -58,8 +58,8 @@ namespace mars {
                                int callbackParam) {}
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                                 utils::ConfigMap *config);
-      virtual utils::ConfigMap createConfig() const;
+                                                 configmaps::ConfigMap *config);
+      virtual configmaps::ConfigMap createConfig() const;
 
     protected:
       std::string typeName;

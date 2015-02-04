@@ -20,7 +20,7 @@
 
 #include "EntityManager.h"
 #include "SimEntity.h"
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/utils/MutexLocker.h>
 

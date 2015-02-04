@@ -109,7 +109,7 @@ namespace mars {
 
       void ConstraintsPlugin::loadMotors(const string &filename) {
         if(!filename.empty()) {
-          utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename);
+          configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(filename);
           for(unsigned int i = 0; i < config["MotorValues"].size(); ++i) {
             std::string name = config["MotorValues"][i]["name"][0].getString();
             double value = config["MotorValues"][i]["value"][0].getDouble();

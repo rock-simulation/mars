@@ -39,7 +39,7 @@
 #include "ControlCenter.h"
 #include "../sensor_bases.h"
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 
 namespace mars {
@@ -190,7 +190,7 @@ namespace mars {
 
       //virtual void addSensorType(const std::string &name, BaseSensor* (*func)(ControlCenter*,const unsigned long int, const std::string, mars::ConfigMap*)) = 0;
 
-      virtual BaseSensor* createAndAddSensor(utils::ConfigMap* config,
+      virtual BaseSensor* createAndAddSensor(configmaps::ConfigMap* config,
                                              bool reload=true) = 0;
 
       virtual BaseSensor* createAndAddSensor(const std::string &type_name,

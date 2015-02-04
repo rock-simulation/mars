@@ -226,7 +226,7 @@ namespace mars {
         }
 
         // handle material
-        utils::ConfigMap::iterator it;
+        configmaps::ConfigMap::iterator it;
         if((it = load.nodeList[i].find("material_id")) != load.nodeList[i].end()) {
           unsigned long id = it->second[0].getULong();
           if(id) {

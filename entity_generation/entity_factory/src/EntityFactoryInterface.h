@@ -59,7 +59,7 @@ namespace mars {
         virtual ~EntityFactoryInterface(void) {
         }
         ;
-        virtual sim::SimEntity* createEntity(const utils::ConfigMap& config) = 0;
+        virtual sim::SimEntity* createEntity(const configmaps::ConfigMap& config) = 0;
         virtual std::string getType() {
           return this->type;
         }

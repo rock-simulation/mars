@@ -66,9 +66,9 @@ namespace mars {
         virtual void update(std::vector<interfaces::draw_item>* drawItems);
         
         static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                                 utils::ConfigMap *config);
+                                                 configmaps::ConfigMap *config);
         
-        virtual utils::ConfigMap createConfig() const;
+        virtual configmaps::ConfigMap createConfig() const;
 
         const MultiLevelLaserRangeFinderConfig& getConfig() const;
 

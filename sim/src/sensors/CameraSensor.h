@@ -113,8 +113,8 @@ namespace mars {
       void getCameraInfo( interfaces::cameraStruct *cs );
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                     utils::ConfigMap *config);
-      virtual utils::ConfigMap createConfig() const;
+                                     configmaps::ConfigMap *config);
+      virtual configmaps::ConfigMap createConfig() const;
       
       const CameraConfigStruct &getConfig() const
       {

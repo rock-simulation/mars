@@ -130,9 +130,9 @@ namespace mars {
         origName = toString(type);
       }
 
-      bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
+      bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix,
                          LoadCenter *loadCenter = 0);
-      void toConfigMap(utils::ConfigMap *config,
+      void toConfigMap(configmaps::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 
@@ -380,7 +380,7 @@ namespace mars {
        * If the data is created from a ConfigMap map the original map is
        * stored here.
        */
-      utils::ConfigMap map;
+      configmaps::ConfigMap map;
     }; // end of struct NodeData
 
     inline void ZERO_NODE_STRUCT(NodeData &a) {

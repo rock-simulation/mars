@@ -38,6 +38,7 @@ namespace mars {
   namespace plugins {
     namespace Plot3D {
 
+      using namespace configmaps;
       using namespace mars::utils;
       using namespace mars::interfaces;
 
@@ -74,9 +75,9 @@ namespace mars {
 
         //gui->addGenericMenuAction("../Plot3D/entry", 1, this);
 
-        mars::utils::ConfigMap map;
-        map = mars::utils::ConfigMap::fromYamlFile("Plot3DConfig.yml", true);
-        mars::utils::ConfigVector::iterator it, it2;
+        ConfigMap map;
+        map = ConfigMap::fromYamlFile("Plot3DConfig.yml", true);
+        ConfigVector::iterator it, it2;
         int dataIndex = 2;
         if(map.find("Plots") != map.end()) {
           ConfigVector::iterator it = map["Plots"].begin();

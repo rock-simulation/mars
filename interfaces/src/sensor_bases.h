@@ -27,7 +27,7 @@
 
 #include "core_objects_exchange.h"
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/utils/Quaternion.h>
 #include <mars/utils/Vector.h>
 
@@ -96,12 +96,12 @@ namespace mars {
       */
 
       static BaseConfig* parseConfig(ControlCenter *control,
-                                     utils::ConfigMap *config) {
+                                     configmaps::ConfigMap *config) {
         return new BaseConfig();
       }
 
-      virtual utils::ConfigMap createConfig() const {
-        return utils::ConfigMap();
+      virtual configmaps::ConfigMap createConfig() const {
+        return configmaps::ConfigMap();
       }
 
       //Should be proteted due to compability of old code currently direct accessable

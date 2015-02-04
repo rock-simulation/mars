@@ -115,13 +115,13 @@ namespace mars {
     void SMURF::update(sReal time_ms) {
     }
 
-    void SMURF::handleURI(utils::ConfigMap *map, std::string uri) {
-      utils::ConfigMap map2 = utils::ConfigMap::fromYamlFile(uri);
+    void SMURF::handleURI(configmaps::ConfigMap *map, std::string uri) {
+      configmaps::ConfigMap map2 = configmaps::ConfigMap::fromYamlFile(uri);
       handleURIs(&map2);
       map->append(map2);
     }
 
-    void SMURF::handleURIs(utils::ConfigMap *map) {
+    void SMURF::handleURIs(configmaps::ConfigMap *map) {
       if (map->find("URI") != map->end()) {
         std::string file = (std::string) (*map)["URI"][0];
         if (!file.empty() && file[0] != '/') {
@@ -130,7 +130,7 @@ namespace mars {
         handleURI(map, file);
       }
       if (map->find("URIs") != map->end()) {
-        utils::ConfigVector::iterator vIt = (*map)["URIs"].begin();
+        configmaps::ConfigVector::iterator vIt = (*map)["URIs"].begin();
         for (; vIt != (*map)["URIs"].end(); ++vIt) {
           std::string file = (std::string) (*vIt);
           if (!file.empty() && file[0] != '/') {
@@ -141,8 +141,8 @@ namespace mars {
       }
     }
 
-    void SMURF::getSensorIDList(utils::ConfigMap *map) {
-      utils::ConfigVector::iterator it;
+    void SMURF::getSensorIDList(configmaps::ConfigMap *map) {
+      configmaps::ConfigVector::iterator it;
 #warning check if objects exists in maps
 
       if (map->find("link") != map->end()) {
@@ -168,7 +168,7 @@ namespace mars {
       }
     }
 
-    sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
+    sim::SimEntity* SMURF::createEntity(const configmaps::ConfigMap& config) {
       reset();
       sim::SimEntity* entity;
       entityconfig = config;
@@ -185,11 +185,11 @@ namespace mars {
         entity = new sim::SimEntity(entityconfig);
         createModel();
 
-        utils::ConfigMap::iterator it;
+        configmaps::ConfigMap::iterator it;
         entityconfig.toYamlFile("entityconfig.yml");
         for (it = entityconfig.begin(); it != entityconfig.end(); ++it) {
             fprintf(stderr, "  ...loading smurf data section %s.\n", it->first.c_str());
-            utils::ConfigMap tmpconfig;
+            configmaps::ConfigMap tmpconfig;
             tmpconfig[it->first] = it->second;
             addConfigMap(tmpconfig);
         }
@@ -217,8 +217,8 @@ namespace mars {
       return entity;
     }
 
-    void SMURF::addConfigMap(utils::ConfigMap &config) {
-      utils::ConfigVector::iterator it;
+    void SMURF::addConfigMap(configmaps::ConfigMap &config) {
+      configmaps::ConfigVector::iterator it;
       for (it = config["motors"].begin(); it != config["motors"].end(); ++it) {
         handleURIs(&it->children);
         (*it)["index"] = nextMotorID++;
@@ -232,7 +232,7 @@ namespace mars {
       std::map<std::string, std::string> *namemap;
       for (it = config["sensors"].begin(); it != config["sensors"].end(); ++it) {
         handleURIs(&it->children);
-        utils::ConfigMap tmpmap = it->children;
+        configmaps::ConfigMap tmpmap = it->children;
         tmpmap["attached_node"] = (ulong) nodeIDMap[(std::string) tmpmap["link"]];
         //FIXME: tmpmap["mapIndex"] = mapIndex;
         if ((std::string) tmpmap["type"] == "Joint6DOF") {
@@ -248,7 +248,7 @@ namespace mars {
         idmap = 0;
         namemap = 0;
         if (tmpmap.find("id") != tmpmap.end()) {
-          utils::ConfigVector tmpids;
+          configmaps::ConfigVector tmpids;
           if (((std::string) tmpmap["type"]).find("Joint") != std::string::npos) {
             idmap = &jointIDMap;
           }
@@ -260,7 +260,7 @@ namespace mars {
           if (((std::string) tmpmap["type"]).find("Motor") != std::string::npos) {
             idmap = &motorIDMap;
           }
-          for (utils::ConfigVector::iterator idit = tmpmap["id"].begin();
+          for (configmaps::ConfigVector::iterator idit = tmpmap["id"].begin();
               idit != tmpmap["id"].end(); ++idit) {
             if (idmap) {
               //(*idit) = (ulong)nodeIDMap[idit->getString()];
@@ -283,7 +283,7 @@ namespace mars {
       }
       for (it = config["materials"].begin(); it != config["materials"].end(); ++it) {
         handleURIs(&it->children);
-        std::vector<utils::ConfigMap>::iterator mIt = materialList.begin();
+        std::vector<configmaps::ConfigMap>::iterator mIt = materialList.begin();
         for (; mIt != materialList.end(); ++mIt) {
           if ((std::string) (*mIt)["name"][0] == (std::string) (*it)["name"][0]) {
             mIt->append(it->children);
@@ -293,10 +293,10 @@ namespace mars {
       }
       for (it = config["nodes"].begin(); it != config["nodes"].end(); ++it) {
         handleURIs(&it->children);
-        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        std::vector<configmaps::ConfigMap>::iterator nIt = nodeList.begin();
         for (; nIt != nodeList.end(); ++nIt) {
           if ((std::string) (*nIt)["name"][0] == (std::string) (*it)["name"][0]) {
-            utils::ConfigMap::iterator cIt = it->children.begin();
+            configmaps::ConfigMap::iterator cIt = it->children.begin();
             for (; cIt != it->children.end(); ++cIt) {
               (*nIt)[cIt->first] = cIt->second;
             }
@@ -308,12 +308,12 @@ namespace mars {
       for (it = config["visual"].begin(); it != config["visual"].end(); ++it) {
         handleURIs(&it->children);
         std::string cmpName = (std::string) (*it)["name"][0];
-        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        std::vector<configmaps::ConfigMap>::iterator nIt = nodeList.begin();
         if (visualNameMap.find(cmpName) != visualNameMap.end()) {
           cmpName = visualNameMap[cmpName];
           for (; nIt != nodeList.end(); ++nIt) {
             if ((std::string) (*nIt)["name"][0] == cmpName) {
-              utils::ConfigMap::iterator cIt = it->children.begin();
+              configmaps::ConfigMap::iterator cIt = it->children.begin();
               for (; cIt != it->children.end(); ++cIt) {
                 if (cIt->first != "name") {
                   (*nIt)[cIt->first] = cIt->second;
@@ -328,12 +328,12 @@ namespace mars {
       for (it = config["collision"].begin(); it != config["collision"].end(); ++it) {
         handleURIs(&it->children);
         std::string cmpName = (std::string) (*it)["name"][0];
-        std::vector<utils::ConfigMap>::iterator nIt = nodeList.begin();
+        std::vector<configmaps::ConfigMap>::iterator nIt = nodeList.begin();
         if (collisionNameMap.find(cmpName) != collisionNameMap.end()) {
           cmpName = collisionNameMap[cmpName];
           for (; nIt != nodeList.end(); ++nIt) {
             if ((std::string) (*nIt)["name"][0] == cmpName) {
-              utils::ConfigMap::iterator cIt = it->children.begin();
+              configmaps::ConfigMap::iterator cIt = it->children.begin();
               for (; cIt != it->children.end(); ++cIt) {
                 if (cIt->first != "name") {
                   if (cIt->first == "bitmask") {
@@ -363,7 +363,7 @@ namespace mars {
         handleURIs(&it->children);
         (*it)["index"] = nextControllerID++;
         // convert names to ids
-        utils::ConfigVector::iterator it2;
+        configmaps::ConfigVector::iterator it2;
         if (it->children.find("sensors") != it->children.end()) {
           for (it2 = it->children["sensors"].begin(); it2 != it->children["sensors"].end(); ++it2) {
             it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string) *it2]));
@@ -997,9 +997,9 @@ namespace mars {
       control->nodes->editNode(&my_node, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
     }
 
-    unsigned int SMURF::loadNode(utils::ConfigMap config) {
+    unsigned int SMURF::loadNode(configmaps::ConfigMap config) {
       NodeData node;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid)
         return 0;
@@ -1037,7 +1037,7 @@ namespace mars {
       return 1;
     }
 
-    unsigned int SMURF::loadMaterial(utils::ConfigMap config) {
+    unsigned int SMURF::loadMaterial(configmaps::ConfigMap config) {
       MaterialData material;
 
       int valid = material.fromConfigMap(&config, tmpPath);
@@ -1046,10 +1046,10 @@ namespace mars {
       return valid;
     }
 
-    unsigned int SMURF::loadJoint(utils::ConfigMap config) {
+    unsigned int SMURF::loadJoint(configmaps::ConfigMap config) {
       JointData joint;
       joint.invertAxis = true;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
       int valid = joint.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing joint\n");
@@ -1070,9 +1070,9 @@ namespace mars {
       return true;
     }
 
-    unsigned int SMURF::loadMotor(utils::ConfigMap config) {
+    unsigned int SMURF::loadMotor(configmaps::ConfigMap config) {
       MotorData motor;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
 
       int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
@@ -1094,8 +1094,8 @@ namespace mars {
       return true;
     }
 
-    BaseSensor* SMURF::loadSensor(utils::ConfigMap config) {
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+    BaseSensor* SMURF::loadSensor(configmaps::ConfigMap config) {
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
 //      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
 //          ((std::string)config["type"]).c_str());
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
@@ -1107,9 +1107,9 @@ namespace mars {
       return sensor;
     }
 
-    unsigned int SMURF::loadGraphic(utils::ConfigMap config) {
+    unsigned int SMURF::loadGraphic(configmaps::ConfigMap config) {
       GraphicData graphic;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
       int valid = graphic.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing graphic\n");
@@ -1122,9 +1122,9 @@ namespace mars {
       return 1;
     }
 
-    unsigned int SMURF::loadLight(utils::ConfigMap config) {
+    unsigned int SMURF::loadLight(configmaps::ConfigMap config) {
       LightData light;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
       int valid = light.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing light\n");
@@ -1134,9 +1134,9 @@ namespace mars {
       return true;
     }
 
-    unsigned int SMURF::loadController(utils::ConfigMap config) {
+    unsigned int SMURF::loadController(configmaps::ConfigMap config) {
       ControllerData controller;
-      config["mapIndex"].push_back(utils::ConfigItem(mapIndex));
+      config["mapIndex"].push_back(configmaps::ConfigItem(mapIndex));
 
       int valid = controller.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {

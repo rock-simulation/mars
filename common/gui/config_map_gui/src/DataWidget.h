@@ -33,7 +33,7 @@
 
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/main_gui/BaseWidget.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 #include <vector>
 #include <set>
@@ -60,11 +60,11 @@ namespace mars {
       virtual void valueChanged(QtProperty *property, const QVariant &value);
     
       main_gui::PropertyDialog *pDialog;
-      void setConfigMap(const std::string &name, const utils::ConfigMap &map);
-      void addConfigMap(const std::string &name, utils::ConfigMap &map);
-      void updateConfigMap(const std::string &name, const utils::ConfigMap &map);
-      void updateConfigMapI(const std::string &name, const utils::ConfigMap &map);
-      const utils::ConfigMap& getConfigMap();
+      void setConfigMap(const std::string &name, const configmaps::ConfigMap &map);
+      void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
+      void updateConfigMap(const std::string &name, const configmaps::ConfigMap &map);
+      void updateConfigMapI(const std::string &name, const configmaps::ConfigMap &map);
+      const configmaps::ConfigMap& getConfigMap();
       void clearGUI();
 
     signals:
@@ -72,9 +72,9 @@ namespace mars {
 
     private:
       QMutex addMutex;
-      utils::ConfigMap config;
-      map<QtVariantProperty*, utils::ConfigItem*> dataMap;
-      map<QtVariantProperty*, utils::ConfigMap*> addMap;
+      configmaps::ConfigMap config;
+      map<QtVariantProperty*, configmaps::ConfigItem*> dataMap;
+      map<QtVariantProperty*, configmaps::ConfigMap*> addMap;
       map<std::string, QtVariantProperty*> propMap;
       std::string addKeyStr, cname;
       bool ignore_change;
