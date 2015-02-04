@@ -39,6 +39,7 @@
 
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
+#include <smurf_parser/SMURFParser.h>
 
 //#define DEBUG_PARSE_SENSOR 1
 
@@ -169,39 +170,37 @@ namespace mars {
 
     sim::SimEntity* SMURF::createEntity(const utils::ConfigMap& config) {
       reset();
-      entityconfig.append(config);
-      debugMap.append(config);
-      sim::SimEntity* entity = new sim::SimEntity(entityconfig);
+      sim::SimEntity* entity;
+      entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
       tmpPath = path;
-      // TODO: we should have a system that first loads the URDF and then the other files in
-      //   order of priority (or sort the contents in a way as to avoid errors upon loading).
-      std::string file;
-      std::string file_extension;
-      std::string urdfpath = "";
+      std::string filename = (std::string)entityconfig["URI"];
+      fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
       if((std::string)entityconfig["type"] == "smurf") {
-        utils::ConfigVector::iterator it;
-        for (it = entityconfig["files"].begin(); it != entityconfig["files"].end(); ++it) {
-          file = (std::string) (*it);
-          file_extension = utils::getFilenameSuffix(file);
-          if (file_extension == ".urdf") {
-            urdfpath = path + file;
-            fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-            fprintf(stderr, "parsing model: %d", parseURDF(urdfpath));
-          }
-          else if(file_extension == ".yml") {
-            fprintf(stderr, "  ...loading yml data from %s.\n", (path+file).c_str());
-            utils::ConfigMap tmpconfig = utils::ConfigMap::fromYamlFile(path+file);
+        model = smurf_parser::parseFile(&entityconfig, path, filename, true);
+        debugMap.append(entityconfig);
+        // TODO: we should have a system that first loads the URDF and then the other files in
+        //   order of priority (or sort the contents in a way as to avoid errors upon loading).
+
+        entity = new sim::SimEntity(entityconfig);
+        createModel();
+
+        utils::ConfigMap::iterator it;
+        entityconfig.toYamlFile("entityconfig.yml");
+        for (it = entityconfig.begin(); it != entityconfig.end(); ++it) {
+            fprintf(stderr, "  ...loading smurf data section %s.\n", it->first.c_str());
+            utils::ConfigMap tmpconfig;
+            tmpconfig[it->first] = it->second;
             addConfigMap(tmpconfig);
-          } else {
-            fprintf(stderr, "SMURFLoader: %s not yet implemented", file_extension.c_str());
-          }
         }
       } else { // if type is "urdf"
-        urdfpath = path + (std::string) entityconfig["URI"];
+        std::string urdfpath = path + (std::string) entityconfig["URI"];
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-        parseURDF(urdfpath);
+        fprintf(stderr, "parsing model: %d", parseURDF(urdfpath));
+        entity = new sim::SimEntity(entityconfig);
+        createModel();
       }
+
       // node mapping and name checking
       std::string robotname = (std::string)entityconfig["name"];
       if (robotname == "") {
@@ -902,6 +901,9 @@ namespace mars {
       if (!model) {
         return 0;
       }
+    }
+
+    void SMURF::createModel() {
 
       if (robotname == "") {
         robotname = model.get()->name_;
@@ -925,8 +927,6 @@ namespace mars {
       //            urdfjointlist.begin(); it != urdfjointlist.end(); ++it) {
       //        getGenericConfig(&jointList, it);
       //    }
-
-      return 1;
     }
 
     unsigned int SMURF::load() {

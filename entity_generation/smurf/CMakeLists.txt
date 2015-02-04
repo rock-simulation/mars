@@ -43,12 +43,14 @@ endif (${Qt5Widgets_FOUND})
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    minizip
+			    #configmaps
 			    mars_utils
 			    mars_interfaces
 			    urdfdom
 			    tinyxml
 			    entity_factory
 			    mars_sim
+			    smurf_parser
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

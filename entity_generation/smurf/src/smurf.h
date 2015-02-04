@@ -62,6 +62,7 @@ namespace mars {
       /**
        * @return 0 on error.
        */
+      void createModel();
       unsigned int parseURDF(std::string filename);
       unsigned int load();
       void addConfigMap(utils::ConfigMap &config);

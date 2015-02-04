@@ -349,6 +349,7 @@ namespace mars {
 
       // split up filename in path + _filename and retrieve file extension
       std::string file_extension = utils::getFilenameSuffix(filename);
+      fprintf(stderr, "SMURFLoader::loadFile: file_extension=%s\n", file_extension.c_str());
       std::string path = utils::getPathOfFile(filename);
       std::string _filename = filename;
       utils::removeFilenamePrefix(&_filename);
@@ -366,7 +367,7 @@ namespace mars {
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
       if(file_extension == ".smurfs") {
         utils::ConfigVector::iterator it;
-        map = utils::ConfigMap::fromYamlFile(path+_filename, true);
+        map = utils::ConfigMap::fromYamlFile(path+_filename, false);
         map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
           (*it)["path"] = path;
@@ -375,8 +376,9 @@ namespace mars {
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;
-          map = utils::ConfigMap::fromYamlFile(path+_filename, true);
+          // map = utils::ConfigMap::fromYamlFile(path+_filename, true);
           map["path"] = path;
+          map["URI"] = _filename;
           map["type"] = "smurf";
           map["name"] = "";
           entitylist.push_back(map);
@@ -408,7 +410,6 @@ namespace mars {
           sit != entitylist.end(); ++sit) {
         utils::ConfigMap tmpmap;
         tmpmap = *sit;
-        tmpmap.toYamlFile("blub.yml");
         factoryManager->createEntity(tmpmap);
       }
 
