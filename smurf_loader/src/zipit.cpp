@@ -29,7 +29,7 @@
 #include <iostream>
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf {
 
     using std::vector;
     using std::string;
@@ -389,5 +389,5 @@ namespace mars {
       return ZIPIT_SUCCESS;
     }
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars

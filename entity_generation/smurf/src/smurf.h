@@ -18,21 +18,23 @@
  *
  */
 
-#ifndef LOAD_H
-#define LOAD_H
+#ifndef SMURF_H
+#define SMURF_H
 
 #ifdef _PRINT_HEADER_
-  #warning "Load.h"
+#warning "smurf.h"
 #endif
 
 #include <map>
 
 #include <yaml-cpp/yaml.h>
 
-//#include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/ConfigData.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/MaterialData.h>
+
+#include <mars/interfaces/sim/MarsPluginTemplate.h>
+#include <mars/plugins/entity_factory/EntityFactoryInterface.h>
 
 #include <urdf_parser/urdf_parser.h>
 #include <boost/function.hpp>
@@ -42,19 +44,37 @@
 #include <urdf_model/pose.h>
 
 namespace mars {
-  namespace urdf_loader {
 
-    class Load {
+  namespace smurf {
+
+    class SMURF: public interfaces::MarsPluginTemplate,
+        public mars::plugins::entity_generation::EntityFactoryInterface {
+
     public:
-      Load(interfaces::ControlCenter *control, std::string tmpPath,
-           std::string robotname, unsigned int mapIndex);
+      SMURF(lib_manager::LibManager *theManager);
+      ~SMURF();
+
+      // LibInterface methods
+      int getLibVersion() const {return 1;}
+      const std::string getLibName() const {return std::string("SMURF");}
+      CREATE_MODULE_INFO();
 
       /**
        * @return 0 on error.
        */
+      void createModel();
       unsigned int parseURDF(std::string filename);
       unsigned int load();
       void addConfigMap(utils::ConfigMap &config);
+      std::string getRobotname();
+
+      // EntityFactoryInterface
+      virtual sim::SimEntity* createEntity(const utils::ConfigMap& config);
+
+      // MarsPlugin methods
+      void init();
+      void reset();
+      void update(mars::interfaces::sReal time_ms);
 
       std::vector<utils::ConfigMap> materialList;
       std::vector<utils::ConfigMap> nodeList;
@@ -67,6 +87,7 @@ namespace mars {
 
     private:
       int nextGroupID;
+      unsigned int mapIndex; // index to map nodes of a single entity
       unsigned long nextNodeID;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
@@ -79,11 +100,10 @@ namespace mars {
       std::map<std::string, unsigned long> motorIDMap;
       std::map<std::string, interfaces::MaterialData> materialMap;
       std::map<std::string, std::string> visualNameMap, collisionNameMap;
-      interfaces::ControlCenter *control;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
-      unsigned int mapIndex; // index of loaded scenes
       utils::ConfigMap debugMap;
+      utils::ConfigMap entityconfig;
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
 
@@ -91,21 +111,16 @@ namespace mars {
       void handleURIs(utils::ConfigMap *map);
       void getSensorIDList(utils::ConfigMap *map);
 
-      void handleInertial(utils::ConfigMap *map,
-                          const boost::shared_ptr<urdf::Link> &link);
-      void calculatePose(utils::ConfigMap *map,
-                         const boost::shared_ptr<urdf::Link> &link);
-      void convertPose(const urdf::Pose &pose,
-                       const boost::shared_ptr<urdf::Link> &link,
-                       utils::Vector *v, utils::Quaternion *q);
-      void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose,
-                       utils::Vector *v, utils::Quaternion *q);
+      void handleInertial(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void calculatePose(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
+          utils::Vector *v, utils::Quaternion *q);
+      void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, utils::Vector *v,
+          utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
 
-      void handleVisual(utils::ConfigMap *map,
-                        const boost::shared_ptr<urdf::Visual> &visual);
-      void handleCollision(utils::ConfigMap *map,
-                           const boost::shared_ptr<urdf::Collision> &c);
+      void handleVisual(utils::ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual);
+      void handleCollision(utils::ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c);
 
       void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
 
@@ -114,6 +129,8 @@ namespace mars {
       void createFakeMaterial();
       void createFakeVisual(utils::ConfigMap *map);
       void createFakeCollision(utils::ConfigMap *map);
+
+      void setPose();
 
       unsigned int loadMaterial(utils::ConfigMap config);
       unsigned int loadNode(utils::ConfigMap config);
@@ -127,7 +144,7 @@ namespace mars {
       urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
     };
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
-#endif  // LOAD_H
+#endif  // SMURF_H

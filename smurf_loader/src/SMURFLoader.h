@@ -19,49 +19,68 @@
  */
 
 /**
- * \file URDFLoader.h
- * \author Malte Langosz
+ * \file SMURFLoader.h
+ * \author Malte Langosz, Kai von Szadkowski
  */
-#ifndef SCENE_LOADER_H
-#define SCENE_LOADER_H
+#ifndef SMURF_LOADER_H
+#define SMURF_LOADER_H
 
 #ifdef _PRINT_HEADER_
-  #warning "URDFLoader.h"
+  #warning "SMURFLoader.h"
 #endif
+
+#include <QtXml>
+#include <QDomNodeList>
 
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
-#include "SaveLoadStructs.h"
+#include <mars/plugins/entity_factory/EntityFactoryManager.h>
+#include <mars/utils/ConfigData.h>
 
 namespace mars {
-  namespace urdf_loader {
+  namespace smurf {
 
-    class URDFLoader : public interfaces::LoadSceneInterface {
-      
+    class SMURFLoader : public interfaces::LoadSceneInterface {
+
     public:
-      URDFLoader(lib_manager::LibManager *theManager);
-      ~URDFLoader();
-
+      SMURFLoader(lib_manager::LibManager *theManager);
+      ~SMURFLoader();
 
       // LibInterface methods
       int getLibVersion() const {return 1;}
-      const std::string getLibName() const {return std::string("mars_urdf_loader");}
+      const std::string getLibName() const {return std::string("mars_smurf_loader");}
       CREATE_MODULE_INFO();
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
-      
       virtual int saveFile(std::string filename, std::string tmpPath);
 
+      // SMURF-Loader specific functions
+      void getGenericConfig(std::vector<utils::ConfigMap> *configList,
+          const QDomElement &elementNode);
+      void getGenericConfig(utils::ConfigMap *config, const QDomElement &elementNode);
+      void checkEncodings();
+      unsigned int parseSVG(std::vector<utils::ConfigMap> *configList,
+          std::string sceneFilename);
+
     private:
+      std::string tmpPath;
+      double global_width;
+      double global_length;
+      std::map<std::string, std::string> params;
+      std::vector<utils::ConfigMap> entityList;
+      utils::ConfigMap courseconfig;
+
       interfaces::ControlCenter *control;
+      plugins::entity_generation::EntityFactoryManager* factoryManager;
+      std::vector<utils::ConfigMap> entitylist; // a list of the entities to be loaded
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
     };
 
-  } // end of namespace urdf_loader
+  } // end of namespace smurf
 } // end of namespace mars
 
-#endif  // SCENE_LOADER_H
+#endif  // SMURF_LOADER_H
