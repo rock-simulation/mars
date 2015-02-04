@@ -346,6 +346,7 @@ namespace mars {
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
       LOG_INFO("urdf_loader: prepare loading");
+      entitylist.clear();
 
       // split up filename in path + _filename and retrieve file extension
       std::string file_extension = utils::getFilenameSuffix(filename);
