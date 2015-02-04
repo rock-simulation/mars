@@ -76,6 +76,8 @@ namespace mars {
 
       f_nearPlane = MY_ZNEAR; //0.01;
       f_farPlane  = MY_ZFAR;  //1000;
+
+#warning WTF, a hack in mainstream?
       FILE* hack_aperture = fopen("aperture.cfg", "r");
       if(hack_aperture) {
         fscanf(hack_aperture, "%lf\n", &f_aperture);
