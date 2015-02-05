@@ -33,14 +33,14 @@
 #warning "EntityFactoryInterface.h"
 #endif
 
+namespace configmaps {
+    class ConfigMap;
+  }
+  
 namespace mars {
 
   namespace sim {
     class SimEntity;
-  }
-
-  namespace utils {
-    class ConfigMap;
   }
 
   namespace plugins {

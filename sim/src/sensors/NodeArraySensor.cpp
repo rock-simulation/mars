@@ -40,6 +40,7 @@ namespace mars {
   namespace sim {
 
     using namespace utils;
+    using namespace configmaps;
     using namespace interfaces;
 
     BaseConfig* NodeArraySensor::parseConfig(ControlCenter *control,

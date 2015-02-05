@@ -32,7 +32,6 @@
 namespace mars {
   namespace interfaces {
 
-    using namespace mars::utils;
     using namespace configmaps;
 
     ControllerData::ControllerData() {

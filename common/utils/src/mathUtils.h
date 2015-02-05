@@ -23,7 +23,9 @@
 
 #include "Vector.h"
 #include "Quaternion.h"
-#include "ConfigData.h"
+#include <configmaps/ConfigData.h>
+
+using namespace configmaps;
 
 namespace mars {
   namespace utils {

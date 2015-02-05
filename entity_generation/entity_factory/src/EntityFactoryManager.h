@@ -38,6 +38,7 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/utils/Mutex.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
 

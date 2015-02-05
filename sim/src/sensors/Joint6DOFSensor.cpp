@@ -42,6 +42,7 @@
 namespace mars {
   namespace sim {
 
+    using namespace configmaps;
     using namespace utils;
     using namespace interfaces;
 

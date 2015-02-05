@@ -26,6 +26,7 @@
 namespace mars {
   namespace interfaces {
 
+    using namespace configmaps;
     using namespace mars::utils;
     
     bool MaterialData::operator==(const MaterialData& other) const {
