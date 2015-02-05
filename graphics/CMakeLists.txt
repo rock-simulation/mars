@@ -78,6 +78,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    mars_interfaces
 			    cfg_manager
+			    configmaps
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

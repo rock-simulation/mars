@@ -13,7 +13,7 @@ define_module_info()
 set(LIB_DEPS "base-lib")
 
 pkg_check_modules(PKGCONFIG REQUIRED
-        mars_utils
+        configmaps
         data_broker
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

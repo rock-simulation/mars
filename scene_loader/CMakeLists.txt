@@ -45,7 +45,9 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    minizip
 			    mars_utils
-			    mars_interfaces)
+			    mars_interfaces
+			    configmaps
+			    )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

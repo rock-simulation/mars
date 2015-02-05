@@ -4,7 +4,7 @@
     </description>
 
     <depend package="simulation/mars/scripts/cmake" />
-    <depend package="simulation/mars/common/utils" />
+    <depend package="configmaps" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="base/types" />
     <tags>needs_opt</tags>

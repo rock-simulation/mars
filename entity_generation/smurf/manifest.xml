@@ -6,7 +6,7 @@
     <depend package="simulation/mars/common/lib_manager" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
-    <depend package="simulation/mars/common/utils" />    
+    <depend package="configmaps" />    
     <depend package="simulation/mars/sim" />    
     <depend package="simulation/mars/entity_generation/smurf" />
 
