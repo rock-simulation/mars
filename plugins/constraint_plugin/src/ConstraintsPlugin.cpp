@@ -34,6 +34,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/utils.h>
 #include <mars/utils/mathUtils.h>
+#include <configmaps/ConfigData.h>
 
 #include <QString>
 #include <QFileDialog>
