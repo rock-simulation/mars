@@ -1,4 +1,4 @@
-project(entity_factory)
+project(mars_entity_factory)
 set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "a")
 cmake_minimum_required(VERSION 2.6)
@@ -23,7 +23,7 @@ include_directories(
 	src
 )
 
-set(SOURCES 
+set(SOURCES
 	src/EntityFactoryManager.cpp
 )
 
@@ -60,9 +60,7 @@ install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/plugins/${PROJECT_NAME})
 
-# Prepare and install necessary files to support finding of the library 
+# Prepare and install necessary files to support finding of the library
 # using pkg-config
 configure_file(${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
-
-
