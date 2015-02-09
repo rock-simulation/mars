@@ -28,7 +28,7 @@
 #include "GraphicsManager.h"
 #include "config.h"
 
-#include <osgUtil/Optimizer>
+//#include <osgUtil/Optimizer>
 
 #include <osgDB/WriteFile>
 #include <osg/Fog>
@@ -808,8 +808,8 @@ namespace mars {
           shadowMap->setRadius(m["shadowCenterRadius"][0]);
         }
       }
-      osgUtil::Optimizer optimizer;
-      optimizer.optimize(shadowedScene.get());
+      //osgUtil::Optimizer optimizer;
+      //optimizer.optimize(shadowedScene.get());
       
       return id;
     }
