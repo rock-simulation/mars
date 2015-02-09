@@ -41,7 +41,7 @@
 #include <mars/interfaces/graphics/GraphicsEventClient.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/utils/Mutex.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
   namespace sim {

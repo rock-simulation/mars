@@ -80,7 +80,7 @@ namespace mars {
       std::string s_pathname;
       std::string s_filename;
   
-      void writeConfigMap(const utils::ConfigMap &cfg, QTextStream * out,
+      void writeConfigMap(const configmaps::ConfigMap &cfg, QTextStream * out,
                           std::string tag, bool handleSensor = false,
                           int depth = 0);
 

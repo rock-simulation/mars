@@ -37,6 +37,7 @@ namespace mars {
   namespace plugins {
     namespace Text3D {
 
+      using namespace configmaps;
       using namespace mars::utils;
       using namespace mars::interfaces;
 
@@ -67,9 +68,9 @@ namespace mars {
         */
         textFactory = libManager->getLibraryAs<osg_text::TextFactoryInterface>("osg_text_factory");
         if(textFactory) {
-          mars::utils::ConfigMap map;
-          map = mars::utils::ConfigMap::fromYamlFile("Text3DConfig.yml", true);
-          mars::utils::ConfigVector::iterator it;
+          ConfigMap map;
+          map = ConfigMap::fromYamlFile("Text3DConfig.yml", true);
+          ConfigVector::iterator it;
           osg_text::TextInterface *text;
           if(map.find("Labels") != map.end()) {
             TextData *td;

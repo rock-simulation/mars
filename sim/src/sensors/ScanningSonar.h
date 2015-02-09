@@ -107,8 +107,8 @@ namespace mars {
       virtual void preGraphicsUpdate(void);
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                           utils::ConfigMap *config);
-      virtual utils::ConfigMap createConfig();
+                                           configmaps::ConfigMap *config);
+      virtual configmaps::ConfigMap createConfig();
   
       void setPingPongConfig(bool ping_pong_mode, float left_limit,
                              float right_limit);

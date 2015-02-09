@@ -29,7 +29,7 @@
 
 #include <yaml-cpp/yaml.h>
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/MaterialData.h>
 
@@ -65,25 +65,25 @@ namespace mars {
       void createModel();
       unsigned int parseURDF(std::string filename);
       unsigned int load();
-      void addConfigMap(utils::ConfigMap &config);
+      void addConfigMap(configmaps::ConfigMap &config);
       std::string getRobotname();
 
       // EntityFactoryInterface
-      virtual sim::SimEntity* createEntity(const utils::ConfigMap& config);
+      virtual sim::SimEntity* createEntity(const configmaps::ConfigMap& config);
 
       // MarsPlugin methods
       void init();
       void reset();
       void update(mars::interfaces::sReal time_ms);
 
-      std::vector<utils::ConfigMap> materialList;
-      std::vector<utils::ConfigMap> nodeList;
-      std::vector<utils::ConfigMap> jointList;
-      std::vector<utils::ConfigMap> motorList;
-      std::vector<utils::ConfigMap> sensorList;
-      std::vector<utils::ConfigMap> controllerList;
-      std::vector<utils::ConfigMap> graphicList;
-      std::vector<utils::ConfigMap> lightList;
+      std::vector<configmaps::ConfigMap> materialList;
+      std::vector<configmaps::ConfigMap> nodeList;
+      std::vector<configmaps::ConfigMap> jointList;
+      std::vector<configmaps::ConfigMap> motorList;
+      std::vector<configmaps::ConfigMap> sensorList;
+      std::vector<configmaps::ConfigMap> controllerList;
+      std::vector<configmaps::ConfigMap> graphicList;
+      std::vector<configmaps::ConfigMap> lightList;
 
     private:
       int nextGroupID;
@@ -102,44 +102,44 @@ namespace mars {
       std::map<std::string, std::string> visualNameMap, collisionNameMap;
       std::string tmpPath;
       //std::map<std::string, std::string> smurffiles;
-      utils::ConfigMap debugMap;
-      utils::ConfigMap entityconfig;
+      configmaps::ConfigMap debugMap;
+      configmaps::ConfigMap entityconfig;
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
 
-      void handleURI(utils::ConfigMap *map, std::string uri);
-      void handleURIs(utils::ConfigMap *map);
-      void getSensorIDList(utils::ConfigMap *map);
+      void handleURI(configmaps::ConfigMap *map, std::string uri);
+      void handleURIs(configmaps::ConfigMap *map);
+      void getSensorIDList(configmaps::ConfigMap *map);
 
-      void handleInertial(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
-      void calculatePose(utils::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void handleInertial(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      void calculatePose(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
       void convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
           utils::Vector *v, utils::Quaternion *q);
       void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, utils::Vector *v,
           utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
 
-      void handleVisual(utils::ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual);
-      void handleCollision(utils::ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c);
+      void handleVisual(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual);
+      void handleCollision(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c);
 
       void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
 
       void handleMaterial(boost::shared_ptr<urdf::Material> material);
 
       void createFakeMaterial();
-      void createFakeVisual(utils::ConfigMap *map);
-      void createFakeCollision(utils::ConfigMap *map);
+      void createFakeVisual(configmaps::ConfigMap *map);
+      void createFakeCollision(configmaps::ConfigMap *map);
 
       void setPose();
 
-      unsigned int loadMaterial(utils::ConfigMap config);
-      unsigned int loadNode(utils::ConfigMap config);
-      unsigned int loadJoint(utils::ConfigMap config);
-      unsigned int loadMotor(utils::ConfigMap config);
-      interfaces::BaseSensor* loadSensor(utils::ConfigMap config);
-      unsigned int loadController(utils::ConfigMap config);
-      unsigned int loadGraphic(utils::ConfigMap config);
-      unsigned int loadLight(utils::ConfigMap config);
+      unsigned int loadMaterial(configmaps::ConfigMap config);
+      unsigned int loadNode(configmaps::ConfigMap config);
+      unsigned int loadJoint(configmaps::ConfigMap config);
+      unsigned int loadMotor(configmaps::ConfigMap config);
+      interfaces::BaseSensor* loadSensor(configmaps::ConfigMap config);
+      unsigned int loadController(configmaps::ConfigMap config);
+      unsigned int loadGraphic(configmaps::ConfigMap config);
+      unsigned int loadLight(configmaps::ConfigMap config);
 
       urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
     };

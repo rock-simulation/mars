@@ -9,7 +9,7 @@
     <depend package="simulation/mars/common/cfg_manager" />
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/interfaces" />
-
+    <depend package="configmaps" />
     <depend package="simulation/ode" />
     <tags>needs_opt</tags>
 </package>

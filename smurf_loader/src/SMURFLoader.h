@@ -36,7 +36,7 @@
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
 #include <mars/plugins/entity_factory/EntityFactoryManager.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
   namespace smurf {
@@ -57,11 +57,11 @@ namespace mars {
       virtual int saveFile(std::string filename, std::string tmpPath);
 
       // SMURF-Loader specific functions
-      void getGenericConfig(std::vector<utils::ConfigMap> *configList,
+      void getGenericConfig(std::vector<configmaps::ConfigMap> *configList,
           const QDomElement &elementNode);
-      void getGenericConfig(utils::ConfigMap *config, const QDomElement &elementNode);
+      void getGenericConfig(configmaps::ConfigMap *config, const QDomElement &elementNode);
       void checkEncodings();
-      unsigned int parseSVG(std::vector<utils::ConfigMap> *configList,
+      unsigned int parseSVG(std::vector<configmaps::ConfigMap> *configList,
           std::string sceneFilename);
 
     private:
@@ -69,12 +69,12 @@ namespace mars {
       double global_width;
       double global_length;
       std::map<std::string, std::string> params;
-      std::vector<utils::ConfigMap> entityList;
-      utils::ConfigMap courseconfig;
+      std::vector<configmaps::ConfigMap> entityList;
+      configmaps::ConfigMap courseconfig;
 
       interfaces::ControlCenter *control;
       plugins::entity_generation::EntityFactoryManager* factoryManager;
-      std::vector<utils::ConfigMap> entitylist; // a list of the entities to be loaded
+      std::vector<configmaps::ConfigMap> entitylist; // a list of the entities to be loaded
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);

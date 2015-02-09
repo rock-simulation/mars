@@ -33,7 +33,7 @@
 #warning "MotorCurrentSensor.h"
 #endif
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
 
@@ -60,9 +60,9 @@ namespace mars {
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                                  interfaces::BaseConfig *config);
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                                 utils::ConfigMap *config);
+                                                 configmaps::ConfigMap *config);
 
-      virtual utils::ConfigMap createConfig() const;
+      virtual configmaps::ConfigMap createConfig() const;
 
     private:
       IDListConfig config;

@@ -22,7 +22,7 @@
 #define MARS_INTERFACES_MATERIAL_STRUCT_H
 
 #include <mars/utils/Color.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
   namespace interfaces {
@@ -63,8 +63,8 @@ namespace mars {
       }
 
       // todo: handle filenames
-      bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix);
-      void toConfigMap(utils::ConfigMap *config,
+      bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix);
+      void toConfigMap(configmaps::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 

@@ -23,7 +23,7 @@
 
 #include "MARSDefs.h"
 #include <mars/utils/Vector.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 #include <string>
 
@@ -58,9 +58,9 @@ namespace mars {
                  unsigned long node_id1 = 0, unsigned long node_id2 = 0 );
 
 
-      bool fromConfigMap(utils::ConfigMap *config, std::string filenamePrefix,
+      bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix,
                          LoadCenter *loadCenter = 0);
-      void toConfigMap(utils::ConfigMap *config,
+      void toConfigMap(configmaps::ConfigMap *config,
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 

@@ -267,11 +267,11 @@ namespace mars {
       return 1;
     }
 
-    void Save::writeConfigMap(const utils::ConfigMap &cfg, QTextStream * out,
+    void Save::writeConfigMap(const configmaps::ConfigMap &cfg, QTextStream * out,
                               std::string tag, bool handleSensor, int depth) {
 
-      utils::ConfigMap::const_iterator it;
-      utils::ConfigVector::const_iterator it2;
+      configmaps::ConfigMap::const_iterator it;
+      configmaps::ConfigVector::const_iterator it2;
       bool close = false;
       char text[255];
 
@@ -334,7 +334,7 @@ namespace mars {
       if(v_BaseSensor->size() > 0) {
         *out << "<sensorlist>\n";
         for(it=v_BaseSensor->begin(); it!=v_BaseSensor->end(); ++it) {
-          utils::ConfigMap cfg = (*it)->createConfig();
+          configmaps::ConfigMap cfg = (*it)->createConfig();
           writeConfigMap(cfg, out, std::string("sensor"), true);
         }
         *out << "</sensorlist>\n";
@@ -346,8 +346,8 @@ namespace mars {
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames,
                                 unsigned long id) {
-      utils::ConfigMap config;
-      config["id"][0] = utils::ConfigItem(id);
+      configmaps::ConfigMap config;
+      config["id"][0] = configmaps::ConfigItem(id);
       materialData->toConfigMap(&config, true);
       materialData->getFilesToSave(v_filenames);
       writeConfigMap(config, out, std::string("material"));
@@ -357,7 +357,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::NodeData *nodeData,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       if(nodeData->relative_id) { // handle relative positioning
         interfaces::NodeData parentNode;
@@ -383,7 +383,7 @@ namespace mars {
           materials.push_back(tmp_mat_map);
           next_material_id++;
         }
-        config["material_id"][0] = utils::ConfigItem(mat_id);
+        config["material_id"][0] = configmaps::ConfigItem(mat_id);
       }
 
       writeConfigMap(config, out, std::string("node"));
@@ -393,7 +393,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::JointData *jointData,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       jointData->toConfigMap(&config, true);
       jointData->getFilesToSave(v_filenames);
@@ -405,7 +405,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::MotorData *motorData,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       motorData->toConfigMap(&config, true);
       motorData->getFilesToSave(v_filenames);
@@ -417,7 +417,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::LightData *lightData,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       lightData->toConfigMap(&config, true);
       lightData->getFilesToSave(v_filenames);
@@ -429,7 +429,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::GraphicData *graphicData,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       graphicData->toConfigMap(&config, true);
       graphicData->getFilesToSave(v_filenames);
@@ -441,7 +441,7 @@ namespace mars {
     unsigned int Save::generate(interfaces::ControllerData *controller,
                                 QTextStream *out,
                                 std::vector<std::string> *v_filenames) {
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       controller->toConfigMap(&config, true);
       controller->getFilesToSave(v_filenames);

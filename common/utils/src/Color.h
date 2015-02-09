@@ -21,7 +21,7 @@
 #ifndef MARS_UTILS_COLOR_H
 #define MARS_UTILS_COLOR_H
 
-#include "ConfigData.h"
+#include <configmaps/ConfigData.h>
 
 namespace mars {
   namespace utils {
@@ -60,8 +60,8 @@ namespace mars {
         return !(*this == other);
       }
 
-      bool fromConfigItem(ConfigItem *item);
-      void toConfigItem(ConfigItem *item);
+      bool fromConfigItem(configmaps::ConfigItem *item);
+      void toConfigItem(configmaps::ConfigItem *item);
 
     }; // end of class Color
 

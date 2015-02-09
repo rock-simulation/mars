@@ -34,6 +34,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/utils.h>
 #include <mars/utils/mathUtils.h>
+#include <configmaps/ConfigData.h>
 
 #include <QString>
 #include <QFileDialog>
@@ -109,7 +110,7 @@ namespace mars {
 
       void ConstraintsPlugin::loadMotors(const string &filename) {
         if(!filename.empty()) {
-          utils::ConfigMap config = utils::ConfigMap::fromYamlFile(filename);
+          configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(filename);
           for(unsigned int i = 0; i < config["MotorValues"].size(); ++i) {
             std::string name = config["MotorValues"][i]["name"][0].getString();
             double value = config["MotorValues"][i]["value"][0].getDouble();

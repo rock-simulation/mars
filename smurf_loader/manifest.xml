@@ -4,7 +4,7 @@
     </description>
 
     <depend package="simulation/lib_manager" />
-    <depend package="simulation/mars/common/utils" />
+    <depend package="configmaps" />
     <depend package="simulation/mars/interfaces" />
 
     <depend package="external/minizip" />

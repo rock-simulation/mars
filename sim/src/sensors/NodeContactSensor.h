@@ -32,7 +32,7 @@
 #warning "NodeContactSensor.h"
 #endif
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
 
@@ -54,10 +54,10 @@ namespace mars {
                                const data_broker::DataPackage &package,
                                int callbackParam);
 
-      virtual utils::ConfigMap createConfig() const;
+      virtual configmaps::ConfigMap createConfig() const;
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                           utils::ConfigMap *config);
+                                           configmaps::ConfigMap *config);
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                            interfaces::BaseConfig *config);
 

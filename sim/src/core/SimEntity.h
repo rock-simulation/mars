@@ -28,7 +28,7 @@
 #ifndef SIMENTITY_H
 #define SIMENTITY_H
 
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <string>
 #include <set>
 #include <map>
@@ -41,9 +41,9 @@ namespace mars {
     class SimEntity {
     public:
       SimEntity(const std::string& name);
-      SimEntity(const utils::ConfigMap& parameters);
+      SimEntity(const configmaps::ConfigMap& parameters);
 
-      void appendConfig(const utils::ConfigMap& parameters);
+      void appendConfig(const configmaps::ConfigMap& parameters);
 
       void removeEntity();
 
@@ -117,7 +117,7 @@ namespace mars {
     private:
       std::string name;
 
-      utils::ConfigMap config;
+      configmaps::ConfigMap config;
 
       // stores the ids of the nodes belonging to the robot
       std::map<unsigned long, std::string> nodeIds;

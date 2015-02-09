@@ -28,7 +28,7 @@
 #include <map>
 
 #include <mars/interfaces/sim/ControlCenter.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/MaterialData.h>
 
@@ -52,14 +52,14 @@ namespace mars {
       unsigned int loadScene();
 
       std::map<unsigned long, interfaces::MaterialData> materials;
-      std::vector<utils::ConfigMap> materialList;
-      std::vector<utils::ConfigMap> nodeList;
-      std::vector<utils::ConfigMap> jointList;
-      std::vector<utils::ConfigMap> motorList;
-      std::vector<utils::ConfigMap> sensorList;
-      std::vector<utils::ConfigMap> controllerList;
-      std::vector<utils::ConfigMap> graphicList;
-      std::vector<utils::ConfigMap> lightList;
+      std::vector<configmaps::ConfigMap> materialList;
+      std::vector<configmaps::ConfigMap> nodeList;
+      std::vector<configmaps::ConfigMap> jointList;
+      std::vector<configmaps::ConfigMap> motorList;
+      std::vector<configmaps::ConfigMap> sensorList;
+      std::vector<configmaps::ConfigMap> controllerList;
+      std::vector<configmaps::ConfigMap> graphicList;
+      std::vector<configmaps::ConfigMap> lightList;
 
     private:
       // Every new load scene gets an offset, which is added to all group_ids
@@ -70,9 +70,9 @@ namespace mars {
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
 
-      void getGenericConfig(std::vector<utils::ConfigMap> *configList,
+      void getGenericConfig(std::vector<configmaps::ConfigMap> *configList,
                             const QDomElement &elementNode);
-      void getGenericConfig(utils::ConfigMap *config,
+      void getGenericConfig(configmaps::ConfigMap *config,
                             const QDomElement &elementNode);
 
 
@@ -96,14 +96,14 @@ namespace mars {
       std::string sceneFilename;
       unsigned int mapIndex;
 
-      unsigned int loadMaterial(utils::ConfigMap config);
-      unsigned int loadNode(utils::ConfigMap config);
-      unsigned int loadJoint(utils::ConfigMap config);
-      unsigned int loadMotor(utils::ConfigMap config);
-      interfaces::BaseSensor* loadSensor(utils::ConfigMap config);
-      unsigned int loadController(utils::ConfigMap config);
-      unsigned int loadGraphic(utils::ConfigMap config);
-      unsigned int loadLight(utils::ConfigMap config);
+      unsigned int loadMaterial(configmaps::ConfigMap config);
+      unsigned int loadNode(configmaps::ConfigMap config);
+      unsigned int loadJoint(configmaps::ConfigMap config);
+      unsigned int loadMotor(configmaps::ConfigMap config);
+      interfaces::BaseSensor* loadSensor(configmaps::ConfigMap config);
+      unsigned int loadController(configmaps::ConfigMap config);
+      unsigned int loadGraphic(configmaps::ConfigMap config);
+      unsigned int loadLight(configmaps::ConfigMap config);
       void checkEncodings();
     };
 

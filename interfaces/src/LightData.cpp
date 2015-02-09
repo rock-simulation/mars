@@ -41,8 +41,9 @@ namespace mars {
   namespace interfaces {
 
     using namespace mars::utils;
+    using namespace configmaps;
 
-    bool LightData::fromConfigMap(utils::ConfigMap *config,
+    bool LightData::fromConfigMap(ConfigMap *config,
                                   std::string filenamePrefix,
                                   LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
@@ -69,7 +70,7 @@ namespace mars {
       return true;
     }
 
-    void LightData::toConfigMap(utils::ConfigMap *config,
+    void LightData::toConfigMap(ConfigMap *config,
                                 bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       LightData defaultLight;

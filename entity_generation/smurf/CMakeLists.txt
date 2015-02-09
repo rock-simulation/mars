@@ -43,8 +43,7 @@ endif (${Qt5Widgets_FOUND})
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    minizip
-			    #configmaps
-			    mars_utils
+			    configmaps
 			    mars_interfaces
 			    urdfdom
 			    tinyxml

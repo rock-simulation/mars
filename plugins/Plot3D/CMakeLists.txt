@@ -38,7 +38,8 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    data_broker
 			    mars_interfaces
-                            osg_plot
+                osg_plot
+                configmaps
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

@@ -20,6 +20,8 @@
 
 #include "Color.h"
 
+using namespace configmaps;
+
 namespace mars {
   namespace utils {
 

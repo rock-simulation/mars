@@ -88,8 +88,8 @@ namespace mars {
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                                 utils::ConfigMap *config);
-      virtual utils::ConfigMap createConfig() const;
+                                                 configmaps::ConfigMap *config);
+      virtual configmaps::ConfigMap createConfig() const;
 
       const RayConfig& getConfig() const;
 

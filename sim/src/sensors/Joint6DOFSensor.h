@@ -87,8 +87,8 @@ namespace mars {
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                            interfaces::BaseConfig* config);
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-                                           utils::ConfigMap *config);
-      virtual utils::ConfigMap createConfig() const;
+                                           configmaps::ConfigMap *config);
+      virtual configmaps::ConfigMap createConfig() const;
 
     private:
       Joint6DOFConfig config;

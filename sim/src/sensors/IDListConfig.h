@@ -50,12 +50,12 @@ namespace mars {
       }
 
       void parseConfig(interfaces::ControlCenter *control,
-                       utils::ConfigMap *config,
+                       configmaps::ConfigMap *config,
                        interfaces::IDMapType mapType) {
 
-        std::vector<utils::ConfigItem>::iterator it;
+        std::vector<configmaps::ConfigItem>::iterator it;
         unsigned long _id;
-        utils::ConfigVector _ids = (*config)["id"];
+        configmaps::ConfigVector _ids = (*config)["id"];
         unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
         updateRate = (*config)["rate"][0].getULong();
 

@@ -32,13 +32,13 @@
 namespace mars {
   namespace interfaces {
 
-    using namespace mars::utils;
+    using namespace configmaps;
 
     ControllerData::ControllerData() {
       rate = 20;
     }
 
-    bool ControllerData::fromConfigMap(utils::ConfigMap *config,
+    bool ControllerData::fromConfigMap(ConfigMap *config,
                                        std::string filenamePrefix,
                                        LoadCenter *loadCenter) {
       CPP_UNUSED(filenamePrefix);
@@ -91,7 +91,7 @@ namespace mars {
       return true;
     }
 
-    void ControllerData::toConfigMap(utils::ConfigMap *config,
+    void ControllerData::toConfigMap(ConfigMap *config,
                                      bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       std::vector<unsigned long>::iterator it;

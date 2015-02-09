@@ -21,7 +21,6 @@ add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 set(SOURCES 
     src/Color.cpp
-    src/ConfigData.cpp
     src/Mutex.cpp
     src/MutexLocker.cpp
     src/ReadWriteLock.cpp
@@ -34,8 +33,6 @@ set(SOURCES
 )
 set(HEADERS
     src/Color.h
-    src/ConfigData.h
-    src/FIFOMap.h
     src/Mutex.h
     src/MutexLocker.h
     src/Quaternion.h

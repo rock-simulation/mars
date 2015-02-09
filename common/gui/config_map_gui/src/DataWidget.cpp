@@ -27,6 +27,7 @@
 namespace mars {
 
   using namespace utils;
+  using namespace configmaps;
 
   namespace config_map_gui {
 
@@ -204,8 +205,8 @@ namespace mars {
     }
 
     void DataWidget::clearGUI() {
-      map<QtVariantProperty*, utils::ConfigItem*>::iterator it;
-      map<QtVariantProperty*, utils::ConfigMap*>::iterator it2;
+      map<QtVariantProperty*, ConfigItem*>::iterator it;
+      map<QtVariantProperty*, ConfigMap*>::iterator it2;
       for(it=dataMap.begin(); it!=dataMap.end(); ++it) {
         pDialog->removeGenericProperty(it->first);
       }

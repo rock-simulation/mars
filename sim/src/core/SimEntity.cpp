@@ -19,7 +19,7 @@
  */
 
 #include "SimEntity.h"
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 #include <iostream>
 
 #include <iterator> // ostream_iterator
@@ -32,14 +32,14 @@ namespace mars {
       selected = false;
     }
 
-    SimEntity::SimEntity(const utils::ConfigMap& parameters) {
+    SimEntity::SimEntity(const configmaps::ConfigMap& parameters) {
       config = parameters;
       this->name = (std::string) config["name"];
       this->selected = false;
     }
 
-    void SimEntity::appendConfig(const utils::ConfigMap& parameters) {
-      utils::ConfigMap map = parameters;
+    void SimEntity::appendConfig(const configmaps::ConfigMap& parameters) {
+      configmaps::ConfigMap map = parameters;
       config.append(map);
     }
 

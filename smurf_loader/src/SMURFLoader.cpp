@@ -77,7 +77,7 @@ namespace mars {
             }
           }
 
-          void SMURFLoader::getGenericConfig(utils::ConfigMap *config,
+          void SMURFLoader::getGenericConfig(configmaps::ConfigMap *config,
               const QDomElement &elementNode) {
 
             QDomNodeList xmlnodepartlist = elementNode.childNodes();
@@ -92,7 +92,7 @@ namespace mars {
               tagName = child2.nodeName().toStdString();
               value = child2.nodeValue().toStdString();
               if (!tagName.empty()) {
-                (*config)[tagName].push_back(utils::ConfigItem(value));
+                (*config)[tagName].push_back(configmaps::ConfigItem(value));
     #ifdef DEBUG_PARSE_SENSOR
                 LOG_DEBUG("attrib [%s : %s]", tagName.c_str(), value.c_str());
     #endif
@@ -105,7 +105,7 @@ namespace mars {
               tagName = child.tagName().toStdString();
               value = child.text().toStdString();
               if (!tagName.empty()) {
-                (*config)[tagName].push_back(utils::ConfigItem(value));
+                (*config)[tagName].push_back(configmaps::ConfigItem(value));
     #ifdef DEBUG_PARSE_SENSOR
                 LOG_DEBUG("element [%s : %s]", tagName.c_str(), value.c_str());
     #endif
@@ -116,14 +116,14 @@ namespace mars {
             // we can or should also iterate over the attributes
           }
 
-          void SMURFLoader::getGenericConfig(std::vector<utils::ConfigMap> *configList,
+          void SMURFLoader::getGenericConfig(std::vector<configmaps::ConfigMap> *configList,
               const QDomElement &elementNode) {
-            utils::ConfigMap config;
+            configmaps::ConfigMap config;
             getGenericConfig(&config, elementNode);
             configList->push_back(config);
           }
 
-          unsigned int SMURFLoader::parseSVG(std::vector<utils::ConfigMap> *configList,
+          unsigned int SMURFLoader::parseSVG(std::vector<configmaps::ConfigMap> *configList,
               std::string sceneFilename) {
             checkEncodings();
             //  HandleFileNames h_filenames;
@@ -183,7 +183,7 @@ namespace mars {
             global_width = root.attribute("width").toDouble();
             global_length = root.attribute("height").toDouble();
 
-    //  std::vector<utils::ConfigMap> poiList;
+    //  std::vector<configmaps::ConfigMap> poiList;
             //first checking wether there is a node with name "node"
             //by passing it in a xmlnodelist and checking if it's not empty.
             //if so, there is at least an element with name "node"
@@ -274,7 +274,7 @@ namespace mars {
               configList->push_back(map);
             }
     //
-    //        for (std::vector<utils::ConfigMap>::iterator it = entityList.begin();
+    //        for (std::vector<configmaps::ConfigMap>::iterator it = entityList.begin();
     //            it != entityList.end(); ++it) {
     //          map = ConfigMap::fromYamlFile((std::string) (*it)["id"] + ".yml", true);
     //          if (it->find("transform") != it->end()) {
@@ -346,6 +346,7 @@ namespace mars {
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
       LOG_INFO("urdf_loader: prepare loading");
+      entitylist.clear();
 
       // split up filename in path + _filename and retrieve file extension
       std::string file_extension = utils::getFilenameSuffix(filename);
@@ -363,11 +364,11 @@ namespace mars {
       }
 
       // read in the provided file - .smurfs / .smurf / .urdf
-      utils::ConfigMap map;
+      configmaps::ConfigMap map;
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
       if(file_extension == ".smurfs") {
-        utils::ConfigVector::iterator it;
-        map = utils::ConfigMap::fromYamlFile(path+_filename, false);
+        configmaps::ConfigVector::iterator it;
+        map = configmaps::ConfigMap::fromYamlFile(path+_filename, false);
         map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
           (*it)["path"] = path;
@@ -376,7 +377,7 @@ namespace mars {
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;
-          // map = utils::ConfigMap::fromYamlFile(path+_filename, true);
+          // map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
           map["path"] = path;
           map["URI"] = _filename;
           map["type"] = "smurf";
@@ -393,9 +394,9 @@ namespace mars {
          * Each svg object must contain a "file" property, specifying the yaml file in
          * which the missing parameters are defined, so we have to append that.
          */
-        std::vector<utils::ConfigMap> svg_entities;
+        std::vector<configmaps::ConfigMap> svg_entities;
         parseSVG(&svg_entities, path+_filename);
-        for(std::vector<utils::ConfigMap>::iterator it = svg_entities.begin();
+        for(std::vector<configmaps::ConfigMap>::iterator it = svg_entities.begin();
             it!=svg_entities.end(); ++it) {
           map = *it;
           map.append(ConfigMap::fromYamlFile((std::string)map["file"], true)); //FIXME: path?
@@ -406,9 +407,9 @@ namespace mars {
 
       //load assembled smurfs
       fprintf(stderr, "Creating simulation entities...\n");
-      for (std::vector<utils::ConfigMap>::iterator sit = entitylist.begin();
+      for (std::vector<configmaps::ConfigMap>::iterator sit = entitylist.begin();
           sit != entitylist.end(); ++sit) {
-        utils::ConfigMap tmpmap;
+        configmaps::ConfigMap tmpmap;
         tmpmap = *sit;
         factoryManager->createEntity(tmpmap);
       }

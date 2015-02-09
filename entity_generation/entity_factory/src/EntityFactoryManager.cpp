@@ -39,7 +39,6 @@ namespace mars {
   namespace plugins {
     namespace entity_generation {
 
-      using namespace mars::utils;
       using namespace mars::interfaces;
 
       EntityFactoryManager::EntityFactoryManager(lib_manager::LibManager *theManager) :
@@ -64,14 +63,14 @@ namespace mars {
 
       void EntityFactoryManager::registerFactory(const std::string type,
           EntityFactoryInterface* factory) {
-        MutexLocker locker(&iMutex);
+        utils::MutexLocker locker(&iMutex);
         factories[type] = factory;
         fprintf(stderr, "EntityFactory: registering factory for type '%s'", type.c_str());
       }
 
-      unsigned long EntityFactoryManager::createEntity(utils::ConfigMap& config) {
+      unsigned long EntityFactoryManager::createEntity(configmaps::ConfigMap& config) {
         unsigned long id = 0;
-        MutexLocker locker(&iMutex);
+        utils::MutexLocker locker(&iMutex);
         std::map<std::string, EntityFactoryInterface*>::iterator it;
         bool knowntype = false;
         for(it=factories.begin(); it!=factories.end(); ++it) {
@@ -92,7 +91,7 @@ namespace mars {
       }
 
       unsigned long EntityFactoryManager::createEntity(std::string configfile) {
-        utils::ConfigMap config = mars::utils::ConfigMap::fromYamlFile(configfile);
+        configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(configfile);
         return createEntity(config);
       }
 

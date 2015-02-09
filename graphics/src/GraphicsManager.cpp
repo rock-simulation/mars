@@ -804,7 +804,7 @@ namespace mars {
         }
         if(shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
           shadowMap->setCenterObject(drawObject->object());
-          utils::ConfigMap m = snode.map;
+          configmaps::ConfigMap m = snode.map;
           shadowMap->setRadius(m["shadowCenterRadius"][0]);
         }
       }

@@ -38,6 +38,7 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/utils/Mutex.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
 
@@ -74,7 +75,7 @@ namespace mars {
         virtual void registerFactory(const std::string type, EntityFactoryInterface* factory);
 
         // creates new entity using an entity factory
-        virtual unsigned long createEntity(utils::ConfigMap& config);
+        virtual unsigned long createEntity(configmaps::ConfigMap& config);
         virtual unsigned long createEntity(std::string configfile);
 
         // EntityFactoryManager methods

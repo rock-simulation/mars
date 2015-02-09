@@ -36,7 +36,7 @@
 namespace mars {
   namespace interfaces {
 
-    using namespace mars::utils;
+    using namespace configmaps;
 
     std::map<std::string, std::string> MotorData::legacynames = init_legacynames();
 

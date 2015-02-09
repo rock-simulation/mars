@@ -41,7 +41,7 @@
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/utils/Mutex.h>
-#include <mars/utils/ConfigData.h>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
   namespace sim {
@@ -200,11 +200,11 @@ namespace mars {
       void addSensorType(const std::string &name, interfaces::BaseSensor* (*func)(interfaces::ControlCenter*, interfaces::BaseConfig*));
 
       //void addQdomParser(const std::string, BaseConfig* (*)(QDomElement*));
-      void addMarsParser(const std::string, interfaces::BaseConfig* (*)(interfaces::ControlCenter*, utils::ConfigMap*));
+      void addMarsParser(const std::string, interfaces::BaseConfig* (*)(interfaces::ControlCenter*, configmaps::ConfigMap*));
 
 
       //virtual BaseSensor* createAndAddSensor(const std::string &type_name, std::string name="",QDomElement* config=0, bool reload=true);
-      virtual interfaces::BaseSensor* createAndAddSensor(utils::ConfigMap* config, bool reload=true);
+      virtual interfaces::BaseSensor* createAndAddSensor(configmaps::ConfigMap* config, bool reload=true);
       virtual interfaces::BaseSensor* createAndAddSensor(const std::string &type_name,interfaces::BaseConfig *config, bool reload=false);
 
   
@@ -231,7 +231,7 @@ namespace mars {
       std::map<const std::string, interfaces::BaseSensor* (*)(interfaces::ControlCenter*, interfaces::BaseConfig*)> availableSensors;
 
       //std::map<const std::string,BaseConfig* (*)(QDomElement*)> qDomParser;
-      std::map<const std::string, interfaces::BaseConfig* (*)(interfaces::ControlCenter*, utils::ConfigMap*)> marsParser;
+      std::map<const std::string, interfaces::BaseConfig* (*)(interfaces::ControlCenter*, configmaps::ConfigMap*)> marsParser;
 
     }; // class SensorManager
 
