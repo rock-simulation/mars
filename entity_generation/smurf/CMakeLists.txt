@@ -18,7 +18,7 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 #include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
-find_package(mars)
+find_package(lib_manager)
 define_module_info()
 
 find_package(Boost REQUIRED system thread)
@@ -47,7 +47,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_interfaces
 			    urdfdom
 			    tinyxml
-			    entity_factory
+			    mars_entity_factory
 			    mars_sim
 			    smurf_parser
 )
