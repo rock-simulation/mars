@@ -34,7 +34,7 @@
 #include <mars/interfaces/MaterialData.h>
 
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
-#include <mars/plugins/entity_factory/EntityFactoryInterface.h>
+#include <mars/plugins/mars_entity_factory/EntityFactoryInterface.h>
 
 #include <urdf_parser/urdf_parser.h>
 #include <boost/function.hpp>
