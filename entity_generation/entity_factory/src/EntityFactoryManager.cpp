@@ -36,68 +36,66 @@
 
 namespace mars {
 
-  namespace plugins {
-    namespace entity_generation {
+  namespace entity_generation {
 
-      using namespace mars::interfaces;
+    using namespace mars::interfaces;
 
-      EntityFactoryManager::EntityFactoryManager(lib_manager::LibManager *theManager) :
-          MarsPluginTemplate(theManager, "EntityFactoryManager") {
+    EntityFactoryManager::EntityFactoryManager(lib_manager::LibManager *theManager) :
+      MarsPluginTemplate(theManager, "mars_entity_factory_manager") {
+    }
+
+    void EntityFactoryManager::init() {
+      control->sim->switchPluginUpdateMode(0, this);
+    }
+
+    void EntityFactoryManager::reset() {
+    }
+
+    EntityFactoryManager::~EntityFactoryManager() {
+    }
+
+    void EntityFactoryManager::update(sReal time_ms) {
+    }
+
+    void EntityFactoryManager::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
+    }
+
+    void EntityFactoryManager::registerFactory(const std::string type,
+                                               EntityFactoryInterface* factory) {
+      utils::MutexLocker locker(&iMutex);
+      factories[type] = factory;
+      fprintf(stderr, "EntityFactory: registering factory for type '%s'", type.c_str());
+    }
+
+    unsigned long EntityFactoryManager::createEntity(configmaps::ConfigMap& config) {
+      unsigned long id = 0;
+      utils::MutexLocker locker(&iMutex);
+      std::map<std::string, EntityFactoryInterface*>::iterator it;
+      bool knowntype = false;
+      for(it=factories.begin(); it!=factories.end(); ++it) {
+        //fprintf(stderr, "Listing types: %s.\n", (it->second->getType()).c_str());
+        if((std::string)config["type"] == (std::string)(it->first))
+          knowntype = true;
       }
-
-      void EntityFactoryManager::init() {
-        control->sim->switchPluginUpdateMode(0, this);
+      if(knowntype) {
+        fprintf(stderr, "Loading Entity of type %s.\n", ((std::string)config["type"]).c_str());
+        sim::SimEntity* newentity = factories[config["type"]]->createEntity(config);
+        id = control->entities->addEntity(newentity);
       }
-
-      void EntityFactoryManager::reset() {
+      else {
+        fprintf(stderr, "No EntityFactory known for type %s.\n", ((std::string)config["type"]).c_str());
+        id = 0;
       }
+      return id;
+    }
 
-      EntityFactoryManager::~EntityFactoryManager() {
-      }
+    unsigned long EntityFactoryManager::createEntity(std::string configfile) {
+      configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(configfile);
+      return createEntity(config);
+    }
 
-      void EntityFactoryManager::update(sReal time_ms) {
-      }
-
-      void EntityFactoryManager::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
-      }
-
-      void EntityFactoryManager::registerFactory(const std::string type,
-          EntityFactoryInterface* factory) {
-        utils::MutexLocker locker(&iMutex);
-        factories[type] = factory;
-        fprintf(stderr, "EntityFactory: registering factory for type '%s'", type.c_str());
-      }
-
-      unsigned long EntityFactoryManager::createEntity(configmaps::ConfigMap& config) {
-        unsigned long id = 0;
-        utils::MutexLocker locker(&iMutex);
-        std::map<std::string, EntityFactoryInterface*>::iterator it;
-        bool knowntype = false;
-        for(it=factories.begin(); it!=factories.end(); ++it) {
-          //fprintf(stderr, "Listing types: %s.\n", (it->second->getType()).c_str());
-          if((std::string)config["type"] == (std::string)(it->first))
-            knowntype = true;
-        }
-        if(knowntype) {
-          fprintf(stderr, "Loading Entity of type %s.\n", ((std::string)config["type"]).c_str());
-          sim::SimEntity* newentity = factories[config["type"]]->createEntity(config);
-          id = control->entities->addEntity(newentity);
-        }
-        else {
-          fprintf(stderr, "No EntityFactory known for type %s.\n", ((std::string)config["type"]).c_str());
-          id = 0;
-        }
-        return id;
-      }
-
-      unsigned long EntityFactoryManager::createEntity(std::string configfile) {
-        configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(configfile);
-        return createEntity(config);
-      }
-
-    } // end of namespace entity_generation
-  } // end of namespace plugins
+  } // end of namespace entity_generation
 } // end of namespace mars
 
-DESTROY_LIB(mars::plugins::entity_generation::EntityFactoryManager);
-CREATE_LIB(mars::plugins::entity_generation::EntityFactoryManager);
+DESTROY_LIB(mars::entity_generation::EntityFactoryManager);
+CREATE_LIB(mars::entity_generation::EntityFactoryManager);

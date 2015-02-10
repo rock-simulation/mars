@@ -34,7 +34,7 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/sim/SimEntity.h>
-#include <mars/plugins/mars_entity_factory/EntityFactoryManager.h>
+#include <mars/entity_generation/entity_factory/EntityFactoryManager.h>
 #include <mars/interfaces/Logging.hpp>
 
 #include <mars/utils/misc.h>
@@ -64,10 +64,10 @@ namespace mars {
     using namespace configmaps;
 
     SMURF::SMURF(lib_manager::LibManager *theManager): MarsPluginTemplate(theManager, "SMURF"),
-        plugins::entity_generation::EntityFactoryInterface("smurf, urdf") {
-      plugins::entity_generation::EntityFactoryManager* factoryManager =
-          theManager->acquireLibraryAs<mars::plugins::entity_generation::EntityFactoryManager>(
-              "entity_factory_manager");
+                                                       entity_generation::EntityFactoryInterface("smurf, urdf") {
+      entity_generation::EntityFactoryManager* factoryManager =
+        theManager->acquireLibraryAs<mars::entity_generation::EntityFactoryManager>(
+              "mars_entity_factory_manager");
       factoryManager->registerFactory("smurf", this);
       factoryManager->registerFactory("urdf", this);
     }

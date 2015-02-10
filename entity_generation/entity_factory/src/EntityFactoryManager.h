@@ -42,16 +42,15 @@
 
 namespace mars {
 
-  namespace plugins {
-    namespace entity_generation {
+  namespace entity_generation {
 
-      class EntityFactoryInterface;
+    class EntityFactoryInterface;
 
-// inherit from MarsPluginTemplateGUI for extending the gui
-      class EntityFactoryManager: public interfaces::MarsPluginTemplate,
-          public cfg_manager::CFGClient {
+    // inherit from MarsPluginTemplateGUI for extending the gui
+    class EntityFactoryManager: public interfaces::MarsPluginTemplate,
+      public cfg_manager::CFGClient {
 
-      public:
+    public:
         EntityFactoryManager(lib_manager::LibManager *theManager);
         ~EntityFactoryManager();
 
@@ -60,10 +59,9 @@ namespace mars {
           return 1;
         }
         const std::string getLibName() const {
-          return std::string("entity_factory_manager");
+          return std::string("mars_entity_factory_manager");
         }
-        CREATE_MODULE_INFO()
-        ;
+        CREATE_MODULE_INFO();
 
         // MarsPlugin methods
         void init();
@@ -80,15 +78,14 @@ namespace mars {
 
         // EntityFactoryManager methods
 
-      private:
+    private:
         std::map<std::string, EntityFactoryInterface*> factories;
         mutable utils::Mutex iMutex;
 
       };
-// end of class definition EntityFactoryManager
+    // end of class definition EntityFactoryManager
 
-    }// end of namespace entity_generation
-  } // end of namespace plugins
+  }// end of namespace entity_generation
 } // end of namespace mars
 
 #endif // MARS_PLUGINS_ENTITY_FACTORY_MANAGER_H

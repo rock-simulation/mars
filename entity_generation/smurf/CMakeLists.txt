@@ -111,7 +111,7 @@ set(_INSTALL_DESTINATIONS
 install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 
 # Install headers into mars include directory
-install(FILES ${HEADERS} DESTINATION include/mars/plugins/${PROJECT_NAME})
+install(FILES ${HEADERS} DESTINATION include/mars/entity_generation/smurf)
 
 # Prepare and install necessary files to support finding of the library
 # using pkg-config

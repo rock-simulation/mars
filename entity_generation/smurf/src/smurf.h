@@ -34,7 +34,7 @@
 #include <mars/interfaces/MaterialData.h>
 
 #include <mars/interfaces/sim/MarsPluginTemplate.h>
-#include <mars/plugins/mars_entity_factory/EntityFactoryInterface.h>
+#include <mars/entity_generation/entity_factory/EntityFactoryInterface.h>
 
 #include <urdf_parser/urdf_parser.h>
 #include <boost/function.hpp>
@@ -48,7 +48,7 @@ namespace mars {
   namespace smurf {
 
     class SMURF: public interfaces::MarsPluginTemplate,
-        public mars::plugins::entity_generation::EntityFactoryInterface {
+        public mars::entity_generation::EntityFactoryInterface {
 
     public:
       SMURF(lib_manager::LibManager *theManager);

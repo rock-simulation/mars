@@ -43,34 +43,32 @@ namespace mars {
     class SimEntity;
   }
 
-  namespace plugins {
-    namespace entity_generation {
+  namespace entity_generation {
 
-      /**
-       * The interface for plugins creating dynamic simulation objects
-       *
-       */
-      class EntityFactoryInterface {
+    /**
+     * The interface for plugins creating dynamic simulation objects
+     *
+     */
+    class EntityFactoryInterface {
 
-      public:
-        EntityFactoryInterface(const std::string type) {
-          this->type = type;
-        }
-        virtual ~EntityFactoryInterface(void) {
-        }
-        ;
-        virtual sim::SimEntity* createEntity(const configmaps::ConfigMap& config) = 0;
-        virtual std::string getType() {
-          return this->type;
-        }
+    public:
+      EntityFactoryInterface(const std::string type) {
+        this->type = type;
+      }
+      virtual ~EntityFactoryInterface(void) {
+      }
+      ;
+      virtual sim::SimEntity* createEntity(const configmaps::ConfigMap& config) = 0;
+      virtual std::string getType() {
+        return this->type;
+      }
 
-      protected:
-        std::string type;
+    protected:
+      std::string type;
 
-      };
+    };
 
-    } // end of namespace entity_generation
-  } // end of namespace plugins
+  } // end of namespace entity_generation
 } // end of namespace mars
 
 #endif  // ENTITY_FACTORY_INTERFACE_H

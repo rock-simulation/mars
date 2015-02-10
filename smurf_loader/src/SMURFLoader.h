@@ -35,7 +35,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
-#include <mars/plugins/mars_entity_factory/EntityFactoryManager.h>
+#include <mars/entity_generation/entity_factory/EntityFactoryManager.h>
 #include <configmaps/ConfigData.h>
 
 namespace mars {
@@ -73,7 +73,7 @@ namespace mars {
       configmaps::ConfigMap courseconfig;
 
       interfaces::ControlCenter *control;
-      plugins::entity_generation::EntityFactoryManager* factoryManager;
+      entity_generation::EntityFactoryManager* factoryManager;
       std::vector<configmaps::ConfigMap> entitylist; // a list of the entities to be loaded
 
       unsigned int unzip(const std::string& destinationDir,
