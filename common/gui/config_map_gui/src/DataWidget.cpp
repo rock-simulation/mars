@@ -26,7 +26,6 @@
 
 namespace mars {
 
-  using namespace utils;
   using namespace configmaps;
 
   namespace config_map_gui {
