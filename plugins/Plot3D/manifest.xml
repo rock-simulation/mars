@@ -6,6 +6,6 @@
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/data_broker" />
     <depend package="simulation/mars/interfaces" />
-    <depend package="configmaps" />
+    <depend package="simulation/configmaps" />
     <tags>needs_opt</tags>
 </package>
