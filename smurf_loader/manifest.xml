@@ -6,10 +6,12 @@
     <depend package="simulation/lib_manager" />
     <depend package="simulation/configmaps" />
     <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/sim" />
+    <depend package="simulation/mars/entity_generation/entity_factory" />
 
     <depend package="external/minizip" />
     <depend package="external/tinyxml" />
-    
+
     <depend package="base/console_bridge" />
     <depend package="control/urdfdom" />
     <depend package="control/urdfdom_headers" />
