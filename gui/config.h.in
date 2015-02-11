@@ -5,6 +5,6 @@
 #ifndef MARS_GUI_CONFIG_H
 #define MARS_GUI_CONFIG_H
 
-#define MARS_GUI_DEFAULT_RESOURCES_PATH "@CMAKE_INSTALL_PREFIX@/share/mars_gui/resources"
+#define MARS_GUI_DEFAULT_RESOURCES_PATH "@CMAKE_INSTALL_PREFIX@/share/mars/gui/resources"
 
 #endif

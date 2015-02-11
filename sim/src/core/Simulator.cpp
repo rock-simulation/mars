@@ -26,6 +26,7 @@
 
 //Convention:the includes should be defined in the header file
 
+#include "config.h"
 #include "Simulator.h"
 #include "PhysicsMapper.h"
 #include "NodeManager.h"
@@ -124,6 +125,9 @@ namespace mars {
       if(control->cfg) {
         configPath = control->cfg->getOrCreateProperty("Config", "config_path",
                                                          string("."));
+
+        control->cfg->getOrCreateProperty("Preferences", "resources_path",
+                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
 
         string loadFile = configPath.sValue;
         loadFile.append("/mars_Preferences.yaml");

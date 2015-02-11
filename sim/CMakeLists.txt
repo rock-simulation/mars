@@ -160,6 +160,9 @@ set(TARGET_SRC
        src/sensors/ScanningSonar.cpp
 )
 
+#cmake variables
+configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/config.h @ONLY)
+include_directories("${CMAKE_BINARY_DIR}")
 add_library(${PROJECT_NAME} SHARED ${TARGET_SRC})
 
 IF (WIN32)

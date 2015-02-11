@@ -5,6 +5,6 @@
 #ifndef MARS_GRAPHICS_CONFIG_H
 #define MARS_GRAPHICS_CONFIG_H
 
-#define MARS_GRAPHICS_DEFAULT_RESOURCES_PATH "@CMAKE_INSTALL_PREFIX@/share/mars_graphics/resources"
+#define MARS_GRAPHICS_DEFAULT_RESOURCES_PATH "@CMAKE_INSTALL_PREFIX@/share/mars/graphics/resources"
 
 #endif
