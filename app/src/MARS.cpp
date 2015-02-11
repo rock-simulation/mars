@@ -128,8 +128,6 @@ namespace mars {
 
     void MARS::start(int argc, char **argv, bool startThread) {
 
-      coreConfigFile = configDir+"/core_libs.txt";
-
       // then check locals
 #ifndef WIN32
       setenv("LC_ALL","C", 1);
@@ -148,7 +146,25 @@ namespace mars {
       }
 
       // load the simulation core_libs:
-      libManager->loadConfigFile(coreConfigFile);
+      coreConfigFile = configDir+"/core_libs.txt";
+      FILE *plugin_config;
+      plugin_config = fopen(coreConfigFile.c_str() , "r");
+      if(plugin_config) {
+        fclose(plugin_config);
+        libManager->loadConfigFile(coreConfigFile);
+      } else {
+        fprintf(stderr, "Loading default core libraries...\n");
+        libManager->loadLibrary("data_broker");
+        libManager->loadLibrary("cfg_manager");
+        libManager->loadLibrary("main_gui");
+        libManager->loadLibrary("mars_graphics");
+        libManager->loadLibrary("mars_sim");
+        libManager->loadLibrary("mars_scene_loader");
+        libManager->loadLibrary("mars_gui");
+        libManager->loadLibrary("mars_entity_factory");
+        libManager->loadLibrary("mars_smurf");
+        libManager->loadLibrary("mars_smurf_loader");
+      }
 
       mars::cfg_manager::CFGManagerInterface *cfg;
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
@@ -199,11 +215,24 @@ namespace mars {
         }
       }
 
-      libManager->loadConfigFile(configDir+"/other_libs.txt");
+      // load the simulation other_libs:
+      std::string otherConfigFile = configDir+"/other_libs.txt";
+      plugin_config = fopen(otherConfigFile.c_str() , "r");
+      if(plugin_config) {
+        fclose(plugin_config);
+        libManager->loadConfigFile(otherConfigFile);
+      } else {
+        fprintf(stderr, "Loading default additional libraries...\n");
+        libManager->loadLibrary("connexion_plugin");
+        libManager->loadLibrary("data_broker_gui");
+        libManager->loadLibrary("cfg_manager_gui");
+        libManager->loadLibrary("lib_manager_gui");
+      }
+
 
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
-      
+
       control->sim->runSimulation(startThread);
 
       if(needQApp) {

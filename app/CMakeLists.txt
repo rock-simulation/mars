@@ -129,24 +129,23 @@ ENDIF (WIN32)
 
 set(ADDITIONAL_LIBS "" CACHE INTERNAL "")
 
-function(add_plugin_if_availible LIBNAME)
+function(add_plugin_if_available LIBNAME)
   find_library(${LIBNAME}_VAR "${LIBNAME}" HINTS ${CMAKE_INSTALL_PREFIX}/${LIBPATH})
   if(${LIBNAME}_VAR)
     MESSAGE("Found ${LIBNAME} Plugin: ${${LIBNAME}_VAR}")
-    set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}${${LIBNAME}_VAR} " CACHE INTERNAL "")
+    set(ADDITIONAL_LIBS "${ADDITIONAL_LIBS}${LIBNAME} " CACHE INTERNAL "")
   else()
     MESSAGE("Not found: ${LIBNAME}")
   endif()
 endfunction()
 
-
-add_plugin_if_availible("connexion_plugin")
-add_plugin_if_availible("data_broker_gui")
-add_plugin_if_availible("cfg_manager_gui")
-add_plugin_if_availible("lib_manager_gui")
+add_plugin_if_available("connexion_plugin")
+add_plugin_if_available("data_broker_gui")
+add_plugin_if_available("cfg_manager_gui")
+add_plugin_if_available("lib_manager_gui")
 
 if(NOT ROCK)
-    add_plugin_if_availible("log_console")
+    add_plugin_if_available("log_console")
 endif()
 
 
@@ -155,10 +154,10 @@ string(REGEX REPLACE " " "
 " ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
 endif()
 
-configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt @ONLY)
-configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt @ONLY)
-configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt ${CMAKE_BINARY_DIR}/other_libs.txt ${CMAKE_BINARY_DIR}/core_libs-nogui.txt DESTINATION configuration/mars_default/)
+configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt.example @ONLY)
+configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt.example @ONLY)
+configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt.example ${CMAKE_BINARY_DIR}/other_libs.txt.example ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example DESTINATION configuration/mars_default/)
 
 configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)
