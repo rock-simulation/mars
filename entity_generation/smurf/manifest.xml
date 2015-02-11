@@ -8,7 +8,8 @@
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/configmaps" />    
     <depend package="simulation/mars/sim" />    
-    <depend package="simulation/mars/entity_generation/smurf" />
+    <depend package="simulation/mars/entity_generation/entity_factory" />
+    <depend package="simulation/smurf_parser" />
 
     <tags>needs_opt</tags>
 </package>
