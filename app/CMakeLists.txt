@@ -154,10 +154,10 @@ string(REGEX REPLACE " " "
 " ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
 endif()
 
-configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt @ONLY)
-configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt @ONLY)
-configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt ${CMAKE_BINARY_DIR}/other_libs.txt ${CMAKE_BINARY_DIR}/core_libs-nogui.txt DESTINATION configuration/mars_default/)
+configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt.example @ONLY)
+configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt.example @ONLY)
+configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt.example ${CMAKE_BINARY_DIR}/other_libs.txt.example ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example DESTINATION configuration/mars_default/)
 
 configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)
