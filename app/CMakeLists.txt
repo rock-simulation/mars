@@ -129,7 +129,7 @@ ENDIF (WIN32)
 
 set(ADDITIONAL_LIBS "" CACHE INTERNAL "")
 
-function(add_plugin_if_availible LIBNAME)
+function(add_plugin_if_available LIBNAME)
   find_library(${LIBNAME}_VAR "${LIBNAME}" HINTS ${CMAKE_INSTALL_PREFIX}/${LIBPATH})
   if(${LIBNAME}_VAR)
     MESSAGE("Found ${LIBNAME} Plugin: ${${LIBNAME}_VAR}")
@@ -139,14 +139,13 @@ function(add_plugin_if_availible LIBNAME)
   endif()
 endfunction()
 
-
-add_plugin_if_availible("connexion_plugin")
-add_plugin_if_availible("data_broker_gui")
-add_plugin_if_availible("cfg_manager_gui")
-add_plugin_if_availible("lib_manager_gui")
+add_plugin_if_available("connexion_plugin")
+add_plugin_if_available("data_broker_gui")
+add_plugin_if_available("cfg_manager_gui")
+add_plugin_if_available("lib_manager_gui")
 
 if(NOT ROCK)
-    add_plugin_if_availible("log_console")
+    add_plugin_if_available("log_console")
 endif()
 
 
