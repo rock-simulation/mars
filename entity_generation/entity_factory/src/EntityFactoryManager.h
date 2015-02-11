@@ -59,7 +59,7 @@ namespace mars {
           return 1;
         }
         const std::string getLibName() const {
-          return std::string("mars_entity_factory_manager");
+          return std::string("mars_entity_factory");
         }
         CREATE_MODULE_INFO();
 

@@ -41,7 +41,7 @@ namespace mars {
     using namespace mars::interfaces;
 
     EntityFactoryManager::EntityFactoryManager(lib_manager::LibManager *theManager) :
-      MarsPluginTemplate(theManager, "mars_entity_factory_manager") {
+      MarsPluginTemplate(theManager, "mars_entity_factory") {
     }
 
     void EntityFactoryManager::init() {

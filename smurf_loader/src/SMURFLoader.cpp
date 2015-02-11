@@ -318,7 +318,7 @@ namespace mars {
 
       factoryManager =
             theManager->acquireLibraryAs<mars::entity_generation::EntityFactoryManager>(
-                "mars_entity_factory_manager");
+                "mars_entity_factory");
     }
 
     SMURFLoader::~SMURFLoader() {

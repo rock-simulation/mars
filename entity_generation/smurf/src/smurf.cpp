@@ -67,7 +67,7 @@ namespace mars {
                                                        entity_generation::EntityFactoryInterface("smurf, urdf") {
       entity_generation::EntityFactoryManager* factoryManager =
         theManager->acquireLibraryAs<mars::entity_generation::EntityFactoryManager>(
-              "mars_entity_factory_manager");
+              "mars_entity_factory");
       factoryManager->registerFactory("smurf", this);
       factoryManager->registerFactory("urdf", this);
     }
