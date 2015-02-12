@@ -78,7 +78,7 @@ namespace mars {
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;
       bool ownLibManager;
-
+      bool argConfDir;
     };
 
   } // end of namespace app

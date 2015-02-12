@@ -85,7 +85,8 @@ namespace mars {
 
     MARS::MARS() : configDir(DEFAULT_CONFIG_DIR),
                    libManager(new lib_manager::LibManager()),
-                   marsGui(NULL), ownLibManager(true) {
+                   marsGui(NULL), ownLibManager(true),
+		   argConfDir(false) {
       needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
@@ -96,7 +97,8 @@ namespace mars {
 
     MARS::MARS(lib_manager::LibManager *theManager) : configDir(DEFAULT_CONFIG_DIR),
                    libManager(theManager),
-                   marsGui(NULL), ownLibManager(false) {
+                   marsGui(NULL), ownLibManager(false),
+		   argConfDir(false) {
       needQApp = true;
       graphicsTimer = NULL;
 #ifdef WIN32
@@ -146,6 +148,13 @@ namespace mars {
       }
 
       // load the simulation core_libs:
+      if(!argConfDir) {
+	FILE *testFile = fopen("core_libs.txt", "r");
+	if(testFile) {
+	  configDir = ".";
+	  fclose(testFile);
+	}
+      }
       coreConfigFile = configDir+"/core_libs.txt";
       FILE *plugin_config;
       plugin_config = fopen(coreConfigFile.c_str() , "r");
@@ -287,8 +296,10 @@ namespace mars {
           break;
         switch (c) {
         case 'C':
-          if( QDir(QString(optarg)).exists() )
+          if( QDir(QString(optarg)).exists() ) {
             configDir = optarg;
+	    argConfDir = true;
+	  }
           else
             printf("The given configuration Directory does not exists: %s\n",
                    optarg);
