@@ -331,6 +331,7 @@ namespace mars {
         control->loadCenter->loadScene.erase(".urdf");
         libManager->releaseLibrary("mars_sim");
       }
+      libManager->releaseLibrary("mars_entity_factory");
     }
 
     /**
