@@ -64,7 +64,7 @@ namespace mars {
                                                EntityFactoryInterface* factory) {
       utils::MutexLocker locker(&iMutex);
       factories[type] = factory;
-      fprintf(stderr, "EntityFactory: registering factory for type '%s'", type.c_str());
+      fprintf(stderr, "EntityFactory: registering factory for type '%s'.\n", type.c_str());
     }
 
     unsigned long EntityFactoryManager::createEntity(configmaps::ConfigMap& config) {
