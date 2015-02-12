@@ -223,10 +223,11 @@ namespace mars {
         libManager->loadConfigFile(otherConfigFile);
       } else {
         fprintf(stderr, "Loading default additional libraries...\n");
-        libManager->loadLibrary("connexion_plugin");
-        libManager->loadLibrary("data_broker_gui");
-        libManager->loadLibrary("cfg_manager_gui");
-        libManager->loadLibrary("lib_manager_gui");
+        // loading errors will be silent for the following optional libraries
+        libManager->loadLibrary("connexion_plugin", NULL, true);
+        libManager->loadLibrary("data_broker_gui", NULL, true);
+        libManager->loadLibrary("cfg_manager_gui", NULL, true);
+        libManager->loadLibrary("lib_manager_gui", NULL, true);
       }
 
 
