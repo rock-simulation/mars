@@ -62,7 +62,10 @@ namespace mars {
     CFGManager::~CFGManager() {
       //cout << "destroy CFGManager" << endl;
 
-      writeConfig("mars_saveOnClose.yaml");
+      cfgPropertyStruct path = getOrCreateProperty("Config", "config_path",
+						   ".");
+      path.sValue += "/mars_saveOnClose.yaml";
+      writeConfig(path.sValue.c_str());
 
       mapIdToParam::iterator iter;
       mutexCFGParams.lock();

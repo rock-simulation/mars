@@ -13,7 +13,7 @@ define_module_info()
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
-set(DEFAULT_CONFIG_DIR "." CACHE STRING "The Default config dir to load")
+set(DEFAULT_CONFIG_DIR "${CMAKE_INSTALL_PREFIX}/configuration/mars_default" CACHE STRING "The Default config dir to load")
 add_definitions(-DDEFAULT_CONFIG_DIR=\"${DEFAULT_CONFIG_DIR}\")
 
 

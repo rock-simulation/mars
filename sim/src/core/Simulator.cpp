@@ -122,34 +122,6 @@ namespace mars {
       checkOptionalDependency("mars_graphics");
       checkOptionalDependency("log_console");
 
-      if(control->cfg) {
-        configPath = control->cfg->getOrCreateProperty("Config", "config_path",
-                                                         string("."));
-
-        control->cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
-
-        string loadFile = configPath.sValue;
-        loadFile.append("/mars_Preferences.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-        loadFile = configPath.sValue;
-        loadFile.append("/mars_Simulator.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-
-        loadFile = configPath.sValue;
-        loadFile.append("/mars_Physics.yaml");
-        control->cfg->loadConfig(loadFile.c_str());
-
-        bool loadLastSave = false;
-        control->cfg->getPropertyValue("Config", "loadLastSave", "value",
-                                       &loadLastSave);
-        if (loadLastSave) {
-          loadFile = configPath.sValue;
-          loadFile.append("/mars_saveOnClose.yaml");
-          control->cfg->loadConfig(loadFile.c_str());
-        }
-      }
-
       getTimeMutex.lock();
       realStartTime = utils::getTime();
       getTimeMutex.unlock();
@@ -251,6 +223,25 @@ namespace mars {
     void Simulator::runSimulation(bool startThread) {
 
       if(control->cfg) {
+        configPath = control->cfg->getOrCreateProperty("Config", "config_path",
+                                                         config_dir);
+
+        control->cfg->getOrCreateProperty("Preferences", "resources_path",
+                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
+
+	std::string loadFile = configPath.sValue+"/mars_Simulator.yaml";
+	control->cfg->loadConfig(loadFile.c_str());
+	loadFile = configPath.sValue+"/mars_Physics.yaml";
+        control->cfg->loadConfig(loadFile.c_str());
+
+        bool loadLastSave = false;
+        control->cfg->getPropertyValue("Config", "loadLastSave", "value",
+                                       &loadLastSave);
+        if (loadLastSave) {
+	  loadFile = configPath.sValue+"/mars_saveOnClose.yaml";
+          control->cfg->loadConfig(loadFile.c_str());
+        }
+
         initCfgParams();
       }
 

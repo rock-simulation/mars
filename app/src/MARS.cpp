@@ -155,6 +155,19 @@ namespace mars {
 	  fclose(testFile);
 	}
       }
+      // we always need the cfg_manager to setup configurations correctly
+      libManager->loadLibrary("cfg_manager");
+      mars::cfg_manager::CFGManagerInterface *cfg;
+      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+      if(cfg) {
+        cfg_manager::cfgPropertyStruct configPath;
+        configPath = cfg->getOrCreateProperty("Config", "config_path",
+                                              configDir);
+	// load preferences
+	std::string loadFile = configDir + "/mars_Preferences.yaml";
+        cfg->loadConfig(loadFile.c_str());
+      }
+
       coreConfigFile = configDir+"/core_libs.txt";
       FILE *plugin_config;
       plugin_config = fopen(coreConfigFile.c_str() , "r");
@@ -164,7 +177,6 @@ namespace mars {
       } else {
         fprintf(stderr, "Loading default core libraries...\n");
         libManager->loadLibrary("data_broker");
-        libManager->loadLibrary("cfg_manager");
         libManager->loadLibrary("main_gui");
         libManager->loadLibrary("mars_graphics");
         libManager->loadLibrary("mars_sim");
@@ -173,16 +185,6 @@ namespace mars {
         libManager->loadLibrary("mars_entity_factory");
         libManager->loadLibrary("mars_smurf");
         libManager->loadLibrary("mars_smurf_loader");
-      }
-
-      mars::cfg_manager::CFGManagerInterface *cfg;
-      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
-      if(cfg) {
-        cfg_manager::cfgPropertyStruct configPath;
-        configPath = cfg->getOrCreateProperty("Config", "config_path",
-                                              configDir);
-        configPath.sValue = configDir;
-        cfg->setProperty(configPath);
       }
 
       // then get the simulation
