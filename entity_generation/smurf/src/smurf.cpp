@@ -70,6 +70,7 @@ namespace mars {
               "mars_entity_factory");
       factoryManager->registerFactory("smurf", this);
       factoryManager->registerFactory("urdf", this);
+      theManager->releaseLibrary("mars_entity_factory");
     }
 
     SMURF::~SMURF(){
