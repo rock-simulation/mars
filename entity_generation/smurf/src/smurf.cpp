@@ -997,6 +997,37 @@ namespace mars {
       my_node.rot = tmpQ;
       control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
       control->nodes->editNode(&my_node, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
+
+      if((std::string)entityconfig["anchor"] == "world") {
+        fprintf(stderr, "Anchor robot to world...\n");
+        // create non-movable anchor node
+        NodeData node;
+        node.init("anchor_" + robotname, tmpV, tmpQ);
+        node.initPrimitive(interfaces::NODE_TYPE_BOX, Vector(0.01, 0.01, 0.01), 0.01);
+        node.groupID = control->nodes->getMaxGroupID() + 1;
+        node.index = 666666666; // unlikely that anyone will ever use this within a model
+        NodeId oldId = node.index;
+        NodeId newId = control->nodes->addNode(&node);
+        control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
+        if (robotname != "") {
+          control->entities->addNode(robotname, node.index, node.name);
+        }
+
+        // create fixed joint between anchor node and root node
+        JointData joint;
+        joint.init("joint_anchoir_" + robotname, interfaces::JOINT_TYPE_FIXED,
+                              nodeid, newId);
+        joint.index = 666666666;
+        JointId newJointId = control->joints->addJoint(&joint);
+        if (!newId) {
+          LOG_ERROR("addJoint returned 0");
+        }
+        control->loadCenter->setMappedID(joint.index, newJointId, MAP_TYPE_JOINT, mapIndex);
+
+        if (robotname != "") {
+          control->entities->addJoint(robotname, joint.index, joint.name);
+        }
+      }
     }
 
     unsigned int SMURF::loadNode(ConfigMap config) {
