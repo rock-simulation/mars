@@ -32,6 +32,6 @@ which, in succession, removes any previously existing build folder, (re)creates 
 
     cmake .. -DCMAKE_INSTALL_PREFIX=/$MARS_DEV_ROOT/install -DCMAKE_BUILD_TYPE=DEBUG $@
     
-thus running *cmake* with a specific install directory in debug-mode. "mMake -j4"" then allows *make* to compile on up to 4 separate processes, speeding up the compiling process. You can change 4 to any number of CPU cores you would like your system to use for compilation.
+thus running *cmake* with a specific install directory in debug-mode. "make -j4" then allows *make* to compile on up to four processors, speeding up the compiling process. You can change 4 to any number of CPU cores you would like your system to use for compilation.
 
 So this is what's happening behind the curtains when you run the build.sh script. You can of course always manually execute the same commands.
