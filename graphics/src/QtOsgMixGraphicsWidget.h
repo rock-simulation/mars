@@ -28,6 +28,13 @@
 #ifndef QTOSGMIXADAPTER_H
 #define QTOSGMIXADAPTER_H
 
+
+#ifdef __APPLE__
+#ifndef Q_FORWARD_DECLARE_OBJC_CLASS
+#define Q_FORWARD_DECLARE_OBJC_CLASS(classname) class classname;
+#endif
+#endif // __APPLE__
+
 #include "GraphicsWidget.h"
 
 #ifdef __APPLE__
