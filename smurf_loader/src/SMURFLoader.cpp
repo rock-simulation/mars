@@ -366,13 +366,17 @@ namespace mars {
 
       // read in the provided file - .smurfs / .smurf / .urdf
       configmaps::ConfigMap map;
+      std::string uri;
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
       if(file_extension == ".smurfs") {
         configmaps::ConfigVector::iterator it;
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, false);
         map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
-          (*it)["path"] = path;
+          uri = (std::string)(*it)["URI"];
+          (*it)["path"] = path+utils::getPathOfFile(uri);
+          utils::removeFilenamePrefix(&uri);
+          (*it)["URI"] = uri;
           entitylist.push_back((*it).children);
         }
       } else if(file_extension == ".smurf") {
