@@ -149,11 +149,11 @@ namespace mars {
 
       // load the simulation core_libs:
       if(!argConfDir) {
-	FILE *testFile = fopen("core_libs.txt", "r");
-	if(testFile) {
-	  configDir = ".";
-	  fclose(testFile);
-	}
+        FILE *testFile = fopen("core_libs.txt", "r");
+        if(testFile) {
+          configDir = ".";
+          fclose(testFile);
+        }
       }
       // we always need the cfg_manager to setup configurations correctly
       libManager->loadLibrary("cfg_manager");
@@ -163,8 +163,10 @@ namespace mars {
         cfg_manager::cfgPropertyStruct configPath;
         configPath = cfg->getOrCreateProperty("Config", "config_path",
                                               configDir);
-	// load preferences
-	std::string loadFile = configDir + "/mars_Preferences.yaml";
+        cfg->getOrCreateProperty("Preferences", "resources_path",
+                                 std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
+        // load preferences
+        std::string loadFile = configDir + "/mars_Preferences.yaml";
         cfg->loadConfig(loadFile.c_str());
       }
 

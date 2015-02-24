@@ -214,5 +214,5 @@ install(DIRECTORY ${MARS_HDRS_DIRS} DESTINATION include/mars/sim FILES_MATCHING 
 configure_file(configuration/${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
 
-configure_file(configuration/mars_Preferences.in ${CMAKE_BINARY_DIR}/mars_Preferences.yaml @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/mars_Preferences.yaml DESTINATION configuration/mars_default/)
+#configure_file(configuration/mars_Preferences.in ${CMAKE_BINARY_DIR}/mars_Preferences.yaml @ONLY)
+#install(FILES ${CMAKE_BINARY_DIR}/mars_Preferences.yaml DESTINATION configuration/mars_default/)
