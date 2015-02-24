@@ -25,8 +25,6 @@
  *      Author: daniel
  */
 
-#include "QtOsgMixGraphicsWidget.h"
-
 #include <QTimer>
 #include <QKeyEvent>
 #include <QApplication>
@@ -34,6 +32,7 @@
 #include <QWidget>
 #include <QKeyEvent>
 
+#include "QtOsgMixGraphicsWidget.h"
 #include "HUD.h"
 #include "GraphicsManager.h"
 

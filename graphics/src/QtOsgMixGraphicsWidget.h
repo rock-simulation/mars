@@ -30,10 +30,12 @@
 
 
 #ifdef __APPLE__
-#ifndef Q_FORWARD_DECLARE_OBJC_CLASS
-#define Q_FORWARD_DECLARE_OBJC_CLASS(classname) class classname;
+#ifdef Q_FORWARD_DECLARE_OBJC_CLASS
+#undef Q_FORWARD_DECLARE_OBJC_CLASS
 #endif
+#define Q_FORWARD_DECLARE_OBJC_CLASS(classname) class classname;
 #endif // __APPLE__
+
 
 #include "GraphicsWidget.h"
 
