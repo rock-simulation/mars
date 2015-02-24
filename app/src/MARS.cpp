@@ -88,6 +88,7 @@ namespace mars {
                    marsGui(NULL), ownLibManager(true),
 		   argConfDir(false) {
       needQApp = true;
+      noGUI = false;
       graphicsTimer = NULL;
 #ifdef WIN32
       // request a scheduler of 1ms
@@ -100,6 +101,7 @@ namespace mars {
                    marsGui(NULL), ownLibManager(false),
 		   argConfDir(false) {
       needQApp = true;
+      noGUI = false;
       graphicsTimer = NULL;
 #ifdef WIN32
       // request a scheduler of 1ms
@@ -179,14 +181,16 @@ namespace mars {
       } else {
         fprintf(stderr, "Loading default core libraries...\n");
         libManager->loadLibrary("data_broker");
-        libManager->loadLibrary("main_gui");
-        libManager->loadLibrary("mars_graphics");
         libManager->loadLibrary("mars_sim");
         libManager->loadLibrary("mars_scene_loader");
-        libManager->loadLibrary("mars_gui");
         libManager->loadLibrary("mars_entity_factory");
         libManager->loadLibrary("mars_smurf");
         libManager->loadLibrary("mars_smurf_loader");
+        if(!noGUI) {
+          libManager->loadLibrary("main_gui");
+          libManager->loadLibrary("mars_graphics");
+          libManager->loadLibrary("mars_gui");
+        }
       }
 
       // then get the simulation
@@ -237,10 +241,12 @@ namespace mars {
       } else {
         fprintf(stderr, "Loading default additional libraries...\n");
         // loading errors will be silent for the following optional libraries
-        libManager->loadLibrary("connexion_plugin", NULL, true);
-        libManager->loadLibrary("data_broker_gui", NULL, true);
-        libManager->loadLibrary("cfg_manager_gui", NULL, true);
-        libManager->loadLibrary("lib_manager_gui", NULL, true);
+        if(!noGUI) {
+          libManager->loadLibrary("connexion_plugin", NULL, true);
+          libManager->loadLibrary("data_broker_gui", NULL, true);
+          libManager->loadLibrary("cfg_manager_gui", NULL, true);
+          libManager->loadLibrary("lib_manager_gui", NULL, true);
+        }
       }
 
 
@@ -274,6 +280,7 @@ namespace mars {
 
       static struct option long_options[] = {
         {"config_dir", required_argument, 0, 'C'},
+        {"no-gui",no_argument,0,'G'},
         {"noQApp",no_argument,0,'Q'},
         {0, 0, 0, 0}
       };
@@ -292,9 +299,9 @@ namespace mars {
       while (1) {
 
 #ifdef __linux__
-        c = getopt_long(argc, argv, "C:Q", long_options, &option_index);
+        c = getopt_long(argc, argv, "GC:Q", long_options, &option_index);
 #else
-        c = getopt_long(argc, argv_copy, "C:Q", long_options, &option_index);
+        c = getopt_long(argc, argv_copy, "GC:Q", long_options, &option_index);
 #endif
         if (c == -1)
           break;
@@ -310,6 +317,9 @@ namespace mars {
           break;
         case 'Q':
           needQApp = false;
+          break;
+        case 'G':
+          noGUI = true;
           break;
         }
       }

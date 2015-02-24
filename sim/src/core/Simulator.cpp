@@ -826,6 +826,7 @@ namespace mars {
         {"run",no_argument,0,'r'},
         {"show_grid",no_argument,0,'g'},
         {"ortho",no_argument,0,'o'},
+        {"no-gui",no_argument,0,'G'},
         {"scenename", 1, 0, 's'},
         {"config_dir", required_argument, 0, 'C'},
         {"c_port",1,0,'c'},
@@ -833,7 +834,7 @@ namespace mars {
       };
 
       while (1) {
-        c = getopt_long(argc, argv, "hrgos:C:p:", long_options, &option_index);
+        c = getopt_long(argc, argv, "hrgoGs:C:p:", long_options, &option_index);
         if (c == -1)
           break;
         switch (c) {
@@ -867,6 +868,8 @@ namespace mars {
           break;
         case 'o':
           arg_ortho = 1;
+          break;
+        case 'G':
           break;
         case 'h':
         default:

@@ -71,7 +71,7 @@ namespace mars {
       static bool quit;
       std::string configDir;
       std::string coreConfigFile;
-      bool needQApp;
+      bool needQApp, noGUI;
 
     private:
       lib_manager::LibManager *libManager;
