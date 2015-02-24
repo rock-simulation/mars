@@ -67,14 +67,11 @@ namespace mars {
           std::cerr << "LoadDrawObject: no node loaded" << std::endl;
           return geodes; // TODO: error message
         }
-        // if the file is a .STL file, OSG read the node as a geode not as a
-        // group
         readGeode = loadedNode->asGeode();
         if(!readGeode.valid()) {
-          std::cerr << "LoadDrawObject: no geode found " << info_.fileName << std::endl;
           osg::ref_ptr<osg::Group> readGroup = loadedNode->asGroup();
           if(!readGroup.valid()) {
-            std::cerr << "LoadDrawObject: no group found" << std::endl;
+            std::cerr << "LoadDrawObject: no geode or group found " << info_.fileName << std::endl;
             return geodes; // TODO: error message
           }
 
