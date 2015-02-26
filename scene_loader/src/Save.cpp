@@ -71,8 +71,14 @@ namespace mars {
       control(c), s_tmpDirectory(tmpPath) {
 
       if(!utils::pathExists(s_tmpDirectory)) {
-        LOG_FATAL("Save:: given tmp dir \"%s\" does not exist!", s_tmpDirectory.c_str());
-        throw std::runtime_error("Invalid path for Saveis given at __FILE__:__LINE__");
+        LOG_INFO("Save:: given tmp dir \"%s\" does not exist!", s_tmpDirectory.c_str());
+        if (!utils::createDirectory(s_tmpDirectory)) {
+          LOG_FATAL("Save:: tmp dir \"%s\" could also not be created!", s_tmpDirectory.c_str());
+          throw std::runtime_error("Invalid path for Saveis given at __FILE__:__LINE__");
+        }
+        else {
+          LOG_INFO("Save:: created tmp dir \"%s\".", s_tmpDirectory.c_str());
+        }
       }
       s_filename = filename;
       utils::removeFilenamePrefix(&s_filename);
