@@ -69,8 +69,8 @@ namespace mars {
 //          this->p = other.p;
 //          this->i = other.i;
 //          this->d = other.d;
-//          this->max_val = other.max_val;
-//          this->min_val = other.min_val;
+//          this->maxValue = other.maxValue;
+//          this->minValue = other.minValue;
 //        }
 //    }
 
@@ -87,8 +87,8 @@ namespace mars {
       p = 0;
       i = 0;
       d = 0;
-      max_val = M_PI;
-      min_val = -M_PI;
+      maxValue = M_PI;
+      minValue = -M_PI;
     }
 
     bool MotorData::fromConfigMap(ConfigMap *config,
@@ -131,8 +131,8 @@ namespace mars {
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
       GET_VALUE("value", value, Double);
-      GET_VALUE("max_val", max_val, Double);
-      GET_VALUE("min_val", min_val, Double);
+      GET_VALUE("maxValue", maxValue, Double);
+      GET_VALUE("minValue", minValue, Double);
 
       return 1;
     }
@@ -155,8 +155,8 @@ namespace mars {
       SET_VALUE("i", i);
       SET_VALUE("d", d);
       SET_VALUE("value", value);
-      SET_VALUE("max_val", max_val);
-      SET_VALUE("min_val", min_val);
+      SET_VALUE("maxValue", maxValue);
+      SET_VALUE("minValue", minValue);
     }
 
     void MotorData::getFilesToSave(std::vector<std::string> *fileList) {
