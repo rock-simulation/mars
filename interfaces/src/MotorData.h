@@ -67,14 +67,16 @@ namespace mars {
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
-      sReal max_val;
-      sReal min_val;
+      sReal maxValue;
+      sReal minValue;
       static std::map<std::string, std::string> legacynames;
 
       static std::map<std::string, std::string> init_legacynames() {
         std::map<std::string, std::string> tmpmap;
         tmpmap["maxEffort"] = "motorMaxForce";
         tmpmap["maxSpeed"] = "maximumVelocity";
+        tmpmap["maxValue"] = "max_val";
+        tmpmap["minValue"] = "min_val";
         return tmpmap;
       }
     }; // end of class MotorData

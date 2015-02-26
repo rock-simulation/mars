@@ -331,10 +331,10 @@ namespace mars {
           switch (sMotor.type) {
           case MOTOR_TYPE_PID:
           {
-            if(desired_position>sMotor.max_val) 
-                desired_position = sMotor.max_val;
-            if(desired_position<sMotor.min_val) 
-                desired_position = sMotor.min_val;
+            if(desired_position>sMotor.maxValue)
+                desired_position = sMotor.maxValue;
+            if(desired_position<sMotor.minValue)
+                desired_position = sMotor.minValue;
             /*
               if(desired_position>2*M_PI) desired_position=0;
               else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
