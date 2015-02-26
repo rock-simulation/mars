@@ -1008,6 +1008,7 @@ namespace mars {
         node.initPrimitive(interfaces::NODE_TYPE_BOX, Vector(0.01, 0.01, 0.01), 0.01);
         node.groupID = control->nodes->getMaxGroupID() + 1;
         node.index = 666666666; // unlikely that anyone will ever use this within a model
+        node.c_params.coll_bitmask = 0;
         NodeId oldId = node.index;
         NodeId newId = control->nodes->addNode(&node);
         control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
