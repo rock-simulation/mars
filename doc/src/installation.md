@@ -1,4 +1,4 @@
-Installing MARS {#installation}
+Installation {#installation}
 ===============
 
 ## Installation

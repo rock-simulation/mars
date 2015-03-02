@@ -1,4 +1,4 @@
-The inner workings of MARS {#inner_workings}
+Structural Overview {#structural_overview}
 ==========================
 
 ## Overview

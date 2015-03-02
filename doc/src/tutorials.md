@@ -1,4 +1,4 @@
-MARS Tutorials {#tutorials}
+Tutorials {#tutorials}
 ==============
 
 * \subpage tutorial_basic_modeling

@@ -1,8 +1,8 @@
-MARS Manual {#mars_manual}
+Manual {#manual}
 ===========
 
 * \subpage documentation_structure
 * \subpage installation
-* \subpage inner_workings
+* \subpage structural_overview
 * \subpage mars_scenes
 
