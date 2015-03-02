@@ -1,0 +1,14 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/MarsPluginTemplate.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/MarsPluginTemplate.h">
+<area shape="rect" id="node3" href="$d8/dbb/_control_center_8h.html" title="&quot;ControlCenter&quot; contains the instances of all modules of the simulation. The modules are connected vi..." alt="" coords="85,145,200,175"/>
+<area shape="rect" id="node9" href="$dd/d9e/_m_a_r_s_defs_8h.html" title="../MARSDefs.h" alt="" coords="576,387,688,416"/>
+<area shape="rect" id="node11" href="$d4/d1e/_plugin_interface_8h.html" title="&quot;PluginInterface&quot; is an interface to load dynamically Plugin into the simulation " alt="" coords="1724,232,1844,261"/>
+<area shape="rect" id="node17" href="$d0/d74/_simulator_interface_8h.html" title="&quot;SimulatorInterface&quot; provides an interface for using the Simulator class " alt="" coords="1397,145,1536,175"/>
+<area shape="rect" id="node19" href="$d7/dec/_physics_interface_8h.html" title="&quot;PhysicsInterface&quot; includes the methods to handle the physically world. " alt="" coords="973,309,1104,339"/>
+<area shape="rect" id="node27" href="$dc/d3b/sim__common_8h.html" title="../sim_common.h" alt="" coords="713,232,836,261"/>
+<area shape="rect" id="node46" href="$d4/d78/draw__structs_8h.html" title="../graphics/draw_structs.h" alt="" coords="1460,232,1633,261"/>
+<area shape="rect" id="node57" href="$da/d1b/_light_data_8h.html" title="../LightData.h" alt="" coords="1335,232,1436,261"/>
+<area shape="rect" id="node35" href="$d1/d98/node_state_8h.html" title="nodeState.h" alt="" coords="808,309,899,339"/>
+<area shape="rect" id="node38" href="$dd/d54/contact__params_8h.html" title="contact_params.h" alt="" coords="507,309,632,339"/>
+<area shape="rect" id="node42" href="$d7/dc4/snmesh_8h.html" title="snmesh.h" alt="" coords="656,309,733,339"/>
+<area shape="rect" id="node48" href="$dd/dd2/_draw_interface_8h.html" title="DrawInterface.h" alt="" coords="1576,309,1691,339"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/PhysicsMapper.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/PhysicsMapper.h">
+<area shape="rect" id="node3" href="$d9/d28/_joint_manager_8cpp.html" title="&quot;JointManager&quot; is the class that manage all joints and their operations and communication between the..." alt="" coords="5,117,243,181"/>
+<area shape="rect" id="node5" href="$d5/d2a/_motor_manager_8cpp.html" title="&quot;MotorManager&quot; implements MotorManagerInterface. It is manages all motors and all motor operations th..." alt="" coords="267,117,509,181"/>
+<area shape="rect" id="node7" href="$d1/dc7/_node_manager_8cpp.html" title="&quot;NodeManager&quot; is the class that manage all nodes and their operations and communication between the d..." alt="" coords="533,117,773,181"/>
+<area shape="rect" id="node9" href="$de/dc6/_physics_mapper_8cpp.html" title="&quot;PhysicsMapper&quot; connects the implemented interface classes to the interface objects that are handled ..." alt="" coords="797,117,1048,181"/>
+<area shape="rect" id="node11" href="$d0/de2/_simulator_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/core/Simulator.cpp" alt="" coords="1072,117,1285,181"/>
+</map>

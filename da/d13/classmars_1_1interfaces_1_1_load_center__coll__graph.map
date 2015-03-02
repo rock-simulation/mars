@@ -1,0 +1,4 @@
+<map id="mars::interfaces::LoadCenter" name="mars::interfaces::LoadCenter">
+<area shape="rect" id="node2" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="5,6,219,53"/>
+<area shape="rect" id="node4" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="243,6,427,53"/>
+</map>

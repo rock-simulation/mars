@@ -1,0 +1,5 @@
+<map id="mars::cfg_manager_gui::CfgWidget" name="mars::cfg_manager_gui::CfgWidget">
+<area shape="rect" id="node4" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="5,58,173,105"/>
+<area shape="rect" id="node10" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="325,109,493,155"/>
+<area shape="rect" id="node6" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="335,181,484,227"/>
+</map>

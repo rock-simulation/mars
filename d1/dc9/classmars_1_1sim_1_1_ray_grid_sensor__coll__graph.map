@@ -1,0 +1,24 @@
+<map id="mars::sim::RayGridSensor" name="mars::sim::RayGridSensor">
+<area shape="rect" id="node2" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="1027,513,1192,559"/>
+<area shape="rect" id="node4" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="725,386,891,433"/>
+<area shape="rect" id="node6" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,5,555,51"/>
+<area shape="rect" id="node16" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,74,541,121"/>
+<area shape="rect" id="node19" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,143,536,190"/>
+<area shape="rect" id="node10" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,213,556,259"/>
+<area shape="rect" id="node12" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,282,568,329"/>
+<area shape="rect" id="node14" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="388,351,545,398"/>
+<area shape="rect" id="node22" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,421,549,467"/>
+<area shape="rect" id="node24" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="364,490,569,537"/>
+<area shape="rect" id="node26" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="372,560,561,589"/>
+<area shape="rect" id="node28" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="7,517,220,563"/>
+<area shape="rect" id="node30" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,586,205,633"/>
+<area shape="rect" id="node32" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,613,569,659"/>
+<area shape="rect" id="node34" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,682,556,729"/>
+<area shape="rect" id="node36" href="$df/d91/classmars_1_1interfaces_1_1_base_grid_intersection_sensor.html" title="mars::interfaces::BaseGrid\lIntersectionSensor" alt="" coords="1020,582,1199,629"/>
+<area shape="rect" id="node38" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="716,582,900,629"/>
+<area shape="rect" id="node40" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="369,752,564,781"/>
+<area shape="rect" id="node44" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="716,651,900,698"/>
+<area shape="rect" id="node46" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="1043,651,1176,698"/>
+<area shape="rect" id="node48" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="705,743,911,772"/>
+<area shape="rect" id="node50" href="$db/d56/structmars_1_1interfaces_1_1draw_struct.html" title="drawStruct connects a vector of draw_item objects with their update interface DrawInterface ..." alt="" coords="1016,772,1203,801"/>
+</map>

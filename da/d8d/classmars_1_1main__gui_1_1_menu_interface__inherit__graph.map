@@ -1,0 +1,22 @@
+<map id="mars::main_gui::MenuInterface" name="mars::main_gui::MenuInterface">
+<area shape="rect" id="node3" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="300,5,431,35"/>
+<area shape="rect" id="node5" href="$d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html" title="data_broker_plotter\l::DataBrokerPlotterLib" alt="" coords="291,58,440,105"/>
+<area shape="rect" id="node7" href="$d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html" title="mars::cfg_manager_gui\l::MainCfgGui" alt="" coords="287,127,444,174"/>
+<area shape="rect" id="node9" href="$d8/d44/classmars_1_1data__broker__gui_1_1_main_data_gui.html" title="mars::data_broker_gui\l::MainDataGui" alt="" coords="291,197,440,243"/>
+<area shape="rect" id="node11" href="$de/d28/classmars_1_1gui_1_1_camera_configurator.html" title="mars::gui::CameraConfigurator" alt="" coords="265,267,465,296"/>
+<area shape="rect" id="node13" href="$dd/dce/classmars_1_1gui_1_1_capture_window.html" title="mars::gui::CaptureWindow" alt="" coords="277,320,453,349"/>
+<area shape="rect" id="node15" href="$d8/da4/classmars_1_1gui_1_1_menu_file.html" title="MenuFile creates the menus and menu items in the File menu of the simulation. " alt="" coords="297,373,433,403"/>
+<area shape="rect" id="node17" href="$d6/dda/classmars_1_1gui_1_1_menu_help.html" title="MenuHelp is the part of the menu bar that manages the help dialogs. " alt="" coords="295,427,436,456"/>
+<area shape="rect" id="node19" href="$d7/d7d/classmars_1_1gui_1_1_menu_simulation.html" title="Provides the Simulation and Control menu entries. " alt="" coords="277,480,453,509"/>
+<area shape="rect" id="node21" href="$d7/d76/classmars_1_1gui_1_1_menu_window.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation. ..." alt="" coords="284,533,447,563"/>
+<area shape="rect" id="node23" href="$da/d36/classmars_1_1log__console_1_1_main_console.html" title="mars::log_console::\lMainConsole" alt="" coords="297,586,433,633"/>
+<area shape="rect" id="node25" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="276,655,455,702"/>
+<area shape="rect" id="node27" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="264,725,467,771"/>
+<area shape="rect" id="node29" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="281,794,449,841"/>
+<area shape="rect" id="node31" href="$d2/dde/classmars_1_1plugins_1_1constraints__plugin_1_1_constraints_plugin.html" title="mars::plugins::constraints\l_plugin::ConstraintsPlugin" alt="" coords="279,863,452,910"/>
+<area shape="rect" id="node33" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="272,933,459,979"/>
+<area shape="rect" id="node35" href="$d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html" title="mars::plugins::lib\l_manager_gui::LibManagerGui" alt="" coords="267,1002,464,1049"/>
+<area shape="rect" id="node37" href="$d5/d44/classmars_1_1plugins_1_1module__info__dumper_1_1_module_info_dumper.html" title="mars::plugins::module\l_info_dumper::ModuleInfoDumper" alt="" coords="256,1071,475,1118"/>
+<area shape="rect" id="node39" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="292,1141,439,1187"/>
+<area shape="rect" id="node41" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="276,1211,455,1240"/>
+</map>

@@ -1,0 +1,4 @@
+<map id="mars::sim::WorldPhysics" name="mars::sim::WorldPhysics">
+<area shape="rect" id="node2" href="$d0/d22/classmars_1_1interfaces_1_1_physics_interface.html" title="mars::interfaces::Physics\lInterface" alt="" coords="5,6,176,53"/>
+<area shape="rect" id="node4" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="200,15,405,44"/>
+</map>

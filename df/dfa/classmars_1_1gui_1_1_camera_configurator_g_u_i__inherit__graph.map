@@ -1,0 +1,5 @@
+<map id="mars::gui::CameraConfiguratorGUI" name="mars::gui::CameraConfiguratorGUI">
+<area shape="rect" id="node2" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="12,111,201,140"/>
+<area shape="rect" id="node6" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="101,6,243,53"/>
+<area shape="rect" id="node8" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="225,102,393,149"/>
+</map>

@@ -1,0 +1,24 @@
+<map id="mars::sim::MultiLevelLaserRangeFinder" name="mars::sim::MultiLevelLaserRangeFinder">
+<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="1004,5,1188,51"/>
+<area shape="rect" id="node4" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="704,13,899,43"/>
+<area shape="rect" id="node50" href="$d4/d5f/classmars_1_1interfaces_1_1_base_config.html" title="mars::interfaces::BaseConfig" alt="" coords="705,71,897,100"/>
+<area shape="rect" id="node8" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="1013,143,1179,190"/>
+<area shape="rect" id="node10" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="719,378,884,425"/>
+<area shape="rect" id="node12" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,66,555,113"/>
+<area shape="rect" id="node22" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,135,541,182"/>
+<area shape="rect" id="node25" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,205,536,251"/>
+<area shape="rect" id="node16" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,274,556,321"/>
+<area shape="rect" id="node18" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,343,568,390"/>
+<area shape="rect" id="node20" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="388,413,545,459"/>
+<area shape="rect" id="node28" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,482,549,529"/>
+<area shape="rect" id="node30" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="364,551,569,598"/>
+<area shape="rect" id="node32" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="372,621,561,651"/>
+<area shape="rect" id="node34" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="7,578,220,625"/>
+<area shape="rect" id="node36" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,647,205,694"/>
+<area shape="rect" id="node38" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,674,569,721"/>
+<area shape="rect" id="node40" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,743,556,790"/>
+<area shape="rect" id="node42" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="1029,213,1163,259"/>
+<area shape="rect" id="node44" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="993,283,1199,312"/>
+<area shape="rect" id="node46" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="1008,335,1184,382"/>
+<area shape="rect" id="node48" href="$d4/df0/classmars_1_1sim_1_1_multi_level_laser_range_finder_config.html" title="mars::sim::MultiLevelLaser\lRangeFinderConfig" alt="" coords="1007,74,1185,121"/>
+</map>

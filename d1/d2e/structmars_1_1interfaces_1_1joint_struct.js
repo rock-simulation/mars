@@ -1,0 +1,26 @@
+var structmars_1_1interfaces_1_1joint_struct =
+[
+    [ "jointStruct", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a4123588c365e4f421ea9913432a5d9de", null ],
+    [ "init", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a1e9284059f580276943b9b1cf5a3f1a9", null ],
+    [ "anchor", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a7b35bf4de8707c77791ba2c6e3028cbc", null ],
+    [ "anchorPos", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a4a3a86f3e92cf15f78badebaf56b9ea2", null ],
+    [ "angle1_offset", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a707421ccb92d045fd279cb2fbf72847c", null ],
+    [ "angle2_offset", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a21ffa219f3005b2ea22ae0a3e9ed7adf", null ],
+    [ "axis1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#ab092ff29e1f7ebe0c0bddd9e9045e707", null ],
+    [ "axis2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a0f4b6ee8f23431bf674494354d146495", null ],
+    [ "damping_const_constraint_axis1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a5eba86f9d3500064ca111af3d81266e9", null ],
+    [ "damping_const_constraint_axis2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a7e59022f22d242f508659eef6d7a2be0", null ],
+    [ "damping_constant", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#aa53358c1e495b1a142d0a710dcd8305b", null ],
+    [ "highStopAxis1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a528f71c1fe75c6d0ad81fb6c5fa7d5d5", null ],
+    [ "highStopAxis2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a3211f7d9758190b8cf577777139cef4e", null ],
+    [ "index", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#aa3ff669cb2ff8cfe4292ad6bc5b4e16d", null ],
+    [ "lowStopAxis1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#ae362e3e5e2230e5baff37b57c7ab25fd", null ],
+    [ "lowStopAxis2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#ad064ff4e5458ad79cc8a0455ceed1544", null ],
+    [ "name", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a9dd4ab8e7f1373c08f16bcacb24016f0", null ],
+    [ "nodeIndex1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a771730e36b77a4df93c2eb39840a3724", null ],
+    [ "nodeIndex2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#ad9050ea9cf092adc215fe90d3bf232e2", null ],
+    [ "spring_const_constraint_axis1", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a03bcdd5d731fffd30a67ab9df2cb0dea", null ],
+    [ "spring_const_constraint_axis2", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a9aca3be5299f50ac1d325f8e3eecdd09", null ],
+    [ "spring_constant", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a6fcad53e3c66dd042cca37953850c27f", null ],
+    [ "type", "d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a4cb65bedac4cdac93ffb52ebc66ec40b", null ]
+];

@@ -1,0 +1,5 @@
+<map id="CaveMovieControl" name="CaveMovieControl">
+<area shape="rect" id="node2" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="31,102,220,149"/>
+<area shape="rect" id="node6" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="120,6,280,53"/>
+<area shape="rect" id="node8" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="244,111,447,140"/>
+</map>

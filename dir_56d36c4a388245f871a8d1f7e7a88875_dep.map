@@ -1,0 +1,29 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/plugins/mars_plugin_collection" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/plugins/mars_plugin_collection">
+<area shape="rect" id="node4" href="dir_d6e1b4d38e7cbf472d2f4ee11001d1d9.html" title="camera_window" alt="" coords="3317,65,3432,113"/>
+<area shape="rect" id="node5" href="dir_af194b328e474fca931451667e6312bb.html" title="CameraGUI" alt="" coords="3203,65,3293,113"/>
+<area shape="rect" id="node6" href="dir_7a3c8ebac694458008352f0edf022adc.html" title="cave_camera_display" alt="" coords="3032,65,3179,113"/>
+<area shape="rect" id="node7" href="dir_9988bb1a5a5c2af3024cb81d46e83e1b.html" title="cave_movie_control" alt="" coords="2869,65,3008,113"/>
+<area shape="rect" id="node8" href="dir_972ae7906027c95bfad001aa86522205.html" title="CaveDemoHudControl" alt="" coords="2691,65,2845,113"/>
+<area shape="rect" id="node9" href="dir_a2f178553cd64d3aa5e6ba825ffc6648.html" title="ConstraintsPlugin" alt="" coords="2541,65,2667,113"/>
+<area shape="rect" id="node10" href="dir_1db7818d8060f82c41d31807613a7eb8.html" title="DataVaultWrapper" alt="" coords="2389,65,2517,113"/>
+<area shape="rect" id="node11" href="dir_890025ef4260b40a7214b39c2584bb56.html" title="db_adrf_receiver" alt="" coords="2248,65,2365,113"/>
+<area shape="rect" id="node12" href="dir_462d1c576c8b1f76d06181a47fc5ab56.html" title="db_adrf_sender" alt="" coords="2115,65,2224,113"/>
+<area shape="rect" id="node13" href="dir_d3f6c4774c045dbeac5e8a71b47250ac.html" title="db_to_cfg" alt="" coords="2013,65,2091,113"/>
+<area shape="rect" id="node14" href="dir_f308656bcb0a9712a9fadd51a9170f49.html" title="EO1Plugin" alt="" coords="1907,65,1989,113"/>
+<area shape="rect" id="node15" href="dir_4096579da7ccfaf9d489a5fdf8000d8c.html" title="EOBillboards" alt="" coords="1784,65,1883,113"/>
+<area shape="rect" id="node16" href="dir_7c6f87572f9eceede78aefa78be2fc9c.html" title="footprint_net" alt="" coords="1667,65,1760,113"/>
+<area shape="rect" id="node17" href="dir_7ccc556ee26126f1d75aca51acc9ec56.html" title="GeneticStructureTest" alt="" coords="1496,65,1643,113"/>
+<area shape="rect" id="node18" href="dir_b79d8576bd5b9c19d9da7a9b2c3de61f.html" title="hud_calibration" alt="" coords="1363,65,1472,113"/>
+<area shape="rect" id="node19" href="dir_d571f16079d2fafb42b97786d2079425.html" title="LineLaser" alt="" coords="1261,65,1339,113"/>
+<area shape="rect" id="node20" href="dir_243052c33cfbbe2158902311cda32a64.html" title="mars_video_player" alt="" coords="1107,65,1237,113"/>
+<area shape="rect" id="node21" href="dir_792489c1dfe3342200b031ecfbbcc585.html" title="module_info_dumper" alt="" coords="941,65,1083,113"/>
+<area shape="rect" id="node22" href="dir_09d819e0a040e699d44574f306fdc23f.html" title="osg_sonar" alt="" coords="835,65,917,113"/>
+<area shape="rect" id="node23" href="dir_a6f67fe7bb4334f0f38d3816b66aa2fc.html" title="plugin_template" alt="" coords="699,65,811,113"/>
+<area shape="rect" id="node24" href="dir_765e27102b3ee1767f8244fca6c025f9.html" title="SCJoypadControl" alt="" coords="549,65,675,113"/>
+<area shape="rect" id="node25" href="dir_83d43082bec93610f713db760ff96a39.html" title="SimState" alt="" coords="451,65,525,113"/>
+<area shape="rect" id="node26" href="dir_f06a4dd2cf1208639991ef335a7bc742.html" title="SonarPlugin" alt="" coords="336,65,427,113"/>
+<area shape="rect" id="node27" href="dir_a3b3194f9157f9df83288a2ea1462627.html" title="TestWireframe" alt="" coords="205,65,312,113"/>
+<area shape="rect" id="node28" href="dir_c1434c83d99ee5381c8eeb01ea002070.html" title="VirtualJoystickPlugin" alt="" coords="37,65,181,113"/>
+<area shape="rect" id="graph3" href="dir_56d36c4a388245f871a8d1f7e7a88875.html" alt="" coords="27,55,3621,124"/>
+<area shape="rect" id="graph2" href="dir_dd074179a7b877640c997812ac8ac560.html" title="plugins" alt="" coords="16,16,3632,135"/>
+</map>

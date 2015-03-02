@@ -1,0 +1,6 @@
+<map id="mars::plugins::mars_video_player::MarsVideoPlayer" name="mars::plugins::mars_video_player::MarsVideoPlayer">
+<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="213,27,403,74"/>
+<area shape="rect" id="node6" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,58,165,105"/>
+<area shape="rect" id="node8" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="220,97,396,143"/>
+<area shape="rect" id="node10" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="243,167,373,196"/>
+</map>

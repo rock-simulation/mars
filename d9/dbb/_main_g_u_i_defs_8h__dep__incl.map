@@ -1,0 +1,11 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/MainGUIDefs.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/MainGUIDefs.h">
+<area shape="rect" id="node3" href="$da/d42/_menu_file_8h.html" title="MenuFile creates the menus and menu items in the File menu of the simulation. " alt="" coords="769,117,977,181"/>
+<area shape="rect" id="node9" href="$d4/d34/_menu_help_8h.html" title="Help section of the menu. " alt="" coords="1008,117,1221,181"/>
+<area shape="rect" id="node13" href="$d3/d92/_menu_simulation_8h.html" title="Provides the Simulation and Control menu entries. " alt="" coords="239,117,487,181"/>
+<area shape="rect" id="node18" href="$d8/d31/_menu_window_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuWindow.h" alt="" coords="511,117,745,181"/>
+<area shape="rect" id="node5" href="$da/d1e/_mars_gui_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/MarsGui.cpp" alt="" coords="563,229,739,293"/>
+<area shape="rect" id="node7" href="$d5/d64/_menu_file_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuFile.cpp" alt="" coords="763,229,984,293"/>
+<area shape="rect" id="node11" href="$df/d7b/_menu_help_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuHelp.cpp" alt="" coords="1008,229,1237,293"/>
+<area shape="rect" id="node16" href="$d9/d82/_menu_simulation_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuSimulation.cpp" alt="" coords="5,229,267,293"/>
+<area shape="rect" id="node21" href="$d0/de2/_menu_window_8cpp.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation and manages the wind..." alt="" coords="291,229,539,293"/>
+</map>

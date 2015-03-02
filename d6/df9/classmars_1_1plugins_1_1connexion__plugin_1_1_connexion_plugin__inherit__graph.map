@@ -1,0 +1,6 @@
+<map id="mars::plugins::connexion_plugin::ConnexionPlugin" name="mars::plugins::connexion_plugin::ConnexionPlugin">
+<area shape="rect" id="node4" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="220,58,409,105"/>
+<area shape="rect" id="node8" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,89,165,135"/>
+<area shape="rect" id="node10" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="213,128,416,157"/>
+<area shape="rect" id="node12" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="227,181,403,227"/>
+</map>

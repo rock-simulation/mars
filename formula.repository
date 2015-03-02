@@ -1,0 +1,1 @@
+\form#0:$ angular\_velocity = angular\_velocity * (1-damping)$

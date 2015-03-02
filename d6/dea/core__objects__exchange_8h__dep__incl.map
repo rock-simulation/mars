@@ -1,0 +1,10 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/core_objects_exchange.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/core_objects_exchange.h">
+<area shape="rect" id="node3" href="$d5/dd6/sensor__bases_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sensor\l_bases.h" alt="" coords="283,137,464,218"/>
+<area shape="rect" id="node15" href="$de/d51/_controller_manager_interface_8h.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="488,137,683,218"/>
+<area shape="rect" id="node17" href="$de/dd8/_joint_manager_interface_8h.html" title="&quot;JointManagerInterface&quot; declares the interfaces for all JointOperations that are used for the communi..." alt="" coords="707,137,872,218"/>
+<area shape="rect" id="node5" href="$d0/ddf/_node_interface_8h.html" title="&quot;NodeInterface&quot; declares the interfaces for the Nodes to the physical layer. " alt="" coords="5,267,171,349"/>
+<area shape="rect" id="node9" href="$d1/dd0/_node_manager_interface_8h.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="195,267,363,349"/>
+<area shape="rect" id="node11" href="$da/da8/_sensor_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/SensorInterface.h" alt="" coords="387,267,552,349"/>
+<area shape="rect" id="node13" href="$d0/ddd/_sensor_manager_interface_8h.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="576,267,755,349"/>
+<area shape="rect" id="node7" href="$db/d35/_joint_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/JointInterface.h" alt="" coords="5,398,171,479"/>
+</map>

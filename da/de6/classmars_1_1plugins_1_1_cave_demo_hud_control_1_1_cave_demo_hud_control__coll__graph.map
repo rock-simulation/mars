@@ -1,0 +1,24 @@
+<map id="mars::plugins::CaveDemoHudControl::CaveDemoHudControl" name="mars::plugins::CaveDemoHudControl::CaveDemoHudControl">
+<area shape="rect" id="node4" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="1372,62,1561,109"/>
+<area shape="rect" id="node12" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,162,555,209"/>
+<area shape="rect" id="node21" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,231,541,278"/>
+<area shape="rect" id="node24" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,370,536,417"/>
+<area shape="rect" id="node43" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="596,44,785,73"/>
+<area shape="rect" id="node8" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="1072,301,1232,347"/>
+<area shape="rect" id="node10" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="812,405,977,451"/>
+<area shape="rect" id="node15" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,439,556,486"/>
+<area shape="rect" id="node17" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,509,568,555"/>
+<area shape="rect" id="node19" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="388,578,545,625"/>
+<area shape="rect" id="node27" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,770,549,817"/>
+<area shape="rect" id="node29" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="364,301,569,347"/>
+<area shape="rect" id="node31" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="372,717,561,747"/>
+<area shape="rect" id="node33" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="7,674,220,721"/>
+<area shape="rect" id="node35" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,743,205,790"/>
+<area shape="rect" id="node37" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,647,569,694"/>
+<area shape="rect" id="node39" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,93,556,139"/>
+<area shape="rect" id="node57" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="1396,323,1537,370"/>
+<area shape="rect" id="node47" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="1400,131,1533,178"/>
+<area shape="rect" id="node49" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="1365,201,1568,231"/>
+<area shape="rect" id="node51" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="1396,254,1537,301"/>
+<area shape="rect" id="node53" href="$dd/db2/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_control_widget.html" title="mars::plugins::CaveDemoHud\lControl::ControlWidget" alt="" coords="1368,393,1565,439"/>
+</map>

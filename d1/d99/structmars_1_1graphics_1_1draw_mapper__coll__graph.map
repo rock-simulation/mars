@@ -1,0 +1,4 @@
+<map id="mars::graphics::drawMapper" name="mars::graphics::drawMapper">
+<area shape="rect" id="node2" href="$db/d56/structmars_1_1interfaces_1_1draw_struct.html" title="drawStruct connects a vector of draw_item objects with their update interface DrawInterface ..." alt="" coords="15,101,201,131"/>
+<area shape="rect" id="node4" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="5,5,211,35"/>
+</map>

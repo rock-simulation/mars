@@ -1,0 +1,10 @@
+<map id="mars::interfaces::MarsPluginTemplateGUI" name="mars::interfaces::MarsPluginTemplateGUI">
+<area shape="rect" id="node7" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="488,5,619,35"/>
+<area shape="rect" id="node9" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="464,58,643,105"/>
+<area shape="rect" id="node11" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="452,127,655,174"/>
+<area shape="rect" id="node13" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="469,197,637,243"/>
+<area shape="rect" id="node15" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="460,266,647,313"/>
+<area shape="rect" id="node17" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="480,335,627,382"/>
+<area shape="rect" id="node19" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="464,405,643,435"/>
+<area shape="rect" id="node4" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,227,165,274"/>
+</map>

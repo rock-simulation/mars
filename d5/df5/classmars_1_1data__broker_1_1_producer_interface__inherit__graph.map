@@ -1,0 +1,8 @@
+<map id="mars::data_broker::ProducerInterface" name="mars::data_broker::ProducerInterface">
+<area shape="rect" id="node3" href="$d5/d86/class_joystick_plugin.html" title="JoystickPlugin" alt="" coords="236,5,343,35"/>
+<area shape="rect" id="node5" href="$de/dff/classmars_1_1sim_1_1_joint6_d_o_f_sensor.html" title="mars::sim::Joint6DOFSensor" alt="" coords="193,59,385,88"/>
+<area shape="rect" id="node7" href="$d2/d9f/classmars_1_1sim_1_1_node_contact_force_sensor.html" title="mars::sim::NodeContactForce\lSensor" alt="" coords="191,111,388,158"/>
+<area shape="rect" id="node9" href="$d2/d27/classmars_1_1sim_1_1_sim_joint.html" title="SimJoint represents the simulated joints. " alt="" coords="220,181,359,211"/>
+<area shape="rect" id="node11" href="$d7/dfb/classmars_1_1sim_1_1_sim_motor.html" title="Each SimMotor object publishes its state on the dataBroker. " alt="" coords="217,235,361,264"/>
+<area shape="rect" id="node13" href="$d5/db3/classmars_1_1sim_1_1_sim_node.html" title="Two typedefs to keep mesh structure nearly similar to ODE. " alt="" coords="219,288,360,317"/>
+</map>

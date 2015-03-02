@@ -1,0 +1,26 @@
+var class_joystick_widget2 =
+[
+    [ "JoystickWidget2", "dc/d3b/class_joystick_widget2.html#a89214c3f842467a405dee4027aeb3cd6", null ],
+    [ "~JoystickWidget2", "dc/d3b/class_joystick_widget2.html#a24904156a707a301923902681afaa651", null ],
+    [ "calcSpeed", "dc/d3b/class_joystick_widget2.html#a1cf81c5ddf8b01e61a3bd8a83d623db2", null ],
+    [ "closeEvent", "dc/d3b/class_joystick_widget2.html#ae6994a0bfeaab23dd0c51f2c4a12c4c3", null ],
+    [ "closeSignal", "dc/d3b/class_joystick_widget2.html#af510735138819795b560f205ce83201f", null ],
+    [ "hideEvent", "dc/d3b/class_joystick_widget2.html#a5ce6f9f4368385d757c61f6372bd7583", null ],
+    [ "hideSignal", "dc/d3b/class_joystick_widget2.html#a75781dec53f65990850c10407e191654", null ],
+    [ "newSpeed", "dc/d3b/class_joystick_widget2.html#ab5bd777cf1a88258aa7bb75d7a198c2f", null ],
+    [ "setLeftSpeed", "dc/d3b/class_joystick_widget2.html#a6efecc3b75f5f33b68e043b6c0bfc76f", null ],
+    [ "setMaxSpeed", "dc/d3b/class_joystick_widget2.html#aa8473db4f96a94d7e6d72d490abd737c", null ],
+    [ "setRightSpeed", "dc/d3b/class_joystick_widget2.html#a54810300ded893eb82e8b9c3abaee570", null ],
+    [ "setSpeed", "dc/d3b/class_joystick_widget2.html#a9a479820535122764b711602d0088a67", null ],
+    [ "updateCrossValue", "dc/d3b/class_joystick_widget2.html#a2156a37ef25289be72177a4c918c74be", null ],
+    [ "updateWidget", "dc/d3b/class_joystick_widget2.html#a49170d5312a3ac4bf31ecf75eb86ff4d", null ],
+    [ "actualSpeedLeft", "dc/d3b/class_joystick_widget2.html#a437fe8311561c193ff6074255573aef7", null ],
+    [ "actualSpeedRight", "dc/d3b/class_joystick_widget2.html#a63d0d8ac30e1a6738af42ba32bef66a9", null ],
+    [ "crossValueX", "dc/d3b/class_joystick_widget2.html#adcc707ff4e10bbf1f9d38b51e0a01e03", null ],
+    [ "crossValueY", "dc/d3b/class_joystick_widget2.html#a084b84121bf7759fc8dcafeabf2d6519", null ],
+    [ "maxSpeed", "dc/d3b/class_joystick_widget2.html#a194a83070186e8a4fa9e9b5e70cb6759", null ],
+    [ "newSpeedLeft", "dc/d3b/class_joystick_widget2.html#ae1ec94fccc231a0ab5a472ee804abc53", null ],
+    [ "newSpeedRight", "dc/d3b/class_joystick_widget2.html#aac10c255f4a15b08c94a1bad0a46dc99", null ],
+    [ "ui", "dc/d3b/class_joystick_widget2.html#a27d4608a1f1497e4256895422e01e92d", null ],
+    [ "zeroZoneSlider", "dc/d3b/class_joystick_widget2.html#a0d95a34295e30c33f150230c33df94e5", null ]
+];

@@ -1,0 +1,28 @@
+var math_utils_8h =
+[
+    [ "angleAxisToQuaternion", "dd/d43/math_utils_8h.html#a9a2ec2ca14fddfeaf3cc72afb94bf887", null ],
+    [ "angleBetween", "dd/d43/math_utils_8h.html#a68fae2ca585635596abcf4f8a0368b05", null ],
+    [ "distanceBetween", "dd/d43/math_utils_8h.html#af4e788bb534b11fee2926c2ea5cf20d5", null ],
+    [ "distanceSquaredBetween", "dd/d43/math_utils_8h.html#a9af9ccdb87e7c23cdfddf4573385b847", null ],
+    [ "eulerToQuaternion", "dd/d43/math_utils_8h.html#a57d035b07274c67cc401f81c97463088", null ],
+    [ "eulerToQuaternion", "dd/d43/math_utils_8h.html#aff95930b4b9c6c37e33ee4388882cee1", null ],
+    [ "getProjection", "dd/d43/math_utils_8h.html#aba57d688de189be1e5a3c88b81632554", null ],
+    [ "getYaw", "dd/d43/math_utils_8h.html#adbf6854aa63566d8fb7ac9828369fc7d", null ],
+    [ "isNormalized", "dd/d43/math_utils_8h.html#a8601000ae1594873eb00518c813f3834", null ],
+    [ "lerp", "dd/d43/math_utils_8h.html#a34df2e766f1727e29bee173471721b22", null ],
+    [ "quaternionFromConfigItem", "dd/d43/math_utils_8h.html#a467b80fd587221db21480af3182f0753", null ],
+    [ "quaternionFromMembers", "dd/d43/math_utils_8h.html#a4c542e4e63aad5fa95fd95b173565f9b", null ],
+    [ "quaternionFromWXYZArray", "dd/d43/math_utils_8h.html#a733e464fe1211692d2ff23c5b24aa9fe", null ],
+    [ "quaternionFromXYZWArray", "dd/d43/math_utils_8h.html#ada68763e3e3a06c37a2d7ec1bc6d1de4", null ],
+    [ "quaternionToConfigItem", "dd/d43/math_utils_8h.html#a1fc9333514671e6da7c6705c37aeb963", null ],
+    [ "quaternionTosRotation", "dd/d43/math_utils_8h.html#aac688a4092545b0ba95339c1fae2c847", null ],
+    [ "random_normal_number", "dd/d43/math_utils_8h.html#ac56bfa19b0abe7811e637be703a7b192", null ],
+    [ "random_number", "dd/d43/math_utils_8h.html#a1779d257cebfb58e0675ed9649bb322f", null ],
+    [ "scaleVectorToLength", "dd/d43/math_utils_8h.html#a8ef52eb91b6b1f07da5f0a83cfb515b7", null ],
+    [ "slerp", "dd/d43/math_utils_8h.html#a6e7ceb63a01eb05358064de0592cbd57", null ],
+    [ "vectorFromConfigItem", "dd/d43/math_utils_8h.html#ace337fcf05f5e7e46d38907e350b5596", null ],
+    [ "vectorFromSpherical", "dd/d43/math_utils_8h.html#a190942c31eb543c4a8ad4e38f88087f2", null ],
+    [ "vectorToConfigItem", "dd/d43/math_utils_8h.html#a3df24ea3827a36b9aef9080a78ae9db6", null ],
+    [ "vectorToSpherical", "dd/d43/math_utils_8h.html#accc54a8c434095aeead45a2adb0b8b8d", null ],
+    [ "EPSILON", "dd/d43/math_utils_8h.html#a3a68c1db8dd384e7f98e97fb22adc508", null ]
+];

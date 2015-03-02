@@ -1,0 +1,10 @@
+<map id="mars::cfg_manager_gui::MainCfgGui" name="mars::cfg_manager_gui::MainCfgGui">
+<area shape="rect" id="node17" href="$df/d3f/classmars_1_1cfg__manager__gui_1_1_cfg_widget.html" title="mars::cfg_manager_gui\l::CfgWidget" alt="" coords="756,490,913,537"/>
+<area shape="rect" id="node14" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="335,426,484,473"/>
+<area shape="rect" id="node28" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="519,312,708,342"/>
+<area shape="rect" id="node6" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="733,187,936,216"/>
+<area shape="rect" id="node8" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="764,240,905,286"/>
+<area shape="rect" id="node10" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="764,117,905,164"/>
+<area shape="rect" id="node20" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="5,544,173,590"/>
+<area shape="rect" id="node23" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="325,594,493,641"/>
+</map>

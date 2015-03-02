@@ -1,0 +1,4 @@
+<map id="mars::plugins::Plot3D::MotorPlot" name="mars::plugins::Plot3D::MotorPlot">
+<area shape="rect" id="node2" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="5,6,139,53"/>
+<area shape="rect" id="node4" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="163,6,339,53"/>
+</map>

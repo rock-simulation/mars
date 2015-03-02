@@ -1,0 +1,26 @@
+var classmars_1_1main__gui_1_1_main_g_u_i =
+[
+    [ "MainGUI", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a3bd07bfb7fc42b855c750f41c78bfe7e", null ],
+    [ "~MainGUI", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a1d0b7bb7aaf0cc6afe9b8565b9b652b7", null ],
+    [ "aboutQt", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a2032a222ba70c9c00316fd3bf2d0adb2", null ],
+    [ "addDockWidget", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a400a64c15ea5908efff7d2eabb6685c0", null ],
+    [ "addGenericMenuAction", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a96b6c0502fc534b025acc3bbb77f2152", null ],
+    [ "CREATE_MODULE_INFO", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a79e1a544b8d22ca027c14685b1da2ce2", null ],
+    [ "dock", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a4c599fec02894b8aeef67319e1d764fc", null ],
+    [ "genericAction", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#aa48d94cb34c771e0e5ed5e2332cbe276", null ],
+    [ "getDocking", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#ac932fd9d18ecaa2d53f49a1983757a8d", null ],
+    [ "getLibName", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#af7663d2c405c01f4d737ab94026a794d", null ],
+    [ "getLibVersion", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a7944808c234645123c4355913bfe449e", null ],
+    [ "mainWindow_p", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a3910fdabf855de83572857df6f42ccf2", null ],
+    [ "removeDockWidget", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a7a1ec730f9a778a650f8b1326d8c9e9c", null ],
+    [ "setBackgroundImage", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#aa61e4aede3dcbe528af8a3ad0398f91e", null ],
+    [ "show", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#adc26be4da100927348d2feaf124394b4", null ],
+    [ "actionAboutQt", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#af8c3d4c6b482b62c8e22dc8c08265c8c", null ],
+    [ "allow_toolbar", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#ae84ffe3cfcc4ece8edc1573abb3c826c", null ],
+    [ "genericMenus", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#aa693f8e62a3062bc1fa2211adf4d3b27", null ],
+    [ "helpMenu", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a4b19a7f7977527220a082e6f70281d61", null ],
+    [ "mainWindow", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#af74d50e22326c5340e5ebb29585bc1ef", null ],
+    [ "mdiArea", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a54148e61dc6b280a3f02801ffd44f760", null ],
+    [ "menuBar", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#af50bbd2135ca5b8550e41f08395886e2", null ],
+    [ "v_qmenu", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html#a69333f12710df1526637a32ea9aaa811", null ]
+];

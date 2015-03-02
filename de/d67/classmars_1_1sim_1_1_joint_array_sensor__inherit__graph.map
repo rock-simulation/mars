@@ -1,0 +1,10 @@
+<map id="mars::sim::JointArraySensor" name="mars::sim::JointArraySensor">
+<area shape="rect" id="node9" href="$d1/dae/classmars_1_1sim_1_1_joint_a_v_g_torque_sensor.html" title="mars::sim::JointAVGTorque\lSensor" alt="" coords="492,5,676,51"/>
+<area shape="rect" id="node11" href="$d0/dc1/classmars_1_1sim_1_1_joint_load_sensor.html" title="mars::sim::JointLoadSensor" alt="" coords="492,75,676,104"/>
+<area shape="rect" id="node13" href="$d5/d5e/classmars_1_1sim_1_1_joint_position_sensor.html" title="mars::sim::JointPosition\lSensor" alt="" coords="503,127,665,174"/>
+<area shape="rect" id="node15" href="$d2/d73/classmars_1_1sim_1_1_joint_torque_sensor.html" title="mars::sim::JointTorqueSensor" alt="" coords="485,197,683,227"/>
+<area shape="rect" id="node17" href="$d2/d77/classmars_1_1sim_1_1_joint_velocity_sensor.html" title="mars::sim::JointVelocity\lSensor" alt="" coords="503,250,665,297"/>
+<area shape="rect" id="node2" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="20,66,185,113"/>
+<area shape="rect" id="node4" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,136,200,165"/>
+<area shape="rect" id="node6" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="36,189,169,235"/>
+</map>

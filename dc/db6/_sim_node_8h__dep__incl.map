@@ -1,0 +1,8 @@
+<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/SimNode.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/SimNode.h">
+<area shape="rect" id="node3" href="$d9/d28/_joint_manager_8cpp.html" title="&quot;JointManager&quot; is the class that manage all joints and their operations and communication between the..." alt="" coords="5,127,243,191"/>
+<area shape="rect" id="node5" href="$d5/d2a/_motor_manager_8cpp.html" title="&quot;MotorManager&quot; implements MotorManagerInterface. It is manages all motors and all motor operations th..." alt="" coords="267,127,509,191"/>
+<area shape="rect" id="node7" href="$d1/dc7/_node_manager_8cpp.html" title="&quot;NodeManager&quot; is the class that manage all nodes and their operations and communication between the d..." alt="" coords="533,127,773,191"/>
+<area shape="rect" id="node9" href="$d4/d70/_sim_joint_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/core/SimJoint.cpp" alt="" coords="797,127,1008,191"/>
+<area shape="rect" id="node11" href="$dc/d0b/_sim_node_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/core/SimNode.cpp" alt="" coords="1032,127,1245,191"/>
+<area shape="rect" id="node13" href="$de/d34/_scanning_sonar_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/ScanningSonar.cpp" alt="" coords="1269,118,1435,199"/>
+</map>

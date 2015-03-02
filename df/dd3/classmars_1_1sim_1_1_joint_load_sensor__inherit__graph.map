@@ -1,0 +1,6 @@
+<map id="mars::sim::JointLoadSensor" name="mars::sim::JointLoadSensor">
+<area shape="rect" id="node2" href="$d0/d80/classmars_1_1sim_1_1_joint_array_sensor.html" title="mars::sim::JointArraySensor" alt="" coords="249,75,436,104"/>
+<area shape="rect" id="node4" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="20,5,185,51"/>
+<area shape="rect" id="node6" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,75,200,104"/>
+<area shape="rect" id="node8" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="36,127,169,174"/>
+</map>

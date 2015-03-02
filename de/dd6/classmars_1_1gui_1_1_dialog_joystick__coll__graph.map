@@ -1,0 +1,24 @@
+<map id="mars::gui::DialogJoystick" name="mars::gui::DialogJoystick">
+<area shape="rect" id="node2" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="724,159,913,188"/>
+<area shape="rect" id="node57" href="$d8/d72/classmars_1_1gui_1_1_node_selection_tree.html" title="mars::gui::NodeSelectionTree" alt="" coords="1013,429,1208,459"/>
+<area shape="rect" id="node53" href="$dc/df2/classmars_1_1gui_1_1_joystick_widget.html" title="Provides an interactive joystick for node movement. " alt="" coords="1024,232,1197,261"/>
+<area shape="rect" id="node6" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="396,61,537,107"/>
+<area shape="rect" id="node8" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="396,130,537,177"/>
+<area shape="rect" id="node12" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,277,541,323"/>
+<area shape="rect" id="node24" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="736,677,901,723"/>
+<area shape="rect" id="node26" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,885,555,931"/>
+<area shape="rect" id="node36" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,954,536,1001"/>
+<area shape="rect" id="node17" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="383,346,551,393"/>
+<area shape="rect" id="node19" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="735,347,903,394"/>
+<area shape="rect" id="node29" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,538,556,585"/>
+<area shape="rect" id="node31" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,746,568,793"/>
+<area shape="rect" id="node33" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="388,1077,545,1123"/>
+<area shape="rect" id="node39" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,607,549,654"/>
+<area shape="rect" id="node41" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="364,677,569,723"/>
+<area shape="rect" id="node43" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="372,1024,561,1053"/>
+<area shape="rect" id="node45" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="7,999,220,1046"/>
+<area shape="rect" id="node47" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,1069,205,1115"/>
+<area shape="rect" id="node49" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,815,569,862"/>
+<area shape="rect" id="node51" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,469,556,515"/>
+<area shape="rect" id="node61" href="$d8/d0b/classmars_1_1interfaces_1_1_graphics_event_client.html" title="mars::interfaces::Graphics\lEventClient" alt="" coords="731,417,907,463"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="JoystickPlugin" name="JoystickPlugin">
+<area shape="rect" id="node4" href="$d1/db0/classmars_1_1data__broker_1_1_producer_interface.html" title="Interface for classes producing data to broadcast via a DataBroker. " alt="" coords="623,74,756,121"/>
+<area shape="rect" id="node6" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="623,143,756,190"/>
+<area shape="rect" id="node8" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="624,213,755,243"/>
+<area shape="rect" id="node10" href="$db/de7/structmars_1_1utils_1_1_pthread_thread_wrapper.html" title="mars::utils::PthreadThread\lWrapper" alt="" coords="285,147,461,194"/>
+<area shape="rect" id="node12" href="$d6/d90/classmars_1_1utils_1_1_mutex.html" title="mars::utils::Mutex" alt="" coords="311,217,436,247"/>
+<area shape="rect" id="node14" href="$d6/d9e/structmars_1_1utils_1_1_pthread_mutex_wrapper.html" title="mars::utils::PthreadMutex\lWrapper" alt="" coords="7,209,177,255"/>
+<area shape="rect" id="node16" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="620,266,759,313"/>
+<area shape="rect" id="node22" href="$d8/d0a/class_game_controller_manager.html" title="GameControllerManager" alt="" coords="608,389,771,419"/>
+<area shape="rect" id="node24" href="$d7/db1/class_g_c_manager_interface.html" title="GCManagerInterface" alt="" coords="303,389,444,419"/>
+</map>
