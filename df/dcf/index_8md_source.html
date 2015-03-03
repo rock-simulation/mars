@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>MARS: /home/kavonszadkowski/limes-dev/simulation/mars/doc/src/index.md Source File</title>
+<title>/home/kavonszadkowski/limes-dev/simulation/mars/doc/src/index.md Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -30,11 +30,9 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="../../logo_v2_wob.png"/></td>
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">MARS
-   </div>
-   <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
-  </td>
+    <td style="padding-left: 0.5em;">
+    <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
+    </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="../../search/mag_sel.png"
@@ -93,28 +91,24 @@ $(document).ready(function(){initNavTree('df/dcf/index_8md.html','../../');});
 <div class="title">/home/kavonszadkowski/limes-dev/simulation/mars/doc/src/index.md</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="../../df/dcf/index_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor"># MARS Simulator</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor">## About</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;MARS (Machina Arte Robotum Simulans) is <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> simulation and visualisation tool <span class="keywordflow">for</span> developing control algorithms and designing robots. It consists of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> core framework containing all <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> simulation components, <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> GUI, OpenGL based visualisation and <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> physics core that is currently based on the [Open Dynamics Engine](http:<span class="comment">//www.ode.org). The software is designed in a modular manner by making high use of interfaces. In this way many parts of MARS can be also used standalone (e.g. the physic simulation can be used without any visualization or GUI).</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">## News</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;* 21.11.2013:</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  First functional version of the <span class="keyword">new</span> MARS documentation is completed. MARS now comes with <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> constantly extended manual as well as <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> Doxygen-powered code documentation <span class="keyword">using</span> <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> shared base of Markdown files. For details, check the [Documentation structure](@ref documentation_structure).</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;## Launch</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;After MARS is installed you can find <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> mars_default configuration folder in $MARS_DEV_ROOT/install/configuration. To launch MARS open <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> Terminal (on Windows an msys shell) and type:</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    cd $MARS_DEV_ROOT</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    . env.sh</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    cd install/configuration/mars_default</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    mars_app</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;If it<span class="stringliteral">&#39;s not clear to you what these commands do, check out the [MARS environment and build tutorial](@ref tutorial_build).</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="stringliteral"></span></div>
+<a href="../../df/dcf/index_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;MARS (Machina Arte Robotum Simulans) is <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> cross-platform simulation and visualisation tool created <span class="keywordflow">for</span> robotics research. It runs on (Ubuntu) Linux, Mac and Windows and consists of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> core framework containing all <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> simulation components, <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> GUI (based on [Qt](http:<span class="comment">//qt-project.org)), 3D visualization (using [OSG](http://www.openscenegraph.org)) and a physics core (based on [ODE](http://www.ode.org). MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics simulation without visualization and GUI.</span></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;It is possible to extend MARS writing your own plugins and many plugins introducing various functionality such as HUDs or custom ground reaction forces already exist - and it&#39;s easy to write your own.</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">## Installation</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;We don<span class="stringliteral">&#39;t yet provide binaries for MARS, thus installing it requires downloading the source and building it locally. To simplify this task, we have created a set of install scripts that will do all the work of downloading and installing dependencies, cloning the MARS repository and building for you. They have their own repository here on GitHub: [MARS install scripts](https://github.com/rock-simulation/mars_install_scripts)</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="stringliteral">## License</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="stringliteral">MARS is distributed under the [Lesser GNU Public License (LGPL)](https://www.gnu.org/licenses/lgpl.html).</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="stringliteral">## Launch</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="stringliteral">After MARS is installed you can find a mars_default configuration folder in $MARS_DEV_ROOT/install/configuration. To launch MARS open a Terminal (on Windows an msys shell) and type:</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="stringliteral">    cd $MARS_DEV_ROOT</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="stringliteral">    . env.sh</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="stringliteral">    mars_app</span></div>
 <div class="ttc" id="simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c_source.html#l00223">CMakeCCompilerId.c:223</a></div></div>
 <div class="ttc" id="_camera_sensor_8h_html_aae14d6f4141dfe114a3f5777462bd8b8"><div class="ttname"><a href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a></div><div class="ttdeci">u_int8_t a</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00043">CameraSensor.h:43</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -123,7 +117,7 @@ $(document).ready(function(){initNavTree('df/dcf/index_8md.html','../../');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../df/dcf/index_8md.html">index.md</a></li>
-    <li class="footer">Generated on Mon Mar 2 2015 17:29:18 for MARS by
+    <li class="footer">Generated on Tue Mar 3 2015 17:24:19 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

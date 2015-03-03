@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>MARS: Installation</title>
+<title>Installation</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -30,11 +30,9 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="../../logo_v2_wob.png"/></td>
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">MARS
-   </div>
-   <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
-  </td>
+    <td style="padding-left: 0.5em;">
+    <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
+    </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="../../search/mag_sel.png"
@@ -93,71 +91,13 @@ $(document).ready(function(){initNavTree('d5/dfc/installation.html','../../');})
 <div class="title">Installation </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><h2>Installation</h2>
-<p>This section describes how to setup a development environment for MARS. You should create a dedicated development folder on your harddrive. Something like C:/development/mars_git or /home/my_username/development/mars_git: </p>
-<pre class="fragment">export MARS_DEV_ROOT=/home/my_username/development/mars_git
-</pre><p>We will refer to this directory as the development directory or $MARS_DEV_ROOT. You should clone the git sources into that directory using </p>
-<pre class="fragment">mkdir -p $MARS_DEV_ROOT
-cd $MARS_DEV_ROOT
-git clone git://gitorious.org/rock-simulation/mars.git
-</pre><p>This will create a new subdirectory "mars" containing the working copy &ndash; note that is not possible to give the directory containing the git-checkout a different name. You then probably have to install some system dependencies. Check the os specific sections below for how to install the dependencies. Afterwards you can continue on all systems in the same way to build and install MARS: </p>
-<pre class="fragment">cd $MARS_DEV_ROOT
-cp mars/scripts/bootstrap/packageList.txt.example mars/scripts/bootstrap/packageList.txt
-./mars/scripts/bootstrap/mars.sh bootstrap
-</pre><p>When running it for the first time the script will ask you for the root development directory. Please enter the <em>absolute</em> path to your development directory. Next you will be asked how many CPU cores the system may use to build MARS.</p>
-<h3>GNU/Linux</h3>
-<p>You can check the "apt_get_dep.sh" to get a list of the needed dependencies. If you have no conflict with manually installed libraries you can also use the script to install the dependecies: </p>
-<pre class="fragment">cd $MARS_DEV_ROOT
-./mars/scripts/bootstrap/apt_get_dep.sh*
-</pre><h3>OS X:</h3>
-<p>On "OS X" you have to install QT and OpenSceneGraph manually. Check the project pages for installation help (<a href="http://qt-project.org">http://qt-project.org</a> and <a href="http://openscenegraph.org">http://openscenegraph.org</a>). Other dependencies can be installed by the script "port_get_deb.sh" via macports: </p>
-<pre class="fragment">cd $MARS_DEV_ROOT
-./mars/scripts/bootstrap/port_get_dep.sh*
-</pre><h3>Windows</h3>
-<h4>Prerequisites</h4>
-<ul>
-<li>OSG: installed and bin dir in PATH</li>
-<li>SSH: <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/">PuTTY</a> (pick the "Windows installer for everything except PuTTYtel")</li>
-<li>MinGW / MSYS: <a href="http://mingw.org/wiki/Getting_Started">Install MinGW</a><ul>
-<li>download and run the mingw-get-inst graphical user interface installer</li>
-<li>When asked what components to install make sure the "C Compiler", "C++ Compiler", "MSYS Basic System", and "MinGW Developer ToolKit" options are selected.</li>
-<li>After installation completed you should install/update some software components. Open a MinGW Shell.</li>
-</ul>
-</li>
-<li>To get a quick overview over what packages are available type <pre class="fragment">  mingw-get list | grep Package 
-  mingw-get upgrade "gcc=4.6.2-1-mingw32"*
-  mingw-get upgrade "g++=4.6.2-1-mingw32"*
-  mingw-get upgrade "mingwrt=3.20-mingw32"*
-  mingw-get install msys-wget*
-  mingw-get install msys-tar*
-  mingw-get install msys-zip*
-  mingw-get install msys-gzip*
-  mingw-get install msys-bzip2*
-  mingw-get install msys-sed*
-  mingw-get install mingw32-libz*
-</pre></li>
-<li><a href="http://msysgit.github.com/">Git For Windows</a> (don't take the msysGit version)</li>
-<li>When asked how you would like to adjust your PATH environment select the third option "Run Git and include Unix tools from the Windows Command Promt"</li>
-</ul>
-<div class="image">
-<img src="../../git_for_windows_adjust_PATH.PNG" alt="git_for_windows_adjust_PATH.PNG"/>
-<div class="caption">
-Run Git and include Unix tools from the Windows Command Prompt</div></div>
-<ul>
-<li>When asked how to handle line endings make sure to select the option to "keep the line endings on checkout" and commit as UNIX.</li>
-</ul>
-<h3>Troubleshooting:</h3>
-<p>Q: When compiling you get errors like: </p>
-<pre class="fragment">unknown type uintptr_t*
-</pre><p>A: You are probably on windows and git your line endings got messed up. Type </p>
-<pre class="fragment">git config --global core.autocrlf input*
-</pre><p>in a shell, remove your working directory and checkout mars anew. </p>
+<div class="textblock"><p>We don't yet provide binaries for MARS, thus installing it requires downloading the source and building it locally. To simplify this task, we have created a set of install scripts that will do all the work of downloading and installing dependencies, cloning the MARS repository and building for you. They have their own repository on GitHub: <a href="https://github.com/rock-simulation/mars_install_scripts">MARS install scripts</a> </p>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Mon Mar 2 2015 17:29:44 for MARS by
+    <li class="footer">Generated on Tue Mar 3 2015 17:24:45 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

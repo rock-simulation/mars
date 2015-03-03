@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>MARS: /home/kavonszadkowski/limes-dev/simulation/mars/doc/src/tutorial_advanced_modeling.md Source File</title>
+<title>/home/kavonszadkowski/limes-dev/simulation/mars/doc/src/tutorial_advanced_modeling.md Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -30,11 +30,9 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="../../logo_v2_wob.png"/></td>
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">MARS
-   </div>
-   <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
-  </td>
+    <td style="padding-left: 0.5em;">
+    <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
+    </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="../../search/mag_sel.png"
@@ -96,67 +94,70 @@ $(document).ready(function(){initNavTree('d5/df0/tutorial__advanced__modeling_8m
 <a href="../../d5/df0/tutorial__advanced__modeling_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;Advanced Modeling {#tutorial_advanced_modeling}</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;=================</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;![](images/tutorials/advanced_modeling/robot.png)</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;## Introduction</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;In <span class="keyword">this</span> tutorial you will learn how to build model of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> robot in Blender which has <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> more complicated structure than the car used in the basic modeling tutorial.</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&gt; NOTE: This tutorial refers to creating the deprecated MARS Scene format. MARS will remain backwards compatible to MARS scenes as <span class="keywordtype">long</span> as reasonably possible, but the SMURF format primarily supported in future development is SMURF (refer to [Supported 3D Formats](@ref supported_3d_formats)).</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&gt;</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&gt; To use Blender <span class="keywordflow">for</span> the creation of SMURF, check out the Blender Add-On [Phobos](http:<span class="comment">//www.github.com/rock-simulation/phobos).</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;![](images/tutorials/advanced_modeling/robot.png)</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;## Prerequisites</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;You should have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> recent version of Blender installed (we use 2.62 in <span class="keyword">this</span> tutorial) and access to the scripts in your MARS development folder. </div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;## Introduction</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;In <span class="keyword">this</span> tutorial you will learn how to build model of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> robot in Blender which has <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> more complicated structure than the car used in the basic modeling tutorial.</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">## Hierarchy and Object Types</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;In MARS, models are hierarchically structured to attach different parts of the model to one another via joints. A very flat hierarchy was used in the basic modeling example, where the body of the modeled car was *parent* to each of the four wheels. This same principle applies, but with more levels, when more complicated models are created in MARS.</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;## Prerequisites</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;You should have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> recent version of Blender installed (we use 2.62 in <span class="keyword">this</span> tutorial) and access to the scripts in your MARS development folder.</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;In general, objects in MARS can be either *bodies* or *joints*. A *body* is any <span class="keywordtype">object</span> in the simulated world and can be either solid (and thus collide with other objects) or merely visible. A *joint* is not <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> physical object (nor normally visible), but <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> helper <span class="keywordtype">object</span> defining how to connect bodies. This means that in order <span class="keywordflow">for</span> bodies to have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> constraint movement with respect to each other (other than collision), joints have to specify those contraints. If bodies are supposed to be fully constrained, they are combined in *groups*, which are derived from the parent and child relationships of the objects.</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;## Hierarchy and Object Types</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;## Modeling <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> walking robot</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;Let<span class="stringliteral">&#39;s implement all these elements in a model with a slighty more complex hierarchy. To keep things simple, we will only use *hinge* joints represented by cylinders as in the basic modeling tutorial and model the rather clumsy looking fellow shown above. You can of course choose another design of your own fancy as long as the overall morphology stays the same.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="stringliteral">As a starting point, we model a main body (we chose a flat cylinder) and attach limbs to it that each possess two segments. Remember to use the *Add -&gt; Mesh* menu in Blender. Via joints, we connect the main body with the upper segment and the upper segment with the lower one:</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="stringliteral">![](images/tutorials/advanced_modeling/building_arm.png)</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;In MARS, models are hierarchically structured to attach different parts of the model to one another via joints. A very flat hierarchy was used in the basic modeling example, where the body of the modeled car was *parent* to each of the four wheels. This same principle applies, but with more levels, when more complicated models are created in MARS.</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;In general, objects in MARS can be either *bodies* or *joints*. A *body* is any <span class="keywordtype">object</span> in the simulated world and can be either solid (and thus collide with other objects) or merely visible. A *joint* is not <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> physical object (nor normally visible), but <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> helper <span class="keywordtype">object</span> defining how to connect bodies. This means that in order <span class="keywordflow">for</span> bodies to have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> constraint movement with respect to each other (other than collision), joints have to specify those contraints. If bodies are supposed to be fully constrained, they are combined in *groups*, which are derived from the parent and child relationships of the objects.</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;## Modeling <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> walking robot</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;Let<span class="stringliteral">&#39;s implement all these elements in a model with a slighty more complex hierarchy. To keep things simple, we will only use *hinge* joints represented by cylinders as in the basic modeling tutorial and model the rather clumsy looking fellow shown above. You can of course choose another design of your own fancy as long as the overall morphology stays the same.</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="stringliteral">MARS does not take into account how far apart objects connected by joints are, thus to properly visually represent a joint, it is often helpful to add another object to &quot;hide&quot; that the objects are seemingly connected only by air. In our robot, we chose spheres for that purpose.</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="stringliteral">As a starting point, we model a main body (we chose a flat cylinder) and attach limbs to it that each possess two segments. Remember to use the *Add -&gt; Mesh* menu in Blender. Via joints, we connect the main body with the upper segment and the upper segment with the lower one:</span></div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="stringliteral">What is important now is to get the hierarchy in this system right. Since the lower leg is connected to the upper one, it has to be moved as well when the upper leg rotates around its joint to the main body. This can by setting the upper leg the *parent* of the lower leg, and the main body the *parent* of the upper leg. This effectively creates a hierarchy as shown here:</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="stringliteral">![](images/tutorials/advanced_modeling/building_arm.png)</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="stringliteral">![](images/tutorials/advanced_modeling/hierarchy.png)</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="stringliteral">MARS does not take into account how far apart objects connected by joints are, thus to properly visually represent a joint, it is often helpful to add another object to &quot;hide&quot; that the objects are seemingly connected only by air. In our robot, we chose spheres for that purpose.</span></div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="stringliteral">Create the custom properties for the joints:</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="stringliteral">What is important now is to get the hierarchy in this system right. Since the lower leg is connected to the upper one, it has to be moved as well when the upper leg rotates around its joint to the main body. This can by setting the upper leg the *parent* of the lower leg, and the main body the *parent* of the upper leg. This effectively creates a hierarchy as shown here:</span></div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="stringliteral">- motor_type: 1 (1 simulates a servo motor, 2 a simple electric motor)</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="stringliteral">- type: joint</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="stringliteral">- node2: here it&#39;</span>s easiest to choose the spheres we used to represent the joints with visually</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    </div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;Also, you can add <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;Now duplicate the leg (*Shift + D*) and rearrange the copies nicely around your body:</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="stringliteral">![](images/tutorials/advanced_modeling/hierarchy.png)</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="stringliteral">Create the custom properties for the joints:</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="stringliteral">- motor_type: 1 (1 simulates a servo motor, 2 a simple electric motor)</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="stringliteral">- type: joint</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="stringliteral">- node2: here it&#39;</span>s easiest to choose the spheres we used to represent the joints with visually</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;![](images/tutorials/advanced_modeling/overview.png)</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;Also, you can add <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;Don&#39;t forget to again change the *node2* custom properties of the joints after duplicating the legs. If everything worked according to plan, you should have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> hierarchy of objects in Blender looking somewhat like this, with the joint helper objects named &quot;H.*&quot;:</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;Now duplicate the leg (*Shift + D*) and rearrange the copies nicely around your body:</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;![](images/tutorials/advanced_modeling/blender_model_structure.png)</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;![](images/tutorials/advanced_modeling/overview.png)</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="preprocessor">## Collision</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;At <span class="keyword">this</span> point you might be wondering: <span class="stringliteral">&quot;Wait a second, all these solid bodies we created are penetrating each other, is this not going to be a problem for collision in MARS?&quot;</span> In fact, <span class="keyword">this</span> is not <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> problem, as objects grouped together cannot collide and may therefore safely overlap. Neither <span class="keywordflow">do</span> objets connected via joints show collision behaviour. However, <span class="keyword">this</span> is only <span class="keyword">true</span> <span class="keywordflow">for</span> direct connections, but not <span class="keyword">true</span> over more than one hierarchical level. Thus the <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> body and the upper leg of our robot cannot collide, but the <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> body and the lower leg <span class="keywordflow">do</span> collide. This is the reason why it<span class="stringliteral">&#39;s important to give the objects helping to visually represent the joint the same parent as the joint itself (and the leg to which the joint is attached).</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="stringliteral">## Final Remarks</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="stringliteral">And that&#39;</span>s it, you<span class="stringliteral">&#39;ve successfully built a walking robot. We&#39;</span>ll deal with how to actually make it walk in another tutorial, but you can use MARS<span class="stringliteral">&#39; motor controller window to manually play around with the robot and check whether everything worked out or not.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;Don&#39;t forget to again change the *node2* custom properties of the joints after duplicating the legs. If everything worked according to plan, you should have <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> hierarchy of objects in Blender looking somewhat like this, with the joint helper objects named &quot;H.*&quot;:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;![](images/tutorials/advanced_modeling/blender_model_structure.png)</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">## Collision</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;At <span class="keyword">this</span> point you might be wondering: <span class="stringliteral">&quot;Wait a second, all these solid bodies we created are penetrating each other, is this not going to be a problem for collision in MARS?&quot;</span> In fact, <span class="keyword">this</span> is not <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> problem, as objects grouped together cannot collide and may therefore safely overlap. Neither <span class="keywordflow">do</span> objets connected via joints show collision behaviour. However, <span class="keyword">this</span> is only <span class="keyword">true</span> <span class="keywordflow">for</span> direct connections, but not <span class="keyword">true</span> over more than one hierarchical level. Thus the <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> body and the upper leg of our robot cannot collide, but the <a class="code" href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a> body and the lower leg <span class="keywordflow">do</span> collide. This is the reason why it<span class="stringliteral">&#39;s important to give the objects helping to visually represent the joint the same parent as the joint itself (and the leg to which the joint is attached).</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="stringliteral">If you have taken a closer look at the custom properties created by the *create_mars_props* script you will have noticed that the hierarchy shown in the Blender model was mirrored in the groups: each section of the robot belonged to a separate group. Technically, the hierarchy introduced above is not strict in the sense that it is internally represented as connected groups rather than hierarchical levels. However, the *create_mars_props* script uses the hierarchy to properly subdivide everything in groups, thus if you have a centipede-like robot where each part is equally structurally equivalent, you will still have to order them manually into a nested hierarchy. The only alternative is to assign the group numbers manually before running the export script.</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="stringliteral">## Final Remarks</span></div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="stringliteral">And that&#39;</span>s it, you<span class="stringliteral">&#39;ve successfully built a walking robot. We&#39;</span>ll deal with how to actually make it walk in another tutorial, but you can use MARS<span class="stringliteral">&#39; motor controller window to manually play around with the robot and check whether everything worked out or not.</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="stringliteral">If you have taken a closer look at the custom properties created by the *create_mars_props* script you will have noticed that the hierarchy shown in the Blender model was mirrored in the groups: each section of the robot belonged to a separate group. Technically, the hierarchy introduced above is not strict in the sense that it is internally represented as connected groups rather than hierarchical levels. However, the *create_mars_props* script uses the hierarchy to properly subdivide everything in groups, thus if you have a centipede-like robot where each part is equally structurally equivalent, you will still have to order them manually into a nested hierarchy. The only alternative is to assign the group numbers manually before running the export script.</span></div>
 <div class="ttc" id="simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c_html_a0ddf1224851353fc92bfbff6f499fa97"><div class="ttname"><a href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#a0ddf1224851353fc92bfbff6f499fa97">main</a></div><div class="ttdeci">int main(int argc, char *argv[])</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d92/simulation_2mars_2app_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c_source.html#l00223">CMakeCCompilerId.c:223</a></div></div>
 <div class="ttc" id="_camera_sensor_8h_html_aae14d6f4141dfe114a3f5777462bd8b8"><div class="ttname"><a href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a></div><div class="ttdeci">u_int8_t a</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00043">CameraSensor.h:43</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -165,7 +166,7 @@ $(document).ready(function(){initNavTree('d5/df0/tutorial__advanced__modeling_8m
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d5/df0/tutorial__advanced__modeling_8md.html">tutorial_advanced_modeling.md</a></li>
-    <li class="footer">Generated on Mon Mar 2 2015 17:29:18 for MARS by
+    <li class="footer">Generated on Tue Mar 3 2015 17:24:19 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.5"/>
-<title>MARS: /home/kavonszadkowski/limes-dev/simulation/mars/doc/src/documentation_structure.md Source File</title>
+<title>/home/kavonszadkowski/limes-dev/simulation/mars/doc/src/documentation_structure.md Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -30,11 +30,9 @@
  <tbody>
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="../../logo_v2_wob.png"/></td>
-  <td style="padding-left: 0.5em;">
-   <div id="projectname">MARS
-   </div>
-   <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
-  </td>
+    <td style="padding-left: 0.5em;">
+    <div id="projectbrief">An open-source, flexible 3D physical simulation framework</div>
+    </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
         <span class="left">
           <img id="MSearchSelect" src="../../search/mag_sel.png"
@@ -96,54 +94,46 @@ $(document).ready(function(){initNavTree('df/def/documentation__structure_8md.ht
 <a href="../../df/def/documentation__structure_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;Documentation Structure {#documentation_structure}</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;=======================</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;As of September 2013, the documentation <span class="keywordflow">for</span> MARS has seen <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> number of structural changes. Thus, <span class="keywordflow">if</span> you are unsure where to look or would like to contribute to MARS<span class="stringliteral">&#39; documentation, hopefully the following will provide the information you need.</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;If you would like to contribute to MARS<span class="stringliteral">&#39; documentation or simply fetch an offline version, hopefully the following will provide the information you need.</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="stringliteral">## Overview</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="stringliteral">## Doxygen</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="stringliteral">MARS Documentation is split into two main components:</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="stringliteral">1. MARS Manual</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="stringliteral">2. MARS Doxygen</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="stringliteral">The MARS Manual is a document describing the main features of MARS and common tasks users have to deal with such as installation or creating a new plugin. To achieve easy formatting and updating, the HTML documentation is generated from [Markdown](http://daringfireball.net/projects/markdown/) files (*.md) using a Python script and the document converter [pandoc](http://johnmacfarlane.net/pandoc/) (&gt; V.1.11.1). The script searches for Markdown files either in</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="stringliteral">    mars/doc/src/</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="stringliteral">and its subfolders or in any \a /doc/ subfolders of mars components such as</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="stringliteral">    mars/common/data_broker/doc/</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="stringliteral">which the script automatically puts in corresponding subcategories of the manual. The folder</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="stringliteral">    mars/doc/src/groups/</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="stringliteral">is ignored by the script as it contains a number of Markdown files defining subpages for Doxygen (see below).</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="stringliteral">Additionally, the documentation generator tool [Doxygen](http://www.doxygen.org/) is used to create a detailed documentation for the source code. However, the Doxygen documentation also includes the complete MARS Manual and thus parses the same Markdown files. The Doxygen documentation is quite large and is thus not included in the repository. You will have to run Doxygen (&gt; V.1.8.5) yourself to create it, either manually</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="stringliteral">    cd mars/doc/doxygen</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="stringliteral">    doxygen mars_doxyconf</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="stringliteral">    </span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="stringliteral">or by using the &quot;update_docs.py&quot; script.</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="stringliteral">## Using Markdown</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="stringliteral">While Markdown is a very straightforward and versatile markup format, there is no official standard and thus different varieties of Markdown exist. Doxygen for instance uses some of the additions defined in [PHP Markdown](http://michelf.com/projects/php-markdown/extra/) and [GitHub flavored Markdown](http://github.github.com/github-flavored-markdown/) as explained [here](http://www.stack.nl/~dimitri/doxygen/manual/markdown.html) (see also [Markdown Extensions](http://www.stack.nl/~dimitri/doxygen/manual/markdown.html#markdown_extra)). Unfortunately, pandoc supports yet another set of Markdown varieties ([pandoc&#39;</span>s Markdown<span class="stringliteral">&#39;](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html)), such that not all features can be used both for the Doxygen documentation and the MARS Manual. However, all essential features work in both versions and the conversion script for the Manual contains some code converting from Doxygen-compatible to pandoc-compatible Markdown notation, thus if there is a conflict, the Doxygen compatible notation should be used.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="stringliteral">If in doubt how something is done, check the Markdown source files where it was done already. If you&#39;</span>re still missing features, contact the MARS team and we<span class="stringliteral">&#39;ll see what we can do. Be welcome to modify the &quot;markdown2marshtml.py&quot; yourself if you feel very strongly about a missing feature).</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="stringliteral">## Doxygen documentation for MARS components</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="stringliteral">Since the Doxygen documentation for the entirety of MARS is pretty large, it is also possible to run Doxygen only on specific MARS components. You can do this automatically by running the &quot;create_subproject_doxygens.py&quot; scripts in the /doc/scripts/ folder. It will search for /doc/ folders within the MARS folder tree and set up Doxygen there if the doc folder contains an *.md file of the same name as the folder (e.g. &quot;data_broker.md&quot; in mars/common/data_broker/doc/).</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="stringliteral">## Automatically documentation update</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="stringliteral">You can run the script &quot;update_docs.py&quot; in the mars/doc/scripts/ folder, which automatically runs all scripts needed to rebuild the MARS documentation, prompting whether to run Doxygen or not where appropriate.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="stringliteral"></span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="stringliteral"></span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="stringliteral">MARS&#39;</span> documentation is built <span class="keyword">using</span> [Doxygen](http:<span class="comment">//www.stack.nl/~dimitri/doxygen), which allows not only the documentation of the source code, but also the addition of manual pages written in  [Markdown](http://daringfireball.net/projects/markdown/). The Doxygen documentation is quite large and is thus not included in the master branch of the MARS repository. You can either explicitly checkout the *gh-pages* branch or you can run Doxygen (&gt; V.1.8.5) yourself to create it locally, either manually</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;    cd simulation/mars/doc/doxygen</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    doxygen mars_doxyconf</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;or by <span class="keyword">using</span> the <span class="stringliteral">&quot;update_docs.py&quot;</span> Python script which can be found in simularion/mars/doc/scripts.</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;## Separate Manual (without source code docs)</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;It is possible to also convert the *.md files to html <span class="keyword">using</span> the document converter [pandoc](http:<span class="comment">//johnmacfarlane.net/pandoc/) (&gt; V.1.11.1), thus compiling a MARS manual without the code documentation (in case you need to work offline and don&#39;t want to checkout the entire code documentation). You can do this using the same &quot;update_docs.py&quot; Python script. The script searches for Markdown files either in</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    simulation/mars/doc/src/</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;and its subfolders or in any /doc/ subfolders of mars components such as</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    mars/common/data_broker/doc/</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;which the script automatically puts in corresponding subcategories of the manual. The folder</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    mars/doc/src/groups/</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;is ignored by the script as it contains <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> number of Markdown files defining subpages <span class="keywordflow">for</span> Doxygen (see below).</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;&gt; Note: This feature is still <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> bit experimental and might run into problems in certain cases.</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;## Using Markdown</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;While Markdown is <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> very straightforward and versatile markup format, there is no comprehensive official standard and thus different varieties of Markdown exist. Doxygen <span class="keywordflow">for</span> instance uses some of the additions defined in [PHP Markdown](http:<span class="comment">//michelf.com/projects/php-markdown/extra/) and [GitHub flavored Markdown](http://github.github.com/github-flavored-markdown/) as explained [here](http://www.stack.nl/~dimitri/doxygen/manual/markdown.html) (see also [Markdown Extensions](http://www.stack.nl/~dimitri/doxygen/manual/markdown.html#markdown_extra)). Unfortunately, pandoc supports yet another set of Markdown varieties ([pandoc&#39;s Markdown&#39;](http://johnmacfarlane.net/pandoc/demo/example9/pandocs-markdown.html)), such that not all features can be used both for the Doxygen documentation and the MARS Manual. However, all essential features work in both versions and the conversion script for the Manual contains some code converting from Doxygen-compatible to pandoc-compatible Markdown notation, thus if there is a conflict, the Doxygen compatible notation should be used.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;If in doubt how something is done, check the Markdown source files where somebody did it already. If you<span class="stringliteral">&#39;re still missing features, contact the MARS team and we&#39;</span>ll see what we can <span class="keywordflow">do</span>. Be welcome to modify the <span class="stringliteral">&quot;markdown2marshtml.py&quot;</span> yourself <span class="keywordflow">if</span> you feel very strongly about <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> missing feature).</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;## Doxygen documentation <span class="keywordflow">for</span> MARS components</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;Since the Doxygen documentation <span class="keywordflow">for</span> the entirety of MARS is pretty large, it is also possible to run Doxygen only on specific MARS components. You can <span class="keywordflow">do</span> <span class="keyword">this</span> automatically by running the <span class="stringliteral">&quot;create_subproject_doxygens.py&quot;</span> scripts in the /doc/scripts/ folder. It will search <span class="keywordflow">for</span> /doc/ folders within the MARS folder tree and set up Doxygen there <span class="keywordflow">if</span> the doc folder contains an *.md file of the same name as the folder (e.g. <span class="stringliteral">&quot;data_broker.md&quot;</span> in mars/common/data_broker/doc/). As always, the <span class="stringliteral">&quot;update_docs.py&quot;</span> script will ask you <span class="keywordflow">if</span> you want to <span class="keywordflow">do</span> <span class="keyword">this</span> as well.</div>
 <div class="ttc" id="_camera_sensor_8h_html_aae14d6f4141dfe114a3f5777462bd8b8"><div class="ttname"><a href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a></div><div class="ttdeci">u_int8_t a</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00043">CameraSensor.h:43</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -151,7 +141,7 @@ $(document).ready(function(){initNavTree('df/def/documentation__structure_8md.ht
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../df/def/documentation__structure_8md.html">documentation_structure.md</a></li>
-    <li class="footer">Generated on Mon Mar 2 2015 17:29:18 for MARS by
+    <li class="footer">Generated on Tue Mar 3 2015 17:24:19 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>
