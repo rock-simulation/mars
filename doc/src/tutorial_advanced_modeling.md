@@ -1,6 +1,10 @@
 Advanced Modeling {#tutorial_advanced_modeling}
 =================
 
+> NOTE: This tutorial refers to creating the deprecated MARS Scene format. MARS will remain backwards compatible to MARS scenes as long as reasonably possible, but the SMURF format primarily supported in future development is SMURF (refer to [Supported 3D Formats](@ref supported_3d_formats)).
+>
+> To use Blender for the creation of SMURF, check out the Blender Add-On [Phobos](http://www.github.com/rock-simulation/phobos).
+
 ![](images/tutorials/advanced_modeling/robot.png)
 
 
@@ -11,7 +15,7 @@ In this tutorial you will learn how to build model of a robot in Blender which h
 
 ## Prerequisites
 
-You should have a recent version of Blender installed (we use 2.62 in this tutorial) and access to the scripts in your MARS development folder. 
+You should have a recent version of Blender installed (we use 2.62 in this tutorial) and access to the scripts in your MARS development folder.
 
 
 ## Hierarchy and Object Types
@@ -40,7 +44,7 @@ Create the custom properties for the joints:
 - motor_type: 1 (1 simulates a servo motor, 2 a simple electric motor)
 - type: joint
 - node2: here it's easiest to choose the spheres we used to represent the joints with visually
-    
+
 Also, you can add a nice ball-shaped feet that will make collision-detection more accurate later on and set the custom properties *physicMode* to *sphere* as well as *radius* to the correct value like you did in the basic modeling tutorial. You can then run the *create_mars_props.py* script.
 
 Now duplicate the leg (*Shift + D*) and rearrange the copies nicely around your body:
@@ -61,4 +65,3 @@ At this point you might be wondering: "Wait a second, all these solid bodies we 
 And that's it, you've successfully built a walking robot. We'll deal with how to actually make it walk in another tutorial, but you can use MARS' motor controller window to manually play around with the robot and check whether everything worked out or not.
 
 If you have taken a closer look at the custom properties created by the *create_mars_props* script you will have noticed that the hierarchy shown in the Blender model was mirrored in the groups: each section of the robot belonged to a separate group. Technically, the hierarchy introduced above is not strict in the sense that it is internally represented as connected groups rather than hierarchical levels. However, the *create_mars_props* script uses the hierarchy to properly subdivide everything in groups, thus if you have a centipede-like robot where each part is equally structurally equivalent, you will still have to order them manually into a nested hierarchy. The only alternative is to assign the group numbers manually before running the export script.
-

@@ -1,6 +1,10 @@
 Basic Modeling {#tutorial_basic_modeling}
 ==============
 
+> NOTE: This tutorial refers to creating the deprecated MARS Scene format. MARS will remain backwards compatible to MARS scenes as long as reasonably possible, but the SMURF format primarily supported in future development is SMURF (refer to [Supported 3D Formats](@ref supported_3d_formats)).
+>
+> To use Blender for the creation of SMURF, check out the Blender Add-On [Phobos](http://www.github.com/rock-simulation/phobos).
+
 ## Introduction
 
 In this tutorial you will learn how to build a simple model of a robot
@@ -108,7 +112,7 @@ object->apply->scale
     joint has the same origin and orientation as the joint helper
     object.  Create two custom properties in the "object property"
     window.
-    
+
     ![Joint](images/tutorials/basic_modeling/joint.png)
 
     For the first custom property press edit to set the "property
@@ -209,4 +213,3 @@ existing scene.
 28. Run the "relative_mars_export.py" script to update the scene.
 
 29. Test in MARS!
-

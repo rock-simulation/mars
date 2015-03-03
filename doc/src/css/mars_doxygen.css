@@ -271,9 +271,10 @@ body {
 
 div.contents {
   /*width: 80%;*/
+    max-width: 850px;
 	margin-top: 10px;
-	margin-left: 20px;
-	margin-right: 40px;
+	margin-left: 5%;
+	margin-right: 5%;
 }
 
 td.indexkey {

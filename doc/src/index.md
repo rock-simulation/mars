@@ -1,6 +1,4 @@
-# MARS Simulator
-
-MARS (Machina Arte Robotum Simulans) is a cross-platform simulation and visualisation tool created for robotics research. It runs on (Ubuntu) Linux, Mac and Windows and consists of a core framework containing all main simulation components, a GUI (based on [Qt]()), 3D visualization (using [OSG](http://www.openscenegraph.org)) and a physics core (based on [ODE](http://www.ode.org). MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics simulation without visualization and GUI.
+MARS (Machina Arte Robotum Simulans) is a cross-platform simulation and visualisation tool created for robotics research. It runs on (Ubuntu) Linux, Mac and Windows and consists of a core framework containing all main simulation components, a GUI (based on [Qt](http://qt-project.org)), 3D visualization (using [OSG](http://www.openscenegraph.org)) and a physics core (based on [ODE](http://www.ode.org). MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics simulation without visualization and GUI.
 It is possible to extend MARS writing your own plugins and many plugins introducing various functionality such as HUDs or custom ground reaction forces already exist - and it's easy to write your own.
 
 ## Installation
