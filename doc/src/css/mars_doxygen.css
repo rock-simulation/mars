@@ -1,7 +1,11 @@
+@import url("http://fonts.googleapis.com/css?family=Muli");
+
 /* The standard CSS for doxygen 1.8.5 */
 
 body, table, div, p, dl {
-	font: 400 14px/22px Roboto,sans-serif;
+    font-family: 'Muli';
+    font-size: 12px;
+	  /*font: 400 14px/22px Roboto,sans-serif;*/
 }
 
 /* @group Heading Levels */
@@ -11,10 +15,11 @@ h1.groupheader {
 }
 
 .title {
-	font: 400 14px/28px Roboto,sans-serif;
+	font: 400 14px/28px 'Muli';
 	font-size: 150%;
 	font-weight: bold;
-	margin: 10px 2px;
+  text-decoration: underline;
+  margin: 10px 2px;
 }
 
 h2.groupheader {
@@ -39,10 +44,16 @@ h1, h2, h3, h4, h5, h6 {
 	-o-transition: text-shadow 0.5s linear;
 	transition: text-shadow 0.5s linear;
 	margin-right: 15px;
+  margin-top: 2em;
 }
 
 h1.glow, h2.glow, h3.glow, h4.glow, h5.glow, h6.glow {
 	text-shadow: 0 0 15px cyan;
+}
+
+div.image img {
+    width: 100%;
+    margin-bottom: 1.5em;
 }
 
 dt {
@@ -259,10 +270,10 @@ body {
 }
 
 div.contents {
-    width: 80%;
+  /*width: 80%;*/
 	margin-top: 10px;
-	margin-left: 10%;
-	margin-right: 10%;
+	margin-left: 20px;
+	margin-right: 40px;
 }
 
 td.indexkey {
@@ -370,6 +381,10 @@ blockquote {
         border-left: 2px solid #E4D0CC;
         margin: 0 24px 0 4px;
         padding: 0 12px 0 16px;
+}
+
+#MSearchBox {
+  top: 140px;
 }
 
 /* @end */
@@ -839,16 +854,44 @@ table.fieldtable {
 	font-size: 13px;
 }
 
+#top {
+  border-bottom: 2px  solid #a88163;
+}
+
+#side-nav {
+  border: 0px;
+  /*border-top: 2px  solid #a88163;*/
+  background-image: none;
+  padding: 0px;
+}
+
+#nav-tree {
+  margin:0px;
+  border: 0px;
+  background-image: none;
+}
+
+.navpath
+{
+  background-image: none;
+  border: 0px;
+  background-color: #ffffff;
+  border-top: 2px  solid #a88163;
+}
+
 .navpath ul
 {
 	font-size: 11px;
+  background-image: none;
+  /*
 	background-image:url('tab_b.png');
 	background-repeat:repeat-x;
 	background-position: 0 -5px;
+*/
 	height:30px;
 	line-height:30px;
 	color:#DFC6C2;
-	border:solid 1px #EFE3E1;
+	border:solid 0px #EFE3E1;
 	overflow:hidden;
 	margin:0px;
 	padding:0px;
@@ -873,7 +916,7 @@ table.fieldtable {
 	text-decoration: none;
 	outline: none;
 	color: #A9665B;
-	font-family: 'Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
+	font-family: 'Muli','Lucida Grande',Geneva,Helvetica,Arial,sans-serif;
 	text-shadow: 0px 1px 1px rgba(255, 255, 255, 0.9);
 	text-decoration: none;        
 }
@@ -925,16 +968,18 @@ div.ingroups a
 
 div.header
 {
-        background-image:url('nav_h.png');
-        background-repeat:repeat-x;
-	background-color: #FDFCFC;
+  /*background-image:url('nav_h.png');
+    background-repeat:repeat-x;*/
+	background-color: #ffffff;
 	margin:  0px;
-	border-bottom: 1px solid #F0E4E2;
+	border-bottom: 0px solid #F0E4E2;
 }
 
 div.headertitle
 {
-	padding: 5px 5px 5px 10px;
+	background-color: #ffffff;
+	padding: 5px 5px 5px 20px;
+	border: 0px;
 }
 
 dl
@@ -1025,15 +1070,19 @@ dl.section dd {
 #projectname
 {
 	font: 300% Tahoma, Arial,sans-serif;
+  color: #eeeeee;
 	margin: 0px;
 	padding: 2px 0px;
 }
     
 #projectbrief
 {
-	font: 120% Tahoma, Arial,sans-serif;
+  font: 120% 'Muli';
 	margin: 0px;
 	padding: 0px;
+  position: absolute;
+  top: 120px;
+  left: 120px;
 }
 
 #projectnumber
@@ -1045,10 +1094,10 @@ dl.section dd {
 
 #titlearea
 {
-	padding: 0px;
+	padding: 0px 0px 20px 0px;
 	margin: 0px;
 	width: 100%;
-	border-bottom: 1px solid #CDA7A1;
+	border-bottom: 0px solid #CDA7A1;
 }
 
 .image
@@ -1106,14 +1155,14 @@ div.toc {
 
 div.toc li {
         background: url("bdwn.png") no-repeat scroll 0 5px transparent;
-        font: 10px/1.2 Verdana,DejaVu Sans,Geneva,sans-serif;
+        font: 10px/1.2 'Muli',Verdana,DejaVu Sans,Geneva,sans-serif;
         margin-top: 5px;
         padding-left: 10px;
         padding-top: 2px;
 }
 
 div.toc h3 {
-        font: bold 12px/1.2 Arial,FreeSans,sans-serif;
+        font: bold 12px/1.2 'Muli',Arial,FreeSans,sans-serif;
 	color: #C69992;
         border-bottom: 0 none;
         margin: 0;
@@ -1209,7 +1258,7 @@ tr.heading h2 {
 #powerTip div {
         margin: 0px;
         padding: 0px;
-        font: 12px/16px Roboto,sans-serif;
+        font: 12px/16px 'Muli',Roboto,sans-serif;
 }
 
 #powerTip:before, #powerTip:after {
