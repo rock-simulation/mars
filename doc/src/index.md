@@ -1,13 +1,15 @@
 # MARS Simulator
 
-## About
+MARS (Machina Arte Robotum Simulans) is a cross-platform simulation and visualisation tool created for robotics research. It runs on (Ubuntu) Linux, Mac and Windows and consists of a core framework containing all main simulation components, a GUI (based on [Qt]()), 3D visualization (using [OSG](http://www.openscenegraph.org)) and a physics core (based on [ODE](http://www.ode.org). MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics simulation without visualization and GUI.
+It is possible to extend MARS writing your own plugins and many plugins introducing various functionality such as HUDs or custom ground reaction forces already exist - and it's easy to write your own.
 
-MARS (Machina Arte Robotum Simulans) is a simulation and visualisation tool for developing control algorithms and designing robots. It consists of a core framework containing all main simulation components, a GUI, OpenGL based visualisation and a physics core that is currently based on the [Open Dynamics Engine](http://www.ode.org). The software is designed in a modular manner by making high use of interfaces. In this way many parts of MARS can be also used standalone (e.g. the physic simulation can be used without any visualization or GUI).
+## Installation
 
-## News
+We don't yet provide binaries for MARS, thus installing it requires downloading the source and building it locally. To simplify this task, we have created a set of install scripts that will do all the work of downloading and installing dependencies, cloning the MARS repository and building for you. They have their own repository here on GitHub: [MARS install scripts](https://github.com/rock-simulation/mars_install_scripts)
 
-* 21.11.2013:
-  First functional version of the new MARS documentation is completed. MARS now comes with a constantly extended manual as well as a Doxygen-powered code documentation using a shared base of Markdown files. For details, check the [Documentation structure](@ref documentation_structure).
+## License
+
+MARS is distributed under the [Lesser GNU Public License (LGPL)](https://www.gnu.org/licenses/lgpl.html).
 
 ## Launch
 
@@ -15,8 +17,4 @@ After MARS is installed you can find a mars_default configuration folder in $MAR
 
     cd $MARS_DEV_ROOT
     . env.sh
-    cd install/configuration/mars_default
     mars_app
-    
-If it's not clear to you what these commands do, check out the [MARS environment and build tutorial](@ref tutorial_build).
-
