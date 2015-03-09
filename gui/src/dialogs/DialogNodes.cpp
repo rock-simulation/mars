@@ -52,6 +52,7 @@ namespace mars {
       pDialog->clearButtonBox();
 
       QHBoxLayout *hLayout = new QHBoxLayout;
+      hLayout->setContentsMargins(1, 1, 1, 1);
       this->setLayout(hLayout);
       hLayout->addWidget(pDialog);
 

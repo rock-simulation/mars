@@ -50,6 +50,7 @@ namespace mars {
       QHBoxLayout *hLayout = new QHBoxLayout;
       this->setLayout(hLayout);
       hLayout->addWidget(pDialog);
+      hLayout->setContentsMargins(1, 1, 1, 1);
 
       pDialog->setViewButtonVisibility(false);
       pDialog->setViewMode(main_gui::TreeViewMode);

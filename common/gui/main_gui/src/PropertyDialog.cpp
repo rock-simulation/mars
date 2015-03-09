@@ -48,6 +48,8 @@ namespace mars {
       variantEditorButton = new QtButtonPropertyBrowser();
       hBoxLayout = new QHBoxLayout();
       vBoxLayout = new QVBoxLayout();
+      hBoxLayout->setContentsMargins(1, 1, 1, 1);
+      vBoxLayout->setContentsMargins(1, 1, 1, 1);
       tabWidget = NULL;
       viewMode = ButtonViewMode;
 
@@ -83,11 +85,9 @@ namespace mars {
       scrollArea = new QScrollArea(0);
       scrollArea->setWidget(frame);
       scrollArea->setWidgetResizable(true);
-
       vBoxLayout->addWidget(viewButton);
       vBoxLayout->addWidget(scrollArea);
       vBoxLayout->addWidget(buttonBox);
-
       setLayout(vBoxLayout);
       adjustSize();
 

@@ -46,6 +46,7 @@ namespace mars {
       startTimer(500);
 
       QVBoxLayout *vLayout = new QVBoxLayout();
+      vLayout->setContentsMargins(1, 1, 1, 1);
       vLayout->addWidget(pDialog);
       setLayout(vLayout);
 
