@@ -53,10 +53,14 @@ namespace mars {
 
       if((it = config->find("ambientFront")) != config->end())
         ambientFront.fromConfigItem(&it->second[0]);
+      if((it = config->find("ambientColor")) != config->end())
+        ambientFront.fromConfigItem(&it->second[0]);
       if((it = config->find("ambientBack")) != config->end())
         ambientBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("diffuseFront")) != config->end())
+        diffuseFront.fromConfigItem(&it->second[0]);
+      if((it = config->find("diffuseColor")) != config->end())
         diffuseFront.fromConfigItem(&it->second[0]);
       if((it = config->find("diffuseBack")) != config->end())
         diffuseBack.fromConfigItem(&it->second[0]);
@@ -64,10 +68,14 @@ namespace mars {
 
       if((it = config->find("specularFront")) != config->end())
         specularFront.fromConfigItem(&it->second[0]);
+      if((it = config->find("specularColor")) != config->end())
+        specularFront.fromConfigItem(&it->second[0]);
       if((it = config->find("specularBack")) != config->end())
         specularBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("emissionFront")) != config->end())
+        emissionFront.fromConfigItem(&it->second[0]);
+      if((it = config->find("emissionColor")) != config->end())
         emissionFront.fromConfigItem(&it->second[0]);
       if((it = config->find("emissionBack")) != config->end())
         emissionBack.fromConfigItem(&it->second[0]);
