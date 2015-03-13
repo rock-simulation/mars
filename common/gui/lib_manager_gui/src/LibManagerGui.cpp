@@ -88,6 +88,14 @@ namespace mars {
 
       void LibManagerGui::unload(std::string libName) {
         libManager->unloadLibrary(libName);
+        std::list<std::string> libNameList;
+        libManager->getAllLibraryNames(&libNameList);
+        widget->clear();
+        for(std::list<std::string>::iterator it = libNameList.begin();
+            it != libNameList.end(); ++it) {
+          lib_manager::LibInfo info = libManager->getLibraryInfo(*it);
+          widget->updateLibInfo(info);
+        }
       }
 
       void LibManagerGui::dumpTo(std::string filepath) {

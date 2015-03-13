@@ -89,12 +89,17 @@ namespace mars {
       }
 
       void LibManagerWidget::onUnload() {
+        std::list<std::string> libs;
+        std::list<std::string>::iterator libsIt;
         QList<QTableWidgetItem*> items = table->selectedItems();
         for(QList<QTableWidgetItem*>::iterator it = items.begin(); 
             it != items.end(); ++it) {
           if((*it)->column() == 0) {
-            emit unload((*it)->text().toStdString());
+            libs.push_back((*it)->text().toStdString());
           }
+        }
+        for(libsIt=libs.begin(); libsIt!=libs.end(); ++libsIt) {
+          emit unload(*libsIt);
         }
       }
 
