@@ -368,29 +368,77 @@ namespace mars {
       // read in the provided file - .smurfs / .smurf / .urdf
       configmaps::ConfigMap map;
       std::string uri;
+      std::string uri_extension;
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
       if(file_extension == ".smurfs") {
         configmaps::ConfigVector::iterator it;
-        map = configmaps::ConfigMap::fromYamlFile(path+_filename, false);
+        map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
         map.toYamlFile("smurfs_debugmap.yml");
-        for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) {
-          uri = (std::string)(*it)["URI"];
-          (*it)["path"] = path+utils::getPathOfFile(uri);
+        for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
+          uri = (std::string)(*it)["file"];
+          if (uri == "") {
+            uri = (std::string)(*it)["URI"]; // backwards compatibility
+          }
+          uri_extension = utils::getFilenameSuffix(uri);
+          // get type from file extension if there is no type
+          if ((std::string)(*it)["type"] == "")
+            (*it)["type"] = uri_extension.substr(1);
+          // handle absolute paths
+          if (uri.substr(0,1) == "/") {
+            (*it)["path"] = utils::getPathOfFile(uri);
+          } else {
+            (*it)["path"] = path+utils::getPathOfFile(uri);
+          }
+          std::string fulluri = uri;
           utils::removeFilenamePrefix(&uri);
-          (*it)["URI"] = uri;
-          entitylist.push_back((*it).children);
+          (*it)["file"] = uri;
+          // the following allows adding an old MARS scene file in a smurf scene
+          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene")) {
+            control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+                path, (std::string)(*it)["name"]);
+          }
+          else {
+            entitylist.push_back((*it).children);
+          }
+        }
+        for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
+          uri = (std::string)(*it)["file"];
+          if (uri == "") {
+            uri = (std::string)(*it)["URI"]; // backwards compatibility
+          }
+          uri_extension = utils::getFilenameSuffix(uri);
+          // get type from file extension if there is no type
+          if ((std::string)(*it)["type"] == "")
+            (*it)["type"] = uri_extension.substr(1);
+          // handle absolute paths
+          if (uri.substr(0,1) == "/") {
+            (*it)["path"] = utils::getPathOfFile(uri);
+          } else {
+            (*it)["path"] = path+utils::getPathOfFile(uri);
+          }
+          std::string fulluri = uri;
+          utils::removeFilenamePrefix(&uri);
+          (*it)["file"] = uri;
+          // the following allows adding an old MARS scene file in a smurf scene
+          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene")) {
+            control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+                path, (std::string)(*it)["name"]);
+          }
+          else {
+            entitylist.push_back((*it).children);
+          }
         }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;
           // map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
           map["path"] = path;
-          map["URI"] = _filename;
+          map["file"] = _filename;
           map["type"] = "smurf";
           map["name"] = "";
           entitylist.push_back(map);
       } else if(file_extension == ".urdf") {
-          map["URI"] = _filename;
+          map["file"] = _filename;
           map["path"] = path;
           map["name"] = "";
           map["type"] = "urdf";

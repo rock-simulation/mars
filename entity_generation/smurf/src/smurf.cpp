@@ -176,7 +176,7 @@ namespace mars {
       entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
       tmpPath = path;
-      std::string filename = (std::string)entityconfig["URI"];
+      std::string filename = (std::string)entityconfig["file"];
       fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
       if((std::string)entityconfig["type"] == "smurf") {
         model = smurf_parser::parseFile(&entityconfig, path, filename, true);
@@ -206,7 +206,7 @@ namespace mars {
       // node mapping and name checking
       std::string robotname = (std::string)entityconfig["name"];
       if (robotname == "") {
-              entityconfig["name"] = "blub";//(std::string)entityconfig["modelname"];
+              entityconfig["name"] = "unknown_robot";  //(std::string)entityconfig["modelname"];
             }
       if(control->loadCenter->getMappedSceneByName(robotname) == 0) {
         control->loadCenter->setMappedSceneName(robotname);
