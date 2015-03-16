@@ -42,6 +42,41 @@ namespace mars {
     using namespace mars::utils;
     using namespace mars::interfaces;
 
+
+    SMURFLoader::SMURFLoader(lib_manager::LibManager *theManager) :
+      interfaces::LoadSceneInterface(theManager), control(NULL){
+
+      mars::interfaces::SimulatorInterface *marsSim;
+      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
+      if(marsSim) {
+        control = marsSim->getControlCenter();
+        control->loadCenter->loadScene[".zsmurf"] = this; // zipped smurf model
+        control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
+        control->loadCenter->loadScene[".smurf"] = this; // smurf model
+        control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
+        control->loadCenter->loadScene[".svg"] = this; // smurfed vector graphic
+        control->loadCenter->loadScene[".urdf"] = this; // urdf model
+        LOG_INFO("smurf_loader: added SMURF loader to loadCenter");
+      }
+
+      factoryManager =
+            theManager->acquireLibraryAs<mars::entity_generation::EntityFactoryManager>(
+                "mars_entity_factory");
+    }
+
+    SMURFLoader::~SMURFLoader() {
+      if(control) {
+        control->loadCenter->loadScene.erase(".zsmurf");
+        control->loadCenter->loadScene.erase(".zsmurfs");
+        control->loadCenter->loadScene.erase(".smurf");
+        control->loadCenter->loadScene.erase(".smurfs");
+        control->loadCenter->loadScene.erase(".svg");
+        control->loadCenter->loadScene.erase(".urdf");
+        libManager->releaseLibrary("mars_sim");
+      }
+      libManager->releaseLibrary("mars_entity_factory");
+    }
+
     void SMURFLoader::checkEncodings() {
             bool existing = true;
             QString str("<xml><easter_egg>3.1418</easter_egg></xml>");
@@ -299,40 +334,6 @@ namespace mars {
             file.close();
             return 1;
         }
-
-    SMURFLoader::SMURFLoader(lib_manager::LibManager *theManager) :
-      interfaces::LoadSceneInterface(theManager), control(NULL){
-
-      mars::interfaces::SimulatorInterface *marsSim;
-      marsSim = libManager->getLibraryAs<mars::interfaces::SimulatorInterface>("mars_sim");
-      if(marsSim) {
-        control = marsSim->getControlCenter();
-        control->loadCenter->loadScene[".zsmurf"] = this; // zipped smurf model
-        control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
-        control->loadCenter->loadScene[".smurf"] = this; // smurf model
-        control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
-        control->loadCenter->loadScene[".svg"] = this; // smurfed vector graphic
-        control->loadCenter->loadScene[".urdf"] = this; // urdf model
-        LOG_INFO("smurf_loader: added SMURF loader to loadCenter");
-      }
-
-      factoryManager =
-            theManager->acquireLibraryAs<mars::entity_generation::EntityFactoryManager>(
-                "mars_entity_factory");
-    }
-
-    SMURFLoader::~SMURFLoader() {
-      if(control) {
-        control->loadCenter->loadScene.erase(".zsmurf");
-        control->loadCenter->loadScene.erase(".zsmurfs");
-        control->loadCenter->loadScene.erase(".smurf");
-        control->loadCenter->loadScene.erase(".smurfs");
-        control->loadCenter->loadScene.erase(".svg");
-        control->loadCenter->loadScene.erase(".urdf");
-        libManager->releaseLibrary("mars_sim");
-      }
-      libManager->releaseLibrary("mars_entity_factory");
-    }
 
     /**
        * Loads a URDF, SMURF or SMURFS (SMURF scene) file.
