@@ -6,7 +6,8 @@
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/scene_loader" />
     <!--<depend package="simulation/mars/urdf_loader" />-->
-    <depend package="simulation/mars/graphics" />
+    <depend package="simulation/mars/graphics"  optional="1" />
+    <depend package="simulation/mars/gui"  optional="1" />
     <depend package="simulation/mars/sim" />
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/gui/main_gui" />
