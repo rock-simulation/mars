@@ -276,9 +276,9 @@ namespace mars {
       void publishDataElement(const DataElement *element);
       void updatePendingRegistrations(DataElement *newElement);
       unsigned long createId();
-      void destroyLock(pthread_rwlock_t *rwlock);
-      void destroyLock(pthread_mutex_t *mutex);
-      void destroyLock(pthread_cond_t *cond);
+      //void destroyLock(pthread_rwlock_t *rwlock);
+      //void destroyLock(pthread_mutex_t *mutex);
+      //void destroyLock(pthread_cond_t *cond);
       DataElement *getElement(const std::string &groupName,
                               const std::string &dataName) const;
 

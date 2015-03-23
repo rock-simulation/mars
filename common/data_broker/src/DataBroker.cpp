@@ -191,17 +191,17 @@ namespace mars {
       fprintf(stderr, "Delete data_broker\n");
     }
 
-    void DataBroker::destroyLock(pthread_rwlock_t *rwlock) {
-      while((pthread_rwlock_destroy(rwlock) == -1) && (errno == EBUSY));
-    }
+    //void DataBroker::destroyLock(pthread_rwlock_t *rwlock) {
+    //  while((pthread_rwlock_destroy(rwlock) == -1) && (errno == EBUSY));
+    //}
 
-    void DataBroker::destroyLock(pthread_mutex_t *mutex) {
-      while((pthread_mutex_destroy(mutex) == -1) && (errno == EBUSY));
-    }
+    //void DataBroker::destroyLock(pthread_mutex_t *mutex) {
+    //  while((pthread_mutex_destroy(mutex) == -1) && (errno == EBUSY));
+    //}
 
-    void DataBroker::destroyLock(pthread_cond_t *cond) {
-      while((pthread_cond_destroy(cond) == -1) && (errno == EBUSY));
-    }
+    //void DataBroker::destroyLock(pthread_cond_t *cond) {
+    //  while((pthread_cond_destroy(cond) == -1) && (errno == EBUSY));
+    //}
 
     bool DataBroker::createTimer(const std::string &timerName) {
       std::map<std::string, Timer>::iterator timerIt;
