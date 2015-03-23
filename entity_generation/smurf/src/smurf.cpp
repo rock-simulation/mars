@@ -985,13 +985,25 @@ namespace mars {
       tmpV[0] = entityconfig["position"][0];
       tmpV[1] = entityconfig["position"][1];
       tmpV[2] = entityconfig["position"][2];
-      fprintf(stderr, "entityposition_x: %f\n", (double) entityconfig["position"][0]);
-      fprintf(stderr, "entityposition_y: %f\n", (double) entityconfig["position"][1]);
-      fprintf(stderr, "entityposition_z: %f\n", (double) entityconfig["position"][2]);
-      tmpR[0] = entityconfig["rotation"][0];
-      tmpR[1] = entityconfig["rotation"][1];
-      tmpR[2] = entityconfig["rotation"][2];
-      tmpQ = eulerToQuaternion(tmpR);
+      // check if euler angles or quaternion is provided; rotate around z if only one angle is provided
+      switch (entityconfig["rotation"].size()) {
+        case 1: tmpR[0] = 0;
+                tmpR[1] = 0;
+                tmpR[2] = entityconfig["rotation"][0];
+                tmpQ = eulerToQuaternion(tmpR);
+                break;
+        case 3: tmpR[0] = entityconfig["rotation"][0];
+                tmpR[1] = entityconfig["rotation"][1];
+                tmpR[2] = entityconfig["rotation"][2];
+                tmpQ = eulerToQuaternion(tmpR);
+                break;
+        case 4: tmpQ.x() = (sReal)entityconfig["rotation"][1];
+                tmpQ.y() = (sReal)entityconfig["rotation"][2];
+                tmpQ.z() = (sReal)entityconfig["rotation"][3];
+                tmpQ.w() = (sReal)entityconfig["rotation"][0];
+                break;
+      }
+
 
       NodeData my_node;
       my_node.index = nodeid;
