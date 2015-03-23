@@ -93,6 +93,8 @@ namespace mars {
 #else
       traits->inheritedWindowData = new WindowData(HIViewGetWindow((HIViewRef)winId()));
 #endif
+#elif defined(WIN32) && !defined(__CYGWIN__)
+      traits->inheritedWindowData = new WindowData((HWND)winId());
 #else // all others
       traits->inheritedWindowData = new WindowData(winId());
 #endif // __APPLE__
