@@ -126,210 +126,212 @@ namespace mars {
     }
 
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {
-      cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
-      if(!cfg) {
-        fprintf(stderr, "******* mars_graphics: couldn't find cfg_manager\n");
-        return;
-      }
+      if(!initialized) {
+        cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
+        if(!cfg) {
+          fprintf(stderr, "******* mars_graphics: couldn't find cfg_manager\n");
+          return;
+        }
 
-      resources_path.propertyType = cfg_manager::stringProperty;
-      resources_path.propertyIndex = 0;
-      resources_path.sValue = ".";
+        resources_path.propertyType = cfg_manager::stringProperty;
+        resources_path.propertyIndex = 0;
+        resources_path.sValue = ".";
 
-      if(cfg) {
-        configPath = cfg->getOrCreateProperty("Config", "config_path",
-                                              string("."));
+        if(cfg) {
+          configPath = cfg->getOrCreateProperty("Config", "config_path",
+                                                string("."));
 
-        string loadFile = configPath.sValue;
-        loadFile.append("/mars_Graphics.yaml");
-        cfg->loadConfig(loadFile.c_str());
+          string loadFile = configPath.sValue;
+          loadFile.append("/mars_Graphics.yaml");
+          cfg->loadConfig(loadFile.c_str());
 
-        // have to handle multisampling here
-        multisamples.propertyType = cfg_manager::intProperty;
-        multisamples.propertyIndex = 0;
-        multisamples.iValue = 0;
-        if(cfg->getPropertyValue("Graphics", "num multisamples", "value",
-                                 &multisamples.iValue)) {
-          multisamples.paramId = cfg->getParamId("Graphics", "num multisamples");
+          // have to handle multisampling here
+          multisamples.propertyType = cfg_manager::intProperty;
+          multisamples.propertyIndex = 0;
+          multisamples.iValue = 0;
+          if(cfg->getPropertyValue("Graphics", "num multisamples", "value",
+                                   &multisamples.iValue)) {
+            multisamples.paramId = cfg->getParamId("Graphics", "num multisamples");
+          }
+          else {
+            multisamples.paramId = cfg->createParam(string("Graphics"),
+                                                    string("num multisamples"),
+                                                    cfg_manager::intParam);
+            cfg->setProperty(multisamples);
+          }
+          cfg->registerToParam(multisamples.paramId,
+                               dynamic_cast<cfg_manager::CFGClient*>(this));
+          setMultisampling(multisamples.iValue);
+
+          resources_path = cfg->getOrCreateProperty("Graphics", "resources_path",
+                                                    string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH),
+                                                    dynamic_cast<cfg_manager::CFGClient*>(this));
+
+          noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
+                                               true, this);
+          useNoise = noiseProp.bValue;
+
+          drawLineLaserProp = cfg->getOrCreateProperty("Graphics", "drawLineLaser",
+                                                       false, this);
+          drawLineLaser = drawLineLaserProp.bValue;
+
+          hudWidthProp = cfg->getOrCreateProperty("Graphics", "hudWidth",
+                                                  1920, this);
+          hudWidth = hudWidthProp.iValue;
+
+          hudHeightProp = cfg->getOrCreateProperty("Graphics", "hudHeight",
+                                                   1080, this);
+          hudHeight = hudHeightProp.iValue;
+
+          marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
+                                                false, this);
         }
         else {
-          multisamples.paramId = cfg->createParam(string("Graphics"),
-                                                  string("num multisamples"),
-                                                  cfg_manager::intParam);
-          cfg->setProperty(multisamples);
+          marsShadow.bValue = false;
         }
-        cfg->registerToParam(multisamples.paramId,
-                             dynamic_cast<cfg_manager::CFGClient*>(this));
-        setMultisampling(multisamples.iValue);
+        globalStateset->setGlobalDefaults();
 
-        resources_path = cfg->getOrCreateProperty("Graphics", "resources_path",
-                                                  string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH),
-                                                  dynamic_cast<cfg_manager::CFGClient*>(this));
+        // with backface culling backfaces are not processed,
+        // else front and back faces are always processed.
+        // Its a good idea to turn this on for perfomance reasons,
+        // 2D objects in 3D scene may want to overwrite this setting, or
+        // walk through indices front to back and vice versa
+        // to get two front faces.
+        cull = new osg::CullFace();
+        cull->setMode(osg::CullFace::BACK);
 
-        noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
-                                             true, this);
-        useNoise = noiseProp.bValue;
+        { // setup LIGHT
+          globalStateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
+          globalStateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
 
-        drawLineLaserProp = cfg->getOrCreateProperty("Graphics", "drawLineLaser",
-                                                     false, this);
-        drawLineLaser = drawLineLaserProp.bValue;
+          globalStateset->setMode(GL_LIGHT0, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT1, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT2, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT3, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT4, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT5, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT6, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_LIGHT7, osg::StateAttribute::OFF);
+          globalStateset->setMode(GL_BLEND,osg::StateAttribute::OFF);
+        }
 
-        hudWidthProp = cfg->getOrCreateProperty("Graphics", "hudWidth",
-                                                1920, this);
-        hudWidth = hudWidthProp.iValue;
+        // background color for the scene
+        graphicOptions.clearColor = mars::utils::Color(0.55, 0.67, 0.88, 1.0);
 
-        hudHeightProp = cfg->getOrCreateProperty("Graphics", "hudHeight",
-                                                1080, this);
-        hudHeight = hudHeightProp.iValue;
+        { // setup FOG
+          graphicOptions.fogColor = mars::utils::Color(0.2, 0.2, 0.2, 1.0);
+          graphicOptions.fogEnabled = true;
+          graphicOptions.fogDensity = 0.35;
+          graphicOptions.fogStart = 10.0;
+          graphicOptions.fogEnd = 30.0;
 
-        marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
-                                              false, this);
-      }
-      else {
-        marsShadow.bValue = false;
-      }
-      globalStateset->setGlobalDefaults();
+          osg::ref_ptr<osg::Fog> myFog = new osg::Fog;
+          myFog->setMode(osg::Fog::LINEAR);
+          myFog->setColor(toOSGVec4(graphicOptions.fogColor));
+          myFog->setStart(graphicOptions.fogStart);
+          myFog->setEnd(graphicOptions.fogEnd);
+          myFog->setDensity(graphicOptions.fogDensity);
+          globalStateset->setAttributeAndModes(myFog.get(), osg::StateAttribute::ON);
+        }
 
-      // with backface culling backfaces are not processed,
-      // else front and back faces are always processed.
-      // Its a good idea to turn this on for perfomance reasons,
-      // 2D objects in 3D scene may want to overwrite this setting, or
-      // walk through indices front to back and vice versa
-      // to get two front faces.
-      cull = new osg::CullFace();
-      cull->setMode(osg::CullFace::BACK);
+        // some fixed function pipeline stuff...
+        // i guess the default is smooth shading, that means
+        // light influence is calculated per vertex and interpolated for fragments.
+        osg::ref_ptr<osg::LightModel> myLightModel = new osg::LightModel;
+        myLightModel->setTwoSided(false);
+        globalStateset->setAttributeAndModes(myLightModel.get(), osg::StateAttribute::ON);
 
-      { // setup LIGHT
-        globalStateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
-        globalStateset->setMode(GL_LIGHTING, osg::StateAttribute::ON);
+        // associate scene with global states
+        scene->setStateSet(globalStateset.get());
+        scene->addChild(lightGroup.get());
+        scene->addChild(shadowedScene.get());
 
-        globalStateset->setMode(GL_LIGHT0, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT1, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT2, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT3, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT4, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT5, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT6, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_LIGHT7, osg::StateAttribute::OFF);
-        globalStateset->setMode(GL_BLEND,osg::StateAttribute::OFF);
-      }
+        // init light (osg can have only 8 lights enabled at a time)
+        for (unsigned int i =0; i<8;i++) {
+          lightmanager ltemp;
+          ltemp.free=true;
+          myLights.push_back(ltemp);
+        }
 
-      // background color for the scene
-      graphicOptions.clearColor = mars::utils::Color(0.55, 0.67, 0.88, 1.0);
-
-      { // setup FOG
-        graphicOptions.fogColor = mars::utils::Color(0.2, 0.2, 0.2, 1.0);
-        graphicOptions.fogEnabled = true;
-        graphicOptions.fogDensity = 0.35;
-        graphicOptions.fogStart = 10.0;
-        graphicOptions.fogEnd = 30.0;
-
-        osg::ref_ptr<osg::Fog> myFog = new osg::Fog;
-        myFog->setMode(osg::Fog::LINEAR);
-        myFog->setColor(toOSGVec4(graphicOptions.fogColor));
-        myFog->setStart(graphicOptions.fogStart);
-        myFog->setEnd(graphicOptions.fogEnd);
-        myFog->setDensity(graphicOptions.fogDensity);
-        globalStateset->setAttributeAndModes(myFog.get(), osg::StateAttribute::ON);
-      }
-
-      // some fixed function pipeline stuff...
-      // i guess the default is smooth shading, that means
-      // light influence is calculated per vertex and interpolated for fragments.
-      osg::ref_ptr<osg::LightModel> myLightModel = new osg::LightModel;
-      myLightModel->setTwoSided(false);
-      globalStateset->setAttributeAndModes(myLightModel.get(), osg::StateAttribute::ON);
-
-      // associate scene with global states
-      scene->setStateSet(globalStateset.get());
-      scene->addChild(lightGroup.get());
-      scene->addChild(shadowedScene.get());
-
-      // init light (osg can have only 8 lights enabled at a time)
-      for (unsigned int i =0; i<8;i++) {
-        lightmanager ltemp;
-        ltemp.free=true;
-        myLights.push_back(ltemp);
-      }
-
-      initDefaultLight();
+        initDefaultLight();
 
 
-      shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
-      shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
-      {
+        shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
+        shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+        {
 #if USE_LSPSM_SHADOW
-        osg::ref_ptr<osgShadow::LightSpacePerspectiveShadowMapDB> sm =
-          new osgShadow::LightSpacePerspectiveShadowMapDB;
+          osg::ref_ptr<osgShadow::LightSpacePerspectiveShadowMapDB> sm =
+            new osgShadow::LightSpacePerspectiveShadowMapDB;
 
-        //sm->setDebugDraw(true);
-        sm->setMinLightMargin( 10.0f );
-        sm->setMaxFarPlane( 0.0f );
-        sm->setTextureSize( osg::Vec2s( 2028, 2028 ) );
-        sm->setShadowTextureCoordIndex( 6 );
-        sm->setShadowTextureUnit( 6 );
+          //sm->setDebugDraw(true);
+          sm->setMinLightMargin( 10.0f );
+          sm->setMaxFarPlane( 0.0f );
+          sm->setTextureSize( osg::Vec2s( 2028, 2028 ) );
+          sm->setShadowTextureCoordIndex( 6 );
+          sm->setShadowTextureUnit( 6 );
 
-        shadowedScene->setShadowTechnique( sm.get() );
+          shadowedScene->setShadowTechnique( sm.get() );
 #elif USE_PSSM_SHADOW
-        osg::ref_ptr<osgShadow::ParallelSplitShadowMap> pssm =
-          new osgShadow::ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
+          osg::ref_ptr<osgShadow::ParallelSplitShadowMap> pssm =
+            new osgShadow::ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
 
-        pssm->enableShadowGLSLFiltering(false);
-        pssm->setTextureResolution(2048);
-        pssm->setMinNearDistanceForSplits(0);
-        pssm->setMaxFarDistance(100);
-        pssm->setMoveVCamBehindRCamFactor(0);
-        //pssm->setPolygonOffset(osg::Vec2(-1.0,-4.0));
+          pssm->enableShadowGLSLFiltering(false);
+          pssm->setTextureResolution(2048);
+          pssm->setMinNearDistanceForSplits(0);
+          pssm->setMaxFarDistance(100);
+          pssm->setMoveVCamBehindRCamFactor(0);
+          //pssm->setPolygonOffset(osg::Vec2(-1.0,-4.0));
 
-        shadowedScene->setShadowTechnique(pssm.get());
+          shadowedScene->setShadowTechnique(pssm.get());
 #endif
-        if(marsShadow.bValue) {
-          shadowMap = new ShadowMap;
-          shadowedScene->setShadowTechnique(shadowMap.get());
-          //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
-          //shadowMap->setTextureUnit(2);
-          //shadowMap->clearShaderList();
-          //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
-          //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+          if(marsShadow.bValue) {
+            shadowMap = new ShadowMap;
+            shadowedScene->setShadowTechnique(shadowMap.get());
+            //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
+            //shadowMap->setTextureUnit(2);
+            //shadowMap->clearShaderList();
+            //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
+            //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+          }
         }
-      }
 
-      // TODO: check this out:
-      //   i guess fire.rgb is a 1D texture
-      //   there is something to generate these in OGLE
-      //osg::ref_ptr<osgParticle::ParticleEffect> effectNode =
-      //new osgParticle::FireEffect;
-      //effectNode->setTextureFileName("fire.rgb");
-      //effectNode->setIntensity(2.5);
-      //effectNode->setScale(4);
-      //scene->addChild(effectNode.get());
+        // TODO: check this out:
+        //   i guess fire.rgb is a 1D texture
+        //   there is something to generate these in OGLE
+        //osg::ref_ptr<osgParticle::ParticleEffect> effectNode =
+        //new osgParticle::FireEffect;
+        //effectNode->setTextureFileName("fire.rgb");
+        //effectNode->setIntensity(2.5);
+        //effectNode->setScale(4);
+        //scene->addChild(effectNode.get());
 
-      grid = new GridPrimitive(osgWidget);
-      showCoords();
+        grid = new GridPrimitive(osgWidget);
+        showCoords();
 
-      // reset number of frames
-      framecount = 0;
+        // reset number of frames
+        framecount = 0;
 
-      viewer = new GraphicsViewer((GuiEventInterface*)this);
-      viewer->setKeyEventSetsDone(0);
+        viewer = new GraphicsViewer((GuiEventInterface*)this);
+        viewer->setKeyEventSetsDone(0);
 #ifdef SINGLE_THREADED
-      viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+        viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 #else
-      viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
+        viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
 #endif
 
-      if(createWindow) {
-        new3DWindow(data);
+        if(createWindow) {
+          new3DWindow(data);
+        }
+
+        //guiHelper->setGraphicsWidget(graphicsWindows[0]);
+        setupCFG();
+
+        if(backfaceCulling.bValue)
+          globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
+        else
+          globalStateset->setAttributeAndModes(cull, osg::StateAttribute::OFF);
+        initialized = true;
       }
-
-      //guiHelper->setGraphicsWidget(graphicsWindows[0]);
-      setupCFG();
-
-      if(backfaceCulling.bValue)
-        globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
-      else
-        globalStateset->setAttributeAndModes(cull, osg::StateAttribute::OFF);
-      initialized = true;
     }
 
     /**\brief resets scene */
@@ -344,7 +346,6 @@ namespace mars {
       }
       clearDrawItems();
     }
-
 
     void GraphicsManager::addGraphicsUpdateInterface(GraphicsUpdateInterface *g) {
       graphicsUpdateObjects.push_back(g);
