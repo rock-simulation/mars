@@ -708,6 +708,9 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 : <a class="el" href="d0/dfa/classmars_1_1graphics_1_1_terrain_draw_object.html#af023acc0c393210df239732cee6cc2c0">mars::graphics::TerrainDrawObject</a>
 , <a class="el" href="d3/d33/classmars_1_1_multi_res_height_map_renderer.html#a56064bb2f88f44f391810d38d4b5bc1e">mars::MultiResHeightMapRenderer</a>
 </li>
+<li>getHeightFromScene()
+: <a class="el" href="d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html#a2f2ae8620ba402f80d09e725ce8f3490">mars::plugins::path_drawer::PathDrawer</a>
+</li>
 <li>getHighResCellCntX()
 : <a class="el" href="d3/d33/classmars_1_1_multi_res_height_map_renderer.html#a0112799800c2ff77ab136c97ada72777">mars::MultiResHeightMapRenderer</a>
 </li>
@@ -872,6 +875,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="d5/d44/classmars_1_1plugins_1_1module__info__dumper_1_1_module_info_dumper.html#a2ca5306b0c8c279aea3a1a0ed16999fa">mars::plugins::module_info_dumper::ModuleInfoDumper</a>
 , <a class="el" href="d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html#a50116d5b10791299babe542d49427988">mars::plugins::obstacle_generator::ObstacleGenerator</a>
 , <a class="el" href="d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html#a55d59e91e6b13aec2b7bda6767c9f0b6">mars::plugins::output_inertias::OutputInertias</a>
+, <a class="el" href="d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html#add314c1164f287bb59945e97912aa41c">mars::plugins::path_drawer::PathDrawer</a>
 , <a class="el" href="d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html#a907928d8a8c391a0baa6061df77efdda">mars::plugins::Plot3D::Plot3D</a>
 , <a class="el" href="da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html#a5d2f648396465b4badfca91b2b7edff0">mars::plugins::SonarPlugin::SonarPlugin</a>
 , <a class="el" href="d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html#a9607c9b5859296530c5917035acf71b0">mars::plugins::TestWireframe::TestWireframe</a>
@@ -931,6 +935,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="d5/d44/classmars_1_1plugins_1_1module__info__dumper_1_1_module_info_dumper.html#ac491f0a536892c61f70a03d6f0947c4f">mars::plugins::module_info_dumper::ModuleInfoDumper</a>
 , <a class="el" href="d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html#a930fac6811f8a54ed2fd8a154af7b9e8">mars::plugins::obstacle_generator::ObstacleGenerator</a>
 , <a class="el" href="d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html#a57fb295c84447f7eea691b48b66bae08">mars::plugins::output_inertias::OutputInertias</a>
+, <a class="el" href="d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html#a2be039cf1099b77cbe994bdd6cd6d51c">mars::plugins::path_drawer::PathDrawer</a>
 , <a class="el" href="d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html#af20c930ce494503158ddb6df8d56f9f8">mars::plugins::Plot3D::Plot3D</a>
 , <a class="el" href="da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html#afe04c39126b9eaf43ec9aa0adc1432e6">mars::plugins::SonarPlugin::SonarPlugin</a>
 , <a class="el" href="d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html#a0f415628b3dcea68eb8f4b97bc0f23b7">mars::plugins::TestWireframe::TestWireframe</a>
@@ -956,7 +961,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 </li>
 <li>getLights()
 : <a class="el" href="dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#a14d91bf4f136ccc4626131bbc5e82fea">mars::graphics::GraphicsManager</a>
-, <a class="el" href="d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html#a0b6015ae3b14eef22a2a71dc5238127a">mars::interfaces::GraphicsManagerInterface</a>
+, <a class="el" href="d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html#a588321827b81717833a23bb205c893dd">mars::interfaces::GraphicsManagerInterface</a>
 </li>
 <li>getLine()
 : <a class="el" href="db/d32/classmars_1_1interfaces_1_1_scene_parse_exception.html#a283c3228a680059d509e0dfc1374f07b">mars::interfaces::SceneParseException</a>
@@ -1217,8 +1222,8 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 : <a class="el" href="dc/db0/classmars_1_1cfg__manager_1_1_c_f_g_param.html#afa119689f30906ba9becb32dc1f8e7ce">mars::cfg_manager::CFGParam</a>
 </li>
 <li>getOrCreateProperty()
-: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#a60c5516ddd92afd5f57ce7780e0491ce">mars::cfg_manager::CFGManager</a>
-, <a class="el" href="d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#a7deca661cfbfcf832cb9cead7f6f87f7">mars::cfg_manager::CFGManagerInterface</a>
+: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#a41c32346318a570dd151dc3c7dfa15f0">mars::cfg_manager::CFGManager</a>
+, <a class="el" href="d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#ab134e2fdb67cd792989c7a1103772815">mars::cfg_manager::CFGManagerInterface</a>
 </li>
 <li>getOrCreateWindowManager()
 : <a class="el" href="d2/d46/classmars_1_1graphics_1_1_graphics_widget.html#a915b7fcb952cdf19d7ce842309be1324">mars::graphics::GraphicsWidget</a>
@@ -1242,7 +1247,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 : <a class="el" href="d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a1256913e911d421e3e5d6c4d259b2a71">mars::sim::SimMotor</a>
 </li>
 <li>getParam()
-: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#a70a50572bbbf6f1212b9499bbe2cfbf2">mars::cfg_manager::CFGManager</a>
+: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#a9dba499dd0159c149a0f935efb98a55e">mars::cfg_manager::CFGManager</a>
 </li>
 <li>getParamId()
 : <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#ac4ad5c154b913f1c702e9de8efe96bed">mars::cfg_manager::CFGManager</a>
@@ -1250,8 +1255,8 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="d6/d13/classmars_1_1cfg__manager_1_1_c_f_g_property.html#a53bc620a2cc7353692e5d1c3faa7d564">mars::cfg_manager::CFGProperty</a>
 </li>
 <li>getParamInfo()
-: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#a1eb53ac92e01bc16b32e7604ae030ab1">mars::cfg_manager::CFGManager</a>
-, <a class="el" href="d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#a974f6e16be41add993325b17e8ba2434">mars::cfg_manager::CFGManagerInterface</a>
+: <a class="el" href="d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html#ab7db4f767508abadec5c5cf9e037dfe8">mars::cfg_manager::CFGManager</a>
+, <a class="el" href="d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#aaab5e6ce55a82480979cb18abeaaeb5c">mars::cfg_manager::CFGManagerInterface</a>
 </li>
 <li>getParamType()
 : <a class="el" href="dc/db0/classmars_1_1cfg__manager_1_1_c_f_g_param.html#ae534d21117e5e831304f585c0b18104a">mars::cfg_manager::CFGParam</a>
@@ -1403,7 +1408,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 : <a class="el" href="da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html#ac1a65685c09ef6e0807a2fc2dfbb292d">mars::interfaces::BaseArraySensor&lt; T &gt;</a>
 </li>
 <li>getRTTDepthData()
-: <a class="el" href="d2/d46/classmars_1_1graphics_1_1_graphics_widget.html#aac0ccce658dfb72b66de4f0ab903d24c">mars::graphics::GraphicsWidget</a>
+: <a class="el" href="d2/d46/classmars_1_1graphics_1_1_graphics_widget.html#a4f98f86b8151aad71f41a1d406ea9752">mars::graphics::GraphicsWidget</a>
 , <a class="el" href="d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html#a6bfeb5e4232d65e1ec13c2c5da8a019e">mars::interfaces::GraphicsWindowInterface</a>
 </li>
 <li>getRTTDepthTexture()
@@ -1446,7 +1451,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="d0/dc1/classmars_1_1sim_1_1_joint_load_sensor.html#a436f912dd30bd1f31403f5af8dd4caae">mars::sim::JointLoadSensor</a>
 , <a class="el" href="dc/d77/classmars_1_1sim_1_1_motor_current_sensor.html#a6f22e00e87a1aab2d15349ecdc32ed8f">mars::sim::MotorCurrentSensor</a>
 , <a class="el" href="d7/d1c/classmars_1_1sim_1_1_motor_position_sensor.html#aaa1f8e11f165edcd371588bb1c66f480">mars::sim::MotorPositionSensor</a>
-, <a class="el" href="d8/d7b/classmars_1_1sim_1_1_multi_level_laser_range_finder.html#abff41dab4a6c8072e5001cd0aefb472b">mars::sim::MultiLevelLaserRangeFinder</a>
+, <a class="el" href="d8/d7b/classmars_1_1sim_1_1_multi_level_laser_range_finder.html#a54041f4644def28a56a2503bf8812c2b">mars::sim::MultiLevelLaserRangeFinder</a>
 , <a class="el" href="d4/dc8/classmars_1_1sim_1_1_node_angular_velocity_sensor.html#a422b9c26af91ca6390c012fd8cb0cc62">mars::sim::NodeAngularVelocitySensor</a>
 , <a class="el" href="d1/d38/classmars_1_1sim_1_1_node_array_sensor.html#a86b5c919bf126252049ecf5766758312">mars::sim::NodeArraySensor</a>
 , <a class="el" href="da/deb/classmars_1_1sim_1_1_node_c_o_m_sensor.html#acedd666bd8c072e5dc397623d37ba3d2">mars::sim::NodeCOMSensor</a>
@@ -1491,7 +1496,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 , <a class="el" href="d3/da4/classmars_1_1sim_1_1_motor_manager.html#a2dbef58bdf142e48da109c02736aa33c">mars::sim::MotorManager</a>
 </li>
 <li>getSimNode()
-: <a class="el" href="d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a29b33f0d951bf178d14385d140082b3a">mars::interfaces::NodeManagerInterface</a>
+: <a class="el" href="d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a140127e026a08e9ea48b2d57e6ccce5f">mars::interfaces::NodeManagerInterface</a>
 , <a class="el" href="d5/d54/classmars_1_1sim_1_1_node_manager.html#a1b3d3b3be71e86853a98f0371e8715d2">mars::sim::NodeManager</a>
 </li>
 <li>getSimSensor()
@@ -1615,7 +1620,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 : <a class="el" href="db/dde/classconfigmaps_1_1_config_item.html#a95e75f8bbc22e27c36cd77f91fdba39a">configmaps::ConfigItem</a>
 </li>
 <li>getValue()
-: <a class="el" href="d6/d13/classmars_1_1cfg__manager_1_1_c_f_g_property.html#a025b1c40ed5b4d6d542c0cab0dc41525">mars::cfg_manager::CFGProperty</a>
+: <a class="el" href="d6/d13/classmars_1_1cfg__manager_1_1_c_f_g_property.html#a315cab97fe0878f59b5d56fe9e9fb098">mars::cfg_manager::CFGProperty</a>
 , <a class="el" href="d7/dfb/classmars_1_1sim_1_1_sim_motor.html#af944569ecde5fc8f1eaedbd52e272652">mars::sim::SimMotor</a>
 </li>
 <li>getVaryings()
@@ -1756,7 +1761,7 @@ $(document).ready(function(){initNavTree('functions_func_g.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 3 2015 17:25:18 by
+    <li class="footer">Generated on Mon Mar 23 2015 17:22:28 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

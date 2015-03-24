@@ -1,6 +1,6 @@
 <map id="mars::interfaces::PluginInterface" name="mars::interfaces::PluginInterface">
-<area shape="rect" id="node3" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="213,839,403,886"/>
-<area shape="rect" id="node57" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="213,1831,403,1878"/>
+<area shape="rect" id="node3" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="213,909,403,955"/>
+<area shape="rect" id="node60" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="213,1901,403,1947"/>
 <area shape="rect" id="node5" href="$de/d5f/classeo1__plugin_1_1_e_o1_plugin.html" title="eo1_plugin::EO1Plugin" alt="" coords="483,5,637,35"/>
 <area shape="rect" id="node7" href="$de/d47/classeo__billboards_1_1_e_o_billboards.html" title="eo_billboards::EOBillboards" alt="" coords="469,59,651,88"/>
 <area shape="rect" id="node9" href="$d4/d0e/classmars_1_1entity__generation_1_1_entity_factory_manager.html" title="mars::entity_generation\l::EntityFactoryManager" alt="" coords="481,111,639,158"/>
@@ -19,18 +19,19 @@
 <area shape="rect" id="node36" href="$d3/d53/classmars_1_1plugins_1_1mars__video__player_1_1_mars_video_player.html" title="mars::plugins::mars\l_video_player::MarsVideoPlayer" alt="" coords="456,1013,664,1059"/>
 <area shape="rect" id="node38" href="$d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html" title="mars::plugins::obstacle\l_generator::ObstacleGenerator" alt="" coords="460,1082,660,1129"/>
 <area shape="rect" id="node40" href="$d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html" title="mars::plugins::output\l_inertias::OutputInertias" alt="" coords="480,1151,640,1198"/>
-<area shape="rect" id="node43" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="471,1221,649,1267"/>
-<area shape="rect" id="node45" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="463,1290,657,1337"/>
-<area shape="rect" id="node47" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="485,1359,635,1406"/>
-<area shape="rect" id="node49" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="483,1429,637,1475"/>
-<area shape="rect" id="node51" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="487,1499,633,1528"/>
-<area shape="rect" id="node53" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="491,1551,629,1598"/>
-<area shape="rect" id="node55" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="505,1621,615,1651"/>
-<area shape="rect" id="node59" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="495,1675,625,1704"/>
-<area shape="rect" id="node61" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="471,1727,649,1774"/>
-<area shape="rect" id="node63" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="459,1797,661,1843"/>
-<area shape="rect" id="node65" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="476,1866,644,1913"/>
-<area shape="rect" id="node67" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="467,1935,653,1982"/>
-<area shape="rect" id="node69" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="487,2005,633,2051"/>
-<area shape="rect" id="node71" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="471,2075,649,2104"/>
+<area shape="rect" id="node43" href="$d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html" title="mars::plugins::path\l_drawer::PathDrawer" alt="" coords="488,1221,632,1267"/>
+<area shape="rect" id="node45" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="471,1290,649,1337"/>
+<area shape="rect" id="node47" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="463,1359,657,1406"/>
+<area shape="rect" id="node49" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="485,1429,635,1475"/>
+<area shape="rect" id="node51" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="483,1498,637,1545"/>
+<area shape="rect" id="node53" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="487,1568,633,1597"/>
+<area shape="rect" id="node56" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="491,1621,629,1667"/>
+<area shape="rect" id="node58" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="505,1691,615,1720"/>
+<area shape="rect" id="node62" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="495,1744,625,1773"/>
+<area shape="rect" id="node64" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="471,1797,649,1843"/>
+<area shape="rect" id="node66" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="459,1866,661,1913"/>
+<area shape="rect" id="node68" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="476,1935,644,1982"/>
+<area shape="rect" id="node70" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="467,2005,653,2051"/>
+<area shape="rect" id="node72" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="487,2074,633,2121"/>
+<area shape="rect" id="node74" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="471,2144,649,2173"/>
 </map>

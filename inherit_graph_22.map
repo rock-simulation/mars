@@ -1,188 +1,189 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="249,577,433,623"/>
-<area shape="rect" id="node3" href="$d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html" title="mars::interfaces::BaseCamera\lSensor\&lt; double \&gt;" alt="" coords="487,1195,687,1242"/>
-<area shape="rect" id="node7" href="$df/d91/classmars_1_1interfaces_1_1_base_grid_intersection_sensor.html" title="mars::interfaces::BaseGrid\lIntersectionSensor" alt="" coords="497,507,676,554"/>
-<area shape="rect" id="node11" href="$d2/d93/classmars_1_1interfaces_1_1_base_polar_intersection_sensor.html" title="mars::interfaces::BasePolar\lIntersectionSensor" alt="" coords="495,577,679,623"/>
-<area shape="rect" id="node5" href="$d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html" title="mars::sim::ScanningSonar" alt="" coords="760,1315,936,1344"/>
-<area shape="rect" id="node9" href="$d1/d3c/classmars_1_1sim_1_1_ray_grid_sensor.html" title="mars::sim::RayGridSensor" alt="" coords="760,539,936,568"/>
-<area shape="rect" id="node13" href="$d3/dde/classmars_1_1sim_1_1_ray_sensor.html" title="mars::sim::RaySensor" alt="" coords="772,592,924,621"/>
-<area shape="rect" id="node15" href="$d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html" title="mars::sim::RotatingRaySensor" alt="" coords="747,645,949,675"/>
-<area shape="rect" id="node18" href="$d7/da8/classconstraints__plugin_1_1_base_constraint.html" title="constraints_plugin\l::BaseConstraint" alt="" coords="785,39,911,86"/>
-<area shape="rect" id="node24" href="$dc/daa/classconstraints__plugin_1_1_constraints_plugin.html" title="constraints_plugin\l::ConstraintsPlugin" alt="" coords="781,109,915,155"/>
-<area shape="rect" id="node20" href="$d1/df3/classconstraints__plugin_1_1_joint_constraint.html" title="constraints_plugin\l::JointConstraint" alt="" coords="1056,5,1181,51"/>
-<area shape="rect" id="node22" href="$de/d9c/classconstraints__plugin_1_1_node_constraint.html" title="constraints_plugin\l::NodeConstraint" alt="" coords="1056,74,1181,121"/>
-<area shape="rect" id="node27" href="$dc/d84/class____n__project_____1_1____project____.html" title="__n_project__::__project__" alt="" coords="759,179,937,208"/>
-<area shape="rect" id="node29" href="$d2/d35/classgenetic__structure__test_1_1_genetic_structure_test.html" title="genetic_structure_test\l::GeneticStructureTest" alt="" coords="771,231,925,278"/>
-<area shape="rect" id="node31" href="$d2/d40/class_neural_soil.html" title="NeuralSoil" alt="" coords="807,371,889,400"/>
-<area shape="rect" id="node33" href="$d5/d9a/classsc__joypad__control_1_1_s_c_joypad_control.html" title="sc_joypad_control::\lSCJoypadControl" alt="" coords="781,301,915,347"/>
-<area shape="rect" id="node36" href="$de/dc7/classmars_1_1plugins_1_1db__adrf__receiver_1_1_d_b_a_d_r_f_receiver.html" title="mars::plugins::db_adrf\l_receiver::DBADRFReceiver" alt="" coords="753,1578,943,1625"/>
-<area shape="rect" id="node44" href="$d6/d22/class_virtual_joystick_plugin.html" title="VirtualJoystickPlugin" alt="" coords="776,4939,920,4968"/>
-<area shape="rect" id="node45" href="$d2/d26/class_joystick_interface.html" title="JoystickInterface" alt="" coords="525,4939,648,4968"/>
-<area shape="rect" id="node49" href="$d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html" title="data_broker_plotter\l::DataBrokerPlotterLib" alt="" coords="773,4991,923,5038"/>
-<area shape="rect" id="node51" href="$df/db1/classmars_1_1viz_1_1_viz.html" title="mars::viz::Viz" alt="" coords="797,5115,899,5144"/>
-<area shape="rect" id="node53" href="$db/d44/classosg__text_1_1_text_factory_interface.html" title="osg_text::TextFactoryInterface" alt="" coords="748,5813,948,5843"/>
-<area shape="rect" id="node58" href="$d5/d61/class_viz_plugin.html" title="VizPlugin" alt="" coords="809,3451,887,3480"/>
-<area shape="rect" id="node55" href="$d0/dfc/classosg__text_1_1_text_factory.html" title="osg_text::TextFactory" alt="" coords="1044,6212,1193,6241"/>
-<area shape="rect" id="node59" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="516,3050,657,3097"/>
-<area shape="rect" id="node61" href="$de/d5f/classeo1__plugin_1_1_e_o1_plugin.html" title="eo1_plugin::EO1Plugin" alt="" coords="771,2720,925,2749"/>
-<area shape="rect" id="node63" href="$d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html" title="mars::cfg_manager_gui\l::MainCfgGui" alt="" coords="769,4730,927,4777"/>
-<area shape="rect" id="node65" href="$d4/d0e/classmars_1_1entity__generation_1_1_entity_factory_manager.html" title="mars::entity_generation\l::EntityFactoryManager" alt="" coords="769,3050,927,3097"/>
-<area shape="rect" id="node67" href="$dd/d00/classmars_1_1graphics_1_1_graphics_manager.html" title="mars::graphics::Graphics\lManager" alt="" coords="764,6551,932,6598"/>
-<area shape="rect" id="node69" href="$d4/dab/classmars_1_1gui_1_1_mars_gui.html" title="Sets up the main gui of the simulation and handles various generic gui options. " alt="" coords="781,3643,915,3672"/>
-<area shape="rect" id="node71" href="$da/d36/classmars_1_1log__console_1_1_main_console.html" title="mars::log_console::\lMainConsole" alt="" coords="780,4325,916,4371"/>
-<area shape="rect" id="node73" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="753,5637,943,5667"/>
-<area shape="rect" id="node125" href="$da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html" title="mars::plugins::__namespace\l__::__classname__" alt="" coords="753,2773,943,2819"/>
-<area shape="rect" id="node127" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="759,3818,937,3865"/>
-<area shape="rect" id="node129" href="$d2/d1c/classmars_1_1plugins_1_1cartest_1_1_cartest.html" title="mars::plugins::cartest\l::Cartest" alt="" coords="775,2842,921,2889"/>
-<area shape="rect" id="node131" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="747,4255,949,4302"/>
-<area shape="rect" id="node133" href="$d7/d44/classmars_1_1plugins_1_1circle__drawing_1_1_circle_drawing.html" title="mars::plugins::circle\l_drawing::CircleDrawing" alt="" coords="767,1903,929,1950"/>
-<area shape="rect" id="node135" href="$d8/df7/classmars_1_1plugins_1_1constraints__plugin_1_1_base_constraint.html" title="mars::plugins::constraints\l_plugin::BaseConstraint" alt="" coords="763,3311,933,3358"/>
-<area shape="rect" id="node139" href="$d2/dde/classmars_1_1plugins_1_1constraints__plugin_1_1_constraints_plugin.html" title="mars::plugins::constraints\l_plugin::ConstraintsPlugin" alt="" coords="761,3381,935,3427"/>
-<area shape="rect" id="node141" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="755,3941,941,3987"/>
-<area shape="rect" id="node143" href="$d8/ded/classmars_1_1plugins_1_1db__to__cfg_1_1_db_to_cfg.html" title="mars::plugins::db_to\l_cfg::DbToCfg" alt="" coords="779,2911,917,2958"/>
-<area shape="rect" id="node145" href="$d2/dfd/classmars_1_1plugins_1_1entityfactorytester_1_1_entityfactorytester.html" title="mars::plugins::entityfactorytester\l::Entityfactorytester" alt="" coords="741,2042,955,2089"/>
-<area shape="rect" id="node147" href="$d2/d2b/classmars_1_1plugins_1_1hud__calibration_1_1_hud_calibration.html" title="mars::plugins::hud\l_calibration::HudCalibration" alt="" coords="757,2111,939,2158"/>
-<area shape="rect" id="node149" href="$d2/dff/classmars_1_1plugins_1_1kais__3rd__car_1_1_kais__3rd_car.html" title="mars::plugins::kais\l_3rd_car::Kais_3rdCar" alt="" coords="772,2181,924,2227"/>
-<area shape="rect" id="node151" href="$de/db0/classmars_1_1plugins_1_1_line_laser_1_1_line_laser.html" title="mars::plugins::LineLaser\l::LineLaser" alt="" coords="767,2250,929,2297"/>
-<area shape="rect" id="node153" href="$d5/dbb/classmars_1_1plugins_1_1mars__stream__window_1_1_stream_window.html" title="mars::plugins::mars\l_stream_window::StreamWindow" alt="" coords="740,3242,956,3289"/>
-<area shape="rect" id="node155" href="$d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html" title="mars::plugins::obstacle\l_generator::ObstacleGenerator" alt="" coords="748,2319,948,2366"/>
-<area shape="rect" id="node157" href="$d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html" title="mars::plugins::output\l_inertias::OutputInertias" alt="" coords="768,2389,928,2435"/>
-<area shape="rect" id="node159" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="775,4063,921,4110"/>
-<area shape="rect" id="node161" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="759,3119,937,3166"/>
-<area shape="rect" id="node163" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="751,2458,945,2505"/>
-<area shape="rect" id="node165" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="773,2527,923,2574"/>
-<area shape="rect" id="node167" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="771,2597,925,2643"/>
-<area shape="rect" id="node169" href="$d9/d6a/classmars_1_1sim_1_1_simulator.html" title="The Simulator class implements the main functions of the MARS simulation. " alt="" coords="777,3765,919,3795"/>
-<area shape="rect" id="node171" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="793,2667,903,2696"/>
-<area shape="rect" id="node75" href="$d0/d20/classdata__broker__plotter_1_1_data_broker_plotter.html" title="data_broker_plotter\l::DataBrokerPlotter" alt="" coords="1052,4702,1185,4749"/>
-<area shape="rect" id="node77" href="$da/d39/classmars_1_1config__map__gui_1_1_data_widget.html" title="mars::config_map_gui\l::DataWidget" alt="" coords="1044,5422,1193,5469"/>
-<area shape="rect" id="node79" href="$d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html" title="mars::data_broker_gui\l::DataConnWidget" alt="" coords="1044,4771,1193,4818"/>
-<area shape="rect" id="node81" href="$de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html" title="mars::data_broker_gui\l::DataWidget" alt="" coords="1044,4841,1193,4887"/>
-<area shape="rect" id="node83" href="$df/dda/classmars_1_1gui_1_1_blender_export_g_u_i.html" title="mars::gui::BlenderExportGUI" alt="" coords="1024,5492,1213,5521"/>
-<area shape="rect" id="node85" href="$d6/dfa/classmars_1_1gui_1_1_camera_configurator_g_u_i.html" title="mars::gui::CameraConfiguratorGUI" alt="" coords="1007,5545,1231,5575"/>
-<area shape="rect" id="node87" href="$d4/d87/classmars_1_1gui_1_1_capture_g_u_i.html" title="mars::gui::CaptureGUI" alt="" coords="1041,5599,1196,5628"/>
-<area shape="rect" id="node89" href="$da/d1a/classmars_1_1gui_1_1_controller_config_g_u_i.html" title="mars::gui::ControllerConfigGUI" alt="" coords="1017,5652,1220,5681"/>
-<area shape="rect" id="node91" href="$dc/d1c/classmars_1_1gui_1_1_dialog___add___force.html" title="Adds a QDialog to set force to nodes. " alt="" coords="1044,5705,1193,5751"/>
-<area shape="rect" id="node93" href="$dd/dca/classmars_1_1gui_1_1_dialog___add___torque.html" title="Adds a QDialog to set torque to nodes. " alt="" coords="1044,5774,1193,5821"/>
-<area shape="rect" id="node95" href="$d9/d5a/classmars_1_1gui_1_1_dialog___graphics___options.html" title="This class creates the Register Frame Dialog. " alt="" coords="1029,5843,1208,5890"/>
-<area shape="rect" id="node97" href="$d6/d46/classmars_1_1gui_1_1_dialog___import___mesh.html" title="Creates the &quot;Import Mesh&quot; dialog. " alt="" coords="1017,5913,1220,5943"/>
-<area shape="rect" id="node99" href="$d6/d2d/classmars_1_1gui_1_1_dialog___motor___control.html" title="Dialog_Motor_Control is a widget that creates MotorSet widgets for each available motor to change its..." alt="" coords="1039,4910,1199,4957"/>
-<area shape="rect" id="node101" href="$d9/d62/classmars_1_1gui_1_1_dialog___rescale___environment.html" title="Dialog for rescaling the environment every node in the environment is rescaled (including its positio..." alt="" coords="1031,4979,1207,5026"/>
-<area shape="rect" id="node103" href="$d1/da4/classmars_1_1gui_1_1_dialog_controllers.html" title="mars::gui::DialogControllers" alt="" coords="1027,5049,1211,5079"/>
-<area shape="rect" id="node105" href="$d3/dad/classmars_1_1gui_1_1_dialog_distance.html" title="Provides selection functionality displaying information about distance between two objects..." alt="" coords="1032,5103,1205,5132"/>
-<area shape="rect" id="node107" href="$de/d64/classmars_1_1gui_1_1_dialog_joints.html" title="mars::gui::DialogJoints" alt="" coords="1041,5156,1196,5185"/>
-<area shape="rect" id="node109" href="$d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html" title="DialogJoystick is a widget that allows node movement functionality with different selection and movem..." alt="" coords="1033,5209,1204,5239"/>
-<area shape="rect" id="node111" href="$d8/d41/classmars_1_1gui_1_1_dialog_lights.html" title="mars::gui::DialogLights" alt="" coords="1041,5263,1196,5292"/>
-<area shape="rect" id="node113" href="$d1/df9/classmars_1_1gui_1_1_dialog_motors.html" title="mars::gui::DialogMotors" alt="" coords="1039,5316,1199,5345"/>
-<area shape="rect" id="node115" href="$dc/d96/classmars_1_1gui_1_1_dialog_nodes.html" title="mars::gui::DialogNodes" alt="" coords="1040,6020,1197,6049"/>
-<area shape="rect" id="node117" href="$d4/d45/classmars_1_1gui_1_1_dialog_sensors.html" title="mars::gui::DialogSensors" alt="" coords="1035,5369,1203,5399"/>
-<area shape="rect" id="node119" href="$d8/d72/classmars_1_1gui_1_1_node_selection_tree.html" title="mars::gui::NodeSelectionTree" alt="" coords="1021,5967,1216,5996"/>
-<area shape="rect" id="node121" href="$d7/d8b/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_widget.html" title="mars::plugins::CameraGUI\l::CameraWidget" alt="" coords="1029,6073,1208,6119"/>
-<area shape="rect" id="node123" href="$d3/d43/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_widget.html" title="mars::plugins::lib\l_manager_gui::LibManagerWidget" alt="" coords="1009,6142,1228,6189"/>
-<area shape="rect" id="node137" href="$d8/d99/classmars_1_1plugins_1_1constraints__plugin_1_1_node_constraint.html" title="mars::plugins::constraints\l_plugin::NodeConstraint" alt="" coords="1033,3311,1204,3358"/>
-<area shape="rect" id="node173" href="$d1/db0/classmars_1_1data__broker_1_1_producer_interface.html" title="Interface for classes producing data to broadcast via a DataBroker. " alt="" coords="520,1126,653,1173"/>
-<area shape="rect" id="node175" href="$d5/d86/class_joystick_plugin.html" title="JoystickPlugin" alt="" coords="795,1421,901,1451"/>
-<area shape="rect" id="node177" href="$de/dff/classmars_1_1sim_1_1_joint6_d_o_f_sensor.html" title="mars::sim::Joint6DOFSensor" alt="" coords="752,981,944,1011"/>
-<area shape="rect" id="node179" href="$d2/d9f/classmars_1_1sim_1_1_node_contact_force_sensor.html" title="mars::sim::NodeContactForce\lSensor" alt="" coords="1020,1073,1217,1119"/>
-<area shape="rect" id="node181" href="$d2/d27/classmars_1_1sim_1_1_sim_joint.html" title="SimJoint represents the simulated joints. " alt="" coords="779,1085,917,1115"/>
-<area shape="rect" id="node183" href="$d7/dfb/classmars_1_1sim_1_1_sim_motor.html" title="Each SimMotor object publishes its state on the dataBroker. " alt="" coords="776,1261,920,1291"/>
-<area shape="rect" id="node185" href="$d5/db3/classmars_1_1sim_1_1_sim_node.html" title="Two typedefs to keep mesh structure nearly similar to ODE. " alt="" coords="777,1139,919,1168"/>
-<area shape="rect" id="node186" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="520,2077,653,2123"/>
-<area shape="rect" id="node190" href="$de/d47/classeo__billboards_1_1_e_o_billboards.html" title="eo_billboards::EOBillboards" alt="" coords="757,1851,939,1880"/>
-<area shape="rect" id="node195" href="$dd/d61/classmars_1_1gui_1_1_camera_config.html" title="mars::gui::CameraConfig" alt="" coords="764,1475,932,1504"/>
-<area shape="rect" id="node197" href="$d1/d38/classmars_1_1gui_1_1_widget___joint___state.html" title="A widget to show the actual properties of a joint. " alt="" coords="1039,4563,1199,4610"/>
-<area shape="rect" id="node199" href="$d5/dd4/classmars_1_1gui_1_1_widget___node___state.html" title="A widget to show the actual properties of a node to the user. " alt="" coords="1037,4633,1200,4679"/>
-<area shape="rect" id="node208" href="$dd/dc0/classmars_1_1plugins_1_1db__adrf__sender_1_1_d_b_a_d_r_f_sender.html" title="mars::plugins::db_adrf\l_sender::DBADRFSender" alt="" coords="761,1973,935,2019"/>
-<area shape="rect" id="node218" href="$dd/d4b/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot.html" title="mars::plugins::Plot3D\l::MotorPlot" alt="" coords="775,2981,921,3027"/>
-<area shape="rect" id="node225" href="$d2/d51/classmars_1_1sim_1_1_camera_sensor.html" title="mars::sim::CameraSensor" alt="" coords="761,1368,935,1397"/>
-<area shape="rect" id="node228" href="$d0/d80/classmars_1_1sim_1_1_joint_array_sensor.html" title="mars::sim::JointArraySensor" alt="" coords="755,768,941,797"/>
-<area shape="rect" id="node240" href="$dc/d77/classmars_1_1sim_1_1_motor_current_sensor.html" title="mars::sim::MotorCurrentSensor" alt="" coords="745,875,951,904"/>
-<area shape="rect" id="node242" href="$d7/d1c/classmars_1_1sim_1_1_motor_position_sensor.html" title="mars::sim::MotorPosition\lSensor" alt="" coords="764,698,932,745"/>
-<area shape="rect" id="node244" href="$d8/d7b/classmars_1_1sim_1_1_multi_level_laser_range_finder.html" title="mars::sim::MultiLevelLaser\lRangeFinder" alt="" coords="759,1191,937,1238"/>
-<area shape="rect" id="node246" href="$d1/d38/classmars_1_1sim_1_1_node_array_sensor.html" title="mars::sim::NodeArraySensor" alt="" coords="753,821,943,851"/>
-<area shape="rect" id="node259" href="$d4/d37/classmars_1_1sim_1_1_node_contact_sensor.html" title="mars::sim::NodeContactSensor" alt="" coords="745,928,951,957"/>
-<area shape="rect" id="node267" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="759,4011,937,4040"/>
-<area shape="rect" id="node230" href="$d1/dae/classmars_1_1sim_1_1_joint_a_v_g_torque_sensor.html" title="mars::sim::JointAVGTorque\lSensor" alt="" coords="1027,475,1211,522"/>
-<area shape="rect" id="node232" href="$d0/dc1/classmars_1_1sim_1_1_joint_load_sensor.html" title="mars::sim::JointLoadSensor" alt="" coords="1027,545,1211,575"/>
-<area shape="rect" id="node234" href="$d5/d5e/classmars_1_1sim_1_1_joint_position_sensor.html" title="mars::sim::JointPosition\lSensor" alt="" coords="1037,598,1200,645"/>
-<area shape="rect" id="node236" href="$d2/d73/classmars_1_1sim_1_1_joint_torque_sensor.html" title="mars::sim::JointTorqueSensor" alt="" coords="1020,668,1217,697"/>
-<area shape="rect" id="node238" href="$d2/d77/classmars_1_1sim_1_1_joint_velocity_sensor.html" title="mars::sim::JointVelocity\lSensor" alt="" coords="1037,721,1200,767"/>
-<area shape="rect" id="node248" href="$d4/dc8/classmars_1_1sim_1_1_node_angular_velocity_sensor.html" title="mars::sim::NodeAngularVelocity\lSensor" alt="" coords="1013,843,1224,890"/>
-<area shape="rect" id="node250" href="$da/deb/classmars_1_1sim_1_1_node_c_o_m_sensor.html" title="mars::sim::NodeCOMSensor" alt="" coords="1024,913,1213,943"/>
-<area shape="rect" id="node253" href="$d9/dc2/classmars_1_1sim_1_1_node_position_sensor.html" title="mars::sim::NodePositionSensor" alt="" coords="1016,967,1221,996"/>
-<area shape="rect" id="node255" href="$d6/ded/classmars_1_1sim_1_1_node_rotation_sensor.html" title="mars::sim::NodeRotationSensor" alt="" coords="1015,1020,1223,1049"/>
-<area shape="rect" id="node257" href="$d3/da3/classmars_1_1sim_1_1_node_velocity_sensor.html" title="mars::sim::NodeVelocitySensor" alt="" coords="1016,791,1221,820"/>
-<area shape="rect" id="node270" href="$d5/dac/classmars_1_1entity__generation_1_1_entity_factory_interface.html" title="The interface for plugins creating dynamic simulation objects. " alt="" coords="508,3181,665,3227"/>
-<area shape="rect" id="node272" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="775,3189,921,3219"/>
-<area shape="rect" id="node273" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,904,200,933"/>
-<area shape="rect" id="node275" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="249,1006,433,1053"/>
-<area shape="rect" id="node287" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="484,647,689,676"/>
-<area shape="rect" id="node294" href="$de/d02/classmars_1_1sim_1_1_world_physics.html" title="Declaration of the physical class, that implements the physics interface. " alt="" coords="764,467,932,496"/>
-<area shape="rect" id="node295" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="769,6690,927,6737"/>
-<area shape="rect" id="node297" href="$d3/d9f/classmars_1_1sim_1_1_entity_manager.html" title="mars::sim::EntityManager" alt="" coords="1033,6604,1204,6633"/>
-<area shape="rect" id="node298" href="$d8/d0b/classmars_1_1interfaces_1_1_graphics_event_client.html" title="mars::interfaces::Graphics\lEventClient" alt="" coords="760,5743,936,5790"/>
-<area shape="rect" id="node302" href="$d7/d0b/classmars_1_1interfaces_1_1_graphics_event_interface.html" title="mars::interfaces::Graphics\lEventInterface" alt="" coords="499,6551,675,6598"/>
-<area shape="rect" id="node304" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="499,3525,675,3571"/>
-<area shape="rect" id="node306" href="$de/d28/classmars_1_1gui_1_1_camera_configurator.html" title="mars::gui::CameraConfigurator" alt="" coords="748,4395,948,4424"/>
-<area shape="rect" id="node308" href="$dd/dce/classmars_1_1gui_1_1_capture_window.html" title="mars::gui::CaptureWindow" alt="" coords="760,4448,936,4477"/>
-<area shape="rect" id="node310" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="764,4554,932,4601"/>
-<area shape="rect" id="node313" href="$d3/d53/classmars_1_1plugins_1_1mars__video__player_1_1_mars_video_player.html" title="mars::plugins::mars\l_video_player::MarsVideoPlayer" alt="" coords="744,3573,952,3619"/>
-<area shape="rect" id="node315" href="$d6/def/classmars_1_1plugins_1_1_plot3_d_1_1_general_plot.html" title="mars::plugins::Plot3D\l::GeneralPlot" alt="" coords="775,3695,921,3742"/>
-<area shape="rect" id="node321" href="$d5/d54/classmars_1_1sim_1_1_node_manager.html" title="The declaration of the NodeManager class. " alt="" coords="764,4133,932,4163"/>
-<area shape="rect" id="node325" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="779,3503,917,3550"/>
-<area shape="rect" id="node327" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="484,4129,689,4175"/>
-<area shape="rect" id="node329" href="$d0/d22/classmars_1_1interfaces_1_1_physics_interface.html" title="mars::interfaces::Physics\lInterface" alt="" coords="501,438,672,485"/>
-<area shape="rect" id="node331" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="261,3357,421,3403"/>
-<area shape="rect" id="node333" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="492,2658,681,2705"/>
-<area shape="rect" id="node360" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="492,4059,681,4106"/>
-<area shape="rect" id="node362" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="783,4501,913,4531"/>
-<area shape="rect" id="node369" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="504,905,669,951"/>
-<area shape="rect" id="node382" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="497,3757,676,3803"/>
-<area shape="rect" id="node387" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="512,6621,661,6667"/>
-<area shape="rect" id="node392" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="517,4229,656,4275"/>
-<area shape="rect" id="node396" href="$d8/d44/classmars_1_1data__broker__gui_1_1_main_data_gui.html" title="mars::data_broker_gui\l::MainDataGui" alt="" coords="773,4869,923,4915"/>
-<area shape="rect" id="node398" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="499,6098,675,6145"/>
-<area shape="rect" id="node401" href="$d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html" title="mars::interfaces::LoadScene\lInterface" alt="" coords="492,6751,681,6798"/>
-<area shape="rect" id="node407" href="$d5/d1a/classmars_1_1interfaces_1_1_mars_gui_interface.html" title="Sets up the main gui of the simulation and handles various generic gui options. " alt="" coords="500,3661,673,3707"/>
-<area shape="rect" id="node413" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="492,5675,681,5704"/>
-<area shape="rect" id="node417" href="$d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html" title="mars::plugins::lib\l_manager_gui::LibManagerGui" alt="" coords="749,5567,947,5614"/>
-<area shape="rect" id="node419" href="$d5/d44/classmars_1_1plugins_1_1module__info__dumper_1_1_module_info_dumper.html" title="mars::plugins::module\l_info_dumper::ModuleInfoDumper" alt="" coords="739,4799,957,4846"/>
-<area shape="rect" id="node389" href="$d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html" title="mars::cfg_manager::\lCFGManager" alt="" coords="777,6621,919,6667"/>
-<area shape="rect" id="node394" href="$d7/d09/classmars_1_1data__broker_1_1_data_broker.html" title="Central class of the DataBroker library. " alt="" coords="781,4186,915,4233"/>
-<area shape="rect" id="node403" href="$d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html" title="mars::scene_loader\l::SceneLoader" alt="" coords="780,6813,916,6859"/>
-<area shape="rect" id="node405" href="$d2/d19/classmars_1_1smurf_1_1_s_m_u_r_f_loader.html" title="mars::smurf::SMURFLoader" alt="" coords="755,6760,941,6789"/>
-<area shape="rect" id="node415" href="$dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html" title="The main part of the gui that manages all dialogs and menus. " alt="" coords="763,5691,933,5720"/>
-<area shape="rect" id="node421" href="$d0/dda/classmars_1_1log__console_1_1_console_interface.html" title="mars::log_console::\lConsoleInterface" alt="" coords="519,4325,655,4371"/>
-<area shape="rect" id="node423" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="485,4532,688,4561"/>
-<area shape="rect" id="node431" href="$d8/da4/classmars_1_1gui_1_1_menu_file.html" title="MenuFile creates the menus and menu items in the File menu of the simulation. " alt="" coords="780,4677,916,4707"/>
-<area shape="rect" id="node433" href="$d6/dda/classmars_1_1gui_1_1_menu_help.html" title="MenuHelp is the part of the menu bar that manages the help dialogs. " alt="" coords="777,4624,919,4653"/>
-<area shape="rect" id="node435" href="$d7/d7d/classmars_1_1gui_1_1_menu_simulation.html" title="Provides the Simulation and Control menu entries. " alt="" coords="760,5168,936,5197"/>
-<area shape="rect" id="node437" href="$d7/d76/classmars_1_1gui_1_1_menu_window.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation. ..." alt="" coords="767,5061,929,5091"/>
-<area shape="rect" id="node448" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="764,5322,932,5369"/>
-<area shape="rect" id="node450" href="$df/d3f/classmars_1_1cfg__manager__gui_1_1_cfg_widget.html" title="mars::cfg_manager_gui\l::CfgWidget" alt="" coords="1040,6359,1197,6406"/>
-<area shape="rect" id="node474" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="521,3595,652,3624"/>
-<area shape="rect" id="node480" href="$dd/d4f/classmars_1_1sim_1_1_controller.html" title="The class to log all data. " alt="" coords="776,3888,920,3917"/>
-<area shape="rect" id="node492" href="$d2/dd0/classmars_1_1app_1_1_graphics_timer.html" title="mars::app::GraphicsTimer" alt="" coords="761,5867,935,5896"/>
-<area shape="rect" id="node497" href="$d3/df4/classmars_1_1gui_1_1_controller_handler.html" title="handles one controller in the simulation providing gui options. " alt="" coords="756,5920,940,5949"/>
-<area shape="rect" id="node499" href="$dd/d96/classmars_1_1gui_1_1_dialog___create___material.html" title="Creates the &quot;Create Material&quot; Dialog window. " alt="" coords="765,6026,931,6073"/>
-<area shape="rect" id="node501" href="$df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html" title="mars::gui::Dialog_Edit\l_Material" alt="" coords="773,6095,923,6142"/>
-<area shape="rect" id="node503" href="$d7/d8e/classmars_1_1gui_1_1_joint_handler.html" title="mars::gui::JointHandler" alt="" coords="769,6165,927,6195"/>
-<area shape="rect" id="node505" href="$d2/d46/classmars_1_1gui_1_1_light_handler.html" title="Provides the GUI properties for handling a light &#45; creating and editing. " alt="" coords="769,6219,927,6248"/>
-<area shape="rect" id="node509" href="$d7/d16/classmars_1_1gui_1_1_motor_handler.html" title="mars::gui::MotorHandler" alt="" coords="767,5973,929,6003"/>
-<area shape="rect" id="node511" href="$dd/db4/classmars_1_1gui_1_1_node_handler.html" title="mars::gui::NodeHandler" alt="" coords="768,6272,928,6301"/>
-<area shape="rect" id="node513" href="$d2/deb/classmars_1_1gui_1_1_sensor_handler.html" title="mars::gui::SensorHandler" alt="" coords="763,6325,933,6355"/>
-<area shape="rect" id="node516" href="$d0/d4e/classmars_1_1gui_1_1_widget___node___options.html" title="A widget to show the actual properties of a node to the user. " alt="" coords="767,6378,929,6425"/>
-<area shape="rect" id="node525" href="$d1/d71/classmars_1_1viz_1_1_graphics_timer.html" title="mars::viz::GraphicsTimer" alt="" coords="764,6499,932,6528"/>
-<area shape="rect" id="node529" href="$d7/d0f/classmars_1_1gui_1_1_capture_config.html" title="mars::gui::CaptureConfig" alt="" coords="764,5392,932,5421"/>
-<area shape="rect" id="node531" href="$d6/d6f/classmars_1_1gui_1_1_image_process.html" title="mars::gui::ImageProcess" alt="" coords="764,5445,932,5475"/>
-<area shape="rect" id="node534" href="$db/df5/classmars_1_1plugins_1_1_sonar_plugin_1_1_udp_thread.html" title="mars::plugins::SonarPlugin\l::UdpThread" alt="" coords="759,5498,937,5545"/>
-<area shape="rect" id="node540" href="$da/dc1/class_cross_widget.html" title="CrossWidget" alt="" coords="799,6883,897,6912"/>
-<area shape="rect" id="node542" href="$dc/d3b/class_joystick_widget2.html" title="JoystickWidget2" alt="" coords="789,6936,907,6965"/>
-<area shape="rect" id="node544" href="$dc/df2/classmars_1_1gui_1_1_joystick_widget.html" title="Provides an interactive joystick for node movement. " alt="" coords="761,6989,935,7019"/>
-<area shape="rect" id="node546" href="$d7/d9d/classmars_1_1gui_1_1_selection_dialog.html" title="mars::gui::SelectionDialog" alt="" coords="761,7043,935,7072"/>
-<area shape="rect" id="node548" href="$d7/d91/classmars_1_1log__console_1_1_console_g_u_i.html" title="mars::log_console::\lConsoleGUI" alt="" coords="780,7095,916,7142"/>
-<area shape="rect" id="node551" href="$dd/db2/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_control_widget.html" title="mars::plugins::CaveDemoHud\lControl::ControlWidget" alt="" coords="749,7165,947,7211"/>
-<area shape="rect" id="node553" href="$dd/dc4/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_widget.html" title="mars::plugins::connexion\l_plugin::ConnexionWidget" alt="" coords="761,7234,935,7281"/>
-<area shape="rect" id="node555" href="$d2/d83/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot_config.html" title="mars::plugins::Plot3D\l::MotorPlotConfig" alt="" coords="775,7303,921,7350"/>
-<area shape="rect" id="node557" href="$db/d20/class_my_double_slider.html" title="MyDoubleSlider" alt="" coords="791,7373,905,7403"/>
+<area shape="rect" id="node1" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="249,2470,433,2517"/>
+<area shape="rect" id="node3" href="$d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html" title="mars::interfaces::BaseCamera\lSensor\&lt; double \&gt;" alt="" coords="487,2835,687,2882"/>
+<area shape="rect" id="node7" href="$df/d91/classmars_1_1interfaces_1_1_base_grid_intersection_sensor.html" title="mars::interfaces::BaseGrid\lIntersectionSensor" alt="" coords="497,2401,676,2447"/>
+<area shape="rect" id="node11" href="$d2/d93/classmars_1_1interfaces_1_1_base_polar_intersection_sensor.html" title="mars::interfaces::BasePolar\lIntersectionSensor" alt="" coords="495,2470,679,2517"/>
+<area shape="rect" id="node5" href="$d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html" title="mars::sim::ScanningSonar" alt="" coords="760,2864,936,2893"/>
+<area shape="rect" id="node9" href="$d1/d3c/classmars_1_1sim_1_1_ray_grid_sensor.html" title="mars::sim::RayGridSensor" alt="" coords="760,2371,936,2400"/>
+<area shape="rect" id="node13" href="$d3/dde/classmars_1_1sim_1_1_ray_sensor.html" title="mars::sim::RaySensor" alt="" coords="772,2477,924,2507"/>
+<area shape="rect" id="node15" href="$d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html" title="mars::sim::RotatingRaySensor" alt="" coords="747,2424,949,2453"/>
+<area shape="rect" id="node18" href="$d7/da8/classconstraints__plugin_1_1_base_constraint.html" title="constraints_plugin\l::BaseConstraint" alt="" coords="785,6295,911,6342"/>
+<area shape="rect" id="node24" href="$dc/daa/classconstraints__plugin_1_1_constraints_plugin.html" title="constraints_plugin\l::ConstraintsPlugin" alt="" coords="781,5981,915,6027"/>
+<area shape="rect" id="node20" href="$d1/df3/classconstraints__plugin_1_1_joint_constraint.html" title="constraints_plugin\l::JointConstraint" alt="" coords="1056,6347,1181,6394"/>
+<area shape="rect" id="node22" href="$de/d9c/classconstraints__plugin_1_1_node_constraint.html" title="constraints_plugin\l::NodeConstraint" alt="" coords="1056,6278,1181,6325"/>
+<area shape="rect" id="node27" href="$dc/d84/class____n__project_____1_1____project____.html" title="__n_project__::__project__" alt="" coords="759,6365,937,6395"/>
+<area shape="rect" id="node29" href="$d2/d35/classgenetic__structure__test_1_1_genetic_structure_test.html" title="genetic_structure_test\l::GeneticStructureTest" alt="" coords="771,6418,925,6465"/>
+<area shape="rect" id="node31" href="$d2/d40/class_neural_soil.html" title="NeuralSoil" alt="" coords="807,6557,889,6587"/>
+<area shape="rect" id="node33" href="$d5/d9a/classsc__joypad__control_1_1_s_c_joypad_control.html" title="sc_joypad_control::\lSCJoypadControl" alt="" coords="781,6487,915,6534"/>
+<area shape="rect" id="node36" href="$de/dc7/classmars_1_1plugins_1_1db__adrf__receiver_1_1_d_b_a_d_r_f_receiver.html" title="mars::plugins::db_adrf\l_receiver::DBADRFReceiver" alt="" coords="753,5,943,51"/>
+<area shape="rect" id="node44" href="$d6/d22/class_virtual_joystick_plugin.html" title="VirtualJoystickPlugin" alt="" coords="776,5312,920,5341"/>
+<area shape="rect" id="node45" href="$d2/d26/class_joystick_interface.html" title="JoystickInterface" alt="" coords="525,5311,648,5340"/>
+<area shape="rect" id="node49" href="$d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html" title="data_broker_plotter\l::DataBrokerPlotterLib" alt="" coords="773,5242,923,5289"/>
+<area shape="rect" id="node51" href="$df/db1/classmars_1_1viz_1_1_viz.html" title="mars::viz::Viz" alt="" coords="797,5136,899,5165"/>
+<area shape="rect" id="node53" href="$db/d44/classosg__text_1_1_text_factory_interface.html" title="osg_text::TextFactoryInterface" alt="" coords="748,6120,948,6149"/>
+<area shape="rect" id="node58" href="$d5/d61/class_viz_plugin.html" title="VizPlugin" alt="" coords="809,3285,887,3315"/>
+<area shape="rect" id="node55" href="$d0/dfc/classosg__text_1_1_text_factory.html" title="osg_text::TextFactory" alt="" coords="1044,6120,1193,6149"/>
+<area shape="rect" id="node59" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="516,1293,657,1339"/>
+<area shape="rect" id="node61" href="$de/d5f/classeo1__plugin_1_1_e_o1_plugin.html" title="eo1_plugin::EO1Plugin" alt="" coords="771,997,925,1027"/>
+<area shape="rect" id="node63" href="$d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html" title="mars::cfg_manager_gui\l::MainCfgGui" alt="" coords="769,4527,927,4574"/>
+<area shape="rect" id="node65" href="$d4/d0e/classmars_1_1entity__generation_1_1_entity_factory_manager.html" title="mars::entity_generation\l::EntityFactoryManager" alt="" coords="769,127,927,174"/>
+<area shape="rect" id="node67" href="$dd/d00/classmars_1_1graphics_1_1_graphics_manager.html" title="mars::graphics::Graphics\lManager" alt="" coords="764,3461,932,3507"/>
+<area shape="rect" id="node69" href="$d4/dab/classmars_1_1gui_1_1_mars_gui.html" title="Sets up the main gui of the simulation and handles various generic gui options. " alt="" coords="781,1467,915,1496"/>
+<area shape="rect" id="node71" href="$da/d36/classmars_1_1log__console_1_1_main_console.html" title="mars::log_console::\lMainConsole" alt="" coords="780,3983,916,4030"/>
+<area shape="rect" id="node73" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="753,5189,943,5219"/>
+<area shape="rect" id="node125" href="$da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html" title="mars::plugins::__namespace\l__::__classname__" alt="" coords="753,1050,943,1097"/>
+<area shape="rect" id="node127" href="$d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html" title="mars::plugins::CameraGUI\l::CameraGUI" alt="" coords="759,3669,937,3715"/>
+<area shape="rect" id="node129" href="$d2/d1c/classmars_1_1plugins_1_1cartest_1_1_cartest.html" title="mars::plugins::cartest\l::Cartest" alt="" coords="775,1119,921,1166"/>
+<area shape="rect" id="node131" href="$de/dbe/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_cave_demo_hud_control.html" title="mars::plugins::CaveDemoHud\lControl::CaveDemoHudControl" alt="" coords="747,3914,949,3961"/>
+<area shape="rect" id="node133" href="$d7/d44/classmars_1_1plugins_1_1circle__drawing_1_1_circle_drawing.html" title="mars::plugins::circle\l_drawing::CircleDrawing" alt="" coords="767,1519,929,1566"/>
+<area shape="rect" id="node135" href="$d8/df7/classmars_1_1plugins_1_1constraints__plugin_1_1_base_constraint.html" title="mars::plugins::constraints\l_plugin::BaseConstraint" alt="" coords="763,805,933,851"/>
+<area shape="rect" id="node139" href="$d2/dde/classmars_1_1plugins_1_1constraints__plugin_1_1_constraints_plugin.html" title="mars::plugins::constraints\l_plugin::ConstraintsPlugin" alt="" coords="761,1397,935,1443"/>
+<area shape="rect" id="node141" href="$da/d09/classmars_1_1plugins_1_1_data_vault_wrapper_1_1_data_vault_wrapper.html" title="mars::plugins::DataVault\lWrapper::DataVaultWrapper" alt="" coords="755,3599,941,3646"/>
+<area shape="rect" id="node143" href="$d8/ded/classmars_1_1plugins_1_1db__to__cfg_1_1_db_to_cfg.html" title="mars::plugins::db_to\l_cfg::DbToCfg" alt="" coords="779,1189,917,1235"/>
+<area shape="rect" id="node145" href="$d2/dfd/classmars_1_1plugins_1_1entityfactorytester_1_1_entityfactorytester.html" title="mars::plugins::entityfactorytester\l::Entityfactorytester" alt="" coords="741,1258,955,1305"/>
+<area shape="rect" id="node147" href="$d2/d2b/classmars_1_1plugins_1_1hud__calibration_1_1_hud_calibration.html" title="mars::plugins::hud\l_calibration::HudCalibration" alt="" coords="757,1327,939,1374"/>
+<area shape="rect" id="node149" href="$d2/dff/classmars_1_1plugins_1_1kais__3rd__car_1_1_kais__3rd_car.html" title="mars::plugins::kais\l_3rd_car::Kais_3rdCar" alt="" coords="772,197,924,243"/>
+<area shape="rect" id="node151" href="$de/db0/classmars_1_1plugins_1_1_line_laser_1_1_line_laser.html" title="mars::plugins::LineLaser\l::LineLaser" alt="" coords="767,266,929,313"/>
+<area shape="rect" id="node153" href="$d5/dbb/classmars_1_1plugins_1_1mars__stream__window_1_1_stream_window.html" title="mars::plugins::mars\l_stream_window::StreamWindow" alt="" coords="740,1818,956,1865"/>
+<area shape="rect" id="node155" href="$d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html" title="mars::plugins::obstacle\l_generator::ObstacleGenerator" alt="" coords="748,335,948,382"/>
+<area shape="rect" id="node157" href="$d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html" title="mars::plugins::output\l_inertias::OutputInertias" alt="" coords="768,405,928,451"/>
+<area shape="rect" id="node159" href="$d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html" title="mars::plugins::path\l_drawer::PathDrawer" alt="" coords="776,474,920,521"/>
+<area shape="rect" id="node161" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="775,3791,921,3838"/>
+<area shape="rect" id="node163" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="759,1589,937,1635"/>
+<area shape="rect" id="node165" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="751,543,945,590"/>
+<area shape="rect" id="node167" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="773,613,923,659"/>
+<area shape="rect" id="node169" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="771,682,925,729"/>
+<area shape="rect" id="node171" href="$d9/d6a/classmars_1_1sim_1_1_simulator.html" title="The Simulator class implements the main functions of the MARS simulation. " alt="" coords="777,3339,919,3368"/>
+<area shape="rect" id="node173" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="793,752,903,781"/>
+<area shape="rect" id="node75" href="$d0/d20/classdata__broker__plotter_1_1_data_broker_plotter.html" title="data_broker_plotter\l::DataBrokerPlotter" alt="" coords="1052,4407,1185,4454"/>
+<area shape="rect" id="node77" href="$da/d39/classmars_1_1config__map__gui_1_1_data_widget.html" title="mars::config_map_gui\l::DataWidget" alt="" coords="1044,5181,1193,5227"/>
+<area shape="rect" id="node79" href="$d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html" title="mars::data_broker_gui\l::DataConnWidget" alt="" coords="1044,4477,1193,4523"/>
+<area shape="rect" id="node81" href="$de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html" title="mars::data_broker_gui\l::DataWidget" alt="" coords="1044,4546,1193,4593"/>
+<area shape="rect" id="node83" href="$df/dda/classmars_1_1gui_1_1_blender_export_g_u_i.html" title="mars::gui::BlenderExportGUI" alt="" coords="1024,5251,1213,5280"/>
+<area shape="rect" id="node85" href="$d6/dfa/classmars_1_1gui_1_1_camera_configurator_g_u_i.html" title="mars::gui::CameraConfiguratorGUI" alt="" coords="1007,5304,1231,5333"/>
+<area shape="rect" id="node87" href="$d4/d87/classmars_1_1gui_1_1_capture_g_u_i.html" title="mars::gui::CaptureGUI" alt="" coords="1041,5357,1196,5387"/>
+<area shape="rect" id="node89" href="$da/d1a/classmars_1_1gui_1_1_controller_config_g_u_i.html" title="mars::gui::ControllerConfigGUI" alt="" coords="1017,5411,1220,5440"/>
+<area shape="rect" id="node91" href="$dc/d1c/classmars_1_1gui_1_1_dialog___add___force.html" title="Adds a QDialog to set force to nodes. " alt="" coords="1044,5463,1193,5510"/>
+<area shape="rect" id="node93" href="$dd/dca/classmars_1_1gui_1_1_dialog___add___torque.html" title="Adds a QDialog to set torque to nodes. " alt="" coords="1044,5533,1193,5579"/>
+<area shape="rect" id="node95" href="$d9/d5a/classmars_1_1gui_1_1_dialog___graphics___options.html" title="This class creates the Register Frame Dialog. " alt="" coords="1029,5602,1208,5649"/>
+<area shape="rect" id="node97" href="$d6/d46/classmars_1_1gui_1_1_dialog___import___mesh.html" title="Creates the &quot;Import Mesh&quot; dialog. " alt="" coords="1017,4616,1220,4645"/>
+<area shape="rect" id="node99" href="$d6/d2d/classmars_1_1gui_1_1_dialog___motor___control.html" title="Dialog_Motor_Control is a widget that creates MotorSet widgets for each available motor to change its..." alt="" coords="1039,4669,1199,4715"/>
+<area shape="rect" id="node101" href="$d9/d62/classmars_1_1gui_1_1_dialog___rescale___environment.html" title="Dialog for rescaling the environment every node in the environment is rescaled (including its positio..." alt="" coords="1031,4738,1207,4785"/>
+<area shape="rect" id="node103" href="$d1/da4/classmars_1_1gui_1_1_dialog_controllers.html" title="mars::gui::DialogControllers" alt="" coords="1027,4808,1211,4837"/>
+<area shape="rect" id="node105" href="$d3/dad/classmars_1_1gui_1_1_dialog_distance.html" title="Provides selection functionality displaying information about distance between two objects..." alt="" coords="1032,4861,1205,4891"/>
+<area shape="rect" id="node107" href="$de/d64/classmars_1_1gui_1_1_dialog_joints.html" title="mars::gui::DialogJoints" alt="" coords="1041,4915,1196,4944"/>
+<area shape="rect" id="node109" href="$d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html" title="DialogJoystick is a widget that allows node movement functionality with different selection and movem..." alt="" coords="1033,4968,1204,4997"/>
+<area shape="rect" id="node111" href="$d8/d41/classmars_1_1gui_1_1_dialog_lights.html" title="mars::gui::DialogLights" alt="" coords="1041,5021,1196,5051"/>
+<area shape="rect" id="node113" href="$d1/df9/classmars_1_1gui_1_1_dialog_motors.html" title="mars::gui::DialogMotors" alt="" coords="1039,5075,1199,5104"/>
+<area shape="rect" id="node115" href="$dc/d96/classmars_1_1gui_1_1_dialog_nodes.html" title="mars::gui::DialogNodes" alt="" coords="1040,5933,1197,5963"/>
+<area shape="rect" id="node117" href="$d4/d45/classmars_1_1gui_1_1_dialog_sensors.html" title="mars::gui::DialogSensors" alt="" coords="1035,5128,1203,5157"/>
+<area shape="rect" id="node119" href="$d8/d72/classmars_1_1gui_1_1_node_selection_tree.html" title="mars::gui::NodeSelectionTree" alt="" coords="1021,5880,1216,5909"/>
+<area shape="rect" id="node121" href="$d7/d8b/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_widget.html" title="mars::plugins::CameraGUI\l::CameraWidget" alt="" coords="1029,5810,1208,5857"/>
+<area shape="rect" id="node123" href="$d3/d43/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_widget.html" title="mars::plugins::lib\l_manager_gui::LibManagerWidget" alt="" coords="1009,5671,1228,5718"/>
+<area shape="rect" id="node137" href="$d8/d99/classmars_1_1plugins_1_1constraints__plugin_1_1_node_constraint.html" title="mars::plugins::constraints\l_plugin::NodeConstraint" alt="" coords="1033,805,1204,851"/>
+<area shape="rect" id="node175" href="$d1/db0/classmars_1_1data__broker_1_1_producer_interface.html" title="Interface for classes producing data to broadcast via a DataBroker. " alt="" coords="520,2699,653,2746"/>
+<area shape="rect" id="node177" href="$d5/d86/class_joystick_plugin.html" title="JoystickPlugin" alt="" coords="795,2971,901,3000"/>
+<area shape="rect" id="node179" href="$de/dff/classmars_1_1sim_1_1_joint6_d_o_f_sensor.html" title="mars::sim::Joint6DOFSensor" alt="" coords="752,2653,944,2683"/>
+<area shape="rect" id="node181" href="$d2/d9f/classmars_1_1sim_1_1_node_contact_force_sensor.html" title="mars::sim::NodeContactForce\lSensor" alt="" coords="1020,2345,1217,2391"/>
+<area shape="rect" id="node183" href="$d2/d27/classmars_1_1sim_1_1_sim_joint.html" title="SimJoint represents the simulated joints. " alt="" coords="779,2757,917,2787"/>
+<area shape="rect" id="node185" href="$d7/dfb/classmars_1_1sim_1_1_sim_motor.html" title="Each SimMotor object publishes its state on the dataBroker. " alt="" coords="776,2531,920,2560"/>
+<area shape="rect" id="node187" href="$d5/db3/classmars_1_1sim_1_1_sim_node.html" title="Two typedefs to keep mesh structure nearly similar to ODE. " alt="" coords="777,2811,919,2840"/>
+<area shape="rect" id="node188" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="520,1929,653,1975"/>
+<area shape="rect" id="node192" href="$de/d47/classeo__billboards_1_1_e_o_billboards.html" title="eo_billboards::EOBillboards" alt="" coords="757,875,939,904"/>
+<area shape="rect" id="node197" href="$dd/d61/classmars_1_1gui_1_1_camera_config.html" title="mars::gui::CameraConfig" alt="" coords="764,1712,932,1741"/>
+<area shape="rect" id="node199" href="$d1/d38/classmars_1_1gui_1_1_widget___joint___state.html" title="A widget to show the actual properties of a joint. " alt="" coords="1039,4269,1199,4315"/>
+<area shape="rect" id="node201" href="$d5/dd4/classmars_1_1gui_1_1_widget___node___state.html" title="A widget to show the actual properties of a node to the user. " alt="" coords="1037,4338,1200,4385"/>
+<area shape="rect" id="node210" href="$dd/dc0/classmars_1_1plugins_1_1db__adrf__sender_1_1_d_b_a_d_r_f_sender.html" title="mars::plugins::db_adrf\l_sender::DBADRFSender" alt="" coords="761,927,935,974"/>
+<area shape="rect" id="node221" href="$dd/d4b/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot.html" title="mars::plugins::Plot3D\l::MotorPlot" alt="" coords="775,3215,921,3262"/>
+<area shape="rect" id="node228" href="$d2/d51/classmars_1_1sim_1_1_camera_sensor.html" title="mars::sim::CameraSensor" alt="" coords="761,2317,935,2347"/>
+<area shape="rect" id="node231" href="$d0/d80/classmars_1_1sim_1_1_joint_array_sensor.html" title="mars::sim::JointArraySensor" alt="" coords="755,1659,941,1688"/>
+<area shape="rect" id="node243" href="$dc/d77/classmars_1_1sim_1_1_motor_current_sensor.html" title="mars::sim::MotorCurrentSensor" alt="" coords="745,2141,951,2171"/>
+<area shape="rect" id="node245" href="$d7/d1c/classmars_1_1sim_1_1_motor_position_sensor.html" title="mars::sim::MotorPosition\lSensor" alt="" coords="764,2194,932,2241"/>
+<area shape="rect" id="node247" href="$d8/d7b/classmars_1_1sim_1_1_multi_level_laser_range_finder.html" title="mars::sim::MultiLevelLaser\lRangeFinder" alt="" coords="759,2583,937,2630"/>
+<area shape="rect" id="node249" href="$d1/d38/classmars_1_1sim_1_1_node_array_sensor.html" title="mars::sim::NodeArraySensor" alt="" coords="753,1765,943,1795"/>
+<area shape="rect" id="node262" href="$d4/d37/classmars_1_1sim_1_1_node_contact_sensor.html" title="mars::sim::NodeContactSensor" alt="" coords="745,2264,951,2293"/>
+<area shape="rect" id="node270" href="$d2/d7d/classmars_1_1sim__state_1_1_sim_state.html" title="mars::sim_state::SimState" alt="" coords="759,3861,937,3891"/>
+<area shape="rect" id="node233" href="$d1/dae/classmars_1_1sim_1_1_joint_a_v_g_torque_sensor.html" title="mars::sim::JointAVGTorque\lSensor" alt="" coords="1027,1489,1211,1535"/>
+<area shape="rect" id="node235" href="$d0/dc1/classmars_1_1sim_1_1_joint_load_sensor.html" title="mars::sim::JointLoadSensor" alt="" coords="1027,1559,1211,1588"/>
+<area shape="rect" id="node237" href="$d5/d5e/classmars_1_1sim_1_1_joint_position_sensor.html" title="mars::sim::JointPosition\lSensor" alt="" coords="1037,1611,1200,1658"/>
+<area shape="rect" id="node239" href="$d2/d73/classmars_1_1sim_1_1_joint_torque_sensor.html" title="mars::sim::JointTorqueSensor" alt="" coords="1020,1681,1217,1711"/>
+<area shape="rect" id="node241" href="$d2/d77/classmars_1_1sim_1_1_joint_velocity_sensor.html" title="mars::sim::JointVelocity\lSensor" alt="" coords="1037,1419,1200,1466"/>
+<area shape="rect" id="node251" href="$d4/dc8/classmars_1_1sim_1_1_node_angular_velocity_sensor.html" title="mars::sim::NodeAngularVelocity\lSensor" alt="" coords="1013,1734,1224,1781"/>
+<area shape="rect" id="node253" href="$da/deb/classmars_1_1sim_1_1_node_c_o_m_sensor.html" title="mars::sim::NodeCOMSensor" alt="" coords="1024,1804,1213,1833"/>
+<area shape="rect" id="node256" href="$d9/dc2/classmars_1_1sim_1_1_node_position_sensor.html" title="mars::sim::NodePositionSensor" alt="" coords="1016,1857,1221,1887"/>
+<area shape="rect" id="node258" href="$d6/ded/classmars_1_1sim_1_1_node_rotation_sensor.html" title="mars::sim::NodeRotationSensor" alt="" coords="1015,1911,1223,1940"/>
+<area shape="rect" id="node260" href="$d3/da3/classmars_1_1sim_1_1_node_velocity_sensor.html" title="mars::sim::NodeVelocitySensor" alt="" coords="1016,1964,1221,1993"/>
+<area shape="rect" id="node273" href="$d5/dac/classmars_1_1entity__generation_1_1_entity_factory_interface.html" title="The interface for plugins creating dynamic simulation objects. " alt="" coords="508,66,665,113"/>
+<area shape="rect" id="node275" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="775,75,921,104"/>
+<area shape="rect" id="node276" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,2153,200,2183"/>
+<area shape="rect" id="node278" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="249,2401,433,2447"/>
+<area shape="rect" id="node290" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="484,2540,689,2569"/>
+<area shape="rect" id="node297" href="$de/d02/classmars_1_1sim_1_1_world_physics.html" title="Declaration of the physical class, that implements the physics interface. " alt="" coords="764,2917,932,2947"/>
+<area shape="rect" id="node298" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="769,6786,927,6833"/>
+<area shape="rect" id="node300" href="$d3/d9f/classmars_1_1sim_1_1_entity_manager.html" title="mars::sim::EntityManager" alt="" coords="1033,6191,1204,6220"/>
+<area shape="rect" id="node301" href="$d8/d0b/classmars_1_1interfaces_1_1_graphics_event_client.html" title="mars::interfaces::Graphics\lEventClient" alt="" coords="760,6050,936,6097"/>
+<area shape="rect" id="node305" href="$d7/d0b/classmars_1_1interfaces_1_1_graphics_event_interface.html" title="mars::interfaces::Graphics\lEventInterface" alt="" coords="499,3461,675,3507"/>
+<area shape="rect" id="node307" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="499,3266,675,3313"/>
+<area shape="rect" id="node309" href="$de/d28/classmars_1_1gui_1_1_camera_configurator.html" title="mars::gui::CameraConfigurator" alt="" coords="748,4123,948,4152"/>
+<area shape="rect" id="node311" href="$dd/dce/classmars_1_1gui_1_1_capture_window.html" title="mars::gui::CaptureWindow" alt="" coords="760,4176,936,4205"/>
+<area shape="rect" id="node313" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="764,4282,932,4329"/>
+<area shape="rect" id="node316" href="$d3/d53/classmars_1_1plugins_1_1mars__video__player_1_1_mars_video_player.html" title="mars::plugins::mars\l_video_player::MarsVideoPlayer" alt="" coords="744,3023,952,3070"/>
+<area shape="rect" id="node318" href="$d6/def/classmars_1_1plugins_1_1_plot3_d_1_1_general_plot.html" title="mars::plugins::Plot3D\l::GeneralPlot" alt="" coords="775,3391,921,3438"/>
+<area shape="rect" id="node324" href="$d5/d54/classmars_1_1sim_1_1_node_manager.html" title="The declaration of the NodeManager class. " alt="" coords="764,3739,932,3768"/>
+<area shape="rect" id="node328" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="779,3093,917,3139"/>
+<area shape="rect" id="node330" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="484,3730,689,3777"/>
+<area shape="rect" id="node332" href="$d0/d22/classmars_1_1interfaces_1_1_physics_interface.html" title="mars::interfaces::Physics\lInterface" alt="" coords="501,2909,672,2955"/>
+<area shape="rect" id="node334" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="261,3274,421,3321"/>
+<area shape="rect" id="node336" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="492,958,681,1005"/>
+<area shape="rect" id="node364" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="492,3853,681,3899"/>
+<area shape="rect" id="node366" href="$d3/d61/class_cave_movie_control.html" title="CaveMovieControl" alt="" coords="783,4229,913,4259"/>
+<area shape="rect" id="node373" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="504,2331,669,2378"/>
+<area shape="rect" id="node386" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="497,3335,676,3382"/>
+<area shape="rect" id="node391" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="512,4050,661,4097"/>
+<area shape="rect" id="node396" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="517,3646,656,3693"/>
+<area shape="rect" id="node400" href="$d8/d44/classmars_1_1data__broker__gui_1_1_main_data_gui.html" title="mars::data_broker_gui\l::MainDataGui" alt="" coords="773,4650,923,4697"/>
+<area shape="rect" id="node402" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="499,3546,675,3593"/>
+<area shape="rect" id="node405" href="$d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html" title="mars::interfaces::LoadScene\lInterface" alt="" coords="492,4834,681,4881"/>
+<area shape="rect" id="node411" href="$d5/d1a/classmars_1_1interfaces_1_1_mars_gui_interface.html" title="Sets up the main gui of the simulation and handles various generic gui options. " alt="" coords="500,1838,673,1885"/>
+<area shape="rect" id="node417" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="492,5813,681,5843"/>
+<area shape="rect" id="node421" href="$d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html" title="mars::plugins::lib\l_manager_gui::LibManagerGui" alt="" coords="749,4773,947,4819"/>
+<area shape="rect" id="node423" href="$d5/d44/classmars_1_1plugins_1_1module__info__dumper_1_1_module_info_dumper.html" title="mars::plugins::module\l_info_dumper::ModuleInfoDumper" alt="" coords="739,4458,957,4505"/>
+<area shape="rect" id="node393" href="$d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html" title="mars::cfg_manager::\lCFGManager" alt="" coords="777,4053,919,4099"/>
+<area shape="rect" id="node398" href="$d7/d09/classmars_1_1data__broker_1_1_data_broker.html" title="Central class of the DataBroker library. " alt="" coords="781,3530,915,3577"/>
+<area shape="rect" id="node407" href="$d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html" title="mars::scene_loader\l::SceneLoader" alt="" coords="780,4895,916,4942"/>
+<area shape="rect" id="node409" href="$d2/d19/classmars_1_1smurf_1_1_s_m_u_r_f_loader.html" title="mars::smurf::SMURFLoader" alt="" coords="755,4843,941,4872"/>
+<area shape="rect" id="node419" href="$dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html" title="The main part of the gui that manages all dialogs and menus. " alt="" coords="763,5928,933,5957"/>
+<area shape="rect" id="node425" href="$d0/dda/classmars_1_1log__console_1_1_console_interface.html" title="mars::log_console::\lConsoleInterface" alt="" coords="519,3926,655,3973"/>
+<area shape="rect" id="node427" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="485,4260,688,4289"/>
+<area shape="rect" id="node435" href="$d8/da4/classmars_1_1gui_1_1_menu_file.html" title="MenuFile creates the menus and menu items in the File menu of the simulation. " alt="" coords="780,4405,916,4435"/>
+<area shape="rect" id="node437" href="$d6/dda/classmars_1_1gui_1_1_menu_help.html" title="MenuHelp is the part of the menu bar that manages the help dialogs. " alt="" coords="777,4352,919,4381"/>
+<area shape="rect" id="node439" href="$d7/d7d/classmars_1_1gui_1_1_menu_simulation.html" title="Provides the Simulation and Control menu entries. " alt="" coords="760,4597,936,4627"/>
+<area shape="rect" id="node441" href="$d7/d76/classmars_1_1gui_1_1_menu_window.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation. ..." alt="" coords="767,4720,929,4749"/>
+<area shape="rect" id="node452" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="764,5066,932,5113"/>
+<area shape="rect" id="node454" href="$df/d3f/classmars_1_1cfg__manager__gui_1_1_cfg_widget.html" title="mars::cfg_manager_gui\l::CfgWidget" alt="" coords="1040,5741,1197,5787"/>
+<area shape="rect" id="node478" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="521,3101,652,3131"/>
+<area shape="rect" id="node484" href="$dd/d4f/classmars_1_1sim_1_1_controller.html" title="The class to log all data. " alt="" coords="776,3163,920,3192"/>
+<area shape="rect" id="node496" href="$d2/dd0/classmars_1_1app_1_1_graphics_timer.html" title="mars::app::GraphicsTimer" alt="" coords="761,5752,935,5781"/>
+<area shape="rect" id="node501" href="$d3/df4/classmars_1_1gui_1_1_controller_handler.html" title="handles one controller in the simulation providing gui options. " alt="" coords="756,5805,940,5835"/>
+<area shape="rect" id="node503" href="$dd/d96/classmars_1_1gui_1_1_dialog___create___material.html" title="Creates the &quot;Create Material&quot; Dialog window. " alt="" coords="765,5858,931,5905"/>
+<area shape="rect" id="node505" href="$df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html" title="mars::gui::Dialog_Edit\l_Material" alt="" coords="773,6173,923,6219"/>
+<area shape="rect" id="node507" href="$d7/d8e/classmars_1_1gui_1_1_joint_handler.html" title="mars::gui::JointHandler" alt="" coords="769,6243,927,6272"/>
+<area shape="rect" id="node509" href="$d2/d46/classmars_1_1gui_1_1_light_handler.html" title="Provides the GUI properties for handling a light &#45; creating and editing. " alt="" coords="769,5416,927,5445"/>
+<area shape="rect" id="node513" href="$d7/d16/classmars_1_1gui_1_1_motor_handler.html" title="mars::gui::MotorHandler" alt="" coords="767,5469,929,5499"/>
+<area shape="rect" id="node515" href="$dd/db4/classmars_1_1gui_1_1_node_handler.html" title="mars::gui::NodeHandler" alt="" coords="768,5523,928,5552"/>
+<area shape="rect" id="node517" href="$d2/deb/classmars_1_1gui_1_1_sensor_handler.html" title="mars::gui::SensorHandler" alt="" coords="763,5576,933,5605"/>
+<area shape="rect" id="node520" href="$d0/d4e/classmars_1_1gui_1_1_widget___node___options.html" title="A widget to show the actual properties of a node to the user. " alt="" coords="767,5629,929,5675"/>
+<area shape="rect" id="node529" href="$d1/d71/classmars_1_1viz_1_1_graphics_timer.html" title="mars::viz::GraphicsTimer" alt="" coords="764,5699,932,5728"/>
+<area shape="rect" id="node533" href="$d7/d0f/classmars_1_1gui_1_1_capture_config.html" title="mars::gui::CaptureConfig" alt="" coords="764,6680,932,6709"/>
+<area shape="rect" id="node535" href="$d6/d6f/classmars_1_1gui_1_1_image_process.html" title="mars::gui::ImageProcess" alt="" coords="764,6733,932,6763"/>
+<area shape="rect" id="node538" href="$db/df5/classmars_1_1plugins_1_1_sonar_plugin_1_1_udp_thread.html" title="mars::plugins::SonarPlugin\l::UdpThread" alt="" coords="759,6610,937,6657"/>
+<area shape="rect" id="node544" href="$da/dc1/class_cross_widget.html" title="CrossWidget" alt="" coords="799,6909,897,6939"/>
+<area shape="rect" id="node546" href="$dc/d3b/class_joystick_widget2.html" title="JoystickWidget2" alt="" coords="789,6963,907,6992"/>
+<area shape="rect" id="node548" href="$dc/df2/classmars_1_1gui_1_1_joystick_widget.html" title="Provides an interactive joystick for node movement. " alt="" coords="761,7016,935,7045"/>
+<area shape="rect" id="node550" href="$d7/d9d/classmars_1_1gui_1_1_selection_dialog.html" title="mars::gui::SelectionDialog" alt="" coords="761,7069,935,7099"/>
+<area shape="rect" id="node552" href="$d7/d91/classmars_1_1log__console_1_1_console_g_u_i.html" title="mars::log_console::\lConsoleGUI" alt="" coords="780,7122,916,7169"/>
+<area shape="rect" id="node555" href="$dd/db2/classmars_1_1plugins_1_1_cave_demo_hud_control_1_1_control_widget.html" title="mars::plugins::CaveDemoHud\lControl::ControlWidget" alt="" coords="749,7191,947,7238"/>
+<area shape="rect" id="node557" href="$dd/dc4/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_widget.html" title="mars::plugins::connexion\l_plugin::ConnexionWidget" alt="" coords="761,7261,935,7307"/>
+<area shape="rect" id="node559" href="$d2/d83/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot_config.html" title="mars::plugins::Plot3D\l::MotorPlotConfig" alt="" coords="775,7330,921,7377"/>
+<area shape="rect" id="node561" href="$db/d20/class_my_double_slider.html" title="MyDoubleSlider" alt="" coords="791,6856,905,6885"/>
 </map>

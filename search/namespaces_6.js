@@ -40,6 +40,7 @@ var searchData=
   ['nodetree',['NodeTree',['../dc/d60/namespacemars_1_1gui_1_1_node_tree.html',1,'mars::gui']]],
   ['obstacle_5fgenerator',['obstacle_generator',['../db/dff/namespacemars_1_1plugins_1_1obstacle__generator.html',1,'mars::plugins']]],
   ['output_5finertias',['output_inertias',['../d2/dce/namespacemars_1_1plugins_1_1output__inertias.html',1,'mars::plugins']]],
+  ['path_5fdrawer',['path_drawer',['../d3/da6/namespacemars_1_1plugins_1_1path__drawer.html',1,'mars::plugins']]],
   ['plot3d',['Plot3D',['../d6/d62/namespacemars_1_1plugins_1_1_plot3_d.html',1,'mars::plugins']]],
   ['plugins',['plugins',['../d9/d06/namespacemars_1_1plugins.html',1,'mars']]],
   ['scene_5floader',['scene_loader',['../df/d72/namespacemars_1_1scene__loader.html',1,'mars']]],

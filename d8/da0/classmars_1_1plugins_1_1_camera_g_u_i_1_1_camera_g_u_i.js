@@ -1,6 +1,6 @@
 var classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i =
 [
-    [ "CameraGUI", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html#a34be1beba50b0215aa71e960ce82b553", null ],
+    [ "CameraGUI", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html#ac530d7a527944bcfea16de4b3aa5425e", null ],
     [ "~CameraGUI", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html#a5de3f106cd9c6d7cd4da83719c13083c", null ],
     [ "cfgUpdateProperty", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html#ad531fee361431cda30232b563ca71406", null ],
     [ "CREATE_MODULE_INFO", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html#a0aed493e9b40f1c6ae4da6980c8115e9", null ],

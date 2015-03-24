@@ -8,6 +8,7 @@ var structmars_1_1sim_1_1_camera_config_struct =
     [ "hud_height", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#abc2ab6161cb16a42391389c396d99e0f", null ],
     [ "hud_pos", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a46dbaa5b3a289071ef0709d374c5ba8c", null ],
     [ "hud_width", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#ad169a391156d27198ccd66942ebab38c", null ],
+    [ "offset", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a431dca86878b2ad9e0c62bb95b2705ee", null ],
     [ "opening_height", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a5beeb423b579eb9afb59e37f6c1b7b8e", null ],
     [ "opening_width", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a24d9a15ec30ef3767a760c3b2b50261e", null ],
     [ "ori_offset", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a6723efd5d5fcbd81c5613056ad0e371f", null ],

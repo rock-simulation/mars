@@ -1,12 +1,12 @@
 <map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src">
 <area shape="rect" id="node4" href="dir_953de810d1de7a29957f5321cc9bd767.html" title="core" alt="" coords="139,65,211,113"/>
 <area shape="rect" id="node6" href="dir_25b6eee03c586e6977c502f246879129.html" title="physics" alt="" coords="77,161,149,209"/>
-<area shape="rect" id="edge8" href="dir_000344_000347.html" title="3" alt="" coords="142,141,150,159"/>
+<area shape="rect" id="edge8" href="dir_000352_000355.html" title="3" alt="" coords="142,141,150,159"/>
 <area shape="rect" id="node7" href="dir_2ba9134cf738c16e34eb1b7b70b5dc58.html" title="sensors" alt="" coords="139,257,211,305"/>
-<area shape="rect" id="edge10" href="dir_000344_000348.html" title="20" alt="" coords="168,230,183,247"/>
+<area shape="rect" id="edge10" href="dir_000352_000356.html" title="20" alt="" coords="168,230,183,247"/>
 <area shape="rect" id="node5" href="dir_6c1077e38c40f17639d8f7f9a408da14.html" title="interfaces" alt="" coords="37,65,115,113"/>
-<area shape="rect" id="edge4" href="dir_000347_000348.html" title="1" alt="" coords="152,228,160,246"/>
-<area shape="rect" id="edge6" href="dir_000348_000344.html" title="2" alt="" coords="170,124,178,141"/>
+<area shape="rect" id="edge4" href="dir_000355_000356.html" title="1" alt="" coords="152,228,160,246"/>
+<area shape="rect" id="edge6" href="dir_000356_000352.html" title="2" alt="" coords="170,124,178,141"/>
 <area shape="rect" id="graph3" href="dir_c70d98a9a9c5ea83d353f04f72053e55.html" alt="" coords="27,55,317,316"/>
 <area shape="rect" id="graph2" href="dir_95ed74897c4a33f9b28a9e7d18ec7151.html" title="sim" alt="" coords="16,16,328,327"/>
 </map>

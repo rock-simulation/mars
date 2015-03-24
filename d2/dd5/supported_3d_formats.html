@@ -94,7 +94,8 @@ $(document).ready(function(){initNavTree('d2/dd5/supported_3d_formats.html','../
 <div class="textblock"><p>MARS is compatible with the following formats:</p>
 <ul>
 <li><a href="http://wiki.ros.org/urdf">URDF</a></li>
-<li><a href="http://github.com/rock-simulation/smurf_parser">SMURF</a>/<a class="el" href="../../d7/dc2/smurfs.html">SMURFs</a></li>
+<li><a href="http://github.com/rock-simulation/smurf_parser">SMURF</a></li>
+<li><a class="el" href="../../d7/dc2/smurfs.html">SMURFs</a></li>
 <li><a class="el" href="../../d8/d08/mars_scenes.html">MARS Scenes</a></li>
 <li><a href="http://en.wikipedia.org/wiki/Wavefront_.obj_file">OBJ</a></li>
 <li><a href="http://en.wikipedia.org/wiki/STL_%28file_format%29">STL</a></li>
@@ -102,11 +103,13 @@ $(document).ready(function(){initNavTree('d2/dd5/supported_3d_formats.html','../
 <h2>URDF</h2>
 <p>The <a href="http://wiki.ros.org/urdf">Unified Robot Description Format</a> is a format to describe the kinematics of a robot developed by the <a href="http://www.ros.org/">ROS</a> community. MARS can load a URDF, however this will only lead to a robot's links and joints be created in simulation, but no motors or sensors will be attached.</p>
 <p>URDF is therefore best used in MARS to create passive objects.</p>
-<h2>SMURF/SMURFs</h2>
+<h2>SMURF</h2>
 <p>The Supplementable, Mostly Universal Robot Format is a flexible format to describe the entirety of a robot. It extends URDF - which it maintains as a separate file - by annotating the URDF data in additional <a href="http://yaml.org">YAML</a> files.</p>
 <p>You can find the SMURF format documentation on the <a href="http://github.com/rock-simulation/smurf_parser">GitHub repository of the SMURF parser</a>.</p>
+<h2>SMURF Scenes (SMURFS)</h2>
+<p>SMURF scenes are a scene format based on SMURF. Check out our page on <a class="el" href="../../d7/dc2/smurfs.html">SMURFS</a>.</p>
 <h2>MARS Scenes</h2>
-<p>MARS Scenes are the original 3D scene format used with MARS and since we have maintained backwards compatibility, it is still possible to load MARS scenes. If for some reasons it is not possible for you to use a SMURF/URDF representation of a robot with MARS, you can still create MARS scenes with <a href="http://www.blender.org">Blender</a> using the export scripts and following the <a class="el" href="../../dd/da0/tutorials.html">tutorials</a>. However, we do not recommend this option, as we will not be working on MARS scenes any more in future development and we may even have to break with backwards compatibility at some point (though we will tag a MARS release before that happens, if it ever does happen).</p>
+<p>MARS Scenes are the original 3D scene format used with MARS and since we have maintained backwards compatibility, it is still possible to load MARS scenes. If for some reasons it is not possible for you to use a SMURF/URDF representation of a robot with MARS, you can still create MARS scenes with <a href="http://www.blender.org">Blender</a> using the export scripts and following the <a class="el" href="../../dd/da0/tutorials.html">tutorials</a>. You can even combine existing MARS scenes with the SMURF scenes format. In general, we do not recommend the use of MARS scenes, as we will not be working on MARS scenes any more in future development and we may even have to break with backwards compatibility at some point (though we will tag a MARS release before that happens, if it ever does happen). Note that <a href="https://github.com/rock-simulation/phobos">Phobos</a> has an option to import MARS scenes as of version 0.6.5.)</p>
 <h2>OBJ / STL files</h2>
 <p>.obj and .stl files can be directly imported as meshes in MARS. We do not recommend this functionality unless you know what you're doing, but it can be very useful for debugging purposes. </p>
 </div></div><!-- contents -->
@@ -114,7 +117,7 @@ $(document).ready(function(){initNavTree('d2/dd5/supported_3d_formats.html','../
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Tue Mar 3 2015 17:24:45 by
+    <li class="footer">Generated on Mon Mar 23 2015 17:21:53 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

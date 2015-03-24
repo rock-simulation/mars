@@ -19,6 +19,7 @@ var dir_56d36c4a388245f871a8d1f7e7a88875 =
     [ "mars_video_player", "dir_243052c33cfbbe2158902311cda32a64.html", "dir_243052c33cfbbe2158902311cda32a64" ],
     [ "module_info_dumper", "dir_792489c1dfe3342200b031ecfbbcc585.html", "dir_792489c1dfe3342200b031ecfbbcc585" ],
     [ "osg_sonar", "dir_09d819e0a040e699d44574f306fdc23f.html", "dir_09d819e0a040e699d44574f306fdc23f" ],
+    [ "path_drawer", "dir_be46d3437662794648312d07b2b35684.html", "dir_be46d3437662794648312d07b2b35684" ],
     [ "plugin_template", "dir_a6f67fe7bb4334f0f38d3816b66aa2fc.html", "dir_a6f67fe7bb4334f0f38d3816b66aa2fc" ],
     [ "SCJoypadControl", "dir_765e27102b3ee1767f8244fca6c025f9.html", "dir_765e27102b3ee1767f8244fca6c025f9" ],
     [ "SimState", "dir_83d43082bec93610f713db760ff96a39.html", "dir_83d43082bec93610f713db760ff96a39" ],

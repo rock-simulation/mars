@@ -152,6 +152,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a836b64aebd0cd72559076d79f33b871a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f51d9893b12ef96bfe4b48af88a122f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a0f51d9893b12ef96bfe4b48af88a122f">enabled</a></td></tr>
 <tr class="separator:a0f51d9893b12ef96bfe4b48af88a122f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a431dca86878b2ad9e0c62bb95b2705ee"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a431dca86878b2ad9e0c62bb95b2705ee">offset</a></td></tr>
+<tr class="separator:a431dca86878b2ad9e0c62bb95b2705ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_classmars_1_1interfaces_1_1_base_config"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_classmars_1_1interfaces_1_1_base_config')"><img src="../../closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="../../d4/d5f/classmars_1_1interfaces_1_1_base_config.html">mars::interfaces::BaseConfig</a></td></tr>
 <tr class="memitem:a85892c2e96a4996017032f6656156763 inherit pub_attribs_classmars_1_1interfaces_1_1_base_config"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d5f/classmars_1_1interfaces_1_1_base_config.html#a85892c2e96a4996017032f6656156763">name</a></td></tr>
 <tr class="separator:a85892c2e96a4996017032f6656156763 inherit pub_attribs_classmars_1_1interfaces_1_1_base_config"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,20 +202,22 @@ Public Attributes</h2></td></tr>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <a class="code" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#ad169a391156d27198ccd66942ebab38c">hud_width</a> = 320;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <a class="code" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#abc2ab6161cb16a42391389c396d99e0f">hud_height</a> = 240;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;        <a class="code" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a836b64aebd0cd72559076d79f33b871a">depthImage</a> = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      }</div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_aacedc26b95000b4768749c8c9af61569"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#aacedc26b95000b4768749c8c9af61569">mars::sim::CameraConfigStruct::show_cam</a></div><div class="ttdeci">bool show_cam</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00081">CameraSensor.h:81</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_ad169a391156d27198ccd66942ebab38c"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#ad169a391156d27198ccd66942ebab38c">mars::sim::CameraConfigStruct::hud_width</a></div><div class="ttdeci">int hud_width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00087">CameraSensor.h:87</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a0a134737bdc0e5903dc11f18678821ba"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a0a134737bdc0e5903dc11f18678821ba">mars::sim::CameraConfigStruct::pos_offset</a></div><div class="ttdeci">utils::Vector pos_offset</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00083">CameraSensor.h:83</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a24d9a15ec30ef3767a760c3b2b50261e"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a24d9a15ec30ef3767a760c3b2b50261e">mars::sim::CameraConfigStruct::opening_width</a></div><div class="ttdeci">double opening_width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00085">CameraSensor.h:85</a></div></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <a class="code" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a431dca86878b2ad9e0c62bb95b2705ee">offset</a> = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      }</div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_aacedc26b95000b4768749c8c9af61569"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#aacedc26b95000b4768749c8c9af61569">mars::sim::CameraConfigStruct::show_cam</a></div><div class="ttdeci">bool show_cam</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00082">CameraSensor.h:82</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a431dca86878b2ad9e0c62bb95b2705ee"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a431dca86878b2ad9e0c62bb95b2705ee">mars::sim::CameraConfigStruct::offset</a></div><div class="ttdeci">bool offset</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00092">CameraSensor.h:92</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_ad169a391156d27198ccd66942ebab38c"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#ad169a391156d27198ccd66942ebab38c">mars::sim::CameraConfigStruct::hud_width</a></div><div class="ttdeci">int hud_width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00088">CameraSensor.h:88</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a0a134737bdc0e5903dc11f18678821ba"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a0a134737bdc0e5903dc11f18678821ba">mars::sim::CameraConfigStruct::pos_offset</a></div><div class="ttdeci">utils::Vector pos_offset</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00084">CameraSensor.h:84</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a24d9a15ec30ef3767a760c3b2b50261e"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a24d9a15ec30ef3767a760c3b2b50261e">mars::sim::CameraConfigStruct::opening_width</a></div><div class="ttdeci">double opening_width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00086">CameraSensor.h:86</a></div></div>
 <div class="ttc" id="classmars_1_1interfaces_1_1_base_config_html_a85892c2e96a4996017032f6656156763"><div class="ttname"><a href="../../d4/d5f/classmars_1_1interfaces_1_1_base_config.html#a85892c2e96a4996017032f6656156763">mars::interfaces::BaseConfig::name</a></div><div class="ttdeci">std::string name</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dd6/sensor__bases_8h_source.html#l00048">sensor_bases.h:48</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a836b64aebd0cd72559076d79f33b871a"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a836b64aebd0cd72559076d79f33b871a">mars::sim::CameraConfigStruct::depthImage</a></div><div class="ttdeci">bool depthImage</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00089">CameraSensor.h:89</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_abc2ab6161cb16a42391389c396d99e0f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#abc2ab6161cb16a42391389c396d99e0f">mars::sim::CameraConfigStruct::hud_height</a></div><div class="ttdeci">int hud_height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00088">CameraSensor.h:88</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a176bf9db62967dbfbc9317f3a6273c15"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a176bf9db62967dbfbc9317f3a6273c15">mars::sim::CameraConfigStruct::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00080">CameraSensor.h:80</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a46dbaa5b3a289071ef0709d374c5ba8c"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a46dbaa5b3a289071ef0709d374c5ba8c">mars::sim::CameraConfigStruct::hud_pos</a></div><div class="ttdeci">int hud_pos</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00082">CameraSensor.h:82</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a0f51d9893b12ef96bfe4b48af88a122f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a0f51d9893b12ef96bfe4b48af88a122f">mars::sim::CameraConfigStruct::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00090">CameraSensor.h:90</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a6723efd5d5fcbd81c5613056ad0e371f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a6723efd5d5fcbd81c5613056ad0e371f">mars::sim::CameraConfigStruct::ori_offset</a></div><div class="ttdeci">utils::Quaternion ori_offset</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00084">CameraSensor.h:84</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a5beeb423b579eb9afb59e37f6c1b7b8e"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a5beeb423b579eb9afb59e37f6c1b7b8e">mars::sim::CameraConfigStruct::opening_height</a></div><div class="ttdeci">double opening_height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00086">CameraSensor.h:86</a></div></div>
-<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a8a817c0751f120d0b32151cc150b8bd0"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a8a817c0751f120d0b32151cc150b8bd0">mars::sim::CameraConfigStruct::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00079">CameraSensor.h:79</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a836b64aebd0cd72559076d79f33b871a"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a836b64aebd0cd72559076d79f33b871a">mars::sim::CameraConfigStruct::depthImage</a></div><div class="ttdeci">bool depthImage</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00090">CameraSensor.h:90</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_abc2ab6161cb16a42391389c396d99e0f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#abc2ab6161cb16a42391389c396d99e0f">mars::sim::CameraConfigStruct::hud_height</a></div><div class="ttdeci">int hud_height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00089">CameraSensor.h:89</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a176bf9db62967dbfbc9317f3a6273c15"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a176bf9db62967dbfbc9317f3a6273c15">mars::sim::CameraConfigStruct::height</a></div><div class="ttdeci">int height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00081">CameraSensor.h:81</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a46dbaa5b3a289071ef0709d374c5ba8c"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a46dbaa5b3a289071ef0709d374c5ba8c">mars::sim::CameraConfigStruct::hud_pos</a></div><div class="ttdeci">int hud_pos</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00083">CameraSensor.h:83</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a0f51d9893b12ef96bfe4b48af88a122f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a0f51d9893b12ef96bfe4b48af88a122f">mars::sim::CameraConfigStruct::enabled</a></div><div class="ttdeci">bool enabled</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00091">CameraSensor.h:91</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a6723efd5d5fcbd81c5613056ad0e371f"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a6723efd5d5fcbd81c5613056ad0e371f">mars::sim::CameraConfigStruct::ori_offset</a></div><div class="ttdeci">utils::Quaternion ori_offset</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00085">CameraSensor.h:85</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a5beeb423b579eb9afb59e37f6c1b7b8e"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a5beeb423b579eb9afb59e37f6c1b7b8e">mars::sim::CameraConfigStruct::opening_height</a></div><div class="ttdeci">double opening_height</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00087">CameraSensor.h:87</a></div></div>
+<div class="ttc" id="structmars_1_1sim_1_1_camera_config_struct_html_a8a817c0751f120d0b32151cc150b8bd0"><div class="ttname"><a href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html#a8a817c0751f120d0b32151cc150b8bd0">mars::sim::CameraConfigStruct::width</a></div><div class="ttdeci">int width</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00080">CameraSensor.h:80</a></div></div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -228,7 +232,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00078">78</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00079">79</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -242,7 +246,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00089">89</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00090">90</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -256,7 +260,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00090">90</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00091">91</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -270,7 +274,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00080">80</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00081">81</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -284,7 +288,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00088">88</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00089">89</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -298,7 +302,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00082">82</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00083">83</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -312,7 +316,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00087">87</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00088">88</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a431dca86878b2ad9e0c62bb95b2705ee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool mars::sim::CameraConfigStruct::offset</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00092">92</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -326,7 +344,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00086">86</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00087">87</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -340,7 +358,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00085">85</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00086">86</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -354,7 +372,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00084">84</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00085">85</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -368,7 +386,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00083">83</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00084">84</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -382,7 +400,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00081">81</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00082">82</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -396,7 +414,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00079">79</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d77/_camera_sensor_8h_source.html#l00080">80</a> of file <a class="el" href="../../db/d77/_camera_sensor_8h_source.html">CameraSensor.h</a>.</p>
 
 </div>
 </div>
@@ -409,7 +427,7 @@ Public Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../df/d48/namespacemars.html">mars</a></li><li class="navelem"><a class="el" href="../../d2/d57/namespacemars_1_1sim.html">sim</a></li><li class="navelem"><a class="el" href="../../de/d94/structmars_1_1sim_1_1_camera_config_struct.html">CameraConfigStruct</a></li>
-    <li class="footer">Generated on Tue Mar 3 2015 17:25:06 by
+    <li class="footer">Generated on Mon Mar 23 2015 17:22:14 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

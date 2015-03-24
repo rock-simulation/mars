@@ -21,6 +21,7 @@ var namespacemars_1_1plugins =
     [ "module_info_dumper", "d6/d4b/namespacemars_1_1plugins_1_1module__info__dumper.html", "d6/d4b/namespacemars_1_1plugins_1_1module__info__dumper" ],
     [ "obstacle_generator", "db/dff/namespacemars_1_1plugins_1_1obstacle__generator.html", "db/dff/namespacemars_1_1plugins_1_1obstacle__generator" ],
     [ "output_inertias", "d2/dce/namespacemars_1_1plugins_1_1output__inertias.html", "d2/dce/namespacemars_1_1plugins_1_1output__inertias" ],
+    [ "path_drawer", "d3/da6/namespacemars_1_1plugins_1_1path__drawer.html", "d3/da6/namespacemars_1_1plugins_1_1path__drawer" ],
     [ "Plot3D", "d6/d62/namespacemars_1_1plugins_1_1_plot3_d.html", "d6/d62/namespacemars_1_1plugins_1_1_plot3_d" ],
     [ "SonarPlugin", "d8/d48/namespacemars_1_1plugins_1_1_sonar_plugin.html", "d8/d48/namespacemars_1_1plugins_1_1_sonar_plugin" ],
     [ "TestWireframe", "de/d2a/namespacemars_1_1plugins_1_1_test_wireframe.html", "de/d2a/namespacemars_1_1plugins_1_1_test_wireframe" ],

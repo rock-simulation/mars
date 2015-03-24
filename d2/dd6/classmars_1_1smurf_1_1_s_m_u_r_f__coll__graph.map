@@ -1,5 +1,5 @@
 <map id="mars::smurf::SMURF" name="mars::smurf::SMURF">
-<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="1288,718,1477,765"/>
+<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="1288,726,1477,773"/>
 <area shape="rect" id="node10" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,42,555,89"/>
 <area shape="rect" id="node19" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,111,541,158"/>
 <area shape="rect" id="node22" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,181,536,227"/>
@@ -16,5 +16,5 @@
 <area shape="rect" id="node35" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,650,569,697"/>
 <area shape="rect" id="node37" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,719,556,766"/>
 <area shape="rect" id="node42" href="$d5/dac/classmars_1_1entity__generation_1_1_entity_factory_interface.html" title="The interface for plugins creating dynamic simulation objects. " alt="" coords="1304,887,1461,934"/>
-<area shape="rect" id="node45" href="$db/d84/classconfigmaps_1_1_config_map.html" title="configmaps::ConfigMap" alt="" coords="1303,957,1463,987"/>
+<area shape="rect" id="node47" href="$db/d84/classconfigmaps_1_1_config_map.html" title="configmaps::ConfigMap" alt="" coords="1303,957,1463,987"/>
 </map>

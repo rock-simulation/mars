@@ -169,9 +169,10 @@ Private Attributes</h2></td></tr>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a> = marsSim-&gt;<a class="code" href="../../dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#ac1f0f2f0c0c9c2456d9e181c82383e92">getControlCenter</a>();</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>[<span class="stringliteral">&quot;.scn&quot;</span>] = <span class="keyword">this</span>;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>[<span class="stringliteral">&quot;.scene&quot;</span>] = <span class="keyword">this</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <span class="comment">//control-&gt;loadCenter-&gt;loadScene[&quot;.zip&quot;] = this;</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      }</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>()</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        <span class="comment">//control-&gt;loadCenter-&gt;loadScene[&quot;.zip&quot;] = this;</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      }</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    }</div>
 <div class="ttc" id="classmars_1_1scene__loader_1_1_scene_loader_html_adedb664b420bbc46554d2e9613ef1ab0"><div class="ttname"><a href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">mars::scene_loader::SceneLoader::control</a></div><div class="ttdeci">interfaces::ControlCenter * control</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d2d/_scene_loader_8h_source.html#l00058">SceneLoader.h:58</a></div></div>
 <div class="ttc" id="classmars_1_1interfaces_1_1_control_center_html_a5770908abd09f3e5ea23b3152b90bc0c"><div class="ttname"><a href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">mars::interfaces::ControlCenter::loadCenter</a></div><div class="ttdeci">LoadCenter * loadCenter</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dbb/_control_center_8h_source.html#l00107">ControlCenter.h:107</a></div></div>
 <div class="ttc" id="classmars_1_1interfaces_1_1_simulator_interface_html_ac1f0f2f0c0c9c2456d9e181c82383e92"><div class="ttname"><a href="../../dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#ac1f0f2f0c0c9c2456d9e181c82383e92">mars::interfaces::SimulatorInterface::getControlCenter</a></div><div class="ttdeci">virtual ControlCenter * getControlCenter(void) const =0</div></div>
@@ -193,15 +194,15 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00053">53</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                              {</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">if</span>(<a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>) {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>.erase(<span class="stringliteral">&quot;.scn&quot;</span>);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>.erase(<span class="stringliteral">&quot;.scene&quot;</span>);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <span class="comment">//control-&gt;loadCenter-&gt;loadScene.erase(&quot;.zip&quot;);</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        libManager-&gt;releaseLibrary(<span class="stringliteral">&quot;mars_sim&quot;</span>);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      }</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
+<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00054">54</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                              {</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keywordflow">if</span>(<a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>.erase(<span class="stringliteral">&quot;.scn&quot;</span>);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;        <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>-&gt;<a class="code" href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">loadCenter</a>-&gt;<a class="code" href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">loadScene</a>.erase(<span class="stringliteral">&quot;.scene&quot;</span>);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="comment">//control-&gt;loadCenter-&gt;loadScene.erase(&quot;.zip&quot;);</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;        libManager-&gt;releaseLibrary(<span class="stringliteral">&quot;mars_sim&quot;</span>);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    }</div>
 <div class="ttc" id="classmars_1_1scene__loader_1_1_scene_loader_html_adedb664b420bbc46554d2e9613ef1ab0"><div class="ttname"><a href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">mars::scene_loader::SceneLoader::control</a></div><div class="ttdeci">interfaces::ControlCenter * control</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d2d/_scene_loader_8h_source.html#l00058">SceneLoader.h:58</a></div></div>
 <div class="ttc" id="classmars_1_1interfaces_1_1_control_center_html_a5770908abd09f3e5ea23b3152b90bc0c"><div class="ttname"><a href="../../d7/d4e/classmars_1_1interfaces_1_1_control_center.html#a5770908abd09f3e5ea23b3152b90bc0c">mars::interfaces::ControlCenter::loadCenter</a></div><div class="ttdeci">LoadCenter * loadCenter</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dbb/_control_center_8h_source.html#l00107">ControlCenter.h:107</a></div></div>
 <div class="ttc" id="classmars_1_1interfaces_1_1_load_center_html_aa1a117c7d502a82f29a812b6f3a835e0"><div class="ttname"><a href="../../d9/d6a/classmars_1_1interfaces_1_1_load_center.html#aa1a117c7d502a82f29a812b6f3a835e0">mars::interfaces::LoadCenter::loadScene</a></div><div class="ttdeci">std::map&lt; std::string, LoadSceneInterface * &gt; loadScene</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d36/_load_center_8h_source.html#l00089">LoadCenter.h:89</a></div></div>
@@ -317,12 +318,12 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a5247aba27d7656b1dd6f104fcf94479f">mars::interfaces::LoadSceneInterface</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00062">62</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                                    {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      Load loadObject(filename, <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>, tmpPath,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                      (<span class="keyword">const</span> std::string&amp;) robotname);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      <span class="keywordflow">return</span> loadObject.load();</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
+<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00063">63</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                                    {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      Load loadObject(filename, <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>, tmpPath,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                      (<span class="keyword">const</span> std::string&amp;) robotname);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">return</span> loadObject.load();</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
 <div class="ttc" id="classmars_1_1scene__loader_1_1_scene_loader_html_adedb664b420bbc46554d2e9613ef1ab0"><div class="ttname"><a href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">mars::scene_loader::SceneLoader::control</a></div><div class="ttdeci">interfaces::ControlCenter * control</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d2d/_scene_loader_8h_source.html#l00058">SceneLoader.h:58</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -361,11 +362,11 @@ Private Attributes</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a9e94f9474819a16a2f18aad360596d8c">mars::interfaces::LoadSceneInterface</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00069">69</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                                                   {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      Save saveObject(filename.c_str(), <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>, tmpPath);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">return</span> saveObject.prepare();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
+<p>Definition at line <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html#l00070">70</a> of file <a class="el" href="../../d9/d82/_scene_loader_8cpp_source.html">SceneLoader.cpp</a>.</p>
+<div class="fragment"><div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                                                   {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      Save saveObject(filename.c_str(), <a class="code" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">control</a>, tmpPath);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">return</span> saveObject.prepare();</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
 <div class="ttc" id="classmars_1_1scene__loader_1_1_scene_loader_html_adedb664b420bbc46554d2e9613ef1ab0"><div class="ttname"><a href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html#adedb664b420bbc46554d2e9613ef1ab0">mars::scene_loader::SceneLoader::control</a></div><div class="ttdeci">interfaces::ControlCenter * control</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d2d/_scene_loader_8h_source.html#l00058">SceneLoader.h:58</a></div></div>
 </div><!-- fragment -->
 </div>
@@ -403,7 +404,7 @@ Private Attributes</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../df/d48/namespacemars.html">mars</a></li><li class="navelem"><a class="el" href="../../df/d72/namespacemars_1_1scene__loader.html">scene_loader</a></li><li class="navelem"><a class="el" href="../../d3/d18/classmars_1_1scene__loader_1_1_scene_loader.html">SceneLoader</a></li>
-    <li class="footer">Generated on Tue Mar 3 2015 17:25:04 by
+    <li class="footer">Generated on Mon Mar 23 2015 17:22:12 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

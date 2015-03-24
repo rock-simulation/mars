@@ -17,12 +17,13 @@
 <area shape="rect" id="node38" href="$d3/d53/classmars_1_1plugins_1_1mars__video__player_1_1_mars_video_player.html" title="mars::plugins::mars\l_video_player::MarsVideoPlayer" alt="" coords="456,1013,664,1059"/>
 <area shape="rect" id="node40" href="$d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html" title="mars::plugins::obstacle\l_generator::ObstacleGenerator" alt="" coords="460,1082,660,1129"/>
 <area shape="rect" id="node42" href="$d7/df7/classmars_1_1plugins_1_1output__inertias_1_1_output_inertias.html" title="mars::plugins::output\l_inertias::OutputInertias" alt="" coords="480,1151,640,1198"/>
-<area shape="rect" id="node45" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="471,1221,649,1267"/>
-<area shape="rect" id="node47" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="463,1290,657,1337"/>
-<area shape="rect" id="node49" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="485,1359,635,1406"/>
-<area shape="rect" id="node51" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="483,1429,637,1475"/>
-<area shape="rect" id="node53" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="487,1499,633,1528"/>
-<area shape="rect" id="node55" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="491,1551,629,1598"/>
-<area shape="rect" id="node57" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="505,1621,615,1651"/>
-<area shape="rect" id="node4" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,835,165,882"/>
+<area shape="rect" id="node45" href="$d2/d19/classmars_1_1plugins_1_1path__drawer_1_1_path_drawer.html" title="mars::plugins::path\l_drawer::PathDrawer" alt="" coords="488,1221,632,1267"/>
+<area shape="rect" id="node47" href="$da/dde/classmars_1_1plugins_1_1_sonar_plugin_1_1_sonar_plugin.html" title="mars::plugins::SonarPlugin\l::SonarPlugin" alt="" coords="471,1290,649,1337"/>
+<area shape="rect" id="node49" href="$d7/d9a/classmars_1_1plugins_1_1_test_wireframe_1_1_test_wireframe.html" title="mars::plugins::TestWireframe\l::TestWireframe" alt="" coords="463,1359,657,1406"/>
+<area shape="rect" id="node51" href="$dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html" title="mars::plugins::Text3D\l::Text3D" alt="" coords="485,1429,635,1475"/>
+<area shape="rect" id="node53" href="$d3/dcf/classmars_1_1plugins_1_1_walkers_1_1_walkers.html" title="mars::plugins::Walkers\l::Walkers" alt="" coords="483,1498,637,1545"/>
+<area shape="rect" id="node55" href="$de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html" title="mars::smurf::SMURF" alt="" coords="487,1568,633,1597"/>
+<area shape="rect" id="node58" href="$d9/d8e/classmars__video__player_1_1_mars_video_player.html" title="mars_video_player::\lMarsVideoPlayer" alt="" coords="491,1621,629,1667"/>
+<area shape="rect" id="node60" href="$d0/de9/class_uebung1_plugin.html" title="Uebung1Plugin" alt="" coords="505,1691,615,1720"/>
+<area shape="rect" id="node4" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,905,165,951"/>
 </map>
