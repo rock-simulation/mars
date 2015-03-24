@@ -91,45 +91,48 @@ $(document).ready(function(){initNavTree('d6/d33/supported__3d__formats_8md.html
 <div class="title">/home/kavonszadkowski/limes-dev/simulation/mars/doc/src/supported_3d_formats.md</div>  </div>
 </div><!--header-->
 <div class="contents">
-<a href="../../d6/d33/supported__3d__formats_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;Supported 3D Formats {#supported_3d_formats}</div>
+<a href="../../d6/d33/supported__3d__formats_8md.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;Supported File Formats {#supported_file_formats}</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;=======================</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;MARS is compatible with the following formats:</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160; - [URDF](http:<span class="comment">//wiki.ros.org/urdf)</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160; - [SMURF](http:<span class="comment">//github.com/rock-simulation/smurf_parser)</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; - [SMURFs](@ref smurfs)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; - [MARS Scenes](@ref mars_scenes)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; - [OBJ](http:<span class="comment">//en.wikipedia.org/wiki/Wavefront_.obj_file)</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; - [STL](http:<span class="comment">//en.wikipedia.org/wiki/STL_%28file_format%29)</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160; - [SMURF Scenes (SMURFS)](@ref smurfs)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160; - [SMURF SVG Scenes (SMURFS SVG)](@ref smurfs_svg)</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160; - [MARS Scenes](@ref mars_scenes)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160; - [OBJ](http:<span class="comment">//en.wikipedia.org/wiki/Wavefront_.obj_file)</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160; - [STL](http:<span class="comment">//en.wikipedia.org/wiki/STL_%28file_format%29)</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">## URDF</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;The [Unified Robot Description Format](http:<span class="comment">//wiki.ros.org/urdf) is a format to describe the kinematics of a robot developed by the [ROS](http://www.ros.org/) community. MARS can load a URDF, however this will only lead to a robot&#39;s links and joints be created in simulation, but no motors or sensors will be attached.</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;URDF is therefore best used in MARS to create passive objects.</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">## URDF</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;The [Unified Robot Description Format](http:<span class="comment">//wiki.ros.org/urdf) is a format to describe the kinematics of a robot developed by the [ROS](http://www.ros.org/) community. MARS can load a URDF, however this will only lead to a robot&#39;s links and joints be created in simulation, but no motors or sensors will be attached.</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;URDF is therefore best used in MARS to create passive objects.</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;## SMURF</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;The Supplementable, Mostly Universal Robot Format is <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> flexible format to describe the entirety of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> robot. It extends URDF - which it maintains as <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> separate file - by annotating the URDF data in additional [YAML](http:<span class="comment">//yaml.org) files.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;You can find the SMURF format documentation on the [GitHub repository of the SMURF parser](http:<span class="comment">//github.com/rock-simulation/smurf_parser).</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">## SMURF Scenes (SMURFS)</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;SMURF scenes are <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> scene format based on SMURF. Check out our page on [SMURFS](@ref smurfs).</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;## SMURF</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;The Supplementable, Mostly Universal Robot Format is <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> flexible format to describe the entirety of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> robot. It extends URDF - which it maintains as <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> separate file - by annotating the URDF data in additional [YAML](http:<span class="comment">//yaml.org) files.</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;You can find the SMURF format documentation on the [GitHub repository of the SMURF parser](http:<span class="comment">//github.com/rock-simulation/smurf_parser).</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">## SMURF Scenes (SMURFS)</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;[SMURF scenes](@ref smurfs) are <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> scene format based on SMURF.</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;## MARS Scenes</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;## SMURF SVG Scenes (SMURFS SVG)</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;MARS Scenes are the original 3D scene format used with MARS and since we have maintained backwards compatibility, it is still possible to load MARS scenes. If <span class="keywordflow">for</span> some reasons it is not possible <span class="keywordflow">for</span> you to use <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> SMURF/URDF representation of <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> robot with MARS, you can still create MARS scenes with [Blender](http:<span class="comment">//www.blender.org) using the export scripts and following the [tutorials](@ref tutorials). You can even combine existing MARS scenes with the SMURF scenes format.  </span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;In general, we <span class="keywordflow">do</span> not recommend the use of MARS scenes, as we will not be working on MARS scenes any more in future development and we may even have to <span class="keywordflow">break</span> with backwards compatibility at some point (though we will tag <a class="code" href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a> MARS release before that happens, <span class="keywordflow">if</span> it ever does happen). Note that [Phobos](https:<span class="comment">//github.com/rock-simulation/phobos) has an option to import MARS scenes as of version 0.6.5.)</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;[SMURF SVG scenes](@ref smurfs_svg) use SVG files to position entities defined in YAML.</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;## MARS Scenes</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">## OBJ / STL files</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;.obj and .stl files can be directly imported as meshes in MARS. We <span class="keywordflow">do</span> not recommend <span class="keyword">this</span> functionality unless you know what you<span class="stringliteral">&#39;re doing, but it can be very useful for debugging purposes.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;[MARS Scenes](@ref mars_scenes) are the original 3D scene format used with MARS. They are deprecated, but MARS is still compatible with them (March 2015).</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;## OBJ / STL files</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;.obj and .stl files can be directly imported as meshes in MARS. We <span class="keywordflow">do</span> not recommend <span class="keyword">this</span> functionality unless you know what you<span class="stringliteral">&#39;re doing, but it can be very useful for debugging purposes.</span></div>
 <div class="ttc" id="_camera_sensor_8h_html_aae14d6f4141dfe114a3f5777462bd8b8"><div class="ttname"><a href="../../db/d77/_camera_sensor_8h.html#aae14d6f4141dfe114a3f5777462bd8b8">a</a></div><div class="ttdeci">u_int8_t a</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d77/_camera_sensor_8h_source.html#l00043">CameraSensor.h:43</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
@@ -137,7 +140,7 @@ $(document).ready(function(){initNavTree('d6/d33/supported__3d__formats_8md.html
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../d6/d33/supported__3d__formats_8md.html">supported_3d_formats.md</a></li>
-    <li class="footer">Generated on Mon Mar 23 2015 17:21:27 by
+    <li class="footer">Generated on Tue Mar 24 2015 13:09:36 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

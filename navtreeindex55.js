@@ -1,7 +1,5 @@
 var NAVTREEINDEX55 =
 {
-"df/d7a/_load_8cpp.html":[6,2,0,9,1,0],
-"df/d7a/_load_8cpp_source.html":[6,2,0,9,1,0],
 "df/d7b/_menu_help_8cpp.html":[6,2,0,5,2,1,2],
 "df/d7b/_menu_help_8cpp_source.html":[6,2,0,5,2,1,2],
 "df/d7b/struct_d_i_p_r_o_p_c_p_o_i_n_t_s.html":[6,1,0,67],
@@ -249,5 +247,7 @@ var NAVTREEINDEX55 =
 "df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a272d98966dfa630a22ba3720b8bf4225":[6,1,0,8,8,21,2],
 "df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a34649872228b9fbabeff8c89d7e67bd9":[6,1,0,8,8,21,18],
 "df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a3ad42c01ddae5c2e4d5a80d86deaa775":[6,1,0,8,8,21,20],
-"df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a3d497587cfeb73f9ea2e7627d06506d5":[6,1,0,8,8,21,8]
+"df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a3d497587cfeb73f9ea2e7627d06506d5":[6,1,0,8,8,21,8],
+"df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a436e8bd4437c627a429d6f72018baea7":[6,1,0,8,8,21,22],
+"df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html#a4aa0a7ef0ea3e4926836495d4224af7b":[6,1,0,8,8,21,17]
 };

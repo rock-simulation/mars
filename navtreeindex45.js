@@ -1,7 +1,5 @@
 var NAVTREEINDEX45 =
 {
-"dc/d96/classmars_1_1gui_1_1_dialog_nodes.html#a8729382705d7e0292dd9eca102082471":[6,1,0,8,8,32,15],
-"dc/d96/classmars_1_1gui_1_1_dialog_nodes.html#a8d62018c08fd60cbb9d3305bd29d7409":[6,1,0,8,8,32,12],
 "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html#a8e00dac125a9bebdae33119baef24606":[6,1,0,8,8,32,3],
 "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html#aa3d456a5c6046ee33970f0d94e88c9b5":[6,1,0,8,8,32,10],
 "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html#aab74b23e5bb5acd80de5e4cd4dec775e":[6,1,0,8,8,32,9],
@@ -249,5 +247,7 @@ var NAVTREEINDEX45 =
 "dd/d00/_my_q_main_window_8h.html":[6,2,0,1,3,6,1,8],
 "dd/d00/_my_q_main_window_8h_source.html":[6,2,0,1,3,6,1,8],
 "dd/d00/classmars_1_1graphics_1_1_graphics_manager.html":[6,1,0,8,7,29],
-"dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#a01b62ec2773b601bfca4807a30194544":[6,1,0,8,7,29,148]
+"dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#a01b62ec2773b601bfca4807a30194544":[6,1,0,8,7,29,148],
+"dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#a020aad34068a082ea9590606c609bc4f":[6,1,0,8,7,29,161],
+"dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#a02acac17e51bc4a563fd8794a735a574":[6,1,0,8,7,29,172]
 };

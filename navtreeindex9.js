@@ -1,6 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"d3/d0e/namespacemars_1_1plugins_1_1_camera_g_u_i.html":[6,1,0,8,13,1],
 "d3/d0e/namespacemars_1_1plugins_1_1_camera_g_u_i.html":[6,0,0,8,13,1],
 "d3/d14/_main_g_u_i_8h.html":[6,2,0,1,3,6,1,4],
 "d3/d14/_main_g_u_i_8h_source.html":[6,2,0,1,3,6,1,4],
@@ -195,6 +194,7 @@ var NAVTREEINDEX9 =
 "d3/d4f/_rotating_ray_sensor_8h_source.html":[6,2,0,11,1,3,44],
 "d3/d50/smurf_2src_2smurf_8h.html":[6,2,0,3,2,1,1],
 "d3/d50/smurf_2src_2smurf_8h_source.html":[6,2,0,3,2,1,1],
+"d3/d51/supported_file_formats.html":[1,0],
 "d3/d52/classmars_1_1main__gui_1_1_menu_interface.html":[6,1,0,8,12,2],
 "d3/d52/classmars_1_1main__gui_1_1_menu_interface.html#a4ca30bd2ea72b3141a5a3c33a0110b2e":[6,1,0,8,12,2,1],
 "d3/d52/classmars_1_1main__gui_1_1_menu_interface.html#a9458e536ce44ad874daf6ae663dd2c6c":[6,1,0,8,12,2,0],

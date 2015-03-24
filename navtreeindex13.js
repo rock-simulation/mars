@@ -176,6 +176,7 @@ var NAVTREEINDEX13 =
 "d4/da3/struct_d_i_p_r_o_p_r_a_n_g_e.html#a6cd8d017e5379f65cfeae9739cd059b1":[6,1,0,72,2],
 "d4/da3/struct_d_i_p_r_o_p_r_a_n_g_e.html#ae4414fca6c6c30ced1612b5d9f417310":[6,1,0,72,1],
 "d4/da3/struct_d_i_p_r_o_p_r_a_n_g_e.html#aedbab081d6de04848e13cc3f2daf830d":[6,1,0,72,0],
+"d4/da5/smurfs_svg.html":[1,3],
 "d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html":[6,1,0,8,1,4],
 "d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#a022e166cd64871f1079427fd84496a40":[6,1,0,8,1,4,38],
 "d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html#a0d331e25c7a8b7fc42b044faf00256b1":[6,1,0,8,1,4,21],
@@ -248,6 +249,5 @@ var NAVTREEINDEX13 =
 "d4/dab/classmars_1_1gui_1_1_mars_gui.html#a5081a4392ca76fe1c5311b82bf7fe31a":[6,1,0,8,8,37,5],
 "d4/dab/classmars_1_1gui_1_1_mars_gui.html#a613cbe617091c3d74e1cc945956a4204":[6,1,0,8,8,37,0],
 "d4/dab/classmars_1_1gui_1_1_mars_gui.html#a65aa887ab6fda6e2a202cc900284482e":[6,1,0,8,8,37,16],
-"d4/dab/classmars_1_1gui_1_1_mars_gui.html#a72261eabd3a2776fd88abf1d934c3c50":[6,1,0,8,8,37,13],
-"d4/dab/classmars_1_1gui_1_1_mars_gui.html#a742abbbddb8ec1586cd36a81b849fdf1":[6,1,0,8,8,37,3]
+"d4/dab/classmars_1_1gui_1_1_mars_gui.html#a72261eabd3a2776fd88abf1d934c3c50":[6,1,0,8,8,37,13]
 };

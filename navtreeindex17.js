@@ -1,5 +1,6 @@
 var NAVTREEINDEX17 =
 {
+"d5/db3/classmars_1_1sim_1_1_sim_node.html#a3d096f3eba8c332eaa1be2516184397a":[6,1,0,8,15,13,27],
 "d5/db3/classmars_1_1sim_1_1_sim_node.html#a418a7710881829aa2fa5fdb314347d16":[6,1,0,8,15,13,97],
 "d5/db3/classmars_1_1sim_1_1_sim_node.html#a43c4ba818972882dfe6b4097043e6815":[6,1,0,8,15,13,59],
 "d5/db3/classmars_1_1sim_1_1_sim_node.html#a43ff5283bc30ecccfd0291f928e16a72":[6,1,0,8,15,13,83],
@@ -248,6 +249,5 @@ var NAVTREEINDEX17 =
 "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#aac1a1cd40933508f3ca59b66e3203355":[6,1,0,8,8,29,4],
 "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#ab0e9b8c0aebb4fbbe8725d0751b81d57":[6,1,0,8,8,29,6],
 "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#ab84967a91ce314860e0cbf2fd4e17f7f":[6,1,0,8,8,29,2],
-"d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#abdad18a7b92b43dd869dcfe55add18f6":[6,1,0,8,8,29,3],
-"d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#ac7792df2560ff2bd8689e66225ea7f99":[6,1,0,8,8,29,14]
+"d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#abdad18a7b92b43dd869dcfe55add18f6":[6,1,0,8,8,29,3]
 };

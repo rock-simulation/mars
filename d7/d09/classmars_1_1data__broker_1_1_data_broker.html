@@ -270,12 +270,6 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a05ec59fbd4a091c16c812b8df82b60bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae721cb158a91dbc377f00613926c194b"><td class="memItemLeft" align="right" valign="top">unsigned long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#ae721cb158a91dbc377f00613926c194b">createId</a> ()</td></tr>
 <tr class="separator:ae721cb158a91dbc377f00613926c194b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ca311a2d8c8276218a30c1303e98f91"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a8ca311a2d8c8276218a30c1303e98f91">destroyLock</a> (pthread_rwlock_t *rwlock)</td></tr>
-<tr class="separator:a8ca311a2d8c8276218a30c1303e98f91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a80532534c118a633434fcf76fa8d05ff"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a80532534c118a633434fcf76fa8d05ff">destroyLock</a> (pthread_mutex_t *mutex)</td></tr>
-<tr class="separator:a80532534c118a633434fcf76fa8d05ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5de15adb721deebae869dd7dc25a1426"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a5de15adb721deebae869dd7dc25a1426">destroyLock</a> (pthread_cond_t *cond)</td></tr>
-<tr class="separator:a5de15adb721deebae869dd7dc25a1426"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15064fc77459e34c70b264b2584c8b3b"><td class="memItemLeft" align="right" valign="top">DataElement *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a15064fc77459e34c70b264b2584c8b3b">getElement</a> (const std::string &amp;groupName, const std::string &amp;dataName) const </td></tr>
 <tr class="separator:a15064fc77459e34c70b264b2584c8b3b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a01bcd81b4b975fd0759359e692ecd433"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a01bcd81b4b975fd0759359e692ecd433">getElementsByName</a> (const std::string &amp;groupName, const std::string &amp;dataName, std::vector&lt; DataElement * &gt; *elements) const </td></tr>
@@ -978,93 +972,6 @@ Additional Inherited Members</h2></td></tr>
 <div class="ttc" id="classmars_1_1data__broker_1_1_data_broker_html_a074fa3cc641427f7b06a9ec51c141d72"><div class="ttname"><a href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a074fa3cc641427f7b06a9ec51c141d72">mars::data_broker::DataBroker::triggers</a></div><div class="ttdeci">std::map&lt; std::string, Trigger &gt; triggers</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daf/_data_broker_8h_source.html#l00312">DataBroker.h:312</a></div></div>
 <div class="ttc" id="classmars_1_1data__broker_1_1_data_broker_html_a812c35919ea664ca565a3306fa18cc59"><div class="ttname"><a href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html#a812c35919ea664ca565a3306fa18cc59">mars::data_broker::DataBroker::elementsByName</a></div><div class="ttdeci">std::map&lt; std::pair&lt; std::string, std::string &gt;, DataElement * &gt; elementsByName</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daf/_data_broker_8h_source.html#l00313">DataBroker.h:313</a></div></div>
 <div class="ttc" id="classmars_1_1utils_1_1_mutex_html_a2faece5e9804f06a6cbce95a82bd7bbc"><div class="ttname"><a href="../../d6/d90/classmars_1_1utils_1_1_mutex.html#a2faece5e9804f06a6cbce95a82bd7bbc">mars::utils::Mutex::lock</a></div><div class="ttdeci">MutexError lock()</div><div class="ttdoc">locks the Mutex </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d4c/_mutex_8cpp_source.html#l00061">Mutex.cpp:61</a></div></div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a8ca311a2d8c8276218a30c1303e98f91"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mars::data_broker::DataBroker::destroyLock </td>
-          <td>(</td>
-          <td class="paramtype">pthread_rwlock_t *&#160;</td>
-          <td class="paramname"><em>rwlock</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html#l00194">194</a> of file <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html">DataBroker.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                                                         {</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="keywordflow">while</span>((pthread_rwlock_destroy(rwlock) == -1) &amp;&amp; (errno == EBUSY));</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a80532534c118a633434fcf76fa8d05ff"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mars::data_broker::DataBroker::destroyLock </td>
-          <td>(</td>
-          <td class="paramtype">pthread_mutex_t *&#160;</td>
-          <td class="paramname"><em>mutex</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html#l00198">198</a> of file <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html">DataBroker.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;                                                       {</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      <span class="keywordflow">while</span>((pthread_mutex_destroy(mutex) == -1) &amp;&amp; (errno == EBUSY));</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    }</div>
-</div><!-- fragment -->
-</div>
-</div>
-<a class="anchor" id="a5de15adb721deebae869dd7dc25a1426"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void mars::data_broker::DataBroker::destroyLock </td>
-          <td>(</td>
-          <td class="paramtype">pthread_cond_t *&#160;</td>
-          <td class="paramname"><em>cond</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html#l00202">202</a> of file <a class="el" href="../../d4/ddc/_data_broker_8cpp_source.html">DataBroker.cpp</a>.</p>
-<div class="fragment"><div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;                                                     {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="keywordflow">while</span>((pthread_cond_destroy(cond) == -1) &amp;&amp; (errno == EBUSY));</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    }</div>
 </div><!-- fragment -->
 </div>
 </div>
@@ -4571,7 +4478,7 @@ Additional Inherited Members</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="../../df/d48/namespacemars.html">mars</a></li><li class="navelem"><a class="el" href="../../d1/d72/namespacemars_1_1data__broker.html">data_broker</a></li><li class="navelem"><a class="el" href="../../d7/d09/classmars_1_1data__broker_1_1_data_broker.html">DataBroker</a></li>
-    <li class="footer">Generated on Mon Mar 23 2015 17:21:58 by
+    <li class="footer">Generated on Tue Mar 24 2015 13:10:08 by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="../../doxygen.png" alt="doxygen"/></a> 1.8.5 </li>
   </ul>

@@ -1,7 +1,5 @@
 var NAVTREEINDEX27 =
 {
-"d8/dcc/classmars_1_1sim_1_1_controller_manager.html#ae386bc451aa8e37cc4a778c530715b23":[6,1,0,8,15,1,17],
-"d8/dce/namespacemars__video__player.html":[6,0,0,9],
 "d8/dce/namespacemars__video__player.html":[6,1,0,9],
 "d8/dd8/tutorial_basic_plugin.html":[3,2],
 "d8/de3/constraint__plugin_2src_2_node_constraint_8h.html":[6,2,0,8,4,2,4],
@@ -249,5 +247,7 @@ var NAVTREEINDEX27 =
 "d8/df4/dinput_8h.html#a1bddfedecdcd825b856f3fb6dcbc306c":[6,2,0,8,6,0,1,0,676],
 "d8/df4/dinput_8h.html#a1c29120143d889c73b04947a5c8aa7a7":[6,2,0,8,6,0,1,0,77],
 "d8/df4/dinput_8h.html#a1c3451d40877688e419b896ef4b53374":[6,2,0,8,6,0,1,0,704],
-"d8/df4/dinput_8h.html#a1c46b6759536ca0488154181d684f225":[6,2,0,8,6,0,1,0,308]
+"d8/df4/dinput_8h.html#a1c46b6759536ca0488154181d684f225":[6,2,0,8,6,0,1,0,308],
+"d8/df4/dinput_8h.html#a1cb51cff86d005baca4772427b851068":[6,2,0,8,6,0,1,0,971],
+"d8/df4/dinput_8h.html#a1cd07544a6b5fb1a7a275ce79cf31d08":[6,2,0,8,6,0,1,0,1475]
 };

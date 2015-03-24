@@ -111,7 +111,6 @@ var NAVTREEINDEX8 =
 "d2/dd5/simulation_2mars_2plugins_2output__inertias_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#aba35d0d200deaeb06aee95ca297acb28":[6,2,0,8,10,0,0,0,0,0],
 "d2/dd5/simulation_2mars_2plugins_2output__inertias_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c.html#adbc5372f40838899018fadbc89bd588b":[6,2,0,8,10,0,0,0,0,2],
 "d2/dd5/simulation_2mars_2plugins_2output__inertias_2build_2_c_make_files_2_compiler_id_c_2_c_make_c_compiler_id_8c_source.html":[6,2,0,8,10,0,0,0,0],
-"d2/dd5/supported_3d_formats.html":[1,0],
 "d2/ddb/cave__camera__display_2src_2_mars_video_player_8h.html":[6,2,0,8,8,2,0,1],
 "d2/ddb/cave__camera__display_2src_2_mars_video_player_8h_source.html":[6,2,0,8,8,2,0,1],
 "d2/dde/_obstacle_generator_8cpp.html":[6,2,0,8,9,0,0],
@@ -249,5 +248,6 @@ var NAVTREEINDEX8 =
 "d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a4b8d2a5e1ad1b7450691e322f0a43f3c":[6,1,0,8,9,45,0],
 "d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a5247aba27d7656b1dd6f104fcf94479f":[6,1,0,8,9,45,2],
 "d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a8ef0cef95c962d060790b76e6ffe3403":[6,1,0,8,9,45,1],
-"d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a9e94f9474819a16a2f18aad360596d8c":[6,1,0,8,9,45,3]
+"d3/d03/classmars_1_1interfaces_1_1_load_scene_interface.html#a9e94f9474819a16a2f18aad360596d8c":[6,1,0,8,9,45,3],
+"d3/d0e/namespacemars_1_1plugins_1_1_camera_g_u_i.html":[6,1,0,8,13,1]
 };

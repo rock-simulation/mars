@@ -69,7 +69,7 @@ var searchData=
   ['textalign',['textAlign',['../d6/d1f/classosg__text_1_1_text.html#a8d313d5c99f79a32d7539f35fdb2ee17',1,'osg_text::Text::textAlign()'],['../d5/d33/namespaceosg__text.html#a00c14192d47a93b41d2a4cdcc561a7ab',1,'osg_text::TextAlign()']]],
   ['textdata',['TextData',['../d4/dd5/structmars_1_1plugins_1_1_text3_d_1_1_text_data.html',1,'mars::plugins::Text3D']]],
   ['textfactory',['TextFactory',['../d0/dfc/classosg__text_1_1_text_factory.html',1,'osg_text']]],
-  ['textfactory',['TextFactory',['../d0/dfc/classosg__text_1_1_text_factory.html#a6cf15e51b1af070f6daa6230daf95eca',1,'osg_text::TextFactory::TextFactory()'],['../dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html#a1e13efef648a7b06d47bb916f360f371',1,'mars::plugins::Text3D::Text3D::textFactory()'],['../d5/d61/class_viz_plugin.html#a672b1105401a7dd3423628194b4d5c49',1,'VizPlugin::textFactory()']]],
+  ['textfactory',['textFactory',['../dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html#a1e13efef648a7b06d47bb916f360f371',1,'mars::plugins::Text3D::Text3D::textFactory()'],['../d5/d61/class_viz_plugin.html#a672b1105401a7dd3423628194b4d5c49',1,'VizPlugin::textFactory()'],['../d0/dfc/classosg__text_1_1_text_factory.html#a6cf15e51b1af070f6daa6230daf95eca',1,'osg_text::TextFactory::TextFactory()']]],
   ['textfactory_2ecpp',['TextFactory.cpp',['../dd/d6a/_text_factory_8cpp.html',1,'']]],
   ['textfactory_2eh',['TextFactory.h',['../d8/dc5/_text_factory_8h.html',1,'']]],
   ['textfactoryinterface',['TextFactoryInterface',['../db/d44/classosg__text_1_1_text_factory_interface.html',1,'osg_text']]],

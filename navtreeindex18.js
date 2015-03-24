@@ -1,5 +1,6 @@
 var NAVTREEINDEX18 =
 {
+"d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#ac7792df2560ff2bd8689e66225ea7f99":[6,1,0,8,8,29,14],
 "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#ad12b9b5cb134685fec7597ad804dab94":[6,1,0,8,8,29,1],
 "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html#afd07c80d4110d1b11f801b481ec12880":[6,1,0,8,8,29,5],
 "d5/de0/namespacemars_1_1plugins_1_1entityfactorytester.html":[6,0,0,8,13,11],
@@ -248,6 +249,5 @@ var NAVTREEINDEX18 =
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ab0e0bb27e4d4ef88c37ae36ba13e8005":[6,1,0,8,4,1,31],
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ab33b4dd7aaecbf36242899c459d1e68b":[6,1,0,8,4,1,16],
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ab898c8d5e41e2dbb87a8d61c8b65c430":[6,1,0,8,4,1,13],
-"d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#abc838a410f9b45de777755f484f8c6d6":[6,1,0,8,4,1,34],
-"d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ac71eac5152115c372a3484254e39f810":[6,1,0,8,4,1,21]
+"d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#abc838a410f9b45de777755f484f8c6d6":[6,1,0,8,4,1,34]
 };

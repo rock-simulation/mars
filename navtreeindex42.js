@@ -1,7 +1,5 @@
 var NAVTREEINDEX42 =
 {
-"db/d56/_load_draw_object_8h.html":[6,2,0,4,1,1,17],
-"db/d56/_load_draw_object_8h_source.html":[6,2,0,4,1,1,17],
 "db/d56/structmars_1_1interfaces_1_1draw_struct.html":[6,1,0,8,9,8],
 "db/d56/structmars_1_1interfaces_1_1draw_struct.html#aae09a542f2ba086e78274f1f2238508a":[6,1,0,8,9,8,1],
 "db/d56/structmars_1_1interfaces_1_1draw_struct.html#af9633228d0b40e243a6b3d0ff6b5e2d8":[6,1,0,8,9,8,0],
@@ -31,8 +29,8 @@ var NAVTREEINDEX42 =
 "db/d73/_c_f_g_manager_8cpp.html#a3c0f15c2a3d6aa8a3eccc56ce21bcd7d":[6,2,0,1,0,2,2,1],
 "db/d73/_c_f_g_manager_8cpp.html#af7f6122e79bd6e552f121fddbb41e126":[6,2,0,1,0,2,2,0],
 "db/d73/_c_f_g_manager_8cpp_source.html":[6,2,0,1,0,2,2],
-"db/d73/namespacemars_1_1plugins_1_1connexion__plugin.html":[6,0,0,8,13,5],
 "db/d73/namespacemars_1_1plugins_1_1connexion__plugin.html":[6,1,0,8,13,5],
+"db/d73/namespacemars_1_1plugins_1_1connexion__plugin.html":[6,0,0,8,13,5],
 "db/d75/plugins_2mars__plugin__collection_2_virtual_joystick_plugin_2_joystick_widget_8cpp.html":[6,2,0,8,8,25,3],
 "db/d75/plugins_2mars__plugin__collection_2_virtual_joystick_plugin_2_joystick_widget_8cpp_source.html":[6,2,0,8,8,25,3],
 "db/d77/_camera_sensor_8h.html":[6,2,0,11,1,3,1],
@@ -249,5 +247,7 @@ var NAVTREEINDEX42 =
 "db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aa6c27173b8eb4aa7d21661997945b80a3":[6,1,0,1,2,0,2],
 "db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aa743bd3111f6697b7a0b450db8a8c474e":[6,1,0,1,2,0,3],
 "db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aa9ce423565a34d8487ded87465bfa5fac":[6,1,0,1,2,0,0],
-"db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aaa2923c3d7b5a2d11281788aa3df5dbe5":[6,1,0,1,2,0,6]
+"db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aaa2923c3d7b5a2d11281788aa3df5dbe5":[6,1,0,1,2,0,6],
+"db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aac16d24c219fdf9a0b8be99ea03944648":[6,1,0,1,2,0,5],
+"db/dde/classconfigmaps_1_1_config_item.html#adb67fc41bf537562997a733097fbb21aaebc069263deadea1a228f396870e06c0":[6,1,0,1,2,0,4]
 };

@@ -1,7 +1,5 @@
 var NAVTREEINDEX35 =
 {
-"d8/df4/dinput_8h.html#af04752e215fd09144daa844c9ffc7cac":[6,2,0,8,6,0,1,0,701],
-"d8/df4/dinput_8h.html#af04e2cf970d4933bf4795adbcba17330":[6,2,0,8,6,0,1,0,1920],
 "d8/df4/dinput_8h.html#af0566b0ac44d733b1ef584d265dd6de5":[6,2,0,8,6,0,1,0,1345],
 "d8/df4/dinput_8h.html#af0569c796f5c880b2673e6a8e099b00a":[6,2,0,8,6,0,1,0,1164],
 "d8/df4/dinput_8h.html#af09f0321a9ce5cf22f6b831c46bcc75d":[6,2,0,8,6,0,1,0,1327],
@@ -249,5 +247,7 @@ var NAVTREEINDEX35 =
 "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html":[6,1,0,8,15,8],
 "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a01085f82a78e8aebdc53fbf32fab586a":[6,1,0,8,15,8,3],
 "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a15a788e4d80f1b799c44cc772a34cd3a":[6,1,0,8,15,8,18],
-"d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a162d87d6b416616271b5ee06c56c3012":[6,1,0,8,15,8,17]
+"d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a162d87d6b416616271b5ee06c56c3012":[6,1,0,8,15,8,17],
+"d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a20b5094260d7646111d5d82e438b89ab":[6,1,0,8,15,8,7],
+"d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a27acbe1c03823ddd021fc96306f759dc":[6,1,0,8,15,8,6]
 };

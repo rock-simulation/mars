@@ -1,5 +1,6 @@
 var NAVTREEINDEX19 =
 {
+"d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ac71eac5152115c372a3484254e39f810":[6,1,0,8,4,1,21],
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ac9de48747e9b5c2ae1f24d0bcac474de":[6,1,0,8,4,1,27],
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ace6029757070ffdd4eff35b9745505b6":[6,1,0,8,4,1,10],
 "d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html#ad6e04bf5d7a4e2bfed0693524f6496a1":[6,1,0,8,4,1,32],
@@ -248,6 +249,5 @@ var NAVTREEINDEX19 =
 "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#a9f9892da3bfbd5c874cd3cc3a23d948f":[6,1,0,3,3,13],
 "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#aa0d3e4a5ed317f3186c05b5226b0d8d4":[6,1,0,3,3,4],
 "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#ab762ccb33108dd051a5da9da4f02de1f":[6,1,0,3,3,7],
-"d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#abd14bfc0ceb4fffad34eb3195e2b0244":[6,1,0,3,3,11],
-"d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#abe73dbfc4ec71b19df4c0da50ce62616":[6,1,0,3,3,15]
+"d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html#abd14bfc0ceb4fffad34eb3195e2b0244":[6,1,0,3,3,11]
 };

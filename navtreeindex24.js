@@ -1,7 +1,5 @@
 var NAVTREEINDEX24 =
 {
-"d7/d8e/classmars_1_1gui_1_1_joint_handler.html#aecf2417d5dde5054eaa5bdab3b43d623":[6,1,0,8,8,34,52],
-"d7/d8e/classmars_1_1gui_1_1_joint_handler.html#af46b9caa61c6231795d8f540b065b616":[6,1,0,8,8,34,16],
 "d7/d8e/classmars_1_1gui_1_1_joint_handler.html#af74291549ca8811eaccd0f28400ee454":[6,1,0,8,8,34,3],
 "d7/d8e/classmars_1_1gui_1_1_joint_handler.html#afa868a730cdf0bb931dee33ad2da31ab":[6,1,0,8,8,34,28],
 "d7/d91/classmars_1_1log__console_1_1_console_g_u_i.html":[6,1,0,8,11,0],
@@ -249,5 +247,7 @@ var NAVTREEINDEX24 =
 "d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a3a86362d286c94b5f3075fa389b7e9a9":[6,1,0,8,15,12,35],
 "d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a3e546ca77d4e6c90b8ada68790151ecb":[6,1,0,8,15,12,80],
 "d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a410c96668d607c3a8eba84b0d04b193b":[6,1,0,8,15,12,64],
-"d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a4123f12fcea41d6aa89ba025e2107d6f":[6,1,0,8,15,12,34]
+"d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a4123f12fcea41d6aa89ba025e2107d6f":[6,1,0,8,15,12,34],
+"d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a461964acda9dad70ea13d927ca29c3e5":[6,1,0,8,15,12,50],
+"d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a4862d532f7f9dbee57384eedde4a12cb":[6,1,0,8,15,12,37]
 };

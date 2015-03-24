@@ -1,7 +1,5 @@
 var NAVTREEINDEX47 =
 {
-"dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#ae0b1332153f038480ff2f497afbc5e02ae6d18c4ff89174bd8c968c63239319cd":[6,1,0,8,9,19,0,4],
-"dd/d02/simulation_2mars_2plugins_2mars__plugin__collection_2_e_o1_plugin_2build_2_c_make_files_2_compilffbb13ef15c9869013f0151c32e2ace1.html":[6,2,0,8,8,10,0,0,0,0],
 "dd/d02/simulation_2mars_2plugins_2mars__plugin__collection_2_e_o1_plugin_2build_2_c_make_files_2_compilffbb13ef15c9869013f0151c32e2ace1.html#a0ddf1224851353fc92bfbff6f499fa97":[6,2,0,8,8,10,0,0,0,0,3],
 "dd/d02/simulation_2mars_2plugins_2mars__plugin__collection_2_e_o1_plugin_2build_2_c_make_files_2_compilffbb13ef15c9869013f0151c32e2ace1.html#a2321403dee54ee23f0c2fa849c60f7d4":[6,2,0,8,8,10,0,0,0,0,6],
 "dd/d02/simulation_2mars_2plugins_2mars__plugin__collection_2_e_o1_plugin_2build_2_c_make_files_2_compilffbb13ef15c9869013f0151c32e2ace1.html#a4b0efeb7a5d59313986b3a0390f050f6":[6,2,0,8,8,10,0,0,0,0,5],
@@ -249,5 +247,7 @@ var NAVTREEINDEX47 =
 "dd/d61/classmars_1_1gui_1_1_camera_config.html#a489f038852ca312337771d20bec0d32b":[6,1,0,8,8,9,30],
 "dd/d61/classmars_1_1gui_1_1_camera_config.html#a501cda1404d648573b7f8a1a2aa348ee":[6,1,0,8,8,9,32],
 "dd/d61/classmars_1_1gui_1_1_camera_config.html#a5ff4c22a6e60adae51bdc207dbc417fc":[6,1,0,8,8,9,19],
-"dd/d61/classmars_1_1gui_1_1_camera_config.html#a62ab41aa2bb8a15dca3bc66e49df34b0":[6,1,0,8,8,9,24]
+"dd/d61/classmars_1_1gui_1_1_camera_config.html#a62ab41aa2bb8a15dca3bc66e49df34b0":[6,1,0,8,8,9,24],
+"dd/d61/classmars_1_1gui_1_1_camera_config.html#a6dc063d40ecdc9329513d5554003bbf0":[6,1,0,8,8,9,22],
+"dd/d61/classmars_1_1gui_1_1_camera_config.html#a704bdce7a18c1ef0c0befaa2828e887b":[6,1,0,8,8,9,15]
 };
