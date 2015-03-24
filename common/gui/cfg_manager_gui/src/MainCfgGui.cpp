@@ -55,7 +55,7 @@ namespace mars {
   
         cfgPropertyStruct r_path;
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string("../resources"));
+                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
         path = r_path.sValue;
       } else
         fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");

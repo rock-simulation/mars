@@ -9,6 +9,7 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+add_definitions(-DMARS_PREFERENCES_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
 
 find_package(Qt5Widgets)
 if (${Qt5Widgets_FOUND})
