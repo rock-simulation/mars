@@ -222,6 +222,7 @@ namespace mars {
       virtual void addOSGNode(void* node) = 0;
       virtual void removeOSGNode(void* node) = 0;
       virtual unsigned long addHUDOSGNode(void* node) = 0;
+      virtual bool isInitialized() const = 0;
 
     }; // end of class GraphicsManagerInterface
 

@@ -295,7 +295,7 @@ namespace mars {
       virtual unsigned long addHUDOSGNode(void* node);
 
       void removeGraphicsWidget(unsigned long id);
-
+      virtual bool isInitialized() const {return initialized;}
     private:
 
       mars::interfaces::GraphicData graphicOptions;
@@ -387,7 +387,7 @@ namespace mars {
       int ignore_next_resize;
       bool set_window_prop;
       osg::ref_ptr<osg::CullFace> cull;
-
+      bool initialized;
 
       void setupCFG(void);
 

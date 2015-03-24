@@ -103,7 +103,8 @@ namespace mars {
         drawLineLaser(false),
         cfg(0),
         ignore_next_resize(0),
-        set_window_prop(0)
+        set_window_prop(0),
+        initialized(false)
 
     {
       //osg::setNotifyLevel( osg::WARN );
@@ -309,14 +310,15 @@ namespace mars {
       // reset number of frames
       framecount = 0;
 
-      if(createWindow) {
-        viewer = new GraphicsViewer((GuiEventInterface*)this);
-        viewer->setKeyEventSetsDone(0);
+      viewer = new GraphicsViewer((GuiEventInterface*)this);
+      viewer->setKeyEventSetsDone(0);
 #ifdef SINGLE_THREADED
-        viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
+      viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);
 #else
-        viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
+      viewer->setThreadingModel(osgViewer::CompositeViewer::DrawThreadPerContext);
 #endif
+
+      if(createWindow) {
         new3DWindow(data);
       }
 
@@ -327,6 +329,7 @@ namespace mars {
         globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
       else
         globalStateset->setAttributeAndModes(cull, osg::StateAttribute::OFF);
+      initialized = true;
     }
 
     /**\brief resets scene */
