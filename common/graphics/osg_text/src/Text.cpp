@@ -48,8 +48,9 @@ namespace osg_text {
                                    fixedWidth(-1), fixedHeight(-1) {
 
     labelGeode = new osg::Geode();
-    std::string timesFont = "fonts/arial.ttf";
-
+    std::string timesFont = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+    timesFont += "/mars/graphics/resources/Fonts/arial.ttf";
+    fprintf(stderr, "font: %s\n", timesFont.c_str());
     labelText = new osgText::Text;
 
     labelGeode->addDrawable(labelText.get());
