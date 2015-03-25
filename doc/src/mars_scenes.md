@@ -3,7 +3,16 @@ MARS Scenes {#mars_scenes}
 
 ## Overview
 
-MARS possesses its own format to represent 3D environments with physical entities, the MARS scene. These files with the extension *.scene* are xml files and have the following principal structure:
+MARS scenes are MARS's original scene format encoded in XML. They have been replaced with the introduction of the [SMURF and SMURF scene](@ref smurfs) formats, but we have maintained backwards compatibility and it is still possible to load MARS scenes.
+
+If for some reasons it is not possible for you to use a SMURF/URDF representation of a robot with MARS, you can still create MARS scenes with [Blender](http://www.blender.org) using the export scripts and following the [tutorials](@ref tutorials). You can even combine existing MARS scenes with the SMURF scenes format.
+
+In general, we do not recommend the use of MARS scenes, as we will not be working on MARS scenes any more in future development and we may even have to break with backwards compatibility at some point (though we will tag a MARS release before that happens, if it ever does happen).
+
+  > **NOTE:** [Phobos](https://github.com/rock-simulation/phobos) has an option to import MARS scenes as of version 0.6.5., so that it should be very little work to transform old robot representations. As of version 0.7, this also includes MARS scenes with multiple "entities", such as a heightmap and a robot.
+
+## XML Definition
+MARS scene files possess the extension *.scene* and are XML files with following principal structure:
 
 
     <?xml version="1.0"?>
@@ -18,7 +27,7 @@ MARS possesses its own format to represent 3D environments with physical entitie
       <materiallist>
       <graphicOptions>
     </SceneFile>
-    
+
 You may have noted that the lists of items correspond to the types of objects needed to represent a robot graphically as well as physically. However, MARS scenes can not merely be used for robots, but also to define an environment a robot can operate in. As it is possible to load multiple MARS scenes in the same MARS simulation, it thus makes sense to save robots and environment in different scene files. This makes it a lot easier to edit the files and to prevent errors in one element of a simulation interfering with another part. It also enables the user to test the same robot in various environments without having to re-edit any of the underlying scenes.
 
 When you load multiple scenes into MARS, make sure that they are all in the same scale.
@@ -64,21 +73,21 @@ We will have a closer look at the items in these lists in the following.
       <density>
       <material_id>
       <coll_bitmask>
-    
+
 | Variable | Description | Possible Values |
 |----------|-------------|-----------------|
-| origname | name used in Blender to represent the object | any String | 
+| origname | name used in Blender to represent the object | any String |
 | filename | name of the *.obj or *.bobj file associated with this note | any valid file path |
-| index | running index of the nodes | int ≥ 1 | 
+| index | running index of the nodes | int ≥ 1 |
 | groupid | id of the group to which a node belongs | int ≥ 1 |
-| physicmode | primitive object by which the node is represented in physics | box, sphere, capsule, cylinder, plane, terrain, mesh  | 
-| relativeid | ? | ? | 
+| physicmode | primitive object by which the node is represented in physics | box, sphere, capsule, cylinder, plane, terrain, mesh  |
+| relativeid | ? | ? |
 | position | position of the node in x, y and z coordinates | double |
 | rotation | rotation of the node in quaternion format | double |
 | extend | extend of the representing primitive (see physicmode) | double |
-| pivot | ? | ? | 
+| pivot | ? | ? |
 | visualsize | ? | ? |
-| movable | whether or not the object is fixed in the world | true / false | 
+| movable | whether or not the object is fixed in the world | true / false |
 | mass | mass of the object in kg | double |
 | density | density of the object in kg/m³ | double  |
 | material_id | index of the associated material | int ≥ 1
@@ -157,10 +166,10 @@ We will have a closer look at the items in these lists in the following.
       <highStopAxis2>
       <damping_const_constraint_axis2>
       <spring_const_constraint_axis2>
-    
+
 | Variable | Description | Possible Values |
 |----------|-------------|-----------------|
-| index | running index of the *joints* | int ≥ 1 | 
+| index | running index of the *joints* | int ≥ 1 |
 | type | type of the joint | hinge, slider |
 | nodeindex1 | index of first attached *node* | valid *node* id |
 | nodeindex2 | index of second attached *node* | valid *node* id |
@@ -174,8 +183,8 @@ We will have a closer look at the items in these lists in the following.
 | spring_const_constraint_axis1 |  |
 | axis2 |  |
 | angle1_offset |  |
-| lowStopAxis2 |  | 
-| highStopAxis2 |  | 
+| lowStopAxis2 |  |
+| highStopAxis2 |  |
 | damping_const_constraint_axis2 |   |
 | spring_const_constraint_axis2 |  |
 
@@ -210,7 +219,7 @@ As for the decoding in MARS scenes, motors are described as follows:
       <min_val>
       <max_val>
       <value>
-  
+
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | index | index of the motor |  int ≥ 1 |
@@ -275,7 +284,7 @@ There are a number of different *sensors* in MARS which can be attached to *node
       <id>
       ...
       <id>
-    
+
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | sensor.name | name of the *sensor*| any valid string |
@@ -297,8 +306,8 @@ Controllers ...
       <motorid>
       <motorid>
       ...
-    
-    
+
+
 | Variable | Description | Possible values |
 | -------- | ----------- | --------------- |
 | rate | operation rate of the *controller* | ? |
@@ -315,7 +324,7 @@ Controllers ...
         <a>
         <r>
         <g>
-        <b>      
+        <b>
       <diffuseFront>
         <a>
         <r>
@@ -350,7 +359,7 @@ Controllers ...
         <a>
         <r>
         <g>
-        <b>            
+        <b>
       <transparency>
       <shininess>
       <texturename>
@@ -360,8 +369,8 @@ Controllers ...
       <brightness>
       <getLight>
       <cullMask>
-    
-    
+
+
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | id | running index of the materials | int ≥ 1 |
@@ -392,7 +401,7 @@ Controllers ...
       <g>
       <b>
       <a>
-    
+
 | Variable | Description | Possible Values |
 | -------- | ----------- | --------------- |
 | clearColor | ? | ? |
@@ -401,8 +410,3 @@ Controllers ...
 | fogStart | distance where the fog starts |  |
 | fogEnd | distance where the fog ends  |  |
 | fogColor| rgba values to define fog color |  |
-
-
-
-
-
