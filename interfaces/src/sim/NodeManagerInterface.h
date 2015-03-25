@@ -82,7 +82,8 @@ namespace mars {
        * \return The unique id of the newly added node is returned.
        */
       virtual NodeId addNode(NodeData *nodeS,
-                             bool reload = false) = 0;
+                             bool reload = false,
+                             bool loadGraphics = true) = 0;
 
   
   
@@ -242,7 +243,7 @@ namespace mars {
        * MainWindowInterface::removeNode() instead.
        * \param id The unique id of the node to remove form the simulation.
        */
-      virtual void removeNode(NodeId id) = 0;
+      virtual void removeNode(NodeId id, bool clearGraphics=true) = 0;
 
       /**
        * \brief Set a state of a node. ## This function is not fully implemented
@@ -534,7 +535,7 @@ namespace mars {
        * the function i_GuiToSim::spotReload should be used.
        * \sa i_GuiToSim::spotReload
        */
-      virtual void reloadNodes(void) = 0;
+      virtual void reloadNodes(bool reloadGraphics) = 0;
 
       /**
        * \brief Updates the node values of dynamic nodes from the physics.
@@ -559,7 +560,8 @@ namespace mars {
        * nodes right now.
        * \sa i_GuiToSim::newWorld
        */
-      virtual void clearAllNodes(bool clear_all=false) = 0;
+      virtual void clearAllNodes(bool clear_all=false,
+                                 bool clearGraphics=true) = 0;
 
       /**
        * \brief Sets the new orientation of a node after a reset of the simulation.

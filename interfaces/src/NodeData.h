@@ -94,6 +94,7 @@ namespace mars {
         this->name = name;
         pos = position;
         rot = orientation;
+        graphicsID1 = graphicsID2 = 0;
       }
 
       /**
@@ -375,7 +376,7 @@ namespace mars {
 
       bool isShadowCaster;
       bool isShadowReceiver;
-
+      NodeId graphicsID1, graphicsID2;
       /**
        * If the data is created from a ConfigMap map the original map is
        * stored here.

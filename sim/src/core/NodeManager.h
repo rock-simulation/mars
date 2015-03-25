@@ -65,7 +65,8 @@ namespace mars {
                                                      bool disablePhysics=false);
 
       virtual interfaces::NodeId addNode(interfaces::NodeData *nodeS,
-                                         bool reload = false);
+                                         bool reload = false,
+                                         bool loadGraphics = true);
       virtual interfaces::NodeId addTerrain(interfaces::terrainStruct *terrainS);
       virtual std::vector<interfaces::NodeId> addNode(std::vector<interfaces::NodeData> v_NodeData);
       virtual interfaces::NodeId addPrimitive(interfaces::NodeData *snode);
@@ -77,7 +78,7 @@ namespace mars {
       virtual void getNodeExchange(interfaces::NodeId id,
                                    interfaces::core_objects_exchange *obj) const;
       virtual const interfaces::NodeData getFullNode(interfaces::NodeId id) const;
-      virtual void removeNode(interfaces::NodeId id);
+      virtual void removeNode(interfaces::NodeId id, bool clearGraphics=true);
       virtual void setNodeState(interfaces::NodeId id, const interfaces::nodeState &state);
       virtual void getNodeState(interfaces::NodeId id, interfaces::nodeState *state) const;
       virtual const utils::Vector getCenterOfMass(const std::vector<interfaces::NodeId> &ids) const;
@@ -98,13 +99,13 @@ namespace mars {
       virtual void reloadNodeSensor(interfaces::BaseNodeSensor *sensor);
       virtual SimNode* getSimNode(interfaces::NodeId id);
       virtual const SimNode* getSimNode(interfaces::NodeId id) const;
-      virtual void reloadNodes(void);
+      virtual void reloadNodes(bool reloadGraphics);
       virtual const utils::Vector setReloadExtent(interfaces::NodeId id, const utils::Vector &ext);
       virtual void setReloadPosition(interfaces::NodeId id, const utils::Vector &pos);
       virtual void setReloadFriction(interfaces::NodeId id, interfaces::sReal friction1,
                                      interfaces::sReal friction2);
       virtual void updateDynamicNodes(interfaces::sReal calc_ms, bool physics_thread = true);
-      virtual void clearAllNodes(bool clear_all=false);
+      virtual void clearAllNodes(bool clear_all=false, bool clearGraphics=true);
       virtual void setReloadAngle(interfaces::NodeId id, const utils::sRotation &angle);
       virtual void setContactParams(interfaces::NodeId id, const interfaces::contact_params &cp);
       virtual const interfaces::contact_params getContactParams(interfaces::NodeId id) const;
@@ -208,7 +209,8 @@ namespace mars {
                                const utils::Quaternion *rotate = 0);
       void setNodeStructPositionFromRelative(interfaces::NodeData *node) const;
       void clearRelativePosition(interfaces::NodeId id, bool lock);
-      void removeNode(interfaces::NodeId id, bool lock);
+      void removeNode(interfaces::NodeId id, bool lock,
+                      bool clearGraphics=true);
       void pushToUpdate(SimNode* node);
 
       // for passing parameters to the recursiveHelper.

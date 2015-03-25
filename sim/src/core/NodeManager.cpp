@@ -99,7 +99,8 @@ namespace mars {
      * pre:
      *     - nodeS->groupID >= 0
      */
-    NodeId NodeManager::addNode(NodeData *nodeS, bool reload) {
+    NodeId NodeManager::addNode(NodeData *nodeS, bool reload,
+                                bool loadGraphics) {
       iMutex.lock();
       nodeS->index = next_node_id;
       next_node_id++;
@@ -196,10 +197,20 @@ namespace mars {
           simNodesDyn[nodeS->index] = newNode;
         iMutex.unlock();
         control->sim->sceneHasChanged(false);
+        NodeId id;
         if(control->graphics) {
-          NodeId id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
-          if(id) newNode->setGraphicsID(id);
-
+          if(loadGraphics) {
+            id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
+            if(id) {
+              newNode->setGraphicsID(id);
+              if(!reload) {
+                simNodesReload.back().graphicsID1 = id;
+              }
+            }
+          }
+          else {
+            newNode->setGraphicsID(nodeS->graphicsID1);
+          }
           //        NEW_NODE_STRUCT(physicalRep);
           NodeData physicalRep;
           physicalRep = *nodeS;
@@ -218,8 +229,19 @@ namespace mars {
                 physicalRep.origName = NodeData::toString(nodeS->physicMode);
               }
             }
-            id = control->graphics->addDrawObject(physicalRep, visual_rep & 2);
-            if(id) newNode->setGraphicsID2(id);
+            if(loadGraphics) {
+              id = control->graphics->addDrawObject(physicalRep,
+                                                    visual_rep & 2);
+              if(id) {
+                newNode->setGraphicsID2(id);
+                if(!reload) {
+                  simNodesReload.back().graphicsID2 = id;
+                }
+              }
+            }
+            else {
+              newNode->setGraphicsID2(nodeS->graphicsID2);
+            }
           }
           newNode->setVisualRep(visual_rep);
         }
@@ -231,8 +253,18 @@ namespace mars {
         iMutex.unlock();
         control->sim->sceneHasChanged(false);
         if(control->graphics) {
-          NodeId id = control->graphics->addDrawObject(*nodeS);
-          if(id) newNode->setGraphicsID(id);
+          if(loadGraphics) {
+            NodeId id = control->graphics->addDrawObject(*nodeS);
+            if(id) {
+              newNode->setGraphicsID(id);
+              if(!reload) {
+                simNodesReload.back().graphicsID1 = id;
+              }
+            }
+          }
+          else {
+            newNode->setGraphicsID(nodeS->graphicsID1);
+          }
         }
       }
       return nodeS->index;
@@ -550,11 +582,11 @@ namespace mars {
      *
      * What about joints?
      */
-    void NodeManager::removeNode(NodeId id) {
-      removeNode(id, true);
+    void NodeManager::removeNode(NodeId id, bool clearGraphics) {
+      removeNode(id, true, clearGraphics);
     }
 
-    void NodeManager::removeNode(NodeId id, bool lock) {
+    void NodeManager::removeNode(NodeId id, bool lock, bool clearGraphics) {
       NodeMap::iterator iter; //NodeMap is a map containing an id and a SimNode
       SimNode *tmpNode = 0;
 
@@ -582,7 +614,7 @@ namespace mars {
       if(!lock) iMutex.lock();
       if (tmpNode) {
         clearRelativePosition(id, lock);
-        if(control->graphics) {
+        if(control->graphics && clearGraphics) {
           control->graphics->removeDrawObject(tmpNode->getGraphicsID());
           control->graphics->removeDrawObject(tmpNode->getGraphicsID2());
         }
@@ -1065,7 +1097,7 @@ namespace mars {
     /**
      *\brief Reloads all nodes in the simulation.
      */
-    void NodeManager::reloadNodes(void) {
+    void NodeManager::reloadNodes(bool reloadGrahpics) {
       std::list<NodeData>::iterator iter;
       NodeData tmp;
       Vector* friction;
@@ -1088,7 +1120,7 @@ namespace mars {
                  (tmp.terrain->width*tmp.terrain->height)*sizeof(double));
         }
         iMutex.unlock();
-        addNode(&tmp, true);
+        addNode(&tmp, true, reloadGrahpics);
         iMutex.lock();
       }
       iMutex.unlock();
@@ -1205,11 +1237,11 @@ namespace mars {
     /**
      *\brief Removes all nodes from the simulation to clear the world.
      */
-    void NodeManager::clearAllNodes(bool clear_all) {
+    void NodeManager::clearAllNodes(bool clear_all, bool clearGraphics) {
       MutexLocker locker(&iMutex);
       NodeMap::iterator iter;
       while (!simNodes.empty())
-        removeNode(simNodes.begin()->first, false);
+        removeNode(simNodes.begin()->first, false, clearGraphics);
       simNodes.clear();
       simNodesDyn.clear();
       if(clear_all) simNodesReload.clear();

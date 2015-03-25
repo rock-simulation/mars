@@ -125,7 +125,7 @@ namespace mars {
         stepping_mutex.unlock();
       }
 
-      virtual void resetSim(void);
+      virtual void resetSim(bool resetGraphics=true);
       virtual bool isSimRunning() const;
       bool startStopTrigger(); ///< Starts and pauses the simulation.
       virtual void singleStep(void);
@@ -226,7 +226,7 @@ namespace mars {
       void reloadWorld(void);      
 
       int arg_no_gui, arg_run, arg_grid, arg_ortho;
-      bool reloadSim;
+      bool reloadSim, reloadGraphics;
       short running;
       char was_running;
       bool kill_sim;

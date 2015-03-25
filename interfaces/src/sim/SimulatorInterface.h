@@ -58,7 +58,7 @@ namespace mars {
       virtual void step(bool setState = false) = 0;
       virtual void StartSimulation() = 0;
       virtual void StopSimulation() = 0;
-      virtual void resetSim(void) = 0;
+      virtual void resetSim(bool resetGraphics=true) = 0;
       virtual bool isSimRunning() const = 0;
       virtual bool startStopTrigger() = 0;
       virtual void singleStep(void) = 0;

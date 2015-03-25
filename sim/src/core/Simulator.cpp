@@ -102,7 +102,7 @@ namespace mars {
       sync_time = 40;
       sync_count = 0;
       load_option = OPEN_INITIAL;
-      reloadSim = false;
+      reloadGraphics = reloadSim = false;
       arg_run    = 0;
       arg_grid   = 0;
       arg_ortho  = 0;
@@ -708,6 +708,7 @@ namespace mars {
         if (was_running) {
           StartSimulation();
         }
+        reloadGraphics = true;
       }
       allow_draw = 0;
       sync_count = 1;
@@ -775,8 +776,8 @@ namespace mars {
       control->sensors->clearAllSensors(clear_all);
       control->motors->clearAllMotors(clear_all);
       control->joints->clearAllJoints(clear_all);
-      control->nodes->clearAllNodes(clear_all);
-      if(control->graphics) {
+      control->nodes->clearAllNodes(clear_all, reloadGraphics);
+      if(control->graphics && reloadGraphics) {
         control->graphics->clearDrawItems();
         control->graphics->reset();
       }
@@ -787,8 +788,9 @@ namespace mars {
       physicsThreadUnlock();
     }
 
-    void Simulator::resetSim(void) {
+    void Simulator::resetSim(bool resetGraphics) {
       reloadSim = true;
+      reloadGraphics = resetGraphics;
       stepping_mutex.lock();
       if(simulationStatus == RUNNING)
         was_running = true;
@@ -807,7 +809,7 @@ namespace mars {
 
 
     void Simulator::reloadWorld(void) {
-      control->nodes->reloadNodes();
+      control->nodes->reloadNodes(reloadGraphics);
       control->joints->reloadJoints();
       control->motors->reloadMotors();
       control->sensors->reloadSensors();
