@@ -45,8 +45,10 @@ namespace mars {
 
       startTimer(500);
 
+      setStyleSheet("padding:0px;");
       QVBoxLayout *vLayout = new QVBoxLayout();
       vLayout->setContentsMargins(1, 1, 1, 1);
+      pDialog->setStyleSheet("margin: 0px;");
       vLayout->addWidget(pDialog);
       setLayout(vLayout);
 

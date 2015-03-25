@@ -85,6 +85,7 @@ namespace mars {
       scrollArea = new QScrollArea(0);
       scrollArea->setWidget(frame);
       scrollArea->setWidgetResizable(true);
+      scrollArea->setStyleSheet("padding: 0px;");
       vBoxLayout->addWidget(viewButton);
       vBoxLayout->addWidget(scrollArea);
       vBoxLayout->addWidget(buttonBox);
