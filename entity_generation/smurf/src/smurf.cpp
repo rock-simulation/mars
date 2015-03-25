@@ -979,7 +979,7 @@ namespace mars {
           MAP_TYPE_NODE, mapIndex);
       fprintf(stderr, "placing: %s, %d\n", (model->root_link_->name).c_str(), nodeid);
       control->nodes->getNodeExchange(nodeid, &node);
-      Quaternion tmpQ;
+      Quaternion tmpQ(1, 0, 0, 0);
       Vector tmpR;
       Vector tmpV;
       tmpV[0] = entityconfig["position"][0];
