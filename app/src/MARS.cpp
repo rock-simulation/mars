@@ -130,7 +130,8 @@ namespace mars {
 
     }
 
-    void MARS::start(int argc, char **argv, bool startThread) {
+    void MARS::start(int argc, char **argv, bool startThread,
+                     bool handleLibraryLoading) {
 
       // then check locals
 #ifndef WIN32
@@ -172,24 +173,26 @@ namespace mars {
         cfg->loadConfig(loadFile.c_str());
       }
 
-      coreConfigFile = configDir+"/core_libs.txt";
       FILE *plugin_config;
-      plugin_config = fopen(coreConfigFile.c_str() , "r");
-      if(plugin_config) {
-        fclose(plugin_config);
-        libManager->loadConfigFile(coreConfigFile);
-      } else {
-        fprintf(stderr, "Loading default core libraries...\n");
-        libManager->loadLibrary("data_broker");
-        libManager->loadLibrary("mars_sim");
-        libManager->loadLibrary("mars_scene_loader");
-        libManager->loadLibrary("mars_entity_factory");
-        libManager->loadLibrary("mars_smurf");
-        libManager->loadLibrary("mars_smurf_loader");
-        if(!noGUI) {
-          libManager->loadLibrary("main_gui");
-          libManager->loadLibrary("mars_graphics");
-          libManager->loadLibrary("mars_gui");
+      if(handleLibraryLoading) {
+        coreConfigFile = configDir+"/core_libs.txt";
+        plugin_config = fopen(coreConfigFile.c_str() , "r");
+        if(plugin_config) {
+          fclose(plugin_config);
+          libManager->loadConfigFile(coreConfigFile);
+        } else {
+          fprintf(stderr, "Loading default core libraries...\n");
+          libManager->loadLibrary("data_broker");
+          libManager->loadLibrary("mars_sim");
+          libManager->loadLibrary("mars_scene_loader");
+          libManager->loadLibrary("mars_entity_factory");
+          libManager->loadLibrary("mars_smurf");
+          libManager->loadLibrary("mars_smurf_loader");
+          if(!noGUI) {
+            libManager->loadLibrary("main_gui");
+            libManager->loadLibrary("mars_graphics");
+            libManager->loadLibrary("mars_gui");
+          }
         }
       }
 
@@ -233,22 +236,23 @@ namespace mars {
       }
 
       // load the simulation other_libs:
-      std::string otherConfigFile = configDir+"/other_libs.txt";
-      plugin_config = fopen(otherConfigFile.c_str() , "r");
-      if(plugin_config) {
-        fclose(plugin_config);
-        libManager->loadConfigFile(otherConfigFile);
-      } else {
-        fprintf(stderr, "Loading default additional libraries...\n");
-        // loading errors will be silent for the following optional libraries
-        if(!noGUI) {
-          libManager->loadLibrary("connexion_plugin", NULL, true);
-          libManager->loadLibrary("data_broker_gui", NULL, true);
-          libManager->loadLibrary("cfg_manager_gui", NULL, true);
-          libManager->loadLibrary("lib_manager_gui", NULL, true);
+      if(handleLibraryLoading) {
+        std::string otherConfigFile = configDir+"/other_libs.txt";
+        plugin_config = fopen(otherConfigFile.c_str() , "r");
+        if(plugin_config) {
+          fclose(plugin_config);
+          libManager->loadConfigFile(otherConfigFile);
+        } else {
+          fprintf(stderr, "Loading default additional libraries...\n");
+          // loading errors will be silent for the following optional libraries
+          if(!noGUI) {
+            libManager->loadLibrary("connexion_plugin", NULL, true);
+            libManager->loadLibrary("data_broker_gui", NULL, true);
+            libManager->loadLibrary("cfg_manager_gui", NULL, true);
+            libManager->loadLibrary("lib_manager_gui", NULL, true);
+          }
         }
       }
-
 
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
