@@ -777,9 +777,11 @@ namespace mars {
       control->motors->clearAllMotors(clear_all);
       control->joints->clearAllJoints(clear_all);
       control->nodes->clearAllNodes(clear_all, reloadGraphics);
-      if(control->graphics && reloadGraphics) {
+      if(control->graphics) {
         control->graphics->clearDrawItems();
-        control->graphics->reset();
+        if(reloadGraphics) {
+          control->graphics->reset();
+        }
       }
 
       sceneHasChanged(true);
