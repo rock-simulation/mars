@@ -2,6 +2,7 @@
     <description brief="data_broker_plotter">
 	Plotting implementation for the data broker
    </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/gui/main_gui" />

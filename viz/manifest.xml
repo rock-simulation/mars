@@ -2,6 +2,7 @@
     <description brief="mars_viz">
        A library that allows to use MARS scenes for a pure visualization.
     </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
 
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />

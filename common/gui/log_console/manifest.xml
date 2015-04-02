@@ -2,6 +2,7 @@
     <description brief="log_console">
 	An small error (message) console based on the lib_manager and the main_gui libraray.
    </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/data_broker" />

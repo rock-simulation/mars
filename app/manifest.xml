@@ -2,6 +2,7 @@
     <description brief="mars_app">
        DFKI Robot simulator application loader
     </description>
+    <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
 
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/scene_loader" />

@@ -2,6 +2,7 @@
     <description brief="osg_text_factory">
        This lib wraps osg_text to create 3D text without osg dependency in MARS.
    </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="simulation/mars/common/graphics/osg_text" />
     <depend package="simulation/lib_manager" />
     <tags>needs_opt</tags>
