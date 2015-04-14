@@ -306,6 +306,19 @@ namespace mars {
           }
         }
       }
+      for (it = config["joint"].begin(); it != config["joint"].end(); ++it) {
+        handleURIs(&it->children);
+        std::vector<ConfigMap>::iterator nIt = jointList.begin();
+        for (; nIt != jointList.end(); ++nIt) {
+          if ((std::string) (*nIt)["name"][0] == (std::string) (*it)["name"][0]) {
+            ConfigMap::iterator cIt = it->children.begin();
+            for (; cIt != it->children.end(); ++cIt) {
+              (*nIt)[cIt->first] = cIt->second;
+            }
+            break;
+          }
+        }
+      }
 
       for (it = config["visual"].begin(); it != config["visual"].end(); ++it) {
         handleURIs(&it->children);
