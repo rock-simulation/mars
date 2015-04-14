@@ -626,6 +626,8 @@ namespace mars {
       Vector scale(1.0, 1.0, 1.0);
       (*map)["filename"] = "PRIMITIVE";
       (*map)["origname"] = "box";
+      (*map)["mass"] = 0.01;
+      (*map)["coll_bitmask"] = 0;
       (*map)["materialName"] = "_fakeMaterial";
       (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["visualsize"][0], &size);
