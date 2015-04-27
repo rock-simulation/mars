@@ -86,14 +86,17 @@ namespace mars {
       std::vector<configmaps::ConfigMap> lightList;
 
     private:
-      int nextGroupID;
+      int groupID;
       unsigned int mapIndex; // index to map nodes of a single entity
       unsigned long nextNodeID;
+      unsigned long nextGroupID;
+      unsigned long currentNodeID;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
       unsigned long nextMotorID;
       unsigned long nextSensorID;
       unsigned long nextControllerID;
+      std::map<std::string, unsigned long> linkIDMap;
       std::map<std::string, unsigned long> nodeIDMap;
       std::map<std::string, unsigned long> jointIDMap;
       std::map<std::string, unsigned long> sensorIDMap;
@@ -111,27 +114,30 @@ namespace mars {
       void handleURIs(configmaps::ConfigMap *map);
       void getSensorIDList(configmaps::ConfigMap *map);
 
-      void handleInertial(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      // creating URDF objects
+      void translateLink(boost::shared_ptr<urdf::Link> link); // handleKinematics
+      void translateJoint(boost::shared_ptr<urdf::Link> childlink); // handleKinematics
+      void createMaterial(const boost::shared_ptr<urdf::Material> material); // handleMaterial
+      void createOrigin(const boost::shared_ptr<urdf::Link> &link);
+      void createInertial(const boost::shared_ptr<urdf::Link> &link);
+      void createVisual(const boost::shared_ptr<urdf::Visual> &visual);
+      void createCollision(const boost::shared_ptr<urdf::Collision> &collision);
+      void addEmptyVisualToNode(configmaps::ConfigMap *map); // createFakeVisual
+      void addEmptyCollisionToNode(configmaps::ConfigMap *map); // createFakeCollision
+      void createEmptyVisualMaterial();
+      void createOriginMaterial();
+      
+      // geometry calculations
+      urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
       void calculatePose(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
-      void convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
-          utils::Vector *v, utils::Quaternion *q);
       void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, utils::Vector *v,
           utils::Quaternion *q);
+      void poseToVectorAndQuaternion(const urdf::Pose &pose, utils::Vector *v, utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
+      bool isNullPos(const urdf::Pose &p);
+      void setPose();     
 
-      void handleVisual(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual);
-      void handleCollision(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c);
-
-      void handleKinematics(boost::shared_ptr<urdf::Link> curlink);
-
-      void handleMaterial(boost::shared_ptr<urdf::Material> material);
-
-      void createFakeMaterial();
-      void createFakeVisual(configmaps::ConfigMap *map);
-      void createFakeCollision(configmaps::ConfigMap *map);
-
-      void setPose();
-
+      // load functions
       unsigned int loadMaterial(configmaps::ConfigMap config);
       unsigned int loadNode(configmaps::ConfigMap config);
       unsigned int loadJoint(configmaps::ConfigMap config);
@@ -141,10 +147,11 @@ namespace mars {
       unsigned int loadGraphic(configmaps::ConfigMap config);
       unsigned int loadLight(configmaps::ConfigMap config);
 
-      urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
+
     };
 
   } // end of namespace smurf
 } // end of namespace mars
 
 #endif  // SMURF_H
+

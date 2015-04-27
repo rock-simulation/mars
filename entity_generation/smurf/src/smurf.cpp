@@ -90,6 +90,7 @@ namespace mars {
       nextMotorID = 1;
       nextSensorID = 1;
       nextControllerID = 1;
+      groupID = control->nodes->getMaxGroupID() + 1;
 
       nodeList.clear();
       jointList.clear();
@@ -100,12 +101,14 @@ namespace mars {
       lightList.clear();
       graphicList.clear();
 
+      linkIDMap.clear();
       nodeIDMap.clear();
       jointIDMap.clear();
       sensorIDMap.clear();
       motorIDMap.clear();
       materialMap.clear();
       collisionNameMap.clear();
+      visualNameMap.clear();
 
       robotname = "";
       model.reset();
@@ -145,7 +148,7 @@ namespace mars {
 
     void SMURF::getSensorIDList(ConfigMap *map) {
       ConfigVector::iterator it;
-#warning check if objects exists in maps
+      // TODO: check if objects exist in maps
 
       if (map->find("link") != map->end()) {
         (*map)["nodeID"] = nodeIDMap[(std::string) (*map)["link"][0]];
@@ -381,140 +384,6 @@ namespace mars {
       }
     }
 
-    void SMURF::handleInertial(ConfigMap *map, const boost::shared_ptr<urdf::Link> &link) {
-      if (link->inertial) {
-        (*map)["density"] = 0.0;
-        (*map)["mass"] = link->inertial->mass;
-        // handle inertial
-        (*map)["i00"] = link->inertial->ixx;
-        (*map)["i01"] = link->inertial->ixy;
-        (*map)["i02"] = link->inertial->ixz;
-        (*map)["i10"] = link->inertial->ixy;
-        (*map)["i11"] = link->inertial->iyy;
-        (*map)["i12"] = link->inertial->iyz;
-        (*map)["i20"] = link->inertial->ixz;
-        (*map)["i21"] = link->inertial->iyz;
-        (*map)["i22"] = link->inertial->izz;
-        (*map)["inertia"] = true;
-      } else {
-        (*map)["inertia"] = false;
-      }
-    }
-
-    void SMURF::calculatePose(ConfigMap *map, const boost::shared_ptr<urdf::Link> &link) {
-      urdf::Pose jointPose, parentInertialPose, inertialPose;
-      urdf::Pose goalPose;
-
-      if (link->parent_joint) {
-        jointPose = link->parent_joint->parent_to_joint_origin_transform;
-        if (link->getParent()->inertial) {
-          parentInertialPose = link->getParent()->inertial->origin;
-        } else if (link->getParent()->collision) {
-          parentInertialPose = link->getParent()->collision->origin;
-        }
-        unsigned long parentID = nodeIDMap[link->getParent()->name];
-        (*map)["relativeid"] = parentID;
-      } else {
-        (*map)["relativeid"] = 0ul;
-      }
-
-      if (link->inertial) {
-        inertialPose = link->inertial->origin;
-      }
-      /** special case handling **/
-      else if (link->collision) {
-        // if we don't have an inertial but a collision (standard for MARS)
-        // we place the node at the position of the collision
-        inertialPose = link->collision->origin;
-      }
-      // we need the inverse of parentInertialPose.position
-      parentInertialPose.position.x *= -1;
-      parentInertialPose.position.y *= -1;
-      parentInertialPose.position.z *= -1;
-
-      goalPose.position = jointPose.position + parentInertialPose.position;
-      goalPose.position = (goalPose.position + jointPose.rotation * inertialPose.position);
-      goalPose.position = (parentInertialPose.rotation.GetInverse() * goalPose.position);
-
-      goalPose.rotation = (parentInertialPose.rotation.GetInverse() * jointPose.rotation
-          * inertialPose.rotation);
-
-//      goalPose.rotation = (jointPose.rotation*inertialPose.rotation*
-//                           parentInertialPose.rotation.GetInverse());
-
-      Vector v(goalPose.position.x, goalPose.position.y, goalPose.position.z);
-      vectorToConfigItem(&(*map)["position"][0], &v);
-      Quaternion q = quaternionFromMembers(goalPose.rotation);
-      quaternionToConfigItem(&(*map)["rotation"][0], &q);
-    }
-
-    urdf::Pose SMURF::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
-      urdf::Pose globalPose;
-      boost::shared_ptr<urdf::Link> pLink = link->getParent();
-      if (link->parent_joint) {
-        globalPose = link->parent_joint->parent_to_joint_origin_transform;
-      }
-      if (pLink) {
-        urdf::Pose parentPose = getGlobalPose(pLink);
-        globalPose.position = parentPose.rotation * globalPose.position;
-        globalPose.position = globalPose.position + parentPose.position;
-        globalPose.rotation = parentPose.rotation * globalPose.rotation;
-      }
-      return globalPose;
-    }
-
-    void SMURF::handleVisual(ConfigMap *map, const boost::shared_ptr<urdf::Visual> &visual) {
-      boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
-      Vector size(0.0, 0.0, 0.0);
-      Vector scale(1.0, 1.0, 1.0);
-      urdf::Vector3 v;
-      (*map)["filename"] = "PRIMITIVE";
-      switch (tmpGeometry->type) {
-      case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
-        (*map)["origname"] = "sphere";
-        break;
-      case urdf::Geometry::BOX:
-        v = ((urdf::Box*) tmpGeometry.get())->dim;
-        size = Vector(v.x, v.y, v.z);
-        (*map)["origname"] = "box";
-        break;
-      case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
-        (*map)["origname"] = "cylinder";
-        break;
-      case urdf::Geometry::MESH:
-        v = ((urdf::Mesh*) tmpGeometry.get())->scale;
-        scale = Vector(v.x, v.y, v.z);
-        (*map)["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
-        (*map)["origname"] = "";
-        break;
-      default:
-        break;
-      }
-      vectorToConfigItem(&(*map)["visualsize"][0], &size);
-      vectorToConfigItem(&(*map)["visualscale"][0], &scale);
-      (*map)["materialName"] = visual->material_name;
-    }
-
-    void SMURF::convertPose(const urdf::Pose &pose, const boost::shared_ptr<urdf::Link> &link,
-        Vector *v, Quaternion *q) {
-      urdf::Pose toPose;
-
-      if (link->inertial) {
-        toPose = link->inertial->origin;
-      }
-      /** special case handling **/
-      else if (link->collision) {
-        // if we don't have an inertial but a collision (standard for MARS)
-        // we place the node at the position of the collision
-        toPose = link->collision->origin;
-      }
-
-      convertPose(pose, toPose, v, q);
-    }
-
     void SMURF::convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, Vector *v,
         Quaternion *q) {
       urdf::Pose pose_ = pose;
@@ -532,6 +401,13 @@ namespace mars {
       *v = Vector(p.x, p.y, p.z);
       *q = quaternionFromMembers(r);
     }
+    
+    void SMURF::poseToVectorAndQuaternion(const urdf::Pose &pose, Vector *v, Quaternion*q) {
+      *v = Vector(pose.position.x, pose.position.y, pose.position.z);
+      *q = quaternionFromMembers(pose.rotation); //Quaternion(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w);
+    }
+    
+    
 
     bool SMURF::isEqualPos(const urdf::Pose &p1, const urdf::Pose p2) {
       bool equal = true;
@@ -553,280 +429,358 @@ namespace mars {
       return equal;
     }
 
-    void SMURF::handleCollision(ConfigMap *map, const boost::shared_ptr<urdf::Collision> &c) {
-      boost::shared_ptr<urdf::Geometry> tmpGeometry = c->geometry;
-      Vector size(0.0, 0.0, 0.0);
-      Vector scale(1.0, 1.0, 1.0);
-      urdf::Vector3 v;
-      switch (tmpGeometry->type) {
-      case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
-        (*map)["physicmode"] = "sphere";
-        break;
-      case urdf::Geometry::BOX:
-        v = ((urdf::Box*) tmpGeometry.get())->dim;
-        size = Vector(v.x, v.y, v.z);
-        (*map)["physicmode"] = "box";
-        break;
-      case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
-        (*map)["physicmode"] = "cylinder";
-        break;
-      case urdf::Geometry::MESH:
-        v = ((urdf::Mesh*) tmpGeometry.get())->scale;
-        scale = Vector(v.x, v.y, v.z);
-        (*map)["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
-        (*map)["origname"] = "";
-        (*map)["physicmode"] = "mesh";
-        break;
-      default:
-        break;
-      }
-      vectorToConfigItem(&(*map)["extend"][0], &size);
-      vectorToConfigItem(&(*map)["scale"][0], &scale);
-      // todo: we need to deal correctly with the scale and size in MARS
-      //       if we have a mesh here, as a first hack we use the scale as size
-      if (tmpGeometry->type == urdf::Geometry::MESH) {
-        vectorToConfigItem(&(*map)["extend"][0], &scale);
-      }
+    bool SMURF::isNullPos(const urdf::Pose &p) {
+      bool zero = true;
+      double epsilon = 0.0000000001;
+      if (p.position.x > epsilon || p.position.x < -epsilon)
+        zero = false;
+      if (p.position.y > epsilon || p.position.y < -epsilon)
+        zero = false;
+      if (p.position.z > epsilon || p.position.z < -epsilon)
+        zero = false;
+      if (p.rotation.x > epsilon || p.position.x < -epsilon)
+        zero = false;
+      if (p.rotation.y > epsilon || p.position.y < -epsilon)
+        zero = false;
+      if (p.rotation.z > epsilon || p.position.z < -epsilon)
+        zero = false;
+      if (p.rotation.w > 1 + epsilon || p.rotation.w < 1 - epsilon)
+        zero = false;
+      return zero;
     }
 
-    void SMURF::createFakeMaterial() {
+    void SMURF::createEmptyVisualMaterial() {
       ConfigMap config;
 
       config["id"] = nextMaterialID++;
-      config["name"] = "_fakeMaterial";
+      config["name"] = "_emptyVisualMaterial";
       config["exists"] = true;
       config["diffuseFront"][0]["a"] = 1.0;
       config["diffuseFront"][0]["r"] = 1.0;
       config["diffuseFront"][0]["g"] = 0.0;
       config["diffuseFront"][0]["b"] = 0.0;
       config["texturename"] = "";
-      config["cullMask"] = 1;
+      config["cullMask"] = 0; // this makes the object invisible
       debugMap["materials"] += config;
       materialList.push_back(config);
     }
+    
+    void SMURF::createOriginMaterial() {
+      ConfigMap config;
 
-    void SMURF::createFakeVisual(ConfigMap *map) {
+      config["id"] = nextMaterialID++;
+      config["name"] = "_originMaterial";
+      config["exists"] = true;
+      config["diffuseFront"][0]["a"] = 1.0;
+      config["diffuseFront"][0]["r"] = 0.0;
+      config["diffuseFront"][0]["g"] = 0.0;
+      config["diffuseFront"][0]["b"] = 1.0;
+      config["texturename"] = "";
+      config["cullMask"] = 0;
+      debugMap["materials"] += config;
+      materialList.push_back(config);
+    }
+    
+
+    void SMURF::addEmptyVisualToNode(ConfigMap *map) {
       Vector size(0.01, 0.01, 0.01);
       Vector scale(1.0, 1.0, 1.0);
       (*map)["filename"] = "PRIMITIVE";
       (*map)["origname"] = "box";
-      (*map)["materialName"] = "_fakeMaterial";
+      (*map)["materialName"] = "_emptyVisualMaterial";
       (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["visualsize"][0], &size);
       vectorToConfigItem(&(*map)["visualscale"][0], &scale);
     }
 
-    void SMURF::createFakeCollision(ConfigMap *map) {
+    void SMURF::addEmptyCollisionToNode(ConfigMap *map) {
       Vector size(0.01, 0.01, 0.01);
       (*map)["physicmode"] = "box";
       (*map)["coll_bitmask"] = 0;
       (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["extend"][0], &size);
     }
-
-    void SMURF::handleKinematics(boost::shared_ptr<urdf::Link> link) {
+    
+    void SMURF::createOrigin(const boost::shared_ptr<urdf::Link> &link) {
       ConfigMap config;
-      // holds the index of the next visual object to load
-      size_t visualArrayIndex = 0;
-      // holds the index of the next collision object to load
-      size_t collisionArrayIndex = 0;
-      bool loadVisual = link->visual;
-      bool loadCollision = link->collision;
+      std::string name;
+      if (link->name.empty()) {
+        name = "link_"; // FIXME
+      } else {
+        name = link->name;
+      }
+      if (link->parent_joint) {
+        config["relativeid"] = linkIDMap[link->parent_joint->parent_link_name];
+      } else {
+        config["relativeid"] = (unsigned long) 0;
+      }
+      
+      // init node
+      config["name"] = name;
+      config["index"] = nextNodeID++;
+      linkIDMap[name] = nextNodeID - 1;
+      nodeIDMap[name] = nextNodeID - 1;
+      currentNodeID = nextNodeID - 1;
+      config["groupid"] = groupID;
+      config["movable"] = true;
+      
+      // pose
       Vector v;
       Quaternion q;
-
-      config["name"] = link->name;
-      config["index"] = nextNodeID++;
-
-      nodeIDMap[link->name] = nextNodeID - 1;
-
-      // todo: if we don't have any joints connected we need some more
-      //       special handling and change the handling below
-      //       config["movable"] ?!?
-      // TODO: we should also read materials from the visual object here, as URDF does not
-      //         necessarily define them on the top level of the file
-
-      config["movable"] = true;
-
-      // we do most of the special case handling here:
-      { /** special case handling **/
-        bool needGroupID = false;
-        if (link->visual_array.size() > 1 || link->collision_array.size() > 1) {
-          needGroupID = true;
-        }
-        if (link->collision && link->inertial) {
-          if (!isEqualPos(link->collision->origin, link->inertial->origin)) {
-            loadCollision = false;
-            needGroupID = true;
-          }
-        }
-        if (link->visual && link->collision) {
-          if (loadCollision && link->collision->geometry->type == urdf::Geometry::MESH) {
-            if (link->visual->geometry->type != urdf::Geometry::MESH) {
-              loadVisual = false;
-              needGroupID = true;
-            } else {
-              if (((urdf::Mesh*) link->collision->geometry.get())->filename
-                  != ((urdf::Mesh*) link->visual->geometry.get())->filename) {
-                loadVisual = false;
-                needGroupID = true;
-              }
-            }
-          }
-        }
-        if (needGroupID) {
-          // we need to group mars nodes
-          config["groupid"] = nextGroupID++;
-        } else {
-          config["groupid"] = 0;
-        }
-      }
-
-      // we always handle the inertial
-      handleInertial(&config, link);
-
-      // calculates the pose including all case handling
-      calculatePose(&config, link);
-
-      if (loadVisual) {
-        visualNameMap[link->visual->name] = link->name;
-        handleVisual(&config, link->visual);
-        // caculate visual position offset
-        convertPose(link->visual->origin, link, &v, &q);
-        vectorToConfigItem(&config["visualposition"][0], &v);
-        quaternionToConfigItem(&config["visualrotation"][0], &q);
-        // the first visual object is SMURFed
-        visualArrayIndex = 1;
-      } else {
-        // we need a fake visual for the node
-        createFakeVisual(&config);
-      }
-
-      if (loadCollision) {
-        collisionNameMap[link->collision->name] = link->name;
-        handleCollision(&config, link->collision);
-        // the first visual object is SMURFed
-        collisionArrayIndex = 1;
-      } else {
-        createFakeCollision(&config);
-      }
-
-      debugMap["links"] += config;
+      urdf::Pose pose;
+      if (link->parent_joint)
+        pose = link->parent_joint->parent_to_joint_origin_transform;
+      poseToVectorAndQuaternion(pose, &v, &q);
+      vectorToConfigItem(&config["position"][0], &v);
+      quaternionToConfigItem(&config["rotation"][0], &q);
+      
+      // complete node
+      addEmptyVisualToNode(&config);
+      addEmptyCollisionToNode(&config);
+      
+      config["origname"] = "sphere";
+      config["material"] = "_originMaterial";
+      
+      debugMap["nodes"] += config;      
       nodeList.push_back(config);
+    }
+    
+    void SMURF::createInertial(const boost::shared_ptr<urdf::Link> &link) {
+      ConfigMap config;
+      std::string name;
+      if (link->name.empty()) {
+        name = "inertial_"; // FIXME
+      } else {
+        name = "inertial_" + link->name;
+      }
+      
+      // init node
+      config["name"] = name;
+      config["index"] = nextNodeID++;
+      nodeIDMap[name] = nextNodeID - 1;
+      config["groupid"] = groupID;
+      config["movable"] = true;
+      config["relativeid"] = currentNodeID;
+      
+      // add inertial information
+      config["density"] = 0.0;
+      config["mass"] = link->inertial->mass;
+      config["i00"] = link->inertial->ixx;
+      config["i01"] = link->inertial->ixy;
+      config["i02"] = link->inertial->ixz;
+      config["i10"] = link->inertial->ixy;
+      config["i11"] = link->inertial->iyy;
+      config["i12"] = link->inertial->iyz;
+      config["i20"] = link->inertial->ixz;
+      config["i21"] = link->inertial->iyz;
+      config["i22"] = link->inertial->izz;
+      
+      // pose
+      Vector v;
+      Quaternion q;
+      urdf::Pose pose;
+      pose = link->inertial->origin;
+      poseToVectorAndQuaternion(pose, &v, &q);
+      vectorToConfigItem(&config["position"][0], &v);
+      quaternionToConfigItem(&config["rotation"][0], &q);      
+      
+      // complete node
+      addEmptyVisualToNode(&config);
+      addEmptyCollisionToNode(&config);
+      
+      debugMap["nodes"] += config;
+      nodeList.push_back(config);        
+    }    
+    
+    void SMURF::createCollision(const boost::shared_ptr<urdf::Collision> &collision) {
+      ConfigMap config;
+      std::string name;
+      if (collision->name.empty()) {
+        name = "collision_"; // FIXME
+      } else {
+        name = collision->name;
+      }
+      
+      // init node
+      config["name"] = name;
+      config["index"] = nextNodeID++;
+      nodeIDMap[name] = nextNodeID - 1;
+      config["groupid"] = groupID;
+      config["movable"] = true;
+      config["relativeid"] = currentNodeID;
+      config["mass"] = 0.001;
+      config["density"] = 0.0;
 
-      // now we have all information for the main node and can create additional
-      // nodes for the collision and visual array
-      while (collisionArrayIndex < link->collision_array.size()) {
-        ConfigMap childNode;
-        boost::shared_ptr<urdf::Collision> collision;
-        boost::shared_ptr<urdf::Visual> visual;
-        collision = link->collision_array[collisionArrayIndex];
-        if (visualArrayIndex < link->visual_array.size()) {
-          visual = link->visual_array[visualArrayIndex];
-          // check wether we can SMURF visual and collision together
-          /** special case handling **/
-          if (collision->geometry->type == urdf::Geometry::MESH) {
-            if (visual->geometry->type != urdf::Geometry::MESH) {
-              visual.reset();
-            } else if (((urdf::Mesh*) collision->geometry.get())->filename
-                != ((urdf::Mesh*) visual->geometry.get())->filename) {
-              visual.reset();
-            }
-          }
+      // parse geometry
+      boost::shared_ptr<urdf::Geometry> tmpGeometry = collision->geometry;
+      Vector size(0.0, 0.0, 0.0);
+      Vector scale(1.0, 1.0, 1.0);
+      urdf::Vector3 tmpV;
+      switch (tmpGeometry->type) {
+      case urdf::Geometry::SPHERE:
+        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        config["physicmode"] = "sphere";
+        break;
+      case urdf::Geometry::BOX:
+        tmpV = ((urdf::Box*) tmpGeometry.get())->dim;
+        size = Vector(tmpV.x, tmpV.y, tmpV.z);
+        config["physicmode"] = "box";
+        break;
+      case urdf::Geometry::CYLINDER:
+        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
+        config["physicmode"] = "cylinder";
+        break;
+      case urdf::Geometry::MESH:
+        tmpV = ((urdf::Mesh*) tmpGeometry.get())->scale;
+        scale = Vector(tmpV.x, tmpV.y, tmpV.z);
+        config["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
+        config["origname"] = "";
+        config["physicmode"] = "mesh";
+        break;
+      default:
+        config["physicmode"] = "undefined";
+        break;
+      }
+      vectorToConfigItem(&config["extend"][0], &size);
+      vectorToConfigItem(&config["scale"][0], &scale);
+      // FIXME: We need to correctly deal with scale and size in MARS
+      //       if we have a mesh here, as a first hack we use the scale as size
+      if (tmpGeometry->type == urdf::Geometry::MESH) {
+        vectorToConfigItem(&config["extend"][0], &scale);
+      }
+      
+      // pose
+      Vector v;
+      Quaternion q;
+      poseToVectorAndQuaternion(collision->origin, &v, &q);
+      vectorToConfigItem(&config["position"][0], &v);
+      quaternionToConfigItem(&config["rotation"][0], &q);
+      
+      collisionNameMap[name] = name;
+      addEmptyVisualToNode(&config);
+      
+      debugMap["nodes"] += config;
+      nodeList.push_back(config);
+    }    
+    
+    void SMURF::createVisual(const boost::shared_ptr<urdf::Visual> &visual) {
+      ConfigMap config;
+      std::string name;
+      if (visual->name.empty()) {
+        name = "visual_"; // FIXME
+      } else {
+        name = visual->name;
+      }
+      
+      // init node
+      config["name"] = name;
+      config["index"] = nextNodeID++;
+      nodeIDMap[name] = nextNodeID - 1;
+      config["groupid"] = groupID;
+      config["movable"] = true;
+      config["relativeid"] = currentNodeID;
+      config["mass"] = 0.001;
+      config["density"] = 0.0;
+      Vector v(0.001, 0.001, 0.001);
+      vectorToConfigItem(&config["extend"][0], &v);
+      
+      // parse position
+      Quaternion q;
+      poseToVectorAndQuaternion(visual->origin, &v, &q);
+      vectorToConfigItem(&config["position"][0], &v);
+      quaternionToConfigItem(&config["rotation"][0], &q);
+    
+      // parse geometry    
+      boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
+      Vector size(0.0, 0.0, 0.0);
+      Vector scale(1.0, 1.0, 1.0);
+      urdf::Vector3 tmpV;
+      config["filename"] = "PRIMITIVE";
+      switch (tmpGeometry->type) {
+      case urdf::Geometry::SPHERE:
+        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        config["origname"] = "sphere";
+        break;
+      case urdf::Geometry::BOX:
+        tmpV = ((urdf::Box*) tmpGeometry.get())->dim;
+        size = Vector(tmpV.x, tmpV.y, tmpV.z);
+        config["origname"] = "box";
+        break;
+      case urdf::Geometry::CYLINDER:
+        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
+        config["origname"] = "cylinder";
+        break;
+      case urdf::Geometry::MESH:
+        tmpV = ((urdf::Mesh*) tmpGeometry.get())->scale;
+        scale = Vector(tmpV.x, tmpV.y, tmpV.z);
+        config["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
+        config["origname"] = "";
+        break;
+      default:
+        break;
+      }
+      vectorToConfigItem(&config["visualsize"][0], &size);
+      vectorToConfigItem(&config["visualscale"][0], &scale);
+      config["materialName"] = visual->material_name;
+      
+      addEmptyCollisionToNode(&config);
+      visualNameMap[name] = name;
+      
+      debugMap["nodes"] += config;
+      nodeList.push_back(config);
+    }
+
+    void SMURF::translateLink(boost::shared_ptr<urdf::Link> link) {
+      Vector v;
+      Quaternion q;
+      
+      groupID++;
+      
+      createOrigin(link);
+      
+      if (link->parent_joint)
+        translateJoint(link);
+
+      // inertial
+      if (link->inertial) {
+        createInertial(link);
+      }
+      
+      // collision
+      if (link->collision) {
+        for (std::vector<boost::shared_ptr<urdf::Collision> >::iterator it = link->collision_array.begin();
+          it != link->collision_array.end(); ++it) {
+            createCollision(*it);
         }
-
-        childNode["index"] = nextNodeID++;
-        std::string childNodeName = ((std::string) config["name"][0]) + "_child";
-        nodeIDMap[childNodeName] = nextNodeID - 1;
-        nodeIDMap[collision->name] = nextNodeID - 1; //FIXME: can we simply duplicate this?
-        childNode["relativeid"] = config["index"];
-        if (collision->name.empty()) {
-          childNode["name"] = childNodeName;
-        } else {
-          childNode["name"] = collision->name;
+      }
+      
+      // visual
+      if (link->visual) {
+        for (std::vector<boost::shared_ptr<urdf::Visual> >::iterator it = link->visual_array.begin();
+          it != link->visual_array.end(); ++it) {
+            createVisual(*it);
         }
-        // add nodes created with collision names to name map
-        collisionNameMap[collision->name] = collision->name;
-        childNode["groupid"] = config["groupid"];
-        // we add a collision node without mass
-        childNode["mass"] = 0.001;
-        childNode["density"] = 0.0;
-        childNode["movable"] = true;
-
-        handleCollision(&childNode, collision);
-        convertPose(collision->origin, link, &v, &q);
-        vectorToConfigItem(&childNode["position"][0], &v);
-        quaternionToConfigItem(&childNode["rotation"][0], &q);
-        urdf::Pose p1;
-        p1.position = urdf::Vector3(v.x(), v.y(), v.z());
-        p1.rotation = urdf::Rotation(q.x(), q.y(), q.z(), q.w());
-        collisionArrayIndex++;
-
-        if (visual) {
-          visualNameMap[visual->name] = link->name;
-          handleVisual(&childNode, visual);
-          // convert the pose into the same coordinate system like as the node
-          convertPose(visual->origin, link, &v, &q);
-          urdf::Pose p2;
-          p2.position = urdf::Vector3(v.x(), v.y(), v.z());
-          p2.rotation = urdf::Rotation(q.x(), q.y(), q.z(), q.w());
-          // then create the relative from node pose to visual pose
-          convertPose(p2, p1, &v, &q);
-          vectorToConfigItem(&childNode["visualposition"][0], &v);
-          quaternionToConfigItem(&childNode["visualrotation"][0], &q);
-          visualArrayIndex++;
-        } else {
-          createFakeVisual(&childNode);
-        }
-        debugMap["childNodes"] += childNode;
-        nodeList.push_back(childNode);
+      }
+      
+      for (std::vector<boost::shared_ptr<urdf::Link> >::iterator it = link->child_links.begin();
+          it != link->child_links.end(); ++it) {
+          fprintf(stderr, "parsing link %s->%s..\n", (link->name).c_str(), ((*it)->name).c_str());
+        translateLink(*it);
       }
 
-      while (visualArrayIndex < link->visual_array.size()) {
-        ConfigMap childNode;
-        boost::shared_ptr<urdf::Visual> visual;
-        visual = link->visual_array[visualArrayIndex];
-
-        childNode["index"] = nextNodeID++;
-        childNode["relativeid"] = config["index"];
-        if (visual->name.empty()) {
-          childNode["name"] = ((std::string) config["name"][0]) + "_child";
-        } else {
-          childNode["name"] = visual->name;
-          visualNameMap[visual->name] = visual->name;
-        }
-        childNode["groupid"] = config["groupid"];
-        childNode["noPhysical"] = false;
-        childNode["mass"] = 0.001;
-        childNode["density"] = 0.0;
-        childNode["movable"] = true;
-        childNode["coll_bitmask"] = 0;
-
-        handleVisual(&childNode, visual);
-        childNode["physicmode"] = "box";
-
-        Vector v(0.001, 0.001, 0.001);
-        vectorToConfigItem(&childNode["extend"][0], &v);
-        convertPose(visual->origin, link, &v, &q);
-        vectorToConfigItem(&childNode["position"][0], &v);
-        quaternionToConfigItem(&childNode["rotation"][0], &q);
-        visualArrayIndex++;
-        debugMap["childNodes"] += childNode;
-        nodeList.push_back(childNode);
-      }
-
-      // TODO:  complete handle joint information
-      if (link->parent_joint) {
-        ConfigMap joint;
-        joint["name"] = link->parent_joint->name;
-        joint["index"] = nextJointID++;
-        jointIDMap[link->parent_joint->name] = nextJointID - 1;
-        joint["nodeindex1"] = nodeIDMap[link->parent_joint->parent_link_name];
-        joint["nodeindex2"] = nodeIDMap[link->parent_joint->child_link_name];
-        joint["anchorpos"] = ANCHOR_CUSTOM;
+    }
+    
+    void SMURF::translateJoint(boost::shared_ptr<urdf::Link> childlink) {
+        ConfigMap config;
+        boost::shared_ptr<urdf::Joint> joint = childlink->parent_joint;
+        config["name"] = joint->name;
+        config["index"] = nextJointID++;
+        jointIDMap[joint->name] = nextJointID - 1;
+        config["nodeindex1"] = nodeIDMap[joint->parent_link_name];
+        config["nodeindex2"] = nodeIDMap[joint->child_link_name];
+        config["anchorpos"] = 2; // always use the child_link as the anchor since joint and child_link are in the same frame
         // FIXME: reading in the limits was discarded until further notice as joint
         //   limits can lead ODE to become unstable
         // if (link->parent_joint->limits) {
@@ -836,38 +790,48 @@ namespace mars {
         // FIXME: we do not at this point read the joint "maxeffort" and "maxvelocity"
         // limits as they are effectively motor values and should be used only
         // if there are no explicit motor values defined
-        if (link->parent_joint->type == urdf::Joint::REVOLUTE
-            || link->parent_joint->type == urdf::Joint::CONTINUOUS) {
-          joint["type"] = "hinge";
-        } else if (link->parent_joint->type == urdf::Joint::PRISMATIC) {
-          joint["type"] = "slider";
-        } else if (link->parent_joint->type == urdf::Joint::FIXED) {
-          joint["type"] = "fixed";
+        if (joint->type == urdf::Joint::REVOLUTE
+            || joint->type == urdf::Joint::CONTINUOUS) {
+          config["type"] = "hinge";
+        } else if (joint->type == urdf::Joint::PRISMATIC) {
+          config["type"] = "slider";
+        } else if (joint->type == urdf::Joint::FIXED) {
+          config["type"] = "fixed";
         } else {
           // we don't support the type yet and use a fixed joint
-          joint["type"] = "fixed";
+          config["type"] = "fixed";
         }
 
-        urdf::Pose pose = getGlobalPose(link);
-        urdf::Pose pose2;
-        pose2.position = pose.rotation * link->parent_joint->axis;
-        v = Vector(pose2.position.x, pose2.position.y, pose2.position.z);
-        vectorToConfigItem(&joint["axis1"][0], &v);
+        // transform the joint's axis into global coordinates
+        urdf::Pose pose = getGlobalPose(childlink);
+        urdf::Pose axispose;
+//        axispose.position = childlink->parent_joint->parent_to_joint_origin_transform.rotation * joint->axis;
+        axispose.position = pose.rotation * joint->axis;
+        Vector v;
+        v = Vector(axispose.position.x, axispose.position.y, axispose.position.z);
+        vectorToConfigItem(&config["axis1"][0], &v);
 
-        v = Vector(pose.position.x, pose.position.y, pose.position.z);
-        vectorToConfigItem(&joint["anchor"][0], &v);
-
-        debugMap["joints"] += joint;
-        jointList.push_back(joint);
-      }
-
-      for (std::vector<boost::shared_ptr<urdf::Link> >::iterator it = link->child_links.begin();
-          it != link->child_links.end(); ++it) {
-        handleKinematics(*it); //TODO: check if this is correct with shared_ptr
-      }
+        // add to debug and joint list
+        debugMap["joints"] += config;
+        jointList.push_back(config);
     }
+    
+    urdf::Pose SMURF::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
+      urdf::Pose globalPose;
+      boost::shared_ptr<urdf::Link> pLink = link->getParent();
+      if (link->parent_joint) {
+        globalPose = link->parent_joint->parent_to_joint_origin_transform;
+      }
+      if (pLink) {
+        urdf::Pose parentPose = getGlobalPose(pLink);
+        globalPose.position = parentPose.rotation * globalPose.position;
+        globalPose.position = globalPose.position + parentPose.position;
+        globalPose.rotation = parentPose.rotation * globalPose.rotation;
+      }
+      return globalPose;
+    }    
 
-    void SMURF::handleMaterial(boost::shared_ptr<urdf::Material> material) {
+    void SMURF::createMaterial(boost::shared_ptr<urdf::Material> material) {
       ConfigMap config;
 
       config["id"] = nextMaterialID++;
@@ -878,6 +842,8 @@ namespace mars {
       config["diffuseFront"][0]["g"] = (double) material->color.g;
       config["diffuseFront"][0]["b"] = (double) material->color.b;
       config["texturename"] = material->texture_filename;
+      
+      // add to debug and material list
       debugMap["materials"] += config;
       materialList.push_back(config);
     }
@@ -913,24 +879,14 @@ namespace mars {
         robotname = model.get()->name_;
       }
 
-      createFakeMaterial();
+      createEmptyVisualMaterial();
+      createOriginMaterial();
       std::map<std::string, boost::shared_ptr<urdf::Material> >::iterator it;
       for (it = model->materials_.begin(); it != model->materials_.end(); ++it) {
-        handleMaterial(it->second);
+        createMaterial(it->second);
       }
 
-      handleKinematics(model->root_link_);
-
-      //    //the entire tree recursively anyway
-      //    std::vector<boost::shared_ptr<urdf::Link>> urdflinklist;
-      //    std::vector<boost::shared_ptr<urdf::Joint>> urdfjointlist;
-      //
-
-      //    model.getJoints(urdfjointlist);
-      //    for (std::vector<boost::shared_ptr<urdf::Link>>::iterator it =
-      //            urdfjointlist.begin(); it != urdfjointlist.end(); ++it) {
-      //        getGenericConfig(&jointList, it);
-      //    }
+      translateLink(model->root_link_);
     }
 
     unsigned int SMURF::load() {
@@ -941,8 +897,11 @@ namespace mars {
         if (!loadMaterial(materialList[i]))
           return 0;
       for (unsigned int i = 0; i < nodeList.size(); ++i)
-        if (!loadNode(nodeList[i]))
+        if (!loadNode(nodeList[i])) {
+          fprintf(stderr, "Couldn't load node %d, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
           return 0;
+        }
+          
 
       for (unsigned int i = 0; i < jointList.size(); ++i)
         if (!loadJoint(jointList[i]))
@@ -1018,7 +977,7 @@ namespace mars {
         NodeData node;
         node.init("anchor_" + robotname, tmpV, tmpQ);
         node.initPrimitive(interfaces::NODE_TYPE_BOX, Vector(0.01, 0.01, 0.01), 0.01);
-        node.groupID = control->nodes->getMaxGroupID() + 1;
+        node.groupID = 
         node.index = 666666666; // unlikely that anyone will ever use this within a model
         node.c_params.coll_bitmask = 0;
         NodeId oldId = node.index;
@@ -1030,7 +989,7 @@ namespace mars {
 
         // create fixed joint between anchor node and root node
         JointData joint;
-        joint.init("joint_anchoir_" + robotname, interfaces::JOINT_TYPE_FIXED,
+        joint.init("joint_anchor_" + robotname, interfaces::JOINT_TYPE_FIXED,
                               nodeid, newId);
         joint.index = 666666666;
         JointId newJointId = control->joints->addJoint(&joint);
@@ -1144,8 +1103,6 @@ namespace mars {
 
     BaseSensor* SMURF::loadSensor(ConfigMap config) {
       config["mapIndex"].push_back(ConfigItem(mapIndex));
-//      fprintf(stderr, "creating sensor: %s, %s", ((std::string)config["name"]).c_str(),
-//          ((std::string)config["type"]).c_str());
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
         control->loadCenter->setMappedID((ulong) config["index"], sensor->getID(), MAP_TYPE_SENSOR,
@@ -1209,9 +1166,8 @@ namespace mars {
       return robotname;
     }
 
-  }        // end of namespace smurf
-}
-// end of namespace mars
+  }  // end of namespace smurf
+}  // end of namespace mars
 
 DESTROY_LIB(mars::smurf::SMURF);
 CREATE_LIB(mars::smurf::SMURF);
