@@ -40,12 +40,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-
-
 namespace mars {
   namespace sim {
 
     using namespace utils;
+    using namespace configmaps;
     using namespace interfaces;
 
     BaseSensor* RotatingRaySensor::instanciate(ControlCenter *control, BaseConfig *config ){
@@ -69,17 +68,8 @@ namespace mars {
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
       full_scan = false;
-      full_scan_mlls = false;
       current_pose.setIdentity();
       num_points = 0;
-      
-      /**
-      double calc_ms = 0.0;
-      control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
-    
-      nsamples = (1000/fmax(updateRate, calc_ms));
-      turning_step = (config.turning_speed*2*M_PI)/(nsamples*config.bands);
-      */
 
       this->attached_node = config.attached_node;
 
@@ -87,7 +77,7 @@ namespace mars {
       drawStruct draw;
       draw_item item;
       Vector tmp;
-      have_update = false;
+      update_available = false;
 
       for(int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
@@ -126,16 +116,12 @@ namespace mars {
 
       double h_angle_cur = 0.0;
       double v_angle_cur = 0.0;
-      
+
       for(int b=0; b<config.bands; ++b) {
         h_angle_cur = b*hAngle - config.opening_width / 2.0 + config.horizontal_offset;
-        mlls_band_angles_lookup.push_back(h_angle_cur);
 
         for(int l=0; l<config.lasers; ++l) {
           v_angle_cur = l*vAngle - config.opening_height / 2.0 + config.vertical_offset;
-          if(b == 0) {
-            mlls_laser_angles_lookup.push_back(v_angle_cur);
-          }
 
           tmp = Eigen::AngleAxisd(h_angle_cur, Eigen::Vector3d::UnitZ()) *
               Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
@@ -165,22 +151,16 @@ namespace mars {
           }
         }
       }
-      
-      // Initiate MultilevelLaserScan
-      mlls.max_range = config.maxDistance * 1000;
-      mlls.min_range = config.minDistance * 1000;
 
       // Add sensor after everything has been initialized.
       control->nodes->addNodeSensor(this);
-      
+
       // GraphicsManager crashes if default constructor drawStruct is passed.
       if(config.draw_rays) {
         if(control->graphics) {
           control->graphics->addDrawItems(&draw);
         }
       }
-      //assert(N == data.size());
-      
     }
 
     RotatingRaySensor::~RotatingRaySensor(void) {
@@ -196,18 +176,6 @@ namespace mars {
         return true;
       } else {
           return false;
-      }
-    }
-
-    bool RotatingRaySensor::getMultiLevelLaserScan(velodyne_lidar::MultilevelLaserScan& scan) {
-      mars::utils::MutexLocker lock(&mutex_pointcloud);
-      if(full_scan_mlls) {
-        full_scan_mlls = false;
-        scan = mlls_full;
-        scan.time = base::Time::fromMilliseconds(control->sim->getTime());
-        return true;
-      } else {
-        return false;
       }
     }
 
@@ -255,42 +223,26 @@ namespace mars {
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
-      
+
       current_pose.setIdentity();
       current_pose.rotate(orientation);
       current_pose.translation() = position;
 
-      // Fills the pointcloud vector with (dist_m, x, y, z).
-      // data[] contains all the measured distances.
-      utils::Vector local_ray, tmpvec;
-
-      // MultilevelLaserScan
-      velodyne_lidar::MultilevelLaserScan::SingleScan single_scan;
-      double dist_mm;
-      base::Angle h_angle, v_angle;
+      // data[] contains all the measured distances according to the define directions.
       assert((int)data.size() == config.bands * config.lasers);
 
-      // Fills the pointcloud vector with (dist_m, x, y, z).
-      // data[] contains all the measured distances according to the define directions.
       int i = 0; // data_counter
+      utils::Vector local_ray, tmpvec;
       for(int b=0; b<config.bands; ++b) {
-        velodyne_lidar::MultilevelLaserScan::VerticalMultilevelScan vertical_scan;
-        vertical_scan.time = base::Time::now();
         base::Orientation base_orientation;
         base_orientation.x() = orientation_offset.x();
         base_orientation.y() = orientation_offset.y();
         base_orientation.z() = orientation_offset.z();
         base_orientation.w() = orientation_offset.w();
 
-        h_angle.rad = mlls_band_angles_lookup[b] + base::getYaw(base_orientation);
-        vertical_scan.horizontal_angle = h_angle;
-        v_angle.rad = mlls_laser_angles_lookup[0];
-        vertical_scan.vertical_start_angle = v_angle;
-        vertical_scan.vertical_angular_resolution = vertical_resolution;
-
-        // If min/max are exceeded distance will be set to min/max.
+        // If min/max are exceeded distance will be ignored.
         for(int l=0; l<config.lasers; ++l, ++i){
-          if (data[i] < config.maxDistance && data[i] > config.minDistance) {
+          if (data[i] >= config.minDistance && data[i] <= config.maxDistance) {
             // Calculates the ray/vector within the sensor frame.
             local_ray = orientation_offset * directions[i] * data[i];
             // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
@@ -298,32 +250,20 @@ namespace mars {
             tmpvec = current_pose * local_ray;
             pointcloud.push_back(tmpvec); // Scale normalized vector.
           }
-
-          // Fill the MultilevelLaserScan format.
-          if(data[i] <= config.minDistance) {
-            dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_NEAR;
-          } else if(data[i] >= config.maxDistance) {
-            dist_mm = velodyne_lidar::MultilevelLaserScan::TOO_FAR;
-          } else {
-            dist_mm = data[i] * 1000;
-          }
-          single_scan.range = dist_mm;
-          vertical_scan.vertical_scans.push_back(single_scan);
         }
-        mlls.horizontal_scans.push_back(vertical_scan);
       }
       num_points += data.size();
-      
-      have_update = true;
+
+      update_available = true;
     }
 
     void RotatingRaySensor::update(std::vector<draw_item>* drawItems) {
-      
+
       unsigned int i;
-   
-      if(have_update) {
+
+      if(update_available) {
         control->nodes->updateRay(attached_node);
-        have_update = false;
+        update_available = false;
       }
       if(config.draw_rays) {
         if(!(*drawItems)[0].draw_state) {
@@ -348,6 +288,8 @@ namespace mars {
         // Copies current full pointcloud to pointcloud_full.
         std::list<utils::Vector>::iterator it = pointcloud.begin();
         pointcloud_full.resize(pointcloud.size());
+        base::Vector3d vec_local;
+
         for(int i=0; it != pointcloud.end(); it++, i++) {
           // Transforms the pointcloud back from world to current node (see receiveDate()).
           // In addition 'transf_sensor_rot_to_sensor' is applied which describes
@@ -355,17 +297,13 @@ namespace mars {
           Eigen::Affine3d rot;
           rot.setIdentity();
           rot.rotate(config.transf_sensor_rot_to_sensor);
-          pointcloud_full[i]= rot * current_pose.inverse() * (*it);
+          vec_local = rot * current_pose.inverse() * (*it);
+          pointcloud_full[i]= vec_local;
         }
+
         pointcloud.clear();
         turning_offset = 0;
         full_scan = true;
-
-        // Copy MultilevelLaserScan.
-        mlls.time = base::Time::fromMilliseconds(control->sim->getTime());
-        mlls_full = mlls;
-        mlls.horizontal_scans.clear();
-        full_scan_mlls = true;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
