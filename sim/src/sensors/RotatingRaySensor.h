@@ -40,7 +40,7 @@
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 
-//#include <base/Time.hpp>
+#include <base/Pose.hpp>
 
 namespace mars {
   namespace sim {
@@ -49,19 +49,20 @@ namespace mars {
     public:
       RotatingRayConfig(){
         name = "Unknown RaySensor";
-        bands=16; 
-        lasers=32; 
+        bands=16; //number of horizontal replicates of vertical laser bands
+        lasers=32; //number of lasers in vertical dimension
         pos_offset.setZero();
         ori_offset.setIdentity();
-        opening_width=2*M_PI; 
-        opening_height= (90.0/180.0)*M_PI; 
+        opening_width=2*M_PI; //this means we cover the entire 360 degrees
+        opening_height= (40.0/180.0)*M_PI;
         attached_node = 0;
+        minDistance = 0.01;
         maxDistance = 100.0;
         draw_rays = true;
         horizontal_resolution = (1.0/180.0)*M_PI;
         transf_sensor_rot_to_sensor.setIdentity();
         horizontal_offset = 0.0;
-        vertical_offset = 0.0;
+        vertical_offset = (10.67/180.0)*M_PI;
       }
 
       unsigned long attached_node;
@@ -73,12 +74,14 @@ namespace mars {
       double opening_height;
       double horizontal_offset; // allows to shift the bands horizontally
       double vertical_offset; // allows to shift the lasers vertically
+      double minDistance;
       double maxDistance;
       bool draw_rays;
       double horizontal_resolution;
       // Describes the orientation of the sensor in the unturned sensor frame. 
       // Can be used compensate the node orientation / to define the turning axis.
       // Pass the node orientation to receive an unturned sensor.
+      // This transformation is only applied to the pointcloud.
       utils::Quaternion transf_sensor_rot_to_sensor;
     };
 
@@ -95,11 +98,15 @@ namespace mars {
       ~RotatingRaySensor(void);
       
       /**
-       * Returns a complete 360 degree scan and clears the pointcloud afterwards.
+       * Returns a complete scan covering the complete defined horizontal range.
+       * The pointcloud is gathered within the world frame and
+       * - after a complete scan has been received - transformed into the
+       * current local frame. This prevents strong distortions on slower computers.
+       * If a full scan is not available an empty pointcloud will be returned.
        */
-      std::vector<utils::Vector> getPointcloud();
-      
-      /** 
+      bool getPointcloud(std::vector<utils::Vector>& pointcloud);
+
+      /**
        * Copies the current full pointcloud to a double array with (x,y,z).
        * \warning Memory has to be freed manually!
        * Inherited from BaseSensor, implemented from BasePolarIntersectionSensor.
@@ -132,9 +139,6 @@ namespace mars {
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                                  configmaps::ConfigMap *config);
       
-      /**
-       * TODO rotation_offset is missing.
-       */
       virtual configmaps::ConfigMap createConfig() const;
 
       const RotatingRayConfig& getConfig() const;
@@ -164,9 +168,14 @@ namespace mars {
     private:
       /** Contains the normalized scan directions. */ 
       std::vector<utils::Vector> directions;
+      // TODO Storing the pointcloud four times is not very effective.
+      // Maybe: Integrate distortion-prevention (use current sensor pose)
+      // in mlls and only create the pointcloud on demand.
       std::list<utils::Vector> pointcloud; // TODO Replace with array with fix size.
       std::vector<utils::Vector> pointcloud_full; // Stores the full scan.
-      bool have_update;
+      double vertical_resolution;
+      bool update_available;
+      bool full_scan;
       double turning_offset;
       double turning_end_fullscan; // Defines the upper border for the turning_offset. 
       utils::Quaternion orientation_offset; // Used to turn the sensor during each simulation step.

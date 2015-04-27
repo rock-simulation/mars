@@ -40,12 +40,11 @@
 #include <cstdio>
 #include <cstdlib>
 
-
-
 namespace mars {
   namespace sim {
 
     using namespace utils;
+    using namespace configmaps;
     using namespace interfaces;
 
     BaseSensor* RotatingRaySensor::instanciate(ControlCenter *control, BaseConfig *config ){
@@ -68,17 +67,9 @@ namespace mars {
       orientation.setIdentity();
       maxDistance = config.maxDistance;
       turning_offset = 0.0;
+      full_scan = false;
       current_pose.setIdentity();
       num_points = 0;
-      
-        /**
-      double calc_ms = 0.0;
-      control->cfg->getPropertyValue("Simulator", "calc_ms", "value", &calc_ms);
-      std::cout << "calc ms " << calc_ms <<  std::endl;
-    
-      nsamples = (1000/fmax(updateRate, calc_ms));
-      turning_step = (config.turning_speed*2*M_PI)/(nsamples*config.bands);
-      */
 
       this->attached_node = config.attached_node;
 
@@ -86,7 +77,8 @@ namespace mars {
       drawStruct draw;
       draw_item item;
       Vector tmp;
-      have_update = false;
+      update_available = false;
+
       for(int i = 0; i < 3; ++i)
         positionIndices[i] = -1;
       for(int i = 0; i < 4; ++i)
@@ -120,11 +112,19 @@ namespace mars {
       
       double vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
       double hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
-      
+      vertical_resolution = config.lasers <= 1 ? 0 : config.opening_height/(config.lasers-1);
+
+      double h_angle_cur = 0.0;
+      double v_angle_cur = 0.0;
+
       for(int b=0; b<config.bands; ++b) {
+        h_angle_cur = b*hAngle - config.opening_width / 2.0 + config.horizontal_offset;
+
         for(int l=0; l<config.lasers; ++l) {
-          tmp = Eigen::AngleAxisd(b*hAngle - config.opening_width / 2.0 + config.horizontal_offset, Eigen::Vector3d::UnitZ()) * 
-              Eigen::AngleAxisd(l*vAngle - config.opening_height / 2.0 + config.vertical_offset, Eigen::Vector3d::UnitY()) *
+          v_angle_cur = l*vAngle - config.opening_height / 2.0 + config.vertical_offset;
+
+          tmp = Eigen::AngleAxisd(h_angle_cur, Eigen::Vector3d::UnitZ()) *
+              Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
               Vector(1,0,0);
               
           directions.push_back(tmp);
@@ -151,18 +151,16 @@ namespace mars {
           }
         }
       }
-      
+
       // Add sensor after everything has been initialized.
       control->nodes->addNodeSensor(this);
-      
+
       // GraphicsManager crashes if default constructor drawStruct is passed.
       if(config.draw_rays) {
         if(control->graphics) {
           control->graphics->addDrawItems(&draw);
         }
       }
-      //assert(N == data.size());
-      
     }
 
     RotatingRaySensor::~RotatingRaySensor(void) {
@@ -170,11 +168,15 @@ namespace mars {
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
     }
 
-    std::vector<utils::Vector> RotatingRaySensor::getPointcloud() {
+    bool RotatingRaySensor::getPointcloud(std::vector<utils::Vector>& pcloud) {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
-      //base::Time time_now = base::Time::now();
-      //std::cout << "Points/sec " << num_points / (time_now - time_start).toSeconds() << std::endl;
-      return pointcloud_full;
+      if(full_scan) {
+        full_scan = false;
+        pcloud =  pointcloud_full;
+        return true;
+      } else {
+          return false;
+      }
     }
 
     int RotatingRaySensor::getSensorData(double** data_) const {
@@ -221,35 +223,47 @@ namespace mars {
       package.get(rotationIndices[1], &orientation.y());
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
-      
+
       current_pose.setIdentity();
       current_pose.rotate(orientation);
       current_pose.translation() = position;
 
-      // Fills the pointcloud vector with (dist_m, x, y, z).
-      // data[] contains all the measured distances.
-      for(unsigned int i=0; i<data.size(); i++) {
-        if (data[i] < config.maxDistance) {
-          // Calculates the ray/vector within the sensor frame.
-          utils::Vector local_ray = orientation_offset * directions[i] * data[i];
-          // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
-          // This necessitates a back-transformation (world2node) in getPointcloud().
-          utils::Vector tmpvec = current_pose * local_ray;
-          pointcloud.push_back(tmpvec); // Scale normalized vector.
+      // data[] contains all the measured distances according to the define directions.
+      assert((int)data.size() == config.bands * config.lasers);
+
+      int i = 0; // data_counter
+      utils::Vector local_ray, tmpvec;
+      for(int b=0; b<config.bands; ++b) {
+        base::Orientation base_orientation;
+        base_orientation.x() = orientation_offset.x();
+        base_orientation.y() = orientation_offset.y();
+        base_orientation.z() = orientation_offset.z();
+        base_orientation.w() = orientation_offset.w();
+
+        // If min/max are exceeded distance will be ignored.
+        for(int l=0; l<config.lasers; ++l, ++i){
+          if (data[i] >= config.minDistance && data[i] <= config.maxDistance) {
+            // Calculates the ray/vector within the sensor frame.
+            local_ray = orientation_offset * directions[i] * data[i];
+            // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
+            // This necessitates a back-transformation (world2node) in getPointcloud().
+            tmpvec = current_pose * local_ray;
+            pointcloud.push_back(tmpvec); // Scale normalized vector.
+          }
         }
       }
       num_points += data.size();
-      
-      have_update = true;
+
+      update_available = true;
     }
 
     void RotatingRaySensor::update(std::vector<draw_item>* drawItems) {
-      
+
       unsigned int i;
-   
-      if(have_update) {
+
+      if(update_available) {
         control->nodes->updateRay(attached_node);
-        have_update = false;
+        update_available = false;
       }
       if(config.draw_rays) {
         if(!(*drawItems)[0].draw_state) {
@@ -274,6 +288,8 @@ namespace mars {
         // Copies current full pointcloud to pointcloud_full.
         std::list<utils::Vector>::iterator it = pointcloud.begin();
         pointcloud_full.resize(pointcloud.size());
+        base::Vector3d vec_local;
+
         for(int i=0; it != pointcloud.end(); it++, i++) {
           // Transforms the pointcloud back from world to current node (see receiveDate()).
           // In addition 'transf_sensor_rot_to_sensor' is applied which describes
@@ -281,10 +297,13 @@ namespace mars {
           Eigen::Affine3d rot;
           rot.setIdentity();
           rot.rotate(config.transf_sensor_rot_to_sensor);
-          pointcloud_full[i]= rot * current_pose.inverse() * (*it);
+          vec_local = rot * current_pose.inverse() * (*it);
+          pointcloud_full[i]= vec_local;
         }
+
         pointcloud.clear();
         turning_offset = 0;
+        full_scan = true;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
@@ -318,6 +337,8 @@ namespace mars {
         cfg->opening_height = it->second[0].getDouble();
       if((it = config->find("max_distance")) != config->end())
         cfg->maxDistance = it->second[0].getDouble();
+      if((it = config->find("min_distance")) != config->end())
+        cfg->minDistance = it->second[0].getDouble();
       if((it = config->find("draw_rays")) != config->end())
         cfg->draw_rays = it->second[0].getBool();
       if((it = config->find("horizontal_offset")) != config->end())
@@ -364,6 +385,7 @@ namespace mars {
       cfg["opening_width"][0] = ConfigItem(config.opening_width);
       cfg["opening_height"][0] = ConfigItem(config.opening_height);
       cfg["max_distance"][0] = ConfigItem(config.maxDistance);
+      cfg["min_distance"][0] = ConfigItem(config.minDistance);
       cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
       cfg["vertical_offset"][0] = ConfigItem(config.vertical_offset);
       cfg["horizontal_offset"][0] = ConfigItem(config.horizontal_offset);
