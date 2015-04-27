@@ -40,10 +40,7 @@
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 
-#include <velodyne_lidar/MultilevelLaserScan.h>
 #include <base/Pose.hpp>
-
-//#include <base/Time.hpp>
 
 namespace mars {
   namespace sim {
@@ -109,12 +106,6 @@ namespace mars {
        */
       bool getPointcloud(std::vector<utils::Vector>& pointcloud);
       
-      /**
-       * Returns the pointcloud in the MultilevelLaserScan format.
-       * Does not compensate the movement during a scan yet.
-       */
-      bool getMultiLevelLaserScan(velodyne_lidar::MultilevelLaserScan& scan);
-      
       /** 
        * Copies the current full pointcloud to a double array with (x,y,z).
        * \warning Memory has to be freed manually!
@@ -148,9 +139,6 @@ namespace mars {
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                                  configmaps::ConfigMap *config);
       
-      /**
-       * TODO rotation_offset is missing.
-       */
       virtual configmaps::ConfigMap createConfig() const;
 
       const RotatingRayConfig& getConfig() const;
@@ -185,14 +173,9 @@ namespace mars {
       // in mlls and only create the pointcloud on demand.
       std::list<utils::Vector> pointcloud; // TODO Replace with array with fix size.
       std::vector<utils::Vector> pointcloud_full; // Stores the full scan.
-      velodyne_lidar::MultilevelLaserScan mlls;
-      velodyne_lidar::MultilevelLaserScan mlls_full;
-      // Contains the angles of each ray
-      std::vector<double> mlls_band_angles_lookup;
-      std::vector<double> mlls_laser_angles_lookup;
       double vertical_resolution;
-      bool have_update;
-      bool full_scan, full_scan_mlls;
+      bool update_available;
+      bool full_scan;
       double turning_offset;
       double turning_end_fullscan; // Defines the upper border for the turning_offset. 
       utils::Quaternion orientation_offset; // Used to turn the sensor during each simulation step.
