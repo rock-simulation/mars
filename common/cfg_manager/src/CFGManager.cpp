@@ -96,14 +96,14 @@ namespace mars {
           //cout << "Found document" << endl;
 
           for(it = dt->begin(); it != dt->end(); ++it) {
-              currentGroup = it->first.as<std::string>();
-            //cout << "Found group: " << group << endl;
+            currentGroup = it->first.as<std::string>();
+            //cout << "Found group: " << currentGroup << endl;
             if(group && (currentGroup != group))
               continue;
 
             readGroup(currentGroup, it->second);
           } // for
-
+          ++dt;
         } // while
       } catch(YAML::ParserException &e) {
         cout << e.what() << endl;
