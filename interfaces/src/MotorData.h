@@ -68,6 +68,7 @@ namespace mars {
       sReal d;  // d part of the controller
       sReal maxValue;
       sReal minValue;
+      configmaps::ConfigMap config;
       static std::map<std::string, std::string> legacynames;
 
       static std::map<std::string, std::string> init_legacynames() {
