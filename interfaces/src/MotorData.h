@@ -66,9 +66,10 @@ namespace mars {
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
-      sReal maxValue;
-      sReal minValue;
+      sReal maxValue; // can be either position or velocity
+      sReal minValue; // can be either position or velocity
       configmaps::ConfigMap config;
+
       static std::map<std::string, std::string> legacynames;
 
       static std::map<std::string, std::string> init_legacynames() {
