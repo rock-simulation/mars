@@ -83,6 +83,7 @@ namespace mars {
       value = 0;
       maxSpeed = 0;
       maxEffort = 0;
+      maxAcceleration = 0;
       this->type = type;
       p = 0;
       i = 0;
@@ -118,6 +119,7 @@ namespace mars {
       GET_VALUE("axis", axis, Int);
       GET_VALUE("maxSpeed", maxSpeed, Double);
       GET_VALUE("maxEffort", maxEffort, Double);
+      GET_VALUE("maxAcceleration", maxAcceleration, Double);
 
       std::string tmpmotortype;
       GET_VALUE("type", tmpmotortype, String);
