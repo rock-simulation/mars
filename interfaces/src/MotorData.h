@@ -61,6 +61,7 @@ namespace mars {
       sReal value;
       sReal maxSpeed; //maximum speed the motor can reach
       sReal maxEffort; // maximum force/torque [F/Nm] the motor can apply
+      sReal maxAcceleration; // maximum acceleration the motor can produce
       MotorType type; // motor type
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
