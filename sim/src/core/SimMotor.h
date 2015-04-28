@@ -151,6 +151,8 @@ namespace mars {
       void setMaximumVelocity(interfaces::sReal value) __attribute__ ((deprecated("use getMaxSpeed")));
 
     private:
+      // we need this typedef to generically interact with the attached joint
+      typedef  void (SimJoint::*JointControlFunction)(interfaces::sReal, unsigned char);
 
       // motor
       unsigned char axis;
@@ -160,6 +162,11 @@ namespace mars {
       interfaces::sReal time;
       interfaces::sReal speed, position1, position2, effort, current, temperature;
       bool active;
+
+      // controller part
+      interfaces::sReal* controlParameter;
+      interfaces::sReal* controlLimit;
+      JointControlFunction setJointControlParameter;
       interfaces::sReal p, i, d;
       interfaces::sReal desired_value, desired_speed;
       interfaces::sReal last_error;
@@ -168,7 +175,13 @@ namespace mars {
 
       // these variables were not used any more
       // interfaces::sReal i_current, last_current, last_velocity, pwm;
+
+      // current estimation
+      void initCurrentEstimation();
       interfaces::sReal kXY, kX, kY, k;
+
+      // temperature estimation
+      void initTemperatureEstimation();
 
       // for dataBroker communication
       data_broker::DataPackage dbPackage;

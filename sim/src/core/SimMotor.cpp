@@ -59,7 +59,10 @@ namespace mars {
       d=0;
       last_error = 0;
       integ_error = 0;
+      updateController();
 
+      initTemperatureEstimation();
+      initCurrentEstimation();
 
       dbPackage.add("id", (long)sMotor.index);
       dbPackage.add("value", getValue());
@@ -96,14 +99,186 @@ namespace mars {
       if(myJoint) myJoint->unsetJointAsMotor(sMotor.axis);
     }
 
+    void SimMotor::updateController() {
+      axis = (unsigned char) sMotor.axis;
+      switch (sMotor.type) {
+        case MOTOR_TYPE_POSITION:
+          controlParameter = &position;
+          controlLimit = &(sMotor.maxSpeed);
+          setJointControlParameter = &SimJoint::setVelocity;
+          break;
+        case MOTOR_TYPE_SPEED:
+          controlParameter = &speed;
+          controlLimit = &(sMotor.maxAcceleration); // this is a stand-in for acceleration
+          setJointControlParameter = &SimJoint::setVelocity;
+          break;
+        case MOTOR_TYPE_EFFORT:
+          controlParameter = &effort;
+          controlLimit = &(sMotor.maxEffort);
+          setJointControlParameter = &SimJoint::setTorque;
+          break;
+        case MOTOR_TYPE_UNDEFINED:
+          // TODO: output error
+          controlParameter = &position; // default to position
+          controlLimit = &(sMotor.maxSpeed);
+          setJointControlParameter = &SimJoint::setVelocity;
+          break;
+        // the following types are deprecated
+        case MOTOR_TYPE_PID:
+          controlParameter = &position;
+          controlLimit = &(sMotor.maxSpeed);
+          setJointControlParameter = &SimJoint::setVelocity;
+          break;
+        case MOTOR_TYPE_DC:
+          controlParameter = &speed;
+          controlLimit = &(sMotor.maxAcceleration);
+          setJointControlParameter = &SimJoint::setVelocity;
+          break;
+        case MOTOR_TYPE_PID_FORCE:
+          // TODO: deprecated error
+          break;
+      }
+    }
+      
+    void SimMotor::control(sReal time) {
+      // the following implements a simple PID controller using the value
+      // pointed to by controlParameter
+      if(desired_value>sMotor.maxValue)
+        desired_value = sMotor.maxValue;
+      if(desired_value<sMotor.minValue)
+        desired_value = sMotor.minValue;
+
+      er = desired_value - *controlParameter;
+      if(er > M_PI)
+        er = -2*M_PI+er;
+      else
+      if(er < -M_PI)
+        er = 2*M_PI+er;
+
+      integ_error += er*time;
+
+      //anti wind up, this code limits the integral error
+      //part of the pid to the maximum velocity. This makes
+      //the pid react way faster. This also eleminates the
+      //overshooting errors seen before in the simulation
+      double iPart = integ_error * sMotor.i;
+      if(iPart > sMotor.maxSpeed)
+      {
+        iPart = sMotor.maxSpeed;
+        integ_error = sMotor.maxSpeed / sMotor.i;
+      }
+
+      if(iPart < -sMotor.maxSpeed)
+      {
+        iPart = -sMotor.maxSpeed;
+        integ_error = -sMotor.maxSpeed / sMotor.i;
+      }
+
+      // set desired velocity. @todo add inertia
+      vel = desired_speed;
+      // P part of the motor
+      vel += er * sMotor.p;
+      // I part of the motor
+      vel += iPart;
+      // D part of the motor
+      vel += ((er - last_error)/time) * sMotor.d;
+      last_error = er;
     }
 
-    void SimMotor::receiveData(const data_broker::DataInfo& info,
-                               const data_broker::DataPackage& package,
-                               int id) {
-      sReal value;
-      package.get(0, &value);
-      setValue(value);
+    void SimMotor::update(sReal time_ms) {
+      sReal er = 0;
+      sReal vel = 0;
+      time = time_ms;// / 1000;
+      sReal play_position = 0.0;
+
+      // if the attached joint does not exist (any more)
+      if (!myJoint) deactivate();
+
+      if(active) {
+        // set play offset to 0
+        if(myPlayJoint) play_position = myPlayJoint->getActualAngle1();
+
+        refreshPosition();
+        position += play_position;
+
+        control(time_ms);
+
+        switch (sMotor.type) {
+
+                break;
+          case MOTOR_TYPE_DC:
+            vel = speed;
+                break;
+          case MOTOR_TYPE_PID_FORCE:
+            if(desired_value>2*M_PI) desired_value=0;
+            else if(desired_value>M_PI) desired_value=-2*M_PI+desired_value;
+            else if(desired_value<-2*M_PI) desired_value=0;
+            else if(desired_value<-M_PI) desired_value=2*M_PI+desired_value;
+
+                er = desired_value - position;
+                if(er > M_PI) er = -2*M_PI+er;
+                else if(er < -M_PI) er = 2*M_PI+er;
+                integ_error += er*time;
+                // P part of the motor
+                effort = er * sMotor.p;
+                // I part of the motor
+                effort += integ_error * sMotor.i;
+                // D part of the motor
+                effort += ((er - last_error)/time) * sMotor.d;
+                last_error = er;
+                if(effort > sMotor.maxEffort) effort = sMotor.maxEffort;
+                else if(effort < -sMotor.maxEffort) effort = -sMotor.maxEffort;
+                break;
+          case MOTOR_TYPE_UNDEFINED:
+            break;
+        }
+
+        // this passes speed, position or force to the attached
+        // joint's setSpeed1/2 or setTorque1/2 methods
+        setJointControlParameter(*controlParameter);
+
+        else {
+
+          estimateCurrent();
+          estimateTemperature();
+
+          if(vel > sMotor.maxSpeed)
+            vel = sMotor.maxSpeed;
+          else
+          if(vel < -sMotor.maxSpeed)
+            vel = -sMotor.maxSpeed;
+
+          if(sMotor.axis == 1) {
+            myJoint->setVelocity(vel);
+          }
+          else if(sMotor.axis == 2) {
+            myJoint->setVelocity2(vel);
+          }
+        }
+      }
+    }
+
+    void SimMotor::estimateCurrent() {
+      // calculate current
+      effort = myJoint->getMotorTorque();
+      joint_velocity = myJoint->getSpeed();
+      current = (kXY*fabs(effort*joint_velocity) +
+                 kX*fabs(effort) +
+                 kY*fabs(joint_velocity) + k);
+      if(current < 0.0)
+        current = 0.0;
+    }
+
+    void SimMotor::estimateTemperature() {
+
+    }
+
+    sReal SimMotor::getMomentaryMaxEffort() const {
+      return sMotor.maxEffort;
+    }
+
+    sReal SimMotor::getMomentaryMaxSpeed() const {
+      return sMotor.maxSpeed;
     }
 
 
@@ -312,134 +487,6 @@ namespace mars {
 
     const MotorData SimMotor::getSMotor(void) const {
       return sMotor;
-    }
-
-    void SimMotor::update(sReal time_ms) {
-      // updates the motor
-      // a timing should be added
-      sReal er = 0;
-      sReal vel = 0;
-      time = time_ms;// / 1000;
-      sReal play_position = 0.0;
-
-      if(activated) {
-        if(myPlayJoint) play_position = myPlayJoint->getActualAngle1();
-        if(myJoint) {
-          if(sMotor.axis == 1)
-            actual_position = myJoint->getActualAngle1();
-          else
-            actual_position = myJoint->getActualAngle2();
-          actual_position += play_position;
-
-          switch (sMotor.type) {
-          case MOTOR_TYPE_PID:
-          {
-            if(desired_position>sMotor.maxValue)
-                desired_position = sMotor.maxValue;
-            if(desired_position<sMotor.minValue)
-                desired_position = sMotor.minValue;
-            /*
-              if(desired_position>2*M_PI) desired_position=0;
-              else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
-              else if(desired_position<-2*M_PI) desired_position=0;
-              else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
-            */
-            er = desired_position - actual_position;
-            if(er > M_PI) 
-                er = -2*M_PI+er;
-            else 
-                if(er < -M_PI) 
-                    er = 2*M_PI+er;
-                
-            integ_error += er*time;
-            
-            //anti wind up, this code limits the integral error
-            //part of the pid to the maximum velocity. This makes
-            //the pid react way faster. This also eleminates the 
-            //overshooting errors seen before in the simulation
-            double iPart = integ_error * sMotor.i;
-            if(iPart > sMotor.maxSpeed)
-            {
-                iPart = sMotor.maxSpeed;
-                integ_error = sMotor.maxSpeed / sMotor.i;
-            }
-
-            if(iPart < -sMotor.maxSpeed)
-            {
-                iPart = -sMotor.maxSpeed;
-                integ_error = -sMotor.maxSpeed / sMotor.i;
-            }
-
-            // set desired velocity. @todo add inertia
-            vel = desired_velocity;
-            // P part of the motor
-            vel += er * sMotor.p;
-            // I part of the motor
-            vel += iPart;
-            // D part of the motor
-            vel += ((er - last_error)/time) * sMotor.d;
-            last_error = er;
-          }
-            break;
-          case MOTOR_TYPE_DC:
-            vel = actual_velocity;
-            break;
-          case MOTOR_TYPE_PID_FORCE:
-            if(desired_position>2*M_PI) desired_position=0;
-            else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
-            else if(desired_position<-2*M_PI) desired_position=0;
-            else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
-
-            er = desired_position - actual_position;
-            if(er > M_PI) er = -2*M_PI+er;
-            else if(er < -M_PI) er = 2*M_PI+er;
-            integ_error += er*time;
-            // P part of the motor
-            torque = er * sMotor.p;
-            // I part of the motor
-            torque += integ_error * sMotor.i;
-            // D part of the motor
-            torque += ((er - last_error)/time) * sMotor.d;
-            last_error = er;
-            if(torque > sMotor.maxEffort) torque = sMotor.maxEffort;
-            else if(torque < -sMotor.maxEffort) torque = -sMotor.maxEffort;
-            break;
-          case MOTOR_TYPE_UNDEFINED:
-            break;
-          }
-
-          if(sMotor.type == MOTOR_TYPE_PID_FORCE) {
-            if(sMotor.axis == 1) {
-              myJoint->setTorque(torque);
-            }
-            else if(sMotor.axis == 2) {
-              myJoint->setTorque2(torque);
-            }
-          }
-          else {
-            // calculate current
-            torque = myJoint->getMotorTorque();
-            joint_velocity = myJoint->getVelocity();
-            current = (kXY*fabs(torque*joint_velocity) +
-                       kX*fabs(torque) +
-                       kY*fabs(joint_velocity) + k);
-            if(current < 0.0) 
-                current = 0.0;
-            if(vel > sMotor.maxSpeed)
-                vel = sMotor.maxSpeed;
-            else 
-                if(vel < -sMotor.maxSpeed)
-                    vel = -sMotor.maxSpeed;
-
-            if(sMotor.axis == 1) {
-              myJoint->setVelocity(vel);
-            }
-            else if(sMotor.axis == 2) {
-              myJoint->setVelocity2(vel);
-            }
-          }
-        }
-      }
     }
 
     void SimMotor::setValue(sReal value) {
