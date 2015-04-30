@@ -63,6 +63,13 @@ namespace osg_text {
     void setFixedWidth(double w);
     void setFixedHeight(double h);
     void setPosition(double x, double y);
+    void getRectangle(double *left, double *right,
+                      double *top, double *bottom) {
+      *left = posX+posXB-pl;
+      *right = posX+posXB+w-pl;
+      *top = posY+pt;
+      *bottom = posY-h+pt;
+    }
 
   private:
     osg::ref_ptr<osg::PositionAttitudeTransform> transform;

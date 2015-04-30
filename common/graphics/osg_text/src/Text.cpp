@@ -50,7 +50,7 @@ namespace osg_text {
     labelGeode = new osg::Geode();
     std::string timesFont = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
     timesFont += "/mars/graphics/resources/Fonts/arial.ttf";
-    fprintf(stderr, "font: %s\n", timesFont.c_str());
+    //fprintf(stderr, "font: %s\n", timesFont.c_str());
     labelText = new osgText::Text;
 
     labelGeode->addDrawable(labelText.get());
@@ -93,7 +93,7 @@ namespace osg_text {
 
   void Text::setBackgroundColor(const Color &c) {
     (*backgroundColor)[0] = osg::Vec4(c.r, c.g, c.b, c.a);
-    //backgroundGeom->dirty();
+    backgroundGeom->dirtyDisplayList();
   }
 
   void Text::setBorderColor(const Color &c) {
