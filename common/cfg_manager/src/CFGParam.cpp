@@ -236,17 +236,17 @@ namespace mars {
 
 
     void CFGParam::readSaveSettingFromYAML(const YAML::Node &node) {
-      if( const YAML::Node *pName = node.FindValue("userSave") ) {
+      if( const YAML::Node &pName = node["userSave"] ) {
         bool bValue = false;
-        *pName >> bValue;
+        bValue = pName.as<bool>();
         if( bValue ) {
           setOption(userSave);
         }
       }
 
-      if( const YAML::Node *pName = node.FindValue("saveOnClose") ) {
+      if( const YAML::Node &pName = node["saveOnClose"] ) {
         bool bValue = false;
-        *pName >> bValue;
+        bValue = pName.as<bool>();
         if( bValue ) {
           setOption(saveOnClose);
         }
@@ -260,23 +260,23 @@ namespace mars {
       bool bValue = false;
       string sValue = "";
 
-      if( const YAML::Node *pName = node.FindValue( getPropertyNameByIndex(index) ) ) {
+      if( const YAML::Node &pName = node[getPropertyNameByIndex(index)] ) {
 
         switch( getPropertyTypeByIndex(index) ) {
         case doubleProperty:
-          *pName >> dValue;
+            dValue = pName.as<double>();
           propertys.at(index)->setValue(dValue);
           break;
         case intProperty:
-          *pName >> iValue;
+          iValue = pName.as<int>();
           propertys.at(index)->setValue(iValue);
           break;
         case boolProperty:
-          *pName >> bValue;
+          bValue = pName.as<bool>();
           propertys.at(index)->setValue(bValue);
           break;
         case stringProperty:
-          *pName >> sValue;
+          sValue = pName.as<std::string>();
           propertys.at(index)->setValue(sValue);
           break;
         default:

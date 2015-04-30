@@ -39,7 +39,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <sstream>
-
+#include <iostream>
 #include <mars/utils/MutexLocker.h>
 
 namespace mars {
@@ -87,24 +87,23 @@ namespace mars {
         return false;
       }
       try {
-        YAML::Parser parser(in);
-        YAML::Node doc;
-        YAML::Iterator it;
+        YAML::const_iterator it;
         string currentGroup = "";
+        std::vector<YAML::Node> doc = YAML::LoadAll(in);
+        std::vector<YAML::Node>::iterator dt = doc.begin();
 
-        while(parser.GetNextDocument(doc)) {
+        while(dt != doc.end()) {
           //cout << "Found document" << endl;
 
-          for(it = doc.begin(); it != doc.end(); ++it) {
-            it.first() >> currentGroup;
-            //cout << "Found group: " << group << endl;
+          for(it = dt->begin(); it != dt->end(); ++it) {
+            currentGroup = it->first.as<std::string>();
+            //cout << "Found group: " << currentGroup << endl;
             if(group && (currentGroup != group))
               continue;
 
-            const YAML::Node &paramNodes = it.second();
-            readGroup(currentGroup, paramNodes);
+            readGroup(currentGroup, it->second);
           } // for
-
+          ++dt;
         } // while
       } catch(YAML::ParserException &e) {
         cout << e.what() << endl;
@@ -663,7 +662,7 @@ namespace mars {
       cfgParamId newId = 0;
 
       for(i = 0; i < paramNodes.size(); ++i) {
-        paramNodes[i]["type"] >> type;
+          type = paramNodes[i]["type"].as<std::string>();
         //cout << "Found type: " << type << endl;
 
         for(j = 0; j < dstNrOfParamTypes; ++j) {

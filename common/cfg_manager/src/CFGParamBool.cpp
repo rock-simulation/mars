@@ -104,9 +104,8 @@ namespace mars {
       //cout << "creating new boolParam" << endl;
       //string name = node["name"];
       */
-      if(const YAML::Node *pName = node.FindValue("name")) {
-        std::string name;
-        *pName >> name;
+      if(const YAML::Node &pName = node["name"]) {
+        std::string name = pName.as<std::string>();
         // std::cout << "Key 'name' exists, with value '" << name << "'\n";
         CFGParamBool *paramBool = new CFGParamBool(_id, _group, name);
         paramBool->readFromYAML(node);
