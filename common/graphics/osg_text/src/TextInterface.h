@@ -68,6 +68,8 @@ namespace osg_text {
     virtual void setFixedWidth(double w) = 0;
     virtual void setFixedHeight(double h) = 0;
     virtual void setPosition(double x, double y) = 0;
+    virtual void getRectangle(double *left, double *right,
+                              double *top, double *bottom) = 0;
   };
 
 } // end of namespace: osg_text
