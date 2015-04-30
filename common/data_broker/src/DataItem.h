@@ -45,6 +45,8 @@ namespace mars {
       DOUBLE_TYPE,
       BOOL_TYPE,
       STRING_TYPE,
+      UINT_TYPE,
+      ULONG_TYPE
     };
 
     struct DataElement;
@@ -67,7 +69,9 @@ namespace mars {
       //    std::string name;
       union {
         int i;
+        unsigned int ui;
         long l;
+        unsigned long ul;
         float f;
         double d;
         bool b;
@@ -87,7 +91,11 @@ namespace mars {
        */
       bool get(int *val) const;
       /// \copydoc get(int*) const
+      bool get(unsigned int *val) const;
+      /// \copydoc get(int*) const
       bool get(long *val) const;
+      /// \copydoc get(int*) const
+      bool get(unsigned long *val) const;
       /// \copydoc get(int*) const
       bool get(float *val) const;
       /// \copydoc get(int*) const
@@ -107,7 +115,11 @@ namespace mars {
        */
       bool set(int val);
       /// \copydoc set(int val)
+      bool set(unsigned int val);
+      /// \copydoc set(int val)
       bool set(long val);
+      /// \copydoc set(int val)
+      bool set(unsigned long val);
       /// \copydoc set(int val)
       bool set(float val);
       /// \copydoc set(int val)

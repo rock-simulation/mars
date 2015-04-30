@@ -121,17 +121,18 @@ namespace mars {
       const utils::Vector getJointLoad(void) const;
       interfaces::sReal getLowerLimit(unsigned char axis_index=0) const;
       interfaces::sReal getUpperLimit(unsigned char axis_index=0) const;
-	  interfaces::sReal getMotorTorque(void) const;  // FIXME: this should not be in the joint
-	  interfaces::NodeId getNodeId(unsigned char node_index=0) const;
-	  const interfaces::JointData getSJoint(void) const;
-	  interfaces::sReal getSpeed(unsigned char axis_index=0) const;
-	  interface::sReal getTorque(interfaces::sReal torque, unsigned char axis_index=0) const;
-	  const utils::Vector getTorqueVector(unsigned char axis_index=0) const;
+      interfaces::sReal getMotorTorque(void) const;  // FIXME: this should not be in the joint
+      interfaces::NodeId getNodeId(unsigned char node_index=0) const;
+      const interfaces::JointData getSJoint(void) const;
+      interfaces::sReal getSpeed(unsigned char axis_index=0) const;
+      interfaces::sReal getTorque(interfaces::sReal torque, unsigned char axis_index=0) const;
+      const utils::Vector getTorqueVector(unsigned char axis_index=0) const;
+      const utils::Vector getTorqueVectorAroundAxis(unsigned char axis_index=0) const;
 
       // setters
       void setAnchor(const utils::Vector &pos);
       void setAttachedNodes(SimNode *node, SimNode *node2);
-      void setAxis(const Vector &axis, unsigned char axis_index=0);
+      void setAxis(const utils::Vector &axis, unsigned char axis_index=0);
       void setEffortLimit(interfaces::sReal force, unsigned char axis_index=0);
       void setId(unsigned long i);
       void setJointType(interfaces::JointType type);
@@ -140,9 +141,9 @@ namespace mars {
       void setSDParams(interfaces::JointData *sJoint);
       void setSJoint(const interfaces::JointData &sJoint);
       void setSpeed(interfaces::sReal speed, unsigned char axis_index=0);
-      void setTorque(interfaces::sReal torque, unsigned char axis_index=0);
-      void setLowerLimit(sReal limit, unsigned char axis_index=0) const;
-      void setUpperLimit(sReal limit, unsigned char axis_index=0) const;
+      void setEffort(interfaces::sReal torque, unsigned char axis_index=0);
+      void setLowerLimit(interfaces::sReal limit, unsigned char axis_index=0);
+      void setUpperLimit(interfaces::sReal limit, unsigned char axis_index=0);
 
       // inherited from DataBroker ProducerInterface
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
@@ -152,8 +153,8 @@ namespace mars {
 
       // the following functions are going to be deprecated in the coming releases of MARS
       void changeStepSize(void) __attribute__ ((deprecated("use updateStepSize")));
-      void setJointAsMotor(unsigned char axis_index) __attribute__ ((deprecated("use attachMotor")));
-      void unsetJointAsMotor(unsigned char axis_index) __attribute__ ((deprecated("use detachMotor")));
+      void setJointAsMotor(int axis) __attribute__ ((deprecated("use attachMotor")));
+      void unsetJointAsMotor(int axis) __attribute__ ((deprecated("use detachMotor")));
       unsigned long getNodeIndex1(void) const __attribute__ ((deprecated("use getNodeId")));
       unsigned long getNodeIndex2(void) const __attribute__ ((deprecated("use getNodeId")));
       void setInterface(interfaces::JointInterface *physical_joint) __attribute__ ((deprecated("use setPhysicalJoint")));
@@ -187,6 +188,8 @@ namespace mars {
       const utils::Vector getAxis1(void) const __attribute__ ((deprecated("use getAxis")));
       const utils::Vector getAxis2(void) const __attribute__ ((deprecated("use getAxis")));
       void reattacheJoint(void) __attribute__ ((deprecated("use reattachJoint")));
+      const utils::Vector getAxis1Torque(void) const __attribute__ ((deprecated("use getTorqueAroundAxis")));
+      const utils::Vector getAxis2Torque(void) const __attribute__ ((deprecated("use getTorqueAroundAxis")));
 
     private:
       interfaces::ControlCenter *control;

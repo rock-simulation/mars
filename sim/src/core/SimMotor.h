@@ -61,13 +61,13 @@ namespace mars {
                const interfaces::MotorData &sMotor);
       ~SimMotor(void);
 
-      void init(const std::string& name = "", MotorType type = MOTOR_TYPE_UNDEFINED);
+      void init(const std::string& name = "", interfaces::MotorType type = interfaces::MOTOR_TYPE_UNDEFINED);
 
       // function methods
 
       void update(interfaces::sReal time_ms);
       void updateController();
-      void control(interfaces::sReal time);
+      void runController(interfaces::sReal time);
       void activate(void);
       void deactivate(void);
       void attachJoint(SimJoint *joint);
@@ -77,6 +77,8 @@ namespace mars {
       // the following two functions might be simple getters or carry out calculations
       interfaces::sReal getMomentaryMaxEffort() const;
       interfaces::sReal getMomentaryMaxSpeed() const;
+      void refreshPosition();
+      void refreshPositions();
 
       // getters
       int getAxis() const;
@@ -97,7 +99,6 @@ namespace mars {
       interfaces::sReal getPosition() const;
       const interfaces::MotorData getSMotor(void) const;
       interfaces::sReal getSpeed() const;
-      interfaces::sReal getTorque(void) const;
       interfaces::sReal getValue(void) const;
       interfaces::sReal getP() const;
       interfaces::sReal getI() const;
@@ -112,15 +113,14 @@ namespace mars {
       void setName(const std::string &newname);
       void setSMotor(const interfaces::MotorData &sMotor);
       void setValue(interfaces::sReal value);
-      void setType(int type);
-      void setValue(interfaces::sReal value);
+      void setType(interfaces::MotorType mtype);
       void setP(interfaces::sReal p);
       void setI(interfaces::sReal i);
       void setD(interfaces::sReal d);
       void setPID(interfaces::sReal mP, interfaces::sReal mI, interfaces::sReal mD);
       void setValueDesiredVelocity(interfaces::sReal value)
       {
-        desired_velocity = value;
+        desired_speed = value;
       }
 
       // methods inherited from data broker interfaces
@@ -137,18 +137,19 @@ namespace mars {
 
       // methods to be deprecated in future MARS versions
 
-      sReal getMotorMaxForce() const __attribute__ ((deprecated("use getMaxEffort")));
-      sReal getMaximumVelocity() const __attribute__ ((deprecated("use getMaxSpeed")));
+      interfaces::sReal getMotorMaxForce() const __attribute__ ((deprecated("use getMaxEffort")));
+      interfaces::sReal getMaximumVelocity() const __attribute__ ((deprecated("use getMaxSpeed")));
       interfaces::sReal getTorque(void) const __attribute__ ((deprecated("use getEffort")));
-      sReal getVelocity() const __attribute__ ((deprecated("use getSpeed")));
-      sReal getActualAngle() const __attribute__ ((deprecated("use getPosition")));
-      sReal getDesiredMotorAngle() const __attribute__ ((deprecated("use getDesiredPosition")));
+      interfaces::sReal getVelocity() const __attribute__ ((deprecated("use getSpeed")));
+      interfaces::sReal getActualAngle() const __attribute__ ((deprecated("use getPosition")));
+      interfaces::sReal getDesiredMotorAngle() const __attribute__ ((deprecated("use getDesiredPosition")));
       void setActualAngle(interfaces::sReal angle) __attribute__ ((deprecated("use setCurrentPosition")));
       void setDesiredMotorAngle(interfaces::sReal angle) __attribute__ ((deprecated("use setDesiredPosition")));
       void setDesiredMotorVelocity(interfaces::sReal vel) __attribute__ ((deprecated("use setDesiredSpeed")));
       void setMotorMaxForce(interfaces::sReal force) __attribute__ ((deprecated("use setMaxEffort")));
       void setVelocity(interfaces::sReal v) __attribute__ ((deprecated("use setSpeed")));
       void setMaximumVelocity(interfaces::sReal value) __attribute__ ((deprecated("use getMaxSpeed")));
+      void refreshAngle() __attribute__ ((deprecated("use refreshPosition(s)")));
 
     private:
       // we need this typedef to generically interact with the attached joint
@@ -161,6 +162,7 @@ namespace mars {
       interfaces::MotorData sMotor;
       interfaces::sReal time;
       interfaces::sReal speed, position1, position2, effort, current, temperature;
+      interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
 
       // controller part
@@ -172,6 +174,7 @@ namespace mars {
       interfaces::sReal last_error;
       interfaces::sReal integ_error;
       interfaces::sReal joint_velocity;
+      interfaces::sReal vel, er;
 
       // these variables were not used any more
       // interfaces::sReal i_current, last_current, last_velocity, pwm;
@@ -181,12 +184,20 @@ namespace mars {
       interfaces::sReal kXY, kX, kY, k;
 
       // temperature estimation
+      //FIXME: add voltage & ambientTemperature to sMotor and read from ConfigMap
       void initTemperatureEstimation();
+      interfaces::sReal voltage;
+      interfaces::sReal ambientTemperature; // not all motors are exposed to a general outside temperature
+      interfaces::sReal heatlossCoefficient;
+      interfaces::sReal heatCapacity;
+      interfaces::sReal heatTransferCoefficient;
+      interfaces::sReal calcHeatDissipation() const;
+      interfaces::sReal calcHeatProduction() const;
 
       // for dataBroker communication
       data_broker::DataPackage dbPackage;
       unsigned long dbPushId;
-      long dbIdIndex, dbValueIndex, dbPositionIndex, dbCurrentIndex, dbTorqueIndex;
+      long dbIdIndex, dbValueIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex;
     };
 
   } // end of namespace sim

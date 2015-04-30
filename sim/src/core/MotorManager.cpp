@@ -430,7 +430,7 @@ namespace mars {
       map<unsigned long, SimMotor*>::const_iterator iter;
       iter = simMotors.find(motorId);
       if (iter != simMotors.end())
-        return iter->second->getActualPosition();
+        return iter->second->getPosition();
       return 0.;
     }
 
@@ -439,7 +439,7 @@ namespace mars {
       map<unsigned long, SimMotor*>::const_iterator iter;
       iter = simMotors.find(motorId);
       if (iter != simMotors.end())
-        return iter->second->getTorque();
+        return iter->second->getEffort();
       return 0.;
     }
 
@@ -448,7 +448,7 @@ namespace mars {
       map<unsigned long, SimMotor*>::const_iterator iter;
       iter = simMotors.find(id);
       if (iter != simMotors.end())
-        iter->second->setMotorMaxForce(maxTorque);
+        iter->second->setMaxEffort(maxTorque);
     }
 
     void MotorManager::setMaxSpeed(unsigned long id, sReal maxSpeed) {

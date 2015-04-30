@@ -67,55 +67,33 @@ namespace mars {
       if(physical_joint) delete physical_joint;
     }
 
-    void SimJoint::setupDataPackageMapping() {
-      dbPackageMapping.clear();
-      dbPackageMapping.add("id", &id);
+    void SimJoint::reattachJoint(void) {
+      Vector pos;
 
-      dbPackageMapping.add("axis1/x", &axis1.x());
-      dbPackageMapping.add("axis1/y", &axis1.y());
-      dbPackageMapping.add("axis1/z", &axis1.z());
-      dbPackageMapping.add("axis1/angle", &position1);
-      dbPackageMapping.add("axis1/speed", &speed1);
-      dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
-      dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
-      dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
+      sJoint.angle1_offset = position1;
+      sJoint.angle2_offset = position2;
+      if(sJoint.anchorPos == ANCHOR_NODE1) {
+        pos = snode1->getPosition();
+        setAnchor(pos);
+      }
+      else if(sJoint.anchorPos == ANCHOR_NODE2) {
+        pos = snode2->getPosition();
+        setAnchor(pos);
+      }
+      else if(sJoint.anchorPos == ANCHOR_CENTER) {
+        pos = (snode1->getPosition() + snode2->getPosition()) / 2.;
+        setAnchor(pos);
+      }
+      else if(physical_joint) {
+        physical_joint->reattacheJoint();
+        physical_joint->getAnchor(&sJoint.anchor);
+      }
 
-      dbPackageMapping.add("axis2/x", &axis2.x());
-      dbPackageMapping.add("axis2/y", &axis2.y());
-      dbPackageMapping.add("axis2/z", &axis2.z());
-      dbPackageMapping.add("axis2/angle", &position2);
-      dbPackageMapping.add("axis2/speed", &speed2);
-      dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
-      dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
-      dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
+      sJoint.axis1 = snode1->getRotation()*axis1InNode1;
+      if(physical_joint) physical_joint->setAxis(sJoint.axis1);
 
-      dbPackageMapping.add("force1/x", &f1.x());
-      dbPackageMapping.add("force1/y", &f1.y());
-      dbPackageMapping.add("force1/z", &f1.z());
-      dbPackageMapping.add("torque1/x", &t1.x());
-      dbPackageMapping.add("torque1/y", &t1.y());
-      dbPackageMapping.add("torque1/z", &t1.z());
-
-      dbPackageMapping.add("force2/x", &f2.x());
-      dbPackageMapping.add("force2/y", &f2.y());
-      dbPackageMapping.add("force2/z", &f2.z());
-      dbPackageMapping.add("torque2/x", &t2.x());
-      dbPackageMapping.add("torque2/y", &t2.y());
-      dbPackageMapping.add("torque2/z", &t2.z());
-
-      dbPackageMapping.add("anchor/x", &anchor.x());
-      dbPackageMapping.add("anchor/y", &anchor.y());
-      dbPackageMapping.add("anchor/z", &anchor.z());
-      dbPackageMapping.add("jointLoad/x", &joint_load.x());
-      dbPackageMapping.add("jointLoad/y", &joint_load.y());
-      dbPackageMapping.add("jointLoad/z", &joint_load.z());
-      dbPackageMapping.add("motorTorque", &motor_torque);
-    }
-
-    void SimJoint::produceData(const data_broker::DataInfo &info,
-                               data_broker::DataPackage *dbPackage,
-                               int callbackParam) {
-      dbPackageMapping.writePackage(dbPackage);
+      node1ToAnchor = sJoint.anchor - snode1->getPosition();
+      node1ToAnchor = snode1->getRotation().inverse()*node1ToAnchor;
     }
 
     void SimJoint::setAttachedNodes(SimNode* node1, SimNode* node2){
@@ -127,7 +105,7 @@ namespace mars {
       axis1InNode1 = inverseQNode1*sJoint.axis1;
     }
 
-    SimNode* getAttachedNode(unsigned char axis_index=0) const {
+    SimNode* SimJoint::getAttachedNode(unsigned char axis_index) const {
       if (axis_index == 0) {
         return snode1;
       }
@@ -165,7 +143,7 @@ namespace mars {
       return anchor;
     }
 
-    void SimJoint::rotateAxis(const utils::Quaternion &rotate, unsigned char axis_index=0) {
+    void SimJoint::rotateAxis(const utils::Quaternion &rotate, unsigned char axis_index) {
       //sJoint.axis1 = QVRotate(rotate, sJoint.axis1);
       if (axis_index == 0) {
       sJoint.axis1 = (rotate * sJoint.axis1);
@@ -183,7 +161,7 @@ namespace mars {
       rotateAxis(rotate, 0);
     }
 
-    const utils::Vector getAxis(unsigned char axis_index=0) const {
+    const utils::Vector SimJoint::getAxis(unsigned char axis_index) const {
       return axis_index == 0 ? axis1 : axis2;
     }
 
@@ -195,7 +173,7 @@ namespace mars {
       return getAxis(1);
     }
 
-    void SimJoint::setAxis(const Vector &axis, unsigned char axis_index=0) {
+    void SimJoint::setAxis(const Vector &axis, unsigned char axis_index) {
       if (axis_index == 0) {
         sJoint.axis1 = axis1 = axis;
         axis1InNode1 = snode1->getRotation().inverse()*sJoint.axis1;
@@ -211,11 +189,11 @@ namespace mars {
     }
 
     void SimJoint::setAxis1(const Vector &axis) {
-      setAxis(0);
+      setAxis(axis, 0);
     }
 
     void SimJoint::setAxis2(const Vector &axis) {
-      setAxis(0);
+      setAxis(axis, 0);
     }
 
     void SimJoint::setId(unsigned long i) {
@@ -226,7 +204,7 @@ namespace mars {
       return sJoint.index;
     }
 
-    sReal SimJoint::getPosition(unsigned char axis_index=0) const {
+    sReal SimJoint::getPosition(unsigned char axis_index) const {
         return axis_index == 0 ? position1 : position2;
       }
 
@@ -309,7 +287,7 @@ namespace mars {
       return tmp;
     }
 
-    void setPhysicalJoint(interfaces::JointInterface *physical_joint) {
+    void SimJoint::setPhysicalJoint(interfaces::JointInterface *physical_joint) {
       this->physical_joint = physical_joint;
     }
 
@@ -317,7 +295,7 @@ namespace mars {
       setPhysicalJoint(physical_joint);
     }
 
-    void setEffortLimit(interfaces::sReal effort, unsigned char axis_index=0) {
+    void SimJoint::setEffortLimit(interfaces::sReal effort, unsigned char axis_index) {
       if (axis_index == 0) {
         physical_joint->setForceLimit(effort);
       }
@@ -334,23 +312,23 @@ namespace mars {
       setEffortLimit(force, 1);
     }
 
-    void setSpeed(interfaces::sReal speed, unsigned char axis_index=0) {
+    void SimJoint::setSpeed(interfaces::sReal speed, unsigned char axis_index) {
       if (axis_index == 0) {
-        physical_joint->setVelocity(velocity*invert);
+        physical_joint->setVelocity(speed*invert);
       } else {
-        physical_joint->setVelocity2(velocity*invert);
+        physical_joint->setVelocity2(speed*invert);
       }
     }
 
-    void SimJoint::setVelocity(sReal velocity) { // deprecated
-      setSpeed(velocity, 0);
+    void SimJoint::setVelocity(sReal speed) { // deprecated
+      setSpeed(speed, 0);
     }
 
-    void SimJoint::setVelocity2(sReal velocity) { // deprecated
-      setSpeed(velocity, 1);
+    void SimJoint::setVelocity2(sReal speed) { // deprecated
+      setSpeed(speed, 1);
     }
 
-    interfaces::sReal SimJoint::getSpeed(unsigned char axis_index=0) const {
+    interfaces::sReal SimJoint::getSpeed(unsigned char axis_index) const {
       return axis_index == 0 ? speed1 : speed2;
     }
 
@@ -362,7 +340,7 @@ namespace mars {
       return speed2;
     }
 
-    void setTorque(interfaces::sReal torque, unsigned char axis_index=0) {
+    void SimJoint::setEffort(interfaces::sReal torque, unsigned char axis_index) {
       if (axis_index == 0) {
         physical_joint->setTorque(torque*invert);
       } else {
@@ -378,20 +356,20 @@ namespace mars {
       setEffort(torque, 1);
     }
 
-    void attachMotor(unsigned char axis_index) {
+    void SimJoint::attachMotor(unsigned char axis_index) {
       physical_joint->setJointAsMotor(axis_index);
     }
 
-    void detachMotor(unsigned char axis_index) {
+    void SimJoint::detachMotor(unsigned char axis_index) {
       physical_joint->unsetJointAsMotor(axis_index);
     }
 
     void SimJoint::setJointAsMotor(int axis) { // deprecated
-      attachMotor(axis);
+      attachMotor((unsigned char) axis);
     }
 
     void SimJoint::unsetJointAsMotor(int axis) { // deprecated
-      detachMotor(axis);
+      detachMotor((unsigned char) axis);
     }
 
     void SimJoint::getCoreExchange(core_objects_exchange *obj) const {
@@ -402,7 +380,7 @@ namespace mars {
       obj->rot = angleAxisToQuaternion(position1*invert, axis1);
     }
 
-    const utils::Vector SimJoint::getForceVector(unsigned char axis_index=0) const {
+    const utils::Vector SimJoint::getForceVector(unsigned char axis_index) const {
       return axis_index == 0 ? f1 : f2;
     }
 
@@ -414,7 +392,7 @@ namespace mars {
       return getForceVector(1);
     }
 
-    const utils::Vector getTorqueVector(unsigned char axis_index=0) const {
+    const Vector SimJoint::getTorqueVector(unsigned char axis_index) const {
       return axis_index == 0 ? t1 : t2;
     }
 
@@ -430,48 +408,23 @@ namespace mars {
       reattachJoint();
     }
 
-    void SimJoint::reattachJoint(void) {
-      Vector pos;
-
-      sJoint.angle1_offset = position1;
-      sJoint.angle2_offset = position2;
-      if(sJoint.anchorPos == ANCHOR_NODE1) {
-        pos = snode1->getPosition();
-        setAnchor(pos);
-      }
-      else if(sJoint.anchorPos == ANCHOR_NODE2) {
-        pos = snode2->getPosition();
-        setAnchor(pos);
-      }
-      else if(sJoint.anchorPos == ANCHOR_CENTER) {
-        pos = (snode1->getPosition() + snode2->getPosition()) / 2.;
-        setAnchor(pos);
-      }
-      else if(physical_joint) {
-        physical_joint->reattacheJoint();
-        physical_joint->getAnchor(&sJoint.anchor);
-      }
-
-      sJoint.axis1 = snode1->getRotation()*axis1InNode1;
-      if(physical_joint) physical_joint->setAxis(sJoint.axis1);
-
-      node1ToAnchor = sJoint.anchor - snode1->getPosition();
-      node1ToAnchor = snode1->getRotation().inverse()*node1ToAnchor;
+    const Vector SimJoint::getTorqueVectorAroundAxis(unsigned char axis_index) const {
+      return axis_index == 0 ? axis1_torque : axis2_torque;
     }
 
     const Vector SimJoint::getAxis1Torque(void) const {
-      return axis1_torque;
+      return getTorqueVectorAroundAxis(0);
     }
 
     const Vector SimJoint::getAxis2Torque(void) const {
-      return axis2_torque;
+      return getTorqueVectorAroundAxis(1);
     }
 
     const Vector SimJoint::getJointLoad(void) const {
       return joint_load;
     }
 
-    interfaces::NodeId getNodeId(unsigned char node_index=0) const {
+    NodeId SimJoint::getNodeId(unsigned char node_index) const {
       return node_index == 0 ? sJoint.nodeIndex1 : sJoint.nodeIndex2;
     }
 
@@ -541,11 +494,11 @@ namespace mars {
       }
     }
 
-    interfaces::sReal SimJoint::getLowerLimit(unsigned char axis_index=0) const {
+    sReal SimJoint::getLowerLimit(unsigned char axis_index) const {
       return axis_index == 0 ? lowerLimit1 : lowerLimit2;
     }
 
-    interfaces::sReal SimJoint::getUpperLimit(unsigned char axis_index=0) const {
+    sReal SimJoint::getUpperLimit(unsigned char axis_index) const {
       return axis_index == 0 ? upperLimit1 : upperLimit2;
     }
 
@@ -565,7 +518,7 @@ namespace mars {
       return getUpperLimit(1);
     }
 
-    void SimJoint::setLowerLimit(sReal limit, unsigned char axis_index=0) {
+    void SimJoint::setLowerLimit(sReal limit, unsigned char axis_index) {
       if (axis_index == 0) {
         this->lowerLimit1 = limit;
         physical_joint->setLowStop(-lowerLimit1*invert);
@@ -575,12 +528,12 @@ namespace mars {
       }
     }
 
-    void SimJoint::setUpperLimit(sReal limit, unsigned char axis_index=0) {
+    void SimJoint::setUpperLimit(sReal limit, unsigned char axis_index) {
       if (axis_index == 0) {
         this->upperLimit1 = limit;
         physical_joint->setLowStop(-upperLimit1*invert);
       } else {
-        this->uppererLimit2 = limit;
+        this->upperLimit2 = limit;
         physical_joint->setLowStop(upperLimit2*invert);
       }
     }
@@ -602,6 +555,59 @@ namespace mars {
     void SimJoint::setHighStop2(sReal highStop2) { // deprecated
       this->upperLimit2 = highStop2;
       physical_joint->setHighStop2(highStop2*invert);
+    }
+
+    // for dataBroker communication
+
+    void SimJoint::produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *dbPackage,
+                               int callbackParam) {
+      dbPackageMapping.writePackage(dbPackage);
+    }
+
+    void SimJoint::setupDataPackageMapping() {
+      dbPackageMapping.clear();
+      dbPackageMapping.add("id", &id);
+
+      dbPackageMapping.add("axis1/x", &axis1.x());
+      dbPackageMapping.add("axis1/y", &axis1.y());
+      dbPackageMapping.add("axis1/z", &axis1.z());
+      dbPackageMapping.add("axis1/angle", &position1);
+      dbPackageMapping.add("axis1/speed", &speed1);
+      dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
+      dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
+      dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
+
+      dbPackageMapping.add("axis2/x", &axis2.x());
+      dbPackageMapping.add("axis2/y", &axis2.y());
+      dbPackageMapping.add("axis2/z", &axis2.z());
+      dbPackageMapping.add("axis2/angle", &position2);
+      dbPackageMapping.add("axis2/speed", &speed2);
+      dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
+      dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
+      dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
+
+      dbPackageMapping.add("force1/x", &f1.x());
+      dbPackageMapping.add("force1/y", &f1.y());
+      dbPackageMapping.add("force1/z", &f1.z());
+      dbPackageMapping.add("torque1/x", &t1.x());
+      dbPackageMapping.add("torque1/y", &t1.y());
+      dbPackageMapping.add("torque1/z", &t1.z());
+
+      dbPackageMapping.add("force2/x", &f2.x());
+      dbPackageMapping.add("force2/y", &f2.y());
+      dbPackageMapping.add("force2/z", &f2.z());
+      dbPackageMapping.add("torque2/x", &t2.x());
+      dbPackageMapping.add("torque2/y", &t2.y());
+      dbPackageMapping.add("torque2/z", &t2.z());
+
+      dbPackageMapping.add("anchor/x", &anchor.x());
+      dbPackageMapping.add("anchor/y", &anchor.y());
+      dbPackageMapping.add("anchor/z", &anchor.z());
+      dbPackageMapping.add("jointLoad/x", &joint_load.x());
+      dbPackageMapping.add("jointLoad/y", &joint_load.y());
+      dbPackageMapping.add("jointLoad/z", &joint_load.z());
+      dbPackageMapping.add("motorTorque", &motor_torque);
     }
 
 

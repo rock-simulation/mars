@@ -182,7 +182,11 @@ namespace mars {
        */
       void add(const std::string &itemName, int val);
       /// \copydoc add(const std::string&, int)
+      void add(const std::string &itemName, unsigned int val);
+      /// \copydoc add(const std::string&, int)
       void add(const std::string &itemName, long val);
+      /// \copydoc add(const std::string&, int)
+      void add(const std::string &itemName, unsigned long val);
       /// \copydoc add(const std::string&, int)
       void add(const std::string &itemName, float val);
       /// \copydoc add(const std::string&, int)
