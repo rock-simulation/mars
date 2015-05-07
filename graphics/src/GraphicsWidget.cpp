@@ -1179,8 +1179,8 @@ namespace mars {
       if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
 
-      if(graphicsEventHandler.size() > 0) {
-        graphicsEventHandler[0]->emitGeometryChange(widgetID,
+      for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
+        graphicsEventHandler[i]->emitGeometryChange(widgetID,
                                                     widgetX, widgetY,
                                                     widgetWidth, widgetHeight);
       }
