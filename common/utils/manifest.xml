@@ -2,6 +2,7 @@
     <description brief="mars_utils">
 	This Library contains several useful utilities like a Mutex and Thread class.
     </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="eigen3" />
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />

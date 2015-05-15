@@ -24,6 +24,29 @@
 
 #include <pthread.h>
 
+#ifdef WIN32
+
+  #ifdef pthread_cleanup_push
+    #undef pthread_cleanup_push
+  #endif
+
+  #define pthread_cleanup_push(F, A)\
+  {\
+      const _pthread_cleanup _pthread_cup = {(F), (A), *pthread_getclean()};\
+      __sync_synchronize();\
+      *pthread_getclean() = (_pthread_cleanup *) &_pthread_cup;\
+      __sync_synchronize()
+
+  #ifdef pthread_cleanup_pop
+    #undef pthread_cleanup_pop
+  #endif
+  
+  /* Note that if async cancelling is used, then there is a race here */
+  #define pthread_cleanup_pop(E)\
+      (*pthread_getclean() = _pthread_cup.next, (E?_pthread_cup.func((pthread_once_t *)_pthread_cup.arg):void()));}
+
+#endif // WIN32
+    
 namespace mars {
   namespace utils {
 

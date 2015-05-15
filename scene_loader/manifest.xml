@@ -3,6 +3,7 @@
        Plugin to load and save MARS scene files.
     </description>
 
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/utils" />

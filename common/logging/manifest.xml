@@ -2,6 +2,7 @@
     <description brief="mars_logging">
         This library provides the logging functionality for mars. Either the mars logging (standalone) or the rock logging is used. 
     </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="base/types" />
     <tags>needs_opt</tags>
 </package>
