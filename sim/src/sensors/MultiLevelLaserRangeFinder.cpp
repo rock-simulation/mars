@@ -145,8 +145,9 @@ MultiLevelLaserRangeFinder::MultiLevelLaserRangeFinder(ControlCenter *control, M
 }
 
 MultiLevelLaserRangeFinder::~MultiLevelLaserRangeFinder(void) {
+  if(control->graphics)
     control->graphics->removeDrawItems((DrawInterface*)this);
-    control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+  control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
 }
 
 void MultiLevelLaserRangeFinder::preGraphicsUpdate(void )

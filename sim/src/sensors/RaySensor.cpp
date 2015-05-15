@@ -128,7 +128,8 @@ namespace mars {
     }
 
     RaySensor::~RaySensor(void) {
-      control->graphics->removeDrawItems((DrawInterface*)this);
+      if(control->graphics)
+        control->graphics->removeDrawItems((DrawInterface*)this);
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
                                                    "mars_sim/simTimer");
     }
