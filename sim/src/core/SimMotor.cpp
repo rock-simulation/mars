@@ -239,7 +239,7 @@ namespace mars {
         (myJoint->*setJointControlParameter)(*controlParameter, axis);
 
         estimateCurrent();
-        estimateTemperature();
+        estimateTemperature(time_ms);
 
         if(vel > getMomentaryMaxSpeed())
           vel = getMomentaryMaxSpeed();
@@ -270,8 +270,8 @@ namespace mars {
 
 
 
-    void SimMotor::estimateTemperature() {
-      temperature = temperature - calcHeatDissipation() + calcHeatProduction();
+    void SimMotor::estimateTemperature(sReal time_ms) {
+      temperature = temperature - calcHeatDissipation(time_ms) + calcHeatProduction(time_ms);
     }
 
     /*
@@ -283,7 +283,7 @@ namespace mars {
      * and Ta the ambient temperature. Since k, A and d are all constant
      * in our case, heatTransferCoefficient = k*A/d and thus:
      */
-    sReal SimMotor::calcHeatDissipation() const {
+    sReal SimMotor::calcHeatDissipation(sReal time_ms) const {
       return (heatTransferCoefficient * (temperature - ambientTemperature))*time_ms/1000.0;
     }
 
@@ -292,7 +292,7 @@ namespace mars {
      * heatlossCoefficient would be the fraction of the energy the motor gets from the
      * power supply which gets transformed into heat energy.
      */
-    sReal SimMotor::calcHeatProduction() const {
+    sReal SimMotor::calcHeatProduction(sReal time_ms) const {
       return (current * voltage * heatlossCoefficient)*time_ms/1000.0;
     }
 

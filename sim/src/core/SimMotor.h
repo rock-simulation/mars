@@ -73,7 +73,7 @@ namespace mars {
       void attachJoint(SimJoint *joint);
       void attachPlayJoint(SimJoint *joint);
       void estimateCurrent();
-      void estimateTemperature();
+      void estimateTemperature(interfaces::sReal time_ms);
       // the following two functions might be simple getters or carry out calculations
       interfaces::sReal getMomentaryMaxEffort() const;
       interfaces::sReal getMomentaryMaxSpeed() const;
@@ -191,8 +191,8 @@ namespace mars {
       interfaces::sReal heatlossCoefficient;
       interfaces::sReal heatCapacity;
       interfaces::sReal heatTransferCoefficient;
-      interfaces::sReal calcHeatDissipation() const;
-      interfaces::sReal calcHeatProduction() const;
+      interfaces::sReal calcHeatDissipation(interfaces::sReal time_ms) const;
+      interfaces::sReal calcHeatProduction(interfaces::sReal time_ms) const;
 
       // for dataBroker communication
       data_broker::DataPackage dbPackage;
