@@ -31,7 +31,7 @@ namespace mars {
       clear();
     }
 
-    // we need theses because the std::string in the nameLookup map 
+    // we need theses because the std::string in the nameLookup map
     // needs to be deep-copied to be thread safe.
     DataPackage::DataPackage(const DataPackage &other) {
       *this = other;
@@ -112,10 +112,26 @@ namespace mars {
       add(item);
     }
 
+    void DataPackage::add(const std::string &itemName, unsigned int val) {
+      DataItem item;
+      item.setName(itemName);
+      item.type = UINT_TYPE;
+      item.i = val;
+      add(item);
+    }
+
     void DataPackage::add(const std::string &itemName, long val) {
       DataItem item;
       item.setName(itemName);
       item.type = LONG_TYPE;
+      item.l = val;
+      add(item);
+    }
+
+    void DataPackage::add(const std::string &itemName, unsigned long val) {
+      DataItem item;
+      item.setName(itemName);
+      item.type = ULONG_TYPE;
       item.l = val;
       add(item);
     }
