@@ -44,7 +44,7 @@ namespace mars {
 
     /**
      * Each SimMotor object publishes its state on the dataBroker.
-     * The name under which the data is published can be obtained from the 
+     * The name under which the data is published can be obtained from the
      * motorId via MotorManager::getDataBrokerNames.
      * The data_broker::DataPackage will contain the following items:
      *  - "id" (long)
@@ -126,7 +126,7 @@ namespace mars {
       // methods inherited from data broker interfaces
 
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
-  
+
       virtual void produceData(const data_broker::DataInfo &info,
                                data_broker::DataPackage *package,
                                int callbackParam);

@@ -141,7 +141,7 @@ namespace mars {
           break;
       }
     }
-      
+
     void SimMotor::runController(sReal time) {
       // the following implements a simple PID controller using the value
       // pointed to by controlParameter
@@ -378,11 +378,11 @@ namespace mars {
     void SimMotor::setDesiredMotorAngle(sReal angle) { // deprecated
       setDesiredPosition(angle);
     }
-      
+
     void SimMotor::setDesiredPosition(sReal position) {
       desired_value = position;
       sMotor.value = position;
-    }      
+    }
 
     void SimMotor::setDesiredMotorVelocity(sReal vel) { // deprecated
       setDesiredSpeed(vel);
@@ -390,11 +390,11 @@ namespace mars {
 
     void SimMotor::setDesiredSpeed(sReal vel) {
       desired_speed = vel;
-    }      
+    }
 
     sReal SimMotor::getDesiredPosition() const {
       return desired_value;
-    }      
+    }
 
     sReal SimMotor::getDesiredMotorAngle() const { // deprecated
       return getDesiredPosition();
@@ -476,7 +476,7 @@ namespace mars {
 
     sReal SimMotor::getVelocity() const { // deprecated
       return getSpeed();
-    }      
+    }
 
     void SimMotor::setP(sReal p) {
       sMotor.p = p;
