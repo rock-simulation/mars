@@ -185,35 +185,6 @@ namespace mars {
       // D part of the motor
       vel += ((er - last_error)/time) * sMotor.d;
       last_error = er;
-
-//      switch (sMotor.type) {
-//
-//        break;
-//        case MOTOR_TYPE_DC:
-//          vel = speed;
-//          break;
-//        case MOTOR_TYPE_PID_FORCE:
-//          if(desired_value>2*M_PI) desired_value=0;
-//          else if(desired_value>M_PI) desired_value=-2*M_PI+desired_value;
-//          else if(desired_value<-2*M_PI) desired_value=0;
-//          else if(desired_value<-M_PI) desired_value=2*M_PI+desired_value;
-//
-//          er = desired_value - position;
-//          if(er > M_PI) er = -2*M_PI+er;
-//          else if(er < -M_PI) er = 2*M_PI+er;
-//          integ_error += er*time;
-//          // P part of the motor
-//          effort = er * sMotor.p;
-//          // I part of the motor
-//          effort += integ_error * sMotor.i;
-//          // D part of the motor
-//          effort += ((er - last_error)/time) * sMotor.d;
-//          last_error = er;
-//          if(effort > sMotor.maxEffort) effort = sMotor.maxEffort;
-//          else if(effort < -sMotor.maxEffort) effort = -sMotor.maxEffort;
-//          break;
-//        case MOTOR_TYPE_UNDEFINED:
-//          break;
     }
 
     void SimMotor::update(sReal time_ms) {
