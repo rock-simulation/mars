@@ -473,6 +473,10 @@ namespace mars {
     }
 
     void SimJoint::setOfflineValue(sReal value) {
+      setOfflinePosition(value);
+    }
+
+    void SimJoint::setOfflinePosition(sReal value) {
       if(snode2) {
         sReal tmp = value;
         value -= position1;
@@ -505,7 +509,7 @@ namespace mars {
     sReal SimJoint::getLowStop() const { // deprecated
       return getLowerLimit(0);
     }
-      
+
     sReal SimJoint::getHighStop() const { // deprecated
       return getLowerLimit(1);
     }

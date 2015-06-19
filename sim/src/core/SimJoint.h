@@ -136,7 +136,7 @@ namespace mars {
       void setEffortLimit(interfaces::sReal force, unsigned char axis_index=0);
       void setId(unsigned long i);
       void setJointType(interfaces::JointType type);
-      void setOfflineValue(interfaces::sReal value);
+      void setOfflinePosition(interfaces::sReal value);
       void setPhysicalJoint(interfaces::JointInterface *physical_joint);
       void setSDParams(interfaces::JointData *sJoint);
       void setSJoint(const interfaces::JointData &sJoint);
@@ -190,6 +190,7 @@ namespace mars {
       void reattacheJoint(void) __attribute__ ((deprecated("use reattachJoint")));
       const utils::Vector getAxis1Torque(void) const __attribute__ ((deprecated("use getTorqueAroundAxis")));
       const utils::Vector getAxis2Torque(void) const __attribute__ ((deprecated("use getTorqueAroundAxis")));
+      void setOfflineValue(interfaces::sReal value) __attribute__ ((deprecated("use setOfflinePosition")));
 
     private:
       interfaces::ControlCenter *control;
