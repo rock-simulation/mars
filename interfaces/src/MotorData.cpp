@@ -80,7 +80,8 @@ namespace mars {
       jointIndex = 0;
       jointIndex2 = 0;
       axis = 0;
-      value = 0;
+      minPosition = -M_PI;
+      maxPosition = M_PI;
       maxSpeed = 0;
       maxEffort = 0;
       maxAcceleration = 0;
@@ -88,8 +89,9 @@ namespace mars {
       p = 0;
       i = 0;
       d = 0;
-      maxValue = M_PI;
-      minValue = -M_PI;
+      maxPosition = M_PI;
+      minPosition = -M_PI;
+      value = 0;
     }
 
     bool MotorData::fromConfigMap(ConfigMap *config,
@@ -132,9 +134,9 @@ namespace mars {
       GET_VALUE("p", p, Double);
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
-      GET_VALUE("value", value, Double);
-      GET_VALUE("maxValue", maxValue, Double);
-      GET_VALUE("minValue", minValue, Double);
+      GET_VALUE("value", d, Double);
+      GET_VALUE("maxPosition", maxPosition, Double);
+      GET_VALUE("minPosition", minPosition, Double);
 
       return 1;
     }
@@ -156,9 +158,8 @@ namespace mars {
       SET_VALUE("p", p);
       SET_VALUE("i", i);
       SET_VALUE("d", d);
-      SET_VALUE("value", value);
-      SET_VALUE("maxValue", maxValue);
-      SET_VALUE("minValue", minValue);
+      SET_VALUE("maxPosition", maxPosition);
+      SET_VALUE("minPosition", minPosition);
     }
 
     void MotorData::getFilesToSave(std::vector<std::string> *fileList) {

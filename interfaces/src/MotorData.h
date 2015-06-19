@@ -41,7 +41,7 @@ namespace mars {
 
 //      MotorData& operator= (const MotorData& other);
 
-      /** 
+      /**
        * @brief initialize motor struct with zero values.
        *
        * mainly kept for compatibility with ZERO_MOTOR_STRUCT macro
@@ -58,16 +58,16 @@ namespace mars {
       unsigned long index; // index number of the motor
       unsigned long jointIndex, jointIndex2; // index of the joint the motor moves
       int axis; // index of the joints axis the motor moves
-      sReal value;
-      sReal maxSpeed; //maximum speed the motor can reach
+      sReal maxSpeed; // maximum speed the motor can reach
       sReal maxEffort; // maximum force/torque [F/Nm] the motor can apply
       sReal maxAcceleration; // maximum acceleration the motor can produce
       MotorType type; // motor type
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
-      sReal maxValue; // can be either position or velocity
-      sReal minValue; // can be either position or velocity
+      sReal value; // initial / current control parameter value
+      sReal maxPosition; // maximum position the motor can reach
+      sReal minPosition; // minimum position the motor can reach
       configmaps::ConfigMap config;
 
       static std::map<std::string, std::string> legacynames;
@@ -76,8 +76,8 @@ namespace mars {
         std::map<std::string, std::string> tmpmap;
         tmpmap["maxEffort"] = "motorMaxForce";
         tmpmap["maxSpeed"] = "maximumVelocity";
-        tmpmap["maxValue"] = "max_val";
-        tmpmap["minValue"] = "min_val";
+        tmpmap["maxPosition"] = "maxValue";
+        tmpmap["minPosition"] = "minValue";
         return tmpmap;
       }
     }; // end of class MotorData
