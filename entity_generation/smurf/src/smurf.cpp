@@ -196,9 +196,9 @@ namespace mars {
             addConfigMap(tmpconfig);
         }
       } else { // if type is "urdf"
-        std::string urdfpath = path + (std::string) entityconfig["URI"];
+        std::string urdfpath = path + filename;
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-        fprintf(stderr, "parsing model: %d", parseURDF(urdfpath));
+        fprintf(stderr, "parsing model...\n", parseURDF(urdfpath));
         entity = new sim::SimEntity(entityconfig);
         createModel();
       }
