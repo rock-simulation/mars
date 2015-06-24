@@ -57,6 +57,9 @@ namespace mars {
       current = 0;
       effort = 0;
       myJoint = 0;
+      mimic = false;
+      mimic_multiplier=1.0;
+      mimic_offset=0;
 
       myPlayJoint = 0;
       active = true;
@@ -106,6 +109,24 @@ namespace mars {
       }
       // if we have to delete something we can do it here
       if(myJoint) myJoint->detachMotor(sMotor.axis);
+    }
+
+    void SimMotor::addMimic(SimMotor* mimic) {
+      mimics[mimic->getName()] = mimic;
+    }
+
+    void SimMotor::removeMimic(std::string mimicname) {
+      mimics.erase(mimicname);
+    }
+
+    void SimMotor::clearMimics() {
+      mimics.clear();
+    }
+
+    void SimMotor::setMimic(sReal multiplier, sReal offset) {
+      mimic = true;
+      mimic_multiplier = multiplier;
+      mimic_offset = offset;
     }
 
     void SimMotor::updateController() {
@@ -183,6 +204,8 @@ namespace mars {
       // the following implements a simple PID controller using the value
       // pointed to by controlParameter
 
+      controlValue = mimic_multiplier * controlValue + mimic_offset;
+
       // limit to range of motion
       controlValue = std::max(sMotor.minPosition,
         std::min(controlValue, sMotor.maxPosition));
@@ -254,6 +277,12 @@ namespace mars {
         effort = std::max(-(getMomentaryMaxEffort()),
           std::min(effort, getMomentaryMaxEffort()));
 
+        for(std::map<std::string, SimMotor*>::iterator it = mimics.begin();
+          it != mimics.end(); ++it) {
+            it->second->setControlValue(controlValue);
+          }
+
+
         // estimate motor parameters based on achieved status
         estimateCurrent();
         estimateTemperature(time_ms);
@@ -261,6 +290,8 @@ namespace mars {
         // pass speed (position/speed control) or torque to the attached
         // joint's setSpeed1/2 or setTorque1/2 methods
         (myJoint->*setJointControlParameter)(*controlParameter, axis);
+        //for mimic in myJoint->mimics:
+        //  mimic->*setJointControlParameter)(mimic_multiplier*controlParameter, axis);
       }
     }
 

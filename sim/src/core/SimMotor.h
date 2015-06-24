@@ -81,6 +81,9 @@ namespace mars {
       void runPositionController(interfaces::sReal time_ms);
       void runSpeedController(interfaces::sReal time_ms);
       void runEffortController(interfaces::sReal time_ms);
+      void addMimic(SimMotor* mimic);
+      void removeMimic(std::string mimicname);
+      void clearMimics();
 
       // getters
       int getAxis() const;
@@ -117,6 +120,7 @@ namespace mars {
       void setD(interfaces::sReal d);
       void setPID(interfaces::sReal mP, interfaces::sReal mI, interfaces::sReal mD);
       void setControlValue(interfaces::sReal value);
+      void setMimic(interfaces::sReal multiplier, interfaces::sReal offset);
 
       // methods inherited from data broker interfaces
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
@@ -160,6 +164,10 @@ namespace mars {
       interfaces::sReal speed, position1, position2, effort, current, temperature;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
+      std::map<std::string, SimMotor*> mimics;
+      bool mimic;
+      interfaces::sReal mimic_multiplier;
+      interfaces::sReal mimic_offset;
 
       // controller part
       interfaces::sReal controlValue;

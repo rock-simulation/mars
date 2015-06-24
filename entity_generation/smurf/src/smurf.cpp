@@ -34,6 +34,7 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/sim/SimEntity.h>
+#include <mars/sim/SimMotor.h>
 #include <mars/entity_generation/entity_factory/EntityFactoryManager.h>
 #include <mars/interfaces/Logging.hpp>
 
@@ -967,6 +968,10 @@ namespace mars {
         if (!loadMotor(motorList[i]))
           return 0;
 
+      for (std::map<unsigned long, std::string>::iterator it = mimicmotors.begin();
+        it != mimicmotors.end(); ++it)
+          loadMimic(it->first, it->second);
+
       for (unsigned int i = 0; i < sensorList.size(); ++i)
         if (!loadSensor(sensorList[i]))
           return 0;
@@ -1154,7 +1159,25 @@ namespace mars {
       if (robotname != "") {
         control->entities->addMotor(robotname, motor.index, motor.name);
       }
+
+      // set motor mimics
+      if (config.find("mimic_motor") != config.end()) {
+        mimicmotors[newId] = (std::string)config["mimic_motor"];
+        (control->motors->getSimMotor(newId))->setMimic(
+          (sReal)config["mimic_multiplier"], (sReal)config["mimic_offset"]);
+      }
+
       return true;
+    }
+
+    void SMURF::loadMimic(unsigned long mimicId, std::string parent_name) {
+      sim::SimMotor* parentmotor =
+        control->motors->getSimMotorByName(parent_name);
+      if (parentmotor != NULL)
+        fprintf(stderr, ", %s\n", parentmotor->getName().c_str());
+      else
+        fprintf(stderr, "no parentmotor found\n");
+      parentmotor->addMimic(control->motors->getSimMotor(mimicId));
     }
 
     BaseSensor* SMURF::loadSensor(ConfigMap config) {
