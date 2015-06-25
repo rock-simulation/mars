@@ -30,15 +30,17 @@
 
 
 namespace mars {
-
   namespace app {
-
+  	  mars::app::MyApp* app;
   } // end of namespace app
 } // end of namespace mars
 
+mars::app::MyApp *app=NULL;
 
 void qtExitHandler(int sig) {
-  qApp->quit();
+	if (app){
+		app->quit();
+	}
   mars::app::exit_main(sig);
 }
 
@@ -73,7 +75,7 @@ int main(int argc, char *argv[]) {
 
   // first setup qapp
   //QApplication *app = new QApplication(argc, argv);
-  mars::app::MyApp *app=NULL;
+
   if(simulation->needQApp) {
     mars::app::MyApp *app = new mars::app::MyApp(argc, argv);
     //app->setStyle(new QPlastiqueStyle);
