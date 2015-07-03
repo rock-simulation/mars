@@ -31,6 +31,7 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/interfaces/MotorData.h>
+#include <mars/utils/mathUtils.h>
 
 #include <iostream>
 
@@ -74,8 +75,8 @@ namespace mars {
       void estimateCurrent();
       void estimateTemperature(interfaces::sReal time_ms);
       // the following two functions might be simple getters or carry out calculations
-      interfaces::sReal getMomentaryMaxEffort() const;
-      interfaces::sReal getMomentaryMaxSpeed() const;
+      interfaces::sReal getMomentaryMaxEffort();
+      interfaces::sReal getMomentaryMaxSpeed();
       void refreshPosition();
       void refreshPositions();
       void runPositionController(interfaces::sReal time_ms);
@@ -84,6 +85,8 @@ namespace mars {
       void addMimic(SimMotor* mimic);
       void removeMimic(std::string mimicname);
       void clearMimics();
+      void setMaxEffortApproximation(utils::ApproximationFunction type, std::vector<double>* coefficients);
+      void setMaxSpeedApproximation(utils::ApproximationFunction type, std::vector<double>* coefficients);
 
       // getters
       int getAxis() const;
@@ -154,6 +157,7 @@ namespace mars {
       // typedefs for function pointers
       typedef  void (SimJoint::*JointControlFunction)(interfaces::sReal, unsigned char);
       typedef void (SimMotor::*MotorControlFunction)(interfaces::sReal);
+      typedef double (*ApproximationFunction)(double*, std::vector<double>*);
 
       // motor
       unsigned char axis;
@@ -181,8 +185,13 @@ namespace mars {
       interfaces::sReal joint_velocity;
       interfaces::sReal error;
 
-      // these variables were not used any more
-      // interfaces::sReal i_current, last_current, last_velocity, pwm;
+      // function approximation
+      double * maxspeed_x;
+      double * maxeffort_x;
+      std::vector<interfaces::sReal>* maxeffort_coefficients;
+      std::vector<interfaces::sReal>* maxspeed_coefficients;
+      ApproximationFunction maxEffortApproximation;
+      ApproximationFunction maxSpeedApproximation;
 
       // current estimation
       void initCurrentEstimation();

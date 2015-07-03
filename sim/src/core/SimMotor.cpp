@@ -21,7 +21,6 @@
 #include "SimMotor.h"
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
-
 #include <mars/data_broker/DataBrokerInterface.h>
 
 #include <cstdio>
@@ -60,6 +59,12 @@ namespace mars {
       mimic = false;
       mimic_multiplier=1.0;
       mimic_offset=0;
+      maxEffortApproximation = &utils::pipe;
+      maxSpeedApproximation = &utils::pipe;
+      maxeffort_coefficients = NULL;
+      maxspeed_coefficients = NULL;
+      maxspeed_x = &sMotor.maxSpeed;
+      maxeffort_x = &sMotor.maxEffort;
 
       myPlayJoint = 0;
       active = true;
@@ -109,6 +114,10 @@ namespace mars {
       }
       // if we have to delete something we can do it here
       if(myJoint) myJoint->detachMotor(sMotor.axis);
+
+      // delete any coefficient vectors we might have created
+      delete maxspeed_coefficients;
+      delete maxeffort_coefficients;
     }
 
     void SimMotor::addMimic(SimMotor* mimic) {
@@ -127,6 +136,45 @@ namespace mars {
       mimic = true;
       mimic_multiplier = multiplier;
       mimic_offset = offset;
+    }
+
+    void SimMotor::setMaxEffortApproximation(utils::ApproximationFunction type,
+      std::vector<double>* coefficients) {
+      switch (type) {
+        case FUNCTION_PIPE:
+          maxEffortApproximation =&utils::pipe;
+          maxeffort_x = &sMotor.maxEffort;
+          break;
+        case FUNCTION_POLYNOM3:
+          maxEffortApproximation =&utils::polynom3;
+          maxeffort_x = position;
+          break;
+        case FUNCTION_POLYNOM5:
+          maxEffortApproximation =&utils::polynom5;
+          maxeffort_x = position;
+          break;
+      }
+      maxeffort_coefficients = coefficients;
+    }
+
+    void SimMotor::setMaxSpeedApproximation(utils::ApproximationFunction type,
+      std::vector<double>* coefficients) {
+        fprintf(stderr, "setMaxSpeedApproximation\n");
+      switch (type) {
+        case FUNCTION_PIPE:
+          maxSpeedApproximation = &utils::pipe;
+          maxspeed_x = &sMotor.maxSpeed;
+          break;
+        case FUNCTION_POLYNOM3:
+          maxSpeedApproximation = &utils::polynom3;
+          maxspeed_x = position;
+          break;
+        case FUNCTION_POLYNOM5:
+          maxSpeedApproximation = &utils::polynom5;
+          maxspeed_x = position;
+          break;
+      }
+      maxspeed_coefficients = coefficients;
     }
 
     void SimMotor::updateController() {
@@ -280,6 +328,7 @@ namespace mars {
         for(std::map<std::string, SimMotor*>::iterator it = mimics.begin();
           it != mimics.end(); ++it) {
             it->second->setControlValue(controlValue);
+            //it->second->setControlValue(*position);
           }
 
 
@@ -366,18 +415,18 @@ namespace mars {
 
     /*
      * This function can be overloaded in a child class in order to
-     * implement a variable effort.
+     * implement a specifically variable effort.
      */
-    sReal SimMotor::getMomentaryMaxEffort() const {
-      return sMotor.maxEffort;
+    sReal SimMotor::getMomentaryMaxEffort() {
+      return (*maxEffortApproximation)(maxeffort_x, maxeffort_coefficients);
     }
 
     /*
      * This function can be overloaded in a child class in order to
-     * implement a variable speed.
+     * implement a specifically speed.
      */
-    sReal SimMotor::getMomentaryMaxSpeed() const {
-      return sMotor.maxSpeed;
+    sReal SimMotor::getMomentaryMaxSpeed() {
+      return (*maxSpeedApproximation)(maxspeed_x, maxspeed_coefficients);
     }
 
 

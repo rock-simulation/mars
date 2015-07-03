@@ -1160,11 +1160,36 @@ namespace mars {
         control->entities->addMotor(robotname, motor.index, motor.name);
       }
 
+      sim::SimMotor* newMotor = control->motors->getSimMotor(newId);
+
       // set motor mimics
       if (config.find("mimic_motor") != config.end()) {
         mimicmotors[newId] = (std::string)config["mimic_motor"];
-        (control->motors->getSimMotor(newId))->setMimic(
+        newMotor->setMimic(
           (sReal)config["mimic_multiplier"], (sReal)config["mimic_offset"]);
+      }
+
+      // set approximation functions
+      if (config.find("maxeffort_approximation") != config.end()) {
+        std::vector<sReal>* maxeffort_coefficients = new std::vector<sReal>;
+        ConfigVector::iterator vIt = config["maxeffort_coefficients"].begin();
+        for (; vIt != config["maxeffort_coefficients"].end(); ++vIt) {
+          maxeffort_coefficients->push_back((double)(*vIt));
+          newMotor->setMaxEffortApproximation(
+            utils::approximationFunctionMap[(std::string)config["maxeffort_approximation"]],
+            maxeffort_coefficients);
+        }
+      }
+      if (config.find("maxspeed_approximation") != config.end()) {
+        fprintf(stderr, "found maxspeed_approximation in %s\n", ((std::string)config["name"]).c_str());
+        std::vector<sReal>* maxspeed_coefficients = new std::vector<sReal>;
+        ConfigVector::iterator vIt = config["maxspeed_coefficients"].begin();
+        for (; vIt != config["maxspeed_coefficients"].end(); ++vIt) {
+          maxspeed_coefficients->push_back((double)(*vIt));
+          newMotor->setMaxSpeedApproximation(
+            utils::approximationFunctionMap[(std::string)config["maxspeed_approximation"]],
+            maxspeed_coefficients);
+        }
       }
 
       return true;
