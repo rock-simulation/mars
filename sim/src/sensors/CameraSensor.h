@@ -30,6 +30,7 @@
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
+#include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/GraphicsWindowInterface.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
 #include <mars/interfaces/graphics/GraphicsCameraInterface.h>
@@ -135,6 +136,8 @@ namespace mars {
       long dbPosIndices[3];
       long dbRotIndices[4];
       unsigned int cam_id;
+      utils::Mutex mutex;
+      int renderCam;
     };
 
   } // end of namespace sim
