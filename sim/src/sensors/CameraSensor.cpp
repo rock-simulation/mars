@@ -302,9 +302,8 @@ namespace mars {
       if((it = config->find("show_cam")) != config->end()){
         cfg->show_cam =  it->second[0].getBool();
         if(cfg->show_cam) {
-          if((it2 = it->second[0].children.find("hud_idx")) !=
-             it->second[0].children.end())
-            cfg->hud_pos = it2->second[0].getInt();
+          if((it = config->find("hud_idx")) != config->end())
+            cfg->hud_pos = it->second[0].getInt();
         }
       }else{
         cfg->show_cam = false;
