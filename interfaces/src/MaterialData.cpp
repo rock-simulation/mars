@@ -100,6 +100,8 @@ namespace mars {
         getLight = it->second[0].getBool();
       if((it = config->find("cullMask")) != config->end())
         cullMask = it->second[0].getInt();
+      if((it = config->find("bumpNorFac")) != config->end())
+        bumpNorFac = it->second[0].getDouble();
 
 
       if(!filenamePrefix.empty()) {
@@ -182,6 +184,8 @@ namespace mars {
         (*config)["getLigth"][0] = ConfigItem(getLight);
       if(cullMask != defaultMaterial.cullMask)
         (*config)["cullMask"][0] = ConfigItem(cullMask);
+      if(cullMask != defaultMaterial.bumpNorFac)
+        (*config)["bumpNorFac"][0] = ConfigItem(bumpNorFac);
 
     }
 

@@ -60,6 +60,7 @@ namespace mars {
         brightness = 0.0;
         getLight = true;
         cullMask = 0xffffffff;
+        bumpNorFac = 1.;
       }
 
       // todo: handle filenames
@@ -85,6 +86,7 @@ namespace mars {
       std::string texturename; // the filename of the texture of the node
       std::string bumpmap; // the filename for a bump- / displacementmap
       std::string normalmap; // the filename for a normalmap
+      double bumpNorFac;
       double tex_scale;
       bool reflect;
       double brightness;
