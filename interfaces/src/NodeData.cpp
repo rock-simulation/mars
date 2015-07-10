@@ -66,7 +66,8 @@ namespace mars {
         "cylinder",
         "plane",
         "terrain",
-        "reference"
+        "reference",
+        "empty"
       };
 
     const char* NodeData::toString(const NodeType &type) {

@@ -101,6 +101,7 @@ set(HEADERS
            src/3d_objects/CoordsPrimitive.h
            src/3d_objects/CubeDrawObject.h
            src/3d_objects/CylinderDrawObject.h
+           src/3d_objects/EmptyDrawObject.h
            src/3d_objects/DrawObject.h
            src/3d_objects/GridPrimitive.h
            src/3d_objects/LoadDrawObject.h

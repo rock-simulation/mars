@@ -26,6 +26,7 @@
  */
 
 #include "OSGNodeStruct.h"
+#include "../3d_objects/EmptyDrawObject.h"
 #include "../3d_objects/CubeDrawObject.h"
 #include "../3d_objects/SphereDrawObject.h"
 #include "../3d_objects/CylinderDrawObject.h"
@@ -111,6 +112,15 @@ namespace mars {
           }
           else {
             drawObject_ = new PlaneDrawObject(node.ext);
+          }
+          break;
+        }
+        case mars::interfaces::NODE_TYPE_EMPTY: {
+          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+            drawObject_ = new EmptyDrawObject(node.visual_size);
+          }
+          else {
+            drawObject_ = new EmptyDrawObject(node.ext);
           }
           break;
         }
