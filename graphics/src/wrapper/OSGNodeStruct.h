@@ -53,7 +53,7 @@ namespace mars {
                     const mars::interfaces::NodeData &node,
                     bool isPreview, unsigned long id, bool useMARSShader,
                     bool useFog, bool useNoise, bool drawLineLaser,
-                    bool marsShadow);
+                    bool marsShadow, int defaultMaxNumNodeLights);
       /**
        * Edit this node, works only in the PREVIEW state.
        */

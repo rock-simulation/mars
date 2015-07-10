@@ -57,7 +57,7 @@ namespace mars {
                                  unsigned long id,
                                  bool useMARSShader, bool useFog,
                                  bool useNoise, bool drawLineLaser,
-                                 bool marsShadow)
+                                 bool marsShadow, int defaultMaxNumNodeLights)
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
       configmaps::ConfigMap map = node.map;
       if (node.filename.compare("PRIMITIVE") == 0) {
@@ -134,6 +134,9 @@ namespace mars {
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
+        else {
+          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
+        }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(0.0, 0.0, 0.0));//node.pivot);
       } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
@@ -155,6 +158,9 @@ namespace mars {
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
+        else {
+          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
+        }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(node.terrain->targetWidth*0.5,
                                              node.terrain->targetHeight*0.5, 0.0));
@@ -165,6 +171,9 @@ namespace mars {
         drawObject_ = new LoadDrawObject(info, node.ext);
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
+        }
+        else {
+          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
         }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, node.pivot);

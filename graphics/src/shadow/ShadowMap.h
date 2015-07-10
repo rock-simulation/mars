@@ -62,6 +62,10 @@ namespace mars {
         radius = v;
       }
 
+      void setShadowTextureSize(int v) {
+        shadowTextureSize = v;
+      }
+
     protected:
       virtual void createUniforms();
 
@@ -77,7 +81,7 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> ambientBiasUniform;
       std::vector< osg::ref_ptr<osg::Uniform> > uniformList;
       unsigned int shadowTextureUnit;
-
+      int shadowTextureSize;
     }; // end of class ShadowMap
 
   } // end of namespace graphics

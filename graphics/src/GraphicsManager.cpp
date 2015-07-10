@@ -185,6 +185,12 @@ namespace mars {
 
           marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
                                                 false, this);
+          defaultMaxNumNodeLights = cfg->getOrCreateProperty("Graphics",
+                                                             "defaultMaxNumNodeLights",
+                                                             1, this);
+          shadowTextureSize = cfg->getOrCreateProperty("Graphics",
+                                                       "shadowTextureSize",
+                                                       2048, this);
         }
         else {
           marsShadow.bValue = false;
@@ -286,6 +292,7 @@ namespace mars {
 #endif
           if(marsShadow.bValue) {
             shadowMap = new ShadowMap;
+            shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
             shadowedScene->setShadowTechnique(shadowMap.get());
             //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
             //shadowMap->setTextureUnit(2);
@@ -782,7 +789,7 @@ namespace mars {
 
       getLights(&lightList);
       if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
-      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
+      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
       osg::PositionAttitudeTransform *transform = drawObject->object()->getPosTransform();
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
@@ -1226,7 +1233,7 @@ namespace mars {
 
       if (allNodes[0].filename=="PRIMITIVE") {
         osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
+                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
         previewNodes_[nextPreviewID] = drawObject;
         scene->addChild(drawObject->object()->getPosTransform());
       } else {
@@ -1234,7 +1241,7 @@ namespace mars {
         for(DrawObjects::iterator it = previewNodes_.begin();
             it != previewNodes_.end(); ++it) {
           osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
-                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue);
+                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
           previewNodes_[nextPreviewID] = drawObject;
           scene->addChild(drawObject->object()->getPosTransform());
         }
@@ -1860,14 +1867,14 @@ namespace mars {
 
 
     void GraphicsManager::initDefaultLight() {
-      defaultLight.lStruct.pos = Vector(0.0, 0.0, 10.0);
-      defaultLight.lStruct.ambient = mars::utils::Color(0.0, 0.0, 0.0, 1.0);
+      defaultLight.lStruct.pos = Vector(2.0, 2.0, 10.0);
+      defaultLight.lStruct.ambient = mars::utils::Color(0.5, 0.5, 0.5, 1.0);
       defaultLight.lStruct.diffuse = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
       defaultLight.lStruct.specular = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
-      defaultLight.lStruct.constantAttenuation = 0.0;
+      defaultLight.lStruct.constantAttenuation = 0.25;
       defaultLight.lStruct.linearAttenuation = 0.0;
-      defaultLight.lStruct.quadraticAttenuation = 0.00001;
-      defaultLight.lStruct.directional = false;
+      defaultLight.lStruct.quadraticAttenuation = 0.07;
+      defaultLight.lStruct.directional = true;
       defaultLight.lStruct.type = mars::interfaces::OMNILIGHT;
       defaultLight.lStruct.index = 0;
       defaultLight.lStruct.angle = 0;

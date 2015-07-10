@@ -94,7 +94,7 @@ namespace mars {
         blendEquation_(0),
         hasShaderSources(false),
         useMARSShader(true),
-        maxNumLights(4) {
+        maxNumLights(1) {
     }
 
     DrawObject::~DrawObject() {
