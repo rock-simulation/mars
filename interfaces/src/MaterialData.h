@@ -60,7 +60,7 @@ namespace mars {
         brightness = 0.0;
         getLight = true;
         cullMask = 0xffffffff;
-        bumpNorFac = 1.;
+        bumpNorFac = 0.3;
       }
 
       // todo: handle filenames
