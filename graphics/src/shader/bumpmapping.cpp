@@ -39,7 +39,7 @@ namespace mars {
     BumpMapFrag::BumpMapFrag(vector<string> &args)
       : ShaderFunc("bump", args)
     {
-      addConstant( (GLSLConstant) { "float", "bumpNorFac", "0.1" });
+      addUniform( (GLSLUniform) { "float", "bumpNorFac"} );
     }
 
     string BumpMapFrag::code() const
@@ -49,38 +49,35 @@ namespace mars {
       s << " * this method returns a per fragment normal from a normal map." << endl;
       s << " * the normal exists in tangent space." << endl;
       s << " **/" << endl;
-      s << "void " << name << "(vec4 texel, out vec3 normal)" << endl;
+      s << "void " << name << "(vec4 texel, vec3 n, out vec3 normal)" << endl;
       s << "{" << endl;
       //s << "    normal = vec3( 0.0, 0.0, 1.0 );" << endl;
-      s << "    normal = normalize( texel.xyz * 2.0 - 1.0 );" << endl;
+      s << "    normal = n+(normalize( osg_ViewMatrixInverse * vec4(gl_NormalMatrix * ( texel.xyz * 2.0 - 1.0 ), 0.0)).xyz - n)*bumpNorFac;" << endl;
+      s << "    normal = normalize(normal);" << endl;
       s << "}" << endl;
       return s.str();
     }
 
     BumpMapVert::BumpMapVert(vector<string> &args,
-                             vector<LightData*> &lightList)
-      : ShaderFunc("bump", args)
+                             int numLights)
+      : ShaderFunc("bump", args), numLights(numLights)
     {
       stringstream s;
 
-      s << "lightVec[" << lightList.size() << "]";
+      s << "lightVec[" << numLights << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() });
       s.str("");
 
-      s << "spotDir[" << lightList.size() << "]";
+      s << "spotDir[" << numLights << "]";
       addVarying( (GLSLVarying) { "vec3", s.str() });
       s.str("");
 
       addAttribute( (GLSLAttribute) { "vec4", "vertexTangent" });
-
-      this->lightList = lightList;
     }
 
     string BumpMapVert::code() const
     {
       stringstream s;
-      vector<LightData*>::const_iterator it;
-      int lightIndex = 0;
 
       s << "/**" << endl;
       s << " * this method transforms the varyings eyeVec and lightVec to tangent space." << endl;
@@ -96,7 +93,7 @@ namespace mars {
       s << "{" << endl;
       s << "    // get the tangent in eye space (multiplication by gl_NormalMatrix transforms to eye space)" << endl;
       s << "    // the tangent should point in positive u direction on the uv plane in the tangent space." << endl;
-      s << "    vec3 t = normalize( gl_NormalMatrix * vertexTangent.xyz );" << endl;
+      s << "    return; vec3 t = normalize( (osg_ViewMatrixInverse*vec4(gl_NormalMatrix * vertexTangent.xyz, 0.0)).xyz );" << endl;
       s << "    // calculate the binormal, cross makes sure tbn matrix is orthogonal" << endl;
       s << "    // multiplicated by handeness." << endl;
       s << "    vec3 b = cross(n, t);" << endl;
@@ -113,14 +110,14 @@ namespace mars {
       s << "" << endl;
       s << "    // do the transformation of the light vectors" << endl;
 
-      for(it = lightList.begin(); it != lightList.end(); ++it) {
+      s << " for(int i=0; i<"<< numLights << "; ++i) {" << endl;
         /*
         s << "        buf.x = dot( lightVec[" << lightIndex << "], t );" << endl;
         s << "        buf.y = dot( lightVec[" << lightIndex << "], b );" << endl;
         s << "        buf.z = dot( lightVec[" << lightIndex << "], n ) ;" << endl;
         s << "        lightVec[" << lightIndex << "] = normalize( buf  );" << endl;
         */
-        s << "    lightVec[" << lightIndex << "] = tbn*lightVec[" << lightIndex << "];" << endl;
+        s << "    lightVec[i] = tbn*lightVec[i];" << endl;
 
         /*
         s << "        buf.x = dot( spotDir[" << lightIndex << "], t );" << endl;
@@ -128,10 +125,8 @@ namespace mars {
         s << "        buf.z = dot( spotDir[" << lightIndex << "], n ) ;" << endl;
         s << "        spotDir[" << lightIndex << "] = normalize( buf  );" << endl;
         */
-        s << "    spotDir[" << lightIndex << "] = tbn*spotDir[" << lightIndex << "];" << endl;
-        ++lightIndex;
-      }
-
+        s << "    spotDir[i] = tbn*spotDir[i];" << endl;
+      s << "}" << endl;
       s << "}" << endl;
 
       return s.str();

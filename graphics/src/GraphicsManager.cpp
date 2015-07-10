@@ -660,6 +660,38 @@ namespace mars {
         (*iter)->updateView();
       }
 
+      vector<mars::interfaces::LightData*> lightList;
+      vector<mars::interfaces::LightData*>::iterator lightIt;
+      getLights(&lightList);
+      if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
+
+      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator drawIter;
+
+      for (unsigned int i=0; i<myLights.size(); i++) {
+        //return only the used lights
+        if (!myLights[i].free) {
+          if(myLights[i].lStruct.drawID != 0) {
+            for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter) {
+              if(drawIter->first == myLights[i].lStruct.drawID) {
+                Vector pos = drawIter->second->object()->getPosition();
+                Quaternion q = drawIter->second->object()->getQuaternion();
+                myLights[i].lStruct.pos = pos;
+                myLights[i].light->setPosition(osg::Vec4(pos.x(), pos.y(),
+                                                         pos.z()+0.1, 1.0));
+                pos = q*Vector(1, 0, 0);
+                myLights[i].lStruct.lookAt = pos;
+                myLights[i].light->setDirection(osg::Vec3(pos.x(), pos.y(),
+                                                          pos.z()));
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter)
+        drawIter->second->object()->updateLights(lightList);
+
       // Render a complete new frame.
       if(viewer) viewer->frame();
       ++framecount;
@@ -1000,9 +1032,9 @@ namespace mars {
         myLights[lm.lStruct.index] = lm;
 
         // light changed for every draw object
-        getLights(&lightList);
-        for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-          iter->second->object()->updateShader(lightList, true);
+        //getLights(&lightList);
+        //for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
+        //  iter->second->object()->updateShader(lightList, true);
       }
 
       //else make a message (should be handled in another way, will be done later)
@@ -1030,8 +1062,8 @@ namespace mars {
           lightList.push_back(&defaultLight.lStruct);
         }
 
-        for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-          iter->second->object()->updateShader(lightList, true);
+        //for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
+        //iter->second->object()->updateShader(lightList, true);
       }
     }
 
@@ -1042,14 +1074,15 @@ namespace mars {
       }
       else
         fprintf(stderr, "GraphicsManager::updateLight -> no Light %u\n", i);
-
+      /*
       if(recompileShader) {
         vector<mars::interfaces::LightData*> lightList;
         map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
         getLights(&lightList);
         for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-          iter->second->object()->updateShader(lightList, true);
+        iter->second->object()->updateShader(lightList, true);
       }
+      */
     }
 
     void GraphicsManager::getLights(vector<mars::interfaces::LightData*> *lightList) {

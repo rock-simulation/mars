@@ -41,10 +41,10 @@ namespace mars {
     class BumpMapVert : public ShaderFunc {
     public:
       BumpMapVert(std::vector<std::string> &args,
-                  std::vector<mars::interfaces::LightData*> &lightList);
+                  int numLights);
       std::string code() const;
     private:
-      std::vector<mars::interfaces::LightData*> lightList;
+      int numLights;
     }; // end of class BumpMapVert
 
   } // end of namespace graphics

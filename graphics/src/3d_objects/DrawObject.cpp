@@ -84,7 +84,7 @@ namespace mars {
         normalMapUniform(NULL),
         bumpMapUniform(NULL),
         baseImageUniform(NULL),
-	group_(0),
+        group_(0),
         material_(0),
         colorMap_(0),
         normalMap_(0),
@@ -93,7 +93,8 @@ namespace mars {
         scaleTransform_(0),
         blendEquation_(0),
         hasShaderSources(false),
-        useMARSShader(true) {
+        useMARSShader(true),
+        maxNumLights(4) {
     }
 
     DrawObject::~DrawObject() {
@@ -122,6 +123,22 @@ namespace mars {
       lineLaserColor = new osg::Uniform("lineLaserColor", osg::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
       lineLaserDirection = new osg::Uniform("lineLaserDirection", osg::Vec3f(0.0f, 0.0f, 1.0f));
       lineLaserOpeningAngle = new osg::Uniform("lineLaserOpeningAngle", (float)M_PI * 2.0f);
+
+      lightPosUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC3, "lightPos", maxNumLights);
+      lightAmbientUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightAmbient", maxNumLights);
+      lightDiffuseUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightDiffuse", maxNumLights);
+      lightSpecularUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightSpecular", maxNumLights);
+      lightSpotDirUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC3, "lightSpotDir", maxNumLights);
+      lightIsSpotUniform = new osg::Uniform(osg::Uniform::INT, "lightIsSpot", maxNumLights);
+      lightIsDirectionalUniform = new osg::Uniform(osg::Uniform::INT, "lightIsDirectional", maxNumLights);
+      lightConstantAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightConstantAtt", maxNumLights);
+      lightLinearAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightLinearAtt", maxNumLights);
+      lightQuadraticAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightQuadraticAtt", maxNumLights);
+      lightIsSetUniform = new osg::Uniform(osg::Uniform::INT, "lightIsSet", maxNumLights);
+      lightCosCutoffUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightCosCutoff", maxNumLights);
+      lightSpotExponentUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightSpotExponent", maxNumLights);
+
+      bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
 
       scaleTransform_ = new osg::MatrixTransform();
       scaleTransform_->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
@@ -284,6 +301,7 @@ namespace mars {
           setBumpMap(mStruct.bumpmap);
         }
         setNormalMap(mStruct.normalmap);
+        bumpNorFacUniform->set((float)mStruct.bumpNorFac);
       } else {
         if(lastProgram.valid()) updateShader(lastLights, true);
       }
@@ -489,8 +507,10 @@ namespace mars {
 
         {
           ShaderFunc *vertexShader = new ShaderFunc;
+          /*
           vertexShader->addUniform( (GLSLUniform)
                                     { "mat4", "osg_ViewMatrix" } );
+          */
           vertexShader->addExport( (GLSLExport)
                                    {"gl_Position", "gl_ModelViewProjectionMatrix * gl_Vertex"} );
           vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "v"} );
@@ -533,23 +553,33 @@ namespace mars {
 
         args.clear();
         args.push_back("v");
-        PixelLightVert *plightVert = new PixelLightVert(args, lightList, drawLineLaser, marsShadow);
+        PixelLightVert *plightVert = new PixelLightVert(args, lightList, drawLineLaser, marsShadow, maxNumLights);
         plightVert->addMainVar( (GLSLVariable)
-                                { "vec4", "v", "gl_ModelViewMatrix * gl_Vertex" } );
+                                { "vec4", "v", "osg_ViewMatrixInverse * gl_ModelViewMatrix * gl_Vertex" } );
+        plightVert->addMainVar( (GLSLVariable)
+                                { "vec4", "n", "normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))" } );
+
         plightVert->addExport( (GLSLExport)
-                               { "normalVarying", "normalize( gl_NormalMatrix * gl_Normal )" } );
+                               { "normalVarying", "n.xyz" } );
+
+        plightVert->addExport( (GLSLExport)
+                               { "positionVarying", "v" } );
+
+        plightVert->addVarying( (GLSLVarying)
+                                { "vec4", "positionVarying" } );
         plightVert->addVarying( (GLSLVarying)
                                 { "vec3", "normalVarying" } );
         shaderGenerator.addShaderFunction(plightVert, mars::interfaces::SHADER_TYPE_VERTEX);
 
         if(normalMap_.valid()) {
           args.clear();
-          args.push_back("gl_NormalMatrix * gl_Normal");
-          BumpMapVert *bumpVert = new BumpMapVert(args, lightList);
+          args.push_back("n.xyz");
+          BumpMapVert *bumpVert = new BumpMapVert(args, maxNumLights);
           shaderGenerator.addShaderFunction(bumpVert, mars::interfaces::SHADER_TYPE_VERTEX);
 
           args.clear();
           args.push_back("texture2D( NormalMap, texCoord )");
+          args.push_back("n");
           args.push_back("n");
           BumpMapFrag *bumpFrag = new BumpMapFrag(args);
           bumpFrag->addUniform( (GLSLUniform) { "sampler2D", "NormalMap" } );
@@ -563,7 +593,7 @@ namespace mars {
         PixelLightFrag *plightFrag = new PixelLightFrag(args, useFog,
                                                         useNoise, drawLineLaser,
                                                         marsShadow,
-                                                        lightList);
+                                                        maxNumLights);
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.
         // TODO: check not needed if backfaces not processed.
@@ -587,6 +617,20 @@ namespace mars {
           stateSet->addUniform(brightnessUniform.get());
           stateSet->addUniform(transparencyUniform.get());
           stateSet->addUniform(texScaleUniform.get());
+          stateSet->addUniform(lightPosUniform.get());
+          stateSet->addUniform(lightAmbientUniform.get());
+          stateSet->addUniform(lightDiffuseUniform.get());
+          stateSet->addUniform(lightSpecularUniform.get());
+          stateSet->addUniform(lightSpotDirUniform.get());
+          stateSet->addUniform(lightIsSpotUniform.get());
+          stateSet->addUniform(lightIsDirectionalUniform.get());
+          stateSet->addUniform(lightConstantAttUniform.get());
+          stateSet->addUniform(lightLinearAttUniform.get());
+          stateSet->addUniform(lightQuadraticAttUniform.get());
+          stateSet->addUniform(lightIsSetUniform.get());
+          stateSet->addUniform(lightCosCutoffUniform.get());
+          stateSet->addUniform(lightSpotExponentUniform.get());
+
           if(drawLineLaser) {
             stateSet->addUniform(lineLaserPosUniform.get());
             stateSet->addUniform(lineLaserNormalUniform.get());
@@ -597,30 +641,32 @@ namespace mars {
         }
 
         if(normalMapUniform) {
-          stateSet->removeUniform(normalMapUniform);
+          stateSet->removeUniform(normalMapUniform.get());
+          stateSet->removeUniform(bumpNorFacUniform.get());
           normalMapUniform = NULL;
         }
         if(normalMap_.valid()) {
           normalMapUniform = new osg::Uniform("NormalMap", NORMAL_MAP_UNIT);
-          stateSet->addUniform(normalMapUniform);
+          stateSet->addUniform(normalMapUniform.get());
+          stateSet->addUniform(bumpNorFacUniform.get());
         }
 
         if(bumpMapUniform) {
-          stateSet->removeUniform(bumpMapUniform);
+          stateSet->removeUniform(bumpMapUniform.get());
           bumpMapUniform = NULL;
         }
         if(bumpMap_.valid()) {
           bumpMapUniform = new osg::Uniform("BumpMap", BUMP_MAP_UNIT);
-          stateSet->addUniform(bumpMapUniform);
+          stateSet->addUniform(bumpMapUniform.get());
         }
 
         if(baseImageUniform) {
-          stateSet->removeUniform(baseImageUniform);
+          stateSet->removeUniform(baseImageUniform.get());
           baseImageUniform = NULL;
         }
         if(colorMap_.valid()) {
           baseImageUniform = new osg::Uniform("BaseImage", COLOR_MAP_UNIT);
-          stateSet->addUniform(baseImageUniform);
+          stateSet->addUniform(baseImageUniform.get());
         }
 
         stateSet->setAttributeAndModes(glslProgram, osg::StateAttribute::ON);
@@ -708,6 +754,66 @@ namespace mars {
         lineLaserColor->set(osg::Vec4f(color.x(), color.y(), color.z(), 1.0f ) );
         lineLaserDirection->set(osg::Vec3f(laserAngle.x(), laserAngle.y(), laserAngle.z()));
         lineLaserOpeningAngle->set( openingAngle);
+      }
+    }
+
+    void DrawObject::updateLights(std::vector<mars::interfaces::LightData*> &lightList) {
+      std::vector<mars::interfaces::LightData*>::iterator it;
+      std::list<mars::interfaces::LightData*> lightList_;
+      std::list<mars::interfaces::LightData*>::iterator it2;
+      double dist1, dist2;
+
+      for(it=lightList.begin(); it!=lightList.end(); ++it) {
+        dist1 = Vector((*it)->pos - position_).norm();
+        for(it2=lightList_.begin(); it2!=lightList_.end(); ++it2) {
+          dist2 = Vector((*it2)->pos - position_).norm();
+          if(dist1 < dist2) {
+            lightList_.insert(it2, *it);
+            break;
+          }
+        }
+        if(it2 == lightList_.end()) {
+          lightList_.push_back(*it);
+        }
+      }
+      int i=0;
+      for(it2=lightList_.begin(); it2!=lightList_.end() && i<maxNumLights; ++it2, ++i) {
+        /*
+        fprintf(stderr, "set light: %d\n", i);
+        fprintf(stderr, "  pos: %g %g %g\n", (*it2)->pos.x(), (*it2)->pos.y(), (*it2)->pos.z());
+        fprintf(stderr, "  ambient: %g %g %g %g\n", (*it2)->ambient.r, (*it2)->ambient.g,
+                (*it2)->ambient.b, (*it2)->ambient.a);
+        fprintf(stderr, "  diffuse: %g %g %g %g\n", (*it2)->diffuse.r, (*it2)->diffuse.g,
+                (*it2)->diffuse.b, (*it2)->diffuse.a);
+        */
+        lightPosUniform->setElement(i, osg::Vec3f((*it2)->pos.x(),
+                                                 (*it2)->pos.y(),
+                                                 (*it2)->pos.z()));
+        lightAmbientUniform->setElement(i, osg::Vec4f((*it2)->ambient.r,
+                                                     (*it2)->ambient.g,
+                                                     (*it2)->ambient.b,
+                                                     (*it2)->ambient.a));
+        lightDiffuseUniform->setElement(i, osg::Vec4f((*it2)->diffuse.r,
+                                                     (*it2)->diffuse.g,
+                                                     (*it2)->diffuse.b,
+                                                     (*it2)->diffuse.a));
+        lightSpecularUniform->setElement(i, osg::Vec4f((*it2)->specular.r,
+                                                      (*it2)->specular.g,
+                                                      (*it2)->specular.b,
+                                                      (*it2)->specular.a));
+        lightIsSpotUniform->setElement(i, (*it2)->type-1);
+        Vector v = (*it2)->lookAt;// - (*it2)->pos;
+        lightSpotDirUniform->setElement(i, osg::Vec3f(v.x(), v.y(), v.z()));
+        lightIsDirectionalUniform->setElement(i, (*it2)->directional);
+        lightConstantAttUniform->setElement(i, (float)(*it2)->constantAttenuation);
+        lightLinearAttUniform->setElement(i, (float)(*it2)->linearAttenuation);
+        lightQuadraticAttUniform->setElement(i, (float)(*it2)->quadraticAttenuation);
+        lightIsSetUniform->setElement(i, 1);
+        lightCosCutoffUniform->setElement(i, (float)cos((*it2)->angle*0.017453292519943));
+        lightSpotExponentUniform->setElement(i, (float)(*it2)->exponent);
+      }
+      for(; i<maxNumLights; ++i) {
+        lightIsSetUniform->setElement(i, 0);
       }
     }
 

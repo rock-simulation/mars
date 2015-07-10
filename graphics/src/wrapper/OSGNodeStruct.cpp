@@ -59,6 +59,7 @@ namespace mars {
                                  bool useNoise, bool drawLineLaser,
                                  bool marsShadow)
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
+      configmaps::ConfigMap map = node.map;
       if (node.filename.compare("PRIMITIVE") == 0) {
         switch(NodeData::typeFromString(node.origName.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
@@ -130,6 +131,9 @@ namespace mars {
                   node.origName.c_str(), __FILE__, __LINE__);
           throw std::runtime_error("unknown primitive type");
         }
+        if(map.find("maxNumLights") != map.end()) {
+          drawObject_->setMaxNumLights(map["maxNumLights"]);
+        }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(0.0, 0.0, 0.0));//node.pivot);
       } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
@@ -148,6 +152,9 @@ namespace mars {
           }
         }
         drawObject_ = new TerrainDrawObject(node.terrain);
+        if(map.find("maxNumLights") != map.end()) {
+          drawObject_->setMaxNumLights(map["maxNumLights"]);
+        }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(node.terrain->targetWidth*0.5,
                                              node.terrain->targetHeight*0.5, 0.0));
@@ -156,6 +163,9 @@ namespace mars {
         info.fileName = node.filename;
         info.objectName = node.origName;
         drawObject_ = new LoadDrawObject(info, node.ext);
+        if(map.find("maxNumLights") != map.end()) {
+          drawObject_->setMaxNumLights(map["maxNumLights"]);
+        }
         drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, node.pivot);
         drawObject_->setScale(node.visual_scale);

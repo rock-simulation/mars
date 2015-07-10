@@ -90,6 +90,7 @@ namespace mars {
 
       typedef std::map<mars::interfaces::ShaderType, std::string> foo;
 
+      void updateLights(std::vector<mars::interfaces::LightData*> &lightList);
       void updateShader(std::vector<mars::interfaces::LightData*> &lightList,
                         bool reload=false,
                         const foo &shaderSource=foo());
@@ -165,6 +166,8 @@ namespace mars {
                                     utils::Vector LaserAngle,
                                     float openingAngle);
 
+      void setMaxNumLights(int n) {maxNumLights = n;}
+
     protected:
       unsigned long id_;
       unsigned int nodeMask_;
@@ -175,7 +178,13 @@ namespace mars {
       bool getLight;
       float brightness_;
       osg::ref_ptr<osg::Program> lastProgram;
-      osg::Uniform *normalMapUniform, *bumpMapUniform, *baseImageUniform;
+      osg::ref_ptr<osg::Uniform> normalMapUniform, bumpMapUniform, baseImageUniform;
+      osg::ref_ptr<osg::Uniform> lightPosUniform, lightAmbientUniform, lightDiffuseUniform;
+      osg::ref_ptr<osg::Uniform> lightSpecularUniform, lightIsSpotUniform;
+      osg::ref_ptr<osg::Uniform> lightSpotDirUniform, lightIsDirectionalUniform;
+      osg::ref_ptr<osg::Uniform> lightConstantAttUniform, lightLinearAttUniform, lightQuadraticAttUniform;
+      osg::ref_ptr<osg::Uniform> lightIsSetUniform, lightCosCutoffUniform, lightSpotExponentUniform;
+      osg::ref_ptr<osg::Uniform> bumpNorFacUniform;
 
       osg::ref_ptr<osg::Group> group_;
       std::list< osg::ref_ptr<osg::Geometry> > geometry_;
@@ -203,6 +212,7 @@ namespace mars {
       bool useMARSShader;
       bool drawLineLaser;
       bool marsShadow;
+      int maxNumLights;
       utils::Vector lineLasePos, lineLaserNormal;
 
       std::vector<mars::interfaces::LightData*> lastLights;

@@ -39,104 +39,74 @@ namespace mars {
     PixelLightVert::PixelLightVert(vector<string> &args,
                                    vector<LightData*> &lightList,
                                    bool drawLineLaser,
-                                   bool marsShadow)
+                                   bool marsShadow,
+                                   int numLights)
       : ShaderFunc("plight", args), drawLineLaser(drawLineLaser),
-        marsShadow(marsShadow) {
-      stringstream s;
-      s << "lightVec[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec3", s.str() } );
-      s.str("");
+        marsShadow(marsShadow), numLights(numLights) {
+      std::stringstream s;
+      s << "[" << numLights << "]";
 
-      s << "spotDir[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec3", s.str() } );
-      s.str("");
-
-      /*
-      s << "attenFacs[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "float", s.str() } );
-
-      */
-
-      s << "diffuse[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec4", s.str() } );
-      s.str("");
-
-      s << "specular[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec4", s.str() } );
-
+      addVarying( (GLSLVarying) { "vec3", "lightVec" + s.str() } );
+      addVarying( (GLSLVarying) { "vec3", "spotDir" + s.str() } );
+      addVarying( (GLSLVarying) { "vec4", "diffuse" + s.str() } );
+      addVarying( (GLSLVarying) { "vec4", "specular" + s.str() } );
       addVarying( (GLSLVarying) { "vec3", "eyeVec" } );
-      addVarying( (GLSLVarying) { "vec3", "positionVarying" } );
-      if(drawLineLaser) {
-        addVarying( (GLSLVarying) { "vec3", "worldPosition" } );
-      }
 
+      addUniform( (GLSLUniform) { "vec3", "lightPos" + s.str() } );
+      addUniform( (GLSLUniform) { "vec3", "lightSpotDir" + s.str() } );
+      addUniform( (GLSLUniform) { "vec4", "lightDiffuse" + s.str() } );
+      addUniform( (GLSLUniform) { "vec4", "lightSpecular" + s.str() } );
+      addUniform( (GLSLUniform) { "int", "lightIsDirectional" + s.str() } );
+      addUniform( (GLSLUniform) { "int", "lightIsSet" + s.str() } );
+      addUniform( (GLSLUniform) { "float", "lightConstantAtt" + s.str() } );
+      addUniform( (GLSLUniform) { "float", "lightLinearAtt" + s.str() } );
+      addUniform( (GLSLUniform) { "float", "lightQuadraticAtt" + s.str() } );
       addUniform( (GLSLUniform) { "mat4", "osg_ViewMatrixInverse" } );
-
-      this->lightList = lightList;
+      addUniform( (GLSLUniform) { "mat4", "osg_ViewMatrix" } );
     }
 
     string PixelLightVert::code() const {
       stringstream s;
-      vector<LightData*>::const_iterator it;
-      int lightIndex = 0;
-
       s << "void " << name << "(vec4 v)" << endl;
       s << "{" << endl;
-      s << "    float atten;" << endl;
-      s << "    positionVarying = gl_Vertex.xyz;" << endl;
-      if(drawLineLaser) {
-        s << "    worldPosition = (osg_ViewMatrixInverse * gl_ModelViewMatrix * gl_Vertex).xyz;" << endl;
+      s << "  float atten;" << endl;
+      s << "  // save the vertex to eye vector in world space" << endl;
+      s << "  eyeVec = osg_ViewMatrixInverse[3].xyz;" << endl;
+      s << "  float dist;" << endl;
+      s << "  for(int i=0; i<"<< numLights << "; ++i) {" << endl;
+      s << "    if(lightIsSet[i] == 1) {" << endl;
+      s << "      if(lightIsDirectional[i] == 1) {" << endl;
+      s << "        lightVec[i] = -lightPos[i];" << endl;
+      s << "        diffuse[i] = lightDiffuse[i]*gl_FrontMaterial.diffuse;" << endl;
+      s << "        specular[i] = lightSpecular[i]*gl_FrontMaterial.specular;" << endl;
+      s << "      } else {" << endl;
+      s << "        lightVec[i] = v.xyz-lightPos[i];" << endl;
+      s << "        dist = length(lightVec[i]);" << endl;
+      s << "        atten = 1.0/(lightConstantAtt[i] +" << endl;
+      s << "        lightLinearAtt[i] * dist +" << endl;
+      s << "        lightQuadraticAtt[i] * dist * dist);" << endl;
+      s << "        diffuse[i] = lightDiffuse[i]*gl_FrontMaterial.diffuse*atten;" << endl;
+      s << "        specular[i] = lightSpecular[i]*gl_FrontMaterial.specular*atten;" << endl;
+      s << "      }" << endl;
+      s << "      spotDir[i] = lightSpotDir[i];" << endl;
+      s << "      vec4 eye = vec4((gl_ModelViewMatrix * gl_Vertex).xyz, 1.);" << endl;
+      if(marsShadow) {
+        s << "      // generate coords for shadow mapping" << endl;
+        s << "      gl_TexCoord[2].s = dot( eye, gl_EyePlaneS[2] );" << endl;
+        s << "      gl_TexCoord[2].t = dot( eye, gl_EyePlaneT[2] );" << endl;
+        s << "      gl_TexCoord[2].p = dot( eye, gl_EyePlaneR[2] );" << endl;
+        s << "      gl_TexCoord[2].q = dot( eye, gl_EyePlaneQ[2] );" << endl;
       }
-      s << "    // save the vertex vector in eye space" << endl;
-      s << "    eyeVec = v.xyz;" << endl;
-      s << "    float dist;" << endl;
-      for(it = lightList.begin(); it != lightList.end(); ++it) {
-        stringstream lightSource;
-        lightSource << "gl_LightSource[" << (*it)->index << "]";
-
-        if((*it)->directional) {
-          s << "      lightVec[" << lightIndex << "] = " << lightSource.str() << ".position.xyz - (osg_ViewMatrix*vec4(0.0, 0.0, 0.0, 1.0)).xyz;" << endl;
-        }
-        else {
-          s << "      lightVec[" << lightIndex << "] = vec3(" << lightSource.str() << ".position.xyz - v.xyz);" << endl;
-        }
-
-        s << "      spotDir[" << lightIndex << "] = normalize(vec3(" << lightSource.str() << ".spotDirection.xyz));" << endl;
-
-        //s << "    attenFacs[" << lightIndex << "] = atten;" << endl;
-
-        if((*it)->directional) {
-          s << "        diffuse[" << (*it)->index << "] = gl_FrontLightProduct[" << (*it)->index << "].diffuse;" << endl;
-          s << "        specular[" << (*it)->index << "] = gl_FrontLightProduct[" << (*it)->index << "].specular;" << endl;
-        }
-        else {
-          s << "    dist = length(lightVec[" << lightIndex << "]);" << endl;
-          s << "    atten = 1.0/(gl_LightSource[" << lightIndex << "].constantAttenuation +" << endl;
-          s << "    gl_LightSource[" << lightIndex << "].linearAttenuation * dist +" << endl;
-          s << "    gl_LightSource[" << lightIndex << "].quadraticAttenuation * dist * dist);" << endl;
-          s << "    diffuse[" << (*it)->index << "] = gl_FrontLightProduct[" << (*it)->index << "].diffuse*atten;" << endl;
-          s << "    specular[" << (*it)->index << "] = gl_FrontLightProduct[" << (*it)->index << "].specular*atten;" << endl;
-        }
-
-        s << "    lightVec[" << lightIndex << "] = normalize(lightVec[" << lightIndex << "]);" << endl;
-
-        if(marsShadow) {
-          s << "    // generate coords for shadow mapping" << endl;
-          s << "    gl_TexCoord[2].s = dot( vec4(eyeVec, 1.0), gl_EyePlaneS[2] );" << endl;
-          s << "    gl_TexCoord[2].t = dot( vec4(eyeVec, 1.0), gl_EyePlaneT[2] );" << endl;
-          s << "    gl_TexCoord[2].p = dot( vec4(eyeVec, 1.0), gl_EyePlaneR[2] );" << endl;
-          s << "    gl_TexCoord[2].q = dot( vec4(eyeVec, 1.0), gl_EyePlaneQ[2] );" << endl;
-        }
 
 #if USE_LSPSM_SHADOW
-        s << "    // generate coords for shadow mapping" << endl;
-        s << "    gl_TexCoord[2].s = dot( vec4(eyeVec, 1.0), gl_EyePlaneS[2] );" << endl;
-        s << "    gl_TexCoord[2].t = dot( vec4(eyeVec, 1.0), gl_EyePlaneT[2] );" << endl;
-        s << "    gl_TexCoord[2].p = dot( vec4(eyeVec, 1.0), gl_EyePlaneR[2] );" << endl;
-        s << "    gl_TexCoord[2].q = dot( vec4(eyeVec, 1.0), gl_EyePlaneQ[2] );" << endl;
+      s << "      // generate coords for shadow mapping" << endl;
+      s << "      gl_TexCoord[2].s = dot( eye, gl_EyePlaneS[2] );" << endl;
+      s << "      gl_TexCoord[2].t = dot( eye, gl_EyePlaneT[2] );" << endl;
+      s << "      gl_TexCoord[2].p = dot( eye, gl_EyePlaneR[2] );" << endl;
+      s << "      gl_TexCoord[2].q = dot( eye, gl_EyePlaneQ[2] );" << endl;
 #endif
-        ++lightIndex;
-      }
+      s << "    }" << endl;
+      s << "  }" << endl;
       s << "}" << endl;
       return s.str();
     }
@@ -195,35 +165,27 @@ namespace mars {
 
     PixelLightFrag::PixelLightFrag(vector<string> &args, bool useFog,
                                    bool useNoise, bool drawLineLaser,
-                                   bool marsShadow,
-                                   vector<LightData*> &lightList)
-      : ShaderFunc("plight", args), marsShadow(marsShadow)
+                                   bool marsShadow, int numLights)
+      : ShaderFunc("plight", args), marsShadow(marsShadow), numLights(numLights)
     {
       stringstream s;
-
-      s << "lightVec[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec3", s.str() } );
-      s.str("");
-
-      s << "spotDir[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec3", s.str() } );
-      s.str("");
-
-      s << "diffuse[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec4", s.str() } );
-      s.str("");
-
-      s << "specular[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "vec4", s.str() } );
-
-      /*
-      s << "attenFacs[" << max(1,lightList.size()) << "]";
-      addVarying( (GLSLVarying) { "float", s.str() } );
-      */
+      s << "[" << numLights << "]";
+      addVarying( (GLSLVarying) { "vec3", "lightVec" + s.str() } );
+      addVarying( (GLSLVarying) { "vec3", "spotDir" + s.str() } );
+      addVarying( (GLSLVarying) { "vec4", "diffuse" + s.str() } );
+      addVarying( (GLSLVarying) { "vec4", "specular" + s.str() } );
 
       addVarying( (GLSLVarying) { "vec3", "eyeVec" } );
-      addVarying( (GLSLVarying) { "vec3", "positionVarying" } );
-      addVarying( (GLSLVarying) { "vec3", "worldPosition" } );
+      addVarying( (GLSLVarying) { "vec4", "positionVarying" } );
+
+      addUniform( (GLSLUniform) { "vec4", "lightAmbient" + s.str() } );
+      addUniform( (GLSLUniform) { "vec3", "lightEmission" + s.str() } );
+      addUniform( (GLSLUniform) { "int", "lightIsSet" + s.str() } );
+      addUniform( (GLSLUniform) { "int", "lightIsSpot" + s.str() } );
+      addUniform( (GLSLUniform) { "float", "lightCosCutoff" + s.str() } );
+      addUniform( (GLSLUniform) { "float", "lightSpotExponent" + s.str() } );
+      addUniform( (GLSLUniform) { "mat4", "osg_ViewMatrixInverse" } );
+
 
       addUniform( (GLSLUniform) { "float", "brightness" } );
       addUniform( (GLSLUniform) { "float", "alpha" } );
@@ -260,15 +222,12 @@ namespace mars {
 
       this->useFog = useFog;
       this->useNoise = useNoise;
-      this->lightList = lightList;
       this->drawLineLaser = drawLineLaser;
     }
 
     string PixelLightFrag::code() const
     {
       stringstream s;
-      vector<LightData*>::const_iterator it;
-      int lightIndex = 0;
 
       // NOTE(daniel): a little messed up in here...
       //    i will clean up when shadow stuff is ready...
@@ -280,73 +239,71 @@ namespace mars {
 
       s << "void " << name << "(vec4 base, vec3 n, out vec4 outcol)" << endl;
       s << "{" << endl;
-      s << "    vec4 ambient = vec4(0.0);" << endl;
-      s << "    vec4 diffuse_ = vec4(0.0);" << endl;
-      s << "    vec4 specular_ = vec4(0.0);" << endl;
-      s << "    vec4 test_specular_;" << endl;      
+      s << "  vec4 ambient = vec4(0.0);" << endl;
+      s << "  vec4 diffuse_ = vec4(0.0);" << endl;
+      s << "  vec4 specular_ = vec4(0.0);" << endl;
+      s << "  vec4 test_specular_;" << endl;
       s << endl;
-      s << "    vec3 eye = normalize( - eyeVec.xyz );" << endl;
-      s << "    vec3 reflected;" << endl;
-      s << "    float nDotL, rDotE, shadow, diffuseShadow;" << endl;
+      s << "  vec3 eye = normalize(  eyeVec );" << endl;
+      s << "  vec3 reflected;" << endl;
+      s << "  float nDotL, rDotE, shadow, diffuseShadow;" << endl;
       s << endl;
 
-      for(it = lightList.begin(); it != lightList.end(); ++it) {
-        stringstream lightSource;
-        lightSource << "gl_LightSource[" << (*it)->index << "]";
-
-        s << "    nDotL = dot( n, normalize(  lightVec[" << lightIndex << "] ) );" << endl;
-        s << endl;
-        s << "    // if nDotL<=0, we can skip diffuse/specular calculation," << endl;
-        s << "    // since this pixel is not lit anyway." << endl;
-        s << endl;
-
-        s << "        reflected = normalize( reflect( - lightVec[" << lightIndex << "], n ) );" << endl;
-        s << "        rDotE = max(dot( reflected, eye ), 0.0);" << endl << endl;
-
-        if(marsShadow) {
-          s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * osgShadow_ambientBias.y);" << endl;
-        }
-        else {
-          s << "    shadow = 1.0f;" << endl;
-        }
-#if USE_LSPSM_SHADOW
-        s << "    shadow = shadow2DProj( shadowTexture, gl_TexCoord[6] ).r;" << endl;
-#elif USE_PSSM_SHADOW
-        s << "    shadow = pssmAmount();" << endl;
-#endif
-        // real light still emits some diffuse light in shadowed region
-        s << "    diffuseShadow = 0.1 + 0.9 * shadow;" << endl;
-        //s << "    attenuation = attenFacs[" << lightIndex << "];" << endl;
-
-        s << "    // add diffuse and specular light" << endl;
-        if((*it)->type == interfaces::SPOTLIGHT) {
-          s << "        float spotEffect = dot( normalize( spotDir[" << (*it)->index <<
-            "] ), normalize( -lightVec[" << lightIndex << "]  ) );" << endl;
-          s << "        float spot = (spotEffect > gl_LightSource[" << (*it)->index << "].spotCosCutoff) ? 1.0 : 0.0;" << endl;
-          s << "        diffuse_  += spot*diffuseShadow * (diffuse[" << (*it)->index << "] * nDotL);" << endl;
-          s << "        test_specular_ = spot*shadow * specular[" << (*it)->index << "]" << endl;
-          s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
-          s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;          
-        }
-        else {
-          s << "        diffuse_  += diffuseShadow * (diffuse[" << (*it)->index << "] * nDotL);" << endl;
-          s << "        test_specular_ = shadow * specular[" << (*it)->index << "]" << endl;
-          s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl; //needed as in some driver implementations, pow(0,0) yields NaN
-          s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;
-        }
-
-        ++lightIndex;
+      s << "  for(int i=0; i<" << numLights << "; ++i) {" << endl;
+      s << "  if(lightIsSet[i]==1) {" << endl;
+      s << "    nDotL = dot( n, normalize(  -lightVec[i] ) );" << endl;
+      //s << "    if(nDotL < 0) nDotL = -nDotL;" << endl;
+      s << endl;
+      s << "    // if nDotL<=0, we can skip diffuse/specular calculation," << endl;
+      s << "    // since this pixel is not lit anyway." << endl;
+      s << endl;
+      s << "    reflected = normalize( reflect( lightVec[i], n ) );" << endl;
+      s << "    rDotE = max(dot( reflected, eye ), 0.0);" << endl << endl;
+      if(marsShadow) {
+        s << "    shadow = (osgShadow_ambientBias.x + shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * osgShadow_ambientBias.y);" << endl;
+        //s << "    shadow = (shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r);" << endl;
       }
+      else {
+        s << "    shadow = 1.0f;" << endl;
+      }
+#if USE_LSPSM_SHADOW
+      s << "    shadow = shadow2DProj( shadowTexture, gl_TexCoord[6] ).r;" << endl;
+#elif USE_PSSM_SHADOW
+      s << "    shadow = pssmAmount();" << endl;
+#endif
+      // real light still emits some diffuse light in shadowed region
+      s << "    diffuseShadow = shadow;//0.1 + 0.9 * shadow;" << endl;
+      s << "    float specularShadow = shadow > 0.999 ? 1. : 0.;" << endl;
+      //s << "    attenuation = attenFacs[" << lightIndex << "];" << endl;
 
+      s << "    // add diffuse and specular light" << endl;
+      s << "    if(lightIsSpot[i]==1) {" << endl;
+      s << "      float spotEffect = dot( normalize( spotDir[i] ), normalize( lightVec[i]  ) );" << endl;
+      s << "        float spot = (spotEffect > lightCosCutoff[i]) ? 1.0 : 1.0-min(1.0, pow(lightSpotExponent[i]*(lightCosCutoff[i]-spotEffect), 2));" << endl;
+      //s << "        spotEffect = pow(spotEffect - ;" << endl;
+      s << "        diffuse_  += spot*diffuseShadow * (diffuse[i] * nDotL);" << endl;
+      s << "        test_specular_ = spot*specularShadow * specular[i]" << endl;
+      s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl;
+      s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;
+      s << "    }" << endl;
+      s << "    else {" << endl;
+      s << "      ambient  += diffuseShadow*lightAmbient[i]*gl_FrontMaterial.ambient;" << endl;
+      s << "        diffuse_  += diffuseShadow * (diffuse[i] * nDotL);" << endl;
+      s << "        test_specular_ = specularShadow * specular[i]" << endl;
+      s << "                     * pow(rDotE, gl_FrontMaterial.shininess);" << endl; //needed as in some driver implementations, pow(0,0) yields NaN
+      s << "        specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);" << endl;
+      s << "    }" << endl;
+      s << "  }" << endl;
+      s << "  }" << endl;
 
       // calculate output color
       s << "" << endl;
-      s << "    outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);" << endl;
+      s << "  outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);" << endl;
 
       if(drawLineLaser) {
 
-        s << "    vec3 lwP = worldPosition - lineLaserPos.xyz;" << endl;
-        s << "    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.002){" << endl;
+        s << "  vec3 lwP = positionVarying.xyz - lineLaserPos.xyz;" << endl;
+        s << "  if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.002) {" << endl;
         s << "		vec3 lwPNorm = normalize(lwP);" << std::endl;
         s << "		vec3 directionNorm = normalize(lineLaserDirection);" << std::endl;
         s << "		float v2Laser = acos( dot(directionNorm, lwPNorm) );" << std::endl;
@@ -355,26 +312,26 @@ namespace mars {
         s << "		}" << std::endl;
         s << "	   }" << std::endl;
       }
-      s << "    //outcol = ((gl_FrontLightModelProduct.sceneColor + ambient + diffuse_) * vec4(1) + specular_);" << endl;
-      s << "    outcol.a = alpha*base.a;" << endl;
+      s << "  //outcol = ((gl_FrontLightModelProduct.sceneColor + ambient + diffuse_) * vec4(1) + specular_);" << endl;
+      s << "  outcol.a = alpha*base.a;" << endl;
       if(useNoise) {
-        s << "    vec3 vNoise, vNoise2;" << endl;
-        s << "    vNoise.x = 0.000001*floor(100000.0*positionVarying.x);" << endl;
-        s << "    vNoise.y = 0.000001*floor(100000.0*positionVarying.y);" << endl;
-        s << "    vNoise.z = 0.000001*floor(100000.0*positionVarying.z);" << endl;
-        s << "    vNoise2.x = rnd(vNoise.x, vNoise.y+vNoise.z);" << endl;
-        s << "    vNoise2.y = rnd(vNoise.y, vNoise.x-vNoise.z);" << endl;
-        s << "    vNoise2.z = rnd(vNoise.x+vNoise.y, vNoise.y-vNoise.x+vNoise.z);" << endl;
-        s << "    outcol.r += 0.04*rnd(vNoise2.x, vNoise2.y+vNoise2.z);" << endl;
-        s << "    outcol.g += 0.04*rnd(vNoise2.y, vNoise2.x-vNoise2.z);" << endl;
-        s << "    outcol.b += 0.04*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);" << endl;
+        s << "  vec3 vNoise, vNoise2;" << endl;
+        s << "  vNoise.x = 0.000001*floor(100000.0*positionVarying.x);" << endl;
+        s << "  vNoise.y = 0.000001*floor(100000.0*positionVarying.y);" << endl;
+        s << "  vNoise.z = 0.000001*floor(100000.0*positionVarying.z);" << endl;
+        s << "  vNoise2.x = rnd(vNoise.x, vNoise.y+vNoise.z);" << endl;
+        s << "  vNoise2.y = rnd(vNoise.y, vNoise.x-vNoise.z);" << endl;
+        s << "  vNoise2.z = rnd(vNoise.x+vNoise.y, vNoise.y-vNoise.x+vNoise.z);" << endl;
+        s << "  outcol.r += 0.04*rnd(vNoise2.x, vNoise2.y+vNoise2.z);" << endl;
+        s << "  outcol.g += 0.04*rnd(vNoise2.y, vNoise2.x-vNoise2.z);" << endl;
+        s << "  outcol.b += 0.04*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);" << endl;
       }
-      s << "    //outcol.rgb = vec3(gl_TexCoord[1],0);" << endl;
+      s << "  //outcol.rgb = vec3(gl_TexCoord[1],0);" << endl;
       s << "" << endl;
       if(useFog) {
-        s << "    // FIXME: eyevec maybe in tbn space !" << endl;
-        s << "    float fog = clamp(gl_Fog.scale*(gl_Fog.end + eyeVec.z), 0.0, 1.0);" << endl;
-        s << "    outcol = mix(gl_Fog.color, outcol, fog);" << endl;
+        s << "  // FIXME: eyevec maybe in tbn space !" << endl;
+        s << "  float fog = clamp(gl_Fog.scale*(gl_Fog.end + eyeVec.z), 0.0, 1.0);" << endl;
+        s << "  outcol = mix(gl_Fog.color, outcol, fog);" << endl;
       }
       s << "}" << endl;
 
