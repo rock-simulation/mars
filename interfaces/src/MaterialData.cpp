@@ -28,7 +28,7 @@ namespace mars {
 
     using namespace configmaps;
     using namespace mars::utils;
-    
+    int MaterialData::anonymCount = 1;
     bool MaterialData::operator==(const MaterialData& other) const {
       return (exists == other.exists) &&
         (ambientFront == other.ambientFront) &&
@@ -102,7 +102,13 @@ namespace mars {
         cullMask = it->second[0].getInt();
       if((it = config->find("bumpNorFac")) != config->end())
         bumpNorFac = it->second[0].getDouble();
-
+      if((it = config->find("name")) != config->end())
+        name = it->second[0].getString();
+      else {
+        std::stringstream s;
+        s << "material" << anonymCount++ << std::endl;
+        name = s.str();
+      }
 
       if(!filenamePrefix.empty()) {
         handleFilenamePrefix(&texturename, filenamePrefix);
@@ -186,7 +192,7 @@ namespace mars {
         (*config)["cullMask"][0] = ConfigItem(cullMask);
       if(cullMask != defaultMaterial.bumpNorFac)
         (*config)["bumpNorFac"][0] = ConfigItem(bumpNorFac);
-
+      (*config)["name"][0] = ConfigItem(name);
     }
 
     void MaterialData::getFilesToSave(std::vector<std::string> *fileList) {
