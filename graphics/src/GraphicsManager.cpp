@@ -290,9 +290,11 @@ namespace mars {
 
           shadowedScene->setShadowTechnique(pssm.get());
 #endif
+          shadowMap = new ShadowMap;
+          shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
+          shadowMap->initTexture();
+          shadowMap->applyState(globalStateset.get());
           if(marsShadow.bValue) {
-            shadowMap = new ShadowMap;
-            shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
             shadowedScene->setShadowTechnique(shadowMap.get());
             //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
             //shadowMap->setTextureUnit(2);
@@ -518,11 +520,11 @@ namespace mars {
         gw->initializeOSG(myQTWidget, graphicsWindows[0], width, height);
       }
       else {
-        
+
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
                                                     next_window_id++, 0,
                                                     0, this);
-        
+
         // this will open an osg widget without qt wrapping
         /*
         gw = new GraphicsWidget(myQTWidget, scene.get(),
@@ -699,6 +701,12 @@ namespace mars {
       for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter)
         drawIter->second->object()->updateLights(lightList);
 
+      std::map<std::string, MarsMaterial*>::iterator mIt = materials.begin();
+      for(; mIt!=materials.end(); ++mIt) {
+        mIt->second->setShadowScale(shadowMap->getTexScale());
+        mIt->second->updateShadowSamples();
+      }
+
       // Render a complete new frame.
       if(viewer) viewer->frame();
       ++framecount;
@@ -789,7 +797,7 @@ namespace mars {
 
       getLights(&lightList);
       if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
-      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
+      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
       osg::PositionAttitudeTransform *transform = drawObject->object()->getPosTransform();
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
@@ -840,12 +848,14 @@ namespace mars {
 
       if(activated) {
         if(mask != 0) {
-          shadowedScene->addChild(transform);
+          drawObject->object()->show();
+          //shadowedScene->addChild(transform);
         }
         else {
-          shadowedScene->addChild(transform);
+          drawObject->object()->show();
+          //shadowedScene->addChild(transform);
         }
-        if(shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
+        if(false && shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
           shadowMap->setCenterObject(drawObject->object());
           configmaps::ConfigMap m = snode.map;
           shadowMap->setRadius(m["shadowCenterRadius"][0]);
@@ -853,7 +863,7 @@ namespace mars {
       }
       //osgUtil::Optimizer optimizer;
       //optimizer.optimize(shadowedScene.get());
-      
+
       return id;
     }
 
@@ -862,6 +872,7 @@ namespace mars {
       if(ns == NULL) return;
       DrawObject *drawObject = ns->object();
       if (drawObject) {
+        drawObject->hide();
         scene->removeChild(drawObject->getPosTransform());
         shadowedScene->removeChild(drawObject->getPosTransform());
         delete drawObject;
@@ -925,9 +936,17 @@ namespace mars {
     }
     void GraphicsManager::setDrawObjectMaterial(unsigned long id,
                                                 const mars::interfaces::MaterialData &material) {
-      OSGNodeStruct *ns = findDrawObject(id);
-      if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise, drawLineLaser);
+      /*
+        OSGNodeStruct *ns = findDrawObject(id);
+        if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise, drawLineLaser);
+      */
+      std::map<std::string, MarsMaterial*>::iterator it;
+      it = materials.find(material.name);
+      if(it!=materials.end()) {
+        it->second->setMaterial(material);
+      }
     }
+
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setBits(bits);
@@ -938,8 +957,12 @@ namespace mars {
       if(ns != NULL) ns->object()->setBlending(mode);
     }
     void GraphicsManager::setBumpMap(unsigned long id, const std::string &bumpMap) {
+      fprintf(stderr, "setBumpMap\n\n");
+      assert(false);
+      /*
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setBumpMap(bumpMap);
+      */
     }
     void GraphicsManager::setSelectable(unsigned long id, bool val) {
       OSGNodeStruct *ns = findDrawObject(id);
@@ -953,8 +976,10 @@ namespace mars {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) {
         if(val) {
-          shadowedScene->addChild(ns->object()->getPosTransform());
+          ns->object()->show();
+          //shadowedScene->addChild(ns->object()->getPosTransform());
         } else {
+          ns->object()->hide();
           scene->removeChild(ns->object()->getPosTransform());
           shadowedScene->removeChild(ns->object()->getPosTransform());
         }
@@ -1031,7 +1056,11 @@ namespace mars {
         lm.lStruct = ls;
         lm.lStruct.index = lightIndex;
         lm.free = false;
-
+        if(ls.map.find("produceShadow") != ls.map.end()) {
+          if((bool)ls.map["produceShadow"]) {
+            shadowMap->setLight(lm.light.get());
+          }
+        }
         lightGroup->addChild( myLightSource.get() );
         globalStateset->setMode(GL_LIGHT0+lightIndex, osg::StateAttribute::ON);
         myLightSource->setStateSetModes(*globalStateset, osg::StateAttribute::ON);
@@ -1232,7 +1261,7 @@ namespace mars {
       getLights(&lightList);
 
       if (allNodes[0].filename=="PRIMITIVE") {
-        osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
+        osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this,
                                                                    allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
         previewNodes_[nextPreviewID] = drawObject;
         scene->addChild(drawObject->object()->getPosTransform());
@@ -1240,7 +1269,7 @@ namespace mars {
         unsigned int i=0;
         for(DrawObjects::iterator it = previewNodes_.begin();
             it != previewNodes_.end(); ++it) {
-          osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(lightList,
+          osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this,
                                                                      allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
           previewNodes_[nextPreviewID] = drawObject;
           scene->addChild(drawObject->object()->getPosTransform());
@@ -1772,12 +1801,12 @@ namespace mars {
       }
 
       if(_property.paramId == noiseProp.paramId) {
-        useNoise = noiseProp.bValue = _property.bValue;
+        setUseNoise(_property.bValue);
         return;
       }
 
       if(_property.paramId == drawLineLaserProp.paramId) {
-        drawLineLaser = drawLineLaserProp.bValue = _property.bValue;
+        setDrawLineLaser(_property.bValue);
         return;
       }
 
@@ -1788,6 +1817,11 @@ namespace mars {
 
       if(_property.paramId == marsShader.paramId) {
         setUseShader(_property.bValue);
+        return;
+      }
+
+      if(_property.paramId == marsShadow.paramId) {
+        setUseShadow(_property.bValue);
         return;
       }
 
@@ -1858,22 +1892,49 @@ namespace mars {
         iter->second->object()->setBrightness((float)val);
     }
 
+    void GraphicsManager::setUseNoise(bool val) {
+      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
+      useNoise = noiseProp.bValue = val;
+
+      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
+        iter->second->object()->setUseNoise(val);
+    }
+
+    void GraphicsManager::setDrawLineLaser(bool val) {
+      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
+      drawLineLaser = drawLineLaserProp.bValue = val;
+      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
+        iter->second->object()->setDrawLineLaser(val);
+    }
+
     void GraphicsManager::setUseShader(bool val) {
+      std::map<std::string, MarsMaterial*>::iterator it;
+      for(it=materials.begin(); it!=materials.end(); ++it) {
+        it->second->setUseMARSShader(val);
+      }
+      if(val) {
+        shadowMap->addTexture(globalStateset.get());
+      }
+      else {
+        shadowMap->removeTexture(globalStateset.get());
+      }
+      /*
       map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
 
       for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
         iter->second->object()->setUseMARSShader(val);
+      */
     }
 
 
     void GraphicsManager::initDefaultLight() {
       defaultLight.lStruct.pos = Vector(2.0, 2.0, 10.0);
       defaultLight.lStruct.ambient = mars::utils::Color(0.5, 0.5, 0.5, 1.0);
-      defaultLight.lStruct.diffuse = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
+      defaultLight.lStruct.diffuse = mars::utils::Color(0.7, 0.7, 0.7, 1.0);
       defaultLight.lStruct.specular = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
       defaultLight.lStruct.constantAttenuation = 0.25;
       defaultLight.lStruct.linearAttenuation = 0.0;
-      defaultLight.lStruct.quadraticAttenuation = 0.07;
+      defaultLight.lStruct.quadraticAttenuation = 0.01;
       defaultLight.lStruct.directional = true;
       defaultLight.lStruct.type = mars::interfaces::OMNILIGHT;
       defaultLight.lStruct.index = 0;
@@ -1979,6 +2040,67 @@ namespace mars {
     void GraphicsManager::removeOSGNode(void* node) {
       scene->removeChild((osg::Node*)node);
     }
+
+    osg::StateSet* GraphicsManager::getMaterialStateSet(const MaterialData &mStruct) {
+      std::map<std::string, MarsMaterial*>::iterator it;
+      it = materials.find(mStruct.name);
+      if(it!=materials.end()) {
+        return it->second->getStateSet();
+      }
+      else {
+        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
+                                           shadowTextureSize.iValue);
+        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
+        m->setUseMARSShader(marsShader.bValue);
+        m->setMaterial(mStruct);
+        materials[mStruct.name] = m;
+        shadowedScene->addChild(m->getGroup());
+        return m->getStateSet();
+      }
+    }
+
+    osg::Group* GraphicsManager::getMaterialGroup(const MaterialData &mStruct) {
+      std::map<std::string, MarsMaterial*>::iterator it;
+      it = materials.find(mStruct.name);
+      if(it!=materials.end()) {
+        return it->second->getGroup();
+      }
+      else {
+        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
+                                           shadowTextureSize.iValue);
+        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
+        m->setUseMARSShader(marsShader.bValue);
+        m->setMaterial(mStruct);
+        materials[mStruct.name] = m;
+        shadowedScene->addChild(m->getGroup());
+        return m->getGroup();
+      }
+    }
+
+    osg::Group* GraphicsManager::getSharedStateGroup(unsigned long id) {
+      DrawObjects::iterator iter = drawObjects_.find(id);
+      if(iter!=drawObjects_.end()) {
+        return iter->second->object()->getStateGroup();
+      }
+      return NULL;
+    }
+
+    void GraphicsManager::setUseShadow(bool v) {
+      marsShadow.bValue = v;
+
+      if(v) {
+        shadowedScene->setShadowTechnique(shadowMap.get());
+      }
+      else {
+        shadowedScene->setShadowTechnique(NULL);
+      }
+      for (DrawObjects::iterator iter = drawObjects_.begin();
+           iter != drawObjects_.end(); ++iter) {
+        iter->second->object()->setUseShadow(v);
+      }
+    }
+
+
   } // end of namespace graphics
 } // end of namespace mars
 
