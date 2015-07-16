@@ -34,17 +34,18 @@ namespace mars {
 
     class BumpMapFrag : public ShaderFunc {
     public:
-      BumpMapFrag(std::vector<std::string> &args);
+      BumpMapFrag(std::vector<std::string> &args, std::string resPath);
       std::string code() const;
+    private:
+      std::string source;
     }; // end of class BumpMapFrag
 
     class BumpMapVert : public ShaderFunc {
     public:
-      BumpMapVert(std::vector<std::string> &args,
-                  int numLights);
+      BumpMapVert(std::vector<std::string> &args, std::string resPath);
       std::string code() const;
     private:
-      int numLights;
+      std::string source;
     }; // end of class BumpMapVert
 
   } // end of namespace graphics

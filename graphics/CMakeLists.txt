@@ -94,6 +94,7 @@ set(HEADERS
            src/HUD.h
            src/PostDrawCallback.h
            src/QtOsgMixGraphicsWidget.h
+           src/MarsMaterial.h
            
            src/3d_objects/AxisPrimitive.h
            src/3d_objects/CapsuleDrawObject.h
@@ -156,6 +157,7 @@ set(SOURCES
            src/HUD.cpp
            src/QtOsgMixGraphicsWidget.cpp
            src/PostDrawCallback.cpp
+           src/MarsMaterial.cpp
            
            src/wrapper/OSGDrawItem.cpp
            src/wrapper/OSGHudElementStruct.cpp
