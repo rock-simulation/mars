@@ -39,9 +39,10 @@ namespace mars {
 
     using namespace std;
 
-    LoadDrawObject::LoadDrawObject(LoadDrawObjectInfo &inf, 
+    LoadDrawObject::LoadDrawObject(GraphicsManager *g,
+                                   LoadDrawObjectInfo &inf,
                                    const mars::utils::Vector &ext)
-      : DrawObject(), info_(inf) {
+      : DrawObject(g), info_(inf) {
     }
 
     std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::createGeometry() {

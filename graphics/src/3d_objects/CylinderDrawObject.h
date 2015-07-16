@@ -41,7 +41,9 @@ namespace mars {
     class CylinderDrawObject : public DrawObject {
 
     public:
-      CylinderDrawObject(mars::interfaces::sReal radius, mars::interfaces::sReal height);
+      CylinderDrawObject(GraphicsManager *g,
+                         mars::interfaces::sReal radius,
+                         mars::interfaces::sReal height);
       virtual void setScaledSize(const mars::utils::Vector &scaledSize);
 
       static void createShellGeometry(osg::Vec3Array *vertices,

@@ -82,7 +82,8 @@ namespace mars {
     class TerrainDrawObject : public DrawObject {
 
     public:
-      TerrainDrawObject(const mars::interfaces::terrainStruct *ts);
+      TerrainDrawObject(GraphicsManager *g,
+                        const mars::interfaces::terrainStruct *ts);
       virtual ~TerrainDrawObject(void);
       virtual void generateTangents();
       virtual void collideSphere(mars::utils::Vector pos,

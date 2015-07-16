@@ -52,7 +52,7 @@ namespace mars {
     using mars::interfaces::MaterialData;
     using mars::utils::Vector;
 
-    OSGNodeStruct::OSGNodeStruct(std::vector<LightData*> &lightList,
+    OSGNodeStruct::OSGNodeStruct(GraphicsManager *g,
                                  const NodeData &node, bool isPreview,
                                  unsigned long id,
                                  bool useMARSShader, bool useFog,
@@ -60,69 +60,51 @@ namespace mars {
                                  bool marsShadow, int defaultMaxNumNodeLights)
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
       configmaps::ConfigMap map = node.map;
+      unsigned long sharedID = 0;
+      if(map.find("sharedDrawID") != map.end()) {
+        sharedID = map["sharedDrawID"];
+      }
       if (node.filename.compare("PRIMITIVE") == 0) {
         switch(NodeData::typeFromString(node.origName.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new CubeDrawObject(node.visual_size);
-          }
-          else {
-            drawObject_ = new CubeDrawObject(node.ext);
-          }
+          drawObject_ = new CubeDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_SPHERE: {
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new SphereDrawObject(node.visual_size.x());
-          }
-          else {
-            drawObject_ = new SphereDrawObject(node.ext.x());
-          }
+          drawObject_ = new SphereDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_REFERENCE: {
 #warning add here an coordinate system item
           //For now until we have an real coordinate system
-          drawObject_ = new SphereDrawObject(0.2);
+          drawObject_ = new SphereDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_MESH:
         case mars::interfaces::NODE_TYPE_CYLINDER: 
           if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new CylinderDrawObject(node.visual_size.x(),
+            drawObject_ = new CylinderDrawObject(g, node.visual_size.x(),
                                                  node.visual_size.y());
           }
           else {
-            drawObject_ = new CylinderDrawObject(node.ext.x(), node.ext.y());
+            drawObject_ = new CylinderDrawObject(g, node.ext.x(), node.ext.y());
           }
-          break;
           break;
         case mars::interfaces::NODE_TYPE_CAPSULE: {
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new CapsuleDrawObject(node.visual_size.x(),
-                                                node.visual_size.y());
-          }
-          else {
-            drawObject_ = new CapsuleDrawObject(node.ext.x(), node.ext.y());
-          }
+          drawObject_ = new CapsuleDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_PLANE: {
           if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new PlaneDrawObject(node.visual_size);
+            drawObject_ = new PlaneDrawObject(g, node.visual_size);
           }
           else {
-            drawObject_ = new PlaneDrawObject(node.ext);
+            drawObject_ = new PlaneDrawObject(g, node.ext);
           }
           break;
         }
         case mars::interfaces::NODE_TYPE_EMPTY: {
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new EmptyDrawObject(node.visual_size);
-          }
-          else {
-            drawObject_ = new EmptyDrawObject(node.ext);
-          }
+          drawObject_ = new EmptyDrawObject(g);
           break;
         }
         default:
@@ -137,8 +119,14 @@ namespace mars {
         else {
           drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
         }
-        drawObject_->setUseMARSShader(useMARSShader);
-        drawObject_->createObject(id, Vector(0.0, 0.0, 0.0));//node.pivot);
+        //drawObject_->setUseMARSShader(useMARSShader);
+        drawObject_->createObject(id, Vector(0.0, 0.0, 0.0), sharedID);
+        if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
+          drawObject_->setScaledSize(node.visual_size);
+        }
+        else {
+          drawObject_->setScaledSize(node.ext);
+        }
       } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
         // we have a heightfield
         if (!node.terrain->pixelData) {
@@ -154,34 +142,40 @@ namespace mars {
             }
           }
         }
-        drawObject_ = new TerrainDrawObject(node.terrain);
+        drawObject_ = new TerrainDrawObject(g, node.terrain);
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
         else {
           drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
         }
-        drawObject_->setUseMARSShader(useMARSShader);
+        //drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(node.terrain->targetWidth*0.5,
-                                             node.terrain->targetHeight*0.5, 0.0));
+                                             node.terrain->targetHeight*0.5,
+                                             0.0),
+                                  sharedID);
       } else { // we have to load the node from an import file
         LoadDrawObjectInfo info;
         info.fileName = node.filename;
         info.objectName = node.origName;
-        drawObject_ = new LoadDrawObject(info, node.ext);
+        drawObject_ = new LoadDrawObject(g, info, node.ext);
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
         else {
           drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
         }
-        drawObject_->setUseMARSShader(useMARSShader);
-        drawObject_->createObject(id, node.pivot);
+        //drawObject_->setUseMARSShader(useMARSShader);
+        drawObject_->createObject(id, node.pivot, sharedID);
         drawObject_->setScale(node.visual_scale);
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
           drawObject_->setScaledSize(node.visual_size);
         }
+        else {
+          drawObject_->setScaledSize(node.ext);
+        }
       }
+
 
       drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
@@ -194,9 +188,11 @@ namespace mars {
 
       drawObject_->setMaterial(ms, useFog, useNoise, drawLineLaser, marsShadow);
 
+      /*
       if(!isPreview) {
-        drawObject_->updateShader(lightList, false, node.shaderSources);
+        drawObject_->updateShader(false, node.shaderSources);
       }
+      */
     }
 
     void OSGNodeStruct::edit(const NodeData &node, bool resize) {

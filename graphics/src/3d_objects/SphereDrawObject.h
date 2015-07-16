@@ -39,7 +39,7 @@ namespace mars {
     class SphereDrawObject : public DrawObject {
 
     public:
-      SphereDrawObject(mars::interfaces::sReal radius);
+      SphereDrawObject(GraphicsManager *g);
       ~SphereDrawObject();
 
       static void createGeometry(osg::Vec3Array *vertices,
@@ -51,11 +51,10 @@ namespace mars {
                                  bool backfaces=false,
                                  unsigned int levelOfDetail=4);
 
-      virtual void setScaledSize(const mars::utils::Vector &scaledSize);
+      //virtual void setScaledSize(const mars::utils::Vector &scaledSize);
 
     protected:
-      mars::interfaces::sReal radius_;
-
+      static osg::ref_ptr<osg::Geode> sharedCube;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry();
 
     }; // end of class SphereDrawObject

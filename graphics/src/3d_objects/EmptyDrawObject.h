@@ -35,13 +35,9 @@ namespace mars {
 
     class EmptyDrawObject : public DrawObject {
     public:
-      EmptyDrawObject(const mars::utils::Vector &ext) : DrawObject(),
-                                                        extend_(ext) {}
-
+    EmptyDrawObject(GraphicsManager *g) : DrawObject(g) {}
 
     protected:
-      mars::utils::Vector extend_;
-
       std::list< osg::ref_ptr< osg::Geode > > createGeometry() {
         return std::list< osg::ref_ptr< osg::Geode > >();
       }
