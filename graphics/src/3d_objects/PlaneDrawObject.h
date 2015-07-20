@@ -40,7 +40,7 @@ namespace mars {
     class PlaneDrawObject : public DrawObject {
 
     public:
-      PlaneDrawObject(const mars::utils::Vector &ext);
+      PlaneDrawObject(GraphicsManager *g, const mars::utils::Vector &ext);
       virtual void setScaledSize(const mars::utils::Vector &scaledSize);
 
     private:

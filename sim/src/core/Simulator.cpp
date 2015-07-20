@@ -670,8 +670,13 @@ namespace mars {
 
     void Simulator::addLight(LightData light) {
       sceneHasChanged(false);
-      if (control->graphics && control->controllers->isLoadingAllowed())
+      if (control->graphics && control->controllers->isLoadingAllowed()) {
+        unsigned long id = control->nodes->getID(light.node);
+        if(id) {
+          light.drawID = control->nodes->getDrawID(id);
+        }
         control->graphics->addLight(light);
+      }
     }
 
 

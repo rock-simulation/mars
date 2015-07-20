@@ -51,7 +51,8 @@ namespace mars {
     class LoadDrawObject : public DrawObject {
 
     public:
-      LoadDrawObject(LoadDrawObjectInfo &inf, const mars::utils::Vector &ext);
+      LoadDrawObject(GraphicsManager *g, LoadDrawObjectInfo &inf,
+                     const mars::utils::Vector &ext);
 
     protected:
       LoadDrawObjectInfo info_;

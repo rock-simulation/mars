@@ -80,7 +80,7 @@ namespace mars {
     class OSGNodeStruct;
     class OSGHudElementStruct;
     class HUDElement;
-
+    class MarsMaterial;
 
 
     //mapping and control structs
@@ -296,6 +296,12 @@ namespace mars {
 
       void removeGraphicsWidget(unsigned long id);
       virtual bool isInitialized() const {return initialized;}
+      osg::StateSet* getMaterialStateSet(const interfaces::MaterialData &mStruct);
+      osg::Group* getMaterialGroup(const interfaces::MaterialData &mStruct);
+      void setDrawLineLaser(bool val);
+      osg::Group* getSharedStateGroup(unsigned long id);
+      void setUseShadow(bool v);
+
     private:
 
       mars::interfaces::GraphicData graphicOptions;
@@ -380,7 +386,7 @@ namespace mars {
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow,
         multisamples, noiseProp, brightness, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
-        hudHeightProp;
+        hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;
@@ -388,12 +394,13 @@ namespace mars {
       bool set_window_prop;
       osg::ref_ptr<osg::CullFace> cull;
       bool initialized;
-
+      std::map<std::string, MarsMaterial*> materials;
       void setupCFG(void);
 
       unsigned long findCoreObject(unsigned long draw_id) const;
       void setMultisampling(int num_samples);
       void setBrightness(double val);
+      void setUseNoise(bool val);
       void setUseShader(bool val);
 
       void initDefaultLight();

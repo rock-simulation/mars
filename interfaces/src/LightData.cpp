@@ -49,7 +49,7 @@ namespace mars {
       CPP_UNUSED(filenamePrefix);
       CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
-
+      map = *config;
       GET_VALUE("name", name, String);
       GET_OBJECT("position", pos, vector);
       GET_OBJECT("lookat", lookAt, vector);
@@ -66,7 +66,8 @@ namespace mars {
       GET_VALUE("angle", angle, Double);
       GET_VALUE("exponent", exponent, Double);
       GET_VALUE("directional", directional, Bool);
-
+      GET_VALUE("nodeName", node, String);
+      drawID = 0;
       return true;
     }
 
@@ -75,6 +76,7 @@ namespace mars {
       CPP_UNUSED(skipFilenamePrefix);
       LightData defaultLight;
 
+      *config = map;
       SET_VALUE("name", name);
       SET_OBJECT("position", pos, vector);
       SET_OBJECT("lookat", lookAt, vector);
@@ -101,6 +103,8 @@ namespace mars {
       SET_VALUE("angle", angle);
       SET_VALUE("exponent", exponent);
       SET_VALUE("directional", directional);
+      SET_VALUE("nodeName", node);
+      drawID = 0;
     }
 
     void LightData::getFilesToSave(std::vector<std::string> *fileList) {

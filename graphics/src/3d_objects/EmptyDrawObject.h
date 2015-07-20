@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2015, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -18,41 +18,32 @@
  *
  */
 
+/*
+ *  EmptyDrawObject.h
+ *  General EmptyDrawObject to inherit from.
+ *
+ *  Created by Malte Langosz on 10.07.15.
+ */
 
-#ifndef MARS_GRAPHICS_GL_PIXEL_LIGHT_H
-#define MARS_GRAPHICS_GL_PIXEL_LIGHT_H
+#ifndef MARS_GRAPHICS_EMPTY_DRAW_OBJECT_H
+#define MARS_GRAPHICS_EMPTY_DRAW_OBJECT_H
 
-#include "shader-function.h"
-
-#include <mars/interfaces/LightData.h>
-
-#include <vector>
-#include <string>
+#include "DrawObject.h"
 
 namespace mars {
   namespace graphics {
 
-    class PixelLightVert : public ShaderFunc {
+    class EmptyDrawObject : public DrawObject {
     public:
-      PixelLightVert(std::vector<std::string> &args, int numLights,
-                     std::string resPath);
-      std::string code() const;
-    private:
-      bool drawLineLaser, marsShadow;
-      int numLights;
-      std::string source;
-    };
+    EmptyDrawObject(GraphicsManager *g) : DrawObject(g) {}
 
-    class PixelLightFrag : public ShaderFunc {
-    public:
-      PixelLightFrag(std::vector<std::string> &args, int numLights,
-                     std::string resPath, int numShadowSampes);
-      std::string code() const;
-    private:
-      std::string source;
+    protected:
+      std::list< osg::ref_ptr< osg::Geode > > createGeometry() {
+        return std::list< osg::ref_ptr< osg::Geode > >();
+      }
     };
 
   } // end of namespace graphics
 } // end of namespace mars
 
-#endif /* MARS_GRAPHICS_GL_PIXEL_LIGHT_H */
+#endif /* MARS_GRAPHICS_EMPTY_DRAW_OBJECT_H */

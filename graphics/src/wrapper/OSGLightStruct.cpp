@@ -65,18 +65,17 @@ namespace mars {
         osg::Vec3 lookPos = osg::Vec3(ls.lookAt.x(), ls.lookAt.y(),
                                       ls.lookAt.z());
 
-        light_->setDirection(lookPos-pos);
+        light_->setDirection(lookPos);
         light_->setSpotCutoff(ls.angle*3.14/180);
         light_->setSpotExponent(ls.exponent);
 
-        //set light position
-        if(ls.directional) {
-          light_->setPosition(osg::Vec4(ls.pos.x(), ls.pos.y(), ls.pos.z(), 0.0f));
-        } else {
-          light_->setPosition(osg::Vec4(ls.pos.x(), ls.pos.y(), ls.pos.z(), 1.0f));
-        }
       } else {
         light_->setSpotCutoff(180.0);
+      }
+      //set light position
+      if(ls.directional) {
+        light_->setPosition(osg::Vec4(ls.pos.x(), ls.pos.y(), ls.pos.z(), 0.0f));
+      } else {
         light_->setPosition(osg::Vec4(ls.pos.x(), ls.pos.y(), ls.pos.z(), 1.0f));
       }
       //set attenuation parameters
@@ -98,7 +97,12 @@ namespace mars {
 
     void OSGLightStruct::update(const LightData &ls) {
       //set light position
-      light_->setPosition(toOSGVec4(ls.pos,1.0f));
+      if(ls.directional) {
+        light_->setPosition(toOSGVec4(ls.pos,0.0f));
+      }
+      else {
+        light_->setPosition(toOSGVec4(ls.pos,1.0f));
+      }
       if(lightMarkerGeode.get()) {
         removeChild(lightMarkerGeode.get());
         lightMarkerGeode = createLightMarker(ls);
@@ -111,21 +115,14 @@ namespace mars {
 
       //set spotlight parameters
       if (ls.type == mars::interfaces::SPOTLIGHT){
-        osg::Vec3 pos = osg::Vec3(ls.pos.x(), ls.pos.y(), ls.pos.z());
         osg::Vec3 lookPos = osg::Vec3(ls.lookAt.x(), ls.lookAt.y(), ls.lookAt.z());
 
-        light_->setDirection(lookPos-pos);
+        light_->setDirection(lookPos);
         light_->setSpotCutoff(ls.angle*3.14/180.);
         light_->setSpotExponent(ls.exponent);
-        if(ls.directional == true) {
-          light_->setPosition(toOSGVec4(ls.pos, 0.0f));
-        } else {
-          light_->setPosition(toOSGVec4(ls.pos, 1.0f));
-        }
       }
       //if no spotlight, set standard values for Omnilight
       else {
-        light_->setDirection(osg::Vec3(0.0f,0.0f,-1.0f));
         light_->setSpotCutoff(180.0f);
         light_->setSpotExponent(0.0f);
       }

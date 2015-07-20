@@ -41,12 +41,10 @@ namespace mars {
     class CapsuleDrawObject : public DrawObject {
 
     public:
-      CapsuleDrawObject(mars::interfaces::sReal radius, mars::interfaces::sReal height);
+      CapsuleDrawObject(GraphicsManager *g);
       virtual void setScaledSize(const mars::utils::Vector &scaledSize);
 
     protected:
-      mars::interfaces::sReal radius_;
-      mars::interfaces::sReal height_;
       osg::ref_ptr<osg::Geometry> geom;
 
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry();

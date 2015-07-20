@@ -37,10 +37,8 @@ namespace mars {
     using mars::interfaces::sReal;
     using mars::utils::Vector;
 
-    CapsuleDrawObject::CapsuleDrawObject(sReal radius, sReal height)
-      : DrawObject(), radius_(radius), height_(height) {
-      geometrySize_.y() = geometrySize_.x() = radius_*2;
-      geometrySize_.z() = height_+geometrySize_.y();
+    CapsuleDrawObject::CapsuleDrawObject(GraphicsManager *g)
+      : DrawObject(g) {
     }
 
     std::list< osg::ref_ptr< osg::Geode > > CapsuleDrawObject::createGeometry() {
@@ -51,11 +49,10 @@ namespace mars {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
 
       // create sphere caps
-      osg::Vec3 sphereTopOffset(0.0f, 0.0f, 0.5*height_ - 0.0018f);
-      osg::Vec3 sphereBottomOffset(0.0f, 0.0f, -0.5*height_ + 0.0018f);
-      SphereDrawObject::createGeometry(
-                                       vertices, normals, uv,
-                                       radius_, sphereTopOffset, sphereBottomOffset, false, 2);
+      osg::Vec3 sphereTopOffset(0.0f, 0.0f, 0.5f - 0.0018f);
+      osg::Vec3 sphereBottomOffset(0.0f, 0.0f, -0.5f + 0.0018f);
+      SphereDrawObject::createGeometry(vertices.get(), normals.get(), uv.get(),
+                                       1.0, sphereTopOffset, sphereBottomOffset, false, 2);
 
       geom->setVertexArray(vertices.get());
       geom->setNormalArray(normals.get());
@@ -83,8 +80,9 @@ namespace mars {
         (scaledSize.y + 2*scaledSize.x) / geometrySize_.z));
       */
       // create sphere caps
-      radius_ = scaledSize.x();
-      height_ = scaledSize.y() + 2*scaledSize.x();
+      double radius_ = scaledSize.x();
+      double height_ = scaledSize.y() + 2*scaledSize.x();
+      fprintf(stderr, "capsule size: %g %g\n", scaledSize.x(), scaledSize.y());
       osg::Vec3 sphereTopOffset(0.0f, 0.0f, 0.5*height_ - 0.0018f);
       osg::Vec3 sphereBottomOffset(0.0f, 0.0f, -0.5*height_ + 0.0018f);
       SphereDrawObject::createGeometry(
@@ -92,7 +90,7 @@ namespace mars {
                                        dynamic_cast<osg::Vec3Array*>(geom->getNormalArray()),
                                        dynamic_cast<osg::Vec2Array*>(geom->getTexCoordArray(DEFAULT_UV_UNIT)),
                                        radius_, sphereTopOffset,
-                                       sphereBottomOffset, false, 4);
+                                       sphereBottomOffset, false, 2);
       geom->dirtyDisplayList();
       geom->dirtyBound();
     }

@@ -24,6 +24,8 @@
 #include <mars/utils/Color.h>
 #include <configmaps/ConfigData.h>
 
+#include <sstream>
+
 namespace mars {
   namespace interfaces {
 
@@ -60,6 +62,10 @@ namespace mars {
         brightness = 0.0;
         getLight = true;
         cullMask = 0xffffffff;
+        bumpNorFac = 1.0;
+        std::stringstream s;
+        s << "material" << anonymCount++;
+        name = s.str();
       }
 
       // todo: handle filenames
@@ -85,11 +91,15 @@ namespace mars {
       std::string texturename; // the filename of the texture of the node
       std::string bumpmap; // the filename for a bump- / displacementmap
       std::string normalmap; // the filename for a normalmap
+      double bumpNorFac;
       double tex_scale;
       bool reflect;
       double brightness;
       bool getLight;
       int cullMask;
+      std::string name;
+
+      static int anonymCount;
     }; // end of struct MaterialData
 
   } // end of namespace interfaces
