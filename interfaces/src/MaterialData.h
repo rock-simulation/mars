@@ -64,7 +64,7 @@ namespace mars {
         cullMask = 0xffffffff;
         bumpNorFac = 1.0;
         std::stringstream s;
-        s << "material" << anonymCount++ << std::endl;
+        s << "material" << anonymCount++;
         name = s.str();
       }
 

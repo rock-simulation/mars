@@ -35,7 +35,8 @@ namespace mars {
       addAttribute( (GLSLAttribute) { "vec4", "vertexTangent" });
       addVarying( (GLSLVarying) { "mat3", "ttw" } );
 
-      std::ifstream t(resPath + "/shader/normalmap.vert");
+      resPath += "/shader/normalmap.vert";
+      std::ifstream t(resPath.c_str());
       std::stringstream buffer;
       buffer << t.rdbuf();
       source = buffer.str();
@@ -56,8 +57,8 @@ namespace mars {
     {
       addVarying( (GLSLVarying) { "mat3", "ttw" } );
       addUniform( (GLSLUniform) { "float", "bumpNorFac"} );
-
-      std::ifstream t(resPath + "/shader/normalmap.frag");
+      resPath += "/shader/normalmap.frag";
+      std::ifstream t(resPath.c_str());
       std::stringstream buffer;
       buffer << t.rdbuf();
       source = buffer.str();

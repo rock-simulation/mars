@@ -9,7 +9,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   vec4 test_specular_;
   vec3 eye = normalize(  eyeVec );
   vec3 reflected;
-  float nDotL, rDotE, shadow, shadow2, diffuseShadow;
+  float nDotL, rDotE, shadow, diffuseShadow;
   float dist, atten, x, y;
   vec4 shadowCoord = gl_TexCoord[2];
   vec2 v;
@@ -24,17 +24,22 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
         for(int k=0; k<shadowSamples; ++k) {
           x = 100*positionVarying.x+100*shadowOffsets[k*2+1].x;
           y = 100*positionVarying.y+100*shadowOffsets[k*2+1].y;
-          v.x = (rnd(x, y)-0.5)*invShadowTextureSize*50000*shadowScale;
-          v.y = (rnd(y, x)-0.5)*invShadowTextureSize*50000*shadowScale;
-          shadowCoord.xy = gl_TexCoord[2].xy + shadowOffsets[k*2]*invShadowTextureSize*20000*shadowScale + v;
+          v.x = (rnd(x, y)-0.5)*2.;
+          v.y = (rnd(y, x)-0.5)*2.;
+          x = length(v);
+          v *= 0.1/x;
+          v += shadowOffsets[k*2];
+          x = sqrt(v.y)*cos(6.28*v.x);
+          y = sqrt(v.y)*sin(6.28*v.x);
+          v = vec2(x, y);
+          //shadowCoord.xy = gl_TexCoord[2].xy + shadowOffsets[k*2]*0.01 + v*0.005;
+          v = (shadowSamples==1)? vec2(0) : v;
+          shadowCoord.xy = gl_TexCoord[2].xy + v*0.05;
           shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
         }
-        shadow *= shadow*shadow* osgShadow_ambientBias.y;
+        //shadow *= shadow*shadow* osgShadow_ambientBias.y;
+        shadow *= osgShadow_ambientBias.y;
         shadow += osgShadow_ambientBias.x;
-        shadowCoord.xy = gl_TexCoord[2].xy;
-        //shadow = shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r;
-        shadowCoord.xy = gl_TexCoord[2].xy+vec2(1.)*invShadowTextureSize*20000*shadowScale;
-        shadow2 = shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r;
       } else {
         shadow = 1.0f;
       }
@@ -109,9 +114,4 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
     float fog = clamp(gl_Fog.scale*(gl_Fog.end + eyeVec.z), 0.0, 1.0);
     outcol = mix(gl_Fog.color, outcol, fog);
   }
-  /*  
-  outcol.r = shadow;
-  outcol.g = shadow2;
-  outcol.b = 0;
-  */
 }

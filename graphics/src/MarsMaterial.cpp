@@ -42,7 +42,8 @@
 #endif
 #include <osg/TexMat>
 
-#define SHADOW_SAMPLES 9
+#define SHADOW_SAMPLES 1
+#define SHADOW_SAMPLES2 (SHADOW_SAMPLES*SHADOW_SAMPLES)
 
 namespace mars {
   namespace graphics {
@@ -72,13 +73,13 @@ namespace mars {
       texScaleUniform = new osg::Uniform("texScale", 1.0f);
       shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
       bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
-      shadowSamplesUniform = new osg::Uniform("shadowSamples", SHADOW_SAMPLES);
+      shadowSamplesUniform = new osg::Uniform("shadowSamples", SHADOW_SAMPLES2);
       invShadowSamplesUniform = new osg::Uniform("invShadowSamples",
-                                                 1.f/SHADOW_SAMPLES);
+                                                 1.f/SHADOW_SAMPLES2);
       invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                      (float)(invShadowTextureSize));
       shadowOffsetsUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC2,
-                                              "shadowOffsets", SHADOW_SAMPLES*2);
+                                              "shadowOffsets", SHADOW_SAMPLES2*2);
       
     }
 
@@ -187,27 +188,29 @@ namespace mars {
       osg::Vec2 v;
       count++;
       double x1, y1, r1, r2;
-      double x[9] = {0, 1, 2,
-                     0, 1, 2,
-                     0, 1, 2};
-      double y[9] = {0, 0, 0,
-                      1, 1, 1,
-                      2, 2, 2};
-      double scale1 = 1./4;
-      for(int i=0; i<SHADOW_SAMPLES; ++i) {
+      double x[SHADOW_SAMPLES2];
+      double y[SHADOW_SAMPLES2];
+      double scale1 = 1./SHADOW_SAMPLES;
+      for(int n=0; n<SHADOW_SAMPLES; ++n) {
+        for(int m=0; m<SHADOW_SAMPLES; ++m) {
+          x[n*SHADOW_SAMPLES+m] = m;
+          y[n*SHADOW_SAMPLES+m] = n;
+        }
+      }
+      for(int i=0; i<SHADOW_SAMPLES2; ++i) {
         // get random values from 0 to 1 in nine sub-squares
-        r1 = ((double) rand()/RAND_MAX); // -1 to 1
-        r2 = ((double) rand()/RAND_MAX);
+        r1 = ((double) rand()/RAND_MAX)*2-1; // -1 to 1
+        r2 = ((double) rand()/RAND_MAX)*2-1;
         //v.x() = r1*scale1*0.5;
         //v.y() = r2*scale1*0.5;
-        v.x() = scale1*0.5+scale1*x[i]; 
+        v.x() = scale1*0.5+scale1*x[i];
         v.y() = scale1*0.5+scale1*y[i];
         //v.x() = (v.x()-0.5)*2;
         //v.y() = (v.y()-0.5)*2;
-        x1 = sqrt(v.y())*cos(6.28*v.x());
-        y1 = sqrt(v.y())*sin(6.28*v.x());
-        v.x() = x1 * invShadowTextureSize;
-        v.y() = y1 * invShadowTextureSize;
+        //x1 = sqrt(v.y())*cos(6.28*v.x());
+        //y1 = sqrt(v.y())*sin(6.28*v.x());
+        //v.x() = x1;// * invShadowTextureSize;
+        //v.y() = y1;// * invShadowTextureSize;
         shadowOffsetsUniform->setElement(i*2, v);
         v.x() = r1;
         v.y() = r2;

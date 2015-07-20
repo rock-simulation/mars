@@ -59,8 +59,8 @@ namespace mars {
 
       addUniform( (GLSLUniform) { "int", "useShadow" } );
       addUniform( (GLSLUniform) { "int", "numLights" } );
-
-      std::ifstream t(resPath + "/shader/plight.vert");
+      resPath += "/shader/plight.vert";
+      std::ifstream t(resPath.c_str());
       std::stringstream buffer;
       buffer << t.rdbuf();
       source = buffer.str();
@@ -190,7 +190,8 @@ namespace mars {
 
       addDependencyCode("pssm", pssmAmount());
 #endif
-      std::ifstream t(resPath + "/shader/plight.frag");
+      resPath += "/shader/plight.frag";
+      std::ifstream t(resPath.c_str());
       std::stringstream buffer;
       buffer << t.rdbuf();
       source = buffer.str();
