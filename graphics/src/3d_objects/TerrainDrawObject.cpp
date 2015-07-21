@@ -375,7 +375,10 @@ namespace mars {
     }
 
     void TerrainDrawObject::collideSphere(Vector pos, sReal radius) {
-      pos += pivot_ - position_;
+      pos -= position_;
+      pos = quaternion_*pos;
+      pos += pivot_;
+
 #ifdef USE_VERTEX_BUFFER
       vbt->collideSphere(pos.x(), pos.y(), pos.z(), radius);
       return;
