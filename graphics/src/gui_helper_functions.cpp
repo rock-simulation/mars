@@ -581,6 +581,7 @@ namespace mars {
       newTextureFile.texture->setDataVariance(osg::Object::DYNAMIC);
       newTextureFile.texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
       newTextureFile.texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+      newTextureFile.texture->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
 
       osg::Image* textureImage = loadImage(filename);
       newTextureFile.texture->setImage(textureImage);

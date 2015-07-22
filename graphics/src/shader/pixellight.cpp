@@ -134,6 +134,7 @@ namespace mars {
 
       addVarying( (GLSLVarying) { "vec3", "eyeVec" } );
       addVarying( (GLSLVarying) { "vec4", "positionVarying" } );
+      addVarying( (GLSLVarying) { "vec4", "modelVertex" } );
 
       addUniform( (GLSLUniform) { "vec4", "lightAmbient" + s.str() } );
       addUniform( (GLSLUniform) { "vec3", "lightEmission" + s.str() } );
@@ -158,14 +159,12 @@ namespace mars {
       addUniform( (GLSLUniform) { "int", "drawLineLaser" } );
 
       addUniform( (GLSLUniform) { "sampler2DShadow", "osgShadow_shadowTexture" });
+      addUniform( (GLSLUniform) { "sampler2D", "NoiseMap" } );
       addUniform( (GLSLUniform) { "vec2", "osgShadow_ambientBias" });
       addUniform( (GLSLUniform) { "float", "shadowScale" });
       addUniform( (GLSLUniform) { "int", "shadowSamples" } );
       addUniform( (GLSLUniform) { "float", "invShadowSamples" } );
       addUniform( (GLSLUniform) { "float", "invShadowTextureSize" } );
-      s.str("");
-      s << "[" << numShadowSamples*2 << "]";
-      addUniform( (GLSLUniform) { "vec2", "shadowOffsets" + s.str() });
 
       addUniform( (GLSLUniform) { "vec3", "lineLaserPos" });
       addUniform( (GLSLUniform) { "vec3", "lineLaserNormal" });
