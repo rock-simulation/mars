@@ -170,9 +170,9 @@ namespace mars {
         rawValues->button1 = (int)values[6];
         rawValues->button2 = (int)values[7];
 
-        coordinates[0] = rawValues->tx * fabs(rawValues->tx * 0.001);
-        coordinates[2] = -rawValues->ty * fabs(rawValues->ty * 0.001);
-        coordinates[1] = -rawValues->tz * fabs(rawValues->tz * 0.001);
+        coordinates[0] = rawValues->tx * fabs(rawValues->tx * 0.01);
+        coordinates[2] = -rawValues->ty * fabs(rawValues->ty * 0.01);
+        coordinates[1] = -rawValues->tz * fabs(rawValues->tz * 0.01);
         coordinates[3] = rawValues->rx * fabs(rawValues->rx * 0.01);
         coordinates[5] = -rawValues->ry * fabs(rawValues->ry * 0.01);
         coordinates[4] = -rawValues->rz * fabs(rawValues->rz * 0.01);
