@@ -2113,7 +2113,7 @@ namespace mars {
       double scale1 = 1./SHADOW_SAMPLES;
       unsigned char *data = noiseImage_->data();
       int sampleX = 0, sampleY = 0;
-      double noise = 0.3;
+      double noise = 0.5;
       for(int i=0; i<256; ++i) {
         for(int l=0; l<256; ++l) {
           if(!count) {
@@ -2137,7 +2137,7 @@ namespace mars {
         }
       }
       noiseImage_->dirty();
-      count = 1;
+      //count = 1;
     }
 
   } // end of namespace graphics

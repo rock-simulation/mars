@@ -25,18 +25,18 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
         shadow = 0;
         if(shadowSamples == 1) {
           shadow += shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * invShadowSamples;
-
         }
         else {
           float da = 256/shadowSamples;
-          vec2 offset = floor(da*screenPos.xy)*shadowSamples;
+          float w = gl_TexCoord[2].w*invShadowTextureSize;
+          vec2 offset = floor(da*screenPos.xy*10)*shadowSamples;
           for(int k=0; k<shadowSamples; ++k) {
             for(int l=0; l<shadowSamples; ++l) {
               x = offset.x*s + k*s;
               y = offset.y*s + l*s;
               v = texture2D( NoiseMap, vec2(x,y)).xy-0.5;
-              v *= 2;
-              shadowCoord.xy = gl_TexCoord[2].xy + v*0.024;
+              v *= 8;
+              shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.001, 0);
               shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
             }
           }
