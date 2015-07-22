@@ -70,7 +70,7 @@ namespace mars {
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=90;
-        opening_height=90;
+        opening_height=-1;
         hud_width = 320;
         hud_height = 240;
         depthImage = false;
@@ -83,8 +83,8 @@ namespace mars {
       int hud_pos;
       utils::Vector pos_offset;
       utils::Quaternion ori_offset;
-      double opening_width;
-      double opening_height;
+      double opening_width; // deprecated: we should probably rename this to opening_angle
+      double opening_height; // deprecated: we should probably rename this to opening_angle2
       int hud_width;
       int hud_height;
       bool depthImage;

@@ -299,6 +299,18 @@ namespace mars {
       if((it = config->find("height")) != config->end())
         cfg->height = it->second[0].getULong();
 
+      if((it = config->find("opening_width")) != config->end()) // deprecated
+        cfg->opening_width = it->second[0].getDouble();
+
+      if((it = config->find("opening_angle")) != config->end())
+        cfg->opening_width = it->second[0].getDouble();
+
+      if((it = config->find("opening_height")) != config->end()) // deprecated
+        cfg->opening_height = it->second[0].getDouble();
+
+      if((it = config->find("opening_angle2")) != config->end())
+        cfg->opening_height = it->second[0].getDouble();
+
       if((it = config->find("show_cam")) != config->end()){
         cfg->show_cam =  it->second[0].getBool();
         if(cfg->show_cam) {
@@ -308,7 +320,7 @@ namespace mars {
       }else{
         cfg->show_cam = false;
       }
-      
+
       if((it = config->find("enabled")) != config->end()){
         cfg->enabled =  it->second[0].getBool();
       }else{
