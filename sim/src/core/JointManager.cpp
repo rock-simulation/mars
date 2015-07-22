@@ -316,7 +316,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
       if (iter != simJoints.end())
-        iter->second->setTorque(torque);
+        iter->second->setEffort(torque, 0);
     }
 
 

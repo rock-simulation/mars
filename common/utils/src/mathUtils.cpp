@@ -30,6 +30,33 @@
 namespace mars {
   namespace utils {
 
+    double pipe(double* x, std::vector<double>* c) {
+      return (*x);
+    }
+
+    double polynom5(double* x, std::vector<double>* c) {
+      return (*c)[0]*pow((*x),5) + (*c)[1]*pow((*x),4) + (*c)[2]*pow((*x),3)
+        + (*c)[3]*pow((*x),2) + (*c)[4]*((*x)) + (*c)[5];
+    }
+
+    double polynom3(double* x, std::vector<double>* c) {
+      return (*c)[0]*pow((*x),3) + (*c)[1]*pow((*x),2) + (*c)[2]*((*x)) + (*c)[3];
+    }
+
+    /* first parameter is mu, second is sigma
+    */
+    double gaussian(double* x, std::vector<double>* c) {
+      return 1/(SQRT2PI*(*c)[1])*exp(-0.5*pow(((*x)-(*c)[0])/(*c)[1], 2));
+    }
+
+    /*double beta_distribution(double* x, std::vector<double>* c) {
+
+    }
+
+    double gamma_distribution(double* x, std::vector<double>* c) {
+
+    }*/
+
     static const int EULER_AXIS_1 = 2;
     static const int EULER_AXIS_2 = 0;
     static const int EULER_AXIS_3 = 1;

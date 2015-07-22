@@ -66,11 +66,27 @@ namespace mars {
       return true;
     }
 
+    bool DataItem::get(unsigned int *val) const {
+      if(type != UINT_TYPE) {
+        return false;
+      }
+      *val = ui;
+      return true;
+    }
+
     bool DataItem::get(long *val) const {
       if(type != LONG_TYPE) {
         return false;
       }
       *val = l;
+      return true;
+    }
+
+    bool DataItem::get(unsigned long *val) const {
+      if(type != ULONG_TYPE) {
+        return false;
+      }
+      *val = ul;
       return true;
     }
 
@@ -123,11 +139,27 @@ namespace mars {
       return true;
     }
 
+    bool DataItem::set(unsigned int val) {
+      if(type != UINT_TYPE) {
+        return false;
+      }
+      ui = val;
+      return true;
+    }
+
     bool DataItem::set(long val) {
       if(type != LONG_TYPE) {
         return false;
       }
       l = val;
+      return true;
+    }
+
+    bool DataItem::set(unsigned long val) {
+      if(type != ULONG_TYPE) {
+        return false;
+      }
+      ul = val;
       return true;
     }
 
