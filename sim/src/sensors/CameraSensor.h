@@ -72,7 +72,7 @@ namespace mars {
         opening_width=90;
         opening_height=-1;
         hud_width = 320;
-        hud_height = 240;
+        hud_height = -1;
         depthImage = false;
       }
 

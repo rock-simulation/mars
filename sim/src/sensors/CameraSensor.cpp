@@ -311,6 +311,10 @@ namespace mars {
       if((it = config->find("opening_angle2")) != config->end())
         cfg->opening_height = it->second[0].getDouble();
 
+      // correct opening_height
+      if (cfg->opening_height < 0)
+        cfg->opening_height = cfg->opening_width * ((double)cfg->height / (double)cfg->width);
+
       if((it = config->find("show_cam")) != config->end()){
         cfg->show_cam =  it->second[0].getBool();
         if(cfg->show_cam) {
@@ -331,6 +335,14 @@ namespace mars {
         cfg->hud_width = it->second[0].children["x"][0].getDouble();
         cfg->hud_height = it->second[0].children["y"][0].getDouble();
       }
+
+      // if hud_height and hud_width are present, overwrite parameters
+      if((it = config->find("hud_width")) != config->end())
+        cfg->hud_width = it->second[0].getDouble();
+      if((it = config->find("hud_height")) != config->end())
+        cfg->hud_height = it->second[0].getDouble();
+      else
+        cfg->hud_height = cfg->hud_width * ((double)cfg->height / (double)cfg->width);
 
       if((it = config->find("position_offset")) != config->end()) {
         cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
