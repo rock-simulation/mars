@@ -1,6 +1,6 @@
 void plight(vec4 v) {
   // save the vertex to eye vector in world space
-  eyeVec = osg_ViewMatrixInverse[3].xyz;
+  eyeVec = osg_ViewMatrixInverse[3].xyz-v.xyz;
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i] == 1) {
       if(lightIsDirectional[i] == 1) {
