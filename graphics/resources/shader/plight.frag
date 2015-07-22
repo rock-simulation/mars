@@ -10,10 +10,12 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   vec3 eye = normalize(  eyeVec );
   vec3 reflected;
   float nDotL, rDotE, shadow, diffuseShadow;
-  float dist, atten, x, y;
+  float dist, atten, x, y, s;
   vec4 shadowCoord = gl_TexCoord[2];
   vec2 v;
-
+  vec4 screenPos = (gl_ModelViewProjectionMatrix * modelVertex);
+  screenPos /= screenPos.w;
+  s = 0.00390625;
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i]==1) {
       nDotL = max(dot( n, normalize(  -lightVec[i] ) ), 0.0);
@@ -21,21 +23,23 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
       rDotE = max(dot( reflected, eye ), 0.0);
       if(useShadow == 1) {
         shadow = 0;
-        for(int k=0; k<shadowSamples; ++k) {
-          x = 100*positionVarying.x+100*shadowOffsets[k*2+1].x;
-          y = 100*positionVarying.y+100*shadowOffsets[k*2+1].y;
-          v.x = (rnd(x, y)-0.5)*2.;
-          v.y = (rnd(y, x)-0.5)*2.;
-          x = length(v);
-          v *= 0.1/x;
-          v += shadowOffsets[k*2];
-          x = sqrt(v.y)*cos(6.28*v.x);
-          y = sqrt(v.y)*sin(6.28*v.x);
-          v = vec2(x, y);
-          //shadowCoord.xy = gl_TexCoord[2].xy + shadowOffsets[k*2]*0.01 + v*0.005;
-          v = (shadowSamples==1)? vec2(0) : v;
-          shadowCoord.xy = gl_TexCoord[2].xy + v*0.05;
-          shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
+        if(shadowSamples == 1) {
+          shadow += shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * invShadowSamples;
+
+        }
+        else {
+          float da = 256/shadowSamples;
+          vec2 offset = floor(da*screenPos.xy)*shadowSamples;
+          for(int k=0; k<shadowSamples; ++k) {
+            for(int l=0; l<shadowSamples; ++l) {
+              x = offset.x*s + k*s;
+              y = offset.y*s + l*s;
+              v = texture2D( NoiseMap, vec2(x,y)).xy-0.5;
+              v *= 2;
+              shadowCoord.xy = gl_TexCoord[2].xy + v*0.024;
+              shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
+            }
+          }
         }
         //shadow *= shadow*shadow* osgShadow_ambientBias.y;
         shadow *= osgShadow_ambientBias.y;
@@ -96,17 +100,8 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   }
   outcol.a = alpha*base.a;
   if(useNoise == 1) {
-    vec3 vNoise, vNoise2;
-    vec4 v = osg_ViewMatrix*positionVarying;
-    vNoise.x = 0.000001*floor(100000.0*v.x);
-    vNoise.y = 0.000001*floor(100000.0*v.y);
-    vNoise.z = 0.000001*floor(100000.0*v.z);
-    vNoise2.x = rnd(vNoise.x, vNoise.y+vNoise.z);
-    vNoise2.y = rnd(vNoise.y, vNoise.x-vNoise.z);
-    vNoise2.z = rnd(vNoise.x+vNoise.y, vNoise.y-vNoise.x+vNoise.z);
-    outcol.r += 0.04*rnd(vNoise2.x, vNoise2.y+vNoise2.z);
-    outcol.g += 0.04*rnd(vNoise2.y, vNoise2.x-vNoise2.z);
-    outcol.b += 0.04*rnd(vNoise2.x+vNoise2.y, vNoise2.y-vNoise2.x+vNoise2.z);
+    outcol.rg += 0.05*(texture2D( NoiseMap, 2*screenPos.xy).zw-0.5);
+    outcol.b += 0.05*(texture2D( NoiseMap, 2*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
   }
 
   if(useFog == 1) {

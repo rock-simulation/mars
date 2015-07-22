@@ -303,7 +303,9 @@ namespace mars {
             //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
           }
         }
-
+        noiseImage_ = new osg::Image();
+        noiseImage_->allocateImage(256, 256, 4, GL_RGBA, GL_UNSIGNED_BYTE);
+        updateShadowSamples();
         // TODO: check this out:
         //   i guess fire.rgb is a 1D texture
         //   there is something to generate these in OGLE
@@ -701,10 +703,12 @@ namespace mars {
       for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter)
         drawIter->second->object()->updateLights(lightList);
 
+      if(useNoise) {
+        updateShadowSamples();
+      }
       std::map<std::string, MarsMaterial*>::iterator mIt = materials.begin();
       for(; mIt!=materials.end(); ++mIt) {
         mIt->second->setShadowScale(shadowMap->getTexScale());
-        mIt->second->updateShadowSamples();
       }
 
       // Render a complete new frame.
@@ -2053,6 +2057,7 @@ namespace mars {
         m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
         m->setUseMARSShader(marsShader.bValue);
         m->setMaterial(mStruct);
+        m->setNoiseImage(noiseImage_.get());
         materials[mStruct.name] = m;
         shadowedScene->addChild(m->getGroup());
         return m->getStateSet();
@@ -2071,6 +2076,7 @@ namespace mars {
         m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
         m->setUseMARSShader(marsShader.bValue);
         m->setMaterial(mStruct);
+        m->setNoiseImage(noiseImage_.get());
         materials[mStruct.name] = m;
         shadowedScene->addChild(m->getGroup());
         return m->getGroup();
@@ -2100,6 +2106,39 @@ namespace mars {
       }
     }
 
+    void GraphicsManager::updateShadowSamples() {
+      static int count = 0;
+      osg::Vec2 v;
+      double x1, y1, r1, r2;
+      double scale1 = 1./SHADOW_SAMPLES;
+      unsigned char *data = noiseImage_->data();
+      int sampleX = 0, sampleY = 0;
+      double noise = 0.3;
+      for(int i=0; i<256; ++i) {
+        for(int l=0; l<256; ++l) {
+          if(!count) {
+            r1 = ((double) rand()/RAND_MAX)*2-1; // -1 to 1
+            r2 = ((double) rand()/RAND_MAX)*2-1;
+            x1 = scale1*0.5+scale1*sampleX+r1*scale1*0.5*noise;
+            y1 = scale1*0.5+scale1*sampleY+r2*scale1*0.5*noise;
+            r1 = (sqrt(y1)*cos(6.28*x1)*0.5 + .5)*255;
+            r2 = (sqrt(y1)*sin(6.28*x1)*0.5 + .5)*255;
+            data[i*256*4+l*4+0] = (unsigned char) r1;
+            data[i*256*4+l*4+1] = (unsigned char) r2;
+          }
+          data[i*256*4+l*4+2] = (unsigned char) (((double)rand()/RAND_MAX)*255);
+          data[i*256*4+l*4+3] = (unsigned char) (((double)rand()/RAND_MAX)*255);
+          if(++sampleX == SHADOW_SAMPLES) {
+            sampleX = 0;
+          }
+        }
+        if(++sampleY == SHADOW_SAMPLES) {
+          sampleY = 0;
+        }
+      }
+      noiseImage_->dirty();
+      count = 1;
+    }
 
   } // end of namespace graphics
 } // end of namespace mars

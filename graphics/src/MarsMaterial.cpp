@@ -42,8 +42,6 @@
 #endif
 #include <osg/TexMat>
 
-#define SHADOW_SAMPLES 1
-#define SHADOW_SAMPLES2 (SHADOW_SAMPLES*SHADOW_SAMPLES)
 
 namespace mars {
   namespace graphics {
@@ -70,17 +68,23 @@ namespace mars {
       baseImageUniform = new osg::Uniform("BaseImage", COLOR_MAP_UNIT);
       normalMapUniform = new osg::Uniform("NormalMap", NORMAL_MAP_UNIT);
       bumpMapUniform = new osg::Uniform("BumpMap", BUMP_MAP_UNIT);
+      noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
       texScaleUniform = new osg::Uniform("texScale", 1.0f);
       shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
       bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
-      shadowSamplesUniform = new osg::Uniform("shadowSamples", SHADOW_SAMPLES2);
+      shadowSamplesUniform = new osg::Uniform("shadowSamples", SHADOW_SAMPLES);
       invShadowSamplesUniform = new osg::Uniform("invShadowSamples",
                                                  1.f/SHADOW_SAMPLES2);
       invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                      (float)(invShadowTextureSize));
-      shadowOffsetsUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC2,
-                                              "shadowOffsets", SHADOW_SAMPLES2*2);
-      
+
+      noiseMap_ = new osg::Texture2D();
+      noiseMap_->setDataVariance(osg::Object::DYNAMIC);
+      noiseMap_->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+      noiseMap_->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+      noiseMap_->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
+      noiseMap_->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
+      noiseMap_->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
     }
 
     MarsMaterial::~MarsMaterial() {
@@ -183,41 +187,6 @@ namespace mars {
       updateShader(true);
     }
 
-    void MarsMaterial::updateShadowSamples() {
-      static int count = 0;
-      osg::Vec2 v;
-      count++;
-      double x1, y1, r1, r2;
-      double x[SHADOW_SAMPLES2];
-      double y[SHADOW_SAMPLES2];
-      double scale1 = 1./SHADOW_SAMPLES;
-      for(int n=0; n<SHADOW_SAMPLES; ++n) {
-        for(int m=0; m<SHADOW_SAMPLES; ++m) {
-          x[n*SHADOW_SAMPLES+m] = m;
-          y[n*SHADOW_SAMPLES+m] = n;
-        }
-      }
-      for(int i=0; i<SHADOW_SAMPLES2; ++i) {
-        // get random values from 0 to 1 in nine sub-squares
-        r1 = ((double) rand()/RAND_MAX)*2-1; // -1 to 1
-        r2 = ((double) rand()/RAND_MAX)*2-1;
-        //v.x() = r1*scale1*0.5;
-        //v.y() = r2*scale1*0.5;
-        v.x() = scale1*0.5+scale1*x[i];
-        v.y() = scale1*0.5+scale1*y[i];
-        //v.x() = (v.x()-0.5)*2;
-        //v.y() = (v.y()-0.5)*2;
-        //x1 = sqrt(v.y())*cos(6.28*v.x());
-        //y1 = sqrt(v.y())*sin(6.28*v.x());
-        //v.x() = x1;// * invShadowTextureSize;
-        //v.y() = y1;// * invShadowTextureSize;
-        shadowOffsetsUniform->setElement(i*2, v);
-        v.x() = r1;
-        v.y() = r2;
-        shadowOffsetsUniform->setElement(i*2+1, v);
-      }
-    }
-
     void MarsMaterial::setShadowScale(float v) {
       //fprintf(stderr, "****** da : %g\n", 1.f/(v*v));
       shadowScaleUniform->set(1.f/(v*v));
@@ -240,6 +209,9 @@ namespace mars {
           stateSet->setTextureAttributeAndModes(BUMP_MAP_UNIT, bumpMap_,
                                          osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
         }
+        stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap_,
+                                              osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+
         return;
       }
       if(normalMap_.valid()) {
@@ -256,6 +228,9 @@ namespace mars {
         return;
       }
       hasShaderSources = true;
+
+      stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap_,
+                                            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
 
       ShaderGenerator shaderGenerator;
       vector<string> args;
@@ -322,11 +297,15 @@ namespace mars {
       
       plightVert->addExport( (GLSLExport)
                              { "positionVarying", "v" } );
+      plightVert->addExport( (GLSLExport)
+                             { "modelVertex", "gl_Vertex" } );
       
       plightVert->addVarying( (GLSLVarying)
                               { "vec4", "positionVarying" } );
       plightVert->addVarying( (GLSLVarying)
                               { "vec3", "normalVarying" } );
+      plightVert->addVarying( (GLSLVarying)
+                              { "vec4", "modelVertex" } );
       shaderGenerator.addShaderFunction(plightVert, mars::interfaces::SHADER_TYPE_VERTEX);
       
       if(normalMap_.valid()) {
@@ -364,6 +343,8 @@ namespace mars {
       if(normalMap_.valid()) {
         glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
       }
+
+      stateSet->addUniform(noiseMapUniform.get());
 
       if(normalMap_.valid()) {
         stateSet->addUniform(normalMapUniform.get());
@@ -403,16 +384,18 @@ namespace mars {
       stateSet->removeUniform(shadowSamplesUniform.get());
       stateSet->removeUniform(invShadowSamplesUniform.get());
       stateSet->removeUniform(invShadowTextureSizeUniform.get());
-      stateSet->removeUniform(shadowOffsetsUniform.get());
       stateSet->removeUniform(shadowScaleUniform.get());
 
       stateSet->addUniform(shadowSamplesUniform.get());
       stateSet->addUniform(invShadowSamplesUniform.get());
       stateSet->addUniform(invShadowTextureSizeUniform.get());
-      stateSet->addUniform(shadowOffsetsUniform.get());
       stateSet->addUniform(shadowScaleUniform.get());
 
       lastProgram = glslProgram; 
+    }
+
+    void MarsMaterial::setNoiseImage(osg::Image *i) {
+      noiseMap_->setImage(i);
     }
 
   } // end of namespace graphics

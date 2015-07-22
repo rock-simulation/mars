@@ -52,6 +52,7 @@
 #define NORMAL_MAP_UNIT 1
 #define SHADOW_MAP_UNIT 2
 #define BUMP_MAP_UNIT 3
+#define NOISE_MAP_UNIT 3
 #define TANGENT_UNIT 7
 #define DEFAULT_UV_UNIT 0
 
@@ -63,6 +64,8 @@
 #define SHADER_USE_NOISE                   1 << 5
 #define SHADER_DRAW_LINE_LASER             1 << 6
 
+#define SHADOW_SAMPLES 1
+#define SHADOW_SAMPLES2 (SHADOW_SAMPLES*SHADOW_SAMPLES)
 
 namespace mars {
   namespace graphics {
@@ -96,24 +99,26 @@ namespace mars {
       void setMaxNumLights(int n) {maxNumLights = n;}
 
       void setUseMARSShader(bool val);
-      void updateShadowSamples();
+      void setNoiseImage(osg::Image *i);
       void setShadowScale(float v);
 
     protected:
       osg::ref_ptr<osg::Program> lastProgram;
-      osg::ref_ptr<osg::Uniform> normalMapUniform, bumpMapUniform, baseImageUniform;
+      osg::ref_ptr<osg::Uniform> normalMapUniform, bumpMapUniform;
+      osg::ref_ptr<osg::Uniform> baseImageUniform, noiseMapUniform;
       osg::ref_ptr<osg::Uniform> bumpNorFacUniform;
       osg::ref_ptr<osg::Uniform> texScaleUniform;
       osg::ref_ptr<osg::Uniform> shadowScaleUniform;
 
       osg::ref_ptr<osg::Uniform> shadowSamplesUniform, invShadowSamplesUniform;
-      osg::ref_ptr<osg::Uniform> shadowOffsetsUniform, invShadowTextureSizeUniform;
+      osg::ref_ptr<osg::Uniform> invShadowTextureSizeUniform;
 
       osg::ref_ptr<osg::Group> group_;
       osg::ref_ptr<osg::Material> material_;
       osg::ref_ptr<osg::Texture2D> colorMap_;
       osg::ref_ptr<osg::Texture2D> normalMap_;
       osg::ref_ptr<osg::Texture2D> bumpMap_;
+      osg::ref_ptr<osg::Texture2D> noiseMap_;
 
       bool hasShaderSources;
       bool useMARSShader;

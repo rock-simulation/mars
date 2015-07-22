@@ -395,6 +395,8 @@ namespace mars {
       osg::ref_ptr<osg::CullFace> cull;
       bool initialized;
       std::map<std::string, MarsMaterial*> materials;
+      osg::ref_ptr<osg::Image> noiseImage_;
+
       void setupCFG(void);
 
       unsigned long findCoreObject(unsigned long draw_id) const;
@@ -404,6 +406,7 @@ namespace mars {
       void setUseShader(bool val);
 
       void initDefaultLight();
+      void updateShadowSamples();
 
     }; // end of class GraphicsManager
 
