@@ -171,9 +171,6 @@ namespace mars {
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
           drawObject_->setScaledSize(node.visual_size);
         }
-        else {
-          drawObject_->setScaledSize(node.ext);
-        }
       }
 
 
