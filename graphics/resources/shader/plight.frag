@@ -36,7 +36,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
               y = offset.y*s + l*s;
               v = texture2D( NoiseMap, vec2(x,y)).xy-0.5;
               v *= 8;
-              shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.001, 0);
+              shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.0, 0);
               shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
             }
           }
