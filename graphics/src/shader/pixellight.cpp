@@ -123,7 +123,7 @@ namespace mars {
     }
 
     PixelLightFrag::PixelLightFrag(vector<string> &args, int numLights,
-                                   std::string resPath, int numShadowSamples)
+                                   std::string resPath)
       : ShaderFunc("plight", args) {
       stringstream s;
       s << "[" << numLights << "]";
