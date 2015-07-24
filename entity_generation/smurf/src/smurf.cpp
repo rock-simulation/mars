@@ -948,6 +948,8 @@ namespace mars {
 
       setPose();
 
+      control->nodes->printNodeMasses(true);
+
       return 1;
     }
 

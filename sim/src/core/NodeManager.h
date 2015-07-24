@@ -213,6 +213,8 @@ namespace mars {
                       bool clearGraphics=true);
       void pushToUpdate(SimNode* node);
 
+      void printNodeMasses(bool onlysum);
+
       // for passing parameters to the recursiveHelper.
       struct Params
       {

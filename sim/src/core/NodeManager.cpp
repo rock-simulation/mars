@@ -1616,5 +1616,16 @@ namespace mars {
       }
     }
 
+    void NodeManager::printNodeMasses(bool onlysum) {
+      NodeMap::iterator it;
+      double masssum = 0;
+      for(it=simNodes.begin(); it!=simNodes.end(); ++it) {
+        if (!onlysum)
+          fprintf(stderr, "%s: %f\n", it->second->getName().c_str(), it->second->getMass());
+        masssum+=it->second->getMass();
+      }
+      fprintf(stderr, "Sum of masses of imported model: %f\n", masssum);
+    }
+
   } // end of namespace sim
 } // end of namespace mars
