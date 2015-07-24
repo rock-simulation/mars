@@ -46,7 +46,7 @@ namespace mars {
     class PixelLightFrag : public ShaderFunc {
     public:
       PixelLightFrag(std::vector<std::string> &args, int numLights,
-                     std::string resPath, int numShadowSampes);
+                     std::string resPath);
       std::string code() const;
     private:
       std::string source;

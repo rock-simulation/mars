@@ -101,6 +101,7 @@ namespace mars {
       void setUseMARSShader(bool val);
       void setNoiseImage(osg::Image *i);
       void setShadowScale(float v);
+      void setShadowSamples(int v);
 
     protected:
       osg::ref_ptr<osg::Program> lastProgram;

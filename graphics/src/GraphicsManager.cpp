@@ -191,6 +191,9 @@ namespace mars {
           shadowTextureSize = cfg->getOrCreateProperty("Graphics",
                                                        "shadowTextureSize",
                                                        2048, this);
+          shadowSamples = cfg->getOrCreateProperty("Graphics",
+                                                   "shadowSamples",
+                                                   1, this);
         }
         else {
           marsShadow.bValue = false;
@@ -1829,6 +1832,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == shadowSamples.paramId) {
+        setShadowSamples(_property.iValue);
+        return;
+      }
+
       if(_property.paramId == backfaceCulling.paramId) {
         if((backfaceCulling.bValue = _property.bValue))
           globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
@@ -1930,6 +1938,13 @@ namespace mars {
       */
     }
 
+    void GraphicsManager::setShadowSamples(int v) {
+      std::map<std::string, MarsMaterial*>::iterator it;
+      shadowSamples.iValue = v;
+      for(it=materials.begin(); it!=materials.end(); ++it) {
+        it->second->setShadowSamples(v);
+      }
+    }
 
     void GraphicsManager::initDefaultLight() {
       defaultLight.lStruct.pos = Vector(2.0, 2.0, 10.0);
@@ -2058,6 +2073,7 @@ namespace mars {
         m->setUseMARSShader(marsShader.bValue);
         m->setMaterial(mStruct);
         m->setNoiseImage(noiseImage_.get());
+        m->setShadowSamples(shadowSamples.iValue);
         materials[mStruct.name] = m;
         shadowedScene->addChild(m->getGroup());
         return m->getStateSet();
@@ -2077,6 +2093,7 @@ namespace mars {
         m->setUseMARSShader(marsShader.bValue);
         m->setMaterial(mStruct);
         m->setNoiseImage(noiseImage_.get());
+        m->setShadowSamples(shadowSamples.iValue);
         materials[mStruct.name] = m;
         shadowedScene->addChild(m->getGroup());
         return m->getGroup();
@@ -2110,7 +2127,7 @@ namespace mars {
       static int count = 0;
       osg::Vec2 v;
       double x1, y1, r1, r2;
-      double scale1 = 1./SHADOW_SAMPLES;
+      double scale1 = 1./shadowSamples.iValue;
       unsigned char *data = noiseImage_->data();
       int sampleX = 0, sampleY = 0;
       double noise = 0.5;
@@ -2128,11 +2145,11 @@ namespace mars {
           }
           data[i*256*4+l*4+2] = (unsigned char) (((double)rand()/RAND_MAX)*255);
           data[i*256*4+l*4+3] = (unsigned char) (((double)rand()/RAND_MAX)*255);
-          if(++sampleX == SHADOW_SAMPLES) {
+          if(++sampleX == shadowSamples.iValue) {
             sampleX = 0;
           }
         }
-        if(++sampleY == SHADOW_SAMPLES) {
+        if(++sampleY == shadowSamples.iValue) {
           sampleY = 0;
         }
       }

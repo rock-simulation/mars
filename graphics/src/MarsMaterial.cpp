@@ -72,9 +72,9 @@ namespace mars {
       texScaleUniform = new osg::Uniform("texScale", 1.0f);
       shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
       bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
-      shadowSamplesUniform = new osg::Uniform("shadowSamples", SHADOW_SAMPLES);
+      shadowSamplesUniform = new osg::Uniform("shadowSamples", 1);
       invShadowSamplesUniform = new osg::Uniform("invShadowSamples",
-                                                 1.f/SHADOW_SAMPLES2);
+                                                 1.f/16);
       invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                      (float)(invShadowTextureSize));
 
@@ -328,7 +328,7 @@ namespace mars {
       args.push_back("n");
       args.push_back("col");
       PixelLightFrag *plightFrag = new PixelLightFrag(args, maxNumLights,
-                                                      resPath, SHADOW_SAMPLES);
+                                                      resPath);
       // invert the normal if gl_FrontFacing=true to handle back faces
       // correctly.
       // TODO: check not needed if backfaces not processed.
@@ -396,6 +396,11 @@ namespace mars {
 
     void MarsMaterial::setNoiseImage(osg::Image *i) {
       noiseMap_->setImage(i);
+    }
+
+    void MarsMaterial::setShadowSamples(int v) {
+      shadowSamplesUniform->set(v);
+      invShadowSamplesUniform->set(1.f/(v*v));
     }
 
   } // end of namespace graphics
