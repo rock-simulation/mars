@@ -19,7 +19,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i]==1) {
       nDotL = max(dot( n, normalize(  -lightVec[i] ) ), 0.0);
-      reflected = normalize( reflect( lightVec[i], n ) );
+      reflected = normalize(reflect(lightVec[i], n ) );
       rDotE = max(dot( reflected, eye ), 0.0);
       if(useShadow == 1) {
         shadow = 0;
@@ -42,8 +42,8 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
           }
         }
         //shadow *= shadow*shadow* osgShadow_ambientBias.y;
-        shadow *= osgShadow_ambientBias.y;
-        shadow += osgShadow_ambientBias.x;
+        //shadow *= osgShadow_ambientBias.y;
+        //shadow += osgShadow_ambientBias.x;
       } else {
         shadow = 1.0f;
       }
@@ -58,7 +58,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
 
       // add diffuse and specular light
       if(lightIsDirectional[i] == 1) {
-        atten = 1.0;
+        atten = lightConstantAtt[i];
       }
       else {
         dist = length(lightVec[i]);
@@ -75,7 +75,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
         specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);
       }
       else {
-        ambient  += diffuseShadow*lightAmbient[i]*gl_FrontMaterial.ambient;
+        ambient  += lightAmbient[i]*gl_FrontMaterial.ambient;
         diffuse_  += diffuseShadow * (atten*diffuse[i] * nDotL);
         test_specular_ = (specularShadow * specular[i]
                           * pow(rDotE, gl_FrontMaterial.shininess)); //needed as in some driver implementations, pow(0,0) yields NaN
