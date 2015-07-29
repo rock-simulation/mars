@@ -187,9 +187,28 @@ namespace mars {
         geometrySize_.z() = fabs(bb.zMin() - bb.zMax());
       }
 
-      scaleTransform_->addChild(group_.get());
+      if(lod.valid()) {
+        scaleTransform_->addChild(lod.get());
+      }
+      else {
+        scaleTransform_->addChild(group_.get());
+      }
     }
 
+    void DrawObject::addLODGeodes(std::list< osg::ref_ptr< osg::Geode > > geodes,
+                                 float start, float end) {
+      std::list< osg::ref_ptr< osg::Geode > >::iterator it;
+      if(!lod.valid()) {
+        lod = new osg::LOD();
+      }
+      for(it=geodes.begin(); it!=geodes.end(); ++it) {
+        lod->addChild(it->get(), start, end);
+        for(unsigned int i=0; i<it->get()->getNumDrawables(); ++i) {
+          osg::Drawable *draw = it->get()->getDrawable(i);
+          geometry_.push_back(draw->asGeometry());
+        }
+      }
+    }
 
     void DrawObject::setStateFilename(const std::string &filename, int create) {
       stateFilename_ = filename;
@@ -336,12 +355,16 @@ namespace mars {
                       scaledSize.z() / geometrySize_.z()));
     }
 
-    void DrawObject::generateTangents()
-    {
+    void DrawObject::generateTangents() {
+      std::list< osg::ref_ptr<osg::Geometry> >::iterator it;
+      for(it = geometry_.begin(); it != geometry_.end(); ++it) {
+        generateTangents(it->get());
+      }
+    }
+
+    void DrawObject::generateTangents(osg::ref_ptr<osg::Geometry> geom) {
       osg::ref_ptr< osgUtil::TangentSpaceGenerator > tsg = new osgUtil::TangentSpaceGenerator;
-      for(std::list< osg::ref_ptr<osg::Geometry> >::iterator it = geometry_.begin();
-          it != geometry_.end(); ++it) {
-        osg::ref_ptr<osg::Geometry> geom = *it;
+
         if(geom->empty()) {
           cerr << "WARNING: empty geometry for DrawObject " << id_ << "!" << endl;
         }
@@ -362,7 +385,6 @@ namespace mars {
 #else
   #error Unknown OSG Version
 #endif
-      }
     }
 
     void DrawObject::removeBits(unsigned int bits) {

@@ -40,9 +40,9 @@ namespace mars {
     using namespace std;
 
     LoadDrawObject::LoadDrawObject(GraphicsManager *g,
-                                   LoadDrawObjectInfo &inf,
+                                   configmaps::ConfigMap &map,
                                    const mars::utils::Vector &ext)
-      : DrawObject(g), info_(inf) {
+      : DrawObject(g), info_(map) {
     }
 
     std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::createGeometry() {
@@ -50,84 +50,87 @@ namespace mars {
       osg::ref_ptr<osg::Geode> readGeode;
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
+      std::string filename;
+      std::string p = (std::string)info_["filePrefix"];
 
-      if(info_.fileName.substr(info_.fileName.size()-5, 5) == ".bobj") {
-        //readBobjFormat(info_.fileName);
-        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readBobjFromFile(info_.fileName);
+      if(p.empty()) {
+        p = ".";
+      }
+
+      if(info_.find("lod") != info_.end()) {
+        double start, end;
+        configmaps::ConfigVector::iterator it;
+        for(it=info_["lod"].begin(); it!=info_["lod"].end(); ++it) {
+          start = (*it)["start"];
+          end = (*it)["end"];
+          filename = (std::string)(*it)["filename"];
+          if(filename[0] != '/') {
+            filename = p+"/"+filename;
+          }
+          geodes = loadGeodes(filename, "");
+          addLODGeodes(geodes, start, end);
+        }
+      }
+      filename = (std::string)info_["filename"];
+      if(filename[0] != '/') {
+        filename = p+"/"+filename;
+      }
+      return loadGeodes(filename, (std::string)info_["origname"]);
+    }
+
+    std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::loadGeodes(std::string filename, std::string objname) {
+      std::list< osg::ref_ptr< osg::Geode > > geodes;
+      bool found = false;
+
+      if(filename.substr(filename.size()-5, 5) == ".bobj") {
+        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readBobjFromFile(filename);
         if(!loadedNode.valid()) {
           std::cerr << "LoadDrawObject: no node loaded" << std::endl;
           return geodes; // TODO: error message
         }
+        found = true;
         geodes.push_back(loadedNode->asGeode());
       }
       // import an .STL file
-      else if((info_.fileName.substr(info_.fileName.size()-4, 4) == ".STL") ||
-             (info_.fileName.substr(info_.fileName.size()-4, 4) == ".stl")) {
-        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
+      else if((filename.substr(filename.size()-4, 4) == ".STL") ||
+              (filename.substr(filename.size()-4, 4) == ".stl") ||
+              (filename.substr(filename.size()-4, 4) == ".obj")) {
+        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(filename);
         if(!loadedNode.valid()) {
           std::cerr << "LoadDrawObject: no node loaded" << std::endl;
           return geodes; // TODO: error message
         }
-        readGeode = loadedNode->asGeode();
+        osg::ref_ptr<osg::Geode> readGeode = loadedNode->asGeode();
         if(!readGeode.valid()) {
           osg::ref_ptr<osg::Group> readGroup = loadedNode->asGroup();
           if(!readGroup.valid()) {
-            std::cerr << "LoadDrawObject: no geode or group found " << info_.fileName << std::endl;
+            std::cerr << "LoadDrawObject: no geode or group found " << filename << std::endl;
             return geodes; // TODO: error message
           }
 
           for (unsigned int i = 0; i < readGroup->getNumChildren(); ++i) {
-            readNode = readGroup->getChild(i);
-            if (readNode->getName() == info_.objectName || info_.objectName == "") {
+            osg::ref_ptr<osg::Node> readNode = readGroup->getChild(i);
+            if (objname == "" || readNode->getName() == objname) {
               geodes.push_back(readNode->asGeode());
               found = true;
             }
           }
-
-          std::list< osg::ref_ptr< osg::Geode > >::iterator it=geodes.begin();
-          for(;it!=geodes.end(); ++it) {
-            for(unsigned int i=0; i<(*it)->getNumDrawables(); ++i) {
-              (*it)->getDrawable(i)->setUseDisplayList(false);
-              (*it)->getDrawable(i)->setUseVertexBufferObjects(true);
-            }
-          }
-
-          return geodes; // TODO: error message
+        } else {
+          geodes.push_back(readGeode);
         }
-        geodes.push_back(readGeode);
       }
-      // import an .OBJ file
+
+      if(!found) {
+        std::cerr << "Failed to load object '" << objname
+                  << "' from file '" << filename << "'" << endl;
+      }
       else {
-        osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(info_.fileName);
-        if(!loadedNode.valid()) {
-          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
-          return geodes; // TODO: error message
-        }
-        osg::ref_ptr<osg::Group> readGroup = loadedNode->asGroup();
-        if(!readGroup.valid()) {
-          std::cerr << "LoadDrawObject: no group found" << std::endl;
-          return geodes; // TODO: error message
-        }
-
-        for (unsigned int i = 0; i < readGroup->getNumChildren(); ++i) {
-          readNode = readGroup->getChild(i);
-          if (readNode->getName() == info_.objectName || info_.objectName == "") {
-            geodes.push_back(readNode->asGeode());
-            found = true;
+        std::list< osg::ref_ptr< osg::Geode > >::iterator it=geodes.begin();
+        for(;it!=geodes.end(); ++it) {
+          for(unsigned int i=0; i<(*it)->getNumDrawables(); ++i) {
+            (*it)->getDrawable(i)->setUseDisplayList(false);
+            (*it)->getDrawable(i)->setUseVertexBufferObjects(true);
           }
-        }
-
-        if(!found) {
-          std::cerr << "Failed to load object '" << info_.objectName
-                    << "' from file '" << info_.fileName << "'" << endl;
-        }
-      }
-
-      std::list< osg::ref_ptr< osg::Geode > >::iterator it=geodes.begin();
-      for(;it!=geodes.end(); ++it) {
-        for(unsigned int i=0; i<(*it)->getNumDrawables(); ++i) {
-          (*it)->getDrawable(i)->setUseDisplayList(false);
-          (*it)->getDrawable(i)->setUseVertexBufferObjects(true);
         }
       }
 

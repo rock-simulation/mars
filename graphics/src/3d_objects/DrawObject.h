@@ -51,6 +51,7 @@
 #include <osg/Uniform>
 #include <osg/Geode>
 #include <osg/Texture2D>
+#include <osg/LOD>
 
 #include "../MarsMaterial.h"
 
@@ -165,6 +166,10 @@ namespace mars {
       void show();
       void hide();
       osg::Group* getStateGroup() {return stateGroup_.get();}
+      void addLODGeodes(std::list< osg::ref_ptr< osg::Geode > > geodes,
+                        float start, float end);
+
+      void generateTangents(osg::ref_ptr<osg::Geometry> g);
 
     protected:
       unsigned long id_;
@@ -184,6 +189,7 @@ namespace mars {
       osg::ref_ptr<osg::Group> group_, mGroup_, stateGroup_;
       std::list< osg::ref_ptr<osg::Geometry> > geometry_;
       osg::ref_ptr<osg::Geode> normal_geode;
+      osg::ref_ptr<osg::LOD> lod;
       MarsMaterial *material_;
       osg::ref_ptr<osg::PositionAttitudeTransform> posTransform_;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform_;

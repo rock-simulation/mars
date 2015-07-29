@@ -282,6 +282,9 @@ namespace mars {
       }
 
       map = *config;
+      if(!filenamePrefix.empty()) {
+        map["filePrefix"] = filenamePrefix;
+      }
       return true;
     }
 

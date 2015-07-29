@@ -155,10 +155,7 @@ namespace mars {
                                              0.0),
                                   sharedID);
       } else { // we have to load the node from an import file
-        LoadDrawObjectInfo info;
-        info.fileName = node.filename;
-        info.objectName = node.origName;
-        drawObject_ = new LoadDrawObject(g, info, node.ext);
+        drawObject_ = new LoadDrawObject(g, map, node.ext);
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
