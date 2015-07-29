@@ -1951,9 +1951,9 @@ namespace mars {
       defaultLight.lStruct.ambient = mars::utils::Color(0.5, 0.5, 0.5, 1.0);
       defaultLight.lStruct.diffuse = mars::utils::Color(0.7, 0.7, 0.7, 1.0);
       defaultLight.lStruct.specular = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
-      defaultLight.lStruct.constantAttenuation = 0.25;
+      defaultLight.lStruct.constantAttenuation = 1.0;
       defaultLight.lStruct.linearAttenuation = 0.0;
-      defaultLight.lStruct.quadraticAttenuation = 0.01;
+      defaultLight.lStruct.quadraticAttenuation = 0.0;
       defaultLight.lStruct.directional = true;
       defaultLight.lStruct.type = mars::interfaces::OMNILIGHT;
       defaultLight.lStruct.index = 0;
