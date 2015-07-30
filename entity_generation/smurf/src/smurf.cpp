@@ -210,9 +210,12 @@ namespace mars {
 
       // node mapping and name checking
       std::string robotname = (std::string)entityconfig["name"];
-      if (robotname == "") {
-              entityconfig["name"] = "unknown_robot";  //(std::string)entityconfig["modelname"];
-            }
+      if (robotname == "")
+        robotname = "unknown_robot";
+      entityconfig["name"] = robotname;  //(std::string)entityconfig["modelname"];
+      // add finalized config to entity
+      entity->appendConfig(entityconfig);
+
       if(control->loadCenter->getMappedSceneByName(robotname) == 0) {
         control->loadCenter->setMappedSceneName(robotname);
       }
@@ -1022,6 +1025,18 @@ namespace mars {
 
         if (robotname != "") {
           control->entities->addJoint(robotname, joint.index, joint.name);
+        }
+      }
+
+      // set Joints
+      configmaps::ConfigVector::iterator it;
+      configmaps::ConfigMap::iterator joint_it;
+      for (it = entityconfig["poses"].begin(); it!= entityconfig["poses"].end(); ++it) {
+        if ((std::string)(*it)["name"] == (std::string)entityconfig["pose"]) {
+          for (joint_it = (*it)["joints"][0].children.begin(); joint_it!= (*it)["joints"][0].children.end(); ++joint_it) {
+            fprintf(stderr, "setMotorValue: joint: %s, id: %i, value: %f\n", ((std::string)joint_it->first).c_str(), motorIDMap[joint_it->first], (double)joint_it->second);
+            control->motors->setMotorValue(motorIDMap[joint_it->first], joint_it->second);
+          }
         }
       }
     }
