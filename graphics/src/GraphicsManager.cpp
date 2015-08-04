@@ -862,7 +862,7 @@ namespace mars {
           drawObject->object()->show();
           //shadowedScene->addChild(transform);
         }
-        if(false && shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
+        if(shadowMap.valid() && snode.map.find("shadowCenterRadius") != snode.map.end()) {
           shadowMap->setCenterObject(drawObject->object());
           configmaps::ConfigMap m = snode.map;
           shadowMap->setRadius(m["shadowCenterRadius"][0]);

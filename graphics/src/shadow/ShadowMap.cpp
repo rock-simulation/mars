@@ -316,9 +316,9 @@ namespace mars {
               osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
               lightDir.normalize();
               // set the position far away along the light direction
-              osg::Vec3 position = bb.center() + lightDir * radius * 2;
               mars::utils::Vector v = centerObject->getPosition();
               osg::Vec3 centerPos(v.x(), v.y(), v.z());
+              osg::Vec3 position = centerPos + lightDir * radius * 2;
               float centerDistance = (position-centerPos).length();
               float znear = centerDistance-radius;
               float zfar  = centerDistance+radius;
