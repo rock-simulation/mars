@@ -15,7 +15,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   vec2 v;
   vec4 screenPos = (gl_ModelViewProjectionMatrix * modelVertex);
   screenPos /= screenPos.w;
-  s = 0.00390625;
+  s = 0.0078125; // 1/128
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i]==1) {
       nDotL = max(dot( n, normalize(  -lightVec[i] ) ), 0.0);
@@ -27,7 +27,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
           shadow += shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * invShadowSamples;
         }
         else {
-          float da = 256/shadowSamples;
+          float da = 128/shadowSamples;
           float w = gl_TexCoord[2].w*invShadowTextureSize;
           vec2 offset = floor(da*screenPos.xy*10)*shadowSamples;
           for(int k=0; k<shadowSamples; ++k) {
@@ -100,8 +100,9 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
   }
   outcol.a = alpha*base.a;
   if(useNoise == 1) {
-    outcol.rg += 0.05*(texture2D( NoiseMap, 2*screenPos.xy).zw-0.5);
-    outcol.b += 0.05*(texture2D( NoiseMap, 2*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
+    float noiseScale = 6;
+    outcol.rg += 0.05*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
+    outcol.b += 0.05*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
   }
 
   if(useFog == 1) {

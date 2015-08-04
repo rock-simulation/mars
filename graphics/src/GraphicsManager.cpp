@@ -307,7 +307,7 @@ namespace mars {
           }
         }
         noiseImage_ = new osg::Image();
-        noiseImage_->allocateImage(256, 256, 4, GL_RGBA, GL_UNSIGNED_BYTE);
+        noiseImage_->allocateImage(128, 128, 4, GL_RGBA, GL_UNSIGNED_BYTE);
         updateShadowSamples();
         // TODO: check this out:
         //   i guess fire.rgb is a 1D texture
@@ -2131,8 +2131,8 @@ namespace mars {
       unsigned char *data = noiseImage_->data();
       int sampleX = 0, sampleY = 0;
       double noise = 0.5;
-      for(int i=0; i<256; ++i) {
-        for(int l=0; l<256; ++l) {
+      for(int i=0; i<128; ++i) {
+        for(int l=0; l<128; ++l) {
           if(!count) {
             r1 = ((double) rand()/RAND_MAX)*2-1; // -1 to 1
             r2 = ((double) rand()/RAND_MAX)*2-1;
@@ -2140,11 +2140,11 @@ namespace mars {
             y1 = scale1*0.5+scale1*sampleY+r2*scale1*0.5*noise;
             r1 = (sqrt(y1)*cos(6.28*x1)*0.5 + .5)*255;
             r2 = (sqrt(y1)*sin(6.28*x1)*0.5 + .5)*255;
-            data[i*256*4+l*4+0] = (unsigned char) r1;
-            data[i*256*4+l*4+1] = (unsigned char) r2;
+            data[i*128*4+l*4+0] = (unsigned char) r1;
+            data[i*128*4+l*4+1] = (unsigned char) r2;
           }
-          data[i*256*4+l*4+2] = (unsigned char) (((double)rand()/RAND_MAX)*255);
-          data[i*256*4+l*4+3] = (unsigned char) (((double)rand()/RAND_MAX)*255);
+          data[i*128*4+l*4+2] = (unsigned char) (((double)rand()/RAND_MAX)*255);
+          data[i*128*4+l*4+3] = (unsigned char) (((double)rand()/RAND_MAX)*255);
           if(++sampleX == shadowSamples.iValue) {
             sampleX = 0;
           }
