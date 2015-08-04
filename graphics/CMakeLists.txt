@@ -96,25 +96,6 @@ set(HEADERS
            src/QtOsgMixGraphicsWidget.h
            src/MarsMaterial.h
            
-           src/3d_objects/AxisPrimitive.h
-           src/3d_objects/CapsuleDrawObject.h
-           src/3d_objects/Clouds.h
-           src/3d_objects/CoordsPrimitive.h
-           src/3d_objects/CubeDrawObject.h
-           src/3d_objects/CylinderDrawObject.h
-           src/3d_objects/EmptyDrawObject.h
-           src/3d_objects/DrawObject.h
-           src/3d_objects/GridPrimitive.h
-           src/3d_objects/LoadDrawObject.h
-           src/3d_objects/OceanDrawObject.h
-           src/3d_objects/PlaneDrawObject.h
-           src/3d_objects/SphereDrawObject.h
-           src/3d_objects/TerrainDrawObject.h
-           src/3d_objects/VertexBufferTerrain.h
-           src/3d_objects/MarsVBOGeom.h
-
-           src/3d_objects/MultiResHeightMapRenderer.h
-
            src/shader/bumpmapping.h
            src/shader/pixellight.h
            src/shader/shader-generator.h
@@ -134,6 +115,26 @@ set(HEADERS_2D
            src/2d_objects/HUDTexture.h
            src/2d_objects/HUDOSGNode.h
            
+)
+
+set(HEADERS_3D
+           src/3d_objects/AxisPrimitive.h
+           src/3d_objects/CapsuleDrawObject.h
+           src/3d_objects/Clouds.h
+           src/3d_objects/CoordsPrimitive.h
+           src/3d_objects/CubeDrawObject.h
+           src/3d_objects/CylinderDrawObject.h
+           src/3d_objects/EmptyDrawObject.h
+           src/3d_objects/DrawObject.h
+           src/3d_objects/GridPrimitive.h
+           src/3d_objects/LoadDrawObject.h
+           src/3d_objects/OceanDrawObject.h
+           src/3d_objects/PlaneDrawObject.h
+           src/3d_objects/SphereDrawObject.h
+           src/3d_objects/TerrainDrawObject.h
+           src/3d_objects/VertexBufferTerrain.h
+           src/3d_objects/MarsVBOGeom.h
+           src/3d_objects/MultiResHeightMapRenderer.h
 )
 
 set(HEADERS_WRAPPER
@@ -255,6 +256,7 @@ install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/graphics)
 install(FILES ${HEADERS_2D} DESTINATION include/mars/graphics/2d_objects)
+install(FILES ${HEADERS_3D} DESTINATION include/mars/graphics/3d_objects)
 install(FILES ${HEADERS_WRAPPER} DESTINATION include/mars/graphics/wrapper)
 
 # Prepare and install necessary files to support finding of the library 
