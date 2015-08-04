@@ -235,16 +235,22 @@ namespace mars {
       return ex;
     }
 
-    void GuiHelper::getPhysicsFromOBJ(mars::interfaces::NodeData* node) {
-      osg::ref_ptr<osg::Node> completeNode;
+    void GuiHelper::getPhysicsFromMesh(mars::interfaces::NodeData* node) {
+      if(node->filename.substr(node->filename.size()-5, 5) == ".bobj") {
+        getPhysicsFromNode(node, GuiHelper::readBobjFromFile(node->filename));
+      }
+      else {
+        getPhysicsFromNode(node, GuiHelper::readNodeFromFile(node->filename));
+      }
+    }
+
+    void GuiHelper::getPhysicsFromNode(mars::interfaces::NodeData* node,
+                                       osg::ref_ptr<osg::Node> completeNode) {
       osg::ref_ptr<osg::Group> myCreatedGroup;
       osg::ref_ptr<osg::Group> myGroupFromRead;
       osg::ref_ptr<osg::Geode> myGeodeFromRead;
       nodemanager tempnode;
       bool found = false;
-
-      completeNode  = GuiHelper::readNodeFromFile(node->filename);
-
       // check whether it is a osg::Group (.obj file)
       if((myGroupFromRead = completeNode->asGroup()) != 0){
         //go through the read node group and combine the parts of the actually

@@ -117,7 +117,7 @@ namespace mars {
       mars::utils::Vector getExtend(osg::Group* oGroup);
       void initGraphics();
 
-      virtual void getPhysicsFromOBJ(mars::interfaces::NodeData *node);
+      virtual void getPhysicsFromMesh(mars::interfaces::NodeData *node);
       virtual void readPixelData(mars::interfaces::terrainStruct *terrain);
 
       static osg::ref_ptr<osg::Node> readNodeFromFile(std::string fileName);
@@ -137,6 +137,8 @@ namespace mars {
       static std::vector<textureFileStruct> textureFiles;
       // vector to prevent double load of images
       static std::vector<imageFileStruct> imageFiles;
+      void getPhysicsFromNode(mars::interfaces::NodeData* node,
+                              osg::ref_ptr<osg::Node> completeNode);
     }; // end of class GuiHelper
 
   } // end of namespace graphics

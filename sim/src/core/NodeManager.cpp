@@ -148,7 +148,7 @@ namespace mars {
           LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
           return INVALID_ID;
         }
-        control->loadCenter->loadMesh->getPhysicsFromOBJ(nodeS);
+        control->loadCenter->loadMesh->getPhysicsFromMesh(nodeS);
       }
       if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
         if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
