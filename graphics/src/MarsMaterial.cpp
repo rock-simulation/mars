@@ -128,14 +128,12 @@ namespace mars {
         state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
                                            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
 
-        /*
         if(mStruct.tex_scale != 1.0) {
           osg::ref_ptr<osg::TexMat> scaleTexture = new osg::TexMat();
           scaleTexture->setMatrix(osg::Matrix::scale(mStruct.tex_scale, mStruct.tex_scale, mStruct.tex_scale));
           state->setTextureAttributeAndModes(COLOR_MAP_UNIT, scaleTexture.get(),
                                              osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
         }
-        */
       }
       texScaleUniform->set((float)mStruct.tex_scale);
 
