@@ -97,6 +97,7 @@ set(SOURCES_H
        src/sensors/JointTorqueSensor.h
        src/sensors/JointVelocitySensor.h
        src/sensors/MotorCurrentSensor.h
+       src/sensors/HapticFieldSensor.h
 #       src/sensors/MotorPositionSensor.h
        src/sensors/NodeAngularVelocitySensor.h
        src/sensors/NodeArraySensor.h
@@ -145,6 +146,7 @@ set(TARGET_SRC
        src/sensors/JointTorqueSensor.cpp
        src/sensors/JointVelocitySensor.cpp
        src/sensors/MotorCurrentSensor.cpp
+       src/sensors/HapticFieldSensor.cpp
 #       src/sensors/MotorPositionSensor.cpp
        src/sensors/NodeAngularVelocitySensor.cpp
        src/sensors/NodeArraySensor.cpp
