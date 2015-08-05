@@ -74,6 +74,7 @@ namespace mars {
         hud_width = 320;
         hud_height = -1;
         depthImage = false;
+        frameOffset = 1;
       }
 
       unsigned long attached_node;
@@ -81,6 +82,7 @@ namespace mars {
       int height;
       bool show_cam;
       int hud_pos;
+      int frameOffset;
       utils::Vector pos_offset;
       utils::Quaternion ori_offset;
       double opening_width; // deprecated: we should probably rename this to opening_angle

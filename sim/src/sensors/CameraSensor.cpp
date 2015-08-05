@@ -228,7 +228,8 @@ namespace mars {
                                orientation.x(), orientation.y(),
                                orientation.z(), orientation.w());
         if(config.enabled) {
-          if(renderCam == 2) {
+          if(renderCam > 2) --renderCam;
+          else if(renderCam == 2) {
             control->graphics->activate3DWindow(cam_window_id);
             renderCam = 1;
           }
@@ -246,7 +247,7 @@ namespace mars {
                                    int callbackParam) {
       CPP_UNUSED(info);
       mutex.lock();
-      renderCam = 2;
+      renderCam = 2+config.frameOffset;
       if(dbPosIndices[0] == -1) {
         dbPosIndices[0] = package.getIndexByName("position/x");
         dbPosIndices[1] = package.getIndexByName("position/y");
@@ -292,6 +293,10 @@ namespace mars {
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second[0].getULong();
       else cfg->updateRate = 100;
+
+      if((it = config->find("frame_offset")) != config->end())
+        cfg->frameOffset = it->second[0].getULong();
+      else cfg->frameOffset = 1;
 
       if((it = config->find("width")) != config->end())
         cfg->width = it->second[0].getULong();
@@ -382,6 +387,7 @@ namespace mars {
       cfg["type"][0] = ConfigItem(std::string("CameraSensor"));
 
       cfg["attached_node"][0] = ConfigItem(config.attached_node);
+      cfg["frame_offset"][0] = ConfigItem(config.frameOffset);
 
       cfg["width"][0] = ConfigItem(config.width);
       cfg["height"][0] = ConfigItem(config.height);
