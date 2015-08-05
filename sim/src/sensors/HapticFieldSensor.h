@@ -55,7 +55,7 @@ namespace mars {
         drawRays=false;
       }
 
-      void parseConfig(interfaces::ControlCenter *control, utils::ConfigMap *config) {
+      void parseConfig(interfaces::ControlCenter *control, configmaps::ConfigMap *config) {
         unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
         name = (*config)["name"][0].getString();
         updateRate = (*config)["rate"][0].getULong();
@@ -99,7 +99,7 @@ namespace mars {
       virtual void update(std::vector<interfaces::draw_item>* drawItems);
 
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
-          utils::ConfigMap *config);
+          configmaps::ConfigMap *config);
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
           interfaces::BaseConfig *config);
 

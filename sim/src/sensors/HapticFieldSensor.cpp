@@ -50,7 +50,7 @@ namespace mars {
     }
 
     BaseConfig* HapticFieldSensor::parseConfig(interfaces::ControlCenter *control,
-        utils::ConfigMap *config) {
+        configmaps::ConfigMap *config) {
       HapticFieldConfig *cfg = new HapticFieldConfig;
       cfg->parseConfig(control, config);
       return cfg;
@@ -207,12 +207,12 @@ namespace mars {
         data_broker::DataPackage *dbPackage, int callbackParam) {
       Vector tmp;
       dbPackage->set(0, (long) id);
-//      fprintf(stderr, "  HapticFieldSensor: ");
+      fprintf(stderr, "  HapticFieldSensor: ");
       for (int i = 0; i < forces.size(); ++i) {
         dbPackage->set(i + 1, forces.at(i));
-//        fprintf(stderr, "%g, ", forces.at(i));
+        fprintf(stderr, "%g, ", forces.at(i));
       }
-//      fprintf(stderr, "\n");
+      fprintf(stderr, "\n");
     }
 
     void HapticFieldSensor::update(std::vector<draw_item>* drawItems) {
