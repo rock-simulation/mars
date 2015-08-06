@@ -101,6 +101,7 @@ namespace mars {
       virtual void printEntityNodes(const std::string &entityName);
       virtual void printEntityMotors(const std::string &entityName);
       virtual void printEntityControllers(const std::string &entityName);
+      virtual void resetPose();
 
     private:
       interfaces::ControlCenter *control;

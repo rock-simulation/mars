@@ -106,6 +106,7 @@ namespace mars {
       configmaps::ConfigMap entityconfig;
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
+      sim::SimEntity* entity;
 
       void handleURI(configmaps::ConfigMap *map, std::string uri);
       void handleURIs(configmaps::ConfigMap *map);

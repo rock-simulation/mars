@@ -44,7 +44,7 @@ namespace mars {
     unsigned long EntityManager::addEntity(const std::string &name) {
       unsigned long id = 0;
       MutexLocker locker(&iMutex);
-      entities[id = getNextId()] = new SimEntity(name);
+      entities[id = getNextId()] = new SimEntity(control, name);
       return id;
     }
 
@@ -225,6 +225,13 @@ namespace mars {
           iter->second->printControllers();
           break;
         }
+      }
+    }
+
+    void EntityManager::resetPose() {
+      std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+      for (; iter != entities.end(); ++iter) {
+        iter->second->setInitialPose();
       }
     }
 
