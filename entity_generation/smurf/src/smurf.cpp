@@ -501,21 +501,14 @@ namespace mars {
     
 
     void SMURF::addEmptyVisualToNode(ConfigMap *map) {
-      Vector size(0.01, 0.01, 0.01);
-      Vector scale(1.0, 1.0, 1.0);
-      (*map)["filename"] = "PRIMITIVE";
-      (*map)["origname"] = "box";
+      (*map)["origname"] = "";
       (*map)["materialName"] = "_emptyVisualMaterial";
-      (*map)["movable"] = true;
-      vectorToConfigItem(&(*map)["visualsize"][0], &size);
-      vectorToConfigItem(&(*map)["visualscale"][0], &scale);
     }
 
     void SMURF::addEmptyCollisionToNode(ConfigMap *map) {
       Vector size(0.01, 0.01, 0.01);
       (*map)["physicmode"] = "box";
       (*map)["coll_bitmask"] = 0;
-      (*map)["movable"] = true;
       vectorToConfigItem(&(*map)["extend"][0], &size);
     }
     
