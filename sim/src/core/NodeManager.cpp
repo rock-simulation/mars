@@ -221,6 +221,7 @@ namespace mars {
           physicalRep.visual_offset_rot = Quaternion::Identity();
           physicalRep.visual_size = physicalRep.ext;
 
+          physicalRep.map["visualType"] = NodeData::toString(nodeS->physicMode);
           if(nodeS->physicMode != NODE_TYPE_TERRAIN) {
             if(nodeS->physicMode != NODE_TYPE_MESH) {
               physicalRep.filename = "PRIMITIVE";

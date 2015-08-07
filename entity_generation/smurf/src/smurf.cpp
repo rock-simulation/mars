@@ -478,7 +478,7 @@ namespace mars {
       config["diffuseFront"][0]["g"] = 0.0;
       config["diffuseFront"][0]["b"] = 0.0;
       config["texturename"] = "";
-      config["cullMask"] = 0; // this makes the object invisible
+      //config["cullMask"] = 0; // this makes the object invisible
       debugMap["materials"] += config;
       materialList.push_back(config);
     }
@@ -503,6 +503,7 @@ namespace mars {
     void SMURF::addEmptyVisualToNode(ConfigMap *map) {
       (*map)["origname"] = "";
       (*map)["materialName"] = "_emptyVisualMaterial";
+      (*map)["visualType"] = "empty";
     }
 
     void SMURF::addEmptyCollisionToNode(ConfigMap *map) {
