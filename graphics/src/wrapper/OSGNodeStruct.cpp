@@ -61,11 +61,28 @@ namespace mars {
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
       configmaps::ConfigMap map = node.map;
       unsigned long sharedID = 0;
+      std::string filename, origname;
+      std::string visualType;
       if(map.find("sharedDrawID") != map.end()) {
         sharedID = map["sharedDrawID"];
       }
-      if (node.filename.compare("PRIMITIVE") == 0) {
-        switch(NodeData::typeFromString(node.origName.c_str())) {
+      if(map.find("visualType") != map.end()) {
+        visualType = (std::string)map["visualType"];
+        if(visualType == "mesh") {
+          filename = node.filename;
+          origname = node.origName;
+        }
+        else {
+          filename = "PRIMITIVE";
+          origname = visualType;
+        }
+      }
+      else {
+        filename = node.filename;
+        origname = node.origName;
+      }
+      if (filename.compare("PRIMITIVE") == 0) {
+        switch(NodeData::typeFromString(origname.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
           drawObject_ = new CubeDrawObject(g);
           break;
@@ -109,8 +126,8 @@ namespace mars {
         }
         default:
           fprintf(stderr,"Cannot find primitive type: %i(%s), at %s:%i\n",
-                  NodeData::typeFromString(node.origName.c_str()),
-                  node.origName.c_str(), __FILE__, __LINE__);
+                  NodeData::typeFromString(origname.c_str()),
+                  origname.c_str(), __FILE__, __LINE__);
           throw std::runtime_error("unknown primitive type");
         }
         if(map.find("maxNumLights") != map.end()) {
