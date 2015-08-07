@@ -88,7 +88,7 @@ namespace mars {
     enum MotorType {
       MOTOR_TYPE_UNDEFINED=0,
       MOTOR_TYPE_POSITION,
-      MOTOR_TYPE_SPEED,
+      MOTOR_TYPE_VELOCITY,
       MOTOR_TYPE_EFFORT,
       MOTOR_TYPE_PID, // deprecated
       MOTOR_TYPE_DC, // deprecated

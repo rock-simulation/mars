@@ -80,13 +80,15 @@ namespace mars {
       void refreshPosition();
       void refreshPositions();
       void runPositionController(interfaces::sReal time_ms);
-      void runSpeedController(interfaces::sReal time_ms);
+      void runVeloctiyController(interfaces::sReal time_ms);
       void runEffortController(interfaces::sReal time_ms);
       void addMimic(SimMotor* mimic);
       void removeMimic(std::string mimicname);
       void clearMimics();
-      void setMaxEffortApproximation(utils::ApproximationFunction type, std::vector<double>* coefficients);
-      void setMaxSpeedApproximation(utils::ApproximationFunction type, std::vector<double>* coefficients);
+      void setMaxEffortApproximation(utils::ApproximationFunction type,
+                                     std::vector<double>* coefficients);
+      void setMaxSpeedApproximation(utils::ApproximationFunction type,
+                                    std::vector<double>* coefficients);
 
       // getters
       int getAxis() const;
@@ -104,7 +106,7 @@ namespace mars {
       SimJoint* getPlayJoint() const;
       interfaces::sReal getPosition() const;
       const interfaces::MotorData getSMotor(void) const;
-      interfaces::sReal getSpeed() const;
+      interfaces::sReal getVelocity() const;
       interfaces::sReal getControlParameter(void) const;
       interfaces::sReal getControlValue(void) const;
       interfaces::sReal getP() const;
@@ -122,6 +124,7 @@ namespace mars {
       void setI(interfaces::sReal i);
       void setD(interfaces::sReal d);
       void setPID(interfaces::sReal mP, interfaces::sReal mI, interfaces::sReal mD);
+      void setVelocity(interfaces::sReal v);
       void setControlValue(interfaces::sReal value);
       void setMimic(interfaces::sReal multiplier, interfaces::sReal offset);
 
@@ -140,18 +143,18 @@ namespace mars {
       interfaces::sReal getMaximumVelocity() const __attribute__ ((deprecated("use getMaxSpeed")));
       interfaces::sReal getTorque(void) const __attribute__ ((deprecated("use getEffort")));
       interfaces::sReal getValue(void) const __attribute__ ((deprecated("use getControlValue")));
-      interfaces::sReal getVelocity() const __attribute__ ((deprecated("use getSpeed")));
-      interfaces::sReal getActualAngle() const __attribute__ ((deprecated("use getPosition")));
-      interfaces::sReal getDesiredMotorAngle() const __attribute__ ((deprecated("use getDesiredPosition")));
+      interfaces::sReal getActualPosition(void) const __attribute__ ((deprecated("use getPosition")));
+      interfaces::sReal getDesiredMotorAngle() const __attribute__ ((deprecated("use getControlValue")));
+
       void setActualAngle(interfaces::sReal angle) __attribute__ ((deprecated("use setCurrentPosition")));
-      void setDesiredMotorAngle(interfaces::sReal angle) __attribute__ ((deprecated("use setDesiredPosition")));
-      void setDesiredMotorVelocity(interfaces::sReal vel) __attribute__ ((deprecated("use setDesiredSpeed")));
-      void setMaximumVelocity(interfaces::sReal value) __attribute__ ((deprecated("use getMaxSpeed")));
+      void setDesiredMotorAngle(interfaces::sReal angle) __attribute__ ((deprecated("use setPosition / setControlValue")));
+      void setMaximumVelocity(interfaces::sReal value) __attribute__ ((deprecated("use setMaxSpeed")));
       void setMotorMaxForce(interfaces::sReal force) __attribute__ ((deprecated("use setMaxEffort")));
-      void setValue(interfaces::sReal value) __attribute__ ((deprecated("use setDesiredSpeed/Position")));
-      void setValueDesiredVelocity(interfaces::sReal value) __attribute__ ((deprecated("no longer supported")));
-      void setVelocity(interfaces::sReal v) __attribute__ ((deprecated("use setDesiredSpeed")));
+      void setValue(interfaces::sReal value) __attribute__ ((deprecated("use setControlValue")));
+      void setDesiredMotorVelocity(interfaces::sReal value) __attribute__ ((deprecated("if use dc motor setControlValue otherwise you could use setMaxVelocity?")));
+      void setValueDesiredVelocity(interfaces::sReal value) __attribute__ ((deprecated("if use dc motor setControlValue otherwise you could use setMaxVelocity?")));
       void refreshAngle() __attribute__ ((deprecated("use refreshPosition(s)")));
+
 
     private:
       // typedefs for function pointers
@@ -165,7 +168,8 @@ namespace mars {
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
       interfaces::sReal time;
-      interfaces::sReal speed, position1, position2, effort, current, temperature;
+      interfaces::sReal velocity, position1, position2, effort;
+      interfaces::sReal current, temperature;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
       std::map<std::string, SimMotor*> mimics;

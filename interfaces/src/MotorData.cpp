@@ -76,21 +76,19 @@ namespace mars {
 
     void MotorData::init(const std::string& name, MotorType type) {
       this->name = name;
+      this->type = type;
       index = 0;
       jointIndex = 0;
       jointIndex2 = 0;
       axis = 0;
-      minPosition = -M_PI;
-      maxPosition = M_PI;
       maxSpeed = 0;
       maxEffort = 0;
       maxAcceleration = 0;
-      this->type = type;
       p = 0;
       i = 0;
       d = 0;
-      maxPosition = M_PI;
-      minPosition = -M_PI;
+      maxValue = M_PI;
+      minValue = -M_PI;
       value = 0;
     }
 
@@ -135,8 +133,8 @@ namespace mars {
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
       GET_VALUE("value", d, Double);
-      GET_VALUE("maxPosition", maxPosition, Double);
-      GET_VALUE("minPosition", minPosition, Double);
+      GET_VALUE("maxPosition", maxValue, Double);
+      GET_VALUE("minPosition", minValue, Double);
 
       return 1;
     }
@@ -158,8 +156,8 @@ namespace mars {
       SET_VALUE("p", p);
       SET_VALUE("i", i);
       SET_VALUE("d", d);
-      SET_VALUE("maxPosition", maxPosition);
-      SET_VALUE("minPosition", minPosition);
+      SET_VALUE("maxPosition", maxValue);
+      SET_VALUE("minPosition", minValue);
     }
 
     void MotorData::getFilesToSave(std::vector<std::string> *fileList) {

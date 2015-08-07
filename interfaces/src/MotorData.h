@@ -66,8 +66,8 @@ namespace mars {
       sReal i;  // i part of the controller
       sReal d;  // d part of the controller
       sReal value; // initial / current control parameter value
-      sReal maxPosition; // maximum position the motor can reach
-      sReal minPosition; // minimum position the motor can reach
+      sReal maxValue; // maximum position the motor can reach
+      sReal minValue; // minimum position the motor can reach
       configmaps::ConfigMap config;
 
       static std::map<std::string, std::string> legacynames;

@@ -106,7 +106,7 @@ namespace mars {
     }
 
     SimNode* SimJoint::getAttachedNode(unsigned char axis_index) const {
-      if (axis_index == 0) {
+      if (axis_index == 1) {
         return snode1;
       }
       else {
@@ -145,7 +145,7 @@ namespace mars {
 
     void SimJoint::rotateAxis(const utils::Quaternion &rotate, unsigned char axis_index) {
       //sJoint.axis1 = QVRotate(rotate, sJoint.axis1);
-      if (axis_index == 0) {
+      if (axis_index == 1) {
       sJoint.axis1 = (rotate * sJoint.axis1);
       if (physical_joint)
         physical_joint->setAxis(sJoint.axis1);
@@ -162,7 +162,7 @@ namespace mars {
     }
 
     const utils::Vector SimJoint::getAxis(unsigned char axis_index) const {
-      return axis_index == 0 ? axis1 : axis2;
+      return axis_index == 1 ? axis1 : axis2;
     }
 
     const Vector SimJoint::getAxis1() const {  // deprecated
@@ -174,7 +174,7 @@ namespace mars {
     }
 
     void SimJoint::setAxis(const Vector &axis, unsigned char axis_index) {
-      if (axis_index == 0) {
+      if (axis_index == 1) {
         sJoint.axis1 = axis1 = axis;
         axis1InNode1 = snode1->getRotation().inverse()*sJoint.axis1;
         // FIXME: Will the joint angle bet set to 0 when the axis changes?
@@ -205,7 +205,7 @@ namespace mars {
     }
 
     sReal SimJoint::getPosition(unsigned char axis_index) const {
-        return axis_index == 0 ? position1 : position2;
+        return axis_index == 1 ? position1 : position2;
       }
 
     sReal SimJoint::getActualAngle1() const { // deprecated
@@ -237,8 +237,8 @@ namespace mars {
         axis1_torque *= invert;
         axis2_torque *= invert;
         joint_load *= invert;
-        speed1 = invert*physical_joint->getVelocity();
-        speed2 = invert*physical_joint->getVelocity2();
+        velocity1 = invert*physical_joint->getVelocity();
+        velocity2 = invert*physical_joint->getVelocity2();
         motor_torque = invert*physical_joint->getMotorTorque();
       }
     }
@@ -258,7 +258,7 @@ namespace mars {
       axis1_torque.x() = axis1_torque.y() = axis1_torque.z() = 0;
       axis2_torque.x() = axis2_torque.y() = axis2_torque.z() = 0;
       joint_load.x() = joint_load.y() = joint_load.z() = 0;
-      speed1 = speed2 = 0;
+      velocity1 = velocity2 = 0;
       motor_torque = 0;
       lowerLimit1 = sJoint.lowStopAxis1;
       upperLimit1 = sJoint.highStopAxis1;
@@ -296,7 +296,7 @@ namespace mars {
     }
 
     void SimJoint::setEffortLimit(interfaces::sReal effort, unsigned char axis_index) {
-      if (axis_index == 0) {
+      if (axis_index == 1) {
         physical_joint->setForceLimit(effort);
       }
       else {
@@ -312,36 +312,30 @@ namespace mars {
       setEffortLimit(force, 1);
     }
 
-    void SimJoint::setSpeed(interfaces::sReal speed, unsigned char axis_index) {
-      if (axis_index == 0) {
-        physical_joint->setVelocity(speed*invert);
+    void SimJoint::setVelocity(interfaces::sReal velocity,
+                               unsigned char axis_index) {
+      if (axis_index == 1) {
+        physical_joint->setVelocity(velocity*invert);
       } else {
-        physical_joint->setVelocity2(speed*invert);
+        physical_joint->setVelocity2(velocity*invert);
       }
     }
 
-    void SimJoint::setVelocity(sReal speed) { // deprecated
-      setSpeed(speed, 0);
+    void SimJoint::setVelocity2(sReal velocity) { // deprecated
+      setVelocity(velocity, 1);
     }
 
-    void SimJoint::setVelocity2(sReal speed) { // deprecated
-      setSpeed(speed, 1);
-    }
-
-    interfaces::sReal SimJoint::getSpeed(unsigned char axis_index) const {
-      return axis_index == 0 ? speed1 : speed2;
-    }
-
-    sReal SimJoint::getVelocity(void) const {
-      return speed1;
+    interfaces::sReal SimJoint::getVelocity(unsigned char axis_index) const {
+      return axis_index == 1 ? velocity1 : velocity2;
     }
 
     sReal SimJoint::getVelocity2(void) const {
-      return speed2;
+      return getVelocity(1);
     }
 
-    void SimJoint::setEffort(interfaces::sReal torque, unsigned char axis_index) {
-      if (axis_index == 0) {
+    void SimJoint::setEffort(interfaces::sReal torque,
+                             unsigned char axis_index) {
+      if (axis_index == 1) {
         physical_joint->setTorque(torque*invert);
       } else {
         physical_joint->setTorque2(torque*invert);
@@ -381,7 +375,7 @@ namespace mars {
     }
 
     const utils::Vector SimJoint::getForceVector(unsigned char axis_index) const {
-      return axis_index == 0 ? f1 : f2;
+      return axis_index == 1 ? f1 : f2;
     }
 
     const Vector SimJoint::getForce1() const { // deprecated
@@ -393,7 +387,7 @@ namespace mars {
     }
 
     const Vector SimJoint::getTorqueVector(unsigned char axis_index) const {
-      return axis_index == 0 ? t1 : t2;
+      return axis_index == 1 ? t1 : t2;
     }
 
     const Vector SimJoint::getTorque1() const { // deprecated
@@ -409,7 +403,7 @@ namespace mars {
     }
 
     const Vector SimJoint::getTorqueVectorAroundAxis(unsigned char axis_index) const {
-      return axis_index == 0 ? axis1_torque : axis2_torque;
+      return axis_index == 1 ? axis1_torque : axis2_torque;
     }
 
     const Vector SimJoint::getAxis1Torque(void) const {
@@ -425,7 +419,7 @@ namespace mars {
     }
 
     NodeId SimJoint::getNodeId(unsigned char node_index) const {
-      return node_index == 0 ? sJoint.nodeIndex1 : sJoint.nodeIndex2;
+      return node_index == 1 ? sJoint.nodeIndex1 : sJoint.nodeIndex2;
     }
 
     unsigned long SimJoint::getNodeIndex1() const { // deprecated
@@ -455,7 +449,7 @@ namespace mars {
       this->sJoint.highStopAxis2 = sJoint->highStopAxis2;
       this->sJoint.damping_const_constraint_axis2 = sJoint->damping_const_constraint_axis2;
       this->sJoint.spring_const_constraint_axis2 = sJoint->spring_const_constraint_axis2;
-      changeStepSize();
+      updateStepSize();
     }
 
     sReal SimJoint::getMotorTorque(void) const {
@@ -499,11 +493,11 @@ namespace mars {
     }
 
     sReal SimJoint::getLowerLimit(unsigned char axis_index) const {
-      return axis_index == 0 ? lowerLimit1 : lowerLimit2;
+      return axis_index == 1 ? lowerLimit1 : lowerLimit2;
     }
 
     sReal SimJoint::getUpperLimit(unsigned char axis_index) const {
-      return axis_index == 0 ? upperLimit1 : upperLimit2;
+      return axis_index == 1 ? upperLimit1 : upperLimit2;
     }
 
     sReal SimJoint::getLowStop() const { // deprecated
@@ -523,7 +517,7 @@ namespace mars {
     }
 
     void SimJoint::setLowerLimit(sReal limit, unsigned char axis_index) {
-      if (axis_index == 0) {
+      if (axis_index == 1) {
         this->lowerLimit1 = limit;
         physical_joint->setLowStop(-lowerLimit1*invert);
       } else {
@@ -533,7 +527,7 @@ namespace mars {
     }
 
     void SimJoint::setUpperLimit(sReal limit, unsigned char axis_index) {
-      if (axis_index == 0) {
+      if (axis_index == 1) {
         this->upperLimit1 = limit;
         physical_joint->setLowStop(-upperLimit1*invert);
       } else {
@@ -577,7 +571,8 @@ namespace mars {
       dbPackageMapping.add("axis1/y", &axis1.y());
       dbPackageMapping.add("axis1/z", &axis1.z());
       dbPackageMapping.add("axis1/angle", &position1);
-      dbPackageMapping.add("axis1/speed", &speed1);
+      dbPackageMapping.add("axis1/speed", &velocity1);
+      dbPackageMapping.add("axis1/veloctiy", &velocity1);
       dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
       dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
       dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
@@ -586,7 +581,8 @@ namespace mars {
       dbPackageMapping.add("axis2/y", &axis2.y());
       dbPackageMapping.add("axis2/z", &axis2.z());
       dbPackageMapping.add("axis2/angle", &position2);
-      dbPackageMapping.add("axis2/speed", &speed2);
+      dbPackageMapping.add("axis2/speed", &velocity2);
+      dbPackageMapping.add("axis1/veloctiy", &velocity2);
       dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
       dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
       dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
