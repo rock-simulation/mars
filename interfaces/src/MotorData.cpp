@@ -80,7 +80,7 @@ namespace mars {
       index = 0;
       jointIndex = 0;
       jointIndex2 = 0;
-      axis = 0;
+      axis = 1;
       maxSpeed = 0;
       maxEffort = 0;
       maxAcceleration = 0;
@@ -132,7 +132,7 @@ namespace mars {
       GET_VALUE("p", p, Double);
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
-      GET_VALUE("value", d, Double);
+      GET_VALUE("position", value, Double);
       GET_VALUE("maxPosition", maxValue, Double);
       GET_VALUE("minPosition", minValue, Double);
 

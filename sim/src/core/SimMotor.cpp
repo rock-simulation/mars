@@ -82,16 +82,16 @@ namespace mars {
       initCurrentEstimation();
 
       dbPackage.add("id", (long)sMotor.index);
-      dbPackage.add("controlParameter", getControlParameter());
+      dbPackage.add("value", controlValue);
       dbPackage.add("position", getPosition());
       dbPackage.add("current", getCurrent());
-      dbPackage.add("effort", getEffort());
+      dbPackage.add("torque", getEffort());
 
       dbIdIndex = dbPackage.getIndexByName("id");
-      dbControlParameterIndex = dbPackage.getIndexByName("controlParameter");
+      dbControlParameterIndex = dbPackage.getIndexByName("value");
       dbPositionIndex = dbPackage.getIndexByName("position");
       dbCurrentIndex = dbPackage.getIndexByName("current");
-      dbEffortIndex = dbPackage.getIndexByName("effort");
+      dbEffortIndex = dbPackage.getIndexByName("torque");
 
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
@@ -190,7 +190,7 @@ namespace mars {
       switch (sMotor.type) {
         case MOTOR_TYPE_POSITION:
         case MOTOR_TYPE_PID: // deprecated
-          controlParameter = position;
+          controlParameter = &velocity;
           controlValue = sMotor.value;
           controlLimit = &(sMotor.maxSpeed);
           setJointControlParameter = &SimJoint::setVelocity;
@@ -214,7 +214,7 @@ namespace mars {
           break;
         case MOTOR_TYPE_UNDEFINED:
           // TODO: output error
-          controlParameter = position; // default to position
+          controlParameter = &velocity; // default to position
           controlValue = sMotor.value;
           controlLimit = &(sMotor.maxSpeed);
           setJointControlParameter = &SimJoint::setVelocity;
@@ -735,7 +735,7 @@ namespace mars {
                                  data_broker::DataPackage *dbPackage,
                                  int callbackParam) {
         dbPackage->set(dbIdIndex, (long)sMotor.index);
-        dbPackage->set(dbControlParameterIndex, getControlParameter());
+        dbPackage->set(dbControlParameterIndex, controlValue);
         dbPackage->set(dbPositionIndex, getPosition());
         dbPackage->set(dbCurrentIndex, getCurrent());
         dbPackage->set(dbEffortIndex, getEffort());
