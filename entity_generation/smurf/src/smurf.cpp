@@ -882,6 +882,7 @@ namespace mars {
       if (!model) {
         return 0;
       }
+      return 1;
     }
 
     void SMURF::createModel() {
@@ -909,7 +910,7 @@ namespace mars {
           return 0;
       for (unsigned int i = 0; i < nodeList.size(); ++i)
         if (!loadNode(nodeList[i])) {
-          fprintf(stderr, "Couldn't load node %d, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
+          fprintf(stderr, "Couldn't load node %lu, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
           return 0;
         }
           
@@ -1027,7 +1028,7 @@ namespace mars {
       for (it = entityconfig["poses"].begin(); it!= entityconfig["poses"].end(); ++it) {
         if ((std::string)(*it)["name"] == (std::string)entityconfig["pose"]) {
           for (joint_it = (*it)["joints"][0].children.begin(); joint_it!= (*it)["joints"][0].children.end(); ++joint_it) {
-            fprintf(stderr, "setMotorValue: joint: %s, id: %i, value: %f\n", ((std::string)joint_it->first).c_str(), motorIDMap[joint_it->first], (double)joint_it->second);
+            fprintf(stderr, "setMotorValue: joint: %s, id: %lu, value: %f\n", ((std::string)joint_it->first).c_str(), motorIDMap[joint_it->first], (double)joint_it->second);
             control->motors->setMotorValue(motorIDMap[joint_it->first], joint_it->second);
           }
         }
