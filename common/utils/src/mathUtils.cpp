@@ -30,6 +30,14 @@
 namespace mars {
   namespace utils {
 
+    ApproximationFunction getApproximationFunctionFromString(std::string s) {
+      if(s == "pipe") return FUNCTION_PIPE;
+      if(s == "polynom3") return FUNCTION_POLYNOM3;
+      if(s == "polynom5") return FUNCTION_POLYNOM5;
+      if(s == "gaussian") return FUNCTION_GAUSSIAN;
+      return FUNCTION_UNKNOWN;
+    }
+
     double pipe(double* x, std::vector<double>* c) {
       return (*x);
     }

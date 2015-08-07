@@ -1145,7 +1145,7 @@ namespace mars {
         for (; vIt != config["maxeffort_coefficients"].end(); ++vIt) {
           maxeffort_coefficients->push_back((double)(*vIt));
           newMotor->setMaxEffortApproximation(
-            utils::approximationFunctionMap[(std::string)config["maxeffort_approximation"]],
+                                              utils::getApproximationFunctionFromString((std::string)config["maxeffort_approximation"]),
             maxeffort_coefficients);
         }
       }
@@ -1156,7 +1156,7 @@ namespace mars {
         for (; vIt != config["maxspeed_coefficients"].end(); ++vIt) {
           maxspeed_coefficients->push_back((double)(*vIt));
           newMotor->setMaxSpeedApproximation(
-            utils::approximationFunctionMap[(std::string)config["maxspeed_approximation"]],
+                                             utils::getApproximationFunctionFromString((std::string)config["maxspeed_approximation"]),
             maxspeed_coefficients);
         }
       }

@@ -24,7 +24,6 @@
 #include "Vector.h"
 #include "Quaternion.h"
 #include <configmaps/ConfigData.h>
-#include <boost/assign.hpp>
 
 using namespace configmaps;
 
@@ -37,26 +36,13 @@ namespace mars {
       FUNCTION_PIPE,
       FUNCTION_POLYNOM3,
       FUNCTION_POLYNOM5,
-      FUNCTION_GAUSSIAN/*,
+      FUNCTION_GAUSSIAN, /*
       FUNCTION_BETA_DISTRIBUTION,
       FUNCTION_GAMMA_DISTRIBUTION*/
+      FUNCTION_UNKNOWN
     };
 
-    // this would be way nicer in C++11
-    /*std::map<std::string, ApproximationFunction> create_approxfunction_map() {
-      std::map<std::string, ApproximationFunction> m;
-      m["pipe"] = FUNCTION_PIPE;
-      m["polynom3"] = FUNCTION_POLYNOM3;
-      m["polynom5"] = FUNCTION_POLYNOM5;
-      m["gaussian"] = FUNCTION_GAUSSIAN;
-      return m;
-    }*/
-
-    static std::map<std::string, ApproximationFunction> approximationFunctionMap =
-      //create_approxfunction_map();
-      boost::assign::map_list_of("pipe", FUNCTION_PIPE) ("polynom3", FUNCTION_POLYNOM3)
-        ("polynom5", FUNCTION_POLYNOM5) ("gaussian", FUNCTION_GAUSSIAN);
-
+    ApproximationFunction getApproximationFunctionFromString(std::string s);
     const double SQRT2PI = 2.5066282746310002;
 
     double pipe(double* x, std::vector<double>* c);
