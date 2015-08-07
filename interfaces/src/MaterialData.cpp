@@ -190,7 +190,7 @@ namespace mars {
         (*config)["getLigth"][0] = ConfigItem(getLight);
       if(cullMask != defaultMaterial.cullMask)
         (*config)["cullMask"][0] = ConfigItem(cullMask);
-      if(cullMask != defaultMaterial.bumpNorFac)
+      if(bumpNorFac != defaultMaterial.bumpNorFac)
         (*config)["bumpNorFac"][0] = ConfigItem(bumpNorFac);
       (*config)["name"][0] = ConfigItem(name);
     }
