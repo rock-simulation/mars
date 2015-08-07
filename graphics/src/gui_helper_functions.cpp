@@ -295,11 +295,19 @@ namespace mars {
       (fabs(bb.zMax()) > fabs(bb.zMin())) ? ex.z() = fabs(bb.zMax() - bb.zMin())
         : ex.z() = fabs(bb.zMin() - bb.zMax());
 
+      if (node->map.find("loadSizeFromMesh") != node->map.end()) {
+        if (node->map["loadSizeFromMesh"]) {
+          Vector physicalScale;
+          utils::vectorFromConfigItem(&(node->map["physicalScale"][0]), &physicalScale);
+          node->ext=Vector(ex.x()*physicalScale.x(), ex.y()*physicalScale.y(), ex.z()*physicalScale.z());
+        }
+      }
+
       //compute scale factor
       double scaleX = 1, scaleY = 1, scaleZ = 1;
-      if (ex.x() != 0) scaleX = node->visual_size.x() / ex.x();
-      if (ex.y() != 0) scaleY = node->visual_size.y() / ex.y();
-      if (ex.z() != 0) scaleZ = node->visual_size.z() / ex.z();
+      if (ex.x() != 0) scaleX = node->ext.x() / ex.x();
+      if (ex.y() != 0) scaleY = node->ext.y() / ex.y();
+      if (ex.z() != 0) scaleZ = node->ext.z() / ex.z();
 
       // create transform and group Node for the actual node
       osg::ref_ptr<osg::PositionAttitudeTransform> transform;

@@ -646,9 +646,11 @@ namespace mars {
       case urdf::Geometry::MESH:
         tmpV = ((urdf::Mesh*) tmpGeometry.get())->scale;
         scale = Vector(tmpV.x, tmpV.y, tmpV.z);
+        vectorToConfigItem(&config["physicalScale"][0], &scale);
         config["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
         config["origname"] = "";
         config["physicmode"] = "mesh";
+        config["loadSizeFromMesh"] = true;
         break;
       default:
         config["physicmode"] = "undefined";
@@ -658,9 +660,6 @@ namespace mars {
       vectorToConfigItem(&config["scale"][0], &scale);
       // FIXME: We need to correctly deal with scale and size in MARS
       //       if we have a mesh here, as a first hack we use the scale as size
-      if (tmpGeometry->type == urdf::Geometry::MESH) {
-        vectorToConfigItem(&config["extend"][0], &scale);
-      }
       
       // pose
       Vector v;
