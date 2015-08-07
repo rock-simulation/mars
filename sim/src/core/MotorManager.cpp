@@ -251,7 +251,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimMotor*>::iterator iter = simMotors.find(id);
       if (iter != simMotors.end())
-        iter->second->setValue(value);
+        iter->second->setControlValue(value);
     }
 
 
@@ -259,7 +259,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimMotor*>::iterator iter = simMotors.find(id);
       if (iter != simMotors.end())
-        iter->second->setValueDesiredVelocity(velocity);
+        iter->second->setVelocity(velocity);
     }
 
 
@@ -368,7 +368,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimMotor*>::iterator iter = simMotors.find(index);
       if (iter != simMotors.end())
-        iter->second->setValue(value);
+        iter->second->setControlValue(value);
     }
 
 

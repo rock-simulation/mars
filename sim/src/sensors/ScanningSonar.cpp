@@ -197,7 +197,7 @@ namespace mars {
 
       SimMotor *motor = control->motors->getSimMotor(motorID);
       //Quaternion q = motor->getJoint()->getAttachedNode2()->getRotation().inverse() * motor->getJoint()->getAttachedNode1()->getRotation();
-      Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
+      Quaternion q = motor->getJoint()->getAttachedNode()->getRotation().inverse() * motor->getJoint()->getAttachedNode(2)->getRotation();
 
 
       double bearing = mars::utils::getYaw(q);
@@ -271,7 +271,7 @@ namespace mars {
       SimMotor *motor = control->motors->getSimMotor(motorID);
       if(motor && config.ping_pong_mode)
         {
-          Quaternion q = motor->getJoint()->getAttachedNode1()->getRotation().inverse() * motor->getJoint()->getAttachedNode2()->getRotation();
+          Quaternion q = motor->getJoint()->getAttachedNode()->getRotation().inverse() * motor->getJoint()->getAttachedNode(2)->getRotation();
           double bearing = mars::utils::getYaw(q);
 
           bool range_switch = false;
