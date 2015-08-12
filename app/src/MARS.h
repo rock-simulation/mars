@@ -63,6 +63,7 @@ namespace mars {
       ~MARS();
 
       void readArguments(int argc, char **argv);
+      void init();
       void start(int argc, char **argv, bool startThread = true,
                  bool handleLibraryLoading = true);
       int runWoQApp();
@@ -80,6 +81,7 @@ namespace mars {
       interfaces::MarsGuiInterface *marsGui;
       bool ownLibManager;
       bool argConfDir;
+      bool initialized;
     };
 
   } // end of namespace app
