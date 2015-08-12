@@ -13,12 +13,22 @@ The `cfg_manager` is generally loaded via the [`lib_manager`](@ref lib_manager) 
     cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
     if(!cfg) { /* error handling */ }
 
-You can access data via the `getOrCreateProperty` method:
+You can access data via the `mars::cfg_manager::CFGManagerInterface`, e.g. by
+using the `getOrCreateProperty` method:
 
     mars::cfg_manager::cfgPropertyStruct data;
     data = cfg->getOrCreateProperty(__groupName__, __paramName__,
                                     __defaultValue__, NULL);
     /* acess data.iValue if value type is int */
+
+You can override the data by setting it's value in the data struct:
+
+    data.sValue = "foo"; // for setting string value
+    cfg->setProperty(data);
+
+Another option to set values is to use:
+
+    cfg->setPropertyValue("group", "name", "propName", value);
 
 If you inherit from `mars::cfg_manager::CFGClient` and implement the
 `void cfgUpdateProperty(cfgPropertyStruct _propertyS)` method you can change
