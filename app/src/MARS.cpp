@@ -90,6 +90,7 @@ namespace mars {
       needQApp = true;
       noGUI = false;
       graphicsTimer = NULL;
+      initialized = false;
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
@@ -103,6 +104,7 @@ namespace mars {
       needQApp = true;
       noGUI = false;
       graphicsTimer = NULL;
+      initialized = false;
 #ifdef WIN32
       // request a scheduler of 1ms
       timeBeginPeriod(1);
@@ -130,9 +132,7 @@ namespace mars {
 
     }
 
-    void MARS::start(int argc, char **argv, bool startThread,
-                     bool handleLibraryLoading) {
-
+    void MARS::init() {
       // then check locals
 #ifndef WIN32
       setenv("LC_ALL","C", 1);
@@ -158,20 +158,30 @@ namespace mars {
           fclose(testFile);
         }
       }
+
       // we always need the cfg_manager to setup configurations correctly
       libManager->loadLibrary("cfg_manager");
       mars::cfg_manager::CFGManagerInterface *cfg;
       cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
       if(cfg) {
-        cfg_manager::cfgPropertyStruct configPath;
+        cfg_manager::cfgPropertyStruct configPath, prefPath;
         configPath = cfg->getOrCreateProperty("Config", "config_path",
                                               configDir);
-        cfg->getOrCreateProperty("Preferences", "resources_path",
-                                 std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
+        prefPath = cfg->getOrCreateProperty("Preferences", "resources_path",
+                                            std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
+        prefPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
+        cfg->setProperty(prefPath);
         // load preferences
         std::string loadFile = configDir + "/mars_Preferences.yaml";
         cfg->loadConfig(loadFile.c_str());
       }
+      initialized = true;
+    }
+
+    void MARS::start(int argc, char **argv, bool startThread,
+                     bool handleLibraryLoading) {
+
+      if(!initialized) init();
 
       FILE *plugin_config;
       if(handleLibraryLoading) {
