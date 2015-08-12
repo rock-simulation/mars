@@ -110,6 +110,7 @@ namespace mars {
       configmaps::ConfigMap entityconfig;
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
+      sim::SimEntity* entity;
 
       void loadMimic(unsigned long mimicId, std::string parent_name);
 

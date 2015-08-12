@@ -705,7 +705,7 @@ namespace mars {
         newWorld();
         reloadWorld();
         control->controllers->resetControllerData();
-
+        control->entities->resetPose();
         for (unsigned int i=0; i<allPlugins.size(); i++)
           allPlugins[i].p_interface->reset();
         control->controllers->setLoadingAllowed(true);
@@ -942,8 +942,8 @@ namespace mars {
       connect_joint.nodeIndex1 = id1;
       connect_joint.nodeIndex2 = id2;
       connect_joint.type = JOINT_TYPE_FIXED;
-      control->joints->addJoint(&connect_joint);
-      LOG_INFO("Simulator: connect node %lu and %lu", id1, id2);
+      control->joints->addJoint(&connect_joint, true);
+      //LOG_INFO("Simulator: connect node %lu and %lu", id1, id2);
     }
 
     void Simulator::disconnectNodes(unsigned long id1, unsigned long id2) {

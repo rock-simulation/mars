@@ -115,6 +115,7 @@ namespace mars {
       robotname = "";
       model.reset();
 
+      entity = NULL;
       entityconfig.clear();
       debugMap.clear();
     }
@@ -177,7 +178,6 @@ namespace mars {
 
     sim::SimEntity* SMURF::createEntity(const ConfigMap& config) {
       reset();
-      sim::SimEntity* entity;
       entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
       tmpPath = path;
@@ -189,7 +189,7 @@ namespace mars {
         // TODO: we should have a system that first loads the URDF and then the other files in
         //   order of priority (or sort the contents in a way as to avoid errors upon loading).
 
-        entity = new sim::SimEntity(entityconfig);
+        entity = new sim::SimEntity(control, entityconfig);
         createModel();
 
         ConfigMap::iterator it;
@@ -201,10 +201,11 @@ namespace mars {
             addConfigMap(tmpconfig);
         }
       } else { // if type is "urdf"
-        std::string urdfpath = path + (std::string) entityconfig["URI"];
+        std::string urdfpath = path + filename;
         fprintf(stderr, "  ...loading urdf data from %s.\n", urdfpath.c_str());
-        fprintf(stderr, "parsing model: %d", parseURDF(urdfpath));
-        entity = new sim::SimEntity(entityconfig);
+        fprintf(stderr, "parsing model...\n");
+        parseURDF(urdfpath);
+        entity = new sim::SimEntity(control, entityconfig);
         createModel();
       }
 
@@ -951,88 +952,10 @@ namespace mars {
     }
 
     void SMURF::setPose() {
-      core_objects_exchange node;
-      uint nodeid = control->loadCenter->getMappedID(nodeIDMap[model->root_link_->name],
-          MAP_TYPE_NODE, mapIndex);
-      fprintf(stderr, "placing: %s, %d\n", (model->root_link_->name).c_str(), nodeid);
-      control->nodes->getNodeExchange(nodeid, &node);
-      Quaternion tmpQ(1, 0, 0, 0);
-      Vector tmpR;
-      Vector tmpV;
-      tmpV[0] = entityconfig["position"][0];
-      tmpV[1] = entityconfig["position"][1];
-      tmpV[2] = entityconfig["position"][2];
-      // check if euler angles or quaternion is provided; rotate around z if only one angle is provided
-      switch (entityconfig["rotation"].size()) {
-        case 1: tmpR[0] = 0;
-                tmpR[1] = 0;
-                tmpR[2] = entityconfig["rotation"][0];
-                tmpQ = eulerToQuaternion(tmpR);
-                break;
-        case 3: tmpR[0] = entityconfig["rotation"][0];
-                tmpR[1] = entityconfig["rotation"][1];
-                tmpR[2] = entityconfig["rotation"][2];
-                tmpQ = eulerToQuaternion(tmpR);
-                break;
-        case 4: tmpQ.x() = (sReal)entityconfig["rotation"][1];
-                tmpQ.y() = (sReal)entityconfig["rotation"][2];
-                tmpQ.z() = (sReal)entityconfig["rotation"][3];
-                tmpQ.w() = (sReal)entityconfig["rotation"][0];
-                break;
-      }
-
-
-      NodeData my_node;
-      my_node.index = nodeid;
-      my_node.pos = tmpV;
-      my_node.rot = tmpQ;
-      control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
-      control->nodes->editNode(&my_node, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
-
-      if((std::string)entityconfig["anchor"] == "world") {
-        fprintf(stderr, "Anchor robot to world...\n");
-        // create non-movable anchor node
-        NodeData node;
-        node.init("anchor_" + robotname, tmpV, tmpQ);
-        node.initPrimitive(interfaces::NODE_TYPE_BOX, Vector(0.01, 0.01, 0.01), 0.01);
-        // FIXME: we need to check the below line
-	node.groupID = 
-        node.index = 666666666; // unlikely that anyone will ever use this within a model
-        node.c_params.coll_bitmask = 0;
-        NodeId oldId = node.index;
-        NodeId newId = control->nodes->addNode(&node);
-        control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
-        if (robotname != "") {
-          control->entities->addNode(robotname, node.index, node.name);
-        }
-
-        // create fixed joint between anchor node and root node
-        JointData joint;
-        joint.init("joint_anchor_" + robotname, interfaces::JOINT_TYPE_FIXED,
-                              nodeid, newId);
-        joint.index = 666666666;
-        JointId newJointId = control->joints->addJoint(&joint);
-        if (!newId) {
-          LOG_ERROR("addJoint returned 0");
-        }
-        control->loadCenter->setMappedID(joint.index, newJointId, MAP_TYPE_JOINT, mapIndex);
-
-        if (robotname != "") {
-          control->entities->addJoint(robotname, joint.index, joint.name);
-        }
-      }
-
-      // set Joints
-      configmaps::ConfigVector::iterator it;
-      configmaps::ConfigMap::iterator joint_it;
-      for (it = entityconfig["poses"].begin(); it!= entityconfig["poses"].end(); ++it) {
-        if ((std::string)(*it)["name"] == (std::string)entityconfig["pose"]) {
-          for (joint_it = (*it)["joints"][0].children.begin(); joint_it!= (*it)["joints"][0].children.end(); ++joint_it) {
-            fprintf(stderr, "setMotorValue: joint: %s, id: %lu, value: %f\n", ((std::string)joint_it->first).c_str(), motorIDMap[joint_it->first], (double)joint_it->second);
-            control->motors->setMotorValue(motorIDMap[joint_it->first], joint_it->second);
-          }
-        }
-      }
+      ConfigMap map;
+      map["rootNode"] = model->root_link_->name;
+      entity->appendConfig(map);
+      entity->setInitialPose();
     }
 
     unsigned int SMURF::loadNode(ConfigMap config) {
@@ -1069,9 +992,7 @@ namespace mars {
         return 0;
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_NODE, mapIndex);
-      if (robotname != "") {
-        control->entities->addNode(robotname, node.index, node.name);
-      }
+      entity->addNode(node.index, node.name);
       return 1;
     }
 
@@ -1102,9 +1023,7 @@ namespace mars {
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_JOINT, mapIndex);
 
-      if (robotname != "") {
-        control->entities->addJoint(robotname, joint.index, joint.name);
-      }
+      entity->addJoint(joint.index, joint.name);
       return true;
     }
 
@@ -1126,9 +1045,7 @@ namespace mars {
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_MOTOR, mapIndex);
 
-      if (robotname != "") {
-        control->entities->addMotor(robotname, motor.index, motor.name);
-      }
+      entity->addMotor(motor.index, motor.name);
 
       sim::SimMotor* newMotor = control->motors->getSimMotor(newId);
 
@@ -1161,7 +1078,6 @@ namespace mars {
             maxspeed_coefficients);
         }
       }
-
       return true;
     }
 
@@ -1230,9 +1146,7 @@ namespace mars {
         return 0;
       }
       control->loadCenter->setMappedID(oldId, newId, MAP_TYPE_CONTROLLER, mapIndex);
-      if (robotname != "") {
-        control->entities->addController(robotname, newId);
-      }
+      entity->addController(newId);
       return 1;
     }
 
