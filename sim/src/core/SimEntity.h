@@ -43,6 +43,8 @@ namespace mars {
 
     class SimEntity {
     public:
+      SimEntity(const std::string& name);
+      SimEntity(const configmaps::ConfigMap& parameters);
       SimEntity(interfaces::ControlCenter *c, const std::string& name);
       SimEntity(interfaces::ControlCenter *c,
                 const configmaps::ConfigMap& parameters);

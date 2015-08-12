@@ -22,6 +22,7 @@
 #include "MyApp.h"
 
 #include <signal.h>
+#include <cstdio>
 //#include "HandleFileNames.h"
 //#include <QPlastiqueStyle>
 

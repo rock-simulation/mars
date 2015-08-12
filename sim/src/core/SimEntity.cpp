@@ -26,11 +26,22 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <iterator> // ostream_iterator
 
 namespace mars {
   using namespace interfaces;
   namespace sim {
+
+    SimEntity::SimEntity(const std::string &name) : name(name), control(NULL),
+                                                    selected(false) {
+    }
+
+    SimEntity::SimEntity(const configmaps::ConfigMap& parameters) : control(NULL),
+                                                                    selected(false) {
+      config = parameters;
+      this->name = (std::string) config["name"];
+    }
 
     SimEntity::SimEntity(ControlCenter *c,
                          const std::string &name) : name(name), control(c),
@@ -163,6 +174,7 @@ namespace mars {
 
     void SimEntity::setInitialPose() {
       bool worldAnchor = false;
+      if(!control) return;
       if(config.find("rootNode") != config.end()) {
         if(config.find("anchor") != config.end()) {
           if((std::string)config["anchor"] == "world") {
