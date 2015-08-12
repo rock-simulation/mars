@@ -112,7 +112,7 @@ namespace mars {
         fprintf(stderr, "Delete ConnexionPlugin\n");
         run_thread = false;
 
-        while (!thread_closed) {
+        while (!thread_closed && isInit) {
           msleep(10);
         }
 
