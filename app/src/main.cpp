@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   //QApplication *app = new QApplication(argc, argv);
 
   if(simulation->needQApp) {
-    mars::app::MyApp *app = new mars::app::MyApp(argc, argv);
+    app = new mars::app::MyApp(argc, argv);
     //app->setStyle(new QPlastiqueStyle);
   }
 
