@@ -29,12 +29,6 @@
 #include <stdexcept>
 
 
-namespace mars {
-  namespace app {
-  	  mars::app::MyApp* app;
-  } // end of namespace app
-} // end of namespace mars
-
 mars::app::MyApp *app=NULL;
 
 void qtExitHandler(int sig) {
