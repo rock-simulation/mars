@@ -53,14 +53,14 @@ namespace mars {
 
       if((it = config->find("ambientFront")) != config->end())
         ambientFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("ambientColor")) != config->end())
+      if((it = config->find("ambientColor")) != config->end()) // new SMURF naming
         ambientFront.fromConfigItem(&it->second[0]);
       if((it = config->find("ambientBack")) != config->end())
         ambientBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("diffuseFront")) != config->end())
         diffuseFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("diffuseColor")) != config->end())
+      if((it = config->find("diffuseColor")) != config->end()) // new SMURF naming
         diffuseFront.fromConfigItem(&it->second[0]);
       if((it = config->find("diffuseBack")) != config->end())
         diffuseBack.fromConfigItem(&it->second[0]);
@@ -68,14 +68,14 @@ namespace mars {
 
       if((it = config->find("specularFront")) != config->end())
         specularFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("specularColor")) != config->end())
+      if((it = config->find("specularColor")) != config->end()) // new SMURF naming
         specularFront.fromConfigItem(&it->second[0]);
       if((it = config->find("specularBack")) != config->end())
         specularBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("emissionFront")) != config->end())
         emissionFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("emissionColor")) != config->end())
+      if((it = config->find("emissionColor")) != config->end()) // new SMURF naming
         emissionFront.fromConfigItem(&it->second[0]);
       if((it = config->find("emissionBack")) != config->end())
         emissionBack.fromConfigItem(&it->second[0]);
@@ -86,9 +86,15 @@ namespace mars {
         shininess = it->second[0].getDouble();
       if((it = config->find("texturename")) != config->end())
         texturename = trim(it->second[0].getString());
+      if((it = config->find("diffuseTexture")) != config->end()) // new SMURF naming
+        texturename = trim(it->second[0].getString());
       if((it = config->find("displacementmap")) != config->end())
         bumpmap = trim(it->second[0].getString());
+      if((it = config->find("displacementTexture")) != config->end()) // new SMURF naming
+        bumpmap = trim(it->second[0].getString());
       if((it = config->find("bumpmap")) != config->end())
+        normalmap = trim(it->second[0].getString());
+      if((it = config->find("normalTexture")) != config->end()) // new SMURF naming
         normalmap = trim(it->second[0].getString());
       if((it = config->find("tex_scale")) != config->end())
         tex_scale = it->second[0].getDouble();
