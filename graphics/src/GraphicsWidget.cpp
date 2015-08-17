@@ -901,6 +901,9 @@ namespace mars {
         rttTexture->setImage(rttImage);
       }
 
+
+
+      if(gm->isDepthImageActive()){
         // depth component
         rttDepthTexture = new osg::Texture2D();
         rttDepthTexture->setResizeNonPowerOfTwoHint(false);
@@ -919,11 +922,9 @@ namespace mars {
                                      1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
-        
         std::fill(rttDepthImage->data(), rttDepthImage->data() + widgetWidth * widgetHeight * sizeof(GLuint), 0);
-        
         rttDepthTexture->setImage(rttDepthImage);
-
+      }
 
       graphicsCamera = new GraphicsCamera(osgCamera, widgetWidth, widgetHeight);
     }

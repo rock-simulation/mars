@@ -1939,6 +1939,12 @@ namespace mars {
     void GraphicsManager::removeOSGNode(void* node) {
       scene->removeChild((osg::Node*)node);
     }
+
+    bool GraphicsManager::isDepthImageActive(){
+      if(!cfg) return false;
+      return cfg->getOrCreateProperty("Graphics", "renderDepthImage", false, this).bValue;
+    }
+
   } // end of namespace graphics
 } // end of namespace mars
 
