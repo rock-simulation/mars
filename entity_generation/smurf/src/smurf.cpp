@@ -329,7 +329,7 @@ namespace mars {
         }
       }
 
-      for (it = config["visual"].begin(); it != config["visual"].end(); ++it) {
+      for (it = config["visuals"].begin(); it != config["visuals"].end(); ++it) {
         handleURIs(&it->children);
         std::string cmpName = (std::string) (*it)["name"][0];
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
@@ -347,6 +347,8 @@ namespace mars {
             }
           }
         }
+        else
+          fprintf(stderr, "visual: couldn't find %s\n", cmpName.c_str());
       }
 
       for (it = config["collision"].begin(); it != config["collision"].end(); ++it) {
