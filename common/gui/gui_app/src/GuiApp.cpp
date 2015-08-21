@@ -88,7 +88,6 @@ namespace gui_app {
     // then check locals
     setlocale(LC_ALL,"C");
 
-    libManager->loadLibrary("main_gui");
     libManager->loadLibrary("cfg_manager");
     cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
     if(!cfg) {
@@ -107,7 +106,14 @@ namespace gui_app {
     loadFile.append("/gui_Windows.yaml");
     cfg->loadConfig(loadFile.c_str());
 
-    mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
+    std::string p = configDir+"/preferences.yml";
+    FILE *f = fopen(p.c_str(), "r");
+    if(f) {
+      fclose(f);
+      cfg->loadConfig(p.c_str());
+    }
+    mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui",
+                                                                true);
     if(!mainGui) {
       fprintf(stderr, "can not load needed library \"main_gui\".\n");
       exit(-1);
