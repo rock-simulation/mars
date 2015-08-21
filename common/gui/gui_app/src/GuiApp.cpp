@@ -88,8 +88,7 @@ namespace gui_app {
     // then check locals
     setlocale(LC_ALL,"C");
 
-    libManager->loadLibrary("cfg_manager");
-    cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+    cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
     if(!cfg) {
       fprintf(stderr, "can not load needed library \"cfg_manager\".\n");
       exit(-1);
@@ -118,6 +117,8 @@ namespace gui_app {
       fprintf(stderr, "can not load needed library \"main_gui\".\n");
       exit(-1);
     }
+
+    libManager->getLibraryAs<void>("lib_manager_gui", true);
 
     // load the simulation core_libs:
     libManager->loadConfigFile(coreConfigFile);
