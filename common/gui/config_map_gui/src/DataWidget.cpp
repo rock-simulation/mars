@@ -61,7 +61,7 @@ namespace mars {
         config = map;
         cname = name;
       }
-      config.toYamlFile("foo.yml");
+      // config.toYamlFile("foo.yml");
       addConfigMap(name, config);
       ignore_change = 0;
     }
