@@ -82,7 +82,6 @@ namespace gui_app {
   }
 
   void GuiApp::init(const std::vector<std::string> &arguments) {
-    std::string coreConfigFile = configDir+"/libs.txt";
     mars::main_gui::MainGUI *mainGui;
 
     // then check locals
@@ -97,13 +96,22 @@ namespace gui_app {
     // pipe arguments into cfg_manager
     char label[55];
     for(size_t i=0; i<arguments.size(); ++i) {
-      sprintf(label, "arg%zu", i);
-      cfg->getOrCreateProperty("Config", label, arguments[i]);
+      size_t f = arguments[i].find("=");
+      if(f != std::string::npos) {
+        cfg->getOrCreateProperty("Config", arguments[i].substr(0, f),
+                                 arguments[i].substr(f+1));
+      }
+      else {
+        sprintf(label, "arg%zu", i);
+        cfg->getOrCreateProperty("Config", label, arguments[i]);
+      }
     }
-    cfg->getOrCreateProperty("Config", "config_path", configDir);
+    configDir = cfg->getOrCreateProperty("Config", "config_path",
+                                         configDir).sValue;
     std::string loadFile = configDir;
     loadFile.append("/gui_Windows.yaml");
     cfg->loadConfig(loadFile.c_str());
+    std::string coreConfigFile = configDir+"/libs.txt";
 
     std::string p = configDir+"/preferences.yml";
     FILE *f = fopen(p.c_str(), "r");
