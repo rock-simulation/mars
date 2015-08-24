@@ -296,6 +296,7 @@ namespace mars {
 
       void removeGraphicsWidget(unsigned long id);
       virtual bool isInitialized() const {return initialized;}
+      virtual bool isDepthImageActive();
     private:
 
       mars::interfaces::GraphicData graphicOptions;

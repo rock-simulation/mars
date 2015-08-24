@@ -34,6 +34,7 @@
 #include <osgGA/FlightManipulator>
 #include <osgGA/TerrainManipulator>
 #include <osgWidget/Frame>
+#include <sstream>
 
 #define CULL_LAYER (1 << (widgetID-1))
 
@@ -898,7 +899,11 @@ namespace mars {
                                 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
         osgCamera->attach(osg::Camera::COLOR_BUFFER, rttImage.get());
         rttTexture->setImage(rttImage);
+      }
 
+
+
+      if(gm->isDepthImageActive()){
         // depth component
         rttDepthTexture = new osg::Texture2D();
         rttDepthTexture->setResizeNonPowerOfTwoHint(false);
@@ -917,13 +922,10 @@ namespace mars {
                                      1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
-        
         std::fill(rttDepthImage->data(), rttDepthImage->data() + widgetWidth * widgetHeight * sizeof(GLuint), 0);
-        
         rttDepthTexture->setImage(rttDepthImage);
-
-
       }
+
       graphicsCamera = new GraphicsCamera(osgCamera, widgetWidth, widgetHeight);
     }
 
@@ -1062,7 +1064,7 @@ namespace mars {
       else
       {
         //slow but works...
-        void *data;
+        void *data=0;
         postDrawCallback->getImageData(&data, width, height);
         memcpy(buffer, data, width*height*4);
         free(data);
@@ -1083,10 +1085,11 @@ namespace mars {
 
     void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height)
     {
-      if(isRTTWidget) {
+      if(rttDepthImage) {
         GLuint* data2 = (GLuint *)rttDepthImage->data();
         width = rttDepthImage->s();
         height = rttDepthImage->t();
+        assert(width*height >= (sizeof(buffer) / sizeof(buffer[0])));
 
         double fovy, aspectRatio, Zn, Zf;
         graphicsCamera->getOSGCamera()->getProjectionMatrixAsPerspective( fovy, aspectRatio, Zn, Zf );
@@ -1307,6 +1310,14 @@ namespace mars {
       case '9' :
         if (myHUD) myHUD->switchCullElement(key);
         break;
+      case 'p' :
+        {
+        std::stringstream s;
+        static int i=0;
+        s << i++ << "out.ply";
+        savePLY(s.str());
+        break;
+        }
       case '.' :
         graphicsCamera->toggleStereoMode();
         break;
@@ -1725,6 +1736,56 @@ namespace mars {
         myHUD->setViewOffsets(x1, x2, y1, y2);
       }
     }
+
+
+    void GraphicsWidget::savePLY(std::string filename){
+        setGrabFrames(true);
+
+        double fovy,ratio,zNear,zFar;
+        getMainCamera()->getProjectionMatrixAsPerspective(fovy,ratio,zNear,zFar);
+        int width,height,cwidth,cheight;
+        size_t w = rttDepthImage->s(),h=rttDepthImage->t();
+        float buffer[w*h];
+        getRTTDepthData(buffer,width,height);
+        char cbuffer[width*height*4];
+        getImageData(cbuffer,cwidth,cheight);
+        double angle_x = ((fovy*ratio)/180.0*M_PI)/width;
+        double angle_y = (fovy/180.0*M_PI)/height;
+        if(cheight != height || cwidth != width){
+            std::cerr << "Sizes are differ" << std::endl;
+            assert(false);
+        }
+
+        std::ofstream file(filename.c_str(), std::ofstream::out | std::fstream::trunc);
+        assert(file.is_open());
+        file << "ply" << std::endl;
+        file << "format ascii 1.0" << std::endl;
+        file << "element vertex " << width*height << std::endl;
+        file << "property float x" << std::endl;
+        file << "property float y" << std::endl;
+        file << "property float z" << std::endl;
+        file << "property char red" << std::endl;
+        file << "property char green" << std::endl;
+        file << "property char blue" << std::endl;
+        file << "end_header" << std::endl;
+        for(unsigned int x=0;x<width;x++){
+            for(unsigned int y=0;y<height;y++){
+                float dist = buffer[(y*width)+x];
+                unsigned char *c = (unsigned char*) &cbuffer[(y*width*4)+(x*4)];
+                double py = dist * -tan(angle_x*(x-width/2.0));
+                double pz = dist * tan(angle_y*(y-height/2.0));
+                double px = dist;
+                if(isnan(dist)){ //check for nan
+                    px=0;
+                    py=0;
+                    pz=0;
+                }
+                file << px << " " << py << " " << pz << " " << (int)c[0] << " " << (int)c[1] << " "  << (int)c[2] << std::endl;
+            }
+        }
+    }
+
+
 
   } // end of namespace graphics
 } // end of namespace mars
