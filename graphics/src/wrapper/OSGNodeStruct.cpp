@@ -82,12 +82,15 @@ namespace mars {
         origname = node.origName;
       }
       if (filename.compare("PRIMITIVE") == 0) {
+        Vector vizSize = node.extend;
         switch(NodeData::typeFromString(origname.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
           drawObject_ = new CubeDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_SPHERE: {
+          vizSize.x() *= 2;
+          vizSize.y() = vizSize.z() = vizSize.x();
           drawObject_ = new SphereDrawObject(g);
           break;
         }
@@ -99,25 +102,20 @@ namespace mars {
         }
         case mars::interfaces::NODE_TYPE_MESH:
         case mars::interfaces::NODE_TYPE_CYLINDER: 
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new CylinderDrawObject(g, node.visual_size.x(),
-                                                 node.visual_size.y());
-          }
-          else {
-            drawObject_ = new CylinderDrawObject(g, node.ext.x(), node.ext.y());
-          }
+          vizSize.x() *= 2;
+          vizSize.z() = vizSize.y();
+          vizSize.y() = vizSize.x();
+          drawObject_ = new CylinderDrawObject(g, 1, 1);
           break;
         case mars::interfaces::NODE_TYPE_CAPSULE: {
+          vizSize.x() *= 2;
+          vizSize.z() = vizSize.y();
+          vizSize.y() = vizSize.x();
           drawObject_ = new CapsuleDrawObject(g);
           break;
         }
         case mars::interfaces::NODE_TYPE_PLANE: {
-          if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-            drawObject_ = new PlaneDrawObject(g, node.visual_size);
-          }
-          else {
-            drawObject_ = new PlaneDrawObject(g, node.ext);
-          }
+          drawObject_ = new PlaneDrawObject(g, vizSize);
           break;
         }
         case mars::interfaces::NODE_TYPE_EMPTY: {
@@ -139,11 +137,9 @@ namespace mars {
         //drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(0.0, 0.0, 0.0), sharedID);
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
-          drawObject_->setScaledSize(node.visual_size);
+          vizSize = node.visual_size;
         }
-        else {
-          drawObject_->setScaledSize(node.ext);
-        }
+        drawObject_->setScaledSize(vizSize);
       } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
         // we have a heightfield
         if (!node.terrain->pixelData) {
