@@ -713,7 +713,9 @@ namespace mars {
       config["filename"] = "PRIMITIVE";
       switch (tmpGeometry->type) {
       case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.x() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.y() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.z() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
         config["origname"] = "sphere";
         break;
       case urdf::Geometry::BOX:
@@ -722,8 +724,9 @@ namespace mars {
         config["origname"] = "box";
         break;
       case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
+        size.x() = 2.0*((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = 2.0*((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.z() = ((urdf::Cylinder*) tmpGeometry.get())->length;
         config["origname"] = "cylinder";
         break;
       case urdf::Geometry::MESH:
