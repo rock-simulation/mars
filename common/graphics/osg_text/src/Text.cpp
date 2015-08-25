@@ -40,17 +40,25 @@ namespace osg_text {
              double paddingL, double paddingT,
              double paddingR, double paddingB,
              Color backgroundColor, Color borderColor,
-             double borderWidth) : posX(posX), posY(posY),
-                                   textAlign(textAlign),
-                                   pl(paddingL), pt(paddingT),
-                                   pr(paddingR), pb(paddingB),
-                                   borderWidth(borderWidth),
-                                   fixedWidth(-1), fixedHeight(-1) {
+             double borderWidth,
+             std::string fontPath) : posX(posX), posY(posY),
+                                     textAlign(textAlign),
+                                     pl(paddingL), pt(paddingT),
+                                     pr(paddingR), pb(paddingB),
+                                     borderWidth(borderWidth),
+                                     fixedWidth(-1), fixedHeight(-1) {
 
     labelGeode = new osg::Geode();
-    std::string timesFont = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
-    timesFont += "/mars/graphics/resources/Fonts/arial.ttf";
-    //fprintf(stderr, "font: %s\n", timesFont.c_str());
+    std::string font;
+    if(fontPath.empty()) {
+      font = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+      font += "/mars/graphics/resources/Fonts";
+      font += "/arial.ttf";
+    }
+    else {
+      font = fontPath;
+    }
+    // fprintf(stderr, "font: %s\n", font.c_str());
     labelText = new osgText::Text;
 
     labelGeode->addDrawable(labelText.get());
@@ -62,7 +70,7 @@ namespace osg_text {
     //stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 
-    labelText->setFont(timesFont);
+    labelText->setFont(font);
     labelText->setPosition(osg::Vec3(0.0f, 0.0f, 0.0f));
     labelText->setCharacterSize(fontSize);
     labelText->setAxisAlignment(osgText::Text::XY_PLANE);

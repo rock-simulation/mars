@@ -51,7 +51,7 @@ namespace osg_text {
          double paddingR=0., double paddingB=0.,         
          Color backgroundColor=Color(),
          Color borderColor=Color(),
-         double borderWidth = 0.0);
+         double borderWidth = 0.0, std::string fontPath="");
 
     ~Text();
     void setText(const std::string &s);
