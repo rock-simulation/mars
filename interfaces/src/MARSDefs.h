@@ -67,6 +67,7 @@ namespace mars {
       NODE_TYPE_PLANE,
       NODE_TYPE_TERRAIN,
       NODE_TYPE_REFERENCE,
+      NODE_TYPE_EMPTY,
       NUMBER_OF_NODE_TYPES
     };
 
@@ -86,9 +87,12 @@ namespace mars {
     // Definition of Motor Types
     enum MotorType {
       MOTOR_TYPE_UNDEFINED=0,
-      MOTOR_TYPE_PID,
-      MOTOR_TYPE_DC,
-      MOTOR_TYPE_PID_FORCE,
+      MOTOR_TYPE_POSITION,
+      MOTOR_TYPE_VELOCITY,
+      MOTOR_TYPE_EFFORT,
+      MOTOR_TYPE_PID, // deprecated
+      MOTOR_TYPE_DC, // deprecated
+      MOTOR_TYPE_PID_FORCE, // deprecated
     };
 
     //Definition of Sensor Types

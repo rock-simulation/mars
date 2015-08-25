@@ -32,8 +32,9 @@
 namespace mars {
   namespace graphics {
 
-    PlaneDrawObject::PlaneDrawObject(const mars::utils::Vector &ext)
-      : DrawObject(), extent_(ext) {
+    PlaneDrawObject::PlaneDrawObject(GraphicsManager *g,
+                                     const mars::utils::Vector &ext)
+      : DrawObject(g), extent_(ext) {
       geometrySize_.x() = extent_.x();
       geometrySize_.y() = extent_.y();
     }

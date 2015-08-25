@@ -42,6 +42,7 @@ namespace mars {
      * Wraps a NodeData in a osg::Group.
      * Handles previews and editing of NodeData groups.
      */
+    class GraphcisManager;
     class OSGNodeStruct : public osg::Group
     {
     public:
@@ -49,11 +50,11 @@ namespace mars {
        * Constructor creates a node in PREVIEW or CREATED state.
        * In PREVIEW state some ressources are not allocated (material,..)
        */
-      OSGNodeStruct(std::vector<mars::interfaces::LightData*> &lightList,
+      OSGNodeStruct(GraphicsManager *g,
                     const mars::interfaces::NodeData &node,
                     bool isPreview, unsigned long id, bool useMARSShader,
                     bool useFog, bool useNoise, bool drawLineLaser,
-                    bool marsShadow);
+                    bool marsShadow, int defaultMaxNumNodeLights);
       /**
        * Edit this node, works only in the PREVIEW state.
        */

@@ -21,11 +21,11 @@
 #include "SimMotor.h"
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
-
 #include <mars/data_broker/DataBrokerInterface.h>
 
 #include <cstdio>
 #include <cmath>
+#include <algorithm>
 
 namespace mars {
   namespace sim {
@@ -36,51 +36,62 @@ namespace mars {
     SimMotor::SimMotor(ControlCenter *c, const MotorData &sMotor_)
       : control(c) {
 
-      //  setSMotor(sMotor_);
       sMotor.index = sMotor_.index;
       sMotor.type = sMotor_.type;
       sMotor.value = sMotor_.value;
+      sMotor.value = 0;
       sMotor.name = sMotor_.name.c_str();
-      myJoint = 0;
-      last_error = 0;
-      integ_error = 0;
-      desired_position = sMotor.value;
-      actual_position = 0;
-      actual_velocity=0;
-      joint_velocity = desired_velocity = 0;
+      sMotor.maxSpeed = sMotor_.maxSpeed;
+      sMotor.maxEffort = sMotor_.maxEffort;
+      sMotor.maxAcceleration = sMotor_.maxAcceleration;
+      sMotor.maxValue = sMotor_.maxValue;
+      sMotor.minValue = sMotor_.minValue;
+      axis = 0;
+      position1 = 0;
+      position2 = 0;
+      position = &position1;
+      velocity=0;
+      joint_velocity = 0;
       time = 10;
       current = 0;
-      torque = 0;
+      effort = 0;
       myJoint = 0;
+      mimic = false;
+      mimic_multiplier=1.0;
+      mimic_offset=0;
+      maxEffortApproximation = &utils::pipe;
+      maxSpeedApproximation = &utils::pipe;
+      maxeffort_coefficients = NULL;
+      maxspeed_coefficients = NULL;
+      maxspeed_x = &sMotor.maxSpeed;
+      maxeffort_x = &sMotor.maxEffort;
+
       myPlayJoint = 0;
-      activated = true;
+      active = true;
 
-      kXY = 100.0*((2.01198e-005) / ((9.81*0.07)*(2*M_PI/60)));
-      kX  = 0.00865849 / (9.81*0.07);
-      kY  = 100.0*(0.000155975 / (2*M_PI/60));
-      k   = -0.0728643;
+      // controller
+      p=0;
+      i=0;
+      d=0;
+      last_error = 0;
+      integ_error = 0;
+      controlValue = 0;
+      updateController();
 
-      kXY = 100.0*((0.00002) / ((9.81*0.07)*(2*M_PI/60)));
-      kX  = 0.00422 / (9.81*0.07);
-      kY  = 100.0*(0.00014 / (2*M_PI/60));
-      k   = 0.02;
-
-      kXY = 100.0*((0.00002) / ((9.81*0.07)*(2*M_PI/60)));
-      kX  = 0.00512 / (9.81*0.07);
-      kY  = 100.0*(0.00006 / (2*M_PI/60));
-      k   = 0.025;
+      initTemperatureEstimation();
+      initCurrentEstimation();
 
       dbPackage.add("id", (long)sMotor.index);
-      dbPackage.add("value", getValue());
-      dbPackage.add("position", getActualPosition());
+      dbPackage.add("value", controlValue);
+      dbPackage.add("position", getPosition());
       dbPackage.add("current", getCurrent());
-      dbPackage.add("torque", getTorque());
+      dbPackage.add("torque", getEffort());
 
       dbIdIndex = dbPackage.getIndexByName("id");
-      dbValueIndex = dbPackage.getIndexByName("value");
+      dbControlParameterIndex = dbPackage.getIndexByName("value");
       dbPositionIndex = dbPackage.getIndexByName("position");
       dbCurrentIndex = dbPackage.getIndexByName("current");
-      dbTorqueIndex = dbPackage.getIndexByName("torque");
+      dbEffortIndex = dbPackage.getIndexByName("torque");
 
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
@@ -90,16 +101,6 @@ namespace mars {
                                                  data_broker::DATA_PACKAGE_READ_FLAG);
         control->dataBroker->registerTimedProducer(this, groupName, dataName,
                                                    "mars_sim/simTimer", 0);
-
-        /*
-        mars::data_broker::DataPackage dbPackage;
-        dbPackage.add("value", getValue());
-        std::string name = dataName + "/value";
-        control->dataBroker->pushData(groupName, name, dbPackage,
-                                      this, mars::data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
-        
-        control->dataBroker->registerSyncReceiver(this, groupName, name, 0);
-        */
       }
     }
 
@@ -112,26 +113,332 @@ namespace mars {
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here
-      if(myJoint) myJoint->unsetJointAsMotor(sMotor.axis);
+      if(myJoint) myJoint->detachMotor(sMotor.axis);
+
+      // delete any coefficient vectors we might have created
+      delete maxspeed_coefficients;
+      delete maxeffort_coefficients;
     }
 
-    void SimMotor::produceData(const data_broker::DataInfo &info,
-                               data_broker::DataPackage *dbPackage,
-                               int callbackParam) {
-      dbPackage->set(dbIdIndex, (long)sMotor.index);
-      dbPackage->set(dbValueIndex, getValue());
-      dbPackage->set(dbPositionIndex, getActualPosition());
-      dbPackage->set(dbCurrentIndex, getCurrent());
-      dbPackage->set(dbTorqueIndex, getTorque());
+    void SimMotor::addMimic(SimMotor* mimic) {
+      mimics[mimic->getName()] = mimic;
     }
 
-    void SimMotor::receiveData(const data_broker::DataInfo& info,
-                               const data_broker::DataPackage& package,
-                               int id) {
-      sReal value;
-      package.get(0, &value);
-      setValue(value);
+    void SimMotor::removeMimic(std::string mimicname) {
+      mimics.erase(mimicname);
     }
+
+    void SimMotor::clearMimics() {
+      mimics.clear();
+    }
+
+    void SimMotor::setMimic(sReal multiplier, sReal offset) {
+      mimic = true;
+      mimic_multiplier = multiplier;
+      mimic_offset = offset;
+    }
+
+    void SimMotor::setMaxEffortApproximation(utils::ApproximationFunction type,
+      std::vector<double>* coefficients) {
+      switch (type) {
+        case FUNCTION_PIPE:
+          maxEffortApproximation =&utils::pipe;
+          maxeffort_x = &sMotor.maxEffort;
+          break;
+        case FUNCTION_POLYNOM3:
+          maxEffortApproximation =&utils::polynom3;
+          maxeffort_x = position;
+          break;
+        case FUNCTION_POLYNOM5:
+          maxEffortApproximation =&utils::polynom5;
+          maxeffort_x = position;
+          break;
+        case FUNCTION_GAUSSIAN:
+        case FUNCTION_UNKNOWN:
+          LOG_WARN("SimMotor: Approximation function not implemented or unknown.");
+          break;
+      }
+      maxeffort_coefficients = coefficients;
+    }
+
+    void SimMotor::setMaxSpeedApproximation(utils::ApproximationFunction type,
+      std::vector<double>* coefficients) {
+        fprintf(stderr, "setMaxSpeedApproximation\n");
+      switch (type) {
+        case FUNCTION_PIPE:
+          maxSpeedApproximation = &utils::pipe;
+          maxspeed_x = &sMotor.maxSpeed;
+          break;
+        case FUNCTION_POLYNOM3:
+          maxSpeedApproximation = &utils::polynom3;
+          maxspeed_x = position;
+          break;
+        case FUNCTION_POLYNOM5:
+          maxSpeedApproximation = &utils::polynom5;
+          maxspeed_x = position;
+          break;
+        case FUNCTION_GAUSSIAN:
+        case FUNCTION_UNKNOWN:
+          LOG_WARN("SimMotor: Approximation function not implemented or unknown.");
+          break;
+      }
+      maxspeed_coefficients = coefficients;
+    }
+
+    void SimMotor::updateController() {
+      axis = (unsigned char) sMotor.axis;
+      switch (sMotor.type) {
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID: // deprecated
+          controlParameter = &velocity;
+          controlValue = sMotor.value;
+          controlLimit = &(sMotor.maxSpeed);
+          setJointControlParameter = &SimJoint::setVelocity;
+          runController = &SimMotor::runPositionController;
+          break;
+        case MOTOR_TYPE_VELOCITY:
+        case MOTOR_TYPE_DC: //deprecated
+          controlParameter = &velocity;
+          controlValue = sMotor.value;
+          controlLimit = &(sMotor.maxAcceleration); // this is a stand-in for acceleration
+          setJointControlParameter = &SimJoint::setVelocity;
+          runController = &SimMotor::runVeloctiyController;
+          break;
+        case MOTOR_TYPE_PID_FORCE: // deprecated
+        case MOTOR_TYPE_EFFORT:
+          controlParameter = &effort;
+          controlValue = sMotor.value;
+          controlLimit = &(sMotor.maxEffort);
+          setJointControlParameter = &SimJoint::setEffort;
+          runController = &SimMotor::runEffortController;
+          break;
+        case MOTOR_TYPE_UNDEFINED:
+          // TODO: output error
+          controlParameter = &velocity; // default to position
+          controlValue = sMotor.value;
+          controlLimit = &(sMotor.maxSpeed);
+          setJointControlParameter = &SimJoint::setVelocity;
+          runController = &SimMotor::runPositionController;
+          break;
+      }
+      //TODO: update the remaining parameters
+    }
+
+    void SimMotor::runEffortController(sReal time) {
+      // limit to range of motion
+      controlValue = std::max(sMotor.minValue,
+        std::min(controlValue, sMotor.maxValue));
+
+      if(controlValue > 2*M_PI)
+        controlValue = 0;
+      else if(controlValue > M_PI)
+        controlValue = -2*M_PI + controlValue;
+      else if(controlValue < -2*M_PI)
+        controlValue = 0;
+      else if(controlValue < -M_PI)
+        controlValue = 2*M_PI + controlValue;
+
+      error = controlValue - *position;
+      if(error > M_PI) error = -2*M_PI + error;
+      else if(error < -M_PI) error = 2*M_PI + error;
+      integ_error += error * time;
+      // P part of the motor
+      effort = error * sMotor.p;
+      // I part of the motor
+      effort += integ_error * sMotor.i;
+      // D part of the motor
+      effort += ((error - last_error)/time) * sMotor.d;
+      last_error = error;
+      effort = std::max(-sMotor.maxEffort, std::min(effort, sMotor.maxEffort));
+    }
+
+    void SimMotor::runVeloctiyController(sReal time) {
+      *controlParameter = controlValue;
+    }
+
+    void SimMotor::runPositionController(sReal time) {
+      // the following implements a simple PID controller using the value
+      // pointed to by controlParameter
+
+      controlValue = mimic_multiplier * controlValue + mimic_offset;
+
+      // limit to range of motion
+      controlValue = std::max(sMotor.minValue,
+        std::min(controlValue, sMotor.maxValue));
+
+      // calculate control values
+      error = controlValue - *position;
+
+      // FIXME: not sure if this makes sense, because it forbids turning
+      //        motors in the same direction for multiple revolutions
+      // and can possibly lead to the motor turning in the wrong direction
+      // beyond its limit, as limit checking was done BEFORE??
+      //if(er > M_PI)
+      //  er = -2*M_PI+er;
+      //else
+      //if(er < -M_PI)
+      //  er = 2*M_PI+er;
+
+      integ_error += error*time;
+
+      //anti wind up, this code limits the integral error
+      //part of the pid to the maximum velocity. This makes
+      //the pid react way faster. This also eleminates the
+      //overshooting errors seen before in the simulation
+      double iPart = integ_error * sMotor.i;
+      if(iPart > sMotor.maxSpeed)
+      {
+        iPart = sMotor.maxSpeed;
+        integ_error = sMotor.maxSpeed / sMotor.i;
+      }
+
+      if(iPart < -sMotor.maxSpeed)
+      {
+        iPart = -sMotor.maxSpeed;
+        integ_error = -sMotor.maxSpeed / sMotor.i;
+      }
+
+      // set desired velocity. @todo add inertia
+      velocity = 0; // by setting a different value we could specify a minimum
+      // P part of the motor
+      velocity += error * sMotor.p;
+      // I part of the motor
+      velocity += iPart;
+      // D part of the motor
+      velocity += ((error - last_error)/time) * sMotor.d;
+      last_error = error;
+    }
+
+    void SimMotor::update(sReal time_ms) {
+      time = time_ms;// / 1000;
+      sReal play_position = 0.0;
+
+      // if the attached joint does not exist (any more)
+      if (!myJoint) deactivate();
+
+      if(active) {
+        // set play offset to 0
+        if(myPlayJoint) play_position = myPlayJoint->getPosition();
+
+        refreshPosition();
+        *position += play_position;
+
+        // call control function for current motor type
+        (this->*runController)(time_ms);
+
+        // cap speed
+        velocity = std::max(-(getMomentaryMaxSpeed()),
+          std::min(velocity, getMomentaryMaxSpeed()));
+        // cap effort
+        effort = std::max(-(getMomentaryMaxEffort()),
+          std::min(effort, getMomentaryMaxEffort()));
+
+        for(std::map<std::string, SimMotor*>::iterator it = mimics.begin();
+          it != mimics.end(); ++it) {
+            it->second->setControlValue(controlValue);
+            //it->second->setControlValue(*position);
+          }
+
+
+        // estimate motor parameters based on achieved status
+        estimateCurrent();
+        estimateTemperature(time_ms);
+
+        // pass speed (position/speed control) or torque to the attached
+        // joint's setSpeed1/2 or setTorque1/2 methods
+        (myJoint->*setJointControlParameter)(*controlParameter, axis);
+        //for mimic in myJoint->mimics:
+        //  mimic->*setJointControlParameter)(mimic_multiplier*controlParameter, axis);
+      }
+    }
+
+    void SimMotor::estimateCurrent() {
+      // calculate current
+      effort = myJoint->getMotorTorque();
+      joint_velocity = myJoint->getVelocity();
+      current = (kXY*fabs(effort*joint_velocity) +
+                 kX*fabs(effort) +
+                 kY*fabs(joint_velocity) + k);
+      if(current < 0.0)
+        current = 0.0;
+    }
+
+    void SimMotor::estimateTemperature(sReal time_ms) {
+      temperature = temperature - calcHeatDissipation(time_ms) + calcHeatProduction(time_ms);
+    }
+
+    /*
+     * Calculates the heat energy dissipating in the update interval.
+     * Normally, heat transfer would be calculated as
+     * P = k*A*(Ti - Ta)/d
+     * where k is the thermal conductivity, A the surface area,
+     * d the distance (material thickness) and Ti the temperature inside
+     * and Ta the ambient temperature. Since k, A and d are all constant
+     * in our case, heatTransferCoefficient = k*A/d and thus:
+     */
+    sReal SimMotor::calcHeatDissipation(sReal time_ms) const {
+      return (heatTransferCoefficient * (temperature - ambientTemperature))*time_ms/1000.0;
+    }
+
+    /*
+     * Calculates the heat energy lost from motor activity in the update interval.
+     * heatlossCoefficient would be the fraction of the energy the motor gets from the
+     * power supply which gets transformed into heat energy.
+     */
+    sReal SimMotor::calcHeatProduction(sReal time_ms) const {
+      return (current * voltage * heatlossCoefficient)*time_ms/1000.0;
+    }
+
+    void SimMotor::initTemperatureEstimation() {
+      temperature = 0;
+      voltage = 0;
+      heatlossCoefficient = 0;
+      heatTransferCoefficient = 0;
+      heatCapacity = 0;
+    }
+
+    void SimMotor::initCurrentEstimation() {
+      kXY = 0;
+      kX = 0;
+      kY = 0;
+      k = 0;
+      current = 0;
+    }
+
+    void SimMotor::refreshPosition(){
+      if(sMotor.axis == 1)
+        position1 = myJoint->getPosition();
+      else
+        position2 = myJoint->getPosition(2);
+    }
+
+    void SimMotor::refreshPositions() {
+      position1 = myJoint->getPosition();
+      position2 = myJoint->getPosition(2);
+    }
+
+    void SimMotor::refreshAngle(){ // deprecated
+      refreshPosition();
+    }
+
+    /*
+     * This function can be overloaded in a child class in order to
+     * implement a specifically variable effort.
+     */
+    sReal SimMotor::getMomentaryMaxEffort() {
+      return (*maxEffortApproximation)(maxeffort_x, maxeffort_coefficients);
+    }
+
+    /*
+     * This function can be overloaded in a child class in order to
+     * implement a specifically speed.
+     */
+    sReal SimMotor::getMomentaryMaxSpeed() {
+      return (*maxSpeedApproximation)(maxspeed_x, maxspeed_coefficients);
+    }
+
+
+// from here on only getters and setters
 
     void SimMotor::attachJoint(SimJoint *joint){
       myJoint = joint;
@@ -149,12 +456,8 @@ namespace mars {
       return myPlayJoint;
     }
 
-    void SimMotor::setAxis(int tempAxis){
-      axis = tempAxis;
-    }
-
     int SimMotor::getAxis() const {
-      return axis;
+      return sMotor.axis;
     }
 
     const std::string SimMotor::getName() const {
@@ -165,28 +468,55 @@ namespace mars {
       sMotor.name = newname;
     }
 
-
-    void SimMotor::setDesiredMotorAngle(sReal angle) {
-      desired_position = angle;
-      sMotor.value = angle;
+    void SimMotor::setDesiredMotorAngle(sReal angle) { // deprecated
+      switch(sMotor.type) {
+        case MOTOR_TYPE_PID:
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID_FORCE:
+        case MOTOR_TYPE_EFFORT:
+          controlValue = angle;
+          break;
+        case MOTOR_TYPE_VELOCITY:
+        case MOTOR_TYPE_DC:
+        case MOTOR_TYPE_UNDEFINED:
+          break;
+      }
     }
 
-    void SimMotor::setDesiredMotorVelocity(sReal vel) {
-      desired_velocity = vel;
+    void SimMotor::setDesiredMotorVelocity(sReal veloctiy) { // deprecated
+      switch(sMotor.type) {
+        case MOTOR_TYPE_DC:
+        case MOTOR_TYPE_VELOCITY:
+          controlValue = velocity;
+          break;
+        case MOTOR_TYPE_PID:
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID_FORCE:
+        case MOTOR_TYPE_EFFORT:
+        case MOTOR_TYPE_UNDEFINED:
+          break;
+      }
     }
 
-    sReal SimMotor::getDesiredMotorAngle() const {
-      return desired_position;
+    sReal SimMotor::getDesiredMotorAngle() const { // deprecated
+      switch(sMotor.type) {
+        case MOTOR_TYPE_PID:
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID_FORCE:
+        case MOTOR_TYPE_EFFORT:
+          return controlValue;
+          break;
+        case MOTOR_TYPE_DC:
+        case MOTOR_TYPE_VELOCITY:
+        case MOTOR_TYPE_UNDEFINED:
+          break;
+        }
+      return 0.0; // return 0 if it doesn't apply
     }
 
     void SimMotor::setMaxEffort(sReal force) {
       sMotor.maxEffort = force;
-      if(sMotor.axis == 1) {
-        myJoint->setForceLimit(sMotor.maxEffort);
-      }
-      else if(sMotor.axis == 2) {
-        myJoint->setForceLimit2(sMotor.maxEffort);
-      }
+      myJoint->setEffortLimit(sMotor.maxEffort, axis);
     }
 
     void SimMotor::setMotorMaxForce(sReal force) { // deprecated
@@ -194,55 +524,77 @@ namespace mars {
     }
 
     sReal SimMotor::getMaxEffort() const {
-      return maxEffort;
+      return sMotor.maxEffort;
     }
 
-    sReal SimMotor::getMotorMaxForce() const {
-      return maxEffort;
+    sReal SimMotor::getMotorMaxForce() const { // deprecated
+      return getMaxEffort();
     }
 
-    sReal SimMotor::getActualAngle() const {
-      return actualAngle1;
+    sReal SimMotor::getPosition() const {
+      return position1;
     }
 
-    void SimMotor::setActualAngle(sReal angle) {
-      actualAngle1 = angle;
+    sReal SimMotor::getActualPosition() const { // deprecated
+      return getPosition();
     }
 
-    void SimMotor::setMaxSpeed(sReal value) {
-      sMotor.maxSpeed = fabs(value);
+    void SimMotor::setPosition(sReal angle) {
+      position1 = angle;
     }
 
-    void SimMotor::setMaximumVelocity(sReal value) {
-      setMaxSpeed(value);
+    void SimMotor::setActualAngle(sReal angle) { // deprecated
+      setPosition(angle);
+    }
+
+    void SimMotor::setMaxSpeed(sReal speed) {
+      sMotor.maxSpeed = fabs(speed);
+    }
+
+    void SimMotor::setMaximumVelocity(sReal v) { // deprecated
+      setMaxSpeed(v);
     }
 
     sReal SimMotor::getMaxSpeed() const {
       return sMotor.maxSpeed;
     }
 
-    sReal SimMotor::getMaximumVelocity() const {
-      return sMotor.maxSpeed;
+    sReal SimMotor::getMaximumVelocity() const { // deprecated
+      return getMaxSpeed();
     }
-
 
     bool SimMotor::isServo() const {
-      // TODO: the 2 should be replaced by the correct enum
-      return (type == 2);
+      return !(sMotor.type == MOTOR_TYPE_DC ||
+        sMotor.type == MOTOR_TYPE_VELOCITY ||
+        sMotor.type == MOTOR_TYPE_UNDEFINED);
     }
 
-    // TODO: where is this->type ever used? shouldn't it be sMotor.type?
-    //       should use the enum MotorType defined in MARSDefs.h
-    void SimMotor::setType(int Type){
-      type = Type;
+    void SimMotor::setType(interfaces::MotorType mtype){
+      sMotor.type = mtype;
+      updateController();
     }
 
     void SimMotor::setVelocity(sReal v) {
-      actual_velocity = v;
+      switch(sMotor.type) {
+        case MOTOR_TYPE_DC:
+        case MOTOR_TYPE_VELOCITY:
+          setControlValue(v);
+          break;
+        case MOTOR_TYPE_PID:
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID_FORCE:
+        case MOTOR_TYPE_EFFORT:
+        case MOTOR_TYPE_UNDEFINED:
+          break;
+      }
     }
 
-    sReal SimMotor::getVelocity() const {
-      return actual_velocity;
+    sReal SimMotor::getControlParameter(void) const {
+      return *controlParameter;
+    }
+
+    sReal SimMotor::getVelocity() const { // deprecated
+      return velocity;
     }
 
     void SimMotor::setP(sReal p) {
@@ -269,232 +621,70 @@ namespace mars {
       return d;
     }
 
-    void SimMotor::refreshAngle(){
-      actualAngle1 = myJoint->getActualAngle1();
-      actualAngle2 = myJoint->getActualAngle2();
-    }
-
-
     void SimMotor::setSMotor(const MotorData &sMotor) {
       this->sMotor = sMotor;
-      if(sMotor.type == MOTOR_TYPE_PID ||
-         sMotor.type == MOTOR_TYPE_PID_FORCE) {
-        desired_position = sMotor.value;
-      }
-      else if(sMotor.type == MOTOR_TYPE_DC) {
-        actual_velocity = sMotor.value;
-      }
-      // we can initialize the motor here
-      // but maybe we should implement a function for that later
       if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
-        // in this first implementation we only set the first axis
-        if(sMotor.axis == 1) {
-          myJoint->setJointAsMotor(1);
-          myJoint->setForceLimit(sMotor.maxEffort);
-        }
-        else if(sMotor.axis == 2) {
-          // the same things for the second axis
-          myJoint->setJointAsMotor(2);
-          myJoint->setForceLimit2(sMotor.maxEffort);
-        }
-        else
-          {
-            fprintf(stderr,
-                    "ERROR: Unknown axis number in <motor> element: %d\n",
-                    sMotor.axis);
-          }
+          myJoint->attachMotor(axis);
+          myJoint->setEffortLimit(sMotor.maxEffort, axis);
       }
     }
-
 
     const MotorData SimMotor::getSMotor(void) const {
       return sMotor;
     }
 
-    void SimMotor::update(sReal time_ms) {
-      // updates the motor
-      // a timing should be added
-      sReal er = 0;
-      sReal vel = 0;
-      time = time_ms;// / 1000;
-      sReal play_position = 0.0;
+    void SimMotor::setValue(sReal value) {
+      setControlValue(value);
+    }
 
-      if(activated) {
-        if(myPlayJoint) play_position = myPlayJoint->getActualAngle1();
-        if(myJoint) {
-          if(sMotor.axis == 1)
-            actual_position = myJoint->getActualAngle1();
-          else
-            actual_position = myJoint->getActualAngle2();
-          actual_position += play_position;
-
-          switch (sMotor.type) {
-          case MOTOR_TYPE_PID:
-          {
-            if(desired_position>sMotor.maxValue)
-                desired_position = sMotor.maxValue;
-            if(desired_position<sMotor.minValue)
-                desired_position = sMotor.minValue;
-            /*
-              if(desired_position>2*M_PI) desired_position=0;
-              else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
-              else if(desired_position<-2*M_PI) desired_position=0;
-              else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
-            */
-            er = desired_position - actual_position;
-            if(er > M_PI) 
-                er = -2*M_PI+er;
-            else 
-                if(er < -M_PI) 
-                    er = 2*M_PI+er;
-                
-            integ_error += er*time;
-            
-            //anti wind up, this code limits the integral error
-            //part of the pid to the maximum velocity. This makes
-            //the pid react way faster. This also eleminates the 
-            //overshooting errors seen before in the simulation
-            double iPart = integ_error * sMotor.i;
-            if(iPart > sMotor.maxSpeed)
-            {
-                iPart = sMotor.maxSpeed;
-                integ_error = sMotor.maxSpeed / sMotor.i;
-            }
-
-            if(iPart < -sMotor.maxSpeed)
-            {
-                iPart = -sMotor.maxSpeed;
-                integ_error = -sMotor.maxSpeed / sMotor.i;
-            }
-
-            // set desired velocity. @todo add inertia
-            vel = desired_velocity;
-            // P part of the motor
-            vel += er * sMotor.p;
-            // I part of the motor
-            vel += iPart;
-            // D part of the motor
-            vel += ((er - last_error)/time) * sMotor.d;
-            last_error = er;
-          }
-            break;
-          case MOTOR_TYPE_DC:
-            vel = actual_velocity;
-            break;
-          case MOTOR_TYPE_PID_FORCE:
-            if(desired_position>2*M_PI) desired_position=0;
-            else if(desired_position>M_PI) desired_position=-2*M_PI+desired_position;
-            else if(desired_position<-2*M_PI) desired_position=0;
-            else if(desired_position<-M_PI) desired_position=2*M_PI+desired_position;
-
-            er = desired_position - actual_position;
-            if(er > M_PI) er = -2*M_PI+er;
-            else if(er < -M_PI) er = 2*M_PI+er;
-            integ_error += er*time;
-            // P part of the motor
-            torque = er * sMotor.p;
-            // I part of the motor
-            torque += integ_error * sMotor.i;
-            // D part of the motor
-            torque += ((er - last_error)/time) * sMotor.d;
-            last_error = er;
-            if(torque > sMotor.maxEffort) torque = sMotor.maxEffort;
-            else if(torque < -sMotor.maxEffort) torque = -sMotor.maxEffort;
-            break;
-          case MOTOR_TYPE_UNDEFINED:
-            break;
-          }
-
-          if(sMotor.type == MOTOR_TYPE_PID_FORCE) {
-            if(sMotor.axis == 1) {
-              myJoint->setTorque(torque);
-            }
-            else if(sMotor.axis == 2) {
-              myJoint->setTorque2(torque);
-            }
-          }
-          else {
-            // calculate current
-            torque = myJoint->getMotorTorque();
-            joint_velocity = myJoint->getVelocity();
-            current = (kXY*fabs(torque*joint_velocity) +
-                       kX*fabs(torque) +
-                       kY*fabs(joint_velocity) + k);
-            if(current < 0.0) 
-                current = 0.0;
-            if(vel > sMotor.maxSpeed)
-                vel = sMotor.maxSpeed;
-            else 
-                if(vel < -sMotor.maxSpeed)
-                    vel = -sMotor.maxSpeed;
-
-            if(sMotor.axis == 1) {
-              myJoint->setVelocity(vel);
-            }
-            else if(sMotor.axis == 2) {
-              myJoint->setVelocity2(vel);
-            }
-          }
-        }
+    void SimMotor::setControlValue(interfaces::sReal value) {
+      controlValue = value;
+      if(!control->sim->isSimRunning()) {
+        myJoint->setOfflinePosition(value);
       }
     }
 
-    void SimMotor::setValue(sReal value) {
-      switch (sMotor.type) {
+    /*switch (sMotor.type) {
+      case MOTOR_TYPE_POSITION:
       case MOTOR_TYPE_PID:
-        sMotor.value = desired_position = value;
-        if(!control->sim->isSimRunning()) {
-          myJoint->setOfflineValue(desired_position);
-        }
+        desired_position = value;
         break;
+      case MOTOR_TYPE_SPEED:
       case MOTOR_TYPE_DC:
-        actual_velocity = value;
+        desired_speed = value;
         break;
       case MOTOR_TYPE_PID_FORCE:
         desired_position = value;
         break;
       case MOTOR_TYPE_UNDEFINED:
         break;
-      }
-    }
+      }*/
 
     sReal SimMotor::getValue(void) const {
-      switch (sMotor.type) {
-      case MOTOR_TYPE_PID:
-        return desired_position;
-        break;
-      case MOTOR_TYPE_DC:
-        return actual_velocity;
-        break;
-      case MOTOR_TYPE_PID_FORCE:
-        return desired_position;
-        break;
-      case MOTOR_TYPE_UNDEFINED:
-        break;
-      }
-      return 0.0;
+      return getControlValue();
+    }
+
+    sReal SimMotor::getControlValue(void) const {
+      return controlValue;
     }
 
     void SimMotor::setPID(sReal mP, sReal mI, sReal mD) {
       switch (sMotor.type) {
-      case MOTOR_TYPE_PID_FORCE:
+      case MOTOR_TYPE_PID: // deprecated
+      case MOTOR_TYPE_POSITION:
+      case MOTOR_TYPE_PID_FORCE: // deprecated
+      case MOTOR_TYPE_EFFORT:
         sMotor.p = mP;
         sMotor.i = mI;
         sMotor.d = mD;
         break;
-      case MOTOR_TYPE_PID:
-        sMotor.p = mP;
-        sMotor.i = mI;
-        sMotor.d = mD;
-        break;
-      case MOTOR_TYPE_DC:
-        //the information are not relevant for this type
-        break;
+      case MOTOR_TYPE_DC: // deprecated
+      case MOTOR_TYPE_VELOCITY:
       case MOTOR_TYPE_UNDEFINED:
+        // information not relevant for these types
         break;
       }
     }
-
 
     unsigned long SimMotor::getIndex(void) const {
       return sMotor.index;
@@ -508,37 +698,27 @@ namespace mars {
       obj->index = sMotor.index;
       obj->name = sMotor.name;
       obj->groupID = sMotor.type;
-      switch (sMotor.type) {
-      case MOTOR_TYPE_PID:
-        obj->value = desired_position;
-        break;
-      case MOTOR_TYPE_DC:
-        obj->value = actual_velocity;
-        break;
-      case MOTOR_TYPE_PID_FORCE:
-        obj->value = actual_position;
-        break;
-      case MOTOR_TYPE_UNDEFINED:
-        break;
-      }
-      //obj->pos = &pos;
-      //obj->rot = &rot;
-    }
-
-    sReal SimMotor::getActualPosition(void) const {
-      return actual_position;
+      obj->value = controlValue;
     }
 
     sReal SimMotor::getCurrent(void) const {
       return current;
     }
 
-    sReal SimMotor::getTorque(void) const {
-      return torque;
+    sReal SimMotor::getEffort() const {
+      return effort;
+    }
+
+    sReal SimMotor::getTorque(void) const { // deprecated
+      return getEffort();
     }
 
     void SimMotor::deactivate(void) {
-      activated = false;
+      active = false;
+    }
+
+    void SimMotor::activate(void) {
+      active = true;
     }
 
     void SimMotor::getDataBrokerNames(std::string *groupName,
@@ -550,6 +730,39 @@ namespace mars {
       *groupName = "mars_sim";
       *dataName = buffer;
     }
+
+      void SimMotor::produceData(const data_broker::DataInfo &info,
+                                 data_broker::DataPackage *dbPackage,
+                                 int callbackParam) {
+        dbPackage->set(dbIdIndex, (long)sMotor.index);
+        dbPackage->set(dbControlParameterIndex, controlValue);
+        dbPackage->set(dbPositionIndex, getPosition());
+        dbPackage->set(dbCurrentIndex, getCurrent());
+        dbPackage->set(dbEffortIndex, getEffort());
+      }
+
+      void SimMotor::receiveData(const data_broker::DataInfo& info,
+                                 const data_broker::DataPackage& package,
+                                 int id) {
+        sReal value;
+        package.get(0, &value);
+        setControlValue(value);
+      }
+
+      void SimMotor::setValueDesiredVelocity(interfaces::sReal value) {
+        switch (sMotor.type) {
+        case MOTOR_TYPE_VELOCITY:
+        case MOTOR_TYPE_DC: //deprecated
+          setControlValue(value);
+          break;
+        case MOTOR_TYPE_PID:
+        case MOTOR_TYPE_POSITION:
+        case MOTOR_TYPE_PID_FORCE:
+        case MOTOR_TYPE_EFFORT:
+        case MOTOR_TYPE_UNDEFINED:
+          break;
+        }
+      };
 
   } // end of namespace sim
 } // end of namespace mars

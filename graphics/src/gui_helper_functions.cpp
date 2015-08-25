@@ -235,16 +235,22 @@ namespace mars {
       return ex;
     }
 
-    void GuiHelper::getPhysicsFromOBJ(mars::interfaces::NodeData* node) {
-      osg::ref_ptr<osg::Node> completeNode;
+    void GuiHelper::getPhysicsFromMesh(mars::interfaces::NodeData* node) {
+      if(node->filename.substr(node->filename.size()-5, 5) == ".bobj") {
+        getPhysicsFromNode(node, GuiHelper::readBobjFromFile(node->filename));
+      }
+      else {
+        getPhysicsFromNode(node, GuiHelper::readNodeFromFile(node->filename));
+      }
+    }
+
+    void GuiHelper::getPhysicsFromNode(mars::interfaces::NodeData* node,
+                                       osg::ref_ptr<osg::Node> completeNode) {
       osg::ref_ptr<osg::Group> myCreatedGroup;
       osg::ref_ptr<osg::Group> myGroupFromRead;
       osg::ref_ptr<osg::Geode> myGeodeFromRead;
       nodemanager tempnode;
       bool found = false;
-
-      completeNode  = GuiHelper::readNodeFromFile(node->filename);
-
       // check whether it is a osg::Group (.obj file)
       if((myGroupFromRead = completeNode->asGroup()) != 0){
         //go through the read node group and combine the parts of the actually
@@ -289,11 +295,19 @@ namespace mars {
       (fabs(bb.zMax()) > fabs(bb.zMin())) ? ex.z() = fabs(bb.zMax() - bb.zMin())
         : ex.z() = fabs(bb.zMin() - bb.zMax());
 
+      if (node->map.find("loadSizeFromMesh") != node->map.end()) {
+        if (node->map["loadSizeFromMesh"]) {
+          Vector physicalScale;
+          utils::vectorFromConfigItem(&(node->map["physicalScale"][0]), &physicalScale);
+          node->ext=Vector(ex.x()*physicalScale.x(), ex.y()*physicalScale.y(), ex.z()*physicalScale.z());
+        }
+      }
+
       //compute scale factor
       double scaleX = 1, scaleY = 1, scaleZ = 1;
-      if (ex.x() != 0) scaleX = node->visual_size.x() / ex.x();
-      if (ex.y() != 0) scaleY = node->visual_size.y() / ex.y();
-      if (ex.z() != 0) scaleZ = node->visual_size.z() / ex.z();
+      if (ex.x() != 0) scaleX = node->ext.x() / ex.x();
+      if (ex.y() != 0) scaleY = node->ext.y() / ex.y();
+      if (ex.z() != 0) scaleZ = node->ext.z() / ex.z();
 
       // create transform and group Node for the actual node
       osg::ref_ptr<osg::PositionAttitudeTransform> transform;
@@ -581,6 +595,7 @@ namespace mars {
       newTextureFile.texture->setDataVariance(osg::Object::DYNAMIC);
       newTextureFile.texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
       newTextureFile.texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+      newTextureFile.texture->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
 
       osg::Image* textureImage = loadImage(filename);
       newTextureFile.texture->setImage(textureImage);

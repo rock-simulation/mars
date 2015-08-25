@@ -54,6 +54,9 @@ namespace mars {
       shadowTextureUnit = 2;
       centerObject = NULL;
       radius = 1.0;
+      shadowTextureSize = 2048;
+      // create own uniforms
+      createUniforms();
     }
 
     void ShadowMap::setLight(osg::Light *l) {
@@ -74,15 +77,14 @@ namespace mars {
       ambientBiasUniform = new osg::Uniform("osgShadow_ambientBias",
                                             osg::Vec2(0.5f,0.5f));
       uniformList.push_back(ambientBiasUniform.get());
+      textureScaleUniform = new osg::Uniform("osgShadow_textureScale",
+                                            1.0f);
+      uniformList.push_back(textureScaleUniform.get());
     }
 
-
-    void ShadowMap::init() {
-      if (!_shadowedScene) return;
-
+    void ShadowMap::initTexture() {
       texture = new osg::Texture2D;
-      //texture->setTextureSize(2048, 2048);
-      texture->setTextureSize(4096, 4096);
+      texture->setTextureSize(shadowTextureSize, shadowTextureSize);
       texture->setInternalFormat(GL_DEPTH_COMPONENT);
       texture->setShadowComparison(true);
       texture->setShadowTextureMode(osg::Texture2D::LUMINANCE);
@@ -93,6 +95,39 @@ namespace mars {
       texture->setWrap(osg::Texture2D::WRAP_S,osg::Texture2D::CLAMP_TO_BORDER);
       texture->setWrap(osg::Texture2D::WRAP_T,osg::Texture2D::CLAMP_TO_BORDER);
       texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+    }
+
+    void ShadowMap::applyState(osg::StateSet* state) {
+      state->setTextureAttributeAndModes(shadowTextureUnit,texture.get(),
+                                         osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+      state->setTextureMode(shadowTextureUnit, GL_TEXTURE_GEN_S,
+                            osg::StateAttribute::ON);
+      state->setTextureMode(shadowTextureUnit, GL_TEXTURE_GEN_T,
+                            osg::StateAttribute::ON);
+      state->setTextureMode(shadowTextureUnit, GL_TEXTURE_GEN_R,
+                            osg::StateAttribute::ON);
+      state->setTextureMode(shadowTextureUnit, GL_TEXTURE_GEN_Q,
+                            osg::StateAttribute::ON);
+
+      // add the uniform list to the stateset
+      for(std::vector< osg::ref_ptr<osg::Uniform> >::const_iterator itr=uniformList.begin();
+          itr!=uniformList.end(); ++itr) {
+        state->addUniform(itr->get());
+      }
+    }
+
+    void ShadowMap::removeTexture(osg::StateSet* state) {
+      state->setTextureAttributeAndModes(shadowTextureUnit,texture.get(),
+                                         osg::StateAttribute::OFF);
+    }
+
+    void ShadowMap::addTexture(osg::StateSet* state) {
+      state->setTextureAttributeAndModes(shadowTextureUnit,texture.get(),
+                                         osg::StateAttribute::ON);
+    }
+
+    void ShadowMap::init() {
+      if (!_shadowedScene) return;
 
       // set up the render to texture camera.
       {
@@ -105,8 +140,7 @@ namespace mars {
         camera->setClearColor(osg::Vec4(1.0f, 1.0f, 1.0f, 1.0f));
         camera->setComputeNearFarMode(osg::Camera::DO_NOT_COMPUTE_NEAR_FAR);
         // set viewport
-        //camera->setViewport(0, 0, 2048, 2048);
-        camera->setViewport(0, 0, 4096, 4096);
+        camera->setViewport(0, 0, shadowTextureSize, shadowTextureSize);
         // set the camera to render before the main camera.
         camera->setRenderOrder(osg::Camera::PRE_RENDER);
         // tell the camera to use OpenGL frame buffer object where supported.
@@ -136,6 +170,8 @@ namespace mars {
 
       {
         stateset = new osg::StateSet;
+        /* should be applied to globalstateset for shader */
+
         stateset->setTextureAttributeAndModes(shadowTextureUnit,texture.get(),
                                               osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
         stateset->setTextureMode(shadowTextureUnit, GL_TEXTURE_GEN_S,
@@ -148,21 +184,18 @@ namespace mars {
                                  osg::StateAttribute::ON);
 
         texgen = new osg::TexGen;
-
-        // create own uniforms
-        createUniforms();
-
-        // add the uniform list to the stateset
-        for(std::vector< osg::ref_ptr<osg::Uniform> >::const_iterator itr=uniformList.begin();
-            itr!=uniformList.end(); ++itr) {
-          stateset->addUniform(itr->get());
-        }
       }
 
       _dirty = false;
     }
 
+    void ShadowMap::updateTexScale() {
+      fprintf(stderr, "texscale: %g\n", 1./(texscale*2));
+      textureScaleUniform->set(0);//1./(texscale*1000));
+    }
+
     void ShadowMap::update(osg::NodeVisitor& nv) {
+      //if(!renderShadow) return;
       _shadowedScene->osg::Group::traverse(nv);
     }
 
@@ -228,6 +261,7 @@ namespace mars {
 
         //std::cout<<"----- VxOSG::ShadowMap selectLight spot cutoff "<<selectLight->getSpotCutoff()<<std::endl;
 
+        texscale = 1000;
         float fov = selectLight->getSpotCutoff() * 2;
         if(fov < 180.0f) {  // spotlight, then we don't need the bounding box
           osg::Vec3 position(lightpos.x(), lightpos.y(), lightpos.z());
@@ -255,6 +289,7 @@ namespace mars {
               if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
               float top   = (radius/centerDistance)*znear;
               float right = top;
+              texscale = top*zfar/znear;
               camera->setProjectionMatrixAsFrustum(-right, right, -top,
                                                    top, znear, zfar);
               camera->setViewMatrixAsLookAt(position, centerPos,
@@ -269,6 +304,7 @@ namespace mars {
               if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
               float top   = (bb.radius()/centerDistance)*znear;
               float right = top;
+              texscale = top*zfar/znear;
               camera->setProjectionMatrixAsFrustum(-right, right, -top,
                                                    top, znear, zfar);
               camera->setViewMatrixAsLookAt(position, bb.center(),
@@ -276,23 +312,59 @@ namespace mars {
             }
           }
           else {   // directional light
-            // make an orthographic projection
-            osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
-            lightDir.normalize();
-            // set the position far away along the light direction
-            osg::Vec3 position = bb.center() + lightDir * bb.radius() * 2;
-            float centerDistance = (position-bb.center()).length();
-            float znear = centerDistance-bb.radius();
-            float zfar  = centerDistance+bb.radius();
-            float zNearRatio = 0.001f;
-            if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
-            float top   = bb.radius();
-            float right = top;
+            if(centerObject) {
+              osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
+              lightDir.normalize();
+              // set the position far away along the light direction
+              mars::utils::Vector v = centerObject->getPosition();
+              osg::Vec3 centerPos(v.x(), v.y(), v.z());
+              osg::Vec3 position = centerPos + lightDir * radius * 2;
+              float centerDistance = (position-centerPos).length();
+              float znear = centerDistance-radius;
+              float zfar  = centerDistance+radius;
+              float zNearRatio = 0.001f;
+              if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
+              float top   = (radius/centerDistance)*znear;
+              float right = top;
+              texscale = top*zfar/znear;
+              camera->setProjectionMatrixAsFrustum(-right, right, -top,
+                                                   top, znear, zfar);
+              camera->setViewMatrixAsLookAt(position, centerPos,
+                                            computeOrthogonalVector(centerPos-position));
+            }
+            else {
+              // make an orthographic projection
+              osg::Vec3 lightDir(lightpos.x(), lightpos.y(), lightpos.z());
+              lightDir.normalize();
+              // set the position far away along the light direction
+              osg::Vec3 position = bb.center() + lightDir * bb.radius() * 2;
+              float centerDistance = (position-bb.center()).length();
+              float znear = centerDistance-bb.radius();
+              float zfar  = centerDistance+bb.radius();
+              float zNearRatio = 0.001f;
+              if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
+              float top   = (bb.radius()/centerDistance)*znear;
+              float right = top;
+              texscale = top*zfar/znear;
+              camera->setProjectionMatrixAsFrustum(-right, right, -top,
+                                                   top, znear, zfar);
+              camera->setViewMatrixAsLookAt(position, bb.center(),
+                                            computeOrthogonalVector(bb.center()-position));
+              /*
+              float centerDistance = (position-bb.center()).length();
+              float znear = centerDistance-bb.radius();
+              float zfar  = centerDistance+bb.radius();
+              float zNearRatio = 0.001f;
+              if (znear<zfar*zNearRatio) znear = zfar*zNearRatio;
+              float top   = bb.radius();
+              float right = top;
 
-            camera->setProjectionMatrixAsOrtho(-right, right, -top,
-                                               top, znear, zfar);
-            camera->setViewMatrixAsLookAt(position, bb.center(),
-                                          computeOrthogonalVector(lightDir));
+              camera->setProjectionMatrixAsOrtho(-right, right, -top,
+                                                 top, znear, zfar);
+              camera->setViewMatrixAsLookAt(position, bb.center(),
+                                            computeOrthogonalVector(lightDir));
+              */
+            }
           }
         }
 

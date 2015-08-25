@@ -66,6 +66,7 @@ namespace mars {
       // to prevent that object loaded from the same scenefile (file twice
       // loaded) are connected through the group_ids.
       unsigned long groupIDOffset;
+      bool useYAML;
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
@@ -75,6 +76,7 @@ namespace mars {
       void getGenericConfig(configmaps::ConfigMap *config,
                             const QDomElement &elementNode);
 
+      unsigned int parseYamlScene();
 
 
       /**

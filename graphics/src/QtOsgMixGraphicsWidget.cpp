@@ -232,6 +232,8 @@ namespace mars {
         return osgGA::GUIEventAdapter::KEY_Left;
       case Qt::Key_Right:
         return osgGA::GUIEventAdapter::KEY_Right;
+      case Qt::Key_Delete:
+        return osgGA::GUIEventAdapter::KEY_Delete;
       default:
         return (osgGA::GUIEventAdapter::KeySymbol)*e->text().toLatin1().data();
       }

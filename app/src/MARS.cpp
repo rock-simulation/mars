@@ -67,15 +67,10 @@ namespace mars {
       MARS::quit = true;
       if (signal) {
         fprintf(stderr, "\nI think we exit with an error! Signal: %d\n", signal);
-        MARS::control->sim->exitMars();
-        exit(-1);
+        //MARS::control->sim->exitMars();
+        //exit(-1);
         //MARS::control->sim->exitMars();
         //Convention: print the signal type
-      } else {
-        MARS::control->sim->exitMars();
-        fprintf(stderr, "\n################################\n");
-        fprintf(stderr, "## everything closed fine ^-^ ##\n");
-        fprintf(stderr, "################################\n\n");
       }
     }
 
@@ -113,7 +108,8 @@ namespace mars {
 
     MARS::~MARS() {
       //! close simulation
-      exit_main(0);
+      MARS::control->sim->exitMars();
+
 
       if(graphicsTimer) delete graphicsTimer;
 
@@ -129,7 +125,6 @@ namespace mars {
       // end scheduler of 1ms
       timeEndPeriod(1);
 #endif //WIN32
-
     }
 
     void MARS::init() {

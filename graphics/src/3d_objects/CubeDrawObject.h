@@ -39,11 +39,10 @@ namespace mars {
 
     class CubeDrawObject : public DrawObject {
     public:
-      CubeDrawObject(const mars::utils::Vector &ext);
+      CubeDrawObject(GraphicsManager *g);
 
     protected:
-      mars::utils::Vector extend_;
-
+      static osg::ref_ptr<osg::Geode> sharedCube;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry();
     };
 

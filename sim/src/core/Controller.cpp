@@ -406,7 +406,7 @@ namespace mars {
           }
           else {
             for (jter = motors.begin(); jter != motors.end(); jter++, pt_motors++)
-              (*jter)->setValue((sReal)*pt_motors);
+              (*jter)->setControlValue((sReal)*pt_motors);
           }
         }
         else if(connected) {
@@ -465,7 +465,7 @@ namespace mars {
                  jter != motors.end(); jter++) {
               p += getSReal(p, &value);
               value *= 0.01745329251994;
-              (*jter)->setValue((sReal)value);
+              (*jter)->setControlValue((sReal)value);
             }
           }
           //the protocol is very simple
@@ -503,7 +503,7 @@ namespace mars {
                   //assert(id=< motors.size());
                   p += getSReal(p, &value);
                   //value *= 0.01745329251994;
-                  motors[id]->setValue((sReal)value);
+                  motors[id]->setControlValue((sReal)value);
 
                   // p += getChar(p, &cmd);
                   getChar(p, &cmd);
@@ -524,7 +524,7 @@ namespace mars {
                   //assert(id=< motors.size());
                   p += getSReal(p, &value);
                   //value *= 0.01745329251994;
-                  motors[id]->setMaximumVelocity((sReal)value);
+                  motors[id]->setMaxSpeed((sReal)value);
 
                   // p += getChar(p, &cmd);
                   getChar(p, &cmd);

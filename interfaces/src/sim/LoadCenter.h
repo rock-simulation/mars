@@ -55,7 +55,7 @@ namespace mars {
     class LoadMeshInterface {
     public:
       virtual ~LoadMeshInterface() {}
-      virtual void getPhysicsFromOBJ(NodeData *node) = 0;
+      virtual void getPhysicsFromMesh(NodeData *node) = 0;
     };
 
 

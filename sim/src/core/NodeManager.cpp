@@ -148,7 +148,7 @@ namespace mars {
           LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
           return INVALID_ID;
         }
-        control->loadCenter->loadMesh->getPhysicsFromOBJ(nodeS);
+        control->loadCenter->loadMesh->getPhysicsFromMesh(nodeS);
       }
       if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
         if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
@@ -221,6 +221,7 @@ namespace mars {
           physicalRep.visual_offset_rot = Quaternion::Identity();
           physicalRep.visual_size = physicalRep.ext;
 
+          physicalRep.map["visualType"] = NodeData::toString(nodeS->physicMode);
           if(nodeS->physicMode != NODE_TYPE_TERRAIN) {
             if(nodeS->physicMode != NODE_TYPE_MESH) {
               physicalRep.filename = "PRIMITIVE";
@@ -880,8 +881,8 @@ namespace mars {
           for (jter = joints->begin(); jter != joints->end();) {
             if ((*jter)->getSJoint().nodeIndex1 == iter->first ||
                 (*jter)->getSJoint().nodeIndex2 == iter->first) {
-              if(rotate) (*jter)->rotateAxis1(*rotate);
-              (*jter)->reattacheJoint();
+              if(rotate) (*jter)->rotateAxis(*rotate);
+              (*jter)->reattachJoint();
               jter2 = jter;
               if(jter != joints->begin()) jter--;
               else jter = joints->begin();
@@ -927,47 +928,47 @@ namespace mars {
       }
 
       for (iter = joints->begin(); iter != joints->end(); iter++) {
-        if ((*iter)->getAttachedNode1() &&
-            (*iter)->getAttachedNode1()->getID() == id) {
+        if ((*iter)->getAttachedNode() &&
+            (*iter)->getAttachedNode()->getID() == id) {
           for (jter = gids->begin(); jter != gids->end(); jter++) {
-            if ((*iter)->getAttachedNode2() &&
-                (*jter) == (*iter)->getAttachedNode2()->getGroupID()) {
+            if ((*iter)->getAttachedNode(2) &&
+                (*jter) == (*iter)->getAttachedNode(2)->getGroupID()) {
               found = true;
               break;
             }
           }
-          if ((*iter)->getAttachedNode2() &&
-              nodes->find((*iter)->getAttachedNode2()->getID()) != nodes->end()) {
-            id2 = (*iter)->getAttachedNode2()->getID();
+          if ((*iter)->getAttachedNode(2) &&
+              nodes->find((*iter)->getAttachedNode(2)->getID()) != nodes->end()) {
+            id2 = (*iter)->getAttachedNode(2)->getID();
             if (!found) {
-              if ((*iter)->getAttachedNode2()->getGroupID())
-                gids->push_back((*iter)->getAttachedNode2()->getGroupID());
-              applyFunc((*iter)->getAttachedNode2(), params);
+              if ((*iter)->getAttachedNode(2)->getGroupID())
+                gids->push_back((*iter)->getAttachedNode(2)->getGroupID());
+              applyFunc((*iter)->getAttachedNode(2), params);
             }
-            nodes->erase(nodes->find((*iter)->getAttachedNode2()->getID()));
+            nodes->erase(nodes->find((*iter)->getAttachedNode(2)->getID()));
             joints->erase(iter);
             recursiveHelper(id, params, joints, gids, nodes, applyFunc);
             recursiveHelper(id2, params, joints, gids, nodes, applyFunc);
             return;
           }
           else found = false;
-        } else if ((*iter)->getAttachedNode2() &&
-                   (*iter)->getAttachedNode2()->getID() == id) {
+        } else if ((*iter)->getAttachedNode(2) &&
+                   (*iter)->getAttachedNode(2)->getID() == id) {
           for (jter = gids->begin(); jter != gids->end(); jter++) {
-            if ((*iter)->getAttachedNode1() &&
-                (*jter) == (*iter)->getAttachedNode1()->getGroupID()) {
+            if ((*iter)->getAttachedNode() &&
+                (*jter) == (*iter)->getAttachedNode()->getGroupID()) {
               found = true;
               break;
             }
           }
-          if(nodes->find((*iter)->getAttachedNode1()->getID()) != nodes->end()) {
-            id2 = (*iter)->getAttachedNode1()->getID();
+          if(nodes->find((*iter)->getAttachedNode()->getID()) != nodes->end()) {
+            id2 = (*iter)->getAttachedNode()->getID();
             if (!found) {
-              if ((*iter)->getAttachedNode1()->getGroupID())
-                gids->push_back((*iter)->getAttachedNode1()->getGroupID());
-              applyFunc((*iter)->getAttachedNode1(), params);
+              if ((*iter)->getAttachedNode()->getGroupID())
+                gids->push_back((*iter)->getAttachedNode()->getGroupID());
+              applyFunc((*iter)->getAttachedNode(), params);
             }
-            nodes->erase(nodes->find((*iter)->getAttachedNode1()->getID()));
+            nodes->erase(nodes->find((*iter)->getAttachedNode()->getID()));
             joints->erase(iter);
             recursiveHelper(id, params, joints, gids, nodes, applyFunc);
             recursiveHelper(id2, params, joints, gids, nodes, applyFunc);
@@ -1508,10 +1509,10 @@ namespace mars {
             connected.push_back(iter->first);
 
       for (size_t i = 0; i < simJoints.size(); i++) {
-        if (simJoints[i]->getAttachedNode1() &&
-            simJoints[i]->getAttachedNode1()->getID() == id &&
-            simJoints[i]->getAttachedNode2()) {
-          connected.push_back(simJoints[i]->getAttachedNode2()->getID());
+        if (simJoints[i]->getAttachedNode() &&
+            simJoints[i]->getAttachedNode()->getID() == id &&
+            simJoints[i]->getAttachedNode(2)) {
+          connected.push_back(simJoints[i]->getAttachedNode(2)->getID());
           /*    current = simNodes.find(connected.back())->second;
                 if (current->getGroupID() != 0)
                 for (iter = simNodes.begin(); iter != simNodes.end(); iter++)
@@ -1519,10 +1520,10 @@ namespace mars {
                 connected.push_back(iter->first);*/
         }
 
-        if (simJoints[i]->getAttachedNode2() &&
-            simJoints[i]->getAttachedNode2()->getID() == id &&
-            simJoints[i]->getAttachedNode1()) {
-          connected.push_back(simJoints[i]->getAttachedNode1()->getID());
+        if (simJoints[i]->getAttachedNode(2) &&
+            simJoints[i]->getAttachedNode(2)->getID() == id &&
+            simJoints[i]->getAttachedNode()) {
+          connected.push_back(simJoints[i]->getAttachedNode()->getID());
           /*      current = simNodes.find(connected.back())->second;
                   if (current->getGroupID() != 0)
                   for (iter = simNodes.begin(); iter != simNodes.end(); iter++)
@@ -1614,6 +1615,17 @@ namespace mars {
           break;
         }
       }
+    }
+
+    void NodeManager::printNodeMasses(bool onlysum) {
+      NodeMap::iterator it;
+      double masssum = 0;
+      for(it=simNodes.begin(); it!=simNodes.end(); ++it) {
+        if (!onlysum)
+          fprintf(stderr, "%s: %f\n", it->second->getName().c_str(), it->second->getMass());
+        masssum+=it->second->getMass();
+      }
+      fprintf(stderr, "Sum of masses of imported model: %f\n", masssum);
     }
 
   } // end of namespace sim

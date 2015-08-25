@@ -22,6 +22,7 @@
 #include "MyApp.h"
 
 #include <signal.h>
+#include <cstdio>
 //#include "HandleFileNames.h"
 //#include <QPlastiqueStyle>
 
@@ -29,17 +30,14 @@
 #include <stdexcept>
 
 
-mars::app::MyApp *app=NULL;
-
 void qtExitHandler(int sig) {
-	if (app){
-		app->quit();
-	}
   mars::app::exit_main(sig);
+  if(qApp) qApp->quit();
 }
 
-void ignoreSignal(int sig)
-{ (void)(sig); }
+void ignoreSignal(int sig) {
+  (void)(sig);
+}
 
 /**
  * The main function, that starts the GUI and init the physical environment.
@@ -67,11 +65,9 @@ int main(int argc, char *argv[]) {
   mars::app::MARS *simulation = new mars::app::MARS();
   simulation->readArguments(argc, argv);
 
-  // first setup qapp
-  //QApplication *app = new QApplication(argc, argv);
-
+  mars::app::MyApp *app=NULL;
   if(simulation->needQApp) {
-    app = new mars::app::MyApp(argc, argv);
+    new mars::app::MyApp(argc, argv);
     //app->setStyle(new QPlastiqueStyle);
   }
 
@@ -92,5 +88,8 @@ int main(int argc, char *argv[]) {
   else state = simulation->runWoQApp();
 
   delete simulation;
+  fprintf(stderr, "\n################################\n");
+  fprintf(stderr, "## everything closed fine ^-^ ##\n");
+  fprintf(stderr, "################################\n\n");
   return state;
 }

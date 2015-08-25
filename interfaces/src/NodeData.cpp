@@ -66,7 +66,8 @@ namespace mars {
         "cylinder",
         "plane",
         "terrain",
-        "reference"
+        "reference",
+        "empty"
       };
 
     const char* NodeData::toString(const NodeType &type) {
@@ -281,6 +282,9 @@ namespace mars {
       }
 
       map = *config;
+      if(!filenamePrefix.empty()) {
+        map["filePrefix"] = filenamePrefix;
+      }
       return true;
     }
 

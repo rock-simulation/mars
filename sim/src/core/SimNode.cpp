@@ -74,7 +74,7 @@ namespace mars {
       update_ray = false;
       visual_rep = 1;
 
-      dbPackageMapping.add("id", (long*)&sNode.index);
+      dbPackageMapping.add("id", &sNode.index);
       dbPackageMapping.add("position/x", &sNode.pos.x());
       dbPackageMapping.add("position/y", &sNode.pos.y());
       dbPackageMapping.add("position/z", &sNode.pos.z());

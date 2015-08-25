@@ -393,7 +393,7 @@ namespace mars {
           utils::removeFilenamePrefix(&uri);
           (*it)["file"] = uri;
           // the following allows adding an old MARS scene file in a smurf scene
-          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene")) {
+          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene") || ((std::string)(*it)["type"] == "yml")) {
             control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
                 path, (std::string)(*it)["name"]);
           }

@@ -40,9 +40,8 @@ namespace mars {
       osg::Vec3 p3;
     } SphereFace;
 
-    SphereDrawObject::SphereDrawObject(mars::interfaces::sReal radius)
-      : DrawObject(), radius_(radius) {
-      geometrySize_.x() = geometrySize_.y() = geometrySize_.z() = radius_*2;
+    SphereDrawObject::SphereDrawObject(GraphicsManager *g)
+      : DrawObject(g) {
     }
 
 
@@ -129,14 +128,19 @@ namespace mars {
       const osg::Vec3 *offset;
       osg::Vec3 halfOffset = (bottomOffset-topOffset)*0.5;
       float factor;
-      int i;
+      int i, face=0;
   
-      vertices->clear();
-      normals->clear();
-      uv->clear();
+      if(vertices->size() != faces->size()*3) {
+        vertices->clear();
+        vertices->resize(faces->size()*3);
+        normals->clear();
+        normals->resize(faces->size()*3);
+        uv->clear();
+        uv->resize(faces->size()*3);
+      }
 
       for(vector<SphereFace>::iterator it = faces->begin();
-          it != faces->end(); ++it) {
+          it != faces->end(); ++it, ++face) {
 
         // add triangle face vertices
         if(it->p1.z() >= 0.0 && it->p2.z() >= 0.0 && it->p3.z() >= 0.0) {
@@ -194,15 +198,15 @@ namespace mars {
 
         if(backfaces) {
           for(i=3; i>0; --i) {
-            vertices->push_back(verts[i]);
-            normals->push_back(nors[i]);
-            uv->push_back(uvs[i]);
+            vertices->at(face+i) = verts[i];
+            normals->at(face+i) = nors[i];
+            uv->at(face+i) = uvs[i];
           }
         } else {
           for(i=0; i<3; ++i) {
-            vertices->push_back(verts[i]);
-            normals->push_back(nors[i]);
-            uv->push_back(uvs[i]);
+            vertices->at(3*face+i) = verts[i];
+            normals->at(3*face+i) = nors[i];
+            uv->at(3*face+i) = uvs[i];
           }
         }
       }
@@ -217,8 +221,8 @@ namespace mars {
       osg::Geometry *geom = new osg::Geometry();
       std::list< osg::ref_ptr< osg::Geode > > geodes;
 
-      createGeometry(vertices, normals, uv,
-                     radius_, zero, zero, false, 2);
+      createGeometry(vertices.get(), normals.get(), uv.get(),
+                     1.0, zero, zero, false, 2);
 
       geom->setVertexArray(vertices.get());
       geom->setNormalArray(normals.get());
@@ -238,11 +242,12 @@ namespace mars {
       return geodes;
     }
 
+    /*
     void SphereDrawObject::setScaledSize(const mars::utils::Vector &scaledSize) {
       setScale(mars::utils::Vector(scaledSize.x() / geometrySize_.x(),
                                    scaledSize.x() / geometrySize_.y(),
                                    scaledSize.x() / geometrySize_.z()));
     }
-
+    */
   } // end of namespace graphics
 } // end of namespace mars

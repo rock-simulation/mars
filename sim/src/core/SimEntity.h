@@ -36,12 +36,18 @@
 
 namespace mars {
 
+  namespace interfaces {
+    class ControlCenter;
+  }
   namespace sim {
 
     class SimEntity {
     public:
       SimEntity(const std::string& name);
       SimEntity(const configmaps::ConfigMap& parameters);
+      SimEntity(interfaces::ControlCenter *c, const std::string& name);
+      SimEntity(interfaces::ControlCenter *c,
+                const configmaps::ConfigMap& parameters);
 
       void appendConfig(const configmaps::ConfigMap& parameters);
 
@@ -109,6 +115,8 @@ namespace mars {
 
       std::string getJoint(unsigned long id);
 
+      void setInitialPose();
+
       //debug functions
       void printNodes();
       void printMotors();
@@ -116,7 +124,7 @@ namespace mars {
 
     private:
       std::string name;
-
+      interfaces::ControlCenter *control;
       configmaps::ConfigMap config;
 
       // stores the ids of the nodes belonging to the robot

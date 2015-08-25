@@ -28,7 +28,7 @@ namespace mars {
 
     using namespace configmaps;
     using namespace mars::utils;
-    
+    int MaterialData::anonymCount = 1;
     bool MaterialData::operator==(const MaterialData& other) const {
       return (exists == other.exists) &&
         (ambientFront == other.ambientFront) &&
@@ -53,14 +53,14 @@ namespace mars {
 
       if((it = config->find("ambientFront")) != config->end())
         ambientFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("ambientColor")) != config->end())
+      if((it = config->find("ambientColor")) != config->end()) // new SMURF naming
         ambientFront.fromConfigItem(&it->second[0]);
       if((it = config->find("ambientBack")) != config->end())
         ambientBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("diffuseFront")) != config->end())
         diffuseFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("diffuseColor")) != config->end())
+      if((it = config->find("diffuseColor")) != config->end()) // new SMURF naming
         diffuseFront.fromConfigItem(&it->second[0]);
       if((it = config->find("diffuseBack")) != config->end())
         diffuseBack.fromConfigItem(&it->second[0]);
@@ -68,14 +68,14 @@ namespace mars {
 
       if((it = config->find("specularFront")) != config->end())
         specularFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("specularColor")) != config->end())
+      if((it = config->find("specularColor")) != config->end()) // new SMURF naming
         specularFront.fromConfigItem(&it->second[0]);
       if((it = config->find("specularBack")) != config->end())
         specularBack.fromConfigItem(&it->second[0]);
 
       if((it = config->find("emissionFront")) != config->end())
         emissionFront.fromConfigItem(&it->second[0]);
-      if((it = config->find("emissionColor")) != config->end())
+      if((it = config->find("emissionColor")) != config->end()) // new SMURF naming
         emissionFront.fromConfigItem(&it->second[0]);
       if((it = config->find("emissionBack")) != config->end())
         emissionBack.fromConfigItem(&it->second[0]);
@@ -86,9 +86,15 @@ namespace mars {
         shininess = it->second[0].getDouble();
       if((it = config->find("texturename")) != config->end())
         texturename = trim(it->second[0].getString());
+      if((it = config->find("diffuseTexture")) != config->end()) // new SMURF naming
+        texturename = trim(it->second[0].getString());
       if((it = config->find("displacementmap")) != config->end())
         bumpmap = trim(it->second[0].getString());
+      if((it = config->find("displacementTexture")) != config->end()) // new SMURF naming
+        bumpmap = trim(it->second[0].getString());
       if((it = config->find("bumpmap")) != config->end())
+        normalmap = trim(it->second[0].getString());
+      if((it = config->find("normalTexture")) != config->end()) // new SMURF naming
         normalmap = trim(it->second[0].getString());
       if((it = config->find("tex_scale")) != config->end())
         tex_scale = it->second[0].getDouble();
@@ -100,7 +106,15 @@ namespace mars {
         getLight = it->second[0].getBool();
       if((it = config->find("cullMask")) != config->end())
         cullMask = it->second[0].getInt();
-
+      if((it = config->find("bumpNorFac")) != config->end())
+        bumpNorFac = it->second[0].getDouble();
+      if((it = config->find("name")) != config->end())
+        name = it->second[0].getString();
+      else {
+        std::stringstream s;
+        s << "material" << anonymCount++ << std::endl;
+        name = s.str();
+      }
 
       if(!filenamePrefix.empty()) {
         handleFilenamePrefix(&texturename, filenamePrefix);
@@ -182,7 +196,9 @@ namespace mars {
         (*config)["getLigth"][0] = ConfigItem(getLight);
       if(cullMask != defaultMaterial.cullMask)
         (*config)["cullMask"][0] = ConfigItem(cullMask);
-
+      if(bumpNorFac != defaultMaterial.bumpNorFac)
+        (*config)["bumpNorFac"][0] = ConfigItem(bumpNorFac);
+      (*config)["name"][0] = ConfigItem(name);
     }
 
     void MaterialData::getFilesToSave(std::vector<std::string> *fileList) {

@@ -893,7 +893,7 @@ namespace mars {
     void JointPhysics::update(void) {
       const dReal *b1_pos, *b2_pos;
       dReal anchor[4], axis[4], axis2[4];
-      bool calc1 = 0, calc2 = 0;
+      int calc1 = 0, calc2 = 0;
       dReal radius, dot, torque;
       dReal v1[3], normal[3], load[3], tmp1[3], axis_force[3];
       MutexLocker locker(&(theWorld->iMutex));

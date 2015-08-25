@@ -117,7 +117,7 @@ namespace mars {
         SimJoint* newJoint = new SimJoint(control, *jointS);
         newJoint->setAttachedNodes(node1, node2);
         //    newJoint->setSJoint(*jointS);
-        newJoint->setInterface(newJointInterface);
+        newJoint->setPhysicalJoint(newJointInterface);
         simJoints[jointS->index] = newJoint;
         iMutex.unlock();
         control->sim->sceneHasChanged(false);
@@ -142,12 +142,12 @@ namespace mars {
       std::map<unsigned long, SimJoint*>::iterator iter = simJoints.find(jointS->index);
       if (iter != simJoints.end()) {
         iter->second->setAnchor(jointS->anchor);
-        iter->second->setAxis1(jointS->axis1);
-        iter->second->setAxis2(jointS->axis2);
-        iter->second->setLowStop(jointS->lowStopAxis1);
-        iter->second->setHighStop(jointS->highStopAxis1);
-        iter->second->setLowStop2(jointS->lowStopAxis2);
-        iter->second->setHighStop2(jointS->highStopAxis2);
+        iter->second->setAxis(jointS->axis1);
+        iter->second->setAxis(jointS->axis2, 2);
+        iter->second->setLowerLimit(jointS->lowStopAxis1);
+        iter->second->setUpperLimit(jointS->highStopAxis1);
+        iter->second->setLowerLimit(jointS->lowStopAxis2, 2);
+        iter->second->setUpperLimit(jointS->highStopAxis2, 2);
       }
     }
 
@@ -207,8 +207,10 @@ namespace mars {
       iMutex.lock();
 
       for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
-        if((iter->second->getNodeIndex1() == id1 && iter->second->getNodeIndex2() == id2) ||
-           (iter->second->getNodeIndex1() == id2 && iter->second->getNodeIndex2() == id1)) {
+        if((iter->second->getNodeId() == id1 &&
+            iter->second->getNodeId(2) == id2) ||
+           (iter->second->getNodeId() == id2 &&
+            iter->second->getNodeId(2) == id1)) {
           iMutex.unlock();
           removeJoint(iter->first);
           return;
@@ -242,7 +244,7 @@ namespace mars {
       for (iter = simJoints.begin(); iter != simJoints.end(); iter++) {
         if (iter->second->getSJoint().nodeIndex1 == node_id ||
             iter->second->getSJoint().nodeIndex2 == node_id) {
-          iter->second->reattacheJoint();
+          iter->second->reattachJoint();
         }
       }
     }
@@ -316,7 +318,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
       if (iter != simJoints.end())
-        iter->second->setTorque(torque);
+        iter->second->setEffort(torque, 0);
     }
 
 
@@ -324,7 +326,7 @@ namespace mars {
       map<unsigned long, SimJoint*>::iterator iter;
       MutexLocker locker(&iMutex);
       for (iter = simJoints.begin(); iter != simJoints.end(); iter++) {
-        iter->second->changeStepSize();
+        iter->second->updateStepSize();
       }
     }
 
@@ -356,7 +358,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
       if (iter != simJoints.end())
-        iter->second->setVelocity2(velocity);
+        iter->second->setVelocity(velocity, 2);
     }
 
 
@@ -366,9 +368,9 @@ namespace mars {
       map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
       if (iter != simJoints.end()) {
         if (first_axis)
-          iter->second->setForceLimit(max_force);
+          iter->second->setEffortLimit(max_force);
         else
-          iter->second->setForceLimit2(max_force);
+          iter->second->setEffortLimit(max_force, 2);
       }
     }
 
@@ -399,7 +401,7 @@ namespace mars {
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return;
-      iter->second->setOfflineValue(value);
+      iter->second->setOfflinePosition(value);
     }
 
     sReal JointManager::getLowStop(unsigned long id) const {
@@ -407,56 +409,56 @@ namespace mars {
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return 0.;
-      return iter->second->getLowStop();
+      return iter->second->getLowerLimit();
     }
     sReal JointManager::getHighStop(unsigned long id) const {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return 0.;
-      return iter->second->getHighStop();
+      return iter->second->getUpperLimit();
     }
     sReal JointManager::getLowStop2(unsigned long id) const {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return 0.;
-      return iter->second->getLowStop2();
+      return iter->second->getLowerLimit(2);
     }
     sReal JointManager::getHighStop2(unsigned long id) const {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return 0.;
-      return iter->second->getHighStop2();
+      return iter->second->getUpperLimit(2);
     }
     void JointManager::setLowStop(unsigned long id, sReal lowStop) {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return;
-      return iter->second->setLowStop(lowStop);
+      return iter->second->setLowerLimit(lowStop);
     }
     void JointManager::setHighStop(unsigned long id, sReal highStop) {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return;
-      return iter->second->setHighStop(highStop);
+      return iter->second->setUpperLimit(highStop);
     }
     void JointManager::setLowStop2(unsigned long id, sReal lowStop2) {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return;
-      return iter->second->setLowStop2(lowStop2);
+      return iter->second->setLowerLimit(lowStop2, 2);
     }
     void JointManager::setHighStop2(unsigned long id, sReal highStop2) {
       map<unsigned long, SimJoint*>::const_iterator iter;
       iter = simJoints.find(id);
       if(iter == simJoints.end())
         return;
-      return iter->second->setHighStop2(highStop2);
+      return iter->second->setUpperLimit(highStop2, 2);
     }
 
   } // end of namespace sim

@@ -70,7 +70,9 @@ namespace mars {
       full_scan = false;
       current_pose.setIdentity();
       num_points = 0;
-
+      toCloud = &pointcloud1;
+      convertPointCloud = false;
+      nextCloud = 2;
       this->attached_node = config.attached_node;
 
       std::string groupName, dataName;
@@ -161,18 +163,22 @@ namespace mars {
           control->graphics->addDrawItems(&draw);
         }
       }
+      closeThread = false;
+      this->start();
     }
 
     RotatingRaySensor::~RotatingRaySensor(void) {
       control->graphics->removeDrawItems((DrawInterface*)this);
       control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+      closeThread = true;
+      this->wait();
     }
 
     bool RotatingRaySensor::getPointcloud(std::vector<utils::Vector>& pcloud) {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
       if(full_scan) {
         full_scan = false;
-        pcloud =  pointcloud_full;
+        pcloud.swap(pointcloud_full);
         return true;
       } else {
           return false;
@@ -190,7 +196,7 @@ namespace mars {
           (*data_)[array_pos+2] = (pointcloud_full[i])[2];
         }
       }
-      return pointcloud.size();
+      return pointcloud_full.size();
     }
 
     void RotatingRaySensor::receiveData(const data_broker::DataInfo &info,
@@ -224,9 +230,11 @@ namespace mars {
       package.get(rotationIndices[2], &orientation.z());
       package.get(rotationIndices[3], &orientation.w());
 
+      poseMutex.lock();
       current_pose.setIdentity();
       current_pose.rotate(orientation);
       current_pose.translation() = position;
+      poseMutex.unlock();
 
       // data[] contains all the measured distances according to the define directions.
       assert((int)data.size() == config.bands * config.lasers);
@@ -248,7 +256,7 @@ namespace mars {
             // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
             // This necessitates a back-transformation (world2node) in getPointcloud().
             tmpvec = current_pose * local_ray;
-            pointcloud.push_back(tmpvec); // Scale normalized vector.
+            toCloud->push_back(tmpvec); // Scale normalized vector.
           }
         }
       }
@@ -285,25 +293,18 @@ namespace mars {
       mutex_pointcloud.lock();
       turning_offset += turning_step;
       if(turning_offset >= turning_end_fullscan) {
-        // Copies current full pointcloud to pointcloud_full.
-        std::list<utils::Vector>::iterator it = pointcloud.begin();
-        pointcloud_full.resize(pointcloud.size());
-        base::Vector3d vec_local;
-
-        for(int i=0; it != pointcloud.end(); it++, i++) {
-          // Transforms the pointcloud back from world to current node (see receiveDate()).
-          // In addition 'transf_sensor_rot_to_sensor' is applied which describes
-          // the orientation of the sensor in the unturned sensor frame.
-          Eigen::Affine3d rot;
-          rot.setIdentity();
-          rot.rotate(config.transf_sensor_rot_to_sensor);
-          vec_local = rot * current_pose.inverse() * (*it);
-          pointcloud_full[i]= vec_local;
+        while(convertPointCloud) msleep(1);
+        fromCloud = toCloud;
+        if(nextCloud == 2) {
+          toCloud = &pointcloud2;
+          nextCloud = 1;
         }
-
-        pointcloud.clear();
+        else {
+          toCloud = &pointcloud1;
+          nextCloud = 2;
+        }
+        convertPointCloud = true;
         turning_offset = 0;
-        full_scan = true;
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
@@ -313,6 +314,37 @@ namespace mars {
 
     int RotatingRaySensor::getNumberRays() {
       return config.bands * config.lasers;
+    }
+
+    void RotatingRaySensor::run() {
+      while(!closeThread) {
+        if(convertPointCloud) {
+          poseMutex.lock();
+          Eigen::Affine3d current_pose2 = current_pose;
+          Eigen::Affine3d rot;
+          rot.setIdentity();
+          rot.rotate(config.transf_sensor_rot_to_sensor);
+          poseMutex.unlock();
+
+          // Copies current full pointcloud to pointcloud_full.
+          std::list<utils::Vector>::iterator it = fromCloud->begin();
+          pointcloud_full.clear();
+          pointcloud_full.reserve(fromCloud->size());
+          base::Vector3d vec_local;
+
+          for(int i=0; it != fromCloud->end(); it++, i++) {
+            // Transforms the pointcloud back from world to current node (see receiveDate()).
+            // In addition 'transf_sensor_rot_to_sensor' is applied which describes
+            // the orientation of the sensor in the unturned sensor frame.
+            vec_local = rot * current_pose2.inverse() * (*it);
+            pointcloud_full.push_back(vec_local);
+          }
+          fromCloud->clear();
+          convertPointCloud = false;
+          full_scan = true;
+        }
+        else msleep(2);
+      }
     }
 
     BaseConfig* RotatingRaySensor::parseConfig(ControlCenter *control,

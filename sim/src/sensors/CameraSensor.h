@@ -30,6 +30,7 @@
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
+#include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/GraphicsWindowInterface.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
 #include <mars/interfaces/graphics/GraphicsCameraInterface.h>
@@ -69,10 +70,11 @@ namespace mars {
         pos_offset.setZero();
         ori_offset.setIdentity();
         opening_width=90;
-        opening_height=90;
+        opening_height=-1;
         hud_width = 320;
-        hud_height = 240;
+        hud_height = -1;
         depthImage = false;
+        frameOffset = 1;
       }
 
       unsigned long attached_node;
@@ -80,10 +82,11 @@ namespace mars {
       int height;
       bool show_cam;
       int hud_pos;
+      int frameOffset;
       utils::Vector pos_offset;
       utils::Quaternion ori_offset;
-      double opening_width;
-      double opening_height;
+      double opening_width; // deprecated: we should probably rename this to opening_angle
+      double opening_height; // deprecated: we should probably rename this to opening_angle2
       int hud_width;
       int hud_height;
       bool depthImage;
@@ -135,6 +138,8 @@ namespace mars {
       long dbPosIndices[3];
       long dbRotIndices[4];
       unsigned int cam_id;
+      utils::Mutex mutex;
+      int renderCam;
     };
 
   } // end of namespace sim

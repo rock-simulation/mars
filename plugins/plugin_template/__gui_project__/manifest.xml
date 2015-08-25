@@ -1,0 +1,13 @@
+<package>
+    <description brief="__project__">
+        __description__
+     </description>
+    <maintainer>__author__/__email__</maintainer>
+    <author>__author__/__email__</author>
+    <depend package="simulation/mars/scripts/cmake" />
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/interfaces" />
+    <tags>needs_opt</tags>
+</package>

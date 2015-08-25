@@ -59,6 +59,9 @@ namespace mars {
       double angle; //angle of the spot cutoff
       double exponent; //spot exponent
       bool directional; //directional light
+      std::string node; // where the light should be attached
+      unsigned long drawID;
+      configmaps::ConfigMap map;
     }; // end of struct LightData
 
   } // end of namespace interfaces

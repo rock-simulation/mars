@@ -19,6 +19,9 @@ fi
 echo -n "insert description: "
 read description
 
+echo -n "does it have a GUI? (y/n): "
+read gui
+
 #echo -n "insert header define: "
 #read header_def
 header_def="MARS_PLUGINS_"
@@ -36,4 +39,8 @@ read author
 echo -n "insert author's email: "
 read email
 
-./create_new_project.sh "$name" "$description" "$header_def" "$namespace" "$author" "$email" "$classname"
+if [ $gui = "y" ]; then
+  ./create_new_project.sh "$name" "$description" "$header_def" "$namespace" "$author" "$email" "$classname" y
+else
+  ./create_new_project.sh "$name" "$description" "$header_def" "$namespace" "$author" "$email" "$classname"
+fi

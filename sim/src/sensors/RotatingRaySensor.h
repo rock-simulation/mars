@@ -36,6 +36,7 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
+#include <mars/utils/Thread.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/draw_structs.h>
@@ -45,7 +46,7 @@
 namespace mars {
   namespace sim {
 
-    class RotatingRayConfig : public interfaces::BaseConfig{
+    class RotatingRayConfig : public interfaces::BaseConfig {
     public:
       RotatingRayConfig(){
         name = "Unknown RaySensor";
@@ -89,7 +90,8 @@ namespace mars {
       public interfaces::BasePolarIntersectionSensor, //->BaseArraySensor ->BaseNodeSensor->BaseSensor
       public interfaces::SensorInterface, // Stores the ControlCenter* control pointer.
       public data_broker::ReceiverInterface,
-      public interfaces::DrawInterface {
+      public interfaces::DrawInterface,
+      utils::Thread {
 
     public:
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
@@ -165,14 +167,21 @@ namespace mars {
       
       RotatingRayConfig config;
 
+    protected:
+      void run();
+
     private:
       /** Contains the normalized scan directions. */ 
       std::vector<utils::Vector> directions;
       // TODO Storing the pointcloud four times is not very effective.
       // Maybe: Integrate distortion-prevention (use current sensor pose)
       // in mlls and only create the pointcloud on demand.
-      std::list<utils::Vector> pointcloud; // TODO Replace with array with fix size.
+      std::list<utils::Vector> pointcloud1; // TODO Replace with array with fix size.
+      std::list<utils::Vector> pointcloud2; // TODO Replace with array with fix size.
+      std::list<utils::Vector> *toCloud, *fromCloud; // TODO Replace with array with fix size.
       std::vector<utils::Vector> pointcloud_full; // Stores the full scan.
+      bool convertPointCloud;
+      int nextCloud;
       double vertical_resolution;
       bool update_available;
       bool full_scan;
@@ -183,8 +192,9 @@ namespace mars {
       long rotationIndices[4];
       double turning_step;
       int nsamples;
-      mutable mars::utils::Mutex mutex_pointcloud;
+      mutable mars::utils::Mutex mutex_pointcloud, poseMutex;
       Eigen::Affine3d current_pose;
+      bool closeThread;
       unsigned int num_points;
     };
 

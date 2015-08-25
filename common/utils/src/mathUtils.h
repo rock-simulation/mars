@@ -30,6 +30,28 @@ using namespace configmaps;
 namespace mars {
   namespace utils {
 
+    // approximation functions
+
+    enum ApproximationFunction {
+      FUNCTION_PIPE,
+      FUNCTION_POLYNOM3,
+      FUNCTION_POLYNOM5,
+      FUNCTION_GAUSSIAN, /*
+      FUNCTION_BETA_DISTRIBUTION,
+      FUNCTION_GAMMA_DISTRIBUTION*/
+      FUNCTION_UNKNOWN
+    };
+
+    ApproximationFunction getApproximationFunctionFromString(std::string s);
+    const double SQRT2PI = 2.5066282746310002;
+
+    double pipe(double* x, std::vector<double>* c);
+    double polynom3(double* x, std::vector<double>* c);
+    double polynom5(double* x, std::vector<double>* c);
+    double gaussian(double* x, std::vector<double>* c);
+    double beta_distribution(double* x, std::vector<double>* c);
+    double gamma_distribution(double* x, std::vector<double>* c);
+
     const double EPSILON = Eigen::NumTraits<double>::epsilon();
 
     inline bool isNormalized(const Vector &vec)

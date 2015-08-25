@@ -46,6 +46,7 @@ namespace mars {
         control = marsSim->getControlCenter();
         control->loadCenter->loadScene[".scn"] = this;
         control->loadCenter->loadScene[".scene"] = this;
+        control->loadCenter->loadScene[".yml"] = this;
         //control->loadCenter->loadScene[".zip"] = this;
       }
     }
@@ -54,6 +55,7 @@ namespace mars {
       if(control) {
         control->loadCenter->loadScene.erase(".scn");
         control->loadCenter->loadScene.erase(".scene");
+        control->loadCenter->loadScene.erase(".yml");
         //control->loadCenter->loadScene.erase(".zip");
         libManager->releaseLibrary("mars_sim");
       }

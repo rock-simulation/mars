@@ -51,6 +51,7 @@
 #include "RayGridSensor.h"
 #include "NodeAngularVelocitySensor.h"
 #include "MotorCurrentSensor.h"
+#include "HapticFieldSensor.h"
 #include "Joint6DOFSensor.h"
 #include "JointTorqueSensor.h"
 #include "ScanningSonar.h"
@@ -97,6 +98,7 @@ namespace mars {
       addSensorType("NodeVelocity",&NodeVelocitySensor::instanciate);
       addSensorType("NodeAngularVelocity",&NodeAngularVelocitySensor::instanciate);
       addSensorType("MotorCurrent",&MotorCurrentSensor::instanciate);
+      addSensorType("HapticField",&HapticFieldSensor::instanciate);
 
       addMarsParser("RaySensor",&RaySensor::parseConfig);
       addMarsParser("RotatingRaySensor",&RotatingRaySensor::parseConfig);
@@ -117,6 +119,7 @@ namespace mars {
       addMarsParser("NodeVelocity",&NodeArraySensor::parseConfig);
       addMarsParser("NodeAngularVelocity",&NodeArraySensor::parseConfig);
       addMarsParser("MotorCurrent",&MotorCurrentSensor::parseConfig);
+      addMarsParser("HapticField",&HapticFieldSensor::parseConfig);
 
       // missing sensors:
       //   RayGridSensor
@@ -336,7 +339,7 @@ namespace mars {
       std::map<const std::string,BaseConfig* (*)(ControlCenter*, ConfigMap*)>::iterator it = marsParser.find(type);
 
       if(it == marsParser.end()){
-        std::cerr << "Could Find MarsParser for Sensor with name: \"" << type.c_str()<< "\"" << std::endl;
+        std::cerr << "Could not find MarsParser for sensor with name: \"" << type.c_str()<< "\"" << std::endl;
         return 0;
       }
       //LOG_DEBUG("found sensor: %s", type.c_str());

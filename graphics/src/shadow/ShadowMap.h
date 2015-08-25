@@ -62,6 +62,22 @@ namespace mars {
         radius = v;
       }
 
+      void setShadowTextureSize(int v) {
+        shadowTextureSize = v;
+      }
+
+      void initTexture();
+      osg::Texture2D* getTexture() {
+        return texture.get();
+      }
+      void applyState(osg::StateSet *state);
+      void removeTexture(osg::StateSet* state);
+      void addTexture(osg::StateSet* state);
+      void updateTexScale();
+      float getTexScale() {
+        return texscale;
+      }
+
     protected:
       virtual void createUniforms();
 
@@ -75,9 +91,11 @@ namespace mars {
       double radius;
 
       osg::ref_ptr<osg::Uniform> ambientBiasUniform;
+      osg::ref_ptr<osg::Uniform> textureScaleUniform;
       std::vector< osg::ref_ptr<osg::Uniform> > uniformList;
       unsigned int shadowTextureUnit;
-
+      int shadowTextureSize;
+      float texscale;
     }; // end of class ShadowMap
 
   } // end of namespace graphics
