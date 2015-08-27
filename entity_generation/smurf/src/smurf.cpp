@@ -949,18 +949,15 @@ namespace mars {
         if (!loadGraphic(graphicList[i]))
           return 0;
 
-      setPose();
-
-      control->nodes->printNodeMasses(true);
-
-      return 1;
-    }
-
-    void SMURF::setPose() {
+      // set model pose
       ConfigMap map;
       map["rootNode"] = model->root_link_->name;
       entity->appendConfig(map);
       entity->setInitialPose();
+
+      control->nodes->printNodeMasses(true);
+
+      return 1;
     }
 
     unsigned int SMURF::loadNode(ConfigMap config) {

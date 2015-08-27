@@ -139,7 +139,6 @@ namespace mars {
       void poseToVectorAndQuaternion(const urdf::Pose &pose, utils::Vector *v, utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
       bool isNullPos(const urdf::Pose &p);
-      void setPose();     
 
       // load functions
       unsigned int loadMaterial(configmaps::ConfigMap config);
