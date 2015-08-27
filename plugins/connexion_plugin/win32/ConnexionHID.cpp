@@ -27,8 +27,10 @@
 
 #include <mars/utils/Mutex.h>
 #include <QApplication>
+#include <QAbstractNativeEventFilter>
 #include <cmath>
 #include <windows.h>
+#include <iostream>
 
 namespace mars {
   namespace plugins {
@@ -38,6 +40,22 @@ namespace mars {
       static int idleThreshold = 4;
 
       bool myEventFilter(void *message, long *result);
+
+      class MyXcbEventFilter : public QAbstractNativeEventFilter
+      {
+      public:
+          virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE
+          {
+        	// std::cout << "nativeEventFilter 1\n";
+        	// std::cout << "event: <" << eventType.constData() << ">\n";
+        	if (eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG") {
+            	// std::cout << "nativeEventFilter 2\n";
+        	  return mars::plugins::connexion_plugin::myEventFilter(message, result);
+            }
+        	// std::cout << "nativeEventFilter 3\n";
+            return false;
+          }
+      };
 
       // let's have some global variables. great!
       static mars::utils::Mutex valueMutex;
@@ -73,7 +91,7 @@ namespace mars {
         tmpValues.button1 = 0;
         tmpValues.button2 = 0;
 
-        qApp->setEventFilter(myEventFilter);
+        qApp->installNativeEventFilter(new MyXcbEventFilter);
 
         HWND handleForMessages = (HWND)windowID;
         return registerRawDevices(handleForMessages);
@@ -117,48 +135,68 @@ namespace mars {
 
       bool myEventFilter(void *message, long *result) {
 
+    	// std::cout << "nativeEventFilter 2:A\n";
+
         MSG *msgStruct = (MSG*) message;
+    	// std::cout << "nativeEventFilter 2:B\n";
 
         if (msgStruct->message == WM_INPUT) {
+        	// std::cout << "nativeEventFilter 2:C\n";
 
-    
-          //cout << "Message: WM_INPUT erhalten" << endl;
+          // std::cout << "Message: WM_INPUT erhalten" << "\n";
 
           unsigned int dwSize = 0;
+      	  // std::cout << "nativeEventFilter 2:D\n";
 
           GetRawInputData((HRAWINPUT)msgStruct->lParam, RID_INPUT, NULL,
                           &dwSize, sizeof(RAWINPUTHEADER));
+      	  // std::cout << "nativeEventFilter 2:E\n";
 
           LPBYTE lpb = new BYTE[dwSize];
+      	  // std::cout << "nativeEventFilter 2:F\n";
 
           if (GetRawInputData((HRAWINPUT)msgStruct->lParam, RID_INPUT,
                               lpb, &dwSize, sizeof(RAWINPUTHEADER))
               != dwSize) {
+          	// std::cout << "nativeEventFilter 2:G\n";
             delete[] lpb;
             return false;
           }
 
+      	  // std::cout << "nativeEventFilter 2:H\n";
+
           RAWINPUT* raw = (RAWINPUT*) lpb;
+
+      	  // std::cout << "nativeEventFilter 2:I\n";
 
           if (raw->header.dwType != RIM_TYPEHID) {
             delete[] lpb;
             return false;
           }
 
+      	  // std::cout << "nativeEventFilter 2:J\n";
+
           RID_DEVICE_INFO sRidDeviceInfo;
+      	  // std::cout << "nativeEventFilter 2:J:2\n";
           sRidDeviceInfo.cbSize = sizeof(RID_DEVICE_INFO);
+      	  // std::cout << "nativeEventFilter 2:J:3\n";
           dwSize = sizeof(RID_DEVICE_INFO);
+      	  // std::cout << "nativeEventFilter 2:J:4\n";
 
           if (GetRawInputDeviceInfo(raw->header.hDevice,
                                     RIDI_DEVICEINFO,
                                     &sRidDeviceInfo,
                                     &dwSize) == dwSize) {
+          	  // std::cout << "nativeEventFilter 2:J:5\n";
             if (sRidDeviceInfo.hid.dwVendorId == LOGITECH_VENDOR_ID) {
-              if (raw->data.hid.bRawData == 0x01) {
+            	  // std::cout << "nativeEventFilter 2:J:6\n";
+            	  // std::cout << "raw->data.hid.bRawData=" << (raw->data.hid.bRawData) << "\n";
+              if (*(raw->data.hid.bRawData) == 0x01) {
                 // Translation vector
+              	// std::cout << "nativeEventFilter 2:J:7\n";
 
                 short *pnData =  reinterpret_cast <short*> (&raw->data.hid.bRawData + 1);
-                //cout << "packet1 X: " << pnData[0] << " Y: " << pnData[1] << " Z: " << pnData[2] << endl;
+                // std::cout << "packet1 X: " << pnData[0] << " Y: " << pnData[1] << " Z: " << pnData[2] << "\n";
                 //	  while(is_waiting) Sleep(1);
 
                 valueMutex.lock();
@@ -167,17 +205,17 @@ namespace mars {
                 tmpValues.tz = pnData[2];
                 idleFrameCount[0] = 0;
                 valueMutex.unlock();
-              } else if (raw->data.hid.bRawData == 0x02) {
+              } else if (*(raw->data.hid.bRawData) == 0x02) {
                 // Direct rotation vector (NOT Euler)
                 short *pnData = reinterpret_cast <short*> (&raw->data.hid.bRawData + 1);
-                //cout << "packet2 rX: " << pnData[0] << " rY: " << pnData[1] << " rZ: " << pnData[2] << endl;
+                // std::cout << "packet2 rX: " << pnData[0] << " rY: " << pnData[1] << " rZ: " << pnData[2] << "\n";
                 valueMutex.lock();
                 tmpValues.rx = pnData[0];
                 tmpValues.ry = pnData[1];
                 tmpValues.rz = pnData[2];
                 idleFrameCount[1] = 0;
                 valueMutex.unlock();
-              } else if (raw->data.hid.bRawData == 0x03) {
+              } else if (*(raw->data.hid.bRawData) == 0x03) {
                 // State of the keys
                 unsigned long dwKeyState = *reinterpret_cast <unsigned long*> (&raw->data.hid.bRawData + 1);
                 if (dwKeyState & 1) {
@@ -192,19 +230,26 @@ namespace mars {
                   idleFrameCount[2] = 0;
                   valueMutex.unlock();
                 }
-                //cout << "key pressed: " << dwKeyState << endl;
+                // std::cout << "key pressed: " << dwKeyState << "\n";
               }
             }
           }
 
+      	  // std::cout << "nativeEventFilter 2:K\n";
+
           // Do something
-          *result = 1;
+          //*result = 1l; //Jan Paul: I do not know why this causes a crash
+      	  // std::cout << "nativeEventFilter 2:K:2\n";
           delete[] lpb;
+
+      	  // std::cout << "nativeEventFilter 2:L\n";
+
           return true;
         }
         else {
           // We do not want to handle this message so pass back to Windows
           // to handle it in a default way
+          // std::cout << "nativeEventFilter 2:M\n";
           return false;
         }
       }
