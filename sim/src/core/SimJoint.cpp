@@ -106,12 +106,7 @@ namespace mars {
     }
 
     SimNode* SimJoint::getAttachedNode(unsigned char axis_index) const {
-      if (axis_index == 1) {
-        return snode1;
-      }
-      else {
-        return snode2;
-      }
+      return axis_index == 1 ? snode1 : snode2;
     }
 
     SimNode* SimJoint::getAttachedNode1() const { // deprecated
@@ -158,7 +153,7 @@ namespace mars {
     }
 
     void SimJoint::rotateAxis1(const Quaternion &rotate) { // deprecated
-      rotateAxis(rotate, 0);
+      rotateAxis(rotate, 1);
     }
 
     const utils::Vector SimJoint::getAxis(unsigned char axis_index) const {
@@ -166,11 +161,11 @@ namespace mars {
     }
 
     const Vector SimJoint::getAxis1() const {  // deprecated
-      return getAxis(0);
+      return getAxis(1);
     }
 
     const Vector SimJoint::getAxis2() const { // deprecated
-      return getAxis(1);
+      return getAxis(2);
     }
 
     void SimJoint::setAxis(const Vector &axis, unsigned char axis_index) {
@@ -189,11 +184,11 @@ namespace mars {
     }
 
     void SimJoint::setAxis1(const Vector &axis) {
-      setAxis(axis, 0);
+      setAxis(axis, 1);
     }
 
     void SimJoint::setAxis2(const Vector &axis) {
-      setAxis(axis, 0);
+      setAxis(axis, 2);
     }
 
     void SimJoint::setId(unsigned long i) {
@@ -379,11 +374,11 @@ namespace mars {
     }
 
     const Vector SimJoint::getForce1() const { // deprecated
-      return getForceVector(0);
+      return getForceVector(1);
     }
 
     const Vector SimJoint::getForce2() const { // deprecated
-      return getForceVector(1);
+      return getForceVector(2);
     }
 
     const Vector SimJoint::getTorqueVector(unsigned char axis_index) const {
@@ -391,11 +386,11 @@ namespace mars {
     }
 
     const Vector SimJoint::getTorque1() const { // deprecated
-      return getTorqueVector(0);
+      return getTorqueVector(1);
     }
 
     const Vector SimJoint::getTorque2() const { // deprecated
-      return getTorqueVector(1);
+      return getTorqueVector(2);
     }
 
     void SimJoint::reattacheJoint(void) { // deprecated
@@ -407,11 +402,11 @@ namespace mars {
     }
 
     const Vector SimJoint::getAxis1Torque(void) const {
-      return getTorqueVectorAroundAxis(0);
+      return getTorqueVectorAroundAxis(1);
     }
 
     const Vector SimJoint::getAxis2Torque(void) const {
-      return getTorqueVectorAroundAxis(1);
+      return getTorqueVectorAroundAxis(2);
     }
 
     const Vector SimJoint::getJointLoad(void) const {
@@ -423,11 +418,11 @@ namespace mars {
     }
 
     unsigned long SimJoint::getNodeIndex1() const { // deprecated
-      return getNodeId(0);
+      return getNodeId(1);
     }
 
     unsigned long SimJoint::getNodeIndex2() const { // deprecated
-      return getNodeId(1);
+      return getNodeId(2);
     }
 
     void SimJoint::updateStepSize(void) {
@@ -501,7 +496,7 @@ namespace mars {
     }
 
     sReal SimJoint::getLowStop() const { // deprecated
-      return getLowerLimit(0);
+      return getLowerLimit(1);
     }
 
     sReal SimJoint::getHighStop() const { // deprecated
@@ -509,11 +504,11 @@ namespace mars {
     }
 
     sReal SimJoint::getLowStop2() const { // deprecated
-      return getUpperLimit(0);
+      return getUpperLimit(2);
     }
 
     sReal SimJoint::getHighStop2() const { // deprecated
-      return getUpperLimit(1);
+      return getUpperLimit(2);
     }
 
     void SimJoint::setLowerLimit(sReal limit, unsigned char axis_index) {
