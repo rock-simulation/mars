@@ -84,7 +84,6 @@ namespace mars {
       std::vector<configmaps::ConfigMap> controllerList;
       std::vector<configmaps::ConfigMap> graphicList;
       std::vector<configmaps::ConfigMap> lightList;
-      std::map<unsigned long, std::string> mimicmotors;
 
     private:
       int groupID;
@@ -111,8 +110,6 @@ namespace mars {
       std::string robotname;
       boost::shared_ptr<urdf::ModelInterface> model;
       sim::SimEntity* entity;
-
-      void loadMimic(unsigned long mimicId, std::string parent_name);
 
       void handleURI(configmaps::ConfigMap *map, std::string uri);
       void handleURIs(configmaps::ConfigMap *map);
