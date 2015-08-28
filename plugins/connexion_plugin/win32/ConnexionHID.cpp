@@ -141,6 +141,7 @@ namespace mars {
 
       void closeConnexionHID() {
 #ifdef USE_QT5
+          qApp->removeNativeEventFilter(smef);
     	  delete smef;
     	  smef=NULL;
 #endif
