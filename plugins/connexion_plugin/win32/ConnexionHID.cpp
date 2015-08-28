@@ -27,7 +27,9 @@
 
 #include <mars/utils/Mutex.h>
 #include <QApplication>
+#ifdef USE_QT5
 #include <QAbstractNativeEventFilter>
+#endif
 #include <cmath>
 #include <windows.h>
 #include <iostream>
@@ -41,26 +43,29 @@ namespace mars {
 
       bool myEventFilter(void *message, long *result);
 
-      class MyXcbEventFilter : public QAbstractNativeEventFilter
+#ifdef USE_QT5
+      class SpaceMouseEventFilter : public QAbstractNativeEventFilter
       {
       public:
-          virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE
-          {
-        	// std::cout << "nativeEventFilter 1\n";
-        	// std::cout << "event: <" << eventType.constData() << ">\n";
-        	if (eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG") {
-            	// std::cout << "nativeEventFilter 2\n";
-        	  return mars::plugins::connexion_plugin::myEventFilter(message, result);
-            }
-        	// std::cout << "nativeEventFilter 3\n";
-            return false;
-          }
+    	  virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *result) Q_DECL_OVERRIDE
+    	  {
+    		  // std::cout << "nativeEventFilter 1\n";
+    		  // std::cout << "event: <" << eventType.constData() << ">\n";
+    		  if (eventType == "windows_generic_MSG" || eventType == "windows_dispatcher_MSG") {
+    			  // std::cout << "nativeEventFilter 2\n";
+    			  return mars::plugins::connexion_plugin::myEventFilter(message, result);
+    		  }
+    		  // std::cout << "nativeEventFilter 3\n";
+    		  return false;
+    	  }
       };
+
+      SpaceMouseEventFilter* smef = NULL;
+#endif
 
       // let's have some global variables. great!
       static mars::utils::Mutex valueMutex;
       static connexionValues tmpValues;
-
 
       int registerRawDevices(HWND hwndMessagesWindow) {
         RAWINPUTDEVICE sRawInputDevices[1];
@@ -91,7 +96,12 @@ namespace mars {
         tmpValues.button1 = 0;
         tmpValues.button2 = 0;
 
-        qApp->installNativeEventFilter(new MyXcbEventFilter);
+#ifdef USE_QT5
+        smef=new SpaceMouseEventFilter();
+        qApp->installNativeEventFilter(new SpaceMouseEventFilter);
+#else
+        qApp->setEventFilter(myEventFilter);
+#endif
 
         HWND handleForMessages = (HWND)windowID;
         return registerRawDevices(handleForMessages);
@@ -130,6 +140,10 @@ namespace mars {
       }
 
       void closeConnexionHID() {
+#ifdef USE_QT5
+    	  delete smef;
+    	  smef=NULL;
+#endif
       }
 
 
@@ -191,7 +205,11 @@ namespace mars {
             if (sRidDeviceInfo.hid.dwVendorId == LOGITECH_VENDOR_ID) {
             	  // std::cout << "nativeEventFilter 2:J:6\n";
             	  // std::cout << "raw->data.hid.bRawData=" << (raw->data.hid.bRawData) << "\n";
+#ifdef USE_QT5
               if (*(raw->data.hid.bRawData) == 0x01) {
+#else
+              if (raw->data.hid.bRawData == 0x01) {
+#endif
                 // Translation vector
               	// std::cout << "nativeEventFilter 2:J:7\n";
 
@@ -205,8 +223,12 @@ namespace mars {
                 tmpValues.tz = pnData[2];
                 idleFrameCount[0] = 0;
                 valueMutex.unlock();
+#ifdef USE_QT5
               } else if (*(raw->data.hid.bRawData) == 0x02) {
-                // Direct rotation vector (NOT Euler)
+#else
+              } else if (raw->data.hid.bRawData == 0x02) {
+#endif
+            	  // Direct rotation vector (NOT Euler)
                 short *pnData = reinterpret_cast <short*> (&raw->data.hid.bRawData + 1);
                 // std::cout << "packet2 rX: " << pnData[0] << " rY: " << pnData[1] << " rZ: " << pnData[2] << "\n";
                 valueMutex.lock();
@@ -215,7 +237,11 @@ namespace mars {
                 tmpValues.rz = pnData[2];
                 idleFrameCount[1] = 0;
                 valueMutex.unlock();
+#ifdef USE_QT5
               } else if (*(raw->data.hid.bRawData) == 0x03) {
+#else
+              } else if (raw->data.hid.bRawData == 0x03) {
+#endif
                 // State of the keys
                 unsigned long dwKeyState = *reinterpret_cast <unsigned long*> (&raw->data.hid.bRawData + 1);
                 if (dwKeyState & 1) {
