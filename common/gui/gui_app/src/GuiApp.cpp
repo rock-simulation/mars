@@ -82,15 +82,12 @@ namespace gui_app {
   }
 
   void GuiApp::init(const std::vector<std::string> &arguments) {
-    std::string coreConfigFile = configDir+"/libs.txt";
     mars::main_gui::MainGUI *mainGui;
 
     // then check locals
     setlocale(LC_ALL,"C");
 
-    libManager->loadLibrary("main_gui");
-    libManager->loadLibrary("cfg_manager");
-    cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+    cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
     if(!cfg) {
       fprintf(stderr, "can not load needed library \"cfg_manager\".\n");
       exit(-1);
@@ -99,19 +96,38 @@ namespace gui_app {
     // pipe arguments into cfg_manager
     char label[55];
     for(size_t i=0; i<arguments.size(); ++i) {
-      sprintf(label, "arg%zu", i);
-      cfg->getOrCreateProperty("Config", label, arguments[i]);
+      size_t f = arguments[i].find("=");
+      if(f != std::string::npos) {
+        cfg->getOrCreateProperty("Config", arguments[i].substr(0, f),
+                                 arguments[i].substr(f+1));
+      }
+      else {
+        sprintf(label, "arg%zu", i);
+        cfg->getOrCreateProperty("Config", label, arguments[i]);
+      }
     }
-    cfg->getOrCreateProperty("Config", "config_path", configDir);
+    configDir = cfg->getOrCreateProperty("Config", "config_path",
+                                         configDir).sValue;
     std::string loadFile = configDir;
     loadFile.append("/gui_Windows.yaml");
     cfg->loadConfig(loadFile.c_str());
+    std::string coreConfigFile = configDir+"/libs.txt";
 
-    mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
+    std::string p = configDir+"/preferences.yml";
+    FILE *f = fopen(p.c_str(), "r");
+    if(f) {
+      fclose(f);
+      cfg->loadConfig(p.c_str());
+    }
+    mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui",
+                                                                true);
+
     if(!mainGui) {
       fprintf(stderr, "can not load needed library \"main_gui\".\n");
       exit(-1);
     }
+
+    libManager->getLibraryAs<void>("lib_manager_gui", true);
 
     // load the simulation core_libs:
     libManager->loadConfigFile(coreConfigFile);

@@ -84,7 +84,6 @@ namespace mars {
       std::vector<configmaps::ConfigMap> controllerList;
       std::vector<configmaps::ConfigMap> graphicList;
       std::vector<configmaps::ConfigMap> lightList;
-      std::map<unsigned long, std::string> mimicmotors;
 
     private:
       int groupID;
@@ -112,8 +111,6 @@ namespace mars {
       boost::shared_ptr<urdf::ModelInterface> model;
       sim::SimEntity* entity;
 
-      void loadMimic(unsigned long mimicId, std::string parent_name);
-
       void handleURI(configmaps::ConfigMap *map, std::string uri);
       void handleURIs(configmaps::ConfigMap *map);
       void getSensorIDList(configmaps::ConfigMap *map);
@@ -139,7 +136,6 @@ namespace mars {
       void poseToVectorAndQuaternion(const urdf::Pose &pose, utils::Vector *v, utils::Quaternion *q);
       bool isEqualPos(const urdf::Pose &p1, const urdf::Pose p2);
       bool isNullPos(const urdf::Pose &p);
-      void setPose();     
 
       // load functions
       unsigned int loadMaterial(configmaps::ConfigMap config);

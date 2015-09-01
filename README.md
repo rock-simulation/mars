@@ -4,6 +4,10 @@ MARS (Machina Arte Robotum Simulans) is a cross-platform simulation and visualis
 MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics simulation without visualization and GUI.
 It is possible to extend MARS writing your own plugins and many plugins introducing various functionality such as HUDs or custom ground reaction forces already exist - and it's easy to write your own.
 
+## Mailing Lists
+
+If you have questions about MARS not suited for GitHub issues or would like to receive updates on upcoming releases, you can [subscribe to the *mars users mailing list*](http://www.dfki.de/mailman/cgi-bin/listinfo/mars-users).
+
 ## Installation
 
 We don't yet provide binaries for MARS, thus installing it requires downloading the source and building it locally. To simplify this task, we have created a set of install scripts that will do all the work of downloading and installing dependencies, cloning the MARS repository and building for you. They have their own repository here on GitHub: [MARS install scripts](https://github.com/rock-simulation/mars_install_scripts)

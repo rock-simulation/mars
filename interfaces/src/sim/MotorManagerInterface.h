@@ -320,6 +320,8 @@ namespace mars {
       virtual void getDataBrokerNames(unsigned long jointId, 
                                       std::string *groupName, 
                                       std::string *dataName) const = 0;
+
+      virtual void connectMimics() = 0;
     }; // class MotorManagerInterface
 
   } // end of namespace interfaces

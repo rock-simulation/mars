@@ -19,6 +19,7 @@
  */
 
 #include "SimEntity.h"
+#include "SimJoint.h"
 #include <configmaps/ConfigData.h>
 #include <iostream>
 #include <mars/utils/mathUtils.h>
@@ -26,6 +27,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <iterator> // ostream_iterator
 
@@ -172,7 +174,7 @@ namespace mars {
       }
     }
 
-    void SimEntity::setInitialPose() {
+    void SimEntity::setInitialPose(bool reset) {
       bool worldAnchor = false;
       if(!control) return;
       if(config.find("rootNode") != config.end()) {
@@ -215,7 +217,31 @@ namespace mars {
           control->nodes->editNode(&myNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
         }
         if(worldAnchor) {
-          control->sim->connectNodes(id, 0);
+          if (reset) {
+            fprintf(stderr, "Resetting initial entity pose.\n");
+            std::map<unsigned long, std::string>::iterator it;
+            JointId anchorJointId = 0;
+            for (it=jointIds.begin(); it!=jointIds.end(); ++it) {
+              if (it->second == "anchor_"+name) {
+                anchorJointId = it->first;
+                break;
+              }
+            }
+            SimJoint* anchorjoint = control->joints->getSimJoint(anchorJointId);
+            if (anchorjoint != NULL) {
+              anchorjoint->reattachJoint();
+            }
+            else fprintf(stderr, "Could not reset anchor of entity %s.\n", name.c_str());
+          }
+          else {
+            JointData anchorjoint;
+            anchorjoint.nodeIndex1 = id;
+            anchorjoint.nodeIndex2 = 0;
+            anchorjoint.type = JOINT_TYPE_FIXED;
+            anchorjoint.name = "anchor_"+name;
+            JointId anchorJointId = control->joints->addJoint(&anchorjoint);
+            addJoint(anchorJointId, anchorjoint.name);
+          }
         }
         // set Joints
         configmaps::ConfigVector::iterator it;

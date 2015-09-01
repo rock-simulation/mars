@@ -713,7 +713,9 @@ namespace mars {
       config["filename"] = "PRIMITIVE";
       switch (tmpGeometry->type) {
       case urdf::Geometry::SPHERE:
-        size.x() = ((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.x() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.y() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
+        size.z() = 2.0*((urdf::Sphere*) tmpGeometry.get())->radius;
         config["origname"] = "sphere";
         break;
       case urdf::Geometry::BOX:
@@ -722,8 +724,9 @@ namespace mars {
         config["origname"] = "box";
         break;
       case urdf::Geometry::CYLINDER:
-        size.x() = ((urdf::Cylinder*) tmpGeometry.get())->radius;
-        size.y() = ((urdf::Cylinder*) tmpGeometry.get())->length;
+        size.x() = 2.0*((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.y() = 2.0*((urdf::Cylinder*) tmpGeometry.get())->radius;
+        size.z() = ((urdf::Cylinder*) tmpGeometry.get())->length;
         config["origname"] = "cylinder";
         break;
       case urdf::Geometry::MESH:
@@ -926,9 +929,7 @@ namespace mars {
         if (!loadMotor(motorList[i]))
           return 0;
 
-      for (std::map<unsigned long, std::string>::iterator it = mimicmotors.begin();
-        it != mimicmotors.end(); ++it)
-          loadMimic(it->first, it->second);
+      control->motors->connectMimics();
 
       for (unsigned int i = 0; i < sensorList.size(); ++i)
         if (!loadSensor(sensorList[i]))
@@ -946,18 +947,15 @@ namespace mars {
         if (!loadGraphic(graphicList[i]))
           return 0;
 
-      setPose();
-
-      control->nodes->printNodeMasses(true);
-
-      return 1;
-    }
-
-    void SMURF::setPose() {
+      // set model pose
       ConfigMap map;
       map["rootNode"] = model->root_link_->name;
       entity->appendConfig(map);
       entity->setInitialPose();
+
+      control->nodes->printNodeMasses(true);
+
+      return 1;
     }
 
     unsigned int SMURF::loadNode(ConfigMap config) {
@@ -1049,48 +1047,7 @@ namespace mars {
 
       entity->addMotor(motor.index, motor.name);
 
-      sim::SimMotor* newMotor = control->motors->getSimMotor(newId);
-
-      // set motor mimics
-      if (config.find("mimic_motor") != config.end()) {
-        mimicmotors[newId] = (std::string)config["mimic_motor"];
-        newMotor->setMimic(
-          (sReal)config["mimic_multiplier"], (sReal)config["mimic_offset"]);
-      }
-
-      // set approximation functions
-      if (config.find("maxeffort_approximation") != config.end()) {
-        std::vector<sReal>* maxeffort_coefficients = new std::vector<sReal>;
-        ConfigVector::iterator vIt = config["maxeffort_coefficients"].begin();
-        for (; vIt != config["maxeffort_coefficients"].end(); ++vIt) {
-          maxeffort_coefficients->push_back((double)(*vIt));
-          newMotor->setMaxEffortApproximation(
-                                              utils::getApproximationFunctionFromString((std::string)config["maxeffort_approximation"]),
-            maxeffort_coefficients);
-        }
-      }
-      if (config.find("maxspeed_approximation") != config.end()) {
-        fprintf(stderr, "found maxspeed_approximation in %s\n", ((std::string)config["name"]).c_str());
-        std::vector<sReal>* maxspeed_coefficients = new std::vector<sReal>;
-        ConfigVector::iterator vIt = config["maxspeed_coefficients"].begin();
-        for (; vIt != config["maxspeed_coefficients"].end(); ++vIt) {
-          maxspeed_coefficients->push_back((double)(*vIt));
-          newMotor->setMaxSpeedApproximation(
-                                             utils::getApproximationFunctionFromString((std::string)config["maxspeed_approximation"]),
-            maxspeed_coefficients);
-        }
-      }
       return true;
-    }
-
-    void SMURF::loadMimic(unsigned long mimicId, std::string parent_name) {
-      sim::SimMotor* parentmotor =
-        control->motors->getSimMotorByName(parent_name);
-      if (parentmotor != NULL)
-        fprintf(stderr, ", %s\n", parentmotor->getName().c_str());
-      else
-        fprintf(stderr, "no parentmotor found\n");
-      parentmotor->addMimic(control->motors->getSimMotor(mimicId));
     }
 
     BaseSensor* SMURF::loadSensor(ConfigMap config) {

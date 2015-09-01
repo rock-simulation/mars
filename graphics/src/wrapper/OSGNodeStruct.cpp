@@ -82,7 +82,7 @@ namespace mars {
         origname = node.origName;
       }
       if (filename.compare("PRIMITIVE") == 0) {
-        Vector vizSize = node.extend;
+        Vector vizSize = node.ext;
         switch(NodeData::typeFromString(origname.c_str())) {
         case mars::interfaces::NODE_TYPE_BOX: {
           drawObject_ = new CubeDrawObject(g);

@@ -118,6 +118,7 @@ namespace mars {
       // delete any coefficient vectors we might have created
       delete maxspeed_coefficients;
       delete maxeffort_coefficients;
+      mimics.clear();
     }
 
     void SimMotor::addMimic(SimMotor* mimic) {

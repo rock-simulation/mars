@@ -115,7 +115,7 @@ namespace mars {
 
       std::string getJoint(unsigned long id);
 
-      void setInitialPose();
+      void setInitialPose(bool reset=false);
 
       //debug functions
       void printNodes();

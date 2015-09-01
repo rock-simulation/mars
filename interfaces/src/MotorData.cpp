@@ -136,6 +136,8 @@ namespace mars {
       GET_VALUE("maxPosition", maxValue, Double);
       GET_VALUE("minPosition", minValue, Double);
 
+      this->config = *config;
+
       return 1;
     }
 
