@@ -2035,13 +2035,13 @@ namespace mars {
       osg::PositionAttitudeTransform *childTransform;
 
       if(!parent || !child) return;
-
       parentTransform = parent->object()->getPosTransform();
       childTransform = child->object()->getPosTransform();
 
       parentTransform->addChild(childTransform);
-      scene->removeChild(childTransform);
-      shadowedScene->removeChild(childTransform);
+      child->object()->seperateMaterial();
+      //scene->removeChild(childTransform);
+      //shadowedScene->removeChild(childTransform);
     }
 
     void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) {

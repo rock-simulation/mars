@@ -66,7 +66,10 @@ int main(int argc, char *argv[]) {
   mars::viz::GraphicsTimer *graphicsTimer = new mars::viz::GraphicsTimer(viz->graphics);
   graphicsTimer->run();
 
-  if(argc > 1) {
+  if(argc > 2) {
+    viz->loadScene(argv[2], argv[1]);
+  }
+  else if(argc > 1) {
     viz->loadScene(argv[1]);
   }
 

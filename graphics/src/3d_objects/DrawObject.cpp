@@ -89,7 +89,7 @@ namespace mars {
     }
 
     DrawObject::~DrawObject() {
-    }    
+    }
 
     unsigned long DrawObject::getID(void) const {
       return id_;
@@ -149,7 +149,7 @@ namespace mars {
         }
         else {
           sharedStateGroup = false;
-          stateGroup_ = new osg::Group;          
+          stateGroup_ = new osg::Group;
         }
       }
       else {
@@ -235,12 +235,13 @@ namespace mars {
                                  bool _marsShadow) {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
-      if(!mStruct.normalmap.empty()) generateTangents();      
+      if(!mStruct.normalmap.empty()) generateTangents();
       mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
+      materialState = g->getMaterialStateSet(mStruct);
       //mGroup->setStateSet(mState);
       //scaleTransform_->addChild(mGroup);
       //scaleTransform_->removeChild(group_.get());
-      
+
       //return;
       useFog = _useFog;
       if(useFog) useFogUniform->set(1);
@@ -327,7 +328,7 @@ namespace mars {
 
     void DrawObject::setPosition(const Vector &_pos) {
       position_ = _pos;
-      posTransform_->setPosition(osg::Vec3(position_.x(), position_.y(), position_.z()));  
+      posTransform_->setPosition(osg::Vec3(position_.x(), position_.y(), position_.z()));
     }
 
     void DrawObject::setQuaternion(const Quaternion &q) {
@@ -401,15 +402,15 @@ namespace mars {
         osg::PolygonMode *polyModeObj;
 
         osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-  
+
         polyModeObj = dynamic_cast<osg::PolygonMode*>
           (state->getAttribute(osg::StateAttribute::POLYGONMODE));
-  
+
         if (!polyModeObj){
           polyModeObj = new osg::PolygonMode;
-          state->setAttribute( polyModeObj );    
+          state->setAttribute( polyModeObj );
         }
- 
+
         if(val) {
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
           //state->setAttributeAndModes(material_.get(), osg::StateAttribute::OFF);
@@ -460,7 +461,18 @@ namespace mars {
         mGroup_->removeChild(stateGroup_.get());
       }
     }
-    
+
+    void DrawObject::seperateMaterial() {
+      if(!sharedStateGroup) {
+        mGroup_->removeChild(stateGroup_.get());
+        posTransform_->setStateSet(materialState.get());
+      }
+      else {
+        // this will be more complicated
+      }
+
+    }
+
     void DrawObject::showNormals(bool val) {
       if(normal_geode.valid()) {
         if(val) {

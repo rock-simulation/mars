@@ -127,14 +127,10 @@ namespace mars {
       libManager->loadConfigFile(coreConfigFile);
 
       mars::cfg_manager::CFGManagerInterface *cfg;
-      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
+      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
       if(!cfg) {
-        libManager->loadLibrary("cfg_manager");
-        cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager");
-        if(!cfg) {
-          fprintf(stderr, "can not load needed library \"cfg_manager\".\n");
-          exit(-1);
-        }
+        fprintf(stderr, "can not load needed library \"cfg_manager\".\n");
+        exit(-1);
       }
       if(cfg) {
         cfg_manager::cfgPropertyStruct prop;
@@ -148,7 +144,7 @@ namespace mars {
         cfg->loadConfig(configFile.c_str());
       }
 
-      graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+      graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics", true);
       if(!graphics) {
         libManager->loadLibrary("cfg_manager");
         graphics = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
@@ -186,7 +182,7 @@ namespace mars {
 
     }
 
-    void Viz::loadScene(std::string filename) {
+    void Viz::loadScene(std::string filename, std::string robotname) {
 
       std::string tmpPath = "./tmp/";
       scene_loader::Load load(filename, control, tmpPath, "");
@@ -375,10 +371,27 @@ namespace mars {
 
                   jointMapByName[jointIt->name] = ft;
                   jointMapById[ft.jointId] = &jointMapByName[jointIt->name];
-
+                  jointMapByNodeId[ft.id] = &jointMapByName[jointIt->name];
                   graphics->makeChild(it1->second.index, it2->second.index);
                   graphics->setDrawObjectPos(node.index, node.pos);
                   graphics->setDrawObjectRot(node.index, node.rot);
+                  if(jointIt->type != JOINT_TYPE_FIXED) {
+                    std::string packageName;
+                    if(robotname.empty()) {
+                      packageName = jointIt->name;
+                    }
+                    else {
+                      packageName = robotname+"/"+jointIt->name;
+                    }
+                    data_broker::DataPackage dbPackage;
+                    dbPackage.add("value", 0.0);
+                    control->dataBroker->pushData("viz", packageName,
+                                                  dbPackage, NULL,
+                                                  data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
+                    control->dataBroker->registerSyncReceiver(this, "viz",
+                                                              packageName,
+                                                              ft.id);
+                  }
 
                   nodeMapReady[it2->first] = it2->second;
                   nodeMapI.erase(it2++);
@@ -461,6 +474,15 @@ namespace mars {
 
     void Viz::setNodeOrientation(const unsigned long &id, const utils::Quaternion &q) {
       graphics->setDrawObjectRot(id, q);
+    }
+
+    void Viz::receiveData(const data_broker::DataInfo& info,
+                          const data_broker::DataPackage& package,
+                          int id) {
+      double value;
+      package.get(0, &value);
+      setJointValue(jointMapByNodeId[id], value);
+      // package.get("force1/x", force);
     }
 
   } // end of namespace viz

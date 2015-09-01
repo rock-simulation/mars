@@ -35,6 +35,7 @@
 #include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/NodeData.h>
+#include <mars/data_broker/ReceiverInterface.h>
 
 namespace mars {
 
@@ -54,7 +55,8 @@ namespace mars {
 
     void exit_main(int signal);
 
-    class Viz : public lib_manager::LibInterface {
+    class Viz : public lib_manager::LibInterface,
+                public data_broker::ReceiverInterface {
     public:
       Viz();
       Viz(lib_manager::LibManager *theManager);
@@ -69,7 +71,7 @@ namespace mars {
 
       void init(bool createWindow=true);
 
-      void loadScene(std::string filename);
+      void loadScene(std::string filename, std::string robotname="");
       void setJointValue(std::string jointName, double value);
       void setJointValue(unsigned int controllerIdx, double value);
       void setNodePosition(const std::string &nodeName,
@@ -82,6 +84,10 @@ namespace mars {
 
       interfaces::GraphicsManagerInterface *graphics;
 
+      virtual void receiveData(const data_broker::DataInfo &info,
+                               const data_broker::DataPackage &package,
+                               int callbackParam);
+
 
     private:
       std::string configDir;
@@ -90,6 +96,7 @@ namespace mars {
       std::map<std::string, interfaces::NodeData> nodeMapByName;
       std::map<std::string, ForwardTransform> jointMapByName;
       std::map<unsigned long, ForwardTransform*> jointMapById;
+      std::map<unsigned long, ForwardTransform*> jointMapByNodeId;
       std::vector<ForwardTransform*> jointByControllerIdx;
       interfaces::ControlCenter *control;
 

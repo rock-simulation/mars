@@ -82,7 +82,7 @@ namespace mars {
                                bool marsShadow = false);
       // can be used for dynamic textures
       virtual void setBlending(bool mode);
-      virtual void collideSphere(mars::utils::Vector pos, 
+      virtual void collideSphere(mars::utils::Vector pos,
                                  mars::interfaces::sReal radius);
 
       void updateLights(std::vector<mars::interfaces::LightData*> &lightList);
@@ -101,7 +101,7 @@ namespace mars {
       void removeBits(unsigned int bits);
       void setBits(unsigned int bits);
       void setNodeMask(unsigned int mask) {
-        nodeMask_ = mask;    
+        nodeMask_ = mask;
         group_->setNodeMask(mask);
       }
 
@@ -138,7 +138,7 @@ namespace mars {
       osg::MatrixTransform* getScaleTransform(void) const {
         return scaleTransform_.get();
       }
-  
+
       void setBrightness(float val);
       void setUseFog(bool val);
       void setUseNoise(bool val);
@@ -170,6 +170,7 @@ namespace mars {
                         float start, float end);
 
       void generateTangents(osg::ref_ptr<osg::Geometry> g);
+      void seperateMaterial();
 
     protected:
       unsigned long id_;
@@ -205,7 +206,8 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> useShadowUniform;
       osg::ref_ptr<osg::Uniform> numLightsUniform;
       osg::ref_ptr<osg::Uniform> drawLineLaserUniform;
-  
+      osg::ref_ptr<osg::StateSet> materialState;
+
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;
 
