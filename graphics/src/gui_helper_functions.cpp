@@ -252,6 +252,10 @@ namespace mars {
       nodemanager tempnode;
       bool found = false;
       // check whether it is a osg::Group (.obj file)
+      if(!completeNode.valid()){
+          throw std::runtime_error("cannot read node from file");
+      }
+
       if((myGroupFromRead = completeNode->asGroup()) != 0){
         //go through the read node group and combine the parts of the actually
         //handled node
