@@ -219,7 +219,7 @@ namespace mars {
           physicalRep.material.transparency = 0.3;
           physicalRep.visual_offset_pos = Vector(0.0, 0.0, 0.0);
           physicalRep.visual_offset_rot = Quaternion::Identity();
-          physicalRep.visual_size = physicalRep.ext;
+          physicalRep.visual_size = Vector(0.0, 0.0, 0.0);
 
           physicalRep.map["visualType"] = NodeData::toString(nodeS->physicMode);
           if(nodeS->physicMode != NODE_TYPE_TERRAIN) {
