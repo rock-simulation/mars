@@ -43,6 +43,7 @@
 #include <smurf_parser/SMURFParser.h>
 
 //#define DEBUG_PARSE_SENSOR 1
+//#define DEBUG_SCENE_MAP
 
 /*
  * remarks:
@@ -185,7 +186,9 @@ namespace mars {
       fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
       if((std::string)entityconfig["type"] == "smurf") {
         model = smurf_parser::parseFile(&entityconfig, path, filename, true);
+#ifdef DEBUG_SCENE_MAP
         debugMap.append(entityconfig);
+#endif
         // TODO: we should have a system that first loads the URDF and then the other files in
         //   order of priority (or sort the contents in a way as to avoid errors upon loading).
 
@@ -193,7 +196,9 @@ namespace mars {
         createModel();
 
         ConfigMap::iterator it;
+#ifdef DEBUG_SCENE_MAP
         entityconfig.toYamlFile("entityconfig.yml");
+#endif
         for (it = entityconfig.begin(); it != entityconfig.end(); ++it) {
             fprintf(stderr, "  ...loading smurf data section %s.\n", it->first.c_str());
             ConfigMap tmpconfig;
@@ -237,7 +242,9 @@ namespace mars {
         (*it)["axis"] = 1;
         (*it)["jointIndex"] = jointIDMap[(*it)["joint"][0]];
         motorList.push_back((*it).children);
+#ifdef DEBUG_SCENE_MAP
         debugMap["motors"] += (*it).children;
+#endif
       }
       std::map<std::string, unsigned long> * idmap;
       std::map<std::string, std::string> *namemap;
@@ -290,7 +297,9 @@ namespace mars {
         sensorIDMap[tmpmap["name"][0]] = nextSensorID - 1;
         getSensorIDList(&tmpmap);
         sensorList.push_back(tmpmap);
+#ifdef DEBUG_SCENE_MAP
         debugMap["sensors"] += tmpmap;
+#endif
       }
       for (it = config["materials"].begin(); it != config["materials"].end(); ++it) {
         handleURIs(&it->children);
@@ -378,12 +387,16 @@ namespace mars {
       for (it = config["lights"].begin(); it != config["lights"].end(); ++it) {
         handleURIs(&it->children);
         lightList.push_back((*it).children);
+#ifdef DEBUG_SCENE_MAP
         debugMap["lights"] += (*it).children;
+#endif
       }
       for (it = config["graphics"].begin(); it != config["graphics"].end(); ++it) {
         handleURIs(&it->children);
         graphicList.push_back((*it).children);
+#ifdef DEBUG_SCENE_MAP
         debugMap["graphics"] += (*it).children;
+#endif
       }
       for (it = config["controllers"].begin(); it != config["controllers"].end(); ++it) {
         handleURIs(&it->children);
@@ -401,7 +414,9 @@ namespace mars {
           }
         }
         controllerList.push_back((*it).children);
+#ifdef DEBUG_SCENE_MAP
         debugMap["controllers"] += (*it).children;
+#endif
       }
     }
 
@@ -482,7 +497,9 @@ namespace mars {
       config["diffuseFront"][0]["b"] = 0.0;
       config["texturename"] = "";
       //config["cullMask"] = 0; // this makes the object invisible
+#ifdef DEBUG_SCENE_MAP
       debugMap["materials"] += config;
+#endif
       materialList.push_back(config);
     }
     
@@ -498,7 +515,9 @@ namespace mars {
       config["diffuseFront"][0]["b"] = 1.0;
       config["texturename"] = "";
       config["cullMask"] = 0;
+#ifdef DEBUG_SCENE_MAP
       debugMap["materials"] += config;
+#endif
       materialList.push_back(config);
     }
     
@@ -556,7 +575,9 @@ namespace mars {
       config["origname"] = "sphere";
       config["material"] = "_originMaterial";
       
+#ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;      
+#endif
       nodeList.push_back(config);
     }
     
@@ -603,7 +624,9 @@ namespace mars {
       addEmptyVisualToNode(&config);
       addEmptyCollisionToNode(&config);
       
+#ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
+#endif
       nodeList.push_back(config);        
     }    
     
@@ -674,7 +697,9 @@ namespace mars {
       collisionNameMap[name] = name;
       addEmptyVisualToNode(&config);
       
+#ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
+#endif
       nodeList.push_back(config);
     }    
     
@@ -745,7 +770,9 @@ namespace mars {
       addEmptyCollisionToNode(&config);
       visualNameMap[name] = name;
       
+#ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
+#endif
       nodeList.push_back(config);
     }
 
@@ -829,7 +856,9 @@ namespace mars {
         vectorToConfigItem(&config["axis1"][0], &v);
 
         // add to debug and joint list
+#ifdef DEBUG_SCENE_MAP
         debugMap["joints"] += config;
+#endif
         jointList.push_back(config);
     }
     
@@ -861,7 +890,9 @@ namespace mars {
       config["texturename"] = material->texture_filename;
       
       // add to debug and material list
+#ifdef DEBUG_SCENE_MAP
       debugMap["materials"] += config;
+#endif
       materialList.push_back(config);
     }
 
@@ -909,8 +940,9 @@ namespace mars {
 
     unsigned int SMURF::load() {
       fprintf(stderr, "smurfing robot: %s...\n", robotname.c_str());
+#ifdef DEBUG_SCENE_MAP
       debugMap.toYamlFile("debugMap.yml");
-
+#endif
       for (unsigned int i = 0; i < materialList.size(); ++i)
         if (!loadMaterial(materialList[i]))
           return 0;
@@ -985,7 +1017,9 @@ namespace mars {
       }
 
       NodeId oldId = node.index;
+#ifdef DEBUG_SCENE_MAP
       config.toYamlFile("SMURFNode.yml");
+#endif
       NodeId newId = control->nodes->addNode(&node);
       if (!newId) {
         LOG_ERROR("addNode returned 0");
