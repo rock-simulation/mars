@@ -165,6 +165,12 @@ namespace mars {
           (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string) *it]));
         }
       }
+      if (map->find("collisions") != map->end()) {
+        for (it = (*map)["collisions"].begin();
+             it != (*map)["collisions"].end(); ++it) {
+          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string) *it]));
+        }
+      }
       if (map->find("joints") != map->end()) {
         for (it = (*map)["joints"].begin(); it != (*map)["joints"].end(); ++it) {
           (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string) *it]));
