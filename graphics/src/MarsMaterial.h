@@ -127,6 +127,7 @@ namespace mars {
       bool getLight;
       double invShadowTextureSize;
       std::string name, resPath;
+      bool exists;
     }; // end of class DrawObject
 
   } // end of namespace graphics

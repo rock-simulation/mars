@@ -95,7 +95,8 @@ namespace mars {
       //return;
       name = mStruct.name;
       getLight = mStruct.getLight;
-      if (!mStruct.exists) return;
+      exists = mStruct.exists;
+      if (!exists) return;
 
       // create the osg::Material
       material_ = new OSGMaterialStruct(mStruct);
@@ -191,6 +192,7 @@ namespace mars {
     }
     
     void MarsMaterial::updateShader(bool reload) {
+      if(!exists) return;
       osg::StateSet* stateSet = group_->getOrCreateStateSet();
 
       //return;
