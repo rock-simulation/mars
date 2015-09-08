@@ -49,6 +49,7 @@ namespace mars {
       }
   
       void SkyDomePlugin::init() {
+        if(!control->graphics) return;
         posTransform = new osg::PositionAttitudeTransform();
         posTransform->setPosition(osg::Vec3(0.0, 0.0, 0.0));
 
