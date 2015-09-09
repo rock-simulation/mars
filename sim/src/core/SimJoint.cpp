@@ -567,7 +567,7 @@ namespace mars {
       dbPackageMapping.add("axis1/z", &axis1.z());
       dbPackageMapping.add("axis1/angle", &position1);
       dbPackageMapping.add("axis1/speed", &velocity1);
-      dbPackageMapping.add("axis1/veloctiy", &velocity1);
+      dbPackageMapping.add("axis1/velocity", &velocity1);
       dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
       dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
       dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
@@ -577,7 +577,7 @@ namespace mars {
       dbPackageMapping.add("axis2/z", &axis2.z());
       dbPackageMapping.add("axis2/angle", &position2);
       dbPackageMapping.add("axis2/speed", &velocity2);
-      dbPackageMapping.add("axis1/veloctiy", &velocity2);
+      dbPackageMapping.add("axis2/velocity", &velocity2);
       dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
       dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
       dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
