@@ -80,9 +80,9 @@ namespace mars {
         (scaledSize.y + 2*scaledSize.x) / geometrySize_.z));
       */
       // create sphere caps
-      double radius_ = scaledSize.x();
-      double height_ = scaledSize.y() + 2*scaledSize.x();
-      fprintf(stderr, "capsule size: %g %g\n", scaledSize.x(), scaledSize.y());
+      double radius_ = scaledSize.x()*0.5;
+      double height_ = scaledSize.y();// + 2*scaledSize.x();
+      //fprintf(stderr, "capsule size: %g %g\n", scaledSize.x(), scaledSize.y());
       osg::Vec3 sphereTopOffset(0.0f, 0.0f, 0.5*height_ - 0.0018f);
       osg::Vec3 sphereBottomOffset(0.0f, 0.0f, -0.5*height_ + 0.0018f);
       SphereDrawObject::createGeometry(

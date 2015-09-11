@@ -164,9 +164,9 @@ namespace mars {
     }
 
     void CylinderDrawObject::setScaledSize(const Vector &scaledSize) {
-      setScale(Vector(2*scaledSize.x() / geometrySize_.x(),
-                      2*scaledSize.x() / geometrySize_.y(),
-                      scaledSize.y() / geometrySize_.z()));
+      setScale(Vector(scaledSize.x() / geometrySize_.x(),
+                      scaledSize.y() / geometrySize_.y(),
+                      scaledSize.z() / geometrySize_.z()));
     }
 
   } // end of namespace graphics
