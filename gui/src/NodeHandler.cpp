@@ -145,7 +145,7 @@ namespace mars {
       node_name = 
         pDialog->addGenericProperty("../"+nodeName+"/General/Name",
                                     QVariant::String, 
-                                    QString::fromStdString(actualName));
+                                    QString::fromStdString(node.name));
       group_id = 
         pDialog->addGenericProperty("../"+nodeName+"/General/Group",
                                     QVariant::Int, node.groupID, &attr);

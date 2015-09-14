@@ -67,8 +67,14 @@ namespace mars {
 
       control->nodes->getListNodes(&allNodes);
       for (unsigned int i = 0; i<allNodes.size(); i++) {
+        std::string name = allNodes[i].name;
+        for(size_t l=0; l<name.size(); ++l) {
+          if(name[l] == '/') {
+            name[l] = ':';
+          }
+        }
         QtVariantProperty *tmp = 
-          pDialog->addGenericProperty("../"+allNodes[i].name,
+          pDialog->addGenericProperty("../"+name,
                                       QtVariantPropertyManager::groupTypeId(),
                                       0);
         allNodes_p.push_back(tmp);
