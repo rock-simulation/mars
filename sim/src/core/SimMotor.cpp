@@ -642,6 +642,7 @@ namespace mars {
       controlValue = value;
       if(!control->sim->isSimRunning()) {
         myJoint->setOfflinePosition(value);
+        refreshPositions();
       }
     }
 
