@@ -51,11 +51,11 @@ namespace mars {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
       std::string filename;
-      std::string p = (std::string)info_["filePrefix"];
+      std::string p = ".";
 
-      if(p.empty()) {
-        p = ".";
-      }
+      if(info_.find("filePrefix") != info_.end()) {
+        p = (std::string)info_["filePrefix"];
+      };
 
       if(info_.find("lod") != info_.end()) {
         double start, end;
