@@ -245,7 +245,7 @@ namespace mars {
         initCfgParams();
       }
 
-      control->nodes = new NodeManager(control);
+      control->nodes = new NodeManager(control, libManager);
       control->joints = new JointManager(control);
       control->motors = new MotorManager(control);
       control->sensors = new SensorManager(control);
