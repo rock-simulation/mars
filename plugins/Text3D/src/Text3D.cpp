@@ -161,7 +161,7 @@ namespace mars {
 
               td->hudID = control->graphics->addHUDOSGNode(td->text->getOSGNode());
               td->vis = mask & maskId;
-              if(!td->vis) {
+              if(!td->vis && maskId) {
                 control->graphics->switchHUDElementVis(td->hudID);
               }
 
@@ -209,7 +209,7 @@ namespace mars {
             it->second->posY = _property.dValue;
             it->second->text->setPosition(it->second->posX, it->second->posY);
           }
-          else if(it->second->maskId == _property.paramId) {
+          else if(it->second->maskId == _property.paramId && maskId) {
             int vis = maskId & _property.iValue;
             if(vis && !it->second->vis) {
               it->second->vis = true;
