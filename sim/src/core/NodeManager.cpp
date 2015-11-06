@@ -155,7 +155,8 @@ namespace mars {
         }
         if(!control->loadCenter->loadMesh) {
           // try to load mars_graphics
-          GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics", true);
+          libManager->loadLibrary("mars_graphics", NULL, false, true);
+          GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
           if(g) {
             control->loadCenter->loadMesh = g->getLoadMeshInterface();
           }
