@@ -48,13 +48,14 @@ namespace mars {
       void Text3D::init() {
 
         // load the mask id form file
-        FILE *f = fopen("./id.txt", "r");
-        if(f) {
-          fscanf(f, "%d", &maskId);
-          fclose(f);
-          maskId = 1 << (maskId - 1);
-        }
-
+	
+	if(control->cfg) {
+	  example = control->cfg->getOrCreateProperty("CAVE", "CAVEID",
+						      0, this);
+	  if(example.iValue) {
+	    maskId = 1 << (example.iValue -1);
+	  }
+	}
         // Register for node information:
         /*
           std::string groupName, dataName;
