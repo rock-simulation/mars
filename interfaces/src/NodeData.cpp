@@ -32,21 +32,20 @@
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
-    val = it->second[0].get##type()
+    val = it->second;
 
 #define GET_OBJECT(str, val, type)              \
   if((it = config->find(str)) != config->end()) \
-    type##FromConfigItem(&it->second[0], &val);
+    type##FromConfigItem(it->second, &val);
 
 #define SET_VALUE(str, val)                              \
   if(val != defaultNode.val)                             \
-    (*config)[str][0] = ConfigItem(val)
+    (*config)[str] = val
 
 //FIXME:HACK??! default value
 #define SET_OBJECT(str, val, type)                                      \
-  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) {  \
-    (*config)[str][0] = ConfigItem(std::string());                      \
-    type##ToConfigItem(&(*config)[str][0], &val);                       \
+  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) { \
+    type##ToConfigItem((*config)[str], &val);                          \
   }
 
 namespace mars {
@@ -104,16 +103,17 @@ namespace mars {
       bool check = false, massDensity = false;
       bool needMass = true;
 
-      GET_VALUE("name", name, String);
+      name = trim(config->get("name", name));
+
       { // handle node mass
         if((it = config->find("mass")) != config->end()) {
-          mass = it->second[0].getDouble();
+          mass = it->second;
           // use some epsilon here
           if(fabs(mass) > 0.000000001) check = true;
         }
 
         if((it = config->find("density")) != config->end()) {
-          density = it->second[0].getDouble();
+          density = it->second;
           // use some epsilon here
           if(fabs(density) > 0.000000001) {
             if(check) massDensity = true;
@@ -122,12 +122,12 @@ namespace mars {
         }
 
         if((it = config->find("noPhysical")) != config->end()) {
-          noPhysical = it->second[0].getBool();
+          noPhysical = it->second;
           if(noPhysical) needMass = false;
         }
 
         if((it = config->find("movable")) != config->end()) {
-          movable = it->second[0].getBool();
+          movable = it->second;
           if(!movable) needMass = false;
         }
 
@@ -148,7 +148,7 @@ namespace mars {
 
       { // handle node type
         if((it = config->find("physicmode")) != config->end()) {
-          std::string typeName =it->second[0].getString();
+          std::string typeName = (std::string)it->second;
           try {
             physicMode = typeFromString(trim(typeName));
           } catch(...) {
@@ -157,11 +157,8 @@ namespace mars {
           }
         }
 
-        GET_VALUE("origname", origName, String);
-        GET_VALUE("filename", filename, String);
-        
-        origName = trim(origName);
-        filename = trim(filename);
+        origName = trim(config->get("origname", origName));
+        filename = trim(config->get("filename", filename));
 
         if(filename == "PRIMITIVE") {
           if(origName.empty()) {
@@ -200,7 +197,7 @@ namespace mars {
       // handle terrain info
       if((it = config->find("t_srcname")) != config->end()) {
         terrain = new(terrainStruct);
-        terrain->srcname = trim(it->second[0].getString());
+        terrain->srcname = trim((std::string)it->second);
 
         GET_VALUE("t_width", terrain->targetWidth, Double);
         GET_VALUE("t_height", terrain->targetHeight, Double);
@@ -310,11 +307,11 @@ namespace mars {
 
       if(physicMode != defaultNode.physicMode) {
         std::string tmp = toString(physicMode);
-        (*config)["physicmode"][0] = ConfigItem(tmp);
+        (*config)["physicmode"] = tmp;
       }
 
       SET_VALUE("origname", origName);
-      (*config)["filename"][0] = ConfigItem(filename_);
+      (*config)["filename"] = filename_;
       SET_VALUE("groupid", groupID);
       SET_VALUE("index", index);
       SET_OBJECT("position", pos, vector);
@@ -324,12 +321,12 @@ namespace mars {
       SET_VALUE("relativeid", relative_id);
 
       if(terrain) {
-        (*config)["t_srcname"][0] = ConfigItem(srcname_);
-        (*config)["t_width"][0] = ConfigItem(terrain->targetWidth);
-        (*config)["t_height"][0] = ConfigItem(terrain->targetHeight);
-        (*config)["t_scale"][0] = ConfigItem(terrain->scale);
-        (*config)["t_tex_scale_x"][0] = ConfigItem(terrain->texScaleX);
-        (*config)["t_tex_scale_y"][0] = ConfigItem(terrain->texScaleY);
+        (*config)["t_srcname"] = srcname_;
+        (*config)["t_width"] = terrain->targetWidth;
+        (*config)["t_height"] = terrain->targetHeight;
+        (*config)["t_scale"] = terrain->scale;
+        (*config)["t_tex_scale_x"] = terrain->texScaleX;
+        (*config)["t_tex_scale_y"] = terrain->texScaleY;
       }
 
       SET_OBJECT("visualposition", visual_offset_pos, vector);
@@ -351,8 +348,7 @@ namespace mars {
       SET_VALUE("capprox", c_params.approx_pyramid);
       SET_VALUE("coll_bitmask", c_params.coll_bitmask);
       if(c_params.friction_direction1) {
-        (*config)["cfdir1"][0] = ConfigItem(std::string());
-        vectorToConfigItem(&(*config)["cfdir1"][0],
+        vectorToConfigItem((*config)["cfdir1"],
                            c_params.friction_direction1);
       }
 

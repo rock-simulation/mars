@@ -283,9 +283,9 @@ namespace mars {
 
       if(handleSensor && depth == 0) {
         it = cfg.find("name");
-        std::string name = it->second.front().toString();
+        std::string name = it->second.toString();
         it = cfg.find("type");
-        std::string type = it->second.front().toString();
+        std::string type = it->second.toString();
         // FIXME: potential Buffer Overflow!!!!
         sprintf(text, "    <sensor name=\"%s\" type=\"%s\">", name.c_str(),
                 type.c_str());
@@ -309,7 +309,7 @@ namespace mars {
       for(it=cfg.begin(); it!=cfg.end(); ++it) {
         if(handleSensor && (depth < 3 && (it->first == "name" || it->first == "type"))) continue;
         for(it2=it->second.begin(); it2!=it->second.end(); ++it2) {
-          if(it2->children.size() == 0) {
+          if(it2->size() == 0) {
             sprintf(text+depth*2, "<%s>%s</%s>", it->first.c_str(),
                     it2->toString().c_str(), it->first.c_str());
             *out << text << "\n";
@@ -319,7 +319,7 @@ namespace mars {
             sprintf(text+depth*2, "<%s>", it->first.c_str());
             *out << text << "\n";
             //LOG_DEBUG("%s", text);
-            writeConfigMap(it2->children, out, tag, handleSensor, depth+1);
+            writeConfigMap((configmaps::ConfigMap&)(*it2), out, tag, handleSensor, depth+1);
             sprintf(text+depth*2, "</%s>", it->first.c_str());
             *out << text << "\n";
             //LOG_DEBUG("%s", text);
@@ -353,7 +353,7 @@ namespace mars {
                                 std::vector<std::string> *v_filenames,
                                 unsigned long id) {
       configmaps::ConfigMap config;
-      config["id"][0] = configmaps::ConfigItem(id);
+      config["id"] = id;
       materialData->toConfigMap(&config, true);
       materialData->getFilesToSave(v_filenames);
       writeConfigMap(config, out, std::string("material"));
@@ -389,7 +389,7 @@ namespace mars {
           materials.push_back(tmp_mat_map);
           next_material_id++;
         }
-        config["material_id"][0] = configmaps::ConfigItem(mat_id);
+        config["material_id"] = mat_id;
       }
 
       writeConfigMap(config, out, std::string("node"));

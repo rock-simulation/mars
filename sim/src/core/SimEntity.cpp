@@ -248,8 +248,8 @@ namespace mars {
         configmaps::ConfigMap::iterator joint_it;
         for (it = config["poses"].begin(); it!= config["poses"].end(); ++it) {
           if ((std::string)(*it)["name"] == (std::string)config["pose"]) {
-            for (joint_it = (*it)["joints"][0].children.begin();
-                 joint_it!= (*it)["joints"][0].children.end(); ++joint_it) {
+            for (joint_it = (*it)["joints"].beginMap();
+                 joint_it!= (*it)["joints"].endMap(); ++joint_it) {
               //fprintf(stderr, "setMotorValue: joint: %s, id: %lu, value: %f\n", ((std::string)joint_it->first).c_str(), motorIDMap[joint_it->first], (double)joint_it->second);
               control->motors->setMotorValue(getMotor(joint_it->first),
                                              joint_it->second);

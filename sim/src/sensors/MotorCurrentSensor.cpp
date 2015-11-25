@@ -123,13 +123,13 @@ namespace mars {
       std::vector<unsigned long>::const_iterator it;
       ConfigMap cfg;
 
-      cfg["name"][0] = ConfigItem(config.name);
-      cfg["type"][0] = ConfigItem(typeName);
-      cfg["index"][0] = ConfigItem(config.id);
-      cfg["rate"][0] = ConfigItem(config.updateRate);
+      cfg["name"] = config.name;
+      cfg["type"] = typeName;
+      cfg["index"] = config.id;
+      cfg["rate"] = config.updateRate;
 
       for(it=config.ids.begin(); it!= config.ids.end(); ++it) {
-        cfg["id"].push_back(ConfigItem(*it));
+        cfg["id"] << *it;
       }
 
       return cfg;

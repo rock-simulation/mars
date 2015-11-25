@@ -24,18 +24,17 @@
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
-  val = it->second[0].get##type()
+  val = it->second
 
 #define GET_OBJECT(str, val, type)              \
   if((it = config->find(str)) != config->end())      \
-    type##FromConfigItem(&it->second[0], &val);
+    type##FromConfigItem(it->second, &val);
 
 #define SET_VALUE(str, val)                              \
-    (*config)[str][0] = ConfigItem(val)
+    (*config)[str] = val
 
 #define SET_OBJECT(str, val, type)                                      \
-    (*config)[str][0] = ConfigItem(std::string());                      \
-    type##ToConfigItem(&(*config)[str][0], &val);
+    type##ToConfigItem((*config)[str], &val);
 
 namespace mars {
   namespace interfaces {
@@ -50,15 +49,15 @@ namespace mars {
       CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
       map = *config;
-      GET_VALUE("name", name, String);
+      name = config->get("name", name);
       GET_OBJECT("position", pos, vector);
       GET_OBJECT("lookat", lookAt, vector);
       if((it = config->find("ambient")) != config->end())
-        ambient.fromConfigItem(&it->second[0]);
+        ambient.fromConfigItem(it->second);
       if((it = config->find("diffuse")) != config->end())
-        diffuse.fromConfigItem(&it->second[0]);
+        diffuse.fromConfigItem(it->second);
       if((it = config->find("specular")) != config->end())
-        specular.fromConfigItem(&it->second[0]);
+        specular.fromConfigItem(it->second);
       GET_VALUE("constantAttenuation", constantAttenuation, Double);
       GET_VALUE("linearAttenuation", linearAttenuation, Double);
       GET_VALUE("quadraticAttenuation", quadraticAttenuation, Double);
@@ -66,7 +65,7 @@ namespace mars {
       GET_VALUE("angle", angle, Double);
       GET_VALUE("exponent", exponent, Double);
       GET_VALUE("directional", directional, Bool);
-      GET_VALUE("nodeName", node, String);
+      node = config->get("nodeName", node);
       drawID = 0;
       return true;
     }
@@ -82,18 +81,15 @@ namespace mars {
       SET_OBJECT("lookat", lookAt, vector);
 
       if(ambient != defaultLight.ambient) {
-        (*config)["ambient"][0] = ConfigItem(std::string());
-        ambient.toConfigItem(&(*config)["ambient"][0]);
+        ambient.toConfigItem((*config)["ambient"]);
       }
 
       if(diffuse != defaultLight.diffuse) {
-        (*config)["diffuse"][0] = ConfigItem(std::string());
-        diffuse.toConfigItem(&(*config)["diffuse"][0]);
+        diffuse.toConfigItem((*config)["diffuse"]);
       }
 
       if(specular != defaultLight.specular) {
-        (*config)["specular"][0] = ConfigItem(std::string());
-        specular.toConfigItem(&(*config)["specular"][0]);
+        specular.toConfigItem((*config)["specular"]);
       }
 
       SET_VALUE("constantAttenuation", constantAttenuation);

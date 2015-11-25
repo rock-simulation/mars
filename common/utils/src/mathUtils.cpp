@@ -235,43 +235,43 @@ namespace mars {
     }
 
     bool vectorFromConfigItem(ConfigItem *item, Vector *v) {
-      v->x() = item->children["x"][0].getDouble();
-      v->y() = item->children["y"][0].getDouble();
-      v->z() = item->children["z"][0].getDouble();
+      v->x() = (*item)["x"];
+      v->y() = (*item)["y"];
+      v->z() = (*item)["z"];
       return true;
     }
 
     void vectorToConfigItem(ConfigItem *item, Vector *v) {
-      item->children["x"][0] = ConfigItem(v->x());
-      item->children["y"][0] = ConfigItem(v->y());
-      item->children["z"][0] = ConfigItem(v->z());
+      (*item)["x"] = v->x();
+      (*item)["y"] = v->y();
+      (*item)["z"] = v->z();
     }
 
     bool quaternionFromConfigItem(ConfigItem *item, Quaternion *q) {
-      q->w() = item->children["w"][0].getDouble();
-      q->x() = item->children["x"][0].getDouble();
-      q->y() = item->children["y"][0].getDouble();
-      q->z() = item->children["z"][0].getDouble();
+      q->w() = (*item)["w"];
+      q->x() = (*item)["x"];
+      q->y() = (*item)["y"];
+      q->z() = (*item)["z"];
       return true;
     }
 
     void quaternionToConfigItem(ConfigItem *item, Quaternion *q) {
-      item->children["w"][0] = ConfigItem(q->w());
-      item->children["x"][0] = ConfigItem(q->x());
-      item->children["y"][0] = ConfigItem(q->y());
-      item->children["z"][0] = ConfigItem(q->z());
+      (*item)["w"] = q->w();
+      (*item)["x"] = q->x();
+      (*item)["y"] = q->y();
+      (*item)["z"] = q->z();
     }
 
     void inertiaTensorToConfigItem(ConfigItem *item, double *inertia) {
-      item->children["i00"][0] = ConfigItem(inertia[0]);
-      item->children["i01"][0] = ConfigItem(inertia[1]);
-      item->children["i02"][0] = ConfigItem(inertia[2]);
-      item->children["i10"][0] = ConfigItem(inertia[3]);
-      item->children["i11"][0] = ConfigItem(inertia[4]);
-      item->children["i12"][0] = ConfigItem(inertia[5]);
-      item->children["i20"][0] = ConfigItem(inertia[6]);
-      item->children["i21"][0] = ConfigItem(inertia[7]);
-      item->children["i22"][0] = ConfigItem(inertia[8]);
+      (*item)["i00"] = inertia[0];
+      (*item)["i01"] = inertia[1];
+      (*item)["i02"] = inertia[2];
+      (*item)["i10"] = inertia[3];
+      (*item)["i11"] = inertia[4];
+      (*item)["i12"] = inertia[5];
+      (*item)["i20"] = inertia[6];
+      (*item)["i21"] = inertia[7];
+      (*item)["i22"] = inertia[8];
     }
 
     double random_number(double min, double max, int digits) {

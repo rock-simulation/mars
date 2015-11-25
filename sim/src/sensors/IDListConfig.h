@@ -56,11 +56,11 @@ namespace mars {
         std::vector<configmaps::ConfigItem>::iterator it;
         unsigned long _id;
         configmaps::ConfigVector _ids = (*config)["id"];
-        unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-        updateRate = (*config)["rate"][0].getULong();
+        unsigned int mapIndex = (*config)["mapIndex"];
+        updateRate = (*config)["rate"];
 
         for(it=_ids.begin(); it!=_ids.end(); ++it) {
-          if((_id = it->getULong())){
+          if((_id = *it)){
             if(mapIndex) {
               _id = control->loadCenter->getMappedID(_id, mapType, mapIndex);
             }

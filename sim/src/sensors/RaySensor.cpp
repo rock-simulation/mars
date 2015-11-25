@@ -206,8 +206,8 @@ namespace mars {
     BaseConfig* RaySensor::parseConfig(ControlCenter *control,
                                        ConfigMap *config) {
       RayConfig *cfg = new RayConfig;
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-      unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+      unsigned int mapIndex = (*config)["mapIndex"];
+      unsigned long attachedNodeID = (*config)["attached_node"];
       if(mapIndex) {
         attachedNodeID = control->loadCenter->getMappedID(attachedNodeID,
                                                           interfaces::MAP_TYPE_NODE,
@@ -216,15 +216,15 @@ namespace mars {
 
       ConfigMap::iterator it;
       if((it = config->find("width")) != config->end())
-        cfg->width = it->second[0].getInt();
+        cfg->width = it->second;
       if((it = config->find("opening_width")) != config->end())
-        cfg->opening_width = it->second[0].getDouble();
+        cfg->opening_width = it->second;
       if((it = config->find("max_distance")) != config->end())
-        cfg->maxDistance = it->second[0].getDouble();
+        cfg->maxDistance = it->second;
       if((it = config->find("draw_rays")) != config->end())
-        cfg->draw_rays = it->second[0].getBool();
+        cfg->draw_rays = it->second;
       if((it = config->find("rate")) != config->end())
-        cfg->updateRate = it->second[0].getULong();
+        cfg->updateRate = it->second;
 
       cfg->attached_node = attachedNodeID;
 #warning Parse stepX stepY cols and rows
@@ -248,20 +248,20 @@ namespace mars {
 
     ConfigMap RaySensor::createConfig() const {
       ConfigMap cfg;
-      cfg["name"][0] = ConfigItem(config.name);
-      cfg["id"][0] = ConfigItem(config.id);
-      cfg["type"][0] = ConfigItem("RaySensor");
-      cfg["attached_node"][0] = ConfigItem(config.attached_node);
-      cfg["width"][0] = ConfigItem(config.width);
-      cfg["opening_width"][0] = ConfigItem(config.opening_width);
-      cfg["max_distance"][0] = ConfigItem(config.maxDistance);
-      cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
-      cfg["rate"][0] = ConfigItem(config.updateRate);
+      cfg["name"] = config.name;
+      cfg["id"] = config.id;
+      cfg["type"] = "RaySensor";
+      cfg["attached_node"] = config.attached_node;
+      cfg["width"] = config.width;
+      cfg["opening_width"] = config.opening_width;
+      cfg["max_distance"] = config.maxDistance;
+      cfg["draw_rays"] = config.draw_rays;
+      cfg["rate"] = config.updateRate;
       /*
-        cfg["stepX"][0] = ConfigItem(config.stepX);
-        cfg["stepY"][0] = ConfigItem(config.stepY);
-        cfg["cols"][0] = ConfigItem(config.cols);
-        cfg["rows"][0] = ConfigItem(config.rows);
+        cfg["stepX"] = config.stepX;
+        cfg["stepY"] = config.stepY;
+        cfg["cols"] = config.cols;
+        cfg["rows"] = config.rows;
       */
       return cfg;
     }

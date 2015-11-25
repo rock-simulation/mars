@@ -57,9 +57,6 @@ namespace mars {
       virtual int saveFile(std::string filename, std::string tmpPath);
 
       // SMURF-Loader specific functions
-      void getGenericConfig(std::vector<configmaps::ConfigMap> *configList,
-          const QDomElement &elementNode);
-      void getGenericConfig(configmaps::ConfigMap *config, const QDomElement &elementNode);
       void checkEncodings();
       unsigned int parseSVG(std::vector<configmaps::ConfigMap> *configList,
           std::string sceneFilename);

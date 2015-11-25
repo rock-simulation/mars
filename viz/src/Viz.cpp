@@ -208,7 +208,7 @@ namespace mars {
         MaterialData material;
         unsigned long id;
         material.fromConfigMap(&load.materialList[i], tmpPath);
-        if((id = load.materialList[i]["id"][0].getULong())) {
+        if((id = load.materialList[i]["id"])) {
           load.materials[id] = material;
         }
       }
@@ -224,7 +224,7 @@ namespace mars {
         // handle material
         configmaps::ConfigMap::iterator it;
         if((it = load.nodeList[i].find("material_id")) != load.nodeList[i].end()) {
-          unsigned long id = it->second[0].getULong();
+          unsigned long id = it->second;
           if(id) {
             std::map<unsigned long, MaterialData>::iterator it = load.materials.find(id);
             if(it != load.materials.end())

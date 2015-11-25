@@ -56,16 +56,16 @@ namespace mars {
       }
 
       void parseConfig(interfaces::ControlCenter *control, configmaps::ConfigMap *config) {
-        unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-        name = (*config)["name"][0].getString();
-        updateRate = (*config)["rate"][0].getULong();
-        cols = (*config)["cols"][0].getInt();
-        rows = (*config)["rows"][0].getInt();
-        stepX = (*config)["stepX"][0].getDouble();
-        stepY = (*config)["stepY"][0].getDouble();
-        maxDistance = (*config)["maxDistance"][0].getDouble();
-        drawRays = (*config)["drawRays"][0].getInt();
-        attached_node = control->loadCenter->getMappedID((*config)["attached_node"][0].getULong(),
+        unsigned int mapIndex = (*config)["mapIndex"];
+        name = (std::string)(*config)["name"];
+        updateRate = (*config)["rate"];
+        cols = (*config)["cols"];
+        rows = (*config)["rows"];
+        stepX = (*config)["stepX"];
+        stepY = (*config)["stepY"];
+        maxDistance = (*config)["maxDistance"];
+        drawRays = (*config)["drawRays"];
+        attached_node = control->loadCenter->getMappedID((*config)["attached_node"],
             interfaces::MAP_TYPE_NODE, mapIndex);
       }
 

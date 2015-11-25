@@ -26,18 +26,18 @@ namespace mars {
   namespace utils {
 
     bool Color::fromConfigItem(ConfigItem *item) {
-      a = item->children["a"][0].getDouble();
-      r = item->children["r"][0].getDouble();
-      g = item->children["g"][0].getDouble();
-      b = item->children["b"][0].getDouble();
+      a = (*item)["a"];
+      r = (*item)["r"];
+      g = (*item)["g"];
+      b = (*item)["b"];
       return true;
     }
 
     void Color::toConfigItem(ConfigItem *item) {
-      item->children["a"][0] = ConfigItem(a);
-      item->children["r"][0] = ConfigItem(r);
-      item->children["g"][0] = ConfigItem(g);
-      item->children["b"][0] = ConfigItem(b);
+      (*item)["a"] = a;
+      (*item)["r"] = r;
+      (*item)["g"] = g;
+      (*item)["b"] = b;
     }
     
   } // end of namespace base

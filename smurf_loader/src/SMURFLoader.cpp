@@ -112,52 +112,6 @@ namespace mars {
             }
           }
 
-          void SMURFLoader::getGenericConfig(configmaps::ConfigMap *config,
-              const QDomElement &elementNode) {
-
-            QDomNodeList xmlnodepartlist = elementNode.childNodes();
-            QDomNamedNodeMap attributes = elementNode.attributes();
-
-            std::string tagName, value;
-            QDomElement child;
-            QDomNode child2;
-
-            for (int i = 0; i < attributes.size(); i++) {
-              child2 = attributes.item(i);
-              tagName = child2.nodeName().toStdString();
-              value = child2.nodeValue().toStdString();
-              if (!tagName.empty()) {
-                (*config)[tagName].push_back(configmaps::ConfigItem(value));
-    #ifdef DEBUG_PARSE_SENSOR
-                LOG_DEBUG("attrib [%s : %s]", tagName.c_str(), value.c_str());
-    #endif
-              }
-            }
-
-            for (int i = 0; i < xmlnodepartlist.size(); i++) {
-              child = xmlnodepartlist.at(i).toElement();
-
-              tagName = child.tagName().toStdString();
-              value = child.text().toStdString();
-              if (!tagName.empty()) {
-                (*config)[tagName].push_back(configmaps::ConfigItem(value));
-    #ifdef DEBUG_PARSE_SENSOR
-                LOG_DEBUG("element [%s : %s]", tagName.c_str(), value.c_str());
-    #endif
-                getGenericConfig(&((*config)[tagName].back().children), child);
-              }
-            }
-
-            // we can or should also iterate over the attributes
-          }
-
-          void SMURFLoader::getGenericConfig(std::vector<configmaps::ConfigMap> *configList,
-              const QDomElement &elementNode) {
-            configmaps::ConfigMap config;
-            getGenericConfig(&config, elementNode);
-            configList->push_back(config);
-          }
-
           unsigned int SMURFLoader::parseSVG(std::vector<configmaps::ConfigMap> *configList,
               std::string sceneFilename) {
             checkEncodings();
@@ -398,7 +352,7 @@ namespace mars {
                 path, (std::string)(*it)["name"]);
           }
           else {
-            entitylist.push_back((*it).children);
+            entitylist.push_back(*it);
           }
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
@@ -425,7 +379,7 @@ namespace mars {
                 path, (std::string)(*it)["name"]);
           }
           else {
-            entitylist.push_back((*it).children);
+            entitylist.push_back(*it);
           }
         }
       } else if(file_extension == ".smurf") {

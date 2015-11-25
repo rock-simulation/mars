@@ -30,7 +30,7 @@
 #include "Text3D.h"
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/data_broker/DataPackage.h>
-
+#include <configmaps/ConfigData.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 
 namespace mars {
@@ -66,7 +66,7 @@ namespace mars {
            example = control->cfg->getOrCreateProperty("plugin", "example",
            0.0, this);
         */
-        textFactory = libManager->getLibraryAs<osg_text::TextFactoryInterface>("osg_text_factory");
+        textFactory = libManager->getLibraryAs<osg_text::TextFactoryInterface>("osg_text_factory", true);
         if(textFactory) {
           ConfigMap map;
           map = ConfigMap::fromYamlFile("Text3DConfig.yml", true);

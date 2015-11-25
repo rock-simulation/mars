@@ -23,11 +23,11 @@
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
-  val = it->second[0].get##type()
+  val = it->second
 
 
 #define SET_VALUE(str, val)                              \
-  (*config)[str][0] = ConfigItem(val)
+  (*config)[str] = val
 
 namespace mars {
   namespace interfaces {
@@ -45,17 +45,17 @@ namespace mars {
       CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
       std::vector<ConfigItem>::iterator it2;
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
+      unsigned int mapIndex = (*config)["mapIndex"];
       unsigned long _id;
 
       GET_VALUE("index", id, ULong);
       GET_VALUE("rate", rate, Double);
-      GET_VALUE("dylib_path", dylib_path, String);
+      dylib_path = config->get("dylib_path", dylib_path);
 
       if((it = config->find("sensorid")) != config->end()) {
         ConfigVector _ids = (*config)["sensorid"];
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
-          if((_id = it2->getULong())){
+          if((_id = *it2)){
             if(mapIndex) {
               _id = loadCenter->getMappedID(_id, MAP_TYPE_SENSOR, mapIndex);
             }
@@ -67,7 +67,7 @@ namespace mars {
       if((it = config->find("motorid")) != config->end()) {
         ConfigVector _ids = (*config)["motorid"];
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
-          if((_id = it2->getULong())){
+          if((_id = *it2)){
             if(mapIndex) {
               _id = loadCenter->getMappedID(_id, MAP_TYPE_MOTOR, mapIndex);
             }
@@ -79,7 +79,7 @@ namespace mars {
       if((it = config->find("nodeid")) != config->end()) {
         ConfigVector _ids = (*config)["nodeid"];
         for(it2=_ids.begin(); it2!=_ids.end(); ++it2) {
-          if((_id = it2->getULong())){
+          if((_id = *it2)){
             if(mapIndex) {
               _id = loadCenter->getMappedID(_id, MAP_TYPE_NODE, mapIndex);
             }
@@ -101,13 +101,13 @@ namespace mars {
       SET_VALUE("dylib_path", dylib_path);
 
       for(it=sensors.begin(); it!=sensors.end(); ++it) {
-        (*config)["sensorid"].push_back(ConfigItem(*it));
+        (*config)["sensorid"] << *it;
       }
       for(it=motors.begin(); it!=motors.end(); ++it) {
-        (*config)["motorid"].push_back(ConfigItem(*it));
+        (*config)["motorid"] << *it;
       }
       for(it=sNodes.begin(); it!=sNodes.end(); ++it) {
-        (*config)["nodeid"].push_back(ConfigItem(*it));
+        (*config)["nodeid"] << *it;
       }
     }
 

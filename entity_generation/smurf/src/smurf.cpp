@@ -162,23 +162,23 @@ namespace mars {
       }
       if (map->find("links") != map->end()) {
         for (it = (*map)["links"].begin(); it != (*map)["links"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string) *it]));
+          (*map)["id"] << nodeIDMap[(std::string) *it];
         }
       }
       if (map->find("collisions") != map->end()) {
         for (it = (*map)["collisions"].begin();
              it != (*map)["collisions"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(nodeIDMap[(std::string) *it]));
+          (*map)["id"] << nodeIDMap[(std::string) *it];
         }
       }
       if (map->find("joints") != map->end()) {
         for (it = (*map)["joints"].begin(); it != (*map)["joints"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(jointIDMap[(std::string) *it]));
+          (*map)["id"].push_back(jointIDMap[(std::string) *it]);
         }
       }
       if (map->find("motors") != map->end()) {
         for (it = (*map)["motors"].begin(); it != (*map)["motors"].end(); ++it) {
-          (*map)["id"].push_back(ConfigItem(motorIDMap[(std::string) *it]));
+          (*map)["id"].push_back(motorIDMap[(std::string) *it]);
         }
       }
     }
@@ -242,21 +242,21 @@ namespace mars {
     void SMURF::addConfigMap(ConfigMap &config) {
       ConfigVector::iterator it;
       for (it = config["motors"].begin(); it != config["motors"].end(); ++it) {
-        handleURIs(&it->children);
+        handleURIs(*it);
         (*it)["index"] = nextMotorID++;
-        motorIDMap[(*it)["name"][0]] = nextMotorID - 1;
+        motorIDMap[(*it)["name"]] = nextMotorID - 1;
         (*it)["axis"] = 1;
-        (*it)["jointIndex"] = jointIDMap[(*it)["joint"][0]];
-        motorList.push_back((*it).children);
+        (*it)["jointIndex"] = jointIDMap[(*it)["joint"]];
+        motorList.push_back(*it);
 #ifdef DEBUG_SCENE_MAP
-        debugMap["motors"] += (*it).children;
+        debugMap["motors"] += *it;
 #endif
       }
       std::map<std::string, unsigned long> * idmap;
       std::map<std::string, std::string> *namemap;
       for (it = config["sensors"].begin(); it != config["sensors"].end(); ++it) {
-        handleURIs(&it->children);
-        ConfigMap tmpmap = it->children;
+        handleURIs(*it);
+        ConfigMap &tmpmap = *it;
         tmpmap["attached_node"] = (ulong) nodeIDMap[(std::string) tmpmap["link"]];
         //FIXME: tmpmap["mapIndex"] = mapIndex;
         if ((std::string) tmpmap["type"] == "Joint6DOF") {
@@ -289,9 +289,9 @@ namespace mars {
             if (idmap) {
               //(*idit) = (ulong)nodeIDMap[idit->getString()];
               if (namemap) {
-                tmpids.push_back(ConfigItem((ulong) (*idmap)[(*namemap)[(std::string) (*idit)]]));
+                tmpids.append(ConfigAtom((ulong) (*idmap)[(*namemap)[(std::string) (*idit)]]));
               } else {
-                tmpids.push_back(ConfigItem((ulong) (*idmap)[(std::string) (*idit)]));
+                tmpids << ConfigAtom((ulong) (*idmap)[(std::string) (*idit)]);
               }
             } else {
               fprintf(stderr, "Found sensor with id list, but of no known category.\n");
@@ -300,7 +300,7 @@ namespace mars {
           tmpmap["id"] = tmpids;
         }
         tmpmap["index"] = nextSensorID++;
-        sensorIDMap[tmpmap["name"][0]] = nextSensorID - 1;
+        sensorIDMap[tmpmap["name"]] = nextSensorID - 1;
         getSensorIDList(&tmpmap);
         sensorList.push_back(tmpmap);
 #ifdef DEBUG_SCENE_MAP
@@ -308,22 +308,22 @@ namespace mars {
 #endif
       }
       for (it = config["materials"].begin(); it != config["materials"].end(); ++it) {
-        handleURIs(&it->children);
+        handleURIs(*it);
         std::vector<ConfigMap>::iterator mIt = materialList.begin();
         for (; mIt != materialList.end(); ++mIt) {
-          if ((std::string) (*mIt)["name"][0] == (std::string) (*it)["name"][0]) {
-            mIt->append(it->children);
+          if ((std::string) (*mIt)["name"] == (std::string) (*it)["name"]) {
+            mIt->append(*it);
             break;
           }
         }
       }
       for (it = config["nodes"].begin(); it != config["nodes"].end(); ++it) {
-        handleURIs(&it->children);
+        handleURIs(*it);
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
         for (; nIt != nodeList.end(); ++nIt) {
-          if ((std::string) (*nIt)["name"][0] == (std::string) (*it)["name"][0]) {
-            ConfigMap::iterator cIt = it->children.begin();
-            for (; cIt != it->children.end(); ++cIt) {
+          if ((std::string) (*nIt)["name"] == (std::string) (*it)["name"]) {
+            ConfigMap::iterator cIt = it->beginMap();
+            for (; cIt != it->endMap(); ++cIt) {
               (*nIt)[cIt->first] = cIt->second;
             }
             break;
@@ -331,12 +331,12 @@ namespace mars {
         }
       }
       for (it = config["joint"].begin(); it != config["joint"].end(); ++it) {
-        handleURIs(&it->children);
+        handleURIs(*it);
         std::vector<ConfigMap>::iterator nIt = jointList.begin();
         for (; nIt != jointList.end(); ++nIt) {
-          if ((std::string) (*nIt)["name"][0] == (std::string) (*it)["name"][0]) {
-            ConfigMap::iterator cIt = it->children.begin();
-            for (; cIt != it->children.end(); ++cIt) {
+          if ((std::string) (*nIt)["name"] == (std::string) (*it)["name"]) {
+            ConfigMap::iterator cIt = it->beginMap();
+            for (; cIt != it->endMap(); ++cIt) {
               (*nIt)[cIt->first] = cIt->second;
             }
             break;
@@ -345,15 +345,15 @@ namespace mars {
       }
 
       for (it = config["visuals"].begin(); it != config["visuals"].end(); ++it) {
-        handleURIs(&it->children);
-        std::string cmpName = (std::string) (*it)["name"][0];
+        handleURIs(*it);
+        std::string cmpName = (std::string) (*it)["name"];
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
         if (visualNameMap.find(cmpName) != visualNameMap.end()) {
           cmpName = visualNameMap[cmpName];
           for (; nIt != nodeList.end(); ++nIt) {
-            if ((std::string) (*nIt)["name"][0] == cmpName) {
-              ConfigMap::iterator cIt = it->children.begin();
-              for (; cIt != it->children.end(); ++cIt) {
+            if ((std::string) (*nIt)["name"] == cmpName) {
+              ConfigMap::iterator cIt = it->beginMap();
+              for (; cIt != it->endMap(); ++cIt) {
                 if (cIt->first != "name") {
                   (*nIt)[cIt->first] = cIt->second;
                 }
@@ -367,15 +367,15 @@ namespace mars {
       }
 
       for (it = config["collision"].begin(); it != config["collision"].end(); ++it) {
-        handleURIs(&it->children);
-        std::string cmpName = (std::string) (*it)["name"][0];
+        handleURIs(*it);
+        std::string cmpName = (std::string) (*it)["name"];
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
         if (collisionNameMap.find(cmpName) != collisionNameMap.end()) {
           cmpName = collisionNameMap[cmpName];
           for (; nIt != nodeList.end(); ++nIt) {
-            if ((std::string) (*nIt)["name"][0] == cmpName) {
-              ConfigMap::iterator cIt = it->children.begin();
-              for (; cIt != it->children.end(); ++cIt) {
+            if ((std::string) (*nIt)["name"] == cmpName) {
+              ConfigMap::iterator cIt = it->beginMap();
+              for (; cIt != it->endMap(); ++cIt) {
                 if (cIt->first != "name") {
                   if (cIt->first == "bitmask") {
                     (*nIt)["coll_bitmask"] = (int) cIt->second;
@@ -391,37 +391,37 @@ namespace mars {
       }
 
       for (it = config["lights"].begin(); it != config["lights"].end(); ++it) {
-        handleURIs(&it->children);
-        lightList.push_back((*it).children);
+        handleURIs(*it);
+        lightList.push_back(*it);
 #ifdef DEBUG_SCENE_MAP
-        debugMap["lights"] += (*it).children;
+        debugMap["lights"] += *it;
 #endif
       }
       for (it = config["graphics"].begin(); it != config["graphics"].end(); ++it) {
-        handleURIs(&it->children);
-        graphicList.push_back((*it).children);
+        handleURIs(*it);
+        graphicList.push_back(*it);
 #ifdef DEBUG_SCENE_MAP
-        debugMap["graphics"] += (*it).children;
+        debugMap["graphics"] += *it;
 #endif
       }
       for (it = config["controllers"].begin(); it != config["controllers"].end(); ++it) {
-        handleURIs(&it->children);
+        handleURIs(*it);
         (*it)["index"] = nextControllerID++;
         // convert names to ids
         ConfigVector::iterator it2;
-        if (it->children.find("sensors") != it->children.end()) {
-          for (it2 = it->children["sensors"].begin(); it2 != it->children["sensors"].end(); ++it2) {
-            it->children["sensorid"].push_back(ConfigItem(sensorIDMap[(std::string) *it2]));
+        if (it->hasKey("sensors")) {
+          for (it2 = (*it)["sensors"].begin(); it2 != (*it)["sensors"].end(); ++it2) {
+            (*it)["sensorid"].push_back(sensorIDMap[(std::string) *it2]);
           }
         }
-        if (it->children.find("motors") != it->children.end()) {
-          for (it2 = it->children["motors"].begin(); it2 != it->children["motors"].end(); ++it2) {
-            it->children["motorid"] += ConfigItem(motorIDMap[(std::string) *it2]);
+        if (it->hasKey("motors")) {
+          for (it2 = (*it)["motors"].begin(); it2 != (*it)["motors"].end(); ++it2) {
+            (*it)["motorid"] += motorIDMap[(std::string) *it2];
           }
         }
-        controllerList.push_back((*it).children);
+        controllerList.push_back(*it);
 #ifdef DEBUG_SCENE_MAP
-        debugMap["controllers"] += (*it).children;
+        debugMap["controllers"] += *it;
 #endif
       }
     }
@@ -998,14 +998,14 @@ namespace mars {
 
     unsigned int SMURF::loadNode(ConfigMap config) {
       NodeData node;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid)
         return 0;
 
-      if ((std::string) config["materialName"][0] != std::string("")) {
+      if ((std::string) config["materialName"] != std::string("")) {
         std::map<std::string, MaterialData>::iterator it;
-        it = materialMap.find(config["materialName"][0]);
+        it = materialMap.find(config["materialName"]);
         if (it != materialMap.end()) {
           node.material = it->second;
         }
@@ -1040,7 +1040,7 @@ namespace mars {
       MaterialData material;
 
       int valid = material.fromConfigMap(&config, tmpPath);
-      materialMap[config["name"][0]] = material;
+      materialMap[config["name"]] = material;
 
       return valid;
     }
@@ -1048,7 +1048,7 @@ namespace mars {
     unsigned int SMURF::loadJoint(ConfigMap config) {
       JointData joint;
       joint.invertAxis = true;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
       int valid = joint.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing joint\n");
@@ -1069,7 +1069,7 @@ namespace mars {
 
     unsigned int SMURF::loadMotor(ConfigMap config) {
       MotorData motor;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
 
       int valid = motor.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
@@ -1091,7 +1091,7 @@ namespace mars {
     }
 
     BaseSensor* SMURF::loadSensor(ConfigMap config) {
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
         control->loadCenter->setMappedID((ulong) config["index"], sensor->getID(), MAP_TYPE_SENSOR,
@@ -1103,7 +1103,7 @@ namespace mars {
 
     unsigned int SMURF::loadGraphic(ConfigMap config) {
       GraphicData graphic;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
       int valid = graphic.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing graphic\n");
@@ -1118,7 +1118,7 @@ namespace mars {
 
     unsigned int SMURF::loadLight(ConfigMap config) {
       LightData light;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
       int valid = light.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {
         fprintf(stderr, "SMURF: error while smurfing light\n");
@@ -1130,7 +1130,7 @@ namespace mars {
 
     unsigned int SMURF::loadController(ConfigMap config) {
       ControllerData controller;
-      config["mapIndex"].push_back(ConfigItem(mapIndex));
+      config["mapIndex"] = mapIndex;
 
       int valid = controller.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid) {

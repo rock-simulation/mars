@@ -350,8 +350,8 @@ namespace mars {
     BaseConfig* RotatingRaySensor::parseConfig(ControlCenter *control,
                                        ConfigMap *config) {
       RotatingRayConfig *cfg = new RotatingRayConfig;
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-      unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+      unsigned int mapIndex = (*config)["mapIndex"];
+      unsigned long attachedNodeID = (*config)["attached_node"];
       if(mapIndex) {
         attachedNodeID = control->loadCenter->getMappedID(attachedNodeID,
                                                           interfaces::MAP_TYPE_NODE,
@@ -360,45 +360,44 @@ namespace mars {
 
       ConfigMap::iterator it;
       if((it = config->find("bands")) != config->end())
-        cfg->bands = it->second[0].getInt();
+        cfg->bands = it->second;
       if((it = config->find("lasers")) != config->end())
-        cfg->lasers = it->second[0].getInt();
+        cfg->lasers = it->second;
       if((it = config->find("opening_width")) != config->end())
-        cfg->opening_width = it->second[0].getDouble();
+        cfg->opening_width = it->second;
       if((it = config->find("opening_height")) != config->end())
-        cfg->opening_height = it->second[0].getDouble();
+        cfg->opening_height = it->second;
       if((it = config->find("max_distance")) != config->end())
-        cfg->maxDistance = it->second[0].getDouble();
+        cfg->maxDistance = it->second;
       if((it = config->find("min_distance")) != config->end())
-        cfg->minDistance = it->second[0].getDouble();
+        cfg->minDistance = it->second;
       if((it = config->find("draw_rays")) != config->end())
-        cfg->draw_rays = it->second[0].getBool();
+        cfg->draw_rays = it->second;
       if((it = config->find("horizontal_offset")) != config->end())
-        cfg->horizontal_offset = it->second[0].getDouble();
+        cfg->horizontal_offset = it->second;
       if((it = config->find("vertical_offset")) != config->end())
-        cfg->vertical_offset = it->second[0].getDouble();
+        cfg->vertical_offset = it->second;
       if((it = config->find("rate")) != config->end())
-        cfg->updateRate = it->second[0].getULong();
+        cfg->updateRate = it->second;
       if((it = config->find("horizontal_resolution")) != config->end())
-        cfg->horizontal_resolution = it->second[0].getDouble();
+        cfg->horizontal_resolution = it->second;
       cfg->attached_node = attachedNodeID;
       
       ConfigMap::iterator it2;
       if((it = config->find("rotation_offset")) != config->end()) {
-        if((it2 = it->second[0].children.find("yaw")) !=
-           it->second[0].children.end()) {
+        if(it->second.hasKey("yaw")) {
           Vector euler;
-          euler.x() = it->second[0].children["roll"][0].getDouble();
-          euler.y() = it->second[0].children["pitch"][0].getDouble();
-          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          euler.x() = it->second["roll"];
+          euler.y() = it->second["pitch"];
+          euler.z() = it->second["yaw"];
           cfg->transf_sensor_rot_to_sensor = eulerToQuaternion(euler);
         }
         else {
           Quaternion q;
-          q.x() = it->second[0].children["x"][0].getDouble();
-          q.y() = it->second[0].children["y"][0].getDouble();
-          q.z() = it->second[0].children["z"][0].getDouble();
-          q.w() = it->second[0].children["w"][0].getDouble();
+          q.x() = it->second["x"];
+          q.y() = it->second["y"];
+          q.z() = it->second["z"];
+          q.w() = it->second["w"];
           cfg->transf_sensor_rot_to_sensor = q;
         }
       }
@@ -408,27 +407,27 @@ namespace mars {
 
     ConfigMap RotatingRaySensor::createConfig() const {
       ConfigMap cfg;
-      cfg["name"][0] = ConfigItem(config.name);
-      cfg["id"][0] = ConfigItem(config.id);
-      cfg["type"][0] = ConfigItem("RaySensor");
-      cfg["attached_node"][0] = ConfigItem(config.attached_node);
-      cfg["bands"][0] = ConfigItem(config.bands);
-      cfg["lasers"][0] = ConfigItem(config.lasers);
-      cfg["opening_width"][0] = ConfigItem(config.opening_width);
-      cfg["opening_height"][0] = ConfigItem(config.opening_height);
-      cfg["max_distance"][0] = ConfigItem(config.maxDistance);
-      cfg["min_distance"][0] = ConfigItem(config.minDistance);
-      cfg["draw_rays"][0] = ConfigItem(config.draw_rays);
-      cfg["vertical_offset"][0] = ConfigItem(config.vertical_offset);
-      cfg["horizontal_offset"][0] = ConfigItem(config.horizontal_offset);
-      cfg["rate"][0] = ConfigItem(config.updateRate);
-      cfg["horizontal_resolution"][0] = ConfigItem(config.horizontal_resolution);
-      //cfg["rotation_offset"][0] = ConfigItem(config.transf_sensor_rot_to_sensor);
+      cfg["name"] = config.name;
+      cfg["id"] = config.id;
+      cfg["type"] = "RaySensor";
+      cfg["attached_node"] = config.attached_node;
+      cfg["bands"] = config.bands;
+      cfg["lasers"] = config.lasers;
+      cfg["opening_width"] = config.opening_width;
+      cfg["opening_height"] = config.opening_height;
+      cfg["max_distance"] = config.maxDistance;
+      cfg["min_distance"] = config.minDistance;
+      cfg["draw_rays"] = config.draw_rays;
+      cfg["vertical_offset"] = config.vertical_offset;
+      cfg["horizontal_offset"] = config.horizontal_offset;
+      cfg["rate"] = config.updateRate;
+      cfg["horizontal_resolution"] = config.horizontal_resolution;
+      //cfg["rotation_offset"] = config.transf_sensor_rot_to_sensor;
       /*
-        cfg["stepX"][0] = ConfigItem(config.stepX);
-        cfg["stepY"][0] = ConfigItem(config.stepY);
-        cfg["cols"][0] = ConfigItem(config.cols);
-        cfg["rows"][0] = ConfigItem(config.rows);
+        cfg["stepX"] = config.stepX;
+        cfg["stepY"] = config.stepY;
+        cfg["cols"] = config.cols;
+        cfg["rows"] = config.rows;
       */
       return cfg;
     }

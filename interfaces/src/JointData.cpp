@@ -31,20 +31,19 @@
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
-    val = it->second[0].get##type()
+    val = it->second
 
 #define GET_OBJECT(str, val, type)              \
   if((it = config->find(str)) != config->end()) \
-    type##FromConfigItem(&it->second[0], &val);
+    type##FromConfigItem(it->second, &val);
 
 #define SET_VALUE(str, val)                              \
   if(val != defaultJoint.val)                             \
-    (*config)[str][0] = ConfigItem(val)
+    (*config)[str] = val
 
 #define SET_OBJECT(str, val, type)                                      \
   if(1 || val.squaredNorm() - defaultJoint.val.squaredNorm() < 0.0000001) {               \
-    (*config)[str][0] = ConfigItem(std::string());                      \
-    type##ToConfigItem(&(*config)[str][0], &val);                       \
+    type##ToConfigItem((*config)[str], &val);                       \
   }
 
 namespace mars {
@@ -95,9 +94,9 @@ namespace mars {
       unsigned int mapIndex;
       GET_VALUE("mapIndex", mapIndex, UInt);
       
-      GET_VALUE("name", name, String);
+      name = config->get("name", name);
       if((it = config->find("type")) != config->end()) {
-        type = getJointType(it->second[0].getString());
+        type = getJointType((std::string)it->second);
         if(type == JOINT_TYPE_UNDEFINED) {
           LOG_ERROR("JointData: type given is undefined");          
         }
@@ -158,7 +157,7 @@ namespace mars {
 
       {
         std::string tmp = getJointTypeString(type);
-        (*config)["type"][0] = ConfigItem(tmp);
+        (*config)["type"] = tmp;
       }
 
       SET_VALUE("index", index);

@@ -278,8 +278,8 @@ namespace mars {
 
       CameraConfigStruct *cfg = new CameraConfigStruct();
 
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-      unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+      unsigned int mapIndex = (*config)["mapIndex"];
+      unsigned long attachedNodeID = (*config)["attached_node"];
       if(mapIndex) {
         attachedNodeID = control->loadCenter->getMappedID(attachedNodeID,
                                                           interfaces::MAP_TYPE_NODE,
@@ -291,85 +291,84 @@ namespace mars {
       ConfigMap::iterator it2;
 
       if((it = config->find("rate")) != config->end())
-        cfg->updateRate = it->second[0].getULong();
+        cfg->updateRate = it->second;
       else cfg->updateRate = 100;
 
       if((it = config->find("frame_offset")) != config->end())
-        cfg->frameOffset = it->second[0].getULong();
+        cfg->frameOffset = it->second;
       else cfg->frameOffset = 1;
 
       if((it = config->find("width")) != config->end())
-        cfg->width = it->second[0].getULong();
+        cfg->width = it->second;
 
       if((it = config->find("height")) != config->end())
-        cfg->height = it->second[0].getULong();
+        cfg->height = it->second;
 
       if((it = config->find("opening_width")) != config->end()) // deprecated
-        cfg->opening_width = it->second[0].getDouble();
+        cfg->opening_width = it->second;
 
       if((it = config->find("opening_angle")) != config->end())
-        cfg->opening_width = it->second[0].getDouble();
+        cfg->opening_width = it->second;
 
       if((it = config->find("opening_height")) != config->end()) // deprecated
-        cfg->opening_height = it->second[0].getDouble();
+        cfg->opening_height = it->second;
 
       if((it = config->find("opening_angle2")) != config->end())
-        cfg->opening_height = it->second[0].getDouble();
+        cfg->opening_height = it->second;
 
       // correct opening_height
       if (cfg->opening_height < 0)
         cfg->opening_height = cfg->opening_width * ((double)cfg->height / (double)cfg->width);
 
       if((it = config->find("show_cam")) != config->end()){
-        cfg->show_cam =  it->second[0].getBool();
+        cfg->show_cam =  it->second;
         if(cfg->show_cam) {
           if((it = config->find("hud_idx")) != config->end())
-            cfg->hud_pos = it->second[0].getInt();
+            cfg->hud_pos = it->second;
         }
       }else{
         cfg->show_cam = false;
       }
 
       if((it = config->find("enabled")) != config->end()){
-        cfg->enabled =  it->second[0].getBool();
+        cfg->enabled =  it->second;
       }else{
         cfg->enabled = true;
       }
 
       if((it = config->find("hud_size")) != config->end()) {
-        cfg->hud_width = it->second[0].children["x"][0].getDouble();
-        cfg->hud_height = it->second[0].children["y"][0].getDouble();
+        cfg->hud_width = it->second["x"];
+        cfg->hud_height = it->second["y"];
       }
 
       // if hud_height and hud_width are present, overwrite parameters
       if((it = config->find("hud_width")) != config->end())
-        cfg->hud_width = it->second[0].getDouble();
+        cfg->hud_width = it->second;
       if((it = config->find("hud_height")) != config->end())
-        cfg->hud_height = it->second[0].getDouble();
+        cfg->hud_height = it->second;
       else
         cfg->hud_height = cfg->hud_width * ((double)cfg->height / (double)cfg->width);
 
       if((it = config->find("position_offset")) != config->end()) {
-        cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
-        cfg->pos_offset[1] = it->second[0].children["y"][0].getDouble();
-        cfg->pos_offset[2] = it->second[0].children["z"][0].getDouble();
+        cfg->pos_offset[0] = it->second["x"];
+        cfg->pos_offset[1] = it->second["y"];
+        cfg->pos_offset[2] = it->second["z"];
         LOG_DEBUG("camera position_offset: %g %g %g", cfg->pos_offset[0],
                   cfg->pos_offset[1], cfg->pos_offset[2]);
       }
       if((it = config->find("orientation_offset")) != config->end()) {
-        if((it2 = it->second[0].children.find("yaw")) !=
-           it->second[0].children.end()) {
+        if(it->second.hasKey("yaw")) {
           Vector euler;
-          euler.x() = it->second[0].children["roll"][0].getDouble();
-          euler.y() = it->second[0].children["pitch"][0].getDouble();
-          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          euler.x() = it->second["roll"];
+          euler.y() = it->second["pitch"];
+          euler.z() = it->second["yaw"];
           cfg->ori_offset = eulerToQuaternion(euler);
         }
         else {
-          cfg->ori_offset.x() = it->second[0].children["x"][0].getDouble();
-          cfg->ori_offset.y() = it->second[0].children["y"][0].getDouble();
-          cfg->ori_offset.z() = it->second[0].children["z"][0].getDouble();
-          cfg->ori_offset.w() = it->second[0].children["w"][0].getDouble();
+          cfg->ori_offset.x() = it->second["x"];
+          cfg->ori_offset.y() = it->second["y"];
+          cfg->ori_offset.z() = it->second["z"];
+          cfg->ori_offset.w() = it->second["w"];
         }
       }
 
@@ -382,30 +381,29 @@ namespace mars {
       ConfigMap cfg;
       ConfigMap *tmpCfg;
 
-      cfg["name"][0] = ConfigItem(config.name);
-      cfg["id"][0] = ConfigItem(config.id);
-      cfg["type"][0] = ConfigItem(std::string("CameraSensor"));
+      cfg["name"] = config.name;
+      cfg["id"] = config.id;
+      cfg["type"] = std::string("CameraSensor");
 
-      cfg["attached_node"][0] = ConfigItem(config.attached_node);
-      cfg["frame_offset"][0] = ConfigItem(config.frameOffset);
+      cfg["attached_node"] = config.attached_node;
+      cfg["frame_offset"] = config.frameOffset;
 
-      cfg["width"][0] = ConfigItem(config.width);
-      cfg["height"][0] = ConfigItem(config.height);
+      cfg["width"] = config.width;
+      cfg["height"] = config.height;
         
-//      cfg["enabled"][0] = ConfigItem(config.enabled);
+//      cfg["enabled"] = config.enabled;
 
 
       if(config.show_cam) {
-        cfg["show_cam"][0] = ConfigItem(true);
-        cfg["show_cam"][0].children["hud_idx"][0] = ConfigItem(config.hud_pos);
+        cfg["show_cam"] = true;
+        cfg["show_cam"]["hud_idx"] = config.hud_pos;
       }
 
-      cfg["position_offset"][0] = ConfigItem(std::string());
-      tmpCfg = &(cfg["position_offset"][0].children);
+      tmpCfg = cfg["position_offset"];
 
-      (*tmpCfg)["x"][0] = ConfigItem(config.pos_offset[0]);
-      (*tmpCfg)["y"][0] = ConfigItem(config.pos_offset[1]);
-      (*tmpCfg)["z"][0] = ConfigItem(config.pos_offset[2]);
+      (*tmpCfg)["x"] = config.pos_offset[0];
+      (*tmpCfg)["y"] = config.pos_offset[1];
+      (*tmpCfg)["z"] = config.pos_offset[2];
 
 
       Quaternion q = eulerToQuaternion(Vector(90,0,-90));
@@ -414,17 +412,15 @@ namespace mars {
       q.z() *= -1;
       q = config.ori_offset * q;
 
-      cfg["orientation_offset"][0] = ConfigItem(std::string());
-      tmpCfg = &(cfg["orientation_offset"][0].children);
-      (*tmpCfg)["x"][0] = ConfigItem(q.x());
-      (*tmpCfg)["y"][0] = ConfigItem(q.y());
-      (*tmpCfg)["z"][0] = ConfigItem(q.z());
-      (*tmpCfg)["w"][0] = ConfigItem(q.w());
+      tmpCfg = cfg["orientation_offset"];
+      (*tmpCfg)["x"] = q.x();
+      (*tmpCfg)["y"] = q.y();
+      (*tmpCfg)["z"] = q.z();
+      (*tmpCfg)["w"] = q.w();
 
-      cfg["hud_size"][0] = ConfigItem(std::string());
-      tmpCfg = &(cfg["hud_size"][0].children);
-      (*tmpCfg)["x"][0] = ConfigItem(config.hud_width);
-      (*tmpCfg)["y"][0] = ConfigItem(config.hud_height);
+      tmpCfg = cfg["hud_size"];
+      (*tmpCfg)["x"] = config.hud_width;
+      (*tmpCfg)["y"] = config.hud_height;
 
       return cfg;
     }

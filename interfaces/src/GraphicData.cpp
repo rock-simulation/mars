@@ -24,10 +24,10 @@
 
 #define GET_VALUE(str, val, type)                    \
   if((it = config->find(str)) != config->end())      \
-    val = it->second[0].get##type()
+    val = it->second
 
 #define SET_VALUE(str, val)                              \
-    (*config)[str][0] = ConfigItem(val)
+    (*config)[str] = val
 
 namespace mars {
   namespace interfaces {
@@ -60,7 +60,7 @@ namespace mars {
       ConfigMap::iterator it;
 
       if((it = config->find("clearColor")) != config->end())
-        clearColor.fromConfigItem(&it->second[0]);
+        clearColor.fromConfigItem(it->second);
 
       GET_VALUE("fogEnabled", fogEnabled, Bool);
       GET_VALUE("fogDensity", fogDensity, Double);
@@ -68,7 +68,7 @@ namespace mars {
       GET_VALUE("fogEnd", fogEnd, Double);
 
       if((it = config->find("fogColor")) != config->end())
-        fogColor.fromConfigItem(&it->second[0]);
+        fogColor.fromConfigItem(it->second);
 
       return true;
     }
@@ -77,16 +77,14 @@ namespace mars {
                                   bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       
-      (*config)["clearColor"][0] = ConfigItem(std::string());
-      clearColor.toConfigItem(&(*config)["clearColor"][0]);
+      clearColor.toConfigItem((*config)["clearColor"]);
       
       SET_VALUE("fogEnabled", fogEnabled);
       SET_VALUE("fogDensity", fogDensity);
       SET_VALUE("fogStart", fogStart);
       SET_VALUE("fogEnd", fogEnd);
 
-      (*config)["fogColor"][0] = ConfigItem(std::string());
-      fogColor.toConfigItem(&(*config)["fogColor"][0]);
+      fogColor.toConfigItem((*config)["fogColor"]);
 
     }
 

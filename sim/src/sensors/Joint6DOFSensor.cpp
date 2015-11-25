@@ -227,14 +227,14 @@ namespace mars {
     BaseConfig* Joint6DOFSensor::parseConfig(ControlCenter *control,
                                              ConfigMap *config) {
       Joint6DOFConfig *cfg = new Joint6DOFConfig;
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-      unsigned long nodeID = (*config)["nodeID"][0].getULong();
+      unsigned int mapIndex = (*config)["mapIndex"];
+      unsigned long nodeID = (*config)["nodeID"];
       if(mapIndex) {
         nodeID = control->loadCenter->getMappedID(nodeID,
                                                   interfaces::MAP_TYPE_NODE,
                                                   mapIndex);
       }
-      unsigned long jointID = (*config)["jointID"][0].getULong();
+      unsigned long jointID = (*config)["jointID"];
       if(mapIndex) {
         jointID = control->loadCenter->getMappedID(jointID,
                                                    interfaces::MAP_TYPE_JOINT,
@@ -243,18 +243,18 @@ namespace mars {
 
       cfg->nodeID = nodeID;
       cfg->jointID = jointID;
-      cfg->updateRate = (*config)["rate"][0].getULong();
+      cfg->updateRate = (*config)["rate"];
       return cfg;
     }
 
     ConfigMap Joint6DOFSensor::createConfig() const {
       ConfigMap cfg;
-      cfg["name"][0] = ConfigItem(config.name);
-      cfg["index"][0] = ConfigItem(config.id);
-      cfg["type"][0] = ConfigItem(std::string("Joint6DOF"));
-      cfg["rate"][0] = ConfigItem(config.updateRate);
-      cfg["nodeID"][0] = ConfigItem(config.nodeID);
-      cfg["jointID"][0] = ConfigItem(config.jointID);
+      cfg["name"] = config.name;
+      cfg["index"] = config.id;
+      cfg["type"] = std::string("Joint6DOF");
+      cfg["rate"] = config.updateRate;
+      cfg["nodeID"] = config.nodeID;
+      cfg["jointID"] = config.jointID;
       return cfg;
     }
 

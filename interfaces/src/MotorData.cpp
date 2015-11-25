@@ -24,14 +24,14 @@
 
 #define GET_VALUE(str, val, type)                                        \
   if((it = config->find(str)) != config->end()) {                         \
-    val = it->second[0].get##type();                                      \
+    val = it->second;                                   \
   } else if ((it = config->find(legacynames[str])) != config->end()) {   \
-    val = it->second[0].get##type();                                      \
+    val = it->second;                                                   \
   }
 
 #define SET_VALUE(str, val)                              \
   if(val != defaultMotor.val)                             \
-    (*config)[str][0] = ConfigItem(val)
+    (*config)[str] = val
 
 namespace mars {
   namespace interfaces {
@@ -101,7 +101,7 @@ namespace mars {
       unsigned int mapIndex;
       GET_VALUE("mapIndex", mapIndex, UInt);
 
-      GET_VALUE("name", name, String);
+      name = config->get("name", name);
       GET_VALUE("index", index, ULong);
       GET_VALUE("jointIndex", jointIndex, ULong);
       GET_VALUE("jointIndex2", jointIndex2, ULong);
@@ -122,7 +122,7 @@ namespace mars {
       GET_VALUE("maxAcceleration", maxAcceleration, Double);
 
       std::string tmpmotortype;
-      GET_VALUE("type", tmpmotortype, String);
+      tmpmotortype = config->get("tmpmotortype", tmpmotortype);
       if (tmpmotortype=="1" || tmpmotortype=="PID") {
         type = (MotorType)1ul;
       } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
@@ -153,7 +153,7 @@ namespace mars {
       SET_VALUE("maxSpeed", maxSpeed);
       SET_VALUE("maxEffort", maxEffort);
 
-      (*config)["type"][0] = ConfigItem((int)type);
+      (*config)["type"] = (int)type;
 
       SET_VALUE("p", p);
       SET_VALUE("i", i);

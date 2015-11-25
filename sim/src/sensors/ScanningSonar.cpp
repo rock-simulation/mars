@@ -295,8 +295,8 @@ namespace mars {
 
       ScanningSonarConfig *cfg = new ScanningSonarConfig();
 
-      unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-      unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+      unsigned int mapIndex = (*config)["mapIndex"];
+      unsigned long attachedNodeID = (*config)["attached_node"];
       if(mapIndex) {
         attachedNodeID = control->loadCenter->getMappedID(attachedNodeID,
                                                           interfaces::MAP_TYPE_NODE,
@@ -307,91 +307,82 @@ namespace mars {
       ConfigMap::iterator it;
       ConfigMap::iterator it2;
 
-      if((it = config->find("show_cam")) != config->end()){
-        cfg->show_cam =  it->second[0].getBool();
-      }else{
-        cfg->show_cam = false;
-      }
-  
-      if((it = config->find("rate")) != config->end())
-        cfg->updateRate = it->second[0].getULong();
-      else cfg->updateRate = 0;
+      cfg->show_cam = config->get("show_cam", false);
+      cfg->updateRate = config->get("rate", 0UL);
 
       if(cfg->show_cam) {
-        if((it2 = it->second[0].children.find("hud_idx")) !=
-           it->second[0].children.end())
-          cfg->hud_pos = it2->second[0].getInt();
+        if((it2 = it->second.find("hud_idx")) !=
+           it->second.endMap())
+          cfg->hud_pos = it2->second;
       }
 
       if((it = config->find("only_ray")) != config->end())
-        cfg->only_ray = it->second[0].getBool();
+        cfg->only_ray = it->second;
 
       if((it = config->find("resolution")) != config->end())
-        cfg->resolution = it->second[0].getDouble();
+        cfg->resolution = it->second;
 
       if((it = config->find("gain")) != config->end())
-        cfg->gain = it->second[0].getDouble();
+        cfg->gain = it->second;
 
       if((it = config->find("maxDistance")) != config->end())
-        cfg->maxDist = it->second[0].getDouble();
+        cfg->maxDist = it->second;
 
       if((it = config->find("internal_width")) != config->end())
-        cfg->width = it->second[0].getULong();
+        cfg->width = it->second;
 
       if((it = config->find("internal_height")) != config->end())
-        cfg->height = it->second[0].getULong();
+        cfg->height = it->second;
 
       if((it = config->find("position")) != config->end()) {
-        cfg->position[0] = it->second[0].children["x"][0].getDouble();
-        cfg->position[1] = it->second[0].children["y"][0].getDouble();
-        cfg->position[2] = it->second[0].children["z"][0].getDouble();
+        cfg->position[0] = it->second["x"];
+        cfg->position[1] = it->second["y"];
+        cfg->position[2] = it->second["z"];
       }
 
       if((it = config->find("position_offset")) != config->end()) {
-        cfg->pos_offset[0] = it->second[0].children["x"][0].getDouble();
-        cfg->pos_offset[1] = it->second[0].children["y"][0].getDouble();
-        cfg->pos_offset[2] = it->second[0].children["z"][0].getDouble();
+        cfg->pos_offset[0] = it->second["x"];
+        cfg->pos_offset[1] = it->second["y"];
+        cfg->pos_offset[2] = it->second["z"];
       }
 
       if((it = config->find("extension")) != config->end()) {
-        cfg->extension[0] = it->second[0].children["x"][0].getDouble();
-        cfg->extension[1] = it->second[0].children["y"][0].getDouble();
-        cfg->extension[2] = it->second[0].children["z"][0].getDouble();
+        cfg->extension[0] = it->second["x"];
+        cfg->extension[1] = it->second["y"];
+        cfg->extension[2] = it->second["z"];
       }
 
       if((it = config->find("orientation_offset")) != config->end()) {
-        if((it2 = it->second[0].children.find("yaw")) !=
-           it->second[0].children.end()) {
+        if(it->second.hasKey("yaw")) {
           Vector euler;
-          euler.x() = it->second[0].children["roll"][0].getDouble();
-          euler.y() = it->second[0].children["pitch"][0].getDouble();
-          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          euler.x() = it->second["roll"];
+          euler.y() = it->second["pitch"];
+          euler.z() = it->second["yaw"];
           cfg->ori_offset *= eulerToQuaternion(euler);
         }
         else {
           Quaternion q;
-          q.x() = it->second[0].children["x"][0].getDouble();
-          q.y() = it->second[0].children["y"][0].getDouble();
-          q.z() = it->second[0].children["z"][0].getDouble();
-          q.w() = it->second[0].children["w"][0].getDouble();
+          q.x() = it->second["x"];
+          q.y() = it->second["y"];
+          q.z() = it->second["z"];
+          q.w() = it->second["w"];
           cfg->ori_offset *= q;
         }
       }
 
       if((it = config->find("orientation")) != config->end()) {
-        if((it2 = it->second[0].children.find("yaw")) !=
-           it->second[0].children.end()) {
+        if(it->second.hasKey("yaw")) {
           Vector euler;
-          euler.x() = it->second[0].children["roll"][0].getDouble();
-          euler.y() = it->second[0].children["pitch"][0].getDouble();
-          euler.z() = it->second[0].children["yaw"][0].getDouble();
+          euler.x() = it->second["roll"];
+          euler.y() = it->second["pitch"];
+          euler.z() = it->second["yaw"];
           cfg->orientation = eulerToQuaternion(euler);
         }
         else {
-          cfg->orientation.x() = it->second[0].children["x"][0].getDouble();
-          cfg->orientation.y() = it->second[0].children["y"][0].getDouble();
-          cfg->orientation.z() = it->second[0].children["z"][0].getDouble();
-          cfg->orientation.w() = it->second[0].children["w"][0].getDouble();
+          cfg->orientation.x() = it->second["x"];
+          cfg->orientation.y() = it->second["y"];
+          cfg->orientation.z() = it->second["z"];
+          cfg->orientation.w() = it->second["w"];
         }
       }
 

@@ -62,8 +62,12 @@ namespace mars {
       main_gui::PropertyDialog *pDialog;
       void setConfigMap(const std::string &name, const configmaps::ConfigMap &map);
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
+      void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
+      void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
       void updateConfigMap(const std::string &name, const configmaps::ConfigMap &map);
       void updateConfigMapI(const std::string &name, const configmaps::ConfigMap &map);
+      void updateConfigAtomI(const std::string &name, const configmaps::ConfigAtom &map);
+      void updateConfigVectorI(const std::string &name, const configmaps::ConfigVector &map);
       const configmaps::ConfigMap& getConfigMap();
       void clearGUI();
 
@@ -73,7 +77,7 @@ namespace mars {
     private:
       QMutex addMutex;
       configmaps::ConfigMap config;
-      map<QtVariantProperty*, configmaps::ConfigItem*> dataMap;
+      map<QtVariantProperty*, configmaps::ConfigAtom*> dataMap;
       map<QtVariantProperty*, configmaps::ConfigMap*> addMap;
       map<std::string, QtVariantProperty*> propMap;
       std::string addKeyStr, cname;

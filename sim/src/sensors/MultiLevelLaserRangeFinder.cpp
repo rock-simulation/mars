@@ -321,8 +321,8 @@ void MultiLevelLaserRangeFinder::update(std::vector<draw_item>* drawItems) {
 BaseConfig* MultiLevelLaserRangeFinder::parseConfig(ControlCenter *control,
                                     ConfigMap *config) {
     MultiLevelLaserRangeFinderConfig *cfg = new MultiLevelLaserRangeFinderConfig;
-    unsigned int mapIndex = (*config)["mapIndex"][0].getUInt();
-    unsigned long attachedNodeID = (*config)["attached_node"][0].getULong();
+    unsigned int mapIndex = (*config)["mapIndex"];
+    unsigned long attachedNodeID = (*config)["attached_node"];
     if(mapIndex) {
         attachedNodeID = control->loadCenter->getMappedID(attachedNodeID,
                                                             interfaces::MAP_TYPE_NODE,
@@ -332,39 +332,39 @@ BaseConfig* MultiLevelLaserRangeFinder::parseConfig(ControlCenter *control,
  
     ConfigMap::iterator it;
     if((it = config->find("numRaysVertical")) != config->end())
-        cfg->numRaysVertical = it->second[0].getInt();
+      cfg->numRaysVertical = it->second;
     if((it = config->find("numRaysHorizontal")) != config->end())
-        cfg->numRaysHorizontal = it->second[0].getInt();
+      cfg->numRaysHorizontal = it->second;
     if((it = config->find("rttResolutionX")) != config->end())
-        cfg->rttResolutionX = it->second[0].getInt();
+      cfg->rttResolutionX = it->second;
     if((it = config->find("rttResolutionY")) != config->end())
-        cfg->rttResolutionY = it->second[0].getInt();
+      cfg->rttResolutionY = it->second;
     
     if((it = config->find("verticalOpeningAngle")) != config->end())
-        cfg->verticalOpeningAngle = it->second[0].getDouble();
+      cfg->verticalOpeningAngle = it->second;
     if((it = config->find("horizontalOpeningAngle")) != config->end())
-        cfg->horizontalOpeningAngle = it->second[0].getDouble();
+      cfg->horizontalOpeningAngle = it->second;
     if((it = config->find("maxDistance")) != config->end())
-        cfg->maxDistance = it->second[0].getDouble();
+      cfg->maxDistance = it->second;
 
     return cfg;
 }
 
 ConfigMap MultiLevelLaserRangeFinder::createConfig() const {
     ConfigMap cfg;
-    cfg["name"][0] = ConfigItem(config.name);
-    cfg["id"][0] = ConfigItem(config.id);
-    cfg["type"][0] = ConfigItem("MultiLevelLaserRangeFinder");
-    cfg["attached_node"][0] = ConfigItem(config.attached_node);
-    cfg["numRaysVertical"][0] = ConfigItem(config.numRaysVertical);
-    cfg["numRaysHorizontal"][0] = ConfigItem(config.numRaysHorizontal);
-    cfg["rttResolutionX"][0] = ConfigItem(config.rttResolutionX);
-    cfg["rttResolutionY"][0] = ConfigItem(config.rttResolutionY);
-    cfg["max_distance"][0] = ConfigItem(config.maxDistance);
-    cfg["verticalOpeningAngle"][0] = ConfigItem(config.verticalOpeningAngle);
-    cfg["horizontalOpeningAngle"][0] = ConfigItem(config.horizontalOpeningAngle);
-    cfg["rate"][0] = ConfigItem(config.updateRate);
-    cfg["maxDistance"][0] = ConfigItem(config.maxDistance);
+    cfg["name"] = config.name;
+    cfg["id"] = config.id;
+    cfg["type"] = "MultiLevelLaserRangeFinder";
+    cfg["attached_node"] = config.attached_node;
+    cfg["numRaysVertical"] = config.numRaysVertical;
+    cfg["numRaysHorizontal"] = config.numRaysHorizontal;
+    cfg["rttResolutionX"] = config.rttResolutionX;
+    cfg["rttResolutionY"] = config.rttResolutionY;
+    cfg["max_distance"] = config.maxDistance;
+    cfg["verticalOpeningAngle"] = config.verticalOpeningAngle;
+    cfg["horizontalOpeningAngle"] = config.horizontalOpeningAngle;
+    cfg["rate"] = config.updateRate;
+    cfg["maxDistance"] = config.maxDistance;
     return cfg;
 }
 

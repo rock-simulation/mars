@@ -24,6 +24,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
             data_broker
             main_gui
             mars_interfaces
+            configmaps
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
