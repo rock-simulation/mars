@@ -155,30 +155,30 @@ namespace mars {
       // TODO: check if objects exist in maps
 
       if (map->find("link") != map->end()) {
-        (*map)["nodeID"] = nodeIDMap[(std::string) (*map)["link"][0]];
+        (*map)["nodeID"] = nodeIDMap[(*map)["link"][0]];
       }
       if (map->find("joint") != map->end()) {
-        (*map)["jointID"] = jointIDMap[(std::string) (*map)["joint"][0]];
+        (*map)["jointID"] = jointIDMap[(*map)["joint"][0]];
       }
       if (map->find("links") != map->end()) {
         for (it = (*map)["links"].begin(); it != (*map)["links"].end(); ++it) {
-          (*map)["id"] << nodeIDMap[(std::string) *it];
+          (*map)["id"] += nodeIDMap[*it];
         }
       }
       if (map->find("collisions") != map->end()) {
         for (it = (*map)["collisions"].begin();
              it != (*map)["collisions"].end(); ++it) {
-          (*map)["id"] << nodeIDMap[(std::string) *it];
+          (*map)["id"] += nodeIDMap[*it];
         }
       }
       if (map->find("joints") != map->end()) {
         for (it = (*map)["joints"].begin(); it != (*map)["joints"].end(); ++it) {
-          (*map)["id"].push_back(jointIDMap[(std::string) *it]);
+          (*map)["id"].push_back(jointIDMap[*it]);
         }
       }
       if (map->find("motors") != map->end()) {
         for (it = (*map)["motors"].begin(); it != (*map)["motors"].end(); ++it) {
-          (*map)["id"].push_back(motorIDMap[(std::string) *it]);
+          (*map)["id"].push_back(motorIDMap[*it]);
         }
       }
     }
@@ -291,7 +291,7 @@ namespace mars {
               if (namemap) {
                 tmpids.append(ConfigAtom((ulong) (*idmap)[(*namemap)[(std::string) (*idit)]]));
               } else {
-                tmpids << ConfigAtom((ulong) (*idmap)[(std::string) (*idit)]);
+                tmpids += ConfigAtom((ulong) (*idmap)[(std::string) (*idit)]);
               }
             } else {
               fprintf(stderr, "Found sensor with id list, but of no known category.\n");
