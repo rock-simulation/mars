@@ -215,14 +215,14 @@ namespace mars {
       GET_OBJECT("visualrotation", visual_offset_rot, quaternion);
 
       if((it = config->find("visualsize")) != config->end()) {
-        vectorFromConfigItem(&it->second[0], &visual_size);
+        vectorFromConfigItem(it->second, &visual_size);
       }
       else {
         visual_size = ext;
       }
 
       if((it = config->find("visualscale")) != config->end()) {
-        vectorFromConfigItem(&it->second[0], &visual_scale);
+        vectorFromConfigItem(it->second, &visual_scale);
       }
       else {
         visual_scale = Vector(1.0, 1.0, 1.0);
@@ -247,7 +247,7 @@ namespace mars {
           if(!c_params.friction_direction1) {
             c_params.friction_direction1 = new Vector();
           }
-          vectorFromConfigItem(&it->second[0], c_params.friction_direction1);
+          vectorFromConfigItem(it->second, c_params.friction_direction1);
         }
       }
 

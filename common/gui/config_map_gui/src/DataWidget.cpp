@@ -157,42 +157,43 @@ namespace mars {
     void DataWidget::updateConfigMap(const std::string &name,
                                      const ConfigMap &map) {
       ignore_change = 1;
-      updateConfigMapI(name, map);
+      ConfigMap tmpMap = map;
+      updateConfigMapI(name, tmpMap);
       ignore_change = 0;
     }
 
     void DataWidget::updateConfigMapI(const std::string &name,
-                                      const ConfigMap &map) {
+                                      ConfigMap &map) {
       ConfigMap::const_iterator it = map.begin();
       for(;it!=map.end(); ++it) {
 
         if(it->second.isAtom()) {
-          updateConfigAtomI(name + "/" + it->first, (ConfigAtom&)it->second);
+          updateConfigAtomI(name + "/" + it->first, it->second);
         }
         else if(it->second.isVector()) {
-          updateConfigVectorI(name + "/" + it->first, (ConfigVector&)it->second);
+          updateConfigVectorI(name + "/" + it->first, it->second);
         }
         else if(it->second.isMap()) {
-          updateConfigMapI(name + "/" + it->first, (ConfigMap&)it->second);
+          updateConfigMapI(name + "/" + it->first, it->second);
         }
       }
     }
 
     void DataWidget::updateConfigVectorI(const std::string &name,
-                                         const ConfigVector &v) {
+                                         ConfigVector &v) {
 
       for(size_t i=0; i<v.size(); ++i) {
         char iText[64];
         iText[0] = '\0';
         sprintf(iText, "/%d", (int)i);
-        if(v[i].isAtom()) updateConfigAtomI(name + iText, (ConfigAtom&)v[i]);
-        else if(v[i].isVector()) updateConfigVectorI(name + iText, (ConfigVector&)v[i]);
-        else if(v[i].isMap()) updateConfigMapI(name + iText, (ConfigMap&)v[i]);
+        if(v[i].isAtom()) updateConfigAtomI(name + iText, v[i]);
+        else if(v[i].isVector()) updateConfigVectorI(name + iText, v[i]);
+        else if(v[i].isMap()) updateConfigMapI(name + iText, v[i]);
       }
     }
 
     void DataWidget::updateConfigAtomI(const std::string &name,
-                                       const ConfigAtom &v) {
+                                       ConfigAtom &v) {
 
       QtVariantProperty *guiElem;
       std::map<QString, QVariant> attr;

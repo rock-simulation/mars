@@ -65,9 +65,9 @@ namespace mars {
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
       void updateConfigMap(const std::string &name, const configmaps::ConfigMap &map);
-      void updateConfigMapI(const std::string &name, const configmaps::ConfigMap &map);
-      void updateConfigAtomI(const std::string &name, const configmaps::ConfigAtom &map);
-      void updateConfigVectorI(const std::string &name, const configmaps::ConfigVector &map);
+      void updateConfigMapI(const std::string &name, configmaps::ConfigMap &map);
+      void updateConfigAtomI(const std::string &name, configmaps::ConfigAtom &map);
+      void updateConfigVectorI(const std::string &name, configmaps::ConfigVector &map);
       const configmaps::ConfigMap& getConfigMap();
       void clearGUI();
 
