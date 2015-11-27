@@ -55,6 +55,7 @@ namespace osg_text {
 
     ~Text();
     void setText(const std::string &s);
+    void setFontSize(const double fontSize);
     void setBackgroundColor(const Color &c);
     void setBorderColor(const Color &c);
     void setBorderWidth(double w);
