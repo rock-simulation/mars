@@ -99,6 +99,11 @@ namespace osg_text {
     updateSize();
   }
 
+  void Text::setFontSize(const double fontSize) {
+    labelText->setCharacterSize(fontSize);
+    updateSize();
+  }
+
   void Text::setBackgroundColor(const Color &c) {
     (*backgroundColor)[0] = osg::Vec4(c.r, c.g, c.b, c.a);
     backgroundGeom->dirtyDisplayList();
