@@ -125,7 +125,6 @@ namespace mars {
         physicMode = type;
         ext = extents;
         this->mass = mass;
-        visual_size = extents;
         filename = "PRIMITIVE";
 
         origName = toString(type);

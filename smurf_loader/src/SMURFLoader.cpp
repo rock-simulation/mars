@@ -408,7 +408,7 @@ namespace mars {
             it!=svg_entities.end(); ++it) {
           map = *it;
           map.append(ConfigMap::fromYamlFile((std::string)map["file"], true)); //FIXME: path?
-          fprintf(stderr, "Loading config for svg entity: %s", ((std::string)map["file"]).c_str());
+          fprintf(stderr, "Loading config for svg entity: %s\n", ((std::string)map["file"]).c_str());
           entitylist.push_back(map);
         }
       }

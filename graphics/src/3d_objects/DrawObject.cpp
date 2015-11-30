@@ -155,7 +155,9 @@ namespace mars {
       else {
         stateGroup_ = new osg::Group;
       }
-      stateGroup_->addChild(posTransform_.get());
+      if(!sharedStateGroup) {
+        stateGroup_->addChild(posTransform_.get());
+      }
 
       std::list< osg::ref_ptr< osg::Geode > > geodes = createGeometry();
       for(std::list< osg::ref_ptr< osg::Geode > >::iterator it = geodes.begin();
@@ -241,7 +243,7 @@ namespace mars {
       //mGroup->setStateSet(mState);
       //scaleTransform_->addChild(mGroup);
       //scaleTransform_->removeChild(group_.get());
-
+      if(sharedStateGroup) return;
       //return;
       useFog = _useFog;
       if(useFog) useFogUniform->set(1);
@@ -266,7 +268,6 @@ namespace mars {
       if (!mStruct.exists) return;
       setNodeMask(mStruct.cullMask);
 
-      if(sharedStateGroup) return;
       osg::StateSet *state = stateGroup_->getOrCreateStateSet();
 
       // handle transparency
@@ -310,6 +311,7 @@ namespace mars {
     }
 
     void DrawObject::setBlending(bool mode) {
+      if(sharedStateGroup) return;
       if(blendEquation_ && !mode) {
         osg::StateSet *state = stateGroup_->getOrCreateStateSet();
         state->setAttributeAndModes(blendEquation_.get(),
@@ -450,14 +452,20 @@ namespace mars {
     }
 
     void DrawObject::show() {
-      if(!sharedStateGroup) {
-        hide();
+      hide();
+      if(sharedStateGroup) {
+        stateGroup_->addChild(posTransform_.get());
+      }
+      else {
         mGroup_->addChild(stateGroup_.get());
       }
     }
 
     void DrawObject::hide() {
-      if(!sharedStateGroup) {
+      if(sharedStateGroup) {
+        stateGroup_->removeChild(posTransform_.get());
+      }
+      else {
         mGroup_->removeChild(stateGroup_.get());
       }
     }
@@ -485,12 +493,14 @@ namespace mars {
     }
 
     void DrawObject::setUseFog(bool val) {
+      if(sharedStateGroup) return;
       useFog = val;
       if(val) useFogUniform->set(1);
       else useFogUniform->set(0);
     }
 
     void DrawObject::setUseNoise(bool val) {
+      if(sharedStateGroup) return;
       useNoise = val;
       if(sharedStateGroup) return;
       if(val) useNoiseUniform->set(1);
@@ -498,6 +508,7 @@ namespace mars {
     }
 
     void DrawObject::setDrawLineLaser(bool val) {
+      if(sharedStateGroup) return;
       drawLineLaser = val;
       if(sharedStateGroup) return;
       if(val) drawLineLaserUniform->set(1);
