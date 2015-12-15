@@ -66,7 +66,6 @@ namespace mars {
       //NEW_MATERIAL_STRUCT(mStruct);
       MaterialData mStruct;
       mStruct.diffuseFront = Color( 0.0, 1.0, 0.0, 1.0 );
-      mStruct.diffuseBack = Color( 0.0, 1.0, 0.0, 1.0 );
       return new OSGMaterialStruct(mStruct);
     }
 
@@ -403,7 +402,7 @@ namespace mars {
       if(selectable_) {
         osg::PolygonMode *polyModeObj;
 
-        osg::StateSet *state = stateGroup_->getOrCreateStateSet();
+        osg::StateSet *state = group_->getOrCreateStateSet();
 
         polyModeObj = dynamic_cast<osg::PolygonMode*>
           (state->getAttribute(osg::StateAttribute::POLYGONMODE));
@@ -416,19 +415,22 @@ namespace mars {
         if(val) {
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
           //state->setAttributeAndModes(material_.get(), osg::StateAttribute::OFF);
+
           state->setAttributeAndModes(selectionMaterial.get(),
                                       osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
           state->setMode(GL_LIGHTING,
                          osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
           state->setMode(GL_FOG, osg::StateAttribute::OFF);
+
         }
         else {
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
-          state->setAttributeAndModes(selectionMaterial.get(), osg::StateAttribute::OFF);
+
+          state->removeAttribute(selectionMaterial.get());
           //state->setAttributeAndModes(material_.get(), osg::StateAttribute::ON);
-          state->setMode(GL_LIGHTING,
-                         osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-          state->setMode(GL_FOG, osg::StateAttribute::ON);
+          state->removeMode(GL_LIGHTING);
+          state->removeMode(GL_FOG);
+
         }
       }
     }
