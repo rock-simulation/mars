@@ -155,9 +155,11 @@ namespace mars {
           return INVALID_ID;
         }
         if(!control->loadCenter->loadMesh) {
-          // try to load mars_graphics
-          libManager->loadLibrary("mars_graphics", NULL, false, true);
           GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+          if(!g) {
+            libManager->loadLibrary("mars_graphics", NULL, false, true);
+            g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+          }
           if(g) {
             control->loadCenter->loadMesh = g->getLoadMeshInterface();
           }
@@ -174,7 +176,11 @@ namespace mars {
             return INVALID_ID;
           }
           if(!control->loadCenter->loadHeightmap) {
-            GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics", true);
+            GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            if(!g) {
+              libManager->loadLibrary("mars_graphics", NULL, false, true);
+              g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            }
             if(g) {
               control->loadCenter->loadHeightmap = g->getLoadHeightmapInterface();
             }
