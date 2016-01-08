@@ -107,7 +107,7 @@ void plight(vec4 base, vec3 n, out vec4 outcol) {
 
   if(useFog == 1) {
     // FIXME: eyevec maybe in tbn space !
-    float fog = clamp(gl_Fog.scale*(gl_Fog.end + eyeVec.z), 0.0, 1.0);
-    outcol = mix(gl_Fog.color, outcol, fog);
+    float fog = gl_Fog.density*clamp(gl_Fog.scale*(length(eyeVec)-gl_Fog.start) , 0.0, 1.0);
+    outcol = mix(gl_Fog.color, outcol, 1-fog);
   }
 }
