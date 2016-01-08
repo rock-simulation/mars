@@ -20,8 +20,9 @@
 
 #include "DataWidget.h"
 
-#include <QVBoxLayout>
+#include <mars/utils/misc.h>
 
+#include <QVBoxLayout>
 #include <cassert>
 
 namespace mars {
@@ -55,6 +56,14 @@ namespace mars {
 
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
+      std::vector<std::string> pattern;
+      setConfigMap(name, map, pattern);
+    }
+
+    void DataWidget::setConfigMap(const std::string &name,
+                                  const ConfigMap &map,
+                                  const std::vector<std::string> &pattern) {
+      editPattern = pattern;
       ignore_change = 1;
       clearGUI();
       if(&config != &map) {
@@ -107,6 +116,16 @@ namespace mars {
       attr["decimals"] = 7;
       ConfigAtom::ItemType type = v.getType();
       if(propMap.find(name) == propMap.end()) {
+        bool editable = true;
+        if(editPattern.size() > 0) {
+          editable = false;
+          for(size_t i=0; i<editPattern.size(); ++i) {
+            if(utils::matchPattern(editPattern[i], name)) {
+              editable = true;
+              break;
+            }
+          }
+        }
         if(type == ConfigAtom::UNDEFINED_TYPE) {
           guiElem = pDialog->addGenericProperty(name,
                                                 QVariant::String,
@@ -149,8 +168,10 @@ namespace mars {
                                                 v.getBool(),
                                                 &attr);
         }
+        guiElem->setEnabled(editable);
         dataMap[guiElem] = &v;
         propMap[name] = guiElem;
+        nameMap[guiElem] = name;
       }
     }
 
@@ -238,6 +259,7 @@ namespace mars {
         pDialog->removeGenericProperty(it2->first);
       }
       dataMap.clear();
+      nameMap.clear();
       propMap.clear();
       addMap.clear();
       addProperty = 0;
@@ -281,6 +303,7 @@ namespace mars {
             it->second->setBool(value.toBool());
           }
         }
+        emit valueChanged(nameMap[(QtVariantProperty*)property], it->second->toString());
       }
       {
         map<QtVariantProperty*, ConfigMap*>::iterator it;

@@ -30,6 +30,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
         cfg_manager
         main_gui
         configmaps
+        mars_utils
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
