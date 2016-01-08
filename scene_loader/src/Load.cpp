@@ -490,7 +490,12 @@ namespace mars {
 #endif
           }
           else {
-            (*config)[tagName] = value;
+            if(config->hasKey(tagName)) {
+              (*config)[tagName] += value;
+            }
+            else {
+              (*config)[tagName] = value;
+            }
 #ifdef DEBUG_PARSE
             LOG_DEBUG("element [%s : %s]", tagName.c_str(), value.c_str());
 #endif
