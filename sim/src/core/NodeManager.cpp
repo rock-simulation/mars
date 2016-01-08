@@ -41,6 +41,7 @@
 
 #include <mars/interfaces/utils.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/misc.h>
 
 #include <stdexcept>
 
@@ -1652,6 +1653,24 @@ namespace mars {
         masssum+=it->second->getMass();
       }
       fprintf(stderr, "Sum of masses of imported model: %f\n", masssum);
+    }
+
+    void NodeManager::edit(NodeId id, const std::string &key,
+                           const std::string &value) {
+      NodeData nd = getFullNode(id);
+      if(utils::matchPattern("*/position/*", key)) {
+          double v = atof(value.c_str());
+          if(key.back() == 'x') {
+            nd.pos.x() = v;
+          }
+          else if(key.back() == 'y') {
+            nd.pos.y() = v;
+          }
+          else if(key.back() == 'z') {
+            nd.pos.z() = v;
+          }
+          control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
+      }
     }
 
   } // end of namespace sim

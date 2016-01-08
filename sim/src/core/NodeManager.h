@@ -156,6 +156,8 @@ namespace mars {
       virtual void positionNode(interfaces::NodeId id, utils::Vector pos,
                                 unsigned long excludeJointId);
       virtual unsigned long getMaxGroupID() { return maxGroupID; }
+      virtual void edit(interfaces::NodeId id, const std::string &key,
+                        const std::string &value);
 
     private:
       interfaces::NodeId next_node_id;
