@@ -508,6 +508,11 @@ namespace mars {
           Vector scale;
           if(sNode.filename == "PRIMITIVE") {
             scale = nodeS->ext;
+            if(sNode.physicMode == NODE_TYPE_SPHERE) {
+              scale.x() *= 2;
+              scale.y() = scale.z() = scale.x();
+            }
+            // todo: set scale for cylinder and capsule
           } else {
             scale = sNode.visual_size-sNode.ext;
             scale += nodeS->ext;
