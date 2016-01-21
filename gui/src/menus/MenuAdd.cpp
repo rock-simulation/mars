@@ -50,7 +50,7 @@ namespace mars {
                        main_gui::GuiInterface *gui, std::string resPath,
                        lib_manager::LibManager *theManager)
       : libManager(theManager), mainGui(gui), control(c) {
-  
+
       std::string tmp1;
 
       tmp1 = resPath + "/images";

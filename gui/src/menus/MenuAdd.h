@@ -68,14 +68,14 @@ namespace mars {
 
       /**
        * \brief Called whenever a menu item is selected.
-       * \param action The action that is passed to the GuiInterface 
+       * \param action The action that is passed to the GuiInterface
        * via addGenericMenuAction function.
-       * \param checked Indicates if the menu/menu item is checked or not. 
+       * \param checked Indicates if the menu/menu item is checked or not.
        */
       virtual void menuAction(int action, bool checked = false);
 
     private:
- 
+
       lib_manager::LibManager *libManager;
       main_gui::GuiInterface *mainGui;
       interfaces::ControlCenter *control;
