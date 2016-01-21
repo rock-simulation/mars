@@ -102,7 +102,8 @@ namespace mars {
       sync_time = 40;
       sync_count = 0;
       load_option = OPEN_INITIAL;
-      reloadGraphics = reloadSim = false;
+      reloadGraphics = true;
+      reloadSim = false;
       arg_run    = 0;
       arg_grid   = 0;
       arg_ortho  = 0;
