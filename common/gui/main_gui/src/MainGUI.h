@@ -55,6 +55,7 @@ namespace mars {
      * \brief Holds the callback properties of a menu item.
      */
     struct genericMenu {
+      std::string path;
       QAction *genericAction;
       MenuInterface *menu;
       int action;
@@ -89,6 +90,8 @@ namespace mars {
                                         MenuInterface *menu, int qtKey=0,
                                         const std::string &icon = "",
                                         bool toolbar = 0, int checkable=0);
+
+      virtual void setMenuActionSelected(const std::string &path, bool checked);
 
       /**
        * \brief Sets an image as a central widget in the main window.
@@ -186,6 +189,10 @@ namespace mars {
       bool allow_toolbar;
 
       // Hold the created menus and their properties
+      /* todo: this only works well if the menu entries are unique,
+               also between different submenus!
+               Also using a map from name to menu might be better.
+      */
       std::vector<menuStruct> v_qmenu;
       std::vector<genericMenu> genericMenus;
 

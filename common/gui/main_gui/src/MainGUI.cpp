@@ -174,9 +174,11 @@ namespace mars {
         for(; i < menuPath.size(); i++) {
           //if last entry
           if(i == menuPath.size()-1) {
-
             if(checkable < 0) { // this is only a separator
               csMenu = qmenu->addSeparator();
+              return;
+            }
+            if(menuPath[i].empty()) {
               return;
             }
 
@@ -226,8 +228,9 @@ namespace mars {
               }
             }
             if(!menu_exists) {
-              qmenu = new QMenu(QString::fromStdString(menuPath[i]));
-              menuBar->insertMenu(helpMenu->menuAction(), qmenu);
+              QMenu *qmenu2 = new QMenu(QString::fromStdString(menuPath[i]));
+              qmenu->addMenu(qmenu2);
+              qmenu = qmenu2;
               new_menu.menu = qmenu;
               new_menu.label = menuPath[i];
               if (toolbar && allow_toolbar) {
@@ -262,6 +265,7 @@ namespace mars {
         }
       }
       g_menu.genericAction = csMenu;
+      g_menu.path = path;
       genericMenus.push_back(g_menu);
     }
 
@@ -303,6 +307,16 @@ namespace mars {
       QMessageBox::aboutQt(mainWindow, "About Qt");
     }
 
+    void MainGUI::setMenuActionSelected(const std::string &path, bool checked) {
+      for(size_t i=0; i<genericMenus.size(); ++i) {
+        if(genericMenus[i].path == path) {
+          if(genericMenus[i].genericAction->isCheckable()) {
+            genericMenus[i].genericAction->setChecked(checked);
+          }
+          break;
+        }
+      }
+    }
 
   } // end namespace main_gui
 } // end namespace mars
