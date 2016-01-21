@@ -37,7 +37,7 @@ namespace mars {
                                  main_gui::GuiInterface *gui) :
       control(c), mainGui(gui) {
   
-      mainGui->addGenericMenuAction("../Windows/CaptureWindow", 1,
+      mainGui->addGenericMenuAction("../File/Export/Movie", 1,
                                     (main_gui::MenuInterface*)this, 0);
       myWidget = NULL;
       init = false;

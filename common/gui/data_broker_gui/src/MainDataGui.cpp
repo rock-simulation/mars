@@ -67,12 +67,12 @@ namespace mars {
 
       std::string path2 = path;
       path2.append("/mars/data_broker_gui/resources/images/data_broker_symbol.png");
-      gui->addGenericMenuAction("../Windows/GuiDataBroker", 1, this, 0,
+      gui->addGenericMenuAction("../Data/DataBroker", 1, this, 0,
                                 path2, true);
 
       path2 = path;
       path2.append("/mars/data_broker_gui/resources/images/data_broker_connection_symbol.png");
-      gui->addGenericMenuAction("../Windows/DataBrokerConnections", 2, this, 0,
+      gui->addGenericMenuAction("../Data/DataBrokerConnections", 2, this, 0,
                                 path2, true);
 
       dataWidget = NULL;//new DataWidget(dataBroker);

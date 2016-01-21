@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,27 +19,34 @@
  */
 
 /**
- * \file MenuWindow.cpp
- * \author Vladimir Komsiyski
- * \brief MenuWindow creates the menus and menu items in the Window menu of the simulation
- * and manages the window dialogs.
+ * \file MenuAdd.h
+ * \author Malte Langosz
+ * \brief MenuFile creates the menus and menu items in the Add menu of the simulation.
  */
 
-#ifndef MENUWINDOW_H
-#define MENUWINDOW_H
+#ifndef MENUADD_H
+#define MENUADD_H
 
 #ifdef _PRINT_HEADER_
-#warning "MenuWindow.h"
+#warning "MenuAdd.h"
 #endif
 
 #include "MainGUIDefs.h"
-#include "BlenderExportGUI.h"
-#include "ControllerConfigGUI.h"
-#include <mars/main_gui/MenuInterface.h>
 
-#include <sstream>
+#include <mars/main_gui/MenuInterface.h>
+#include <configmaps/ConfigData.h>
+
+#include <string>
+
+namespace lib_manager {
+  class LibManager;
+}
 
 namespace mars {
+
+  namespace interfaces {
+    class ControlCenter;
+  }
 
   namespace main_gui {
     class GuiInterface;
@@ -48,18 +55,16 @@ namespace mars {
   namespace gui {
 
     /**
-     * \brief MenuWindow creates the menus and menu items in the Window menu of the simulation.
+     * \brief MenuAdd creates the menus and menu items in the File menu of the simulation.
      */
-    class MenuWindow :  public QObject, public main_gui::MenuInterface,
-                        public cfg_manager::CFGClient {
-
-      Q_OBJECT
+    class MenuAdd :  public main_gui::MenuInterface {
 
     public:
 
-      /** \brief The constructor add the actions to the Window menu */
-      MenuWindow(interfaces::ControlCenter *c, main_gui::GuiInterface *gui);
-      ~MenuWindow();
+      /** \brief The constructor adds the actions to the File menu */
+      MenuAdd(interfaces::ControlCenter *c, main_gui::GuiInterface *gui,
+               std::string resPath, lib_manager::LibManager *theManager);
+      ~MenuAdd();
 
       /**
        * \brief Called whenever a menu item is selected.
@@ -69,25 +74,16 @@ namespace mars {
        */
       virtual void menuAction(int action, bool checked = false);
 
-      // CFGClient methods
-      virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
-
     private:
-      void menu_addWindow();
-      void menu_dock(bool checked);
-      void menu_blender();
-      void menu_controller_config();
-
-      interfaces::ControlCenter *control;
+ 
+      lib_manager::LibManager *libManager;
       main_gui::GuiInterface *mainGui;
+      interfaces::ControlCenter *control;
+      configmaps::ConfigMap material;
 
-      BlenderExportGUI *blender;
-      ControllerConfigGUI *cc;
-      cfg_manager::cfgPropertyStruct cfgVisRep;
-      bool updateProp;
-
-    private slots:
-      void closeWidget(void* widget);
+      void menu_addBox();
+      void menu_addSphere();
+      void menu_addPlane();
 
     };
 

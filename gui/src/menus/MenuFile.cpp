@@ -45,33 +45,35 @@ namespace mars {
                        main_gui::GuiInterface *gui, std::string resPath,
                        lib_manager::LibManager *theManager)
       : libManager(theManager), mainGui(gui), control(c) {
-  
+
       std::string tmp1;
 
       tmp1 = resPath + "/images";
-      tmp1.append("/new_scene.png");
-      mainGui->addGenericMenuAction("../File/New Scene", GUI_ACTION_NEW_SCENE,
+      tmp1.append("/open_scene.png");
+      mainGui->addGenericMenuAction("../File/Open", GUI_ACTION_OPEN_SCENE,
                                     (main_gui::MenuInterface*)this, 0, tmp1, true);
 
       tmp1 = resPath + "/images";
-      tmp1.append("/open_scene.png");
-      mainGui->addGenericMenuAction("../File/Open Scene", GUI_ACTION_OPEN_SCENE,
+      tmp1.append("/new_scene.png");
+      mainGui->addGenericMenuAction("../File/Clear Simulation", GUI_ACTION_NEW_SCENE,
+                                    (main_gui::MenuInterface*)this, 0, tmp1, true);
+
+
+      tmp1 = resPath + "/images";
+      tmp1.append("/reset.png");
+      mainGui->addGenericMenuAction("../File/Reset Simulation", GUI_ACTION_RESET_SCENE,
                                     (main_gui::MenuInterface*)this, 0, tmp1, true);
 
       tmp1 = resPath + "/images";
       tmp1.append("/save_scene.png");
-      mainGui->addGenericMenuAction("../File/Save Scene", GUI_ACTION_SAVE_SCENE,
+      mainGui->addGenericMenuAction("../File/Export/MARS Scene", GUI_ACTION_SAVE_SCENE,
                                     (main_gui::MenuInterface*)this, 0, tmp1, true);
 
-      tmp1 = resPath + "/images";
-      tmp1.append("/reset.png");
-      mainGui->addGenericMenuAction("../File/Reset Scene", GUI_ACTION_RESET_SCENE,
-                                    (main_gui::MenuInterface*)this, 0, tmp1, true);
 
       // add separator
       mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
 
-      mainGui->addGenericMenuAction("../File/Export Scene", GUI_ACTION_EXPORT_SCENE, 
+      mainGui->addGenericMenuAction("../File/Export/OSG-OBJ Model", GUI_ACTION_EXPORT_SCENE,
                                     (main_gui::MenuInterface*)this, 0);
 
     }
@@ -135,7 +137,7 @@ namespace mars {
               ";;All files (*.*)";
       QString fileName = QFileDialog::getOpenFileName(0, "Open Scene", ".", fileTypes);
 
-      if (fileName.isEmpty()) 
+      if (fileName.isEmpty())
         return;
       bool wasrunning = false;
       if (control->sim->isSimRunning()) {
@@ -156,7 +158,7 @@ namespace mars {
         control->sim->startStopTrigger();
         wasRunning = true;
       }
-  
+
       QString fileName = QFileDialog::getSaveFileName(0, "Save File",
                                                       "../",
                                                       "MARS Scene Files (*.scn)");
@@ -168,7 +170,7 @@ namespace mars {
           control->sim->startStopTrigger();
         }
       }
-  
+
     }
 
   } // end of namespace gui

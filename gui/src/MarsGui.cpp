@@ -29,6 +29,7 @@
 #include <mars/main_gui/MyQMainWindow.h>
 
 #include "MenuFile.h"
+#include "MenuAdd.h"
 #include "MenuSimulation.h"
 #include "MenuWindow.h"
 
@@ -239,6 +240,15 @@ namespace mars {
 
           }
 
+          mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Control/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../View/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Data/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Tools/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Plugins/", 0, NULL, 0, "", 0, 0);
+          mainGui->addGenericMenuAction("../Options/", 0, NULL, 0, "", 0, 0);
+
           /*
           if (marsStyle.bValue) {
             qApp->setStyle(new MarsStyle(resourcesPath.sValue+"/styles"));
@@ -247,8 +257,9 @@ namespace mars {
         }
 
         new MenuFile(control, gui, resourcesPath.sValue, libManager);
-        new MenuWindow(control, gui);
+        new MenuAdd(control, gui, resourcesPath.sValue, libManager);
         new MenuSimulation(control, gui, resourcesPath.sValue);
+        new MenuWindow(control, gui);
     
         //    cfgUpdateProperty(cfgW_left);
     

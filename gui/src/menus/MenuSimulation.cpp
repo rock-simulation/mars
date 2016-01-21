@@ -46,7 +46,7 @@ namespace mars {
 
       daf = NULL; // dialog add force
       dat = NULL; // dialog apply torque
-      dim = NULL; // dialog import mesh 
+      dim = NULL; // dialog import mesh
 
       dd = NULL; // distance
       nst = NULL; // selection
@@ -59,90 +59,96 @@ namespace mars {
 
 
       std::string tmp1;
-  
+
       tmp1 = resPath + "/images";
       tmp1.append("/play_button.png");
-      mainGui->addGenericMenuAction("../Controls/Start", GUI_ACTION_SIM_START,
+      mainGui->addGenericMenuAction("../Control/Start", GUI_ACTION_SIM_START,
                                     (main_gui::MenuInterface*)this,
                                     'R', tmp1, true);
 
       tmp1 = resPath + "/images";
       tmp1.append("/pause_button.png");
-      mainGui->addGenericMenuAction("../Controls/Pause", GUI_ACTION_SIM_PAUSE,
+      mainGui->addGenericMenuAction("../Control/Pause", GUI_ACTION_SIM_PAUSE,
                                     (main_gui::MenuInterface*)this,
                                     'P', tmp1, true);
 
       tmp1 = resPath + "/images";
       tmp1.append("/step_button.png");
-      mainGui->addGenericMenuAction("../Controls/Single Step",
+      mainGui->addGenericMenuAction("../Control/Single Step",
                                     GUI_ACTION_SIM_STEP,
                                     (main_gui::MenuInterface*)this,
                                     'T', tmp1, true);
 
       // add separator
-      mainGui->addGenericMenuAction("../Controls/", 0, NULL, 0, "", 0, -1);  
-      mainGui->addGenericMenuAction("../Controls/Joystick", 
-                                    GUI_ACTION_JOYSTICK,
-                                    (main_gui::MenuInterface*)this, 0);
-      mainGui->addGenericMenuAction("../Controls/Object Distance",
-                                    GUI_ACTION_DISTANCE,
-                                    (main_gui::MenuInterface*)this, 0);
-      mainGui->addGenericMenuAction("../Controls/Node Selection",
-                                    GUI_ACTION_SELECTION,
-                                    (main_gui::MenuInterface*)this, 0);
-      mainGui->addGenericMenuAction("../Controls/Motor Control",
+      mainGui->addGenericMenuAction("../Control/", 0, NULL, 0, "", 0, -1);
+      mainGui->addGenericMenuAction("../Control/Motor Control",
                                     GUI_ACTION_MOTOR_CONTROL,
                                     (main_gui::MenuInterface*)this, 0);
+      mainGui->addGenericMenuAction("../Control/Joystick",
+                                    GUI_ACTION_JOYSTICK,
+                                    (main_gui::MenuInterface*)this, 0);
+      mainGui->addGenericMenuAction("../Control/", 0, NULL, 0, "", 0, -1);
+      /*
+      mainGui->addGenericMenuAction("../Tools/Node Selection",
+                                    GUI_ACTION_SELECTION,
+                                    (main_gui::MenuInterface*)this, 0);
+      */
 
 
-      mainGui->addGenericMenuAction("../Simulation/Nodes", GUI_ACTION_NODE_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+N")[0]);
-      mainGui->addGenericMenuAction("../Simulation/Joints", GUI_ACTION_JOINT_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+J")[0]);
-      mainGui->addGenericMenuAction("../Simulation/Lights", GUI_ACTION_LIGHT_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+L")[0]);
-      mainGui->addGenericMenuAction("../Simulation/Motors", GUI_ACTION_MOTOR_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+M")[0]);
-      mainGui->addGenericMenuAction("../Simulation/Sensors", GUI_ACTION_SENSOR_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+E")[0]);
-      mainGui->addGenericMenuAction("../Simulation/Controllers",
-                                    GUI_ACTION_CONTROLLER_TREE,
-                                    (main_gui::MenuInterface*)this, 
-                                    QKeySequence("CTRL+O")[0]);
-
-      mainGui->addGenericMenuAction("../Simulation/", 0, NULL, 0, "", 0, -1); // separator
-      mainGui->addGenericMenuAction("../Simulation/Apply Force",
+      //mainGui->addGenericMenuAction("../Simulation/", 0, NULL, 0, "", 0, -1); // separator
+      mainGui->addGenericMenuAction("../Control/Apply Force",
                                     GUI_ACTION_APPLY_FORCE,
                                     (main_gui::MenuInterface*)this, 0);
-      mainGui->addGenericMenuAction("../Simulation/Apply Torque",
+      mainGui->addGenericMenuAction("../Control/Apply Torque",
                                     GUI_ACTION_APPLY_TORQUE,
                                     (main_gui::MenuInterface*)this, 0);
-      mainGui->addGenericMenuAction("../Simulation/Rescale Environment",
+      mainGui->addGenericMenuAction("../Tools/Rescale Environment",
                                     GUI_ACTION_RESCALE_ENV,
                                     (main_gui::MenuInterface*) this, 0);
 
-      mainGui->addGenericMenuAction("../Simulation/", 0, NULL, 0, "", 0, -1); // separator
-      mainGui->addGenericMenuAction("../Simulation/Import Mesh",
+      tmp1 = resPath + "/images";
+      tmp1.append("/mesh.png");
+      mainGui->addGenericMenuAction("../Edit/Mesh",
                                     GUI_ACTION_IMPORT_MESH,
-                                    (main_gui::MenuInterface*)this, 0);
+                                    (main_gui::MenuInterface*)this, 0,
+                                    tmp1, true);
+      //mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1); // separator
 
 
-      mainGui->addGenericMenuAction("../Simulation/", 0, NULL, 0, "", 0, -1); // separator
-      mainGui->addGenericMenuAction("../Simulation/Graphics Options",
+      mainGui->addGenericMenuAction("../Deprecated/Graphics Options",
                                     GUI_ACTION_EDIT_GRAPHICS,
                                     (main_gui::MenuInterface*) this, 0);
-  
+
       if (control->cfg) {
         cfg_manager::cfgPropertyStruct r_path;
         r_path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
                                                    std::string("."));
         resourcesPath = r_path.sValue;
       }
+
+      mainGui->addGenericMenuAction("../Deprecated/Nodes", GUI_ACTION_NODE_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+N")[0]);
+      mainGui->addGenericMenuAction("../Deprecated/Joints", GUI_ACTION_JOINT_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+J")[0]);
+      mainGui->addGenericMenuAction("../Deprecated/Lights", GUI_ACTION_LIGHT_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+L")[0]);
+      mainGui->addGenericMenuAction("../Deprecated/Motors", GUI_ACTION_MOTOR_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+M")[0]);
+      mainGui->addGenericMenuAction("../Deprecated/Sensors", GUI_ACTION_SENSOR_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+E")[0]);
+      mainGui->addGenericMenuAction("../Deprecated/Controllers",
+                                    GUI_ACTION_CONTROLLER_TREE,
+                                    (main_gui::MenuInterface*)this,
+                                    QKeySequence("CTRL+O")[0]);
+
+      mainGui->addGenericMenuAction("../Tools/Object Distance",
+                                    GUI_ACTION_DISTANCE,
+                                    (main_gui::MenuInterface*)this, 0);
       resourcesPath.append("/images");
     }
 
@@ -278,11 +284,11 @@ namespace mars {
     void MenuSimulation::menu_graphicsOptions() {
       //if dialog already exists close it and delete its memory
       if (dgo != NULL) {
-        if(dgo->pDialog) 
+        if(dgo->pDialog)
           dgo->pDialog->close();
         delete dgo;
         dgo = NULL;
-      }  
+      }
       //create new dialog
       if (control->graphics) {
         dgo = new Dialog_Graphics_Options(control, mainGui);
@@ -300,7 +306,7 @@ namespace mars {
     void MenuSimulation::menu_rescaleEnvironment(){
       //if dialog already exists close it and delete its memory
       if (dre != NULL) {
-        if(dre->pDialog) 
+        if(dre->pDialog)
           dre->pDialog->close();
         delete dre;
         dre = NULL;
@@ -383,7 +389,7 @@ namespace mars {
     void MenuSimulation::menu_applyForce() {
       //close and delete existing dialog
       if (daf != NULL) {
-        if(daf->pDialog) 
+        if(daf->pDialog)
           daf->pDialog->close();
         delete daf;
         daf = NULL;
@@ -403,7 +409,7 @@ namespace mars {
     void MenuSimulation::menu_applyTorque() {
       //close and delete existing dialog
       if (dat != NULL) {
-        if(dat->pDialog) 
+        if(dat->pDialog)
           dat->pDialog->close();
         delete dat;
         dat = NULL;
@@ -422,7 +428,7 @@ namespace mars {
     void MenuSimulation::menu_importMesh() {
       //close and delete existing dialog
       if (dim != NULL) {
-        if(dim->pDialog) 
+        if(dim->pDialog)
           dim->pDialog->close();
         delete dim;
         dim = NULL;

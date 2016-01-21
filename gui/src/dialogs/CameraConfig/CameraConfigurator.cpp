@@ -36,7 +36,7 @@ namespace mars {
                                            main_gui::GuiInterface *gui) : 
       control(c), mainGui(gui) {
   
-      mainGui->addGenericMenuAction("../Windows/Camera Configuration", 1,
+      mainGui->addGenericMenuAction("../View/Configure 3DView(s)", 1,
                                     (main_gui::MenuInterface*)this, 0);
       myWidget = NULL;
       init = false;

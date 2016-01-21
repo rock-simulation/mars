@@ -65,7 +65,7 @@ namespace mars {
         return;
 
       path.append("/mars/cfg_manager_gui/resources/images/preferences.png");
-      gui->addGenericMenuAction("../Windows/GuiCfg", 1,
+      gui->addGenericMenuAction("../Options/Configuration", 1,
                                 dynamic_cast<main_gui::MenuInterface*>(this),0,
                                 path, true);
 

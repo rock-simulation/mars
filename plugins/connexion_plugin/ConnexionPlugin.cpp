@@ -72,7 +72,7 @@ namespace mars {
         // add options to the menu
         if(gui) {
           std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
-          gui->addGenericMenuAction("../Windows/Parameter", 1,
+          gui->addGenericMenuAction("../Plugins/Connexion", 1,
                                     this, 0,
                                     tmp, true);    
         }

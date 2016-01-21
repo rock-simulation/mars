@@ -123,6 +123,7 @@ set(HEADERS
         src/dialogs/CaptureWindow/ImageProcess.h
         
         src/menus/MenuFile.h
+        src/menus/MenuAdd.h
         src/menus/MenuHelp.h
         src/menus/MenuSimulation.h
         src/menus/MenuWindow.h
@@ -227,6 +228,7 @@ set(TARGET_SRC
             src/dialogs/CaptureWindow/ImageProcess.cpp
 
             src/menus/MenuFile.cpp
+            src/menus/MenuAdd.cpp
             src/menus/MenuHelp.cpp
             src/menus/MenuWindow.cpp
             src/menus/MenuSimulation.cpp

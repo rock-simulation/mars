@@ -80,6 +80,10 @@ namespace mars {
                                         const std::string &icon = "", 
                                         bool toolbar = 0, int checkable = 0) = 0;
  
+      /**
+       * \brief Set the selection state of an menu action.
+       */
+      virtual void setMenuActionSelected(const std::string &path, bool checked) = 0;
 
       /** \brief Makes a widget dockable in the main window. 
        *  \param window A pointer to the widget being docked.
