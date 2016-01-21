@@ -1377,7 +1377,40 @@ namespace mars {
                                          const std::string &toGroupName,
                                          const std::string &toDataName,
                                          const std::string &toItemName) {
-      pushError("disconnectDataItems is not implemented, yet!");
+      std::map<std::pair<std::string, std::string>, DataElement*>::iterator elementIt;
+      std::list<DataItemConnection>::iterator jt;
+      // TODO: should we special case wildcards?
+      DataElement *element;
+
+      // from element handling
+      {
+        elementIt = elementsByName.find(std::make_pair(fromGroupName,
+                                                       fromDataName));
+        if(elementIt == elementsByName.end()) {
+          pushError("could not find from Element: %s, %s\n",
+                    fromGroupName.c_str(),
+                    fromDataName.c_str());
+          return;
+        }
+        element = elementIt->second;
+        for(jt=element->connections.begin();
+            jt!=element->connections.end(); ++jt) {
+          jt->toElement->bufferLock->lockForWrite();
+          if(jt->toDataItemIndex >= (int)jt->toElement->frontBuffer->size()) {
+            pushError("DataBroker::disconnectDataItems : connection index does not match!");
+          }
+          else {
+            if(jt->toElement->info.groupName == toGroupName &&
+               jt->toElement->info.dataName == toDataName &&
+               (*jt->toElement->frontBuffer)[jt->toDataItemIndex].getName() == toItemName) {
+              jt->toElement->bufferLock->unlock();
+              element->connections.erase(jt);
+              break;
+            }
+          }
+          jt->toElement->bufferLock->unlock();
+        }
+      }
     }
 
     void DataBroker::disconnectDataItems(const std::string &toGroupName,
