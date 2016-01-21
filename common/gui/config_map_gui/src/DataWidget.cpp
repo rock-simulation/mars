@@ -33,7 +33,7 @@ namespace mars {
 
 
     DataWidget::DataWidget(cfg_manager::CFGManagerInterface *cfg,
-                           QWidget *parent) :
+                           QWidget *parent, bool onlyCompactView) :
       main_gui::BaseWidget(parent, cfg, "ConfigMapWidget"),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
@@ -45,6 +45,10 @@ namespace mars {
       setLayout(vLayout);
 
       addProperty = 0;
+      if(onlyCompactView) {
+        pDialog->setViewButtonVisibility(false);
+        pDialog->setViewMode(main_gui::TreeViewMode);
+      }
       pDialog->setButtonBoxVisibility(true);
       pDialog->clearButtonBox();
       pDialog->addGenericButton("add key", this, SLOT(addKey()));
@@ -70,23 +74,44 @@ namespace mars {
         config = map;
         cname = name;
       }
+      std::string n = name;
+      for(size_t i=0; i<n.size(); ++i) {
+        if(n[i] == '/') {
+          n.insert(n.begin()+i, '/');
+          ++i;
+        }
+      }
       // config.toYamlFile("foo.yml");
-      addConfigMap(name, config);
+      std::string path = "../";
+      path += n;
+      addConfigMap(path, config);
       ignore_change = 0;
     }
 
     void DataWidget::addConfigMap(const std::string &name,
                                ConfigMap &map) {
       ConfigMap::iterator it = map.begin();
+      QtVariantProperty *tmp =
+        pDialog->addGenericProperty(name,
+                                    QtVariantPropertyManager::groupTypeId(),
+                                    0);
       for(;it!=map.end(); ++it) {
+        std::string n = it->first;
+        for(size_t i=0; i<n.size(); ++i) {
+          if(n[i] == '/') {
+            n.insert(n.begin()+i, '/');
+            ++i;
+          }
+        }
+
         if(it->second.isVector()) {
-          addConfigVector(name+"/"+it->first, it->second);
+          addConfigVector(name+"/"+n, it->second);
         }
         else if(it->second.isMap()) {
-          addConfigMap(name+"/"+it->first, it->second);
+          addConfigMap(name+"/"+n, it->second);
         }
         else if(it->second.isAtom()) {
-          addConfigAtom(name+"/"+it->first, it->second);
+          addConfigAtom(name+"/"+n, it->second);
         }
       }
       QtVariantProperty *guiElem;
@@ -94,6 +119,7 @@ namespace mars {
                                             QVariant::String,
                                             "");
       addMap[guiElem] = &map;
+      pDialog->expandTree(tmp);
     }
 
     void DataWidget::addConfigVector(const std::string &name,
@@ -186,16 +212,30 @@ namespace mars {
     void DataWidget::updateConfigMapI(const std::string &name,
                                       ConfigMap &map) {
       ConfigMap::const_iterator it = map.begin();
+      std::string n = name;
+      for(size_t i=0; i<n.size(); ++i) {
+        if(n[i] == '/') {
+          n.insert(n.begin()+i, '/');
+          ++i;
+        }
+      }
       for(;it!=map.end(); ++it) {
+        n = it->first;
+        for(size_t i=0; i<n.size(); ++i) {
+          if(n[i] == '/') {
+            n.insert(n.begin()+i, '/');
+            ++i;
+          }
+        }
 
         if(it->second.isAtom()) {
-          updateConfigAtomI(name + "/" + it->first, it->second);
+          updateConfigAtomI(name + "/" + n, it->second);
         }
         else if(it->second.isVector()) {
-          updateConfigVectorI(name + "/" + it->first, it->second);
+          updateConfigVectorI(name + "/" + n, it->second);
         }
         else if(it->second.isMap()) {
-          updateConfigMapI(name + "/" + it->first, it->second);
+          updateConfigMapI(name + "/" + n, it->second);
         }
       }
     }

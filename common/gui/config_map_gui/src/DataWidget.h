@@ -51,10 +51,11 @@ namespace mars {
     class DataWidget : public main_gui::BaseWidget,
                        public main_gui::PropertyCallback {
     
-                         Q_OBJECT;
+      Q_OBJECT;
       
     public:
-      DataWidget(mars::cfg_manager::CFGManagerInterface *cfg, QWidget *parent = 0);
+      DataWidget(mars::cfg_manager::CFGManagerInterface *cfg,
+                 QWidget *parent = 0, bool onlyCompactView = false);
       ~DataWidget();
     
       virtual void valueChanged(QtProperty *property, const QVariant &value);
@@ -68,10 +69,14 @@ namespace mars {
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
-      void updateConfigMap(const std::string &name, const configmaps::ConfigMap &map);
-      void updateConfigMapI(const std::string &name, configmaps::ConfigMap &map);
-      void updateConfigAtomI(const std::string &name, configmaps::ConfigAtom &map);
-      void updateConfigVectorI(const std::string &name, configmaps::ConfigVector &map);
+      void updateConfigMap(const std::string &name,
+                           const configmaps::ConfigMap &map);
+      void updateConfigMapI(const std::string &name,
+                            configmaps::ConfigMap &map);
+      void updateConfigAtomI(const std::string &name,
+                             configmaps::ConfigAtom &map);
+      void updateConfigVectorI(const std::string &name,
+                               configmaps::ConfigVector &map);
       const configmaps::ConfigMap& getConfigMap();
       void clearGUI();
 
