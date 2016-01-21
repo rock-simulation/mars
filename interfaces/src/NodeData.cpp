@@ -217,9 +217,6 @@ namespace mars {
       if((it = config->find("visualsize")) != config->end()) {
         vectorFromConfigItem(it->second, &visual_size);
       }
-      else {
-        visual_size = ext;
-      }
 
       if((it = config->find("visualscale")) != config->end()) {
         vectorFromConfigItem(it->second, &visual_scale);
