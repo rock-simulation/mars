@@ -69,7 +69,7 @@
 
 namespace mars {
   namespace graphics {
-    
+
     class MarsMaterial {
     public:
       MarsMaterial(std::string resPath, int shadowTextureSize);
@@ -83,7 +83,7 @@ namespace mars {
       virtual void setBumpMap(const std::string &bumpMap);
       typedef std::map<mars::interfaces::ShaderType, std::string> foo;
       void updateShader(bool reload=false);
-
+      void edit(std::string key, std::string value);
       osg::StateSet* getStateSet() {
         return group_->getOrCreateStateSet();
       }
@@ -102,6 +102,7 @@ namespace mars {
       void setNoiseImage(osg::Image *i);
       void setShadowScale(float v);
       void setShadowSamples(int v);
+      inline const interfaces::MaterialData& getMaterialData() {return materialData;}
 
     protected:
       osg::ref_ptr<osg::Program> lastProgram;
@@ -128,6 +129,7 @@ namespace mars {
       double invShadowTextureSize;
       std::string name, resPath;
       bool exists;
+      interfaces::MaterialData materialData;
     }; // end of class DrawObject
 
   } // end of namespace graphics

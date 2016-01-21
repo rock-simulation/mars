@@ -302,6 +302,9 @@ namespace mars {
       osg::Group* getSharedStateGroup(unsigned long id);
       void setUseShadow(bool v);
       void setShadowSamples(int v);
+      virtual std::vector<interfaces::MaterialData> getMaterialList() const;
+      virtual void editMaterial(std::string materialName, std::string key,
+                                std::string value);
 
     private:
 

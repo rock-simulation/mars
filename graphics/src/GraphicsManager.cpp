@@ -954,6 +954,26 @@ namespace mars {
       }
     }
 
+    std::vector<interfaces::MaterialData> GraphicsManager::getMaterialList() const {
+      std::vector<interfaces::MaterialData> materialList;
+      std::map<std::string, MarsMaterial*>::const_iterator it;
+
+      for(it=materials.begin(); it!=materials.end(); ++it) {
+        materialList.push_back(it->second->getMaterialData());
+      }
+      return materialList;
+    }
+
+    void GraphicsManager::editMaterial(std::string materialName,
+                                       std::string key,
+                                       std::string value) {
+      std::map<std::string, MarsMaterial*>::iterator it;
+      it = materials.find(materialName);
+      if(it!=materials.end()) {
+        it->second->edit(key, value);
+      }
+    }
+
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setBits(bits);

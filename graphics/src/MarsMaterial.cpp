@@ -25,6 +25,7 @@
  *  Created by Langosz on 20.10.09.
  */
 
+#include <mars/utils/misc.h>
 #include "MarsMaterial.h"
 #include "gui_helper_functions.h"
 #include "../wrapper/OSGMaterialStruct.h"
@@ -93,6 +94,7 @@ namespace mars {
     // the material struct can also contain a static texture (texture file)
     void MarsMaterial::setMaterial(const MaterialData &mStruct) {
       //return;
+      materialData = mStruct;
       name = mStruct.name;
       getLight = mStruct.getLight;
       exists = mStruct.exists;
@@ -146,6 +148,18 @@ namespace mars {
         bumpNorFacUniform->set((float)mStruct.bumpNorFac);
       }
       updateShader(true);
+    }
+
+    void MarsMaterial::edit(std::string key, std::string value) {
+      if(utils::matchPattern("*/diffuseColor/*", key) ||
+         utils::matchPattern("*/diffuseFront/*", key)) {
+        double v = atof(value.c_str());
+        if(key.back() == 'a') materialData.diffuseFront.a = v;
+        else if(key.back() == 'r') materialData.diffuseFront.r = v;
+        else if(key.back() == 'g') materialData.diffuseFront.g = v;
+        else if(key.back() == 'b') materialData.diffuseFront.b = v;
+        setMaterial(materialData);
+      }
     }
 
     void MarsMaterial::setTexture(osg::Texture2D *texture) {

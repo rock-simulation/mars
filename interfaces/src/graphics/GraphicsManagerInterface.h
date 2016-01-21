@@ -223,7 +223,9 @@ namespace mars {
       virtual void removeOSGNode(void* node) = 0;
       virtual unsigned long addHUDOSGNode(void* node) = 0;
       virtual bool isInitialized() const = 0;
-
+      virtual std::vector<interfaces::MaterialData> getMaterialList() const = 0;
+      virtual void editMaterial(std::string materialName, std::string key,
+                                std::string value) = 0;
     }; // end of class GraphicsManagerInterface
 
   } // end of namespace interfaces
