@@ -145,6 +145,8 @@ add_plugin_if_available("connexion_plugin")
 add_plugin_if_available("data_broker_gui")
 add_plugin_if_available("cfg_manager_gui")
 add_plugin_if_available("lib_manager_gui")
+add_plugin_if_available("entity_view")
+add_plugin_if_available("SkyDomePlugin")
 
 if(NOT ROCK)
     add_plugin_if_available("log_console")
