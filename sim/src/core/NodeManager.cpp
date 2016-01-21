@@ -1670,17 +1670,30 @@ namespace mars {
                            const std::string &value) {
       NodeData nd = getFullNode(id);
       if(utils::matchPattern("*/position/*", key)) {
-          double v = atof(value.c_str());
-          if(key.back() == 'x') {
-            nd.pos.x() = v;
-          }
-          else if(key.back() == 'y') {
-            nd.pos.y() = v;
-          }
-          else if(key.back() == 'z') {
-            nd.pos.z() = v;
-          }
-          control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
+        double v = atof(value.c_str());
+        if(key.back() == 'x') {
+          nd.pos.x() = v;
+        }
+        else if(key.back() == 'y') {
+          nd.pos.y() = v;
+        }
+        else if(key.back() == 'z') {
+          nd.pos.z() = v;
+        }
+        control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
+      }
+      else if(utils::matchPattern("*/extend/*", key)) {
+        double v = atof(value.c_str());
+        if(key.back() == 'x') {
+          nd.ext.x() = v;
+        }
+        else if(key.back() == 'y') {
+          nd.ext.y() = v;
+        }
+        else if(key.back() == 'z') {
+          nd.ext.z() = v;
+        }
+        control->nodes->editNode(&nd, EDIT_NODE_SIZE);
       }
     }
 
