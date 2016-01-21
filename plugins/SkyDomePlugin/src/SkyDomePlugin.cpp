@@ -32,6 +32,7 @@
 #include <mars/data_broker/DataPackage.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/utils/misc.h>
 #include <osg/TextureCubeMap>
 #include <osg/PositionAttitudeTransform>
 #include <osg/Group>
@@ -45,19 +46,46 @@ namespace mars {
       using namespace mars::interfaces;
 
       SkyDomePlugin::SkyDomePlugin(lib_manager::LibManager *theManager)
-        : MarsPluginTemplate(theManager, "SkyDomePlugin") {
+        : MarsPluginTemplateGUI(theManager, "SkyDomePlugin") {
       }
-  
+
       void SkyDomePlugin::init() {
         if(!control->graphics) return;
         posTransform = new osg::PositionAttitudeTransform();
         posTransform->setPosition(osg::Vec3(0.0, 0.0, 0.0));
-
+        updateProp = true;
         scene = static_cast<osg::Group*>(control->graphics->getScene());
 
-        scene->addChild(posTransform);
+        resPath = ".";
+        if(control->cfg) {
+          cfgProp = control->cfg->getOrCreateProperty("Graphics",
+                                                      "resources_path",
+                                                      ".");
+          resPath = cfgProp.sValue;
+          cfgProp = control->cfg->getOrCreateProperty("Preferences",
+                                                      "SkyDomePath",
+                                                      "cubemap",
+                                                      this);
+          folder = cfgProp.sValue;
+          cfgEnableSD = control->cfg->getOrCreateProperty("Preferences",
+                                                          "SkyDomeEnable",
+                                                          false, this);
+        }
+        else {
+          cfgEnableSD.bValue = false;
+        }
 
+        if(cfgEnableSD.bValue) {
+          scene->addChild(posTransform);
+        }
+
+        if(pathExists(resPath+"/Textures/"+folder)) {
+          folder = resPath+"/Textures/"+folder;
+        }
+
+        // todo: handle wrong path
         osg::ref_ptr<osg::TextureCubeMap> _cubemap = loadCubeMapTextures();
+
         _skyDome = new SkyDome( 1.9f, 24, 24, _cubemap.get() );
         posTransform->addChild(_skyDome.get());
 
@@ -73,6 +101,9 @@ namespace mars {
 
         control->graphics->addGraphicsUpdateInterface(this);
         control->sim->switchPluginUpdateMode(0, this);
+        gui->addGenericMenuAction("../View/", 0, NULL, 0, "", 0, -1); // separator
+        gui->addGenericMenuAction("../View/SkyDome", 1, this, 0, "", 0,
+                                  1 + cfgEnableSD.bValue);
       }
 
       void SkyDomePlugin::reset() {
@@ -84,23 +115,14 @@ namespace mars {
 
       osg::ref_ptr<osg::TextureCubeMap> SkyDomePlugin::loadCubeMapTextures() {
         enum {POS_X, NEG_X, POS_Y, NEG_Y, POS_Z, NEG_Z};
-        std::string path = ".";
         std::string filenames[6];
+        filenames[POS_X] = folder + "/east.png";
+        filenames[NEG_X] = folder + "/west.png";
+        filenames[POS_Z] = folder + "/north.png";
+        filenames[NEG_Z] = folder + "/south.png";
+        filenames[POS_Y] = folder + "/down.png";
+        filenames[NEG_Y] = folder + "/up.png";
 
-        if(control->cfg) {
-          cfgProp = control->cfg->getOrCreateProperty("Graphics",
-                                                      "resources_path",
-                                                      ".");
-          path = cfgProp.sValue;
-        }
-
-        filenames[POS_X] = path + "/Textures/cubemap/east.png";
-        filenames[NEG_X] = path + "/Textures/cubemap/west.png";
-        filenames[POS_Z] = path + "/Textures/cubemap/north.png";
-        filenames[NEG_Z] = path + "/Textures/cubemap/south.png";
-        filenames[POS_Y] = path + "/Textures/cubemap/down.png";
-        filenames[NEG_Y] = path + "/Textures/cubemap/up.png";
-        
         osg::ref_ptr<osg::TextureCubeMap> cubeMap = new osg::TextureCubeMap;
         cubeMap->setInternalFormat(GL_RGBA);
 
@@ -136,7 +158,7 @@ namespace mars {
         cam->getViewportQuat(&tx, &ty, &tz, &rx, &ry, &rz, &rw);
         posTransform->setPosition(osg::Vec3(tx, ty, tz));
       }
-      
+
       void SkyDomePlugin::update(sReal time_ms) {
 
         // control->motors->setMotorValue(id, value);
@@ -147,9 +169,36 @@ namespace mars {
                                     int id) {
         // package.get("force1/x", force);
       }
-  
-      void SkyDomePlugin::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
 
+      void SkyDomePlugin::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
+        if(cfgEnableSD.paramId == _property.paramId) {
+          if(updateProp) {
+            cfgEnableSD.bValue = _property.bValue;
+            updateProp = false;
+            gui->setMenuActionSelected("../View/SkyDome", cfgEnableSD.bValue);
+            scene->removeChild(posTransform.get());
+            if(cfgEnableSD.bValue) {
+              scene->addChild(posTransform.get());
+            }
+            updateProp = true;
+          }
+        }
+        else if(cfgProp.paramId == _property.paramId) {
+          folder = cfgProp.sValue = _property.sValue;
+          if(pathExists(resPath + "/Textures/"+folder)) {
+            folder = resPath + "/Textures/"+folder;
+          }
+          if(pathExists(folder)) {
+            _skyDome->setCubeMap(loadCubeMapTextures().get());
+          }
+        }
+      }
+
+      void SkyDomePlugin::menuAction (int action, bool checked) {
+        if(updateProp) {
+          cfgEnableSD.bValue = checked;
+          control->cfg->setProperty(cfgEnableSD);
+        }
       }
 
     } // end of namespace SkyDomePlugin

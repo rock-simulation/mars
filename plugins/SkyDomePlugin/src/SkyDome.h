@@ -36,10 +36,13 @@ public:
 	void create( float radius, unsigned int latSteps, unsigned int longSteps, osg::TextureCubeMap* cubemap );
 	
 	inline void setCubeMap( osg::TextureCubeMap* cubemap ){
+    getOrCreateStateSet()->removeAttribute(cubemap_);
 		getOrCreateStateSet()->setTextureAttributeAndModes( 0, cubemap, osg::StateAttribute::ON );
+    cubemap_ = cubemap;
 	}
 
 private:
 	osg::ref_ptr<osg::Program> createShader(void);
+  osg::ref_ptr<osg::TextureCubeMap> cubemap_;
 
 };

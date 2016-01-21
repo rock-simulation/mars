@@ -49,6 +49,7 @@ void SkyDome::setupStateSet( osg::TextureCubeMap* cubemap )
 {
     osg::StateSet* ss = new osg::StateSet;
 
+    cubemap_ = cubemap;
     ss->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
     ss->setTextureAttributeAndModes( 0, cubemap, osg::StateAttribute::ON );
     ss->setAttributeAndModes( createShader().get(), osg::StateAttribute::ON );

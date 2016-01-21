@@ -34,8 +34,7 @@
 #endif
 
 // set define if you want to extend the gui
-//#define PLUGIN_WITH_MARS_GUI
-#include <mars/interfaces/sim/MarsPluginTemplate.h>
+#include <mars/interfaces/sim/MarsPluginTemplateGUI.h>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
@@ -51,12 +50,12 @@ namespace mars {
     namespace SkyDomePlugin {
 
       // inherit from MarsPluginTemplateGUI for extending the gui
-      class SkyDomePlugin: public mars::interfaces::MarsPluginTemplate,
-        public mars::data_broker::ReceiverInterface,
-        // for gui
-        // public mars::main_gui::MenuInterface,
-        public mars::cfg_manager::CFGClient,
-        public mars::interfaces::GraphicsUpdateInterface {
+      class SkyDomePlugin: public mars::interfaces::MarsPluginTemplateGUI,
+                           public mars::data_broker::ReceiverInterface,
+                           // for gui
+                           public mars::main_gui::MenuInterface,
+                           public mars::cfg_manager::CFGClient,
+                           public mars::interfaces::GraphicsUpdateInterface {
 
       public:
         SkyDomePlugin(lib_manager::LibManager *theManager);
@@ -82,20 +81,21 @@ namespace mars {
         virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
 
         // MenuInterface methods
-        //void menuAction(int action, bool checked = false);
+        void menuAction(int action, bool checked = false);
 
         virtual void preGraphicsUpdate(void);
         // SkyDomePlugin methods
 
       private:
-        cfg_manager::cfgPropertyStruct cfgProp;
+        cfg_manager::cfgPropertyStruct cfgProp, cfgEnableSD;
 
         osg::ref_ptr<SkyDome> _skyDome;
         osg::ref_ptr<osg::Group> scene;
         osg::ref_ptr<osg::PositionAttitudeTransform> posTransform;
+        std::string resPath, folder;
+        bool updateProp;
 
         osg::ref_ptr<osg::TextureCubeMap> loadCubeMapTextures();
-
       }; // end of class definition SkyDomePlugin
 
     } // end of namespace SkyDomePlugin
