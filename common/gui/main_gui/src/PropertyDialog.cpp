@@ -158,7 +158,8 @@ namespace mars {
       // tokenize the path
       unsigned int j = 0;
       for(unsigned int i = 0; i < path.length()+1; i++) {
-        if(path[i] == '/') {
+        // ignore // for path
+        if(path[i] == '/' && path[i+1] != '/' && path[i-1]!='/') {
           propertyPath.push_back(path.substr(j, i-j));
           j = i + 1;
         }
@@ -174,7 +175,14 @@ namespace mars {
       if(propertyPath[0] != "..") {
         return addTabbedProperty(path, type, value, attributes, options);
       }
-
+      // remove double //
+      for(int i = 0; i < propertyPath.size(); i++) {
+        for(size_t k=0; k<propertyPath[i].size(); k++) {
+          if(propertyPath[i][k] == '/') {
+            propertyPath[i].erase(propertyPath[i].begin()+k+1);
+          }
+        }
+      }
       propertyPath.pop_front(); // get rid of the "../"
       propertyName = propertyPath.back(); // save the name of the actual property
       propertyPath.pop_back(); // leave only the path
