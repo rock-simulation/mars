@@ -227,8 +227,9 @@ namespace mars {
               std::vector<std::string> editPattern;
               editPattern.push_back("*/position/*");
               editPattern.push_back("*/extend/*");
+              editPattern.push_back("*/material");
               nodeData = control->nodes->getFullNode(id);
-              configmaps::ConfigMap map;
+              configmaps::ConfigMap map = nodeData.map;
               nodeData.toConfigMap(&map);
               dw->setConfigMap(nodeData.name, map, editPattern);
               editCategory = 1;

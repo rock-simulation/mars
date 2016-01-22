@@ -951,10 +951,16 @@ namespace mars {
         OSGNodeStruct *ns = findDrawObject(id);
         if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise, drawLineLaser);
       */
+      OSGNodeStruct *ns = findDrawObject(id);
+      if(!ns) return;
       std::map<std::string, MarsMaterial*>::iterator it;
       it = materials.find(material.name);
       if(it!=materials.end()) {
-        it->second->setMaterial(material);
+        fprintf(stderr, "set material %s for id: %lu\n", material.name.c_str(),
+                id);
+        ns->object()->setMaterial(it->second->getMaterialData(),
+                                  useFog, useNoise, drawLineLaser);
+        //it->second->setMaterial(material);
       }
     }
 
@@ -2135,6 +2141,20 @@ namespace mars {
         materials[mStruct.name] = m;
         shadowedScene->addChild(m->getGroup());
         return m->getGroup();
+      }
+    }
+
+    void GraphicsManager::addMaterial(const interfaces::MaterialData &material) {
+      if(materials.find(material.name) == materials.end()) {
+        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
+                                           shadowTextureSize.iValue);
+        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
+        m->setUseMARSShader(marsShader.bValue);
+        m->setMaterial(material);
+        m->setNoiseImage(noiseImage_.get());
+        m->setShadowSamples(shadowSamples.iValue);
+        materials[material.name] = m;
+        shadowedScene->addChild(m->getGroup());
       }
     }
 

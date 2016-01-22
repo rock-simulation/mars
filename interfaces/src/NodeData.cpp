@@ -367,6 +367,7 @@ namespace mars {
       SET_VALUE("shadow_id", shadow_id);
       SET_VALUE("shadowcaster", isShadowCaster);
       SET_VALUE("shadowreceiver", isShadowReceiver);
+      SET_VALUE("material", material.name);
 
     }
 

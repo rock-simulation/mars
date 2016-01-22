@@ -1695,6 +1695,20 @@ namespace mars {
         }
         control->nodes->editNode(&nd, EDIT_NODE_SIZE);
       }
+      else if(utils::matchPattern("*/material", key)) {
+        if(control->graphics) {
+          std::vector<interfaces::MaterialData> mList;
+          std::vector<interfaces::MaterialData>::iterator it;
+          mList = control->graphics->getMaterialList();
+          for(it=mList.begin(); it!=mList.end(); ++it) {
+            if(it->name == value) {
+              unsigned long drawID = getDrawID(id);
+              control->graphics->setDrawObjectMaterial(drawID, *it);
+              break;
+            }
+          }
+        }
+      }
     }
 
   } // end of namespace sim

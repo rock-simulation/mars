@@ -237,9 +237,18 @@ namespace mars {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
       //if(!mStruct.normalmap.empty())
+      bool show_ = false;
+      if(mGroup_.valid()) {
+        // todo: do not show if is already hidden
+        hide();
+        show_ = true;
+      }
       generateTangents();
       mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
       materialState = g->getMaterialStateSet(mStruct);
+      if(show_) {
+        show();
+      }
       //mGroup->setStateSet(mState);
       //scaleTransform_->addChild(mGroup);
       //scaleTransform_->removeChild(group_.get());

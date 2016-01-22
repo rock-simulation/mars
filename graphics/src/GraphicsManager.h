@@ -145,6 +145,7 @@ namespace mars {
       virtual void setDrawObjectScale(unsigned long id, const mars::utils::Vector &ext);
       virtual void setDrawObjectMaterial(unsigned long id,
                                          const mars::interfaces::MaterialData &material);
+      virtual void addMaterial(const interfaces::MaterialData &material);
       virtual void setDrawObjectNodeMask(unsigned long id, unsigned int bits);
       virtual void setBlending(unsigned long id, bool mode);
       virtual void setBumpMap(unsigned long id, const std::string &bumpMap);

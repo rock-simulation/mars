@@ -89,6 +89,7 @@ namespace mars {
                                       const mars::utils::Vector &ext) = 0;
       virtual void setDrawObjectMaterial(unsigned long id, 
                                          const MaterialData &material) = 0;
+      virtual void addMaterial(const MaterialData &material) = 0;
       virtual void setDrawObjectNodeMask(unsigned long id, unsigned int bits) = 0;
 
       virtual void closeAxis() = 0; ///< Closes existing joint axis.
