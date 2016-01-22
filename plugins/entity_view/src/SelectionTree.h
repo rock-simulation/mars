@@ -35,6 +35,9 @@
 #include <mars/main_gui/BaseWidget.h>
 #include <mars/interfaces/NodeData.h>
 #include <mars/interfaces/JointData.h>
+#include <mars/interfaces/MotorData.h>
+#include <mars/interfaces/sensor_bases.h>
+#include <mars/interfaces/ControllerData.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/core_objects_exchange.h>
 #include <mars/interfaces/graphics/GraphicsEventClient.h>
@@ -62,18 +65,24 @@ namespace mars {
       bool filled, selectAllowed;
       int editCategory;
       std::vector<interfaces::core_objects_exchange> simNodes, simJoints;
+      std::vector<interfaces::core_objects_exchange> simMotors, simSensors;
+      std::vector<interfaces::core_objects_exchange> simControllers;
       std::map<std::string, configmaps::ConfigMap> materialMap;
       std::vector<unsigned long> present;
       std::map<unsigned long, QTreeWidgetItem*> nodeItemMap;
       QTreeWidget *treeWidget;
       interfaces::NodeData nodeData;
       interfaces::JointData jointData;
+      interfaces::MotorData motorData;
+      interfaces::BaseSensor sensorData;
+      interfaces::ControllerData controllerData;
       configmaps::ConfigMap currentMaterial;
 
       void closeEvent(QCloseEvent* event);
       void fill(unsigned long id, QTreeWidgetItem *current = NULL);
       void reset(void);
       void createTree(unsigned long root);
+      void addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category);
 
     signals:
       void closeSignal(void* widget);

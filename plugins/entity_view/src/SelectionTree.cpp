@@ -23,6 +23,9 @@
 
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/sim/SensorManagerInterface.h>
+#include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/utils/misc.h>
 #include <QGridLayout>
@@ -134,19 +137,16 @@ namespace mars {
       //treeWidget->expandAll();
 
       control->joints->getListJoints(&simJoints);
+      addCoreExchange(simJoints, "joints");
 
-      temp.clear();
-      temp << "joints";
-      current = new QTreeWidgetItem(temp);
-      treeWidget->addTopLevelItem(current);
-      for(size_t i=0; i<simJoints.size(); ++i) {
-        temp.clear();
-        temp << QString::number(simJoints[i].index) + ":" + QString::fromStdString(simJoints[i].name);
-        QTreeWidgetItem *next = new QTreeWidgetItem(temp);
-        current->addChild(next);
-      }
+      control->motors->getListMotors(&simMotors);
+      addCoreExchange(simMotors, "motors");
 
-      control->joints->getListJoints(&simJoints);
+      control->sensors->getListSensors(&simSensors);
+      addCoreExchange(simSensors, "sensors");
+
+      control->controllers->getListController(&simControllers);
+      addCoreExchange(simControllers, "controllers");
 
       temp.clear();
       temp << "materials";
@@ -242,6 +242,19 @@ namespace mars {
               dw->setConfigMap(jointData.name, map, editPattern);
               editCategory = 2;
             }
+            else if(parent->text(0) == "motors") {
+              std::vector<std::string> editPattern;
+              // fake pattern to disable everthing
+              editPattern.push_back("//");
+              motorData = control->motors->getFullMotor(id);
+              configmaps::ConfigMap map;
+              motorData.toConfigMap(&map);
+              dw->setConfigMap(motorData.name, map, editPattern);
+              editCategory = 3;
+            }
+          }
+          else if(parent->text(0) == "controllers") {
+            editCategory = 4;
           }
           else if(parent->text(0) == "materials") {
             std::vector<std::string> editPattern;
@@ -252,7 +265,7 @@ namespace mars {
             currentMaterial.toYamlStream(std::cerr);
             dw->setConfigMap(currentMaterial["name"], currentMaterial,
                              editPattern);
-            editCategory = 3;
+            editCategory = 5;
           }
         }
       }
@@ -271,7 +284,7 @@ namespace mars {
       else if(editCategory == 2) {
 
       }
-      else if(editCategory == 3) {
+      else if(editCategory == 5) {
         control->graphics->editMaterial(currentMaterial["name"], name, value);
       }
     }
@@ -292,6 +305,21 @@ namespace mars {
       }
       selectAllowed = true;
       treeWidget->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    }
+
+    void SelectionTree::addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category) {
+      std::vector<interfaces::core_objects_exchange>::const_iterator it;
+      QTreeWidgetItem *current;
+      QStringList temp;
+      temp << category.c_str();
+      current = new QTreeWidgetItem(temp);
+      treeWidget->addTopLevelItem(current);
+      for(it=objects.begin(); it!=objects.end(); ++it) {
+        temp.clear();
+        temp << QString::number(it->index) + ":" + QString::fromStdString(it->name);
+        QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+        current->addChild(next);
+      }
     }
 
   } // end of namespace plugins
