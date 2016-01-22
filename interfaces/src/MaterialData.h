@@ -71,7 +71,8 @@ namespace mars {
       // todo: handle filenames
       bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix);
       void toConfigMap(configmaps::ConfigMap *config,
-                       bool skipFilenamePrefix = false);
+                       bool skipFilenamePrefix = false,
+                       bool exportDefault = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 
       /** Compare with other material (usually compared with default material) */

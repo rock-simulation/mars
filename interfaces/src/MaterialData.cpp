@@ -111,7 +111,8 @@ namespace mars {
       return true;
     }
 
-    void MaterialData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix) {
+    void MaterialData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix,
+                                   bool exportDefault) {
       MaterialData defaultMaterial;
       std::string texturename_ = texturename;
       std::string bumpmap_ = bumpmap;
@@ -123,60 +124,60 @@ namespace mars {
         removeFilenamePrefix(&normalmap_);
       }
 
-      if(exists != defaultMaterial.exists)
-        (*config)["exists"] = exists;
+      (*config)["name"] = name;
 
-      if(ambientFront != defaultMaterial.ambientFront) {
-        ambientFront.toConfigItem((*config)["ambientFront"]);
+      if(exportDefault || ambientFront != defaultMaterial.ambientFront) {
+        ambientFront.toConfigItem((*config)["ambientColor"]);
       }
       if(ambientBack != defaultMaterial.ambientBack) {
         ambientBack.toConfigItem((*config)["ambientBack"]);
       }
 
-      if(diffuseFront != defaultMaterial.diffuseFront) {
-        diffuseFront.toConfigItem((*config)["diffuseFront"]);
+      if(exportDefault || diffuseFront != defaultMaterial.diffuseFront) {
+        diffuseFront.toConfigItem((*config)["diffuseColor"]);
       }
       if(diffuseBack != defaultMaterial.diffuseBack) {
         diffuseBack.toConfigItem((*config)["diffuseBack"]);
       }
 
-      if(specularFront != defaultMaterial.specularFront) {
-        specularFront.toConfigItem((*config)["specularFront"]);
+      if(exportDefault || specularFront != defaultMaterial.specularFront) {
+        specularFront.toConfigItem((*config)["specularColor"]);
       }
       if(specularBack != defaultMaterial.specularBack) {
         specularBack.toConfigItem((*config)["specularBack"]);
       }
 
-      if(emissionFront != defaultMaterial.emissionFront) {
-        emissionFront.toConfigItem((*config)["emissionFront"]);
+      if(exportDefault || emissionFront != defaultMaterial.emissionFront) {
+        emissionFront.toConfigItem((*config)["emissionColor"]);
       }
       if(emissionBack != defaultMaterial.emissionBack) {
         emissionBack.toConfigItem((*config)["emissionBack"]);
       }
 
-      if(transparency != defaultMaterial.transparency)
-        (*config)["transparency"] = transparency;
-      if(shininess != defaultMaterial.shininess)
+      if(exportDefault || shininess != defaultMaterial.shininess)
         (*config)["shininess"] = shininess;
-      if(texturename_ != defaultMaterial.texturename)
-        (*config)["texturename"] = texturename_;
-      if(bumpmap_ != defaultMaterial.bumpmap)
-        (*config)["displacementmap"] = bumpmap_;
-      if(normalmap_ != defaultMaterial.normalmap)
-        (*config)["bumpmap"] = normalmap_;
-      if(tex_scale != defaultMaterial.tex_scale)
+      if(exportDefault || transparency != defaultMaterial.transparency)
+        (*config)["transparency"] = transparency;
+      if(exportDefault || texturename_ != defaultMaterial.texturename)
+        (*config)["diffuseTexture"] = texturename_;
+      if(exportDefault || normalmap_ != defaultMaterial.normalmap)
+        (*config)["normalTexture"] = normalmap_;
+      if(exportDefault || bumpmap_ != defaultMaterial.bumpmap)
+        (*config)["displacementTexture"] = bumpmap_;
+      if(exportDefault || tex_scale != defaultMaterial.tex_scale)
         (*config)["tex_scale"] = tex_scale;
-      if(reflect != defaultMaterial.reflect)
+      if(exportDefault || reflect != defaultMaterial.reflect)
         (*config)["reflect"] = reflect;
-      if(brightness != defaultMaterial.brightness)
+      if(exportDefault || brightness != defaultMaterial.brightness)
         (*config)["brightness"] = brightness;
-      if(getLight != defaultMaterial.getLight)
+      if(exportDefault || getLight != defaultMaterial.getLight)
         (*config)["getLigth"] = getLight;
-      if(cullMask != defaultMaterial.cullMask)
+      if(exportDefault || cullMask != defaultMaterial.cullMask)
         (*config)["cullMask"] = cullMask;
-      if(bumpNorFac != defaultMaterial.bumpNorFac)
+      if(exportDefault || bumpNorFac != defaultMaterial.bumpNorFac)
         (*config)["bumpNorFac"] = bumpNorFac;
-      (*config)["name"] = name;
+      if(exportDefault || exists != defaultMaterial.exists)
+        (*config)["exists"] = exists;
     }
 
     void MaterialData::getFilesToSave(std::vector<std::string> *fileList) {
