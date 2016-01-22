@@ -53,6 +53,14 @@
 
 #define MENU_SHOW_VISUAL   -1
 #define MENU_SHOW_PHYSICAL -2
+#define MENU_SHOW_COORDS   -3
+#define MENU_SHOW_GRID     -4
+#define MENU_VIEW_TOP      -5
+#define MENU_VIEW_FRONT    -6
+#define MENU_VIEW_RIGHT    -7
+#define MENU_VIEW_BACK     -8
+#define MENU_VIEW_LEFT     -9
+#define MENU_VIEW_BOTTOM   -10
 
 namespace mars {
   namespace gui {
@@ -103,6 +111,10 @@ namespace mars {
 
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
+      cfgShowCoords = control->cfg->getOrCreateProperty("Graphics", "showCoords",
+                                                        true, this);
+      cfgShowGrid = control->cfg->getOrCreateProperty("Graphics", "showGrid",
+                                                        false, this);
 
       // todo: update state if value in cfg_manager changes
       mainGui->addGenericMenuAction("../View/visual representation",
@@ -115,6 +127,35 @@ namespace mars {
                                     (main_gui::MenuInterface*)this,
                                     0, "", 0,
                                     1+cfgVisRep.iValue | 2);
+
+      mainGui->addGenericMenuAction("../View/Show Coordinates",
+                                    MENU_SHOW_COORDS,
+                                    (main_gui::MenuInterface*)this,
+                                    0, "", 0,
+                                    1+cfgShowCoords.bValue);
+      mainGui->addGenericMenuAction("../View/Show Grid",
+                                    MENU_SHOW_GRID,
+                                    (main_gui::MenuInterface*)this,
+                                    0, "", 0,
+                                    1+cfgShowGrid.bValue);
+      mainGui->addGenericMenuAction("../View/Camera/Top",
+                                    MENU_VIEW_TOP,
+                                    (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Camera/Front",
+                                    MENU_VIEW_FRONT,
+                                    (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Camera/Right",
+                                    MENU_VIEW_RIGHT,
+                                    (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Camera/Back",
+                                    MENU_VIEW_BACK,
+                                    (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Camera/Left",
+                                    MENU_VIEW_LEFT,
+                                    (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Camera/Bottom",
+                                    MENU_VIEW_BOTTOM,
+                                    (main_gui::MenuInterface*)this);
     }
 
 
@@ -160,6 +201,30 @@ namespace mars {
           updateProp = true;
           break;
         }
+      case MENU_SHOW_COORDS:
+        if(updateProp) {
+          cfgShowCoords.bValue = checked;
+          updateProp = false;
+          control->cfg->setProperty(cfgShowCoords);
+          updateProp = true;
+          break;
+        }
+      case MENU_SHOW_GRID:
+        if(updateProp) {
+          cfgShowGrid.bValue = checked;
+          updateProp = false;
+          control->cfg->setProperty(cfgShowGrid);
+          updateProp = true;
+          break;
+        }
+      case MENU_VIEW_TOP:
+      case MENU_VIEW_FRONT:
+      case MENU_VIEW_RIGHT:
+      case MENU_VIEW_BACK:
+      case MENU_VIEW_LEFT:
+      case MENU_VIEW_BOTTOM:
+        control->graphics->setCameraDefaultView(-action-4);
+        break;
       }
     }
 
@@ -229,6 +294,24 @@ namespace mars {
                                          cfgVisRep.iValue & 1);
           mainGui->setMenuActionSelected("../View/physical representation",
                                          cfgVisRep.iValue & 2);
+          updateProp = true;
+        }
+      }
+      if(cfgShowCoords.paramId == _property.paramId) {
+        cfgShowCoords.bValue = _property.bValue;
+        if(updateProp) {
+          updateProp = false;
+          mainGui->setMenuActionSelected("../View/Show Coordinates",
+                                         cfgShowCoords.bValue);
+          updateProp = true;
+        }
+      }
+      if(cfgShowGrid.paramId == _property.paramId) {
+        cfgShowGrid.bValue = _property.bValue;
+        if(updateProp) {
+          updateProp = false;
+          mainGui->setMenuActionSelected("../View/Show Grid",
+                                         cfgShowGrid.bValue);
           updateProp = true;
         }
       }

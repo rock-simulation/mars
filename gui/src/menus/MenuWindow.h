@@ -83,7 +83,7 @@ namespace mars {
 
       BlenderExportGUI *blender;
       ControllerConfigGUI *cc;
-      cfg_manager::cfgPropertyStruct cfgVisRep;
+      cfg_manager::cfgPropertyStruct cfgVisRep, cfgShowCoords, cfgShowGrid;
       bool updateProp;
 
     private slots:

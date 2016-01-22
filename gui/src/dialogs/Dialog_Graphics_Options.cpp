@@ -79,8 +79,10 @@ namespace mars {
                                              0, NULL, &enumNames);
       enumNames.clear();
       enumNames << "Custom" << "Left" << "Right" << "Front" << "Rear" << "Top" << "Bottom";
+      /*
       viewport = pDialog->addGenericProperty("../Camera/Viewport", QtVariantPropertyManager::enumTypeId(),
                                              0, NULL, &enumNames);
+      */
       pos = pDialog->addGenericProperty("../Camera/Viewport/Position", QtVariantPropertyManager::groupTypeId(), 0);
       rot = pDialog->addGenericProperty("../Camera/Viewport/Rotation", QtVariantPropertyManager::groupTypeId(), 0);
   
@@ -102,9 +104,11 @@ namespace mars {
       fogEnd = pDialog->addGenericProperty("../Fog/End", QVariant::Double, gs_backup.fogEnd);
       fogColor = pDialog->addGenericProperty("../Fog/Color", QVariant::Color,
                                              to_QColor(gs_backup.fogColor));
+      /*
       coords = pDialog->addGenericProperty("../Coordinates", QVariant::Bool, coords_backup);
       clouds = pDialog->addGenericProperty("../Clouds", QVariant::Bool, clouds_backup);
       grid = pDialog->addGenericProperty("../Grid", QVariant::Bool, grid_backup);
+      */
 
       on_change_window(0);
       on_change_fog(fogEnabled->value().toBool());

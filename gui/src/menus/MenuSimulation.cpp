@@ -108,7 +108,7 @@ namespace mars {
 
       tmp1 = resPath + "/images";
       tmp1.append("/mesh.png");
-      mainGui->addGenericMenuAction("../Edit/Mesh",
+      mainGui->addGenericMenuAction("../Edit/Add Mesh",
                                     GUI_ACTION_IMPORT_MESH,
                                     (main_gui::MenuInterface*)this, 0,
                                     tmp1, true);
