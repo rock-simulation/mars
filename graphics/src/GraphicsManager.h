@@ -305,6 +305,7 @@ namespace mars {
       virtual std::vector<interfaces::MaterialData> getMaterialList() const;
       virtual void editMaterial(std::string materialName, std::string key,
                                 std::string value);
+      virtual void setCameraDefaultView(int view);
 
     private:
 
@@ -390,7 +391,8 @@ namespace mars {
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow,
         multisamples, noiseProp, brightness, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
-        hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize;
+        hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize,
+        showGridProp, showCoordsProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;

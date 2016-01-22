@@ -194,6 +194,10 @@ namespace mars {
           shadowSamples = cfg->getOrCreateProperty("Graphics",
                                                    "shadowSamples",
                                                    1, this);
+          showGridProp = cfg->getOrCreateProperty("Graphics", "showGrid",
+                                                  false, this);
+          showCoordsProp = cfg->getOrCreateProperty("Graphics", "showCoords",
+                                                    true, this);
         }
         else {
           marsShadow.bValue = false;
@@ -1869,6 +1873,20 @@ namespace mars {
         setGrabFrames(_property.bValue);
         return;
       }
+
+      if(_property.paramId == showGridProp.paramId) {
+        showGridProp.bValue = _property.bValue;
+        if(showGridProp.bValue) showGrid();
+        else hideGrid();
+        return;
+      }
+
+      if(_property.paramId == showCoordsProp.paramId) {
+        showCoordsProp.bValue = _property.bValue;
+        if(showCoordsProp.bValue) showCoords();
+        else hideCoords();
+        return;
+      }
     }
 
     void GraphicsManager::emitGeometryChange(unsigned long win_id, int left,
@@ -2175,6 +2193,33 @@ namespace mars {
       }
       noiseImage_->dirty();
       //count = 1;
+    }
+
+    void GraphicsManager::setCameraDefaultView(int view) {
+      interfaces::GraphicsCameraInterface* cam;
+      cam = graphicsWindows[0]->getCameraInterface();
+      switch(view) {
+      case 1:
+        cam->context_setCamPredefTop();
+        break;
+      case 2:
+        cam->context_setCamPredefFront();
+        break;
+      case 3:
+        cam->context_setCamPredefRight();
+        break;
+      case 4:
+        cam->context_setCamPredefRear();
+        break;
+      case 5:
+        cam->context_setCamPredefLeft();
+        break;
+      case 6:
+        cam->context_setCamPredefBottom();
+        break;
+      default:
+        break;
+      }
     }
 
   } // end of namespace graphics
