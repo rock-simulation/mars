@@ -1671,26 +1671,26 @@ namespace mars {
       NodeData nd = getFullNode(id);
       if(utils::matchPattern("*/position/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'x') {
+        if(key[key.size()-1] == 'x') {
           nd.pos.x() = v;
         }
-        else if(key.back() == 'y') {
+        else if(key[key.size()-1] == 'y') {
           nd.pos.y() = v;
         }
-        else if(key.back() == 'z') {
+        else if(key[key.size()-1] == 'z') {
           nd.pos.z() = v;
         }
         control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
       }
       else if(utils::matchPattern("*/extend/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'x') {
+        if(key[key.size()-1] == 'x') {
           nd.ext.x() = v;
         }
-        else if(key.back() == 'y') {
+        else if(key[key.size()-1] == 'y') {
           nd.ext.y() = v;
         }
-        else if(key.back() == 'z') {
+        else if(key[key.size()-1] == 'z') {
           nd.ext.z() = v;
         }
         control->nodes->editNode(&nd, EDIT_NODE_SIZE);

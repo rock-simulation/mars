@@ -154,10 +154,10 @@ namespace mars {
       if(utils::matchPattern("*/diffuseColor/*", key) ||
          utils::matchPattern("*/diffuseFront/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'a') materialData.diffuseFront.a = v;
-        else if(key.back() == 'r') materialData.diffuseFront.r = v;
-        else if(key.back() == 'g') materialData.diffuseFront.g = v;
-        else if(key.back() == 'b') materialData.diffuseFront.b = v;
+        if(key[key.size()-1] == 'a') materialData.diffuseFront.a = v;
+        else if(key[key.size()-1] == 'r') materialData.diffuseFront.r = v;
+        else if(key[key.size()-1] == 'g') materialData.diffuseFront.g = v;
+        else if(key[key.size()-1] == 'b') materialData.diffuseFront.b = v;
         setMaterial(materialData);
       }
     }
