@@ -37,6 +37,8 @@
 #include <configmaps/ConfigData.h>
 
 #include <string>
+#include <QLineEdit>
+#include <QWidget>
 
 namespace lib_manager {
   class LibManager;
@@ -57,13 +59,13 @@ namespace mars {
     /**
      * \brief MenuAdd creates the menus and menu items in the File menu of the simulation.
      */
-    class MenuAdd :  public main_gui::MenuInterface {
-
+    class MenuAdd :  public QObject, public main_gui::MenuInterface {
+      Q_OBJECT
     public:
 
       /** \brief The constructor adds the actions to the File menu */
       MenuAdd(interfaces::ControlCenter *c, main_gui::GuiInterface *gui,
-               std::string resPath, lib_manager::LibManager *theManager);
+              std::string resPath, lib_manager::LibManager *theManager);
       ~MenuAdd();
 
       /**
@@ -74,16 +76,22 @@ namespace mars {
        */
       virtual void menuAction(int action, bool checked = false);
 
+    private slots:
+      void addMaterial();
+
     private:
 
       lib_manager::LibManager *libManager;
       main_gui::GuiInterface *mainGui;
       interfaces::ControlCenter *control;
       configmaps::ConfigMap material;
+      QWidget *widgetAddMaterial;
+      QLineEdit *materialLineEdit;
 
       void menu_addBox();
       void menu_addSphere();
       void menu_addPlane();
+      void menu_addMaterial();
 
     };
 

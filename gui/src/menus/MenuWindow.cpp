@@ -61,6 +61,7 @@
 #define MENU_VIEW_BACK     -8
 #define MENU_VIEW_LEFT     -9
 #define MENU_VIEW_BOTTOM   -10
+#define MENU_SHOW_CONTACTS -11
 
 namespace mars {
   namespace gui {
@@ -115,6 +116,8 @@ namespace mars {
                                                         true, this);
       cfgShowGrid = control->cfg->getOrCreateProperty("Graphics", "showGrid",
                                                         false, this);
+      cfgShowContacts = control->cfg->getOrCreateProperty("Simulator", "draw contacts",
+                                                        false, this);
 
       // todo: update state if value in cfg_manager changes
       mainGui->addGenericMenuAction("../View/visual representation",
@@ -138,6 +141,13 @@ namespace mars {
                                     (main_gui::MenuInterface*)this,
                                     0, "", 0,
                                     1+cfgShowGrid.bValue);
+
+      mainGui->addGenericMenuAction("../View/Show Contacts",
+                                    MENU_SHOW_CONTACTS,
+                                    (main_gui::MenuInterface*)this,
+                                    0, "", 0,
+                                    1+cfgShowContacts.bValue);
+
       mainGui->addGenericMenuAction("../View/Camera/Top",
                                     MENU_VIEW_TOP,
                                     (main_gui::MenuInterface*)this);
@@ -188,8 +198,8 @@ namespace mars {
           updateProp = false;
           control->cfg->setProperty(cfgVisRep);
           updateProp = true;
-          break;
         }
+        break;
       case MENU_SHOW_PHYSICAL:
         if(updateProp) {
           if(checked)
@@ -199,24 +209,32 @@ namespace mars {
           updateProp = false;
           control->cfg->setProperty(cfgVisRep);
           updateProp = true;
-          break;
         }
+        break;
       case MENU_SHOW_COORDS:
         if(updateProp) {
           cfgShowCoords.bValue = checked;
           updateProp = false;
           control->cfg->setProperty(cfgShowCoords);
           updateProp = true;
-          break;
         }
+        break;
       case MENU_SHOW_GRID:
         if(updateProp) {
           cfgShowGrid.bValue = checked;
           updateProp = false;
           control->cfg->setProperty(cfgShowGrid);
           updateProp = true;
-          break;
         }
+        break;
+      case MENU_SHOW_CONTACTS:
+        if(updateProp) {
+          cfgShowContacts.bValue = checked;
+          updateProp = false;
+          control->cfg->setProperty(cfgShowContacts);
+          updateProp = true;
+        }
+        break;
       case MENU_VIEW_TOP:
       case MENU_VIEW_FRONT:
       case MENU_VIEW_RIGHT:
@@ -312,6 +330,15 @@ namespace mars {
           updateProp = false;
           mainGui->setMenuActionSelected("../View/Show Grid",
                                          cfgShowGrid.bValue);
+          updateProp = true;
+        }
+      }
+      if(cfgShowContacts.paramId == _property.paramId) {
+        cfgShowContacts.bValue = _property.bValue;
+        if(updateProp) {
+          updateProp = false;
+          mainGui->setMenuActionSelected("../View/Show Contacts",
+                                         cfgShowContacts.bValue);
           updateProp = true;
         }
       }

@@ -173,6 +173,7 @@ set(QT_MOC_HEADER
 
         src/menus/MenuSimulation.h
         src/menus/MenuWindow.h
+        src/menus/MenuAdd.h
 )
  
 if (${USE_QT5})

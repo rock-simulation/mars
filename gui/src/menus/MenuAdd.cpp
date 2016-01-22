@@ -29,6 +29,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/main_gui/GuiInterface.h>
 #include <lib_manager/LibManager.hpp>
 #include <QtGui>
@@ -36,9 +37,10 @@
 #include <QMessageBox>
 #include <QFileDialog>
 
-#define GUI_ACTION_ADD_PLANE  1
-#define GUI_ACTION_ADD_BOX    2
-#define GUI_ACTION_ADD_SPHERE 3
+#define GUI_ACTION_ADD_PLANE    1
+#define GUI_ACTION_ADD_BOX      2
+#define GUI_ACTION_ADD_SPHERE   3
+#define GUI_ACTION_ADD_MATERIAL 4
 
 namespace mars {
   namespace gui {
@@ -67,6 +69,9 @@ namespace mars {
       tmp1.append("/sphere.png");
       mainGui->addGenericMenuAction("../Edit/Add Sphere", GUI_ACTION_ADD_SPHERE,
                                     (main_gui::MenuInterface*)this, 0, tmp1, true);
+      mainGui->addGenericMenuAction("../Edit/Add Material",
+                                    GUI_ACTION_ADD_MATERIAL,
+                                    (main_gui::MenuInterface*)this);
 
       material["name"] = "defaultGrey";
       material["diffuseColor"]["a"] = 1.0;
@@ -83,6 +88,16 @@ namespace mars {
       material["ambientColor"]["b"] = 0.7;
       material["shininess"] = 100.;
 
+      widgetAddMaterial = new QWidget();
+      QPushButton *button = new QPushButton("ok");
+      QLabel *label = new QLabel("Material Name:");
+      materialLineEdit = new QLineEdit();
+      QHBoxLayout *layout = new QHBoxLayout();
+      layout->addWidget(label);
+      layout->addWidget(materialLineEdit);
+      layout->addWidget(button);
+      widgetAddMaterial->setLayout(layout);
+      connect(button, SIGNAL(clicked()), this, SLOT(addMaterial()));
     }
 
     MenuAdd::~MenuAdd() {
@@ -96,7 +111,20 @@ namespace mars {
       case GUI_ACTION_ADD_PLANE: menu_addPlane(); break;
       case GUI_ACTION_ADD_BOX: menu_addBox(); break;
       case GUI_ACTION_ADD_SPHERE: menu_addSphere(); break;
+      case GUI_ACTION_ADD_MATERIAL: menu_addMaterial(); break;
       }
+    }
+
+    void MenuAdd::addMaterial() {
+      interfaces::MaterialData md;
+      md.name = materialLineEdit->text().toStdString();
+      fprintf(stderr, "add material: %s\n", md.name.c_str());
+      control->graphics->addMaterial(md);
+      widgetAddMaterial->hide();
+    }
+
+    void MenuAdd::menu_addMaterial(void) {
+      widgetAddMaterial->show();
     }
 
     void MenuAdd::menu_addPlane(void) {
