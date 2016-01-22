@@ -28,7 +28,9 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/utils/misc.h>
-#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
 
 using namespace std;
 
@@ -43,8 +45,6 @@ namespace mars {
       filled = false;
       control = c;
       editCategory = 0;
-      control->nodes->getListNodes(&simNodes);
-
       this->setWindowTitle(tr("Node Selection"));
 
       selectAllowed = true;
@@ -58,12 +58,21 @@ namespace mars {
         control->graphics->addEventClient((interfaces::GraphicsEventClient*)this);
       }
 
-      if (simNodes.size())
-        createTree(simNodes[0].index);
+      MaterialData md;
+      md.toConfigMap(&defaultMaterial, false, true);
 
-      QGridLayout *layout = new QGridLayout;
-      layout->addWidget(treeWidget, 0, 0);
-      layout->setRowStretch(0, 1);
+      createTree();
+
+      QVBoxLayout *layout = new QVBoxLayout;
+      QHBoxLayout *hlayout = new QHBoxLayout;
+      layout->addWidget(treeWidget);
+      QPushButton *button = new QPushButton("Delete Entities");
+      connect(button, SIGNAL(clicked()), this, SLOT(deleteEntities()));
+      hlayout->addWidget(button);
+      button = new QPushButton("Update TreeView");
+      connect(button, SIGNAL(clicked()), this, SLOT(update()));
+      hlayout->addWidget(button);
+      layout->addLayout(hlayout);
       setLayout(layout);
       filled = true;
     }
@@ -84,9 +93,9 @@ namespace mars {
           if (found == false) {
             temp << QString::number(id) + ":" + QString::fromStdString(simNodes[i].name);
             QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+            // todo: should read the selected state in the simulation
             nodeItemMap[id] = next;
-            if(current) current->addChild(next);
-            else treeWidget->addTopLevelItem(next);
+            current->addChild(next);
             current = next;
             present.push_back(id);
           }
@@ -115,7 +124,7 @@ namespace mars {
       }
     }
 
-    void SelectionTree::createTree(unsigned long root)  {
+    void SelectionTree::createTree()  {
       std::vector<interfaces::core_objects_exchange> tmpList;
       present.clear();
       control->nodes->getListNodes(&tmpList);
@@ -124,13 +133,6 @@ namespace mars {
       temp << "nodes";
       QTreeWidgetItem *current = new QTreeWidgetItem(temp);
       treeWidget->addTopLevelItem(current);
-
-      for (size_t i = 0; i < simNodes.size(); ++i) {
-        if (simNodes[i].index == root) {
-          fill(simNodes[i].index, current);
-          break;
-        }
-      }
 
       while(simNodes.size() > 0) fill(simNodes[0].index, current);
       tmpList.swap(simNodes);
@@ -177,7 +179,6 @@ namespace mars {
     }
 
     void SelectionTree::selectNodes(void) {
-      fprintf(stderr, "selectedNodes fooooooo\n");
       if(selectAllowed) { // handle selection state
         int n;
         unsigned long id;
@@ -259,16 +260,57 @@ namespace mars {
           else if(parent->text(0) == "materials") {
             std::vector<std::string> editPattern;
             // fake pattern to disable everthing
+            editPattern.push_back("*/ambientColor/*");
             editPattern.push_back("*/diffuseColor/*");
-            editPattern.push_back("*/diffuseFront/*");
+            editPattern.push_back("*/specularColor/*");
+            editPattern.push_back("*/emissionColor/*");
+            editPattern.push_back("*/diffuseTexture");
+            editPattern.push_back("*/normalTexture");
+            //editPattern.push_back("*/displacementTexture");
+            editPattern.push_back("*/bumpNorFac");
+            editPattern.push_back("*/transparency");
+            editPattern.push_back("*/shininess");
+
             currentMaterial = materialMap[currentItem->text(0).toStdString()];
-            currentMaterial.toYamlStream(std::cerr);
-            dw->setConfigMap(currentMaterial["name"], currentMaterial,
+            configmaps::ConfigMap map = defaultMaterial;
+            map.append(currentMaterial);
+            dw->setConfigMap(currentMaterial["name"], map,
                              editPattern);
             editCategory = 5;
           }
         }
       }
+    }
+
+    void SelectionTree::deleteEntities(void) {
+      int n;
+      unsigned long id;
+      QList<QTreeWidgetItem*> selectedItems = treeWidget->selectedItems();
+      std::vector<unsigned long> ids;
+      for(size_t i=0; i<selectedItems.size(); ++i) {
+        n = selectedItems[i]->text(0).indexOf(":");
+        QTreeWidgetItem *parent = selectedItems[i]->parent();
+        if(!parent) continue;
+        while(parent->parent()) parent = parent->parent();
+        if(parent->text(0) == "nodes") {
+          id = selectedItems[i]->text(0).left(n).toULong();
+          for(int k=0; k<selectedItems[i]->childCount(); ++k) {
+            selectedItems[i]->parent()->addChild(selectedItems[i]->child(k)->clone());
+          }
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+          control->nodes->removeNode(id);
+          if(nodeData.index == id) dw->clearGUI();
+
+        }
+      }
+      // todo: delete joints / motors / etc.
+    }
+
+    void SelectionTree::update(void) {
+      reset();
+      dw->clearGUI();
+      createTree();
+      // todo: more intelligent update
     }
 
     void SelectionTree::closeEvent(QCloseEvent* event) {
@@ -277,7 +319,8 @@ namespace mars {
     }
 
     void SelectionTree::valueChanged(std::string name, std::string value) {
-      fprintf(stderr, "get feedback: %s\n", name.c_str());
+      if(name.empty()) return;
+      //fprintf(stderr, "get feedback: %s\n", name.c_str());
       if(editCategory == 1) {
         control->nodes->edit(nodeData.index, name, value);
       }
@@ -309,16 +352,33 @@ namespace mars {
 
     void SelectionTree::addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category) {
       std::vector<interfaces::core_objects_exchange>::const_iterator it;
-      QTreeWidgetItem *current;
+      std::vector<std::string> path;
+      std::vector<std::string>::iterator pt;
+      std::map<std::string, QTreeWidgetItem*> treeMap;
+      QTreeWidgetItem *current, *top, *next;
       QStringList temp;
       temp << category.c_str();
-      current = new QTreeWidgetItem(temp);
-      treeWidget->addTopLevelItem(current);
+      top = new QTreeWidgetItem(temp);
+      treeWidget->addTopLevelItem(top);
       for(it=objects.begin(); it!=objects.end(); ++it) {
-        temp.clear();
-        temp << QString::number(it->index) + ":" + QString::fromStdString(it->name);
-        QTreeWidgetItem *next = new QTreeWidgetItem(temp);
-        current->addChild(next);
+        path = utils::explodeString('/', it->name);
+        current = top;
+        for(pt=path.begin(); pt!=path.end(); ++pt) {
+          temp.clear();
+          if(pt==path.end()-1) {
+            temp << QString::number(it->index) + ":" + QString::fromStdString(*pt);
+            current->addChild(new QTreeWidgetItem(temp));
+          }
+          else {
+            if(treeMap.find(*pt) == treeMap.end()) {
+              temp << QString::fromStdString(*pt);
+              next = new QTreeWidgetItem(temp);
+              current->addChild(next);
+              treeMap[*pt] = next;
+            }
+            current = treeMap[*pt];
+          }
+        }
       }
     }
 

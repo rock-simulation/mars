@@ -77,11 +77,12 @@ namespace mars {
       interfaces::BaseSensor sensorData;
       interfaces::ControllerData controllerData;
       configmaps::ConfigMap currentMaterial;
+      configmaps::ConfigMap defaultMaterial;
 
       void closeEvent(QCloseEvent* event);
       void fill(unsigned long id, QTreeWidgetItem *current = NULL);
       void reset(void);
-      void createTree(unsigned long root);
+      void createTree();
       void addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category);
 
     signals:
@@ -91,6 +92,8 @@ namespace mars {
     private slots:
       void selectNodes(void);
       void valueChanged(std::string name, std::string value);
+      void deleteEntities(void);
+      void update(void);
     };
 
   } // end of namespace plugins

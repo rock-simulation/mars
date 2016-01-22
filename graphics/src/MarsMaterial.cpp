@@ -90,7 +90,7 @@ namespace mars {
 
     MarsMaterial::~MarsMaterial() {
     }
-    
+
     // the material struct can also contain a static texture (texture file)
     void MarsMaterial::setMaterial(const MaterialData &mStruct) {
       //return;
@@ -107,13 +107,13 @@ namespace mars {
 
       // set the material
       state->setAttributeAndModes(material_.get(), osg::StateAttribute::ON);
-    
+
       if(!getLight) {
         osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
         cull->setMode(osg::CullFace::BACK);
         state->setAttributeAndModes(cull.get(), osg::StateAttribute::OFF);
         state->setMode(GL_LIGHTING,
-                       osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+                       osg::StateAttribute::OFF);
         state->setMode(GL_FOG, osg::StateAttribute::OFF);
       }
 
@@ -129,14 +129,17 @@ namespace mars {
 
         colorMap_ = GuiHelper::loadTexture(mStruct.texturename);
         state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
-                                           osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                           osg::StateAttribute::ON);
 
         if(mStruct.tex_scale != 1.0) {
           osg::ref_ptr<osg::TexMat> scaleTexture = new osg::TexMat();
           scaleTexture->setMatrix(osg::Matrix::scale(mStruct.tex_scale, mStruct.tex_scale, mStruct.tex_scale));
           state->setTextureAttributeAndModes(COLOR_MAP_UNIT, scaleTexture.get(),
-                                             osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                             osg::StateAttribute::ON);
         }
+      }
+      else {
+        if(colorMap_.valid()) colorMap_ = 0;
       }
       texScaleUniform->set((float)mStruct.tex_scale);
 
@@ -144,13 +147,28 @@ namespace mars {
         if(mStruct.bumpmap != "") {
           setBumpMap(mStruct.bumpmap);
         }
+        else if(bumpMap_.valid()) {
+          bumpMap_ = 0;
+        }
         setNormalMap(mStruct.normalmap);
         bumpNorFacUniform->set((float)mStruct.bumpNorFac);
+      }
+      else {
+        normalMap_ = 0;
       }
       updateShader(true);
     }
 
     void MarsMaterial::edit(std::string key, std::string value) {
+      if(utils::matchPattern("*/ambientColor/*", key) ||
+         utils::matchPattern("*/ambientFront/*", key)) {
+        double v = atof(value.c_str());
+        if(key.back() == 'a') materialData.ambientFront.a = v;
+        else if(key.back() == 'r') materialData.ambientFront.r = v;
+        else if(key.back() == 'g') materialData.ambientFront.g = v;
+        else if(key.back() == 'b') materialData.ambientFront.b = v;
+        setMaterial(materialData);
+      }
       if(utils::matchPattern("*/diffuseColor/*", key) ||
          utils::matchPattern("*/diffuseFront/*", key)) {
         double v = atof(value.c_str());
@@ -160,13 +178,77 @@ namespace mars {
         else if(key[key.size()-1] == 'b') materialData.diffuseFront.b = v;
         setMaterial(materialData);
       }
+      if(utils::matchPattern("*/specularColor/*", key) ||
+         utils::matchPattern("*/specularFront/*", key)) {
+        double v = atof(value.c_str());
+        if(key.back() == 'a') materialData.specularFront.a = v;
+        else if(key.back() == 'r') materialData.specularFront.r = v;
+        else if(key.back() == 'g') materialData.specularFront.g = v;
+        else if(key.back() == 'b') materialData.specularFront.b = v;
+        setMaterial(materialData);
+      }
+      if(utils::matchPattern("*/emissionColor/*", key) ||
+         utils::matchPattern("*/emissionFront/*", key)) {
+        double v = atof(value.c_str());
+        if(key.back() == 'a') materialData.emissionFront.a = v;
+        else if(key.back() == 'r') materialData.emissionFront.r = v;
+        else if(key.back() == 'g') materialData.emissionFront.g = v;
+        else if(key.back() == 'b') materialData.emissionFront.b = v;
+        setMaterial(materialData);
+      }
+
+      if(utils::matchPattern("*/diffuseTexture", key) ||
+         utils::matchPattern("*/texturename", key)) {
+        if(value == "") {
+          materialData.texturename = "";
+          setMaterial(materialData);
+        }
+        else if(utils::pathExists(value)) {
+          materialData.texturename = value;
+          setMaterial(materialData);
+        }
+      }
+      if(utils::matchPattern("*/normalTexture", key) ||
+         utils::matchPattern("*/bumpmap", key)) {
+        if(value == "") {
+          materialData.normalmap = "";
+          setMaterial(materialData);
+        }
+        else if(utils::pathExists(value)) {
+          materialData.normalmap = value;
+          setMaterial(materialData);
+        }
+      }
+      if(utils::matchPattern("*/displacementTexture", key) ||
+         utils::matchPattern("*/displacementmap", key)) {
+        if(value == "") {
+          materialData.bumpmap = "";
+          setMaterial(materialData);
+        }
+        else if(utils::pathExists(value)) {
+          materialData.bumpmap = value;
+          setMaterial(materialData);
+        }
+      }
+      if(utils::matchPattern("*/bumpNorFac", key)) {
+        materialData.bumpNorFac = atof(value.c_str());
+        setMaterial(materialData);
+      }
+      if(utils::matchPattern("*/shininess", key)) {
+        materialData.shininess = atof(value.c_str());
+        setMaterial(materialData);
+      }
+      if(utils::matchPattern("*/transparency", key)) {
+        materialData.transparency = atof(value.c_str());
+        setMaterial(materialData);
+      }
     }
 
     void MarsMaterial::setTexture(osg::Texture2D *texture) {
       colorMap_ = texture;
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap_,
-                                         osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                         osg::StateAttribute::ON);
     }
 
     void MarsMaterial::setBumpMap(const std::string &bumpMap) {
@@ -179,7 +261,7 @@ namespace mars {
 
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(BUMP_MAP_UNIT, bumpMap_,
-                                         osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                         osg::StateAttribute::ON);
     }
 
     void MarsMaterial::setNormalMap(const std::string &normalMap) {
@@ -192,7 +274,7 @@ namespace mars {
 
       osg::StateSet *state = group_->getOrCreateStateSet();
       state->setTextureAttributeAndModes(NORMAL_MAP_UNIT, normalMap_,
-                                         osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                         osg::StateAttribute::ON);
     }
 
     void MarsMaterial::setUseMARSShader(bool val) {
@@ -204,7 +286,7 @@ namespace mars {
       //fprintf(stderr, "****** da : %g\n", 1.f/(v*v));
       shadowScaleUniform->set(1.f/(v*v));
     }
-    
+
     void MarsMaterial::updateShader(bool reload) {
       if(!exists) return;
       osg::StateSet* stateSet = group_->getOrCreateStateSet();
@@ -217,26 +299,26 @@ namespace mars {
         }
         if(normalMap_.valid()) {
           stateSet->setTextureAttributeAndModes(NORMAL_MAP_UNIT, normalMap_,
-                                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+                                         osg::StateAttribute::OFF);
         }
         if(bumpMap_.valid()) {
           stateSet->setTextureAttributeAndModes(BUMP_MAP_UNIT, bumpMap_,
-                                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+                                         osg::StateAttribute::OFF);
         }
         stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap_,
-                                              osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
+                                              osg::StateAttribute::OFF);
 
         return;
       }
       if(normalMap_.valid()) {
         stateSet->setTextureAttributeAndModes(NORMAL_MAP_UNIT, normalMap_,
-                                              osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                              osg::StateAttribute::ON);
       }
       if(bumpMap_.valid()) {
         stateSet->setTextureAttributeAndModes(BUMP_MAP_UNIT, bumpMap_,
-                                              osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                              osg::StateAttribute::ON);
       }
-      
+
       if(!reload && hasShaderSources) {
         // no need to regenerate, shader source did not changed
         return;
@@ -244,7 +326,7 @@ namespace mars {
       hasShaderSources = true;
 
       stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap_,
-                                            osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+                                            osg::StateAttribute::ON);
 
       ShaderGenerator shaderGenerator;
       vector<string> args;
@@ -274,7 +356,7 @@ namespace mars {
                                         { "sampler2D", "BumpMap" } );
             fragmentShader->addMainVar( (GLSLVariable)
                                         { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale + texture2D(BumpMap, gl_TexCoord[0].xy*texScale).x*0.01*eyeVec.xy" });
-            
+
           }
           else {
             fragmentShader->addMainVar( (GLSLVariable)
@@ -305,15 +387,15 @@ namespace mars {
                               { "vec4", "v", "osg_ViewMatrixInverse * v1" } );
       plightVert->addMainVar( (GLSLVariable)
                               { "vec4", "n", "normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))" } );
-      
+
       plightVert->addExport( (GLSLExport)
                              { "normalVarying", "n.xyz" } );
-      
+
       plightVert->addExport( (GLSLExport)
                              { "positionVarying", "v" } );
       plightVert->addExport( (GLSLExport)
                              { "modelVertex", "gl_Vertex" } );
-      
+
       plightVert->addVarying( (GLSLVarying)
                               { "vec4", "positionVarying" } );
       plightVert->addVarying( (GLSLVarying)
@@ -321,7 +403,7 @@ namespace mars {
       plightVert->addVarying( (GLSLVarying)
                               { "vec4", "modelVertex" } );
       shaderGenerator.addShaderFunction(plightVert, mars::interfaces::SHADER_TYPE_VERTEX);
-      
+
       if(normalMap_.valid()) {
         args.clear();
         args.push_back("n.xyz");
@@ -351,7 +433,7 @@ namespace mars {
       plightFrag->addVarying( (GLSLVarying)
                               { "vec3", "normalVarying" } );
       shaderGenerator.addShaderFunction(plightFrag, mars::interfaces::SHADER_TYPE_FRAGMENT);
-      
+
       osg::Program *glslProgram = shaderGenerator.generate();
 
       if(normalMap_.valid()) {
@@ -380,7 +462,7 @@ namespace mars {
         stateSet->addUniform(texScaleUniform.get());
       }
       else {
-        stateSet->removeUniform(texScaleUniform.get());        
+        stateSet->removeUniform(texScaleUniform.get());
       }
       if(colorMap_.valid()) {
         stateSet->addUniform(baseImageUniform.get());
@@ -405,7 +487,7 @@ namespace mars {
       stateSet->addUniform(invShadowTextureSizeUniform.get());
       stateSet->addUniform(shadowScaleUniform.get());
 
-      lastProgram = glslProgram; 
+      lastProgram = glslProgram;
     }
 
     void MarsMaterial::setNoiseImage(osg::Image *i) {

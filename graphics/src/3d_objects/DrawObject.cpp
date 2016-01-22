@@ -236,7 +236,8 @@ namespace mars {
                                  bool _marsShadow) {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
-      if(!mStruct.normalmap.empty()) generateTangents();
+      //if(!mStruct.normalmap.empty())
+      generateTangents();
       mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
       materialState = g->getMaterialStateSet(mStruct);
       //mGroup->setStateSet(mState);
