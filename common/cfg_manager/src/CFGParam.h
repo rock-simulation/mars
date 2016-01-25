@@ -38,7 +38,7 @@
 #include "CFGProperty.h"
 #include "CFGClient.h"
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp03/yaml.h>
 
 #include <mars/utils/Mutex.h>
 

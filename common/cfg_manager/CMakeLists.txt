@@ -11,7 +11,7 @@ define_module_info()
 
 pkg_check_modules(DEPS REQUIRED
 	lib_manager
-	yaml-cpp
+	yaml-cpp03
 	mars_utils
 )
 include_directories(${DEPS_INCLUDE_DIRS})
