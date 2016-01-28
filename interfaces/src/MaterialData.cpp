@@ -162,11 +162,13 @@ namespace mars {
         (*config)["diffuseTexture"] = texturename_;
       if(exportDefault || normalmap_ != defaultMaterial.normalmap)
         (*config)["normalTexture"] = normalmap_;
-      if(exportDefault || bumpmap_ != defaultMaterial.bumpmap)
+      // no default export because testing is needed
+      if( bumpmap_ != defaultMaterial.bumpmap)
         (*config)["displacementTexture"] = bumpmap_;
       if(exportDefault || tex_scale != defaultMaterial.tex_scale)
         (*config)["tex_scale"] = tex_scale;
-      if(exportDefault || reflect != defaultMaterial.reflect)
+      // feature is currently not working (no default export)
+      if(reflect != defaultMaterial.reflect)
         (*config)["reflect"] = reflect;
       if(exportDefault || brightness != defaultMaterial.brightness)
         (*config)["brightness"] = brightness;
@@ -176,7 +178,8 @@ namespace mars {
         (*config)["cullMask"] = cullMask;
       if(exportDefault || bumpNorFac != defaultMaterial.bumpNorFac)
         (*config)["bumpNorFac"] = bumpNorFac;
-      if(exportDefault || exists != defaultMaterial.exists)
+      // can not be changed online currently
+      if(exists != defaultMaterial.exists)
         (*config)["exists"] = exists;
     }
 

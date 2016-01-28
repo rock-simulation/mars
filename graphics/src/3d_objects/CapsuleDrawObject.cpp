@@ -28,6 +28,7 @@
 #include "CapsuleDrawObject.h"
 #include "CylinderDrawObject.h"
 #include "SphereDrawObject.h"
+#include "../MarsMaterial.h"
 
 #include <osg/Geometry>
 

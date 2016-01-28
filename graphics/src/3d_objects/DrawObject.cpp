@@ -28,6 +28,7 @@
 #include "DrawObject.h"
 #include "gui_helper_functions.h"
 #include "../wrapper/OSGMaterialStruct.h"
+#include "../MarsMaterial.h"
 
 #include <iostream>
 
@@ -84,10 +85,12 @@ namespace mars {
         blendEquation_(0),
         maxNumLights(1),
         g(g),
-        sharedStateGroup(false) {
+        sharedStateGroup(false),
+        marsMaterial(NULL) {
     }
 
     DrawObject::~DrawObject() {
+      if(marsMaterial!=NULL) marsMaterial->removeDrawObject(id_);
     }
 
     unsigned long DrawObject::getID(void) const {
@@ -211,6 +214,10 @@ namespace mars {
       }
     }
 
+    osg::ref_ptr<osg::Material> DrawObject::getMaterial() {
+      return material_->getMaterial();
+    }
+
     void DrawObject::setStateFilename(const std::string &filename, int create) {
       stateFilename_ = filename;
       if (create) {
@@ -228,6 +235,27 @@ namespace mars {
     }
     void DrawObject::exportModel(const std::string &filename) {
       osgDB::writeNodeFile(*(stateGroup_.get()), filename.data());
+    }
+
+    void DrawObject::setTransparency(float t) {
+      // handle transparency
+      transparencyUniform->set(t);
+      if(sharedStateGroup) return;
+      osg::StateSet *state = stateGroup_->getOrCreateStateSet();
+      if (t != 0) {
+        state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+        state->setMode(GL_BLEND,osg::StateAttribute::ON);
+        state->setRenderBinDetails(1, "DepthSortedBin");
+        osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+        depth->setWriteMask( false );
+        state->setAttributeAndModes(depth.get(),
+                                    osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+      }
+      else {
+        state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+        state->setMode(GL_BLEND,osg::StateAttribute::OFF);
+        state->setRenderBinDetails(1, "RenderBin");
+      }
     }
 
     // the material struct can also contain a static texture (texture file)

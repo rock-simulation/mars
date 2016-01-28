@@ -27,6 +27,7 @@
 
 #include "Clouds.h"
 #include "SphereDrawObject.h"
+#include "../MarsMaterial.h"
 
 #include <osg/Geode>
 #include <osg/Geometry>

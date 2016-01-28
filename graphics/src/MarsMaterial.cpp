@@ -157,6 +157,10 @@ namespace mars {
         normalMap_ = 0;
       }
       updateShader(true);
+      std::map<unsigned long, DrawObject*>::iterator it;
+      for(it=drawObjectMap.begin(); it!=drawObjectMap.end(); ++it) {
+        it->second->setTransparency((float)mStruct.transparency);
+      }
     }
 
     void MarsMaterial::edit(std::string key, std::string value) {

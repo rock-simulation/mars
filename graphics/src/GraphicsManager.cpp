@@ -27,6 +27,7 @@
 
 #include "GraphicsManager.h"
 #include "config.h"
+#include "MarsMaterial.h"
 
 //#include <osgUtil/Optimizer>
 
@@ -958,8 +959,10 @@ namespace mars {
       if(it!=materials.end()) {
         fprintf(stderr, "set material %s for id: %lu\n", material.name.c_str(),
                 id);
+        it->second->addDrawObject(id, ns->object());
         ns->object()->setMaterial(it->second->getMaterialData(),
                                   useFog, useNoise, drawLineLaser);
+        ns->object()->setMarsMaterial(it->second);
         //it->second->setMaterial(material);
       }
     }

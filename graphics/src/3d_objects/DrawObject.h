@@ -53,12 +53,13 @@
 #include <osg/Texture2D>
 #include <osg/LOD>
 
-#include "../MarsMaterial.h"
+
 
 namespace mars {
   namespace graphics {
 
     class GraphicsManager;
+    class MarsMaterial;
 
     class DrawObject {
     public:
@@ -80,6 +81,7 @@ namespace mars {
                                bool useFog = false, bool useNoise = false,
                                bool drawLineLaser = false,
                                bool marsShadow = false);
+      void setMarsMaterial(MarsMaterial *m) {marsMaterial = m;}
       // can be used for dynamic textures
       virtual void setBlending(bool mode);
       virtual void collideSphere(mars::utils::Vector pos,
@@ -126,9 +128,8 @@ namespace mars {
       osg::ref_ptr<osg::MatrixTransform> getScaleMatrix() {
         return scaleTransform_;
       }
-      osg::ref_ptr<osg::Material> getMaterial() {
-        return material_->getMaterial();
-      }
+      osg::ref_ptr<osg::Material> getMaterial();
+
       osg::Group* getObject(void) const {
         return group_.get();
       }
@@ -171,6 +172,7 @@ namespace mars {
 
       void generateTangents(osg::ref_ptr<osg::Geometry> g);
       void seperateMaterial();
+      void setTransparency(float t);
 
     protected:
       unsigned long id_;
@@ -186,6 +188,8 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> lightSpotDirUniform, lightIsDirectionalUniform;
       osg::ref_ptr<osg::Uniform> lightConstantAttUniform, lightLinearAttUniform, lightQuadraticAttUniform;
       osg::ref_ptr<osg::Uniform> lightIsSetUniform, lightCosCutoffUniform, lightSpotExponentUniform;
+
+      MarsMaterial* marsMaterial;
 
       osg::ref_ptr<osg::Group> group_, mGroup_, stateGroup_;
       std::list< osg::ref_ptr<osg::Geometry> > geometry_;

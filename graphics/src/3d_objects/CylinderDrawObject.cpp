@@ -28,6 +28,7 @@
 #include <osg/Geometry>
 
 #include "CylinderDrawObject.h"
+#include "MarsMaterial.h"
 
 namespace mars {
   namespace graphics {

@@ -27,6 +27,7 @@
 
 #include <osg/Geometry>
 #include "CubeDrawObject.h"
+#include "../MarsMaterial.h"
 
 namespace mars {
   namespace graphics {

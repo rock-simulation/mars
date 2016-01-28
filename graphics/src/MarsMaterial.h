@@ -32,6 +32,8 @@
   #warning "MarsMaterial.h"
 #endif
 
+#include "3d_objects/DrawObject.h"
+
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
@@ -102,9 +104,12 @@ namespace mars {
       void setNoiseImage(osg::Image *i);
       void setShadowScale(float v);
       void setShadowSamples(int v);
+      void addDrawObject(unsigned long id, DrawObject *d) {drawObjectMap[id] = d;}
+      void removeDrawObject(unsigned long id) {drawObjectMap.erase(id);}
       inline const interfaces::MaterialData& getMaterialData() {return materialData;}
 
     protected:
+      std::map<unsigned long, DrawObject*> drawObjectMap;
       osg::ref_ptr<osg::Program> lastProgram;
       osg::ref_ptr<osg::Uniform> normalMapUniform, bumpMapUniform;
       osg::ref_ptr<osg::Uniform> baseImageUniform, noiseMapUniform;

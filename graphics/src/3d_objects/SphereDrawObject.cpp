@@ -28,6 +28,7 @@
 #include <osg/Geometry>
 
 #include "SphereDrawObject.h"
+#include "MarsMaterial.h"
 
 namespace mars {
   namespace graphics {
