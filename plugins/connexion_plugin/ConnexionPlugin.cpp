@@ -67,8 +67,6 @@ namespace mars {
 
       void ConnexionPlugin::init() {
         if(!control->graphics || isInit) return;
-        isInit = true;
-
         // add options to the menu
         if(gui) {
           std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
@@ -116,7 +114,7 @@ namespace mars {
           msleep(10);
         }
 
-        closeConnexionHID();
+        if(isInit) closeConnexionHID();
         delete newValues;
       }
 

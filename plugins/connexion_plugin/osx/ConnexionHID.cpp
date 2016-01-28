@@ -105,6 +105,7 @@ namespace mars {
         char target_product[255] = "SpaceNavigator";
         char target_product2[255] = "Space Navigator";
         //char target_product[255] = "Apple Optical USB Mouse";
+        bool found_device = false;
         for ( idx = 0; idx < cnt; idx++ ) {
           myIOHIDDeviceRef = (IOHIDDeviceRef)CFArrayGetValueAtIndex(myDeviceCFArrayRef, idx);
     
@@ -120,12 +121,15 @@ namespace mars {
                                              CFSTR(kIOHIDProductIDKey), &result);
 
           if(!strcmp(target_product, product)) {
+            found_device = true;
             break;
           }
           if(!strcmp(target_product2, product)) {
+            found_device = true;
             break;
           }
         }
+        if(!found_device) return 0;
         myElementCFArrayRef = IOHIDDeviceCopyMatchingElements(myIOHIDDeviceRef, 
                                                               NULL, 0);
         if(myElementCFArrayRef) {
