@@ -33,6 +33,9 @@
 #include <mars/main_gui/GuiInterface.h>
 #include <lib_manager/LibManager.hpp>
 #include <QtGui>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QLabel>
 
 #include <QMessageBox>
 #include <QFileDialog>
