@@ -142,8 +142,9 @@ namespace mars {
         if(colorMap_.valid()) colorMap_ = 0;
       }
       texScaleUniform->set((float)mStruct.tex_scale);
-
+      bool generateTangents = false;
       if (mStruct.normalmap != "") {
+        generateTangents = true;
         if(mStruct.bumpmap != "") {
           setBumpMap(mStruct.bumpmap);
         }
@@ -152,13 +153,18 @@ namespace mars {
         }
         setNormalMap(mStruct.normalmap);
         bumpNorFacUniform->set((float)mStruct.bumpNorFac);
+        // generate tangents
       }
       else {
         normalMap_ = 0;
       }
       updateShader(true);
+
       std::map<unsigned long, DrawObject*>::iterator it;
       for(it=drawObjectMap.begin(); it!=drawObjectMap.end(); ++it) {
+        if(generateTangents) {
+          it->second->generateTangents();
+        }
         it->second->setTransparency((float)mStruct.transparency);
       }
     }
@@ -244,6 +250,10 @@ namespace mars {
       }
       if(utils::matchPattern("*/transparency", key)) {
         materialData.transparency = atof(value.c_str());
+        setMaterial(materialData);
+      }
+      if(utils::matchPattern("*/tex_scale", key)) {
+        materialData.tex_scale = atof(value.c_str());
         setMaterial(materialData);
       }
     }

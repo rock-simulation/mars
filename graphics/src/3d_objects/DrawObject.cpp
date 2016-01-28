@@ -86,7 +86,8 @@ namespace mars {
         g(g),
         sharedStateGroup(false),
         marsMaterial(NULL),
-        showSelected(true) {
+        showSelected(true),
+        tangentsGenerated(false) {
     }
 
     DrawObject::~DrawObject() {
@@ -267,14 +268,13 @@ namespace mars {
                                  bool _marsShadow) {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
-      //if(!mStruct.normalmap.empty())
       bool show_ = false;
       if(mGroup_.valid()) {
         // todo: do not show if is already hidden
         hide();
         show_ = true;
       }
-      generateTangents();
+      if(!mStruct.normalmap.empty()) generateTangents();
       mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
       materialState = g->getMaterialStateSet(mStruct);
       if(show_) {
@@ -399,10 +399,12 @@ namespace mars {
     }
 
     void DrawObject::generateTangents() {
+      if(tangentsGenerated) return;
       std::list< osg::ref_ptr<osg::Geometry> >::iterator it;
       for(it = geometry_.begin(); it != geometry_.end(); ++it) {
         generateTangents(it->get());
       }
+      tangentsGenerated = true;
     }
 
     void DrawObject::generateTangents(osg::ref_ptr<osg::Geometry> geom) {

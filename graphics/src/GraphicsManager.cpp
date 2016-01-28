@@ -878,7 +878,7 @@ namespace mars {
       }
       //osgUtil::Optimizer optimizer;
       //optimizer.optimize(shadowedScene.get());
-
+      setDrawObjectMaterial(id, snode.material);
       return id;
     }
 

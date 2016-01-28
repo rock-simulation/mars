@@ -221,9 +221,9 @@ namespace mars {
       bool marsShadow;
       int maxNumLights;
       bool sharedStateGroup;
+      bool tangentsGenerated;
       utils::Vector lineLasePos, lineLaserNormal;
       GraphicsManager *g;
-
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;
     }; // end of class DrawObject
 

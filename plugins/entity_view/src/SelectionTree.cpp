@@ -271,6 +271,7 @@ namespace mars {
             editPattern.push_back("*/bumpNorFac");
             editPattern.push_back("*/transparency");
             editPattern.push_back("*/shininess");
+            editPattern.push_back("*/tex_scale");
 
             currentMaterial = materialMap[currentItem->text(0).toStdString()];
             configmaps::ConfigMap map = defaultMaterial;
