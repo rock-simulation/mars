@@ -51,17 +51,18 @@
 #include "CameraConfigurator.h"
 #include "CaptureWindow.h"
 
-#define MENU_SHOW_VISUAL   -1
-#define MENU_SHOW_PHYSICAL -2
-#define MENU_SHOW_COORDS   -3
-#define MENU_SHOW_GRID     -4
-#define MENU_VIEW_TOP      -5
-#define MENU_VIEW_FRONT    -6
-#define MENU_VIEW_RIGHT    -7
-#define MENU_VIEW_BACK     -8
-#define MENU_VIEW_LEFT     -9
-#define MENU_VIEW_BOTTOM   -10
-#define MENU_SHOW_CONTACTS -11
+#define MENU_SHOW_VISUAL    -1
+#define MENU_SHOW_PHYSICAL  -2
+#define MENU_SHOW_COORDS    -3
+#define MENU_SHOW_GRID      -4
+#define MENU_VIEW_TOP       -5
+#define MENU_VIEW_FRONT     -6
+#define MENU_VIEW_RIGHT     -7
+#define MENU_VIEW_BACK      -8
+#define MENU_VIEW_LEFT      -9
+#define MENU_VIEW_BOTTOM    -10
+#define MENU_SHOW_CONTACTS  -11
+#define MENU_SHOW_SELECTION -12
 
 namespace mars {
   namespace gui {
@@ -118,6 +119,8 @@ namespace mars {
                                                         false, this);
       cfgShowContacts = control->cfg->getOrCreateProperty("Simulator", "draw contacts",
                                                         false, this);
+      cfgShowSelection = control->cfg->getOrCreateProperty("Graphics", "showSelection",
+                                                        true, this);
 
       // todo: update state if value in cfg_manager changes
       mainGui->addGenericMenuAction("../View/visual representation",
@@ -147,6 +150,11 @@ namespace mars {
                                     (main_gui::MenuInterface*)this,
                                     0, "", 0,
                                     1+cfgShowContacts.bValue);
+      mainGui->addGenericMenuAction("../View/Show Selection",
+                                    MENU_SHOW_SELECTION,
+                                    (main_gui::MenuInterface*)this,
+                                    0, "", 0,
+                                    1+cfgShowSelection.bValue);
 
       mainGui->addGenericMenuAction("../View/Camera/Top",
                                     MENU_VIEW_TOP,
@@ -232,6 +240,14 @@ namespace mars {
           cfgShowContacts.bValue = checked;
           updateProp = false;
           control->cfg->setProperty(cfgShowContacts);
+          updateProp = true;
+        }
+        break;
+      case MENU_SHOW_SELECTION:
+        if(updateProp) {
+          cfgShowSelection.bValue = checked;
+          updateProp = false;
+          control->cfg->setProperty(cfgShowSelection);
           updateProp = true;
         }
         break;
@@ -339,6 +355,15 @@ namespace mars {
           updateProp = false;
           mainGui->setMenuActionSelected("../View/Show Contacts",
                                          cfgShowContacts.bValue);
+          updateProp = true;
+        }
+      }
+      if(cfgShowSelection.paramId == _property.paramId) {
+        cfgShowSelection.bValue = _property.bValue;
+        if(updateProp) {
+          updateProp = false;
+          mainGui->setMenuActionSelected("../View/Show Selection",
+                                         cfgShowSelection.bValue);
           updateProp = true;
         }
       }

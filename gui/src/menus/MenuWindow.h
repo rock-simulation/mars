@@ -84,7 +84,7 @@ namespace mars {
       BlenderExportGUI *blender;
       ControllerConfigGUI *cc;
       cfg_manager::cfgPropertyStruct cfgVisRep, cfgShowCoords, cfgShowGrid;
-      cfg_manager::cfgPropertyStruct cfgShowContacts;
+      cfg_manager::cfgPropertyStruct cfgShowContacts, cfgShowSelection;
       bool updateProp;
 
     private slots:

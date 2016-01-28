@@ -199,6 +199,9 @@ namespace mars {
                                                   false, this);
           showCoordsProp = cfg->getOrCreateProperty("Graphics", "showCoords",
                                                     true, this);
+          showSelectionProp = cfg->getOrCreateProperty("Graphics",
+                                                       "showSelection",
+                                                       true, this);
         }
         else {
           marsShadow.bValue = false;
@@ -1894,6 +1897,15 @@ namespace mars {
         showCoordsProp.bValue = _property.bValue;
         if(showCoordsProp.bValue) showCoords();
         else hideCoords();
+        return;
+      }
+
+      if(_property.paramId == showSelectionProp.paramId) {
+        showSelectionProp.bValue = _property.bValue;
+        map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator it;
+        for(it=drawObjects_.begin(); it!=drawObjects_.end(); ++it) {
+          it->second->object()->setShowSelected(showSelectionProp.bValue);
+        }
         return;
       }
     }

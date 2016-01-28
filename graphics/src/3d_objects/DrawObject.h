@@ -52,6 +52,7 @@
 #include <osg/Geode>
 #include <osg/Texture2D>
 #include <osg/LOD>
+#include <osg/Depth>
 
 
 
@@ -117,7 +118,7 @@ namespace mars {
       void setSelectable(bool val) {
         selectable_ = val;
       }
-
+      void setShowSelected(bool val);
       unsigned long getID(void) const;
       void setID(unsigned long _id);
       void showNormals(bool val);
@@ -179,7 +180,7 @@ namespace mars {
       unsigned int nodeMask_;
 
       std::string stateFilename_;
-      bool selected_, selectable_;
+      bool selected_, selectable_, showSelected;
       bool useFog, useNoise;
       bool getLight;
       float brightness_;
@@ -211,6 +212,7 @@ namespace mars {
       osg::ref_ptr<osg::Uniform> numLightsUniform;
       osg::ref_ptr<osg::Uniform> drawLineLaserUniform;
       osg::ref_ptr<osg::StateSet> materialState;
+      osg::ref_ptr<osg::Depth> depth;
 
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;

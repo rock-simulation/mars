@@ -393,7 +393,7 @@ namespace mars {
         multisamples, noiseProp, brightness, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
         hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize,
-        showGridProp, showCoordsProp;
+        showGridProp, showCoordsProp, showSelectionProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;

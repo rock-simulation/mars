@@ -34,7 +34,6 @@
 
 #include <osg/CullFace>
 #include <osg/PolygonMode>
-#include <osg/Depth>
 #include <osg/ComputeBoundsVisitor>
 
 #include <osgUtil/TangentSpaceGenerator>
@@ -86,7 +85,8 @@ namespace mars {
         maxNumLights(1),
         g(g),
         sharedStateGroup(false),
-        marsMaterial(NULL) {
+        marsMaterial(NULL),
+        showSelected(true) {
     }
 
     DrawObject::~DrawObject() {
@@ -239,22 +239,25 @@ namespace mars {
 
     void DrawObject::setTransparency(float t) {
       // handle transparency
-      transparencyUniform->set(t);
+      transparencyUniform->set(1-t);
       if(sharedStateGroup) return;
       osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-      if (t != 0) {
+      if (t >= 0.00001) {
         state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
         state->setMode(GL_BLEND,osg::StateAttribute::ON);
         state->setRenderBinDetails(1, "DepthSortedBin");
-        osg::ref_ptr<osg::Depth> depth = new osg::Depth;
+        depth = new osg::Depth;
         depth->setWriteMask( false );
         state->setAttributeAndModes(depth.get(),
                                     osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
       }
       else {
+        if(depth.valid()) {
+          state->removeAttribute(depth.get());
+        }
         state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
         state->setMode(GL_BLEND,osg::StateAttribute::OFF);
-        state->setRenderBinDetails(1, "RenderBin");
+        state->setRenderBinDetails(0, "RenderBin");
       }
     }
 
@@ -308,7 +311,7 @@ namespace mars {
       osg::StateSet *state = stateGroup_->getOrCreateStateSet();
 
       // handle transparency
-      transparencyUniform->set((float)(1.0f-(float)(mStruct.transparency)));
+      transparencyUniform->set((float)(1.f-(float)(mStruct.transparency)));
       if (mStruct.transparency != 0) {
         state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
         state->setMode(GL_BLEND,osg::StateAttribute::ON);
@@ -436,7 +439,13 @@ namespace mars {
       posTransform_->setNodeMask(nodeMask_);
     }
 
+    void DrawObject::setShowSelected(bool val) {
+      showSelected = val;
+      setSelected(selected_);
+    }
+    
     void DrawObject::setSelected(bool val) {
+      selected_ = val;
       if(selectable_) {
         osg::PolygonMode *polyModeObj;
 
@@ -450,7 +459,7 @@ namespace mars {
           state->setAttribute( polyModeObj );
         }
 
-        if(val) {
+        if(val && showSelected) {
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
           //state->setAttributeAndModes(material_.get(), osg::StateAttribute::OFF);
 
