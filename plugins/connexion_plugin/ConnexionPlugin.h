@@ -103,11 +103,7 @@ namespace mars {
          */
         mars::interfaces::sReal camState[7];
 
-        // was the init of the device successful
-        int is_init;
-
         bool run_thread;
-
         bool thread_closed;
 
         void camReset(void);
