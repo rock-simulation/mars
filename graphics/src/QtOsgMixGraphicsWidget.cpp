@@ -157,10 +157,14 @@ namespace mars {
       if(!haveNSView && !isRTTWidget) {
         NSView* osgWindow = wdata->getCreatedNSView();
         if(osgWindow) {
-          QMacCocoaViewContainer *c = new QMacCocoaViewContainer(0, 0);
+          QWidget *w = new QWidget();
+          QMacCocoaViewContainer *c = new QMacCocoaViewContainer(0, w);
           c->setCocoaView(osgWindow);
+          w->setGeometry(0, 0, width(), height());
           c->setGeometry(0, 0, width(), height());
-          c->setParent(this);
+          this->hide();
+          w->setParent(this);
+          this->show();
           haveNSView = true;
         }
       }
