@@ -222,6 +222,7 @@ namespace mars {
       int maxNumLights;
       bool sharedStateGroup;
       bool tangentsGenerated;
+      bool isHidden;
       utils::Vector lineLasePos, lineLaserNormal;
       GraphicsManager *g;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;

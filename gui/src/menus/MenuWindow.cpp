@@ -127,12 +127,12 @@ namespace mars {
                                     MENU_SHOW_VISUAL,
                                     (main_gui::MenuInterface*)this,
                                     0, "", 0,
-                                    1+cfgVisRep.iValue | 1);
+                                    1+(cfgVisRep.iValue & 1));
       mainGui->addGenericMenuAction("../View/physical representation",
                                     MENU_SHOW_PHYSICAL,
                                     (main_gui::MenuInterface*)this,
                                     0, "", 0,
-                                    1+cfgVisRep.iValue | 2);
+                                    1+(cfgVisRep.iValue & 2));
 
       mainGui->addGenericMenuAction("../View/Show Coordinates",
                                     MENU_SHOW_COORDS,

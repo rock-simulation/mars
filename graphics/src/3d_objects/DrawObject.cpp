@@ -87,7 +87,8 @@ namespace mars {
         sharedStateGroup(false),
         marsMaterial(NULL),
         showSelected(true),
-        tangentsGenerated(false) {
+        tangentsGenerated(false),
+        isHidden(true) {
     }
 
     DrawObject::~DrawObject() {
@@ -268,11 +269,10 @@ namespace mars {
                                  bool _marsShadow) {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
-      bool show_ = false;
+      bool show_ = !isHidden;
       if(mGroup_.valid()) {
         // todo: do not show if is already hidden
         hide();
-        show_ = true;
       }
       if(!mStruct.normalmap.empty()) generateTangents();
       mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
@@ -504,6 +504,7 @@ namespace mars {
 
     void DrawObject::show() {
       hide();
+      isHidden = false;
       if(sharedStateGroup) {
         stateGroup_->addChild(posTransform_.get());
       }
@@ -513,6 +514,7 @@ namespace mars {
     }
 
     void DrawObject::hide() {
+      isHidden = true;
       if(sharedStateGroup) {
         stateGroup_->removeChild(posTransform_.get());
       }
