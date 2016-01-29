@@ -311,6 +311,7 @@ namespace mars {
       (*config)["filename"] = filename_;
       SET_VALUE("groupid", groupID, writeDefaults);
       SET_VALUE("index", index, false);
+      // todo: if a relative id is set, export the relative pos and rot!
       SET_OBJECT("position", pos, vector, true);
       SET_OBJECT("pivot", pivot, vector, true);
       SET_OBJECT("rotation", rot, quaternion, true);
