@@ -28,34 +28,25 @@
 #ifndef QTOSGMIXADAPTER_H
 #define QTOSGMIXADAPTER_H
 
-
 #ifdef __APPLE__
+#ifdef __OBJC__
+#else
 #ifdef Q_FORWARD_DECLARE_OBJC_CLASS
 #undef Q_FORWARD_DECLARE_OBJC_CLASS
 #endif
 #define Q_FORWARD_DECLARE_OBJC_CLASS(classname) class classname;
+#endif
 #endif // __APPLE__
-
 
 #include "GraphicsWidget.h"
 
-#ifdef __APPLE__
-  #define USE_COCOA
-  #include <QMacCocoaViewContainer>
-#else
-  #include <QWidget>
-#endif // __APPLE__
+#include <QWidget>
 
 
 #if defined(WIN32) && !defined(__CYGWIN__)
   #include <osgViewer/api/Win32/GraphicsWindowWin32>
 #elif defined(__APPLE__)  // Assume using Carbon on Mac.
-  #ifdef USE_COCOA
-    #include <QMacCocoaViewContainer>
-    #include <osgViewer/api/Cocoa/GraphicsWindowCocoa>
-  #else
-    #include <osgViewer/api/Carbon/GraphicsWindowCarbon>
-  #endif
+  #include <osgViewer/api/Cocoa/GraphicsWindowCocoa>
 #else // all other unix
   #include <osgViewer/api/X11/GraphicsWindowX11>
 #endif
@@ -65,44 +56,29 @@ namespace mars {
 
     class GraphicsManager;
 
-#ifdef USE_COCOA
-    typedef QMacCocoaViewContainer MarsQtWidget;
-#else
-    typedef QWidget MarsQtWidget;
-#endif
-
 #if defined(WIN32) && !defined(__CYGWIN__)
   typedef HWND WindowHandle;
   typedef osgViewer::GraphicsWindowWin32::WindowData WindowData;
-#elif defined(__APPLE__)  // Assume using Carbon on Mac.
-  #ifdef USE_COCOA
+#elif defined(__APPLE__)
     typedef osgViewer::GraphicsWindowCocoa::WindowData WindowData;
-  #else
-    typedef WindowRef WindowHandle;
-    typedef osgViewer::GraphicsWindowCarbon::WindowData WindowData;
-  #endif
 #else // all other unix
   typedef Window WindowHandle;
   typedef osgViewer::GraphicsWindowX11::WindowData WindowData;
 #endif
 
     /**
-     * A GraphicsWidget using QWidget or QMacCocoaViewContainer.
+     * A GraphicsWidget using QWidget
      */
-    class QtOsgMixGraphicsWidget: public MarsQtWidget, public GraphicsWidget
+    class QtOsgMixGraphicsWidget: public QWidget, public GraphicsWidget
     {
       Q_OBJECT; // with this we need a generated moc file
     public:
       QtOsgMixGraphicsWidget(void *parent, osg::Group *scene,
                              unsigned long id, bool rtt_widget = 0,
                              Qt::WindowFlags f=0, GraphicsManager *gm = 0)
-#ifdef __APPLE__
-        : MarsQtWidget(0, (QWidget*) parent),
-#else
-        : MarsQtWidget((QWidget*) parent, f),
-#endif
+        : QWidget((QWidget*) parent, f),
         GraphicsWidget(parent, scene, id, rtt_widget, f, gm)
-      {};
+          { haveNSView = false;}
 
       // Prevent flicker on Windows Qt
       QPaintEngine* paintEngine () const { return 0; }
