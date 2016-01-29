@@ -83,7 +83,7 @@ namespace mars {
       gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
       if(gui) {
         path.append("/mars/log_console/resources/images/terminal.png");
-        gui->addGenericMenuAction("../Windows/Console", 1,
+        gui->addGenericMenuAction("../Plugins/Console", 1,
                                   dynamic_cast<main_gui::MenuInterface*>(this),
                                   0, path, true);
 	
