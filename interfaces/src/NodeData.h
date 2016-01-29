@@ -133,7 +133,8 @@ namespace mars {
       bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix,
                          LoadCenter *loadCenter = 0);
       void toConfigMap(configmaps::ConfigMap *config,
-                       bool skipFilenamePrefix = false);
+                       bool skipFilenamePrefix = false,
+                       bool exportDefault = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 
       /**

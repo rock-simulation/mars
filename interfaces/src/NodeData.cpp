@@ -38,13 +38,12 @@
   if((it = config->find(str)) != config->end()) \
     type##FromConfigItem(it->second, &val);
 
-#define SET_VALUE(str, val)                              \
-  if(val != defaultNode.val)                             \
+#define SET_VALUE(str, val, b)                             \
+  if(b || val != defaultNode.val)                             \
     (*config)[str] = val
 
-//FIXME:HACK??! default value
-#define SET_OBJECT(str, val, type)                                      \
-  if(1 || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) { \
+#define SET_OBJECT(str, val, type, b)                                     \
+  if(b || val.squaredNorm() - defaultNode.val.squaredNorm() < 0.0000001) { \
     type##ToConfigItem((*config)[str], &val);                          \
   }
 
@@ -282,7 +281,8 @@ namespace mars {
       return true;
     }
 
-    void NodeData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix) {
+    void NodeData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix,
+                               bool writeDefaults) {
       NodeData defaultNode;
       std::string filename_ = filename;
       std::string srcname_;
@@ -296,26 +296,26 @@ namespace mars {
           removeFilenamePrefix(&srcname_);
       }
 
-      SET_VALUE("name", name);
-      SET_VALUE("mass", mass);
-      SET_VALUE("density", density);
-      SET_VALUE("noPhysical", noPhysical);
-      SET_VALUE("movable", movable);
+      SET_VALUE("name", name, writeDefaults);
+      SET_VALUE("mass", mass, writeDefaults);
+      SET_VALUE("density", density, writeDefaults);
+      SET_VALUE("noPhysical", noPhysical, writeDefaults);
+      SET_VALUE("movable", movable, writeDefaults);
 
-      if(physicMode != defaultNode.physicMode) {
+      if(writeDefaults || physicMode != defaultNode.physicMode) {
         std::string tmp = toString(physicMode);
         (*config)["physicmode"] = tmp;
       }
 
-      SET_VALUE("origname", origName);
+      SET_VALUE("origname", origName, false);
       (*config)["filename"] = filename_;
-      SET_VALUE("groupid", groupID);
-      SET_VALUE("index", index);
-      SET_OBJECT("position", pos, vector);
-      SET_OBJECT("pivot", pivot, vector);
-      SET_OBJECT("rotation", rot, quaternion);
-      SET_OBJECT("extend", ext, vector);
-      SET_VALUE("relativeid", relative_id);
+      SET_VALUE("groupid", groupID, writeDefaults);
+      SET_VALUE("index", index, false);
+      SET_OBJECT("position", pos, vector, true);
+      SET_OBJECT("pivot", pivot, vector, true);
+      SET_OBJECT("rotation", rot, quaternion, true);
+      SET_OBJECT("extend", ext, vector, true);
+      SET_VALUE("relativeid", relative_id, writeDefaults);
 
       if(terrain) {
         (*config)["t_srcname"] = srcname_;
@@ -326,48 +326,48 @@ namespace mars {
         (*config)["t_tex_scale_y"] = terrain->texScaleY;
       }
 
-      SET_OBJECT("visualposition", visual_offset_pos, vector);
-      SET_OBJECT("visualrotation", visual_offset_rot, quaternion);
-      SET_OBJECT("visualsize", visual_size, vector);
-      SET_OBJECT("visualscale", visual_scale, vector);
+      SET_OBJECT("visualposition", visual_offset_pos, vector, true);
+      SET_OBJECT("visualrotation", visual_offset_rot, quaternion, true);
+      SET_OBJECT("visualsize", visual_size, vector, true);
+      SET_OBJECT("visualscale", visual_scale, vector, true);
 
-      SET_VALUE("cmax_num_contacts", c_params.max_num_contacts);
-      SET_VALUE("cerp", c_params.erp);
-      SET_VALUE("ccfm", c_params.cfm);
-      SET_VALUE("cfriction1", c_params.friction1);
-      SET_VALUE("cfriction2", c_params.friction2);
-      SET_VALUE("cmotion1", c_params.motion1);
-      SET_VALUE("cmotion2", c_params.motion2);
-      SET_VALUE("cfds1", c_params.fds1);
-      SET_VALUE("cfds2", c_params.fds2);
-      SET_VALUE("cbounce", c_params.bounce);
-      SET_VALUE("cbounce_vel", c_params.bounce_vel);
-      SET_VALUE("capprox", c_params.approx_pyramid);
-      SET_VALUE("coll_bitmask", c_params.coll_bitmask);
+      SET_VALUE("cmax_num_contacts", c_params.max_num_contacts, writeDefaults);
+      SET_VALUE("cerp", c_params.erp, writeDefaults);
+      SET_VALUE("ccfm", c_params.cfm, writeDefaults);
+      SET_VALUE("cfriction1", c_params.friction1, writeDefaults);
+      SET_VALUE("cfriction2", c_params.friction2, writeDefaults);
+      SET_VALUE("cmotion1", c_params.motion1, writeDefaults);
+      SET_VALUE("cmotion2", c_params.motion2, writeDefaults);
+      SET_VALUE("cfds1", c_params.fds1, writeDefaults);
+      SET_VALUE("cfds2", c_params.fds2, writeDefaults);
+      SET_VALUE("cbounce", c_params.bounce, writeDefaults);
+      SET_VALUE("cbounce_vel", c_params.bounce_vel, writeDefaults);
+      SET_VALUE("capprox", c_params.approx_pyramid, writeDefaults);
+      SET_VALUE("coll_bitmask", c_params.coll_bitmask, writeDefaults);
       if(c_params.friction_direction1) {
         vectorToConfigItem((*config)["cfdir1"],
                            c_params.friction_direction1);
       }
 
-      SET_VALUE("inertia", inertia_set);
-      SET_VALUE("i00", inertia[0][0]);
-      SET_VALUE("i01", inertia[0][1]);
-      SET_VALUE("i02", inertia[0][2]);
-      SET_VALUE("i10", inertia[1][0]);
-      SET_VALUE("i11", inertia[1][1]);
-      SET_VALUE("i12", inertia[1][2]);
-      SET_VALUE("i20", inertia[2][0]);
-      SET_VALUE("i21", inertia[2][1]);
-      SET_VALUE("i22", inertia[2][2]);
+      SET_VALUE("inertia", inertia_set, false);
+      SET_VALUE("i00", inertia[0][0], false);
+      SET_VALUE("i01", inertia[0][1], false);
+      SET_VALUE("i02", inertia[0][2], false);
+      SET_VALUE("i10", inertia[1][0], false);
+      SET_VALUE("i11", inertia[1][1], false);
+      SET_VALUE("i12", inertia[1][2], false);
+      SET_VALUE("i20", inertia[2][0], false);
+      SET_VALUE("i21", inertia[2][1], false);
+      SET_VALUE("i22", inertia[2][2], false);
 
-      SET_VALUE("linear_damping", linear_damping);
-      SET_VALUE("angular_damping", angular_damping);
-      SET_VALUE("angular_low", angular_low);
+      SET_VALUE("linear_damping", linear_damping, writeDefaults);
+      SET_VALUE("angular_damping", angular_damping, writeDefaults);
+      SET_VALUE("angular_low", angular_low, writeDefaults);
 
-      SET_VALUE("shadow_id", shadow_id);
-      SET_VALUE("shadowcaster", isShadowCaster);
-      SET_VALUE("shadowreceiver", isShadowReceiver);
-      SET_VALUE("material", material.name);
+      SET_VALUE("shadow_id", shadow_id, writeDefaults);
+      SET_VALUE("shadowcaster", isShadowCaster, writeDefaults);
+      SET_VALUE("shadowreceiver", isShadowReceiver, writeDefaults);
+      SET_VALUE("material", material.name, writeDefaults);
 
     }
 

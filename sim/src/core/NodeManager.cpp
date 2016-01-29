@@ -1669,33 +1669,21 @@ namespace mars {
     void NodeManager::edit(NodeId id, const std::string &key,
                            const std::string &value) {
       NodeData nd = getFullNode(id);
-      if(utils::matchPattern("*/position/*", key)) {
+      if(matchPattern("*/position/*", key)) {
         double v = atof(value.c_str());
-        if(key[key.size()-1] == 'x') {
-          nd.pos.x() = v;
-        }
-        else if(key[key.size()-1] == 'y') {
-          nd.pos.y() = v;
-        }
-        else if(key[key.size()-1] == 'z') {
-          nd.pos.z() = v;
-        }
+        if(key[key.size()-1] == 'x') nd.pos.x() = v;
+        else if(key[key.size()-1] == 'y') nd.pos.y() = v;
+        else if(key[key.size()-1] == 'z') nd.pos.z() = v;
         control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
       }
-      else if(utils::matchPattern("*/extend/*", key)) {
+      else if(matchPattern("*/extend/*", key)) {
         double v = atof(value.c_str());
-        if(key[key.size()-1] == 'x') {
-          nd.ext.x() = v;
-        }
-        else if(key[key.size()-1] == 'y') {
-          nd.ext.y() = v;
-        }
-        else if(key[key.size()-1] == 'z') {
-          nd.ext.z() = v;
-        }
+        if(key[key.size()-1] == 'x') nd.ext.x() = v;
+        else if(key[key.size()-1] == 'y') nd.ext.y() = v;
+        else if(key[key.size()-1] == 'z') nd.ext.z() = v;
         control->nodes->editNode(&nd, EDIT_NODE_SIZE);
       }
-      else if(utils::matchPattern("*/material", key)) {
+      else if(matchPattern("*/material", key)) {
         if(control->graphics) {
           std::vector<interfaces::MaterialData> mList;
           std::vector<interfaces::MaterialData>::iterator it;
@@ -1708,6 +1696,44 @@ namespace mars {
             }
           }
         }
+      }
+      else if(matchPattern("*/c*", key)) {
+        MutexLocker locker(&iMutex);
+        NodeMap::iterator iter;
+        // todo: cfdir1 is a vector
+        iter = simNodes.find(id);
+        if(iter == simNodes.end()) return;
+        contact_params c = iter->second->getContactParams();
+        if(matchPattern("*/cmax_num_contacts", key)) {
+          c.max_num_contacts = atoi(value.c_str());;
+        }
+        else if(matchPattern("*/cerp", key)) c.erp = atof(value.c_str());
+        else if(matchPattern("*/ccfm", key)) c.cfm = atof(value.c_str());
+        else if(matchPattern("*/cfriction1", key)) c.friction1 = atof(value.c_str());
+        else if(matchPattern("*/cfriction2", key)) c.friction2 = atof(value.c_str());
+        else if(matchPattern("*/cmotion1", key)) c.motion1 = atof(value.c_str());
+        else if(matchPattern("*/cmotion2", key)) c.motion2 = atof(value.c_str());
+        else if(matchPattern("*/cfds1", key)) c.fds1 = atof(value.c_str());
+        else if(matchPattern("*/cfds2", key)) c.fds2 = atof(value.c_str());
+        else if(matchPattern("*/cbounce", key)) c.bounce = atof(value.c_str());
+        else if(matchPattern("*/cbounce_vel", key)) c.bounce_vel = atof(value.c_str());
+        else if(matchPattern("*/capprox", key)) {
+          if(value == "true" || value == "True") c.approx_pyramid = true;
+          else c.approx_pyramid = false;
+        }
+        else if(matchPattern("*/coll_bitmask", key)) c.coll_bitmask = atoi(value.c_str());
+        else if(matchPattern("*/cfdir1*", key)) {
+          double v = atof(value.c_str());
+          if(!c.friction_direction1) c.friction_direction1 = new Vector(0,0,0);
+          if(key[key.size()-1] == 'x') c.friction_direction1->x() = v;
+          else if(key[key.size()-1] == 'y') c.friction_direction1->y() = v;
+          else if(key[key.size()-1] == 'z') c.friction_direction1->z() = v;
+          if(c.friction_direction1->norm() < 0.00000001) {
+            delete c.friction_direction1;
+            c.friction_direction1 = 0;
+          }
+        }
+        iter->second->setContactParams(c);
       }
     }
 

@@ -228,9 +228,15 @@ namespace mars {
               editPattern.push_back("*/position/*");
               editPattern.push_back("*/extend/*");
               editPattern.push_back("*/material");
+              editPattern.push_back("*/c*");
               nodeData = control->nodes->getFullNode(id);
               configmaps::ConfigMap map = nodeData.map;
-              nodeData.toConfigMap(&map);
+              if(!map.hasKey("cfdir1")) {
+                map["cfdir1"]["x"] = 0.;
+                map["cfdir1"]["y"] = 0.;
+                map["cfdir1"]["z"] = 0.;
+              }
+              nodeData.toConfigMap(&map, false, true);
               dw->setConfigMap(nodeData.name, map, editPattern);
               editCategory = 1;
             }
