@@ -36,10 +36,6 @@
  #include <opencv/highgui.h>
 #endif
 
-#ifdef USE_MARS_VBO
-#include "3d_objects/MarsVBOGeom.h"
-#endif
-
 #include <mars/utils/mathUtils.h>
 
 namespace mars {
@@ -472,13 +468,6 @@ namespace mars {
         if(r==256) memcpy(buffer, buffer+o, foo);
       }
 
-#ifdef USE_MARS_VBO
-      MarsVBOGeom *geometry = new MarsVBOGeom();
-      geometry->setVertexArray(vertices2);
-      geometry->setNormalArray(normals2);
-      if(osgTexcoords->size() > 0)
-        geometry->setTexCoordArray(texcoords2);
-#else
       osg::Geometry* geometry = new osg::Geometry;
       geometry->setVertexArray(osgVertices.get());
       geometry->setNormalArray(osgNormals.get());
@@ -488,7 +477,7 @@ namespace mars {
 
       osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
       geometry->addPrimitiveSet(drawArrays);
-#endif
+
       geode->addDrawable(geometry);
       geode->setName("bobj");
 
