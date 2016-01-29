@@ -162,7 +162,6 @@ namespace mars {
         temp << QString::fromStdString(mList[i].name);
         configmaps::ConfigMap map;
         mList[i].toConfigMap(&map);
-        fprintf(stderr, "material: %s\n", mList[i].name.c_str());
         materialMap[mList[i].name] = map;
         map.toYamlStream(std::cerr);
         QTreeWidgetItem *next = new QTreeWidgetItem(temp);
@@ -219,7 +218,6 @@ namespace mars {
           QTreeWidgetItem *parent = currentItem->parent();
           if(!parent) return;
           while(parent->parent()) parent = parent->parent();
-          fprintf(stderr, "select parent: %s\n", parent->text(0).toStdString().c_str());
           int n = currentItem->text(0).indexOf(":");
           if(n>-1) {
             unsigned long id = currentItem->text(0).left(n).toULong();
