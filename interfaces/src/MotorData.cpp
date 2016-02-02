@@ -122,7 +122,7 @@ namespace mars {
       GET_VALUE("maxAcceleration", maxAcceleration, Double);
 
       std::string tmpmotortype;
-      tmpmotortype = config->get("tmpmotortype", tmpmotortype);
+      tmpmotortype = config->get("type", tmpmotortype);
       if (tmpmotortype=="1" || tmpmotortype=="PID") {
         type = (MotorType)1ul;
       } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
