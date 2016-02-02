@@ -269,6 +269,8 @@ namespace mars {
 
       // calculate control values
       error = controlValue - *position;
+      if (std::abs(error) < 0.000001)
+        error = 0.0;
 
       // FIXME: not sure if this makes sense, because it forbids turning
       //        motors in the same direction for multiple revolutions
