@@ -382,6 +382,19 @@ namespace mars {
             entitylist.push_back(*it);
           }
         }
+        // parse physics
+        if (map.hasKey("physics")) {
+          configmaps::ConfigMap physicsmap = map["physics"];
+          if (physicsmap.hasKey("gravity")) {
+            utils::Vector gravvec;
+            //configmaps::ConfigMap gravmap = physicsmap["gravity"];
+            //gravvec.x() = gravmap["x"];
+            gravvec.x() = physicsmap["gravity"]["x"];
+            gravvec.y() = physicsmap["gravity"]["y"];
+            gravvec.z() = physicsmap["gravity"]["z"];
+            control->sim->setGravity(gravvec);
+            }
+          }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;
