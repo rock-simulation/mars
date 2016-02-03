@@ -173,10 +173,10 @@ namespace mars {
       if(utils::matchPattern("*/ambientColor/*", key) ||
          utils::matchPattern("*/ambientFront/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'a') materialData.ambientFront.a = v;
-        else if(key.back() == 'r') materialData.ambientFront.r = v;
-        else if(key.back() == 'g') materialData.ambientFront.g = v;
-        else if(key.back() == 'b') materialData.ambientFront.b = v;
+        if(key[key.size()-1] == 'a') materialData.ambientFront.a = v;
+        else if(key[key.size()-1] == 'r') materialData.ambientFront.r = v;
+        else if(key[key.size()-1] == 'g') materialData.ambientFront.g = v;
+        else if(key[key.size()-1] == 'b') materialData.ambientFront.b = v;
         setMaterial(materialData);
       }
       if(utils::matchPattern("*/diffuseColor/*", key) ||
@@ -191,19 +191,19 @@ namespace mars {
       if(utils::matchPattern("*/specularColor/*", key) ||
          utils::matchPattern("*/specularFront/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'a') materialData.specularFront.a = v;
-        else if(key.back() == 'r') materialData.specularFront.r = v;
-        else if(key.back() == 'g') materialData.specularFront.g = v;
-        else if(key.back() == 'b') materialData.specularFront.b = v;
+        if(key[key.size()-1] == 'a') materialData.specularFront.a = v;
+        else if(key[key.size()-1] == 'r') materialData.specularFront.r = v;
+        else if(key[key.size()-1] == 'g') materialData.specularFront.g = v;
+        else if(key[key.size()-1] == 'b') materialData.specularFront.b = v;
         setMaterial(materialData);
       }
       if(utils::matchPattern("*/emissionColor/*", key) ||
          utils::matchPattern("*/emissionFront/*", key)) {
         double v = atof(value.c_str());
-        if(key.back() == 'a') materialData.emissionFront.a = v;
-        else if(key.back() == 'r') materialData.emissionFront.r = v;
-        else if(key.back() == 'g') materialData.emissionFront.g = v;
-        else if(key.back() == 'b') materialData.emissionFront.b = v;
+        if(key[key.size()-1] == 'a') materialData.emissionFront.a = v;
+        else if(key[key.size()-1] == 'r') materialData.emissionFront.r = v;
+        else if(key[key.size()-1] == 'g') materialData.emissionFront.g = v;
+        else if(key[key.size()-1] == 'b') materialData.emissionFront.b = v;
         setMaterial(materialData);
       }
 
