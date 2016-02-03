@@ -77,8 +77,11 @@ namespace mars {
                              unsigned long id, bool rtt_widget = 0,
                              Qt::WindowFlags f=0, GraphicsManager *gm = 0)
         : QWidget((QWidget*) parent, f),
-        GraphicsWidget(parent, scene, id, rtt_widget, f, gm)
-          { haveNSView = false;}
+        GraphicsWidget(parent, scene, id, rtt_widget, f, gm) {
+#ifdef __APPLE__
+          haveNSView = false;
+#endif
+        }
 
       // Prevent flicker on Windows Qt
       QPaintEngine* paintEngine () const { return 0; }
