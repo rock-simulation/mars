@@ -16,7 +16,6 @@
 */
 
 #include "SkyDome.h"
-//#include <osgOcean/ShaderManager>
 
 SkyDome::SkyDome( void )
 {
@@ -82,7 +81,7 @@ osg::ref_ptr<osg::Program> SkyDome::createShader(void)
             "{\n"
             "    vec3 tex = vec3(vTexCoord.x, vTexCoord.y, -vTexCoord.z);\n"
             "    gl_FragColor = textureCube( uEnvironmentMap, tex.xzy );\n"
-            "  gl_FragColor.a = 0.0;\n"
+            "  gl_FragColor.a = 1.0;\n"
             "}\n";
 
         program->setName( "sky_dome_shader" );

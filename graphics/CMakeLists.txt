@@ -115,7 +115,6 @@ set(HEADERS_2D
 set(HEADERS_3D
            src/3d_objects/AxisPrimitive.h
            src/3d_objects/CapsuleDrawObject.h
-           src/3d_objects/Clouds.h
            src/3d_objects/CoordsPrimitive.h
            src/3d_objects/CubeDrawObject.h
            src/3d_objects/CylinderDrawObject.h
@@ -163,7 +162,6 @@ set(SOURCES
            src/3d_objects/AxisPrimitive.cpp
            src/3d_objects/CapsuleDrawObject.cpp
            src/3d_objects/CoordsPrimitive.cpp
-           src/3d_objects/Clouds.cpp
            src/3d_objects/CubeDrawObject.cpp
            src/3d_objects/CylinderDrawObject.cpp
            src/3d_objects/DrawObject.cpp

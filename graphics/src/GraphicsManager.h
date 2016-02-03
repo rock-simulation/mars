@@ -343,7 +343,6 @@ namespace mars {
 
       osg::ref_ptr<osg::Group> grid;
       bool show_grid;
-      osg::ref_ptr<osg::Group> clouds_;
       bool showClouds_;
       bool show_coords;
 

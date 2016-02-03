@@ -44,7 +44,6 @@
 #include "3d_objects/DrawObject.h"
 #include "3d_objects/CoordsPrimitive.h"
 #include "3d_objects/AxisPrimitive.h"
-#include "3d_objects/Clouds.h"
 
 #include "2d_objects/HUDLabel.h"
 #include "2d_objects/HUDTerminal.h"
@@ -1279,21 +1278,13 @@ namespace mars {
       show_grid = false;
     }
 
+    /* this function is deprecated */
     void GraphicsManager::showClouds() {
-      if(!showClouds_) {
-        string tex_path = resources_path.sValue;
-        tex_path.append("/Textures");
-        clouds_ = new Clouds(tex_path);
-        scene->addChild(clouds_.get());
-      }
       showClouds_ = true;
     }
 
+    /* this function is deprecated */
     void GraphicsManager::hideClouds() {
-      if(showClouds_) {
-        scene->removeChild(clouds_.get());
-        clouds_.release();
-      }
       showClouds_ = false;
     }
 

@@ -62,7 +62,6 @@ namespace mars {
       }
   
       coords_backup = control->graphics->coordsVisible();
-      clouds_backup = control->graphics->cloudsVisible();
       grid_backup = control->graphics->gridVisible();
   
       std::map<QString, QVariant> attr;
@@ -106,7 +105,6 @@ namespace mars {
                                              to_QColor(gs_backup.fogColor));
       /*
       coords = pDialog->addGenericProperty("../Coordinates", QVariant::Bool, coords_backup);
-      clouds = pDialog->addGenericProperty("../Clouds", QVariant::Bool, clouds_backup);
       grid = pDialog->addGenericProperty("../Grid", QVariant::Bool, grid_backup);
       */
 
@@ -208,7 +206,6 @@ namespace mars {
       control->graphics->setGraphicOptions(gs_backup);
 
       coords_backup ? control->graphics->showCoords() : control->graphics->hideCoords();
-      clouds_backup ? control->graphics->showClouds() : control->graphics->hideClouds();
       grid_backup ? control->graphics->showGrid() : control->graphics->hideGrid();
 
       for (unsigned int i = 0; i < winIds.size(); i++) {

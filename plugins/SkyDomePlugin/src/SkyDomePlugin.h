@@ -38,7 +38,6 @@
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
-#include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
 
 #include <string>
 
@@ -54,8 +53,7 @@ namespace mars {
                            public mars::data_broker::ReceiverInterface,
                            // for gui
                            public mars::main_gui::MenuInterface,
-                           public mars::cfg_manager::CFGClient,
-                           public mars::interfaces::GraphicsUpdateInterface {
+                           public mars::cfg_manager::CFGClient {
 
       public:
         SkyDomePlugin(lib_manager::LibManager *theManager);
@@ -83,7 +81,6 @@ namespace mars {
         // MenuInterface methods
         void menuAction(int action, bool checked = false);
 
-        virtual void preGraphicsUpdate(void);
         // SkyDomePlugin methods
 
       private:
@@ -91,7 +88,7 @@ namespace mars {
 
         osg::ref_ptr<SkyDome> _skyDome;
         osg::ref_ptr<osg::Group> scene;
-        osg::ref_ptr<osg::PositionAttitudeTransform> posTransform;
+        osg::ref_ptr<osg::Transform> posTransform;
         std::string resPath, folder;
         bool updateProp;
 

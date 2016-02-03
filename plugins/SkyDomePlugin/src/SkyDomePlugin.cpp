@@ -36,6 +36,7 @@
 #include <osg/TextureCubeMap>
 #include <osg/PositionAttitudeTransform>
 #include <osg/Group>
+#include <osgUtil/CullVisitor>
 #include <osgDB/ReadFile>
 
 namespace mars {
@@ -45,14 +46,38 @@ namespace mars {
       using namespace mars::utils;
       using namespace mars::interfaces;
 
+      class SkyTransform : public osg::Transform {
+      public:
+        virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,
+                                               osg::NodeVisitor* nv) const  {
+          osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
+          if (cv) {
+            osg::Vec3 eyePointLocal = cv->getEyeLocal();
+            matrix.preMultTranslate(eyePointLocal);
+          }
+          return true;
+        }
+
+        virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,
+                                               osg::NodeVisitor* nv) const {
+          osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
+          if (cv) {
+            osg::Vec3 eyePointLocal = cv->getEyeLocal();
+            matrix.postMultTranslate(-eyePointLocal);
+          }
+          return true;
+        }
+      };
+
+
       SkyDomePlugin::SkyDomePlugin(lib_manager::LibManager *theManager)
         : MarsPluginTemplateGUI(theManager, "SkyDomePlugin") {
       }
 
       void SkyDomePlugin::init() {
         if(!control->graphics) return;
-        posTransform = new osg::PositionAttitudeTransform();
-        posTransform->setPosition(osg::Vec3(0.0, 0.0, 0.0));
+        posTransform = new SkyTransform();
+        posTransform->setCullingActive(false);
         updateProp = true;
         scene = static_cast<osg::Group*>(control->graphics->getScene());
 
@@ -87,6 +112,7 @@ namespace mars {
         osg::ref_ptr<osg::TextureCubeMap> _cubemap = loadCubeMapTextures();
 
         _skyDome = new SkyDome( 1.9f, 24, 24, _cubemap.get() );
+        _skyDome->setCullingActive(false);
         posTransform->addChild(_skyDome.get());
 
         osg::StateSet *states = _skyDome->getOrCreateStateSet();
@@ -99,7 +125,6 @@ namespace mars {
         //states->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
         //states->setMode(GL_BLEND,osg::StateAttribute::ON);
 
-        control->graphics->addGraphicsUpdateInterface(this);
         control->sim->switchPluginUpdateMode(0, this);
         gui->addGenericMenuAction("../View/", 0, NULL, 0, "", 0, -1); // separator
         gui->addGenericMenuAction("../View/SkyDome", 1, this, 0, "", 0,
@@ -149,14 +174,6 @@ namespace mars {
                           osgDB::readImageFile( filenames[POS_Z] ) );
 
         return cubeMap;
-      }
-
-      void SkyDomePlugin::preGraphicsUpdate() {
-        interfaces::GraphicsCameraInterface *cam;
-        cam = control->graphics->get3DWindow(1)->getCameraInterface();
-        double tx, ty, tz, rx, ry, rz, rw;
-        cam->getViewportQuat(&tx, &ty, &tz, &rx, &ry, &rz, &rw);
-        posTransform->setPosition(osg::Vec3(tx, ty, tz));
       }
 
       void SkyDomePlugin::update(sReal time_ms) {
