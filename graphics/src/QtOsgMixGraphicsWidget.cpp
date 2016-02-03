@@ -198,6 +198,10 @@ namespace mars {
       }
     }
 
+    void QtOsgMixGraphicsWidget::focusInEvent( QFocusEvent *event) {
+      gm->setActiveWindow(this);
+    }
+
     static int qtToOsgKey(QKeyEvent* e) {
       switch(e->key()) {
       case Qt::Key_Shift:
@@ -304,7 +308,7 @@ namespace mars {
     {
       if(event->delta()>0){
         view->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP);
-      } 
+      }
       else{
         view->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN);
       }

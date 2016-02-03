@@ -104,8 +104,8 @@ namespace mars {
         cfg(0),
         ignore_next_resize(0),
         set_window_prop(0),
-        initialized(false)
-
+        initialized(false),
+        activeWindow(NULL)
     {
       //osg::setNotifyLevel( osg::WARN );
 
@@ -545,7 +545,7 @@ namespace mars {
         */
         gw->initializeOSG(myQTWidget, 0, width, height);
       }
-
+      activeWindow = gw;
       gw->setName(name);
       gw->setClearColor(graphicOptions.clearColor);
       viewer->addView(gw->getView());
@@ -2223,7 +2223,8 @@ namespace mars {
 
     void GraphicsManager::setCameraDefaultView(int view) {
       interfaces::GraphicsCameraInterface* cam;
-      cam = graphicsWindows[0]->getCameraInterface();
+      if(!activeWindow) return;
+      cam = activeWindow->getCameraInterface();
       switch(view) {
       case 1:
         cam->context_setCamPredefTop();

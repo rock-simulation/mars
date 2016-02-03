@@ -258,6 +258,7 @@ namespace mars {
 
       // called post drawing
       PostDrawCallback *postDrawCallback;
+      GraphicsManager *gm;
 
     private:
       // the widget id
@@ -293,7 +294,6 @@ namespace mars {
       std::vector<osg::Node*> pickedObjects;
       enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE };
       PickMode pickmode;
-      GraphicsManager *gm;
 
       virtual void initialize() {};
       virtual osg::ref_ptr<osg::GraphicsContext> createWidgetContext(

@@ -1125,7 +1125,6 @@ namespace mars {
                                 osgGA::GUIActionAdapter& aa)
     {
       // remember position for mouse/camera interaction
-
       /*
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
@@ -1136,27 +1135,35 @@ namespace mars {
       switch (ea.getEventType()) {
       case osgGA::GUIEventAdapter::KEYDOWN :
         sendKeyDownEvent(ea);
+        gm->setActiveWindow(this);
         return handleKeyDownEvent(ea);
       case osgGA::GUIEventAdapter::KEYUP :
         if (graphicsEventHandler.size() > 0) {
           graphicsEventHandler[0]->emitSetAppActive(widgetID);
         }
         sendKeyUpEvent(ea);
+        gm->setActiveWindow(this);
         return handleKeyUpEvent(ea);
       case osgGA::GUIEventAdapter::PUSH :
+        gm->setActiveWindow(this);
         return handlePushEvent(ea);
       case osgGA::GUIEventAdapter::MOVE :
+        gm->setActiveWindow(this);
         return handleMoveEvent(ea);
       case osgGA::GUIEventAdapter::DRAG :
+        gm->setActiveWindow(this);
         return handleDragEvent(ea);
       case osgGA::GUIEventAdapter::SCROLL:
+        gm->setActiveWindow(this);
         return handleScrollEvent(ea);
       case osgGA::GUIEventAdapter::RELEASE :
+        gm->setActiveWindow(this);
         return handleReleaseEvent(ea, aa);
       case osgGA::GUIEventAdapter::RESIZE :
         // the view does not receive release events for CTRL+D when the view is (un)docked
         // setting an empty event queue fixes his problem.
         view->setEventQueue(new osgGA::EventQueue);
+        gm->setActiveWindow(this);
         return handleResizeEvent(ea);
       case osgGA::GUIEventAdapter::FRAME :
         return false;

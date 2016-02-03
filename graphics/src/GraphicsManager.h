@@ -307,9 +307,9 @@ namespace mars {
       virtual void editMaterial(std::string materialName, std::string key,
                                 std::string value);
       virtual void setCameraDefaultView(int view);
+      inline void setActiveWindow(GraphicsWidget *g) {activeWindow = g;}
 
     private:
-
       mars::interfaces::GraphicData graphicOptions;
 
       //pointer to outer space
@@ -403,6 +403,7 @@ namespace mars {
       bool initialized;
       std::map<std::string, MarsMaterial*> materials;
       osg::ref_ptr<osg::Image> noiseImage_;
+      GraphicsWidget *activeWindow;
 
       void setupCFG(void);
 

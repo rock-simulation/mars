@@ -108,6 +108,7 @@ namespace mars {
       virtual void resizeEvent(QResizeEvent *event);
       virtual void paintEvent(QPaintEvent *event);
       virtual bool eventFilter(QObject *obj, QEvent *event);
+      virtual void focusInEvent(QFocusEvent *event);
 
       static QtOsgMixGraphicsWidget* createInstance(void *parent,
                                                     osg::Group *scene,
