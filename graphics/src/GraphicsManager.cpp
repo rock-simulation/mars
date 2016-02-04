@@ -959,8 +959,7 @@ namespace mars {
       std::map<std::string, MarsMaterial*>::iterator it;
       it = materials.find(material.name);
       if(it!=materials.end()) {
-        fprintf(stderr, "set material %s for id: %lu\n", material.name.c_str(),
-                id);
+        //fprintf(stderr, "set material %s for id: %lu\n", material.name.c_str(), id);
         it->second->addDrawObject(id, ns->object());
         ns->object()->setMaterial(it->second->getMaterialData(),
                                   useFog, useNoise, drawLineLaser);
