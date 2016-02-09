@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include <mars/utils/MutexLocker.h>
 

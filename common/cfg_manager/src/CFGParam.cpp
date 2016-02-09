@@ -236,23 +236,26 @@ namespace mars {
 
 
     void CFGParam::readSaveSettingFromYAML(const YAML::Node &node) {
+#ifdef YAML_03_API
       if( const YAML::Node *pName = node.FindValue("userSave") ) {
         bool bValue = false;
-#ifdef YAML_03_API
         *pName >> bValue;
 #else
-        bValue = pName.as<bool>();
+      if( const YAML::Node &pName = node["userSave"] ) {
+        bool bValue = pName.as<bool>();
 #endif
         if( bValue ) {
           setOption(userSave);
         }
       }
 
+#ifdef YAML_03_API
       if( const YAML::Node *pName = node.FindValue("saveOnClose") ) {
         bool bValue = false;
-#ifdef YAML_03_API
         *pName >> bValue;
 #else
+      if( const YAML::Node &pName = node["saveOnClose"] ) {
+        bool bValue = pName.as<bool>();
         bValue = pName.as<bool>();
 #endif
         if( bValue ) {
