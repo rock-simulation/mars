@@ -34,7 +34,7 @@
 #include "CFGParamBool.h"
 #include "CFGParamString.h"
 
-#include <yaml-cpp/yaml.h>
+#include <yaml-cpp03/yaml.h>
 
 #include <sys/stat.h>
 #include <fstream>

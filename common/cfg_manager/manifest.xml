@@ -6,6 +6,6 @@
    <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/lib_manager" />
    <depend package="simulation/mars/common/utils" />
-    <depend package="external/yaml-cpp" />
+    <depend package="external/yaml-cpp03" />
     <tags>needs_opt</tags>
 </package>
