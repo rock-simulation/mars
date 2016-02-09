@@ -119,9 +119,14 @@ namespace mars {
       //cout << "creating new doubleParam" << endl;
       //string name = node["name"];
       */
+#ifdef YAML_03_API
       if(const YAML::Node *pName = node.FindValue("name")) {
         std::string name;
         *pName >> name;
+#else
+      if(const YAML::Node &pName = node["name"]) {
+        std::string name = pName.as<std::string>();
+#endif
         CFGParamDouble *paramDouble = new CFGParamDouble(_id, _group, name);
         paramDouble->readFromYAML(node);
         return (CFGParam*)paramDouble;

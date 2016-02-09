@@ -119,9 +119,14 @@ namespace mars {
       //cout << "creating new intParam" << endl;
       //string name = node["name"];
       */
+#ifdef YAML_03_API
       if(const YAML::Node *pName = node.FindValue("name")) {
         std::string name;
         *pName >> name;
+#else
+      if(const YAML::Node &pName = node["name"]) {
+        std::string name = pName.as<std::string>();
+#endif
         CFGParamInt *paramInt = new CFGParamInt(_id, _group, name);
         paramInt->readFromYAML(node);
         return (CFGParam*)paramInt;
