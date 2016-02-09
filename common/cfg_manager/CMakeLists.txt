@@ -9,9 +9,23 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+find_package(Rock)
+rock_find_cmake(Boost)
+
+pkg_check_modules(YAML REQUIRED
+        yaml-cpp
+)
+include_directories(${YAML_INCLUDE_DIRS})
+link_directories(${YAML_LIBRARY_DIRS})
+add_definitions(${YAML_CFLAGS_OTHER})  #flags excluding the ones with -I
+
+if(${YAML_VERSION} EQUAL "0.3.0")
+  add_definitions(-DYAML_03_API)
+  message("       WARNING: The use of yaml 0.3 is deprecated!")
+endif()
+
 pkg_check_modules(DEPS REQUIRED
 	lib_manager
-	yaml-cpp
 	mars_utils
 )
 include_directories(${DEPS_INCLUDE_DIRS})
@@ -51,6 +65,7 @@ MESSAGE("LIBS ${DEPS_LIBRARIES}")
 
 target_link_libraries(${PROJECT_NAME}
                       ${DEPS_LIBRARIES}
+                      ${YAML_LIBRARIES}
 )
 
 if(WIN32)
