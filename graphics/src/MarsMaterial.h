@@ -52,7 +52,7 @@
 #define NORMAL_MAP_UNIT 1
 #define SHADOW_MAP_UNIT 2
 #define BUMP_MAP_UNIT 3
-#define NOISE_MAP_UNIT 3
+#define NOISE_MAP_UNIT 4
 #define TANGENT_UNIT 7
 #define DEFAULT_UV_UNIT 0
 
