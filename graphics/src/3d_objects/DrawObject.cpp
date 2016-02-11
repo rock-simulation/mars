@@ -28,7 +28,6 @@
 #include "DrawObject.h"
 #include "gui_helper_functions.h"
 #include "../wrapper/OSGMaterialStruct.h"
-#include "../MarsMaterial.h"
 
 #include <iostream>
 

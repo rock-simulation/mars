@@ -50,6 +50,7 @@
 #include <osg/Geode>
 #include <osg/LOD>
 
+#include <mars/osg_material_manager/OsgMaterial.h>
 #include <mars/osg_material_manager/MaterialNode.h>
 
 
@@ -57,7 +58,6 @@ namespace mars {
   namespace graphics {
 
     class GraphicsManager;
-    class MarsMaterial;
 
     class DrawObject {
     public:
