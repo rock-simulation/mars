@@ -115,6 +115,7 @@ namespace osg_material_manager {
     int maxNumLights;
     bool getLight;
     double invShadowTextureSize;
+    bool useWorldTexCoords;
     std::string name, resPath;
     configmaps::ConfigMap map;
 

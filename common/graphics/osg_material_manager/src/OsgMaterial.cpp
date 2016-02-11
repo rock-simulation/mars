@@ -52,7 +52,8 @@ namespace osg_material_manager {
       useShader(true),
       maxNumLights(1),
       resPath(resPath),
-      invShadowTextureSize(1./1024) {
+      invShadowTextureSize(1./1024),
+      useWorldTexCoords(false) {
     baseImageUniform = new osg::Uniform("BaseImage", COLOR_MAP_UNIT);
     normalMapUniform = new osg::Uniform("NormalMap", NORMAL_MAP_UNIT);
     bumpMapUniform = new osg::Uniform("BumpMap", BUMP_MAP_UNIT);
@@ -163,6 +164,8 @@ namespace osg_material_manager {
                                          osg::StateAttribute::OFF);
       normalMap = 0;
     }
+
+    useWorldTexCoords = map.get("useWorldTexCoords", false);
     updateShader(true);
 
     float transparency = (float)map.get("transparency", 0.0);
@@ -175,6 +178,7 @@ namespace osg_material_manager {
       (*it)->setTransparency(transparency);
     }
   }
+
   void OsgMaterial::setColor(string color, string key, string value) {
     double v = atof(value.c_str());
     if(key[key.size()-1] == 'a') map[color]["a"] = v;
@@ -360,13 +364,25 @@ namespace osg_material_manager {
         if(bumpMap.valid()) {
           fragmentShader->addUniform( (GLSLUniform)
                                       { "sampler2D", "BumpMap" } );
-          fragmentShader->addMainVar( (GLSLVariable)
-                                      { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale + texture2D(BumpMap, gl_TexCoord[0].xy*texScale).x*0.01*eyeVec.xy" });
+          if(useWorldTexCoords) {
+            fragmentShader->addMainVar( (GLSLVariable)
+                                        { "vec2", "texCoord", "positionVarying.xy*texScale + texture2D(BumpMap, positionVarying.xy*texScale).x*0.01*eyeVec.xy" });
+          }
+          else {
+            fragmentShader->addMainVar( (GLSLVariable)
+                                        { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale + texture2D(BumpMap, gl_TexCoord[0].xy*texScale).x*0.01*eyeVec.xy" });
+          }
 
         }
         else {
-          fragmentShader->addMainVar( (GLSLVariable)
-                                      { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale" });
+          if(useWorldTexCoords) {
+            fragmentShader->addMainVar( (GLSLVariable)
+                                        { "vec2", "texCoord", "positionVarying.xy*texScale" });
+          }
+          else {
+            fragmentShader->addMainVar( (GLSLVariable)
+                                        { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale" });
+          }
         }
       }
       if(colorMap.valid()) {
