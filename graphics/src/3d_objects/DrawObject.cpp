@@ -314,7 +314,6 @@ namespace mars {
     void DrawObject::show() {
       if(!materialNode.valid()) return;
       hide();
-      fprintf(stderr, "show: %lu\n", id_);
       isHidden = false;
       materialNode->addChild(posTransform_.get());
     }
@@ -322,7 +321,6 @@ namespace mars {
     void DrawObject::hide() {
       if(!materialNode.valid()) return;
       isHidden = true;
-      fprintf(stderr, "hide: %lu\n", id_);
       materialNode->removeChild(posTransform_.get());
     }
 
