@@ -41,13 +41,14 @@ namespace mars {
       filled = false;
       if (myLightIndex < 0) {
         interfaces::LightData light;
-        light.pos.z() = 2.00;
+        light.pos.z() = 3.00;
         light.lookAt.z() = -1.00;
         light.name = "NewLight" + QString::number(local_index).toStdString();
-        light.quadraticAttenuation = 0.0002;
+        light.constantAttenuation = 1.0000;
+        light.quadraticAttenuation = 0.00002;
         light.angle = 180;
         light.directional = false;
-        light.ambient = to_my_color(QColor(0,0,0,255));
+        light.ambient = to_my_color(QColor(50,50,50,255));
         light.diffuse = to_my_color(QColor(255,255,255,255));
         light.specular = to_my_color(QColor(255,255,255,255));
         control->graphics->addLight(light);

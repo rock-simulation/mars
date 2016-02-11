@@ -68,12 +68,13 @@ else (${Qt5Widgets_FOUND})
 endif (${Qt5Widgets_FOUND})
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    opencv
-			    lib_manager
-			    mars_interfaces
-			    cfg_manager
-			    configmaps
-			    mars_utils
+                  opencv
+                  lib_manager
+                  mars_interfaces
+                  cfg_manager
+                  configmaps
+                  mars_utils
+                  osg_material_manager
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -89,15 +90,7 @@ set(HEADERS
            src/HUD.h
            src/PostDrawCallback.h
            src/QtOsgMixGraphicsWidget.h
-           src/MarsMaterial.h
            
-           src/shader/bumpmapping.h
-           src/shader/pixellight.h
-           src/shader/shader-generator.h
-           src/shader/shader-function.h
-           src/shader/shader-types.h
-           src/shader/texgen.h
-
            src/shadow/ShadowMap.h
 )
 
@@ -151,7 +144,6 @@ set(SOURCES
            src/HUD.cpp
            src/QtOsgMixGraphicsWidget.cpp
            src/PostDrawCallback.cpp
-           src/MarsMaterial.cpp
            
            src/wrapper/OSGDrawItem.cpp
            src/wrapper/OSGHudElementStruct.cpp
@@ -180,13 +172,6 @@ set(SOURCES
            src/2d_objects/HUDLines.cpp
            src/2d_objects/HUDOSGNode.cpp
            
-           src/shader/bumpmapping.cpp
-           src/shader/pixellight.cpp
-           src/shader/shader-generator.cpp
-           src/shader/shader-function.cpp
-           src/shader/shader-types.cpp
-           src/shader/texgen.cpp
-
            src/shadow/ShadowMap.cpp
 )
 

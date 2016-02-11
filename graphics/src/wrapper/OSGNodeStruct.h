@@ -52,9 +52,7 @@ namespace mars {
        */
       OSGNodeStruct(GraphicsManager *g,
                     const mars::interfaces::NodeData &node,
-                    bool isPreview, unsigned long id, bool useMARSShader,
-                    bool useFog, bool useNoise, bool drawLineLaser,
-                    bool marsShadow, int defaultMaxNumNodeLights);
+                    bool isPreview, unsigned long id);
       /**
        * Edit this node, works only in the PREVIEW state.
        */
