@@ -93,7 +93,7 @@ namespace mars {
       mainGui->addGenericMenuAction("../File/Export/Blender",
                                     GUI_ACTION_BLENDER_EXPORT,
                                     (main_gui::MenuInterface*)this,
-                                    0, path, true);
+                                    0, path, false);
 
       mainGui->addGenericMenuAction("../Control/Connect External Controllers",
                                     GUI_ACTION_CONTROLLER_CONFIG,
