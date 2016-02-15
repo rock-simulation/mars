@@ -6,6 +6,6 @@ includedir=${prefix}/include
 Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
-Requires.private: lib_manager cfg_manager main_gui data_broker
+Requires.private: lib_manager cfg_manager main_gui
 Libs: -L${libdir} -l@PROJECT_NAME@
 Cflags: -I${includedir}
