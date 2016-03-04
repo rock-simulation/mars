@@ -45,8 +45,8 @@ namespace osg_text {
                                      textAlign(textAlign),
                                      pl(paddingL), pt(paddingT),
                                      pr(paddingR), pb(paddingB),
-                                     borderWidth(borderWidth),
-                                     fixedWidth(-1), fixedHeight(-1) {
+                                     fixedWidth(-1), fixedHeight(-1),
+                                     borderWidth(borderWidth){
 
     labelGeode = new osg::Geode();
     std::string font;
