@@ -87,13 +87,13 @@ namespace mars {
                                                       "resources_path",
                                                       ".");
           resPath = cfgProp.sValue;
-          cfgProp = control->cfg->getOrCreateProperty("Preferences",
-                                                      "SkyDomePath",
+          cfgProp = control->cfg->getOrCreateProperty("Scene",
+                                                      "skydome_path",
                                                       "cubemap",
                                                       this);
           folder = cfgProp.sValue;
-          cfgEnableSD = control->cfg->getOrCreateProperty("Preferences",
-                                                          "SkyDomeEnable",
+          cfgEnableSD = control->cfg->getOrCreateProperty("Scene",
+                                                          "skydome_enabled",
                                                           false, this);
         }
         else {
@@ -127,7 +127,7 @@ namespace mars {
 
         control->sim->switchPluginUpdateMode(0, this);
         gui->addGenericMenuAction("../View/", 0, NULL, 0, "", 0, -1); // separator
-        gui->addGenericMenuAction("../View/SkyDome", 1, this, 0, "", 0,
+        gui->addGenericMenuAction("../View/Sky dome", 1, this, 0, "", 0,
                                   1 + cfgEnableSD.bValue);
       }
 
@@ -192,7 +192,7 @@ namespace mars {
           if(updateProp) {
             cfgEnableSD.bValue = _property.bValue;
             updateProp = false;
-            gui->setMenuActionSelected("../View/SkyDome", cfgEnableSD.bValue);
+            gui->setMenuActionSelected("../View/Sky dome", cfgEnableSD.bValue);
             scene->removeChild(posTransform.get());
             if(cfgEnableSD.bValue) {
               scene->addChild(posTransform.get());

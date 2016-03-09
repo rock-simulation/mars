@@ -39,6 +39,7 @@
 #include <sys/stat.h>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 
 #include <mars/utils/MutexLocker.h>
 
@@ -63,7 +64,7 @@ namespace mars {
       //cout << "destroy CFGManager" << endl;
 
       cfgPropertyStruct path = getOrCreateProperty("Config", "config_path",
-						   ".");
+               ".");
       path.sValue += "/mars_saveOnClose.yaml";
       writeConfig(path.sValue.c_str());
 
@@ -87,6 +88,7 @@ namespace mars {
         return false;
       }
       try {
+#ifdef YAML_03_API
         YAML::Parser parser(in);
         YAML::Node doc;
         YAML::Iterator it;
@@ -104,8 +106,27 @@ namespace mars {
             const YAML::Node &paramNodes = it.second();
             readGroup(currentGroup, paramNodes);
           } // for
-
         } // while
+#else
+        YAML::const_iterator it;
+        string currentGroup = "";
+        std::vector<YAML::Node> doc = YAML::LoadAll(in);
+        std::vector<YAML::Node>::iterator dt = doc.begin();
+
+        while(dt != doc.end()) {
+          //cout << "Found document" << endl;
+
+          for(it = dt->begin(); it != dt->end(); ++it) {
+            currentGroup = it->first.as<std::string>();
+            //cout << "Found group: " << group << endl;
+            if(group && (currentGroup != group))
+              continue;
+
+            readGroup(currentGroup, it->second);
+          } // for
+          ++dt;
+        } // while
+#endif
       } catch(YAML::ParserException &e) {
         cout << e.what() << endl;
       } catch(YAML::BadDereference &e) {
@@ -663,7 +684,11 @@ namespace mars {
       cfgParamId newId = 0;
 
       for(i = 0; i < paramNodes.size(); ++i) {
+#ifdef YAML_03_API
         paramNodes[i]["type"] >> type;
+#else
+        type = paramNodes[i]["type"].as<std::string>();
+#endif
         //cout << "Found type: " << type << endl;
 
         for(j = 0; j < dstNrOfParamTypes; ++j) {
