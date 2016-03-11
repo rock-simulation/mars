@@ -607,6 +607,7 @@ namespace mars {
       // add inertial information
       config["density"] = 0.0;
       config["mass"] = link->inertial->mass;
+      config["inertia"] = true;
       config["i00"] = link->inertial->ixx;
       config["i01"] = link->inertial->ixy;
       config["i02"] = link->inertial->ixz;
