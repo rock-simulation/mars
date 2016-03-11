@@ -148,12 +148,6 @@ namespace mars {
       }
       map.append(entityconfig);
 
-      NodeData node;
-      int valid = node.fromConfigMap(&map, tmpPath, control->loadCenter);
-      if (!valid)
-        return NULL;
-      config.toYamlFile("/media/kavonszadkowski/work/debugMap.yml");
-
       // loadMaterial
       configmaps::ConfigMap material;
       material["name"] = "defaultGrey";
