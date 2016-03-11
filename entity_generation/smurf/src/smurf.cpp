@@ -443,13 +443,13 @@ namespace mars {
       *v = Vector(p.x, p.y, p.z);
       *q = quaternionFromMembers(r);
     }
-    
+
     void SMURF::poseToVectorAndQuaternion(const urdf::Pose &pose, Vector *v, Quaternion*q) {
       *v = Vector(pose.position.x, pose.position.y, pose.position.z);
       *q = quaternionFromMembers(pose.rotation); //Quaternion(pose.rotation.x, pose.rotation.y, pose.rotation.z, pose.rotation.w);
     }
-    
-    
+
+
 
     bool SMURF::isEqualPos(const urdf::Pose &p1, const urdf::Pose p2) {
       bool equal = true;
@@ -508,7 +508,7 @@ namespace mars {
 #endif
       materialList.push_back(config);
     }
-    
+
     void SMURF::createOriginMaterial() {
       ConfigMap config;
 
@@ -526,7 +526,7 @@ namespace mars {
 #endif
       materialList.push_back(config);
     }
-    
+
 
     void SMURF::addEmptyVisualToNode(ConfigMap *map) {
       (*map)["origname"] = "";
@@ -540,7 +540,7 @@ namespace mars {
       (*map)["coll_bitmask"] = 0;
       vectorToConfigItem(&(*map)["extend"][0], &size);
     }
-    
+
     void SMURF::createOrigin(const boost::shared_ptr<urdf::Link> &link) {
       ConfigMap config;
       std::string name;
@@ -554,7 +554,7 @@ namespace mars {
       } else {
         config["relativeid"] = (unsigned long) 0;
       }
-      
+
       // init node
       config["name"] = name;
       config["index"] = nextNodeID++;
@@ -563,7 +563,7 @@ namespace mars {
       currentNodeID = nextNodeID - 1;
       config["groupid"] = groupID;
       config["movable"] = true;
-      
+
       // pose
       Vector v;
       Quaternion q;
@@ -573,20 +573,20 @@ namespace mars {
       poseToVectorAndQuaternion(pose, &v, &q);
       vectorToConfigItem(&config["position"][0], &v);
       quaternionToConfigItem(&config["rotation"][0], &q);
-      
+
       // complete node
       addEmptyVisualToNode(&config);
       addEmptyCollisionToNode(&config);
-      
+
       config["origname"] = "sphere";
       config["material"] = "_originMaterial";
-      
+
 #ifdef DEBUG_SCENE_MAP
-      debugMap["nodes"] += config;      
+      debugMap["nodes"] += config;
 #endif
       nodeList.push_back(config);
     }
-    
+
     void SMURF::createInertial(const boost::shared_ptr<urdf::Link> &link) {
       ConfigMap config;
       std::string name;
@@ -595,7 +595,7 @@ namespace mars {
       } else {
         name = "inertial_" + link->name;
       }
-      
+
       // init node
       config["name"] = name;
       config["index"] = nextNodeID++;
@@ -603,8 +603,9 @@ namespace mars {
       config["groupid"] = groupID;
       config["movable"] = true;
       config["relativeid"] = currentNodeID;
-      
+
       // add inertial information
+
       config["density"] = 0.0;
       config["mass"] = link->inertial->mass;
       config["inertia"] = true;
@@ -617,7 +618,7 @@ namespace mars {
       config["i20"] = link->inertial->ixz;
       config["i21"] = link->inertial->iyz;
       config["i22"] = link->inertial->izz;
-      
+
       // pose
       Vector v;
       Quaternion q;
@@ -625,18 +626,18 @@ namespace mars {
       pose = link->inertial->origin;
       poseToVectorAndQuaternion(pose, &v, &q);
       vectorToConfigItem(&config["position"][0], &v);
-      quaternionToConfigItem(&config["rotation"][0], &q);      
-      
+      quaternionToConfigItem(&config["rotation"][0], &q);
+
       // complete node
       addEmptyVisualToNode(&config);
       addEmptyCollisionToNode(&config);
-      
+
 #ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
 #endif
-      nodeList.push_back(config);        
-    }    
-    
+      nodeList.push_back(config);
+    }
+
     void SMURF::createCollision(const boost::shared_ptr<urdf::Collision> &collision) {
       ConfigMap config;
       std::string name;
@@ -645,7 +646,7 @@ namespace mars {
       } else {
         name = collision->name;
       }
-      
+
       // init node
       config["name"] = name;
       config["index"] = nextNodeID++;
@@ -693,23 +694,23 @@ namespace mars {
       vectorToConfigItem(&config["scale"][0], &scale);
       // FIXME: We need to correctly deal with scale and size in MARS
       //       if we have a mesh here, as a first hack we use the scale as size
-      
+
       // pose
       Vector v;
       Quaternion q;
       poseToVectorAndQuaternion(collision->origin, &v, &q);
       vectorToConfigItem(&config["position"][0], &v);
       quaternionToConfigItem(&config["rotation"][0], &q);
-      
+
       collisionNameMap[name] = name;
       addEmptyVisualToNode(&config);
-      
+
 #ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
 #endif
       nodeList.push_back(config);
-    }    
-    
+    }
+
     void SMURF::createVisual(const boost::shared_ptr<urdf::Visual> &visual) {
       ConfigMap config;
       std::string name;
@@ -718,7 +719,7 @@ namespace mars {
       } else {
         name = visual->name;
       }
-      
+
       // init node
       config["name"] = name;
       config["index"] = nextNodeID++;
@@ -730,14 +731,14 @@ namespace mars {
       config["density"] = 0.0;
       Vector v(0.001, 0.001, 0.001);
       vectorToConfigItem(&config["extend"][0], &v);
-      
+
       // parse position
       Quaternion q;
       poseToVectorAndQuaternion(visual->origin, &v, &q);
       vectorToConfigItem(&config["position"][0], &v);
       quaternionToConfigItem(&config["rotation"][0], &q);
-    
-      // parse geometry    
+
+      // parse geometry
       boost::shared_ptr<urdf::Geometry> tmpGeometry = visual->geometry;
       Vector size(0.0, 0.0, 0.0);
       Vector scale(1.0, 1.0, 1.0);
@@ -773,10 +774,10 @@ namespace mars {
       vectorToConfigItem(&config["visualsize"][0], &size);
       vectorToConfigItem(&config["visualscale"][0], &scale);
       config["materialName"] = visual->material_name;
-      
+
       addEmptyCollisionToNode(&config);
       visualNameMap[name] = name;
-      
+
 #ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;
 #endif
@@ -786,11 +787,11 @@ namespace mars {
     void SMURF::translateLink(boost::shared_ptr<urdf::Link> link) {
       Vector v;
       Quaternion q;
-      
+
       groupID++;
-      
+
       createOrigin(link);
-      
+
       if (link->parent_joint)
         translateJoint(link);
 
@@ -798,7 +799,7 @@ namespace mars {
       if (link->inertial) {
         createInertial(link);
       }
-      
+
       // collision
       if (link->collision) {
         for (std::vector<boost::shared_ptr<urdf::Collision> >::iterator it = link->collision_array.begin();
@@ -806,7 +807,7 @@ namespace mars {
             createCollision(*it);
         }
       }
-      
+
       // visual
       if (link->visual) {
         for (std::vector<boost::shared_ptr<urdf::Visual> >::iterator it = link->visual_array.begin();
@@ -814,7 +815,7 @@ namespace mars {
             createVisual(*it);
         }
       }
-      
+
       for (std::vector<boost::shared_ptr<urdf::Link> >::iterator it = link->child_links.begin();
           it != link->child_links.end(); ++it) {
           fprintf(stderr, "parsing link %s->%s..\n", (link->name).c_str(), ((*it)->name).c_str());
@@ -822,7 +823,7 @@ namespace mars {
       }
 
     }
-    
+
     void SMURF::translateJoint(boost::shared_ptr<urdf::Link> childlink) {
         ConfigMap config;
         boost::shared_ptr<urdf::Joint> joint = childlink->parent_joint;
@@ -868,7 +869,7 @@ namespace mars {
 #endif
         jointList.push_back(config);
     }
-    
+
     urdf::Pose SMURF::getGlobalPose(const boost::shared_ptr<urdf::Link> &link) {
       urdf::Pose globalPose;
       boost::shared_ptr<urdf::Link> pLink = link->getParent();
@@ -882,7 +883,7 @@ namespace mars {
         globalPose.rotation = parentPose.rotation * globalPose.rotation;
       }
       return globalPose;
-    }    
+    }
 
     void SMURF::createMaterial(boost::shared_ptr<urdf::Material> material) {
       ConfigMap config;
@@ -895,7 +896,7 @@ namespace mars {
       config["diffuseFront"][0]["g"] = (double) material->color.g;
       config["diffuseFront"][0]["b"] = (double) material->color.b;
       config["texturename"] = material->texture_filename;
-      
+
       // add to debug and material list
 #ifdef DEBUG_SCENE_MAP
       debugMap["materials"] += config;
@@ -958,7 +959,7 @@ namespace mars {
           fprintf(stderr, "Couldn't load node %lu, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
           return 0;
         }
-          
+
 
       for (unsigned int i = 0; i < jointList.size(); ++i)
         if (!loadJoint(jointList[i]))
