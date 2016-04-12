@@ -1001,6 +1001,26 @@ namespace mars {
     unsigned int SMURF::loadNode(ConfigMap config) {
       NodeData node;
       config["mapIndex"] = mapIndex;
+      string suffix, tmpfilename;
+      
+      // check if we can use .bobj
+      tmpfilename = trim(config.get("filename", tmpfilename));
+      // if we have an actual file name
+      if (!tmpfilename.empty()) {
+        suffix = getFilenameSuffix(tmpfilename);
+        if (suffix == ".obj" || suffix == ".OBJ") {
+          // turn our relative filename into an absolute filename
+          removeFilenameSuffix(&tmpfilename);
+          tmpfilename.append(".bobj");
+          handleFilenamePrefix(&tmpfilename, tmpPath);
+          // replace if that file exists
+          if (pathExists(tmpfilename)) {
+            fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
+            config["filename"] = tmpfilename;
+          }
+        }
+      }
+      
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid)
         return 0;
@@ -1016,13 +1036,14 @@ namespace mars {
       }
 
       // check if meshes are stored as `.stl` file
-      string suffix = getFilenameSuffix(node.filename);
+      suffix = getFilenameSuffix(node.filename);
       if (suffix == ".stl" || suffix == ".STL") {
         // add an additional rotation of -90.0 degree due to wrong definition
         // of which direction is up within .stl (for .stl -Y is up and in MARS
         // Z is up)
         node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
       }
+
 
       NodeId oldId = node.index;
 #ifdef DEBUG_SCENE_MAP
