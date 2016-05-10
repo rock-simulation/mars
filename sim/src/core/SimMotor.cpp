@@ -301,6 +301,8 @@ namespace mars {
         integ_error = -sMotor.maxSpeed / sMotor.i;
       }
 
+      // add lowpass filter to velocity
+      double old_velocity = velocity;
       // set desired velocity. @todo add inertia
       velocity = 0; // by setting a different value we could specify a minimum
       // P part of the motor
@@ -309,6 +311,7 @@ namespace mars {
       velocity += iPart;
       // D part of the motor
       velocity += ((error - last_error)/time) * sMotor.d;
+      velocity = old_velocity*0.5 + velocity*0.5;
       last_error = error;
     }
 
