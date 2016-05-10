@@ -34,19 +34,24 @@
 #endif
 
 #include "JointArraySensor.h"
+#include <mars/data_broker/ProducerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 
 namespace mars {
   namespace sim {
 
-    class JointLoadSensor : public JointArraySensor {
+    class JointLoadSensor : public JointArraySensor,
+                            public data_broker::ProducerInterface {
 
     public:
       JointLoadSensor(interfaces::ControlCenter *control, IDListConfig config);
-      ~JointLoadSensor(void) {}
+      ~JointLoadSensor(void);
 
       virtual int getAsciiData(char* data) const ;
       virtual int getSensorData(interfaces::sReal **data) const ;
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
+                               int callbackParam);
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -56,6 +61,7 @@ namespace mars {
 
     private:
       long loadIndices[3];
+      data_broker::DataPackage dbPackage;
     };
 
   } // end of namespace sim

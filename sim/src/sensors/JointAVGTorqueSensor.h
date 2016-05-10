@@ -34,19 +34,24 @@
 #endif
 
 #include "JointArraySensor.h"
+#include <mars/data_broker/ProducerInterface.h>
 
 namespace mars {
   namespace sim {
 
-    class JointAVGTorqueSensor : public JointArraySensor {
+    class JointAVGTorqueSensor : public JointArraySensor,
+                                 public data_broker::ProducerInterface {
 
     public:
       JointAVGTorqueSensor(interfaces::ControlCenter *control,
                            IDListConfig config);
-      ~JointAVGTorqueSensor(void) {}
+      ~JointAVGTorqueSensor(void);
 
       virtual int getAsciiData(char* data) const;
       virtual int getSensorData(interfaces::sReal **data) const;
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
+                               int callbackParam);
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -56,6 +61,7 @@ namespace mars {
 
     private:
       long torqueIndices[3];
+      data_broker::DataPackage dbPackage;
     };
 
   } // end of namespace sim

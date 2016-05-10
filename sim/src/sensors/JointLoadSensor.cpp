@@ -49,6 +49,20 @@ namespace mars {
 
       typeName = "JointLoad";
       loadIndices[0] = -1;
+      dbPackage.add("id", (long)config.id);
+      dbPackage.add("load", 0.0);
+      char text[55];
+      sprintf(text, "Sensors/Load_%05lu", config.id);
+      control->dataBroker->pushData("mars_sim", text,
+                                    dbPackage, NULL,
+                                    data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                 "mars_sim/simTimer", 0);
+    }
+
+    JointLoadSensor::~JointLoadSensor(void) {
+      control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                   "mars_sim/simTimer");
     }
 
     // this function should be overwritten by the special sensor to
@@ -76,6 +90,27 @@ namespace mars {
       }
       **data /= doubleArray.size();
       return 1;
+    }
+
+    void JointLoadSensor::produceData(const data_broker::DataInfo &info,
+                                      data_broker::DataPackage *dbPackage,
+                                      int callbackParam) {
+      (void)callbackParam;
+      (void)info;
+      sReal load = 0;
+      std::vector<double>::const_iterator iter;
+
+      if(doubleArray.size() == 0) {
+        dbPackage->set(0, (long)id);
+        dbPackage->set(1, load);
+        return;
+      }
+      for(iter = doubleArray.begin(); iter != doubleArray.end(); iter++) {
+        load += *iter;
+      }
+      load /= doubleArray.size();
+      dbPackage->set(0, (long)id);
+      dbPackage->set(1, load);
     }
 
     void JointLoadSensor::receiveData(const data_broker::DataInfo &info,
