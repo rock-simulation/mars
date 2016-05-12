@@ -169,6 +169,7 @@ namespace mars {
       interfaces::MotorData sMotor;
       interfaces::sReal time;
       interfaces::sReal velocity, position1, position2, effort;
+      interfaces::sReal tmpmaxeffort, tmpmaxspeed;
       interfaces::sReal current, temperature;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
