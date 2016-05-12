@@ -55,6 +55,8 @@ namespace mars {
       time = 10;
       current = 0;
       effort = 0;
+      tmpmaxeffort = 0;
+      tmpmaxspeed = 0;
       myJoint = 0;
       mimic = false;
       mimic_multiplier=1.0;
@@ -333,11 +335,12 @@ namespace mars {
         (this->*runController)(time_ms);
 
         // cap speed
-        velocity = std::max(-(getMomentaryMaxSpeed()),
-          std::min(velocity, getMomentaryMaxSpeed()));
+        tmpmaxspeed = getMomentaryMaxSpeed();
+        velocity = std::max(-tmpmaxspeed, std::min(velocity, tmpmaxspeed));
         // cap effort
-        effort = std::max(-(getMomentaryMaxEffort()),
-          std::min(effort, getMomentaryMaxEffort()));
+        tmpmaxeffort = getMomentaryMaxEffort();
+        effort = std::max(-tmpmaxeffort, std::min(effort, tmpmaxeffort));
+        myJoint->setEffortLimit(tmpmaxeffort, axis);
 
         for(std::map<std::string, SimMotor*>::iterator it = mimics.begin();
           it != mimics.end(); ++it) {
