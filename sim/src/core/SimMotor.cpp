@@ -166,7 +166,6 @@ namespace mars {
 
     void SimMotor::setMaxSpeedApproximation(utils::ApproximationFunction type,
       std::vector<double>* coefficients) {
-        fprintf(stderr, "setMaxSpeedApproximation\n");
       switch (type) {
         case FUNCTION_PIPE:
           maxSpeedApproximation = &utils::pipe;
