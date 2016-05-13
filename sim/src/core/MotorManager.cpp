@@ -119,7 +119,6 @@ namespace mars {
         }
       }
       if (config.find("maxspeed_approximation") != config.end()) {
-        fprintf(stderr, "found maxspeed_approximation in %s\n", ((std::string)config["name"]).c_str());
         std::vector<sReal>* maxspeed_coefficients = new std::vector<sReal>;
         ConfigVector::iterator vIt = config["maxspeed_coefficients"].begin();
         for (; vIt != config["maxspeed_coefficients"].end(); ++vIt) {
