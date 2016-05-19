@@ -99,14 +99,13 @@ namespace mars {
       configmaps::ConfigMap entityconfig;
       entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
-      entity = new sim::SimEntity(control, entityconfig);
 
       // node mapping and name checking
       std::string primitivename = (std::string)entityconfig["name"];
       if (primitivename == "")
         primitivename = "unnamed_primitive";
-      entityconfig["name"] = primitivename;  //(std::string)entityconfig["modelname"];
-      entity->appendConfig(entityconfig);
+      entityconfig["name"] = primitivename;
+      entity = new sim::SimEntity(control, entityconfig);
     // loadNode
       configmaps::ConfigMap map;
       if (entityconfig.hasKey("geometry") && entityconfig["geometry"].hasKey("type")) {
@@ -146,6 +145,7 @@ namespace mars {
 
         }
       }
+      entityconfig["name"] = map["name"];
       map.append(entityconfig);
 
       NodeData node;
@@ -182,7 +182,14 @@ namespace mars {
         // Z is up)
         node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
       }
-      int groupID = control->nodes->getMaxGroupID() + 1;
+      std::string parentname;
+      if (entityconfig.hasKey("parent")) {
+          parentname = (std::string)entityconfig["parent"];
+            if (parentname == "world") {
+               node.movable = false;
+               node.groupID = 666;
+            }
+        }
       NodeId oldId = node.index;
       NodeId newId = control->nodes->addNode(&node);
       if (!newId) {
