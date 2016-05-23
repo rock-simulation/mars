@@ -56,6 +56,7 @@ namespace mars {
     {
       renderCam = 2;
       this->attached_node = config.attached_node;
+      draw_id = control->nodes->getDrawID(attached_node);
       std::vector<unsigned long>::iterator iter;
       dbPosIndices[0] = -1;
 
@@ -224,9 +225,11 @@ namespace mars {
     void CameraSensor::preGraphicsUpdate(void) {
       mutex.lock();
       if(gc) {
-        gc->updateViewportQuat(position.x(), position.y(), position.z(),
-                               orientation.x(), orientation.y(),
-                               orientation.z(), orientation.w());
+        Vector p = control->graphcis->getDrawObjectPosition(draw_id);
+        Quaternion q = control->graphcis->getDrawObjectQuaternion(draw_id);
+        gc->updateViewportQuat(p.x(), p.y(), p.z(),
+                               q.x(), q.y(),
+                               q.z(), q.w());
         if(config.enabled) {
           if(renderCam > 2) --renderCam;
           else if(renderCam == 2) {
