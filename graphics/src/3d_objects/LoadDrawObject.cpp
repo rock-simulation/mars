@@ -93,9 +93,7 @@ namespace mars {
         geodes.push_back(loadedNode->asGeode());
       }
       // import an .STL file
-      else if((filename.substr(filename.size()-4, 4) == ".STL") ||
-              (filename.substr(filename.size()-4, 4) == ".stl") ||
-              (filename.substr(filename.size()-4, 4) == ".obj")) {
+      else {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(filename);
         if(!loadedNode.valid()) {
           std::cerr << "LoadDrawObject: no node loaded" << std::endl;
