@@ -6,5 +6,6 @@
    <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/lib_manager" />
    <depend package="simulation/mars/common/cfg_manager" />
+   <depend package="qt4" optional="1" />
     <tags>needs_opt</tags>
 </package>

@@ -2,6 +2,7 @@
     <description brief="osg_lines">
       handles lines and path implementation in osg
    </description>
-	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
+   <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
+   <depend package="osg" />
    <tags>needs_opt</tags>
 </package>
