@@ -355,7 +355,7 @@ namespace mars {
       if(file_extension == ".smurfs") {
         configmaps::ConfigVector::iterator it;
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
-        map.toYamlFile("smurfs_debugmap.yml");
+        //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
           loadEntity(it, path);
         }
