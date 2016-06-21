@@ -3,6 +3,7 @@
 	Plot implementation to create 2d opengl (OSG) plots.
    </description>
 	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
-   <depend package="simulation/mars/scripts/cmake" />
-   <tags>needs_opt</tags>
+    <depend package="simulation/mars/scripts/cmake" />
+    <depend package="osg" />
+    <tags>needs_opt</tags>
 </package>
