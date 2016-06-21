@@ -55,6 +55,7 @@ namespace mars {
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
       virtual int saveFile(std::string filename, std::string tmpPath);
+      virtual void loadEntity(configmaps::ConfigVector::iterator it, std::string path);
 
       // SMURF-Loader specific functions
       void checkEncodings();
