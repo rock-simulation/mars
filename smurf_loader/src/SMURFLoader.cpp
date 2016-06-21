@@ -298,6 +298,34 @@ namespace mars {
        *        needed for MARS scenes. It may be removed in the future.
        * @return 1 if the file was successfully loaded, 0 otherwise
        */
+
+    void SMURFLoader::loadEntity(configmaps::ConfigVector::iterator it, std::string path) {
+      std::string uri = (std::string)(*it)["file"];
+      if (uri == "") {
+        uri = (std::string)(*it)["URI"]; // backwards compatibility
+      }
+      std::string uri_extension = utils::getFilenameSuffix(uri);
+      // get type from file extension if there is no type
+      if ((std::string)(*it)["type"] == "")
+        (*it)["type"] = uri_extension.substr(1);
+      // handle absolute paths
+      if (uri.substr(0,1) == "/") {
+        (*it)["path"] = utils::getPathOfFile(uri);
+      } else {
+        (*it)["path"] = path+utils::getPathOfFile(uri);
+      }
+      utils::removeFilenamePrefix(&uri);
+      (*it)["file"] = uri;
+      std::string fulluri = (std::string)((*it)["path"])+"/"+uri;
+      // the following allows adding an old MARS scene file in a smurf scene
+      if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene") || ((std::string)(*it)["type"] == "yml")) {
+        control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+            path, (std::string)(*it)["name"]);
+      }
+      else {
+        entitylist.push_back(*it);
+      }
+    }
     //TODO: remove parameter "robotname"
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
@@ -327,60 +355,12 @@ namespace mars {
       if(file_extension == ".smurfs") {
         configmaps::ConfigVector::iterator it;
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
-        map.toYamlFile("smurfs_debugmap.yml");
+        //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
-          uri = (std::string)(*it)["file"];
-          if (uri == "") {
-            uri = (std::string)(*it)["URI"]; // backwards compatibility
-          }
-          uri_extension = utils::getFilenameSuffix(uri);
-          // get type from file extension if there is no type
-          if ((std::string)(*it)["type"] == "")
-            (*it)["type"] = uri_extension.substr(1);
-          // handle absolute paths
-          if (uri.substr(0,1) == "/") {
-            (*it)["path"] = utils::getPathOfFile(uri);
-          } else {
-            (*it)["path"] = path+utils::getPathOfFile(uri);
-          }
-          std::string fulluri = uri;
-          utils::removeFilenamePrefix(&uri);
-          (*it)["file"] = uri;
-          // the following allows adding an old MARS scene file in a smurf scene
-          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene") || ((std::string)(*it)["type"] == "yml")) {
-            control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
-                path, (std::string)(*it)["name"]);
-          }
-          else {
-            entitylist.push_back(*it);
-          }
+          loadEntity(it, path);
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
-          uri = (std::string)(*it)["file"];
-          if (uri == "") {
-            uri = (std::string)(*it)["URI"]; // backwards compatibility
-          }
-          uri_extension = utils::getFilenameSuffix(uri);
-          // get type from file extension if there is no type
-          if ((std::string)(*it)["type"] == "")
-            (*it)["type"] = uri_extension.substr(1);
-          // handle absolute paths
-          if (uri.substr(0,1) == "/") {
-            (*it)["path"] = utils::getPathOfFile(uri);
-          } else {
-            (*it)["path"] = path+utils::getPathOfFile(uri);
-          }
-          std::string fulluri = uri;
-          utils::removeFilenamePrefix(&uri);
-          (*it)["file"] = uri;
-          // the following allows adding an old MARS scene file in a smurf scene
-          if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene")) {
-            control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
-                path, (std::string)(*it)["name"]);
-          }
-          else {
-            entitylist.push_back(*it);
-          }
+          loadEntity(it, path);
         }
         // parse physics
         if (map.hasKey("physics")) {
