@@ -368,8 +368,7 @@ namespace mars {
           }
         }
 
-        cv.setTraversalMask( traversalMask &
-                             getShadowedScene()->getCastsShadowTraversalMask() );
+        cv.setTraversalMask( getShadowedScene()->getCastsShadowTraversalMask() );
 
         // do RTT camera traversal
         camera->accept(cv);

@@ -76,8 +76,8 @@ namespace mars {
     using mars::utils::Quaternion;
     using namespace mars::interfaces;
 
-    static int ReceivesShadowTraversalMask = 0xffff;
-    static int CastsShadowTraversalMask = 0xffff;
+    static int ReceivesShadowTraversalMask = 0x1000;
+    static int CastsShadowTraversalMask = 0x2000;
 
 
     GraphicsManager::GraphicsManager(lib_manager::LibManager *theManager,
