@@ -97,6 +97,9 @@ namespace mars {
         double sensitivity[6];
         mars::plugins::connexion_plugin::connexionValues *newValues;
         double motion[6];
+        bool useFilter, syncWithFrames;
+        double filterValue;
+
         /*
          * state[0..2] -> trans: x,y,z
          * state[3..6] -> rot: x,y,z,w (quaternion)
@@ -129,6 +132,9 @@ namespace mars {
         void setObjectMode(int mode);
         void setLockAxis(int axis, bool val);
         void setSensitivity(int axis, double val);
+        void setUseFilter(bool val) {useFilter = val;}
+        void setFilterValue(double val) {filterValue = val;}
+        void setSyncWithFrames(bool val) {syncWithFrames = val;}
       }; // end of class ConnexionPlugin
 
     } // end of namespace connexion_plugin

@@ -121,7 +121,18 @@ namespace mars {
                     SLOT(checkRY(bool)), SLOT(sensRYChanged(double)), "RY", 7);
         generateDoF(mainLayout, checkLockRZ, sensitivityRZ, 
                     SLOT(checkRZ(bool)), SLOT(sensRZChanged(double)), "RZ", 8);
+        generateDoF(mainLayout, checkFilter_, filterValue_,
+                    SLOT(checkFilter(bool)), SLOT(filterValueChanged(double)),
+                    "filter", 9);
 
+        QCheckBox *checkBox = new QCheckBox(this);
+        checkBox->setFont(standardFont);
+        checkBox->setText("syncWithFrames");
+
+        connect(checkBox, SIGNAL(toggled(bool)),
+                this, SLOT(checkSyncWithFrames(bool)), Qt::DirectConnection);
+
+        mainLayout->addWidget(checkBox, 10, 0);
 
         startTimer(500);
 
@@ -255,6 +266,14 @@ namespace mars {
         emit setLockAxis(6, val);
       }
 
+      void ConnexionWidget::checkFilter(bool val) {
+        emit setUseFilter(val);
+      }
+
+      void ConnexionWidget::checkSyncWithFrames(bool val) {
+        emit setSyncWithFrames(val);
+      }
+
       void ConnexionWidget::sensXChanged(double val) {
         emit sigSensitivity(1, val);
       }
@@ -277,6 +296,10 @@ namespace mars {
 
       void ConnexionWidget::sensRZChanged(double val) {
         emit sigSensitivity(6, val);
+      }
+
+      void ConnexionWidget::filterValueChanged(double val) {
+        emit setFilterValue(val);
       }
 
 
@@ -315,6 +338,7 @@ namespace mars {
         spinBox->setStyleSheet(QString::fromUtf8("background-color: rgb(217, 217, 217);"));
         spinBox->setFrame(false);
         spinBox->setSingleStep(0.1);
+        spinBox->setDecimals(5);
         spinBox->setRange(-1000., 1000.);
 
         connect(checkBox, SIGNAL(toggled(bool)),

@@ -63,6 +63,9 @@ namespace mars {
         isInit = false;
         init();
         newValues = new connexionValues;
+        useFilter = false;
+        filterValue = 0.0;
+        syncWithFrames = false;
       }
 
       void ConnexionPlugin::init() {
@@ -119,7 +122,8 @@ namespace mars {
       void ConnexionPlugin::preGraphicsUpdate() {
         double data[7];
         Quaternion q(1.0, 0.0, 0.0, 0.0);
-
+        static Quaternion fq(1.0, 0.0, 0.0, 0.0);
+        static Vector fp(0, 0, 0);
         camMutex.lock();
         sReal tmpCamState[7];
         tmpCamState[0] = camState[0];
@@ -140,6 +144,23 @@ namespace mars {
         camState[6] = 1.0; //q.w
         camMutex.unlock();
 
+        if(useFilter) {
+          double b = filterValue;
+          if(b < 0) b = 0;
+          if(b > 1) b = 1;
+          double a = 1-b;
+          fq.x() = fq.x()*a + qRot.x()*b;
+          fq.y() = fq.y()*a + qRot.y()*b;
+          fq.z() = fq.z()*a + qRot.z()*b;
+          fq.w() = fq.w()*a + qRot.w()*b;
+          fq.normalize();
+          fp = fp*a + trans*b;
+        }
+        else {
+          fq = qRot;
+          fp = trans;
+        }
+
         if (object_mode == 1) {
           interfaces::GraphicsWindowInterface *gw = control->graphics->get3DWindow(win_id);
     
@@ -158,8 +179,8 @@ namespace mars {
                                                       data+3, data+4, data+5,
                                                       data+6);
             q = Quaternion(data[6], data[3], data[4], data[5]);
-            trans = q*trans;
-            q = q * qRot;
+            trans = q*fp;
+            q = q * fq;
       
             data[0] += trans.x();
             data[1] += trans.y();
@@ -229,6 +250,12 @@ namespace mars {
                     this, SLOT(setLockAxis(int, bool)));
             connect(myWidget, SIGNAL(sigSensitivity(int, double)),
                     this, SLOT(setSensitivity(int, double)));
+            connect(myWidget, SIGNAL(setUseFilter(bool)),
+                    this, SLOT(setUseFilter(bool)));
+            connect(myWidget, SIGNAL(setFilterValue(double)),
+                    this, SLOT(setFilterValue(double)));
+            connect(myWidget, SIGNAL(setSyncWithFrames(bool)),
+                    this, SLOT(setSyncWithFrames(bool)));
           }
           else {
             closeWidget();//myWidget->hide();
@@ -305,8 +332,11 @@ namespace mars {
         qFromAxisAndAngle(q2, y_axis, ry);
         qFromAxisAndAngle(q3, z_axis, -rz);
 
-        tmpQuatState   = q1 * q2*  q3 * tmpQuatState;
-
+        if(syncWithFrames) {
+          tmpQuatState   = q1 * q2*  q3;
+        } else {
+          tmpQuatState   = q1 * q2*  q3 * tmpQuatState;
+        }
         camState[3] = tmpQuatState.x();
         camState[4] = tmpQuatState.y();
         camState[5] = tmpQuatState.z();
@@ -320,9 +350,16 @@ namespace mars {
         move.y() = x_axis.y() + y_axis.y() + z_axis.y(); // forward / backward
         move.z() = x_axis.z() + y_axis.z() + z_axis.z(); // up / down
 
-        camState[0] += move.x(); //x-axis
-        camState[1] += move.y(); //y-axis
-        camState[2] += move.z(); //z-axis
+        if(syncWithFrames) {
+          camState[0] = move.x(); //x-axis
+          camState[1] = move.y(); //y-axis
+          camState[2] = move.z(); //z-axis
+        }
+        else {
+          camState[0] += move.x(); //x-axis
+          camState[1] += move.y(); //y-axis
+          camState[2] += move.z(); //z-axis
+        }
         camMutex.unlock();
       }
 
