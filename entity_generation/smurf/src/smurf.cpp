@@ -1012,11 +1012,12 @@ namespace mars {
           // turn our relative filename into an absolute filename
           removeFilenameSuffix(&tmpfilename);
           tmpfilename.append(".bobj");
+          string tmpfilename2 = tmpfilename;
           handleFilenamePrefix(&tmpfilename, tmpPath);
           // replace if that file exists
           if (pathExists(tmpfilename)) {
             fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
-            config["filename"] = tmpfilename;
+            config["filename"] = tmpfilename2;
           }
         }
       }
