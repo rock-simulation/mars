@@ -34,18 +34,28 @@
 #endif
 
 #include "NodeArraySensor.h"
+#include <mars/data_broker/ProducerInterface.h>
 
 namespace mars {
   namespace sim {
 
-    class NodeRotationSensor : public NodeArraySensor {
+    class NodeRotationSensor : public NodeArraySensor,
+      public data_broker::ProducerInterface {
+
+      struct RotationData {
+        interfaces::sReal x, y, z, w, roll, pitch, yaw;
+      };
 
     public:
-      NodeRotationSensor(interfaces::ControlCenter* control,  IDListConfig config);
+      NodeRotationSensor(interfaces::ControlCenter* control,
+                         IDListConfig config);
       ~NodeRotationSensor(void) {}
 
       virtual int getAsciiData(char* data) const;
       virtual int getSensorData(interfaces::sReal** data) const;
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
+                               int callbackParam);
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -54,7 +64,10 @@ namespace mars {
                                            interfaces::BaseConfig *config);
 
     private:
-      std::vector<utils::sRotation> values;
+      data_broker::DataPackage dbPackage;
+      unsigned long dbPushId;
+      std::vector<RotationData> values;
+      std::vector<utils::Quaternion> rotations;
       long rotationIndices[4];
     };
 

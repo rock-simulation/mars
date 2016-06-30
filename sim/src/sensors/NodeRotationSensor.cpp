@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,15 +20,17 @@
 
 /*
  *  NodeRotationSensor.cpp
- *  QTVersion
  *
- *  Created by Malte Römmerann
+ *  Created by Malte Langosz
  *
  */
 
 #include "NodeRotationSensor.h"
+#include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/utils/mathUtils.h>
+#include "SimNode.h"
 
 #include <cstdio>
 #include <cstdlib>
@@ -53,7 +55,19 @@ namespace mars {
 
       int i = 0;
   
-      for(i=0; i<countIDs; i++) values.push_back((sRotation){0.0, 0.0, 0.0});
+      for(i=0; i<countIDs; i++) {
+        values.push_back((RotationData){0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0});
+        // store the initial node rotation
+        rotations.push_back(control->nodes->getRotation(config.ids[i]));
+        std::string name = control->nodes->getSimNode(config.ids[i])->getName();
+        dbPackage.add(name+"/x", 0.0);
+        dbPackage.add(name+"/y", 0.0);
+        dbPackage.add(name+"/z", 0.0);
+        dbPackage.add(name+"/w", 0.0);
+        dbPackage.add(name+"/roll", 0.0);
+        dbPackage.add(name+"/pitch", 0.0);
+        dbPackage.add(name+"/yaw", 0.0);
+      }
 
       for(i = 0; i < 4; ++i)
         rotationIndices[i] = -1;
@@ -65,28 +79,39 @@ namespace mars {
     int NodeRotationSensor::getAsciiData(char* data) const {
       char *p;
       int num_char = 0;
-      std::vector<sRotation>::const_iterator iter;
+      std::vector<RotationData>::const_iterator iter;
   
       p = data;
       for(iter = values.begin(); iter != values.end(); iter++) {
-        sprintf(p, " %6.2f %6.2f %6.2f", iter->alpha,
-                iter->beta, iter->gamma);
-        p += 21;
-        num_char += 21;
+        sprintf(p, " %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f %6.2f", iter->x,
+                iter->y, iter->z, iter->w, iter->roll,
+                iter->pitch, iter->yaw);
+        p += 49;
+        num_char += 49;
       }
       return num_char;
     }
 
     int NodeRotationSensor::getSensorData(sReal** data) const {
-      std::vector<sRotation>::const_iterator iter;
+      std::vector<RotationData>::const_iterator iter;
   
-      *data = (sReal*)calloc(3, sizeof(sReal));
+      *data = (sReal*)calloc(7, sizeof(sReal));
       for(iter = values.begin(); iter != values.end(); iter++) {
-        (*data)[0] = iter->alpha;
-        (*data)[1] = iter->beta;
-        (*data)[2] = iter->gamma;
+        (*data)[0] = iter->x;
+        (*data)[1] = iter->y;
+        (*data)[2] = iter->z;
+        (*data)[3] = iter->w;
+        (*data)[4] = iter->roll;
+        (*data)[5] = iter->pitch;
+        (*data)[6] = iter->yaw;
       }
-      return 3;
+      return 7;
+    }
+
+    void NodeRotationSensor::produceData(const data_broker::DataInfo &info,
+                                         data_broker::DataPackage *dbPackage,
+                                         int callbackParam) {
+      *dbPackage = this->dbPackage;
     }
 
     void NodeRotationSensor::receiveData(const data_broker::DataInfo &info,
@@ -103,8 +128,47 @@ namespace mars {
       package.get(rotationIndices[1], &q.y());
       package.get(rotationIndices[2], &q.z());
       package.get(rotationIndices[3], &q.w());
+      Vector axis;
+      double angle = angleBetween(control->sim->getGravity(), Vector(0, 0, -1),
+                                  &axis);
+      q = angleAxisToQuaternion(angle, axis)*q;
+      RotationData r;
       //values[callbackParam].rot = q.toEuler();
-      values[callbackParam] = quaternionTosRotation(q);
+      // calculate the roll / pitch and yaw in a secure way:
+      Vector tmp, tmp2;
+      r.x = q.x();
+      r.y = q.y();
+      r.z = q.z();
+      r.w = q.w();
+
+      // get the roll
+      // we assume the original front orientation is on the x axis
+      tmp = q*Vector(0, 1, 0);
+      tmp = rotations[callbackParam].inverse()*tmp;
+      tmp2 = Vector(0.0, tmp.y(), tmp.z());
+      r.roll = angleBetween(Vector(0, 1, 0), tmp2, &axis);
+      if(axis.x() < 0.0) r.roll = -r.roll;
+
+      // get the pitch
+      tmp = q*Vector(1, 0, 0);
+      tmp = rotations[callbackParam].inverse()*tmp;
+      tmp2 = Vector(tmp.x(), 0.0, tmp.z());
+      r.pitch = angleBetween(Vector(1, 0, 0), tmp2, &axis);
+      if(axis.y() < 0.0) r.pitch = -r.pitch;
+
+      // get the yaw
+      tmp2 = Vector(tmp.x(), tmp.y(), 0.0);
+      r.yaw = angleBetween(Vector(1, 0, 0), tmp2, &axis);
+      if(axis.z() < 0.0) r.yaw = -r.yaw;
+
+      dbPackage.set(callbackParam*7, r.x);
+      dbPackage.set(callbackParam*7+1, r.y);
+      dbPackage.set(callbackParam*7+2, r.z);
+      dbPackage.set(callbackParam*7+3, r.w);
+      dbPackage.set(callbackParam*7+4, r.roll);
+      dbPackage.set(callbackParam*7+5, r.pitch);
+      dbPackage.set(callbackParam*7+6, r.yaw);
+      values[callbackParam] = r;
     }
 
   } // end of namespace sim
