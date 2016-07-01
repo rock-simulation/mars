@@ -40,6 +40,13 @@ namespace mars {
       return FUNCTION_UNKNOWN;
     }
 
+    ApproximationFunction2D getApproximationFunction2DFromString(std::string s) {
+      if(s == "polynom2D1") return FUNCTION_POLYNOM2D1;
+      if(s == "polynom2D2") return FUNCTION_POLYNOM2D2;
+      //if(s == "polynom2D3") return FUNCTION_POLYNOM2D3;
+      return FUNCTION_UNKNOWN2D;
+    }
+
     double pipe(double* x, std::vector<double>* c) {
       return (*x);
     }
@@ -75,6 +82,18 @@ namespace mars {
     double gamma_distribution(double* x, std::vector<double>* c) {
 
     }*/
+
+    //return x*y + x + y +c
+    double polynom2D1(double* x, double* y, std::vector<double>* c) {
+      return (*c)[0]*(*x)*(*y) + (*c)[1]*((*x)) + (*c)[2]*((*x)) + (*c)[3];
+    }
+
+    //return x^2*y^2 + x^2*y + x*y^2 + x^2 + y^2 + x*y + x + y +c
+    double polynom2D2(double* x, double* y, std::vector<double>* c) {
+      return (*c)[0]*pow((*x),2)*pow((*y),2) + (*c)[1]*pow((*x),2)*(*y) + (*c)[2]*(*x)*pow((*y),2)
+        + (*c)[3]*pow((*x),2) + (*c)[4]*pow((*y),2) + (*c)[5]*(*x)*(*y) + (*c)[6]*((*x))
+        + (*c)[7]*((*x)) + (*c)[8];
+    }
 
     static const int EULER_AXIS_1 = 2;
     static const int EULER_AXIS_2 = 0;
