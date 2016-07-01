@@ -33,6 +33,13 @@ namespace mars {
     using namespace utils;
     using namespace interfaces;
 
+    double SpaceClimberCurrent(double* torque, double* velocity,
+      std::vector<interfaces::sReal>* c) {
+      return fabs((*c)[0]*fabs((*torque)*(*velocity)) +
+                   (*c)[1]*fabs((*torque)) +
+                   (*c)[2]*fabs((*velocity)) + (*c)[3]);
+    }
+
     SimMotor::SimMotor(ControlCenter *c, const MotorData &sMotor_)
       : control(c) {
 
@@ -63,8 +70,10 @@ namespace mars {
       mimic_offset=0;
       maxEffortApproximation = &utils::pipe;
       maxSpeedApproximation = &utils::pipe;
+      currentApproximation = &SpaceClimberCurrent;
       maxeffort_coefficients = NULL;
       maxspeed_coefficients = NULL;
+      current_coefficients = NULL;
       maxspeed_x = &sMotor.maxSpeed;
       maxeffort_x = &sMotor.maxEffort;
 
@@ -120,6 +129,7 @@ namespace mars {
       // delete any coefficient vectors we might have created
       delete maxspeed_coefficients;
       delete maxeffort_coefficients;
+      delete current_coefficients;
       mimics.clear();
     }
 
@@ -185,6 +195,19 @@ namespace mars {
           break;
       }
       maxspeed_coefficients = coefficients;
+    }
+
+    void SimMotor::setCurrentApproximation(utils::ApproximationFunction2D type,
+      std::vector<double>* coefficients) {
+      switch (type) {
+        case FUNCTION_UNKNOWN2D:
+          LOG_WARN("SimMotor: Approximation function not implemented or unknown.");
+          break;
+        case FUNCTION_POLYNOM2D2:
+          currentApproximation = &utils::polynom2D2;
+          break;
+      }
+      current_coefficients = coefficients;
     }
 
     void SimMotor::updateController() {
@@ -361,10 +384,7 @@ namespace mars {
       // calculate current
       effort = myJoint->getMotorTorque();
       joint_velocity = myJoint->getVelocity();
-      current = (kXY*fabs(effort*joint_velocity) +
-                 kX*fabs(effort) +
-                 kY*fabs(joint_velocity) + k);
-      current = fabs(current);
+      current = (*currentApproximation)(&effort, &joint_velocity, current_coefficients);
     }
 
     void SimMotor::estimateTemperature(sReal time_ms) {
@@ -406,6 +426,12 @@ namespace mars {
       kX  = 0.00512 / (9.81*0.07);
       kY  = 100.0*(0.00006 / (2*M_PI/60));
       k   = 0.025;
+      std::vector<sReal>* spaceclimber_coefficients = new std::vector<sReal>;
+      spaceclimber_coefficients->push_back(kXY);
+      spaceclimber_coefficients->push_back(kX);
+      spaceclimber_coefficients->push_back(kY);
+      spaceclimber_coefficients->push_back(k);
+      current_coefficients = spaceclimber_coefficients;
       current = 0;
     }
 

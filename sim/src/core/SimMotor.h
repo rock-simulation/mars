@@ -43,6 +43,8 @@ namespace mars {
 
   namespace sim {
 
+    double SpaceClimberCurrent(double* torque, double* velocity, std::vector<interfaces::sReal>* c);
+
     /**
      * Each SimMotor object publishes its state on the dataBroker.
      * The name under which the data is published can be obtained from the
@@ -89,6 +91,8 @@ namespace mars {
                                      std::vector<double>* coefficients);
       void setMaxSpeedApproximation(utils::ApproximationFunction type,
                                     std::vector<double>* coefficients);
+      void setCurrentApproximation(utils::ApproximationFunction2D type,
+                                      std::vector<double>* coefficients);
 
       // getters
       int getAxis() const;
@@ -161,6 +165,7 @@ namespace mars {
       typedef  void (SimJoint::*JointControlFunction)(interfaces::sReal, unsigned char);
       typedef void (SimMotor::*MotorControlFunction)(interfaces::sReal);
       typedef double (*ApproximationFunction)(double*, std::vector<double>*);
+      typedef double (*ApproximationFunction2D)(double*, double*, std::vector<double>*);
 
       // motor
       unsigned char axis;
@@ -195,8 +200,10 @@ namespace mars {
       double * maxeffort_x;
       std::vector<interfaces::sReal>* maxeffort_coefficients;
       std::vector<interfaces::sReal>* maxspeed_coefficients;
+      std::vector<interfaces::sReal>* current_coefficients;
       ApproximationFunction maxEffortApproximation;
       ApproximationFunction maxSpeedApproximation;
+      ApproximationFunction2D currentApproximation;
 
       // current estimation
       void initCurrentEstimation();
