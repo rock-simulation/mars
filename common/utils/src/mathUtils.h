@@ -34,7 +34,9 @@ namespace mars {
 
     enum ApproximationFunction {
       FUNCTION_PIPE,
+      FUNCTION_POLYNOM2,
       FUNCTION_POLYNOM3,
+      FUNCTION_POLYNOM4,
       FUNCTION_POLYNOM5,
       FUNCTION_GAUSSIAN, /*
       FUNCTION_BETA_DISTRIBUTION,
@@ -46,7 +48,9 @@ namespace mars {
     const double SQRT2PI = 2.5066282746310002;
 
     double pipe(double* x, std::vector<double>* c);
+    double polynom2(double* x, std::vector<double>* c);
     double polynom3(double* x, std::vector<double>* c);
+    double polynom4(double* x, std::vector<double>* c);
     double polynom5(double* x, std::vector<double>* c);
     double gaussian(double* x, std::vector<double>* c);
     double beta_distribution(double* x, std::vector<double>* c);
