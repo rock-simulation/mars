@@ -28,7 +28,6 @@
 #include "DrawObject.h"
 #include "gui_helper_functions.h"
 #include "../wrapper/OSGMaterialStruct.h"
-#include "../MarsMaterial.h"
 
 #include <iostream>
 
@@ -36,16 +35,8 @@
 #include <osg/PolygonMode>
 #include <osg/ComputeBoundsVisitor>
 
-#include <osgUtil/TangentSpaceGenerator>
-
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
-
-#ifdef HAVE_OSG_VERSION_H
-  #include <osg/Version>
-#else
-  #include <osg/Export>
-#endif
 
 #include "../GraphicsManager.h"
 
@@ -78,21 +69,20 @@ namespace mars {
         selected_(false),
         selectable_(true),
         group_(0),
-        material_(0),
         posTransform_(0),
         scaleTransform_(0),
-        blendEquation_(0),
         maxNumLights(1),
         g(g),
         sharedStateGroup(false),
-        marsMaterial(NULL),
         showSelected(true),
-        tangentsGenerated(false),
         isHidden(true) {
     }
 
     DrawObject::~DrawObject() {
-      if(marsMaterial!=NULL) marsMaterial->removeDrawObject(id_);
+      if(materialNode.valid()) materialNode->removeChild(posTransform_.get());
+      if(!sharedStateGroup) {
+        // todo: remove materialnode from manager
+      }
     }
 
     unsigned long DrawObject::getID(void) const {
@@ -108,33 +98,6 @@ namespace mars {
       id_ = id;
       pivot_ = pivot;
 
-      brightnessUniform = new osg::Uniform("brightness", 1.0f);
-      transparencyUniform = new osg::Uniform("alpha", 1.0f);
-      lineLaserPosUniform = new osg::Uniform("lineLaserPos", osg::Vec3f(0.0f, 0.0f, 0.0f));
-      lineLaserNormalUniform = new osg::Uniform("lineLaserNormal", osg::Vec3f(1.0f, 0.0f, 0.0f));
-      lineLaserColor = new osg::Uniform("lineLaserColor", osg::Vec4f(1.0f, 0.0f, 0.0f, 1.0f));
-      lineLaserDirection = new osg::Uniform("lineLaserDirection", osg::Vec3f(0.0f, 0.0f, 1.0f));
-      lineLaserOpeningAngle = new osg::Uniform("lineLaserOpeningAngle", (float)M_PI * 2.0f);
-
-      lightPosUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC3, "lightPos", maxNumLights);
-      lightAmbientUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightAmbient", maxNumLights);
-      lightDiffuseUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightDiffuse", maxNumLights);
-      lightSpecularUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC4, "lightSpecular", maxNumLights);
-      lightSpotDirUniform = new osg::Uniform(osg::Uniform::FLOAT_VEC3, "lightSpotDir", maxNumLights);
-      lightIsSpotUniform = new osg::Uniform(osg::Uniform::INT, "lightIsSpot", maxNumLights);
-      lightIsDirectionalUniform = new osg::Uniform(osg::Uniform::INT, "lightIsDirectional", maxNumLights);
-      lightConstantAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightConstantAtt", maxNumLights);
-      lightLinearAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightLinearAtt", maxNumLights);
-      lightQuadraticAttUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightQuadraticAtt", maxNumLights);
-      lightIsSetUniform = new osg::Uniform(osg::Uniform::INT, "lightIsSet", maxNumLights);
-      lightCosCutoffUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightCosCutoff", maxNumLights);
-      lightSpotExponentUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightSpotExponent", maxNumLights);
-      useFogUniform = new osg::Uniform("useFog", 1);
-      useNoiseUniform = new osg::Uniform("useNoise", 1);
-      useShadowUniform = new osg::Uniform("useShadow", 1);
-      numLightsUniform = new osg::Uniform("numLights", maxNumLights);
-      drawLineLaserUniform = new osg::Uniform("drawLineLaser", 0);
-
       scaleTransform_ = new osg::MatrixTransform();
       scaleTransform_->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
       scaleTransform_->setDataVariance(osg::Node::STATIC);
@@ -147,20 +110,13 @@ namespace mars {
 
       group_ = new osg::Group;
       if(sharedID) {
-        stateGroup_ = g->getSharedStateGroup(sharedID);
-        if(stateGroup_.valid()) {
+        materialNode = g->getSharedStateGroup(sharedID);
+        if(materialNode.valid()) {
           sharedStateGroup = true;
         }
         else {
           sharedStateGroup = false;
-          stateGroup_ = new osg::Group;
         }
-      }
-      else {
-        stateGroup_ = new osg::Group;
-      }
-      if(!sharedStateGroup) {
-        stateGroup_->addChild(posTransform_.get());
       }
 
       std::list< osg::ref_ptr< osg::Geode > > geodes = createGeometry();
@@ -216,10 +172,6 @@ namespace mars {
       }
     }
 
-    osg::ref_ptr<osg::Material> DrawObject::getMaterial() {
-      return material_->getMaterial();
-    }
-
     void DrawObject::setStateFilename(const std::string &filename, int create) {
       stateFilename_ = filename;
       if (create) {
@@ -227,6 +179,7 @@ namespace mars {
         fclose(stateFile);
       }
     }
+
     void DrawObject::exportState(void) {
       if (id_) {
         FILE* stateFile = fopen(stateFilename_.data(), "a");
@@ -235,136 +188,26 @@ namespace mars {
         fclose(stateFile);
       }
     }
-    void DrawObject::exportModel(const std::string &filename) {
-      osgDB::writeNodeFile(*(stateGroup_.get()), filename.data());
-    }
 
-    void DrawObject::setTransparency(float t) {
-      // handle transparency
-      transparencyUniform->set(1-t);
-      if(sharedStateGroup) return;
-      osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-      if (t >= 0.00001) {
-        state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-        state->setMode(GL_BLEND,osg::StateAttribute::ON);
-        state->setRenderBinDetails(1, "DepthSortedBin");
-        depth = new osg::Depth;
-        depth->setWriteMask( false );
-        state->setAttributeAndModes(depth.get(),
-                                    osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      }
-      else {
-        if(depth.valid()) {
-          state->removeAttribute(depth.get());
-        }
-        state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
-        state->setMode(GL_BLEND,osg::StateAttribute::OFF);
-        state->setRenderBinDetails(0, "RenderBin");
-      }
+    void DrawObject::exportModel(const std::string &filename) {
+      osgDB::writeNodeFile(*(materialNode.get()), filename.data());
     }
 
     // the material struct can also contain a static texture (texture file)
-    void DrawObject::setMaterial(const MaterialData &mStruct, bool _useFog,
-                                 bool _useNoise, bool _drawLineLaser,
-                                 bool _marsShadow) {
+    void DrawObject::setMaterial(const std::string &name) {
 
       //osg::StateSet *mState = g->getMaterialStateSet(mStruct);
       bool show_ = !isHidden;
-      if(mGroup_.valid()) {
+      if(materialNode.valid()) {
         // todo: do not show if is already hidden
         hide();
       }
-      if(!mStruct.normalmap.empty()) generateTangents();
-      mGroup_ = g->getMaterialGroup(mStruct);//new osg::Group();
-      materialState = g->getMaterialStateSet(mStruct);
+      if(!sharedStateGroup) {
+        // todo: remove materialNode from manager
+        materialNode = g->getMaterialNode(name);
+      }
       if(show_) {
         show();
-      }
-      //mGroup->setStateSet(mState);
-      //scaleTransform_->addChild(mGroup);
-      //scaleTransform_->removeChild(group_.get());
-      if(sharedStateGroup) return;
-      //return;
-      useFog = _useFog;
-      if(useFog) useFogUniform->set(1);
-      else useFogUniform->set(0);
-
-      useNoise = _useNoise;
-      if(useNoise) useNoiseUniform->set(1);
-      else useNoiseUniform->set(0);
-
-      if(_marsShadow) useShadowUniform->set(1);
-      else useShadowUniform->set(0);
-
-      drawLineLaser = _drawLineLaser;
-      if(drawLineLaser) drawLineLaserUniform->set(1);
-      else drawLineLaserUniform->set(0);
-
-      if(mStruct.brightness != 0.0) {
-        brightnessUniform->set((float)mStruct.brightness);
-      } else {
-        brightnessUniform->set(1.0f);
-      }
-      if (!mStruct.exists) return;
-      setNodeMask(mStruct.cullMask);
-
-      osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-
-      // handle transparency
-      transparencyUniform->set((float)(1.f-(float)(mStruct.transparency)));
-      if (mStruct.transparency != 0) {
-        state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-        state->setMode(GL_BLEND,osg::StateAttribute::ON);
-        state->setRenderBinDetails(1, "DepthSortedBin");
-        osg::ref_ptr<osg::Depth> depth = new osg::Depth;
-        depth->setWriteMask( false );
-        state->setAttributeAndModes(depth.get(),
-                                    osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
-      }
-
-      state->addUniform(brightnessUniform.get());
-      state->addUniform(transparencyUniform.get());
-      state->addUniform(lightPosUniform.get());
-      state->addUniform(lightAmbientUniform.get());
-      state->addUniform(lightDiffuseUniform.get());
-      state->addUniform(lightSpecularUniform.get());
-      state->addUniform(lightSpotDirUniform.get());
-      state->addUniform(lightIsSpotUniform.get());
-      state->addUniform(lightIsDirectionalUniform.get());
-      state->addUniform(lightConstantAttUniform.get());
-      state->addUniform(lightLinearAttUniform.get());
-      state->addUniform(lightQuadraticAttUniform.get());
-      state->addUniform(lightIsSetUniform.get());
-      state->addUniform(lightCosCutoffUniform.get());
-      state->addUniform(lightSpotExponentUniform.get());
-
-      state->addUniform(lineLaserPosUniform.get());
-      state->addUniform(lineLaserNormalUniform.get());
-      state->addUniform(lineLaserColor.get());
-      state->addUniform(lineLaserDirection.get());
-      state->addUniform(lineLaserOpeningAngle.get());
-      state->addUniform(useFogUniform.get());
-      state->addUniform(useNoiseUniform.get());
-      state->addUniform(useShadowUniform.get());
-      state->addUniform(numLightsUniform.get());
-      state->addUniform(drawLineLaserUniform.get());
-    }
-
-    void DrawObject::setBlending(bool mode) {
-      if(sharedStateGroup) return;
-      if(blendEquation_ && !mode) {
-        osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-        state->setAttributeAndModes(blendEquation_.get(),
-                                    osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF);
-      }
-      else if(mode) {
-        if(!blendEquation_) {
-          blendEquation_ = new osg::BlendEquation(osg::BlendEquation::FUNC_ADD);
-          //blendEquation->setDataVariance(osg::Object::DYNAMIC);
-        }
-        osg::StateSet *state = stateGroup_->getOrCreateStateSet();
-        state->setAttributeAndModes(blendEquation_.get(),
-                                    osg::StateAttribute::OVERRIDE | osg::StateAttribute::ON);
       }
     }
 
@@ -396,40 +239,6 @@ namespace mars {
                       scaledSize.x() / geometrySize_.x(),
                       scaledSize.y() / geometrySize_.y(),
                       scaledSize.z() / geometrySize_.z()));
-    }
-
-    void DrawObject::generateTangents() {
-      if(tangentsGenerated) return;
-      std::list< osg::ref_ptr<osg::Geometry> >::iterator it;
-      for(it = geometry_.begin(); it != geometry_.end(); ++it) {
-        generateTangents(it->get());
-      }
-      tangentsGenerated = true;
-    }
-
-    void DrawObject::generateTangents(osg::ref_ptr<osg::Geometry> geom) {
-      osg::ref_ptr< osgUtil::TangentSpaceGenerator > tsg = new osgUtil::TangentSpaceGenerator;
-
-        if(geom->empty()) {
-          cerr << "WARNING: empty geometry for DrawObject " << id_ << "!" << endl;
-        }
-        // color map unit for texture coordinates
-        tsg->generate( geom.get(), DEFAULT_UV_UNIT );
-        osg::Vec4Array *tangents = tsg->getTangentArray();
-        if(tangents==NULL || tangents->size()==0) {
-          cerr << "Failed to generate tangents for DrawObject " << id_ << "!" << endl;
-          return;
-        }
-
-
-#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
-        geom->setVertexAttribData( TANGENT_UNIT, osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_PER_VERTEX ) );
-#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
-        geom->setVertexAttribArray( TANGENT_UNIT,
-                                   tangents, osg::Array::BIND_PER_VERTEX );
-#else
-  #error Unknown OSG Version
-#endif
     }
 
     void DrawObject::removeBits(unsigned int bits) {
@@ -485,7 +294,7 @@ namespace mars {
     }
 
     void DrawObject::setRenderBinNumber(int number) {
-      osg::StateSet *state = stateGroup_->getOrCreateStateSet();
+      osg::StateSet *state = group_->getOrCreateStateSet();
       if(number == 0) {
         state->setMode(GL_DEPTH_TEST, osg::StateAttribute::ON);
       }
@@ -503,35 +312,22 @@ namespace mars {
     }
 
     void DrawObject::show() {
+      if(!materialNode.valid()) return;
       hide();
       isHidden = false;
-      if(sharedStateGroup) {
-        stateGroup_->addChild(posTransform_.get());
-      }
-      else {
-        mGroup_->addChild(stateGroup_.get());
-      }
+      materialNode->addChild(posTransform_.get());
     }
 
     void DrawObject::hide() {
+      if(!materialNode.valid()) return;
       isHidden = true;
-      if(sharedStateGroup) {
-        stateGroup_->removeChild(posTransform_.get());
-      }
-      else {
-        mGroup_->removeChild(stateGroup_.get());
-      }
+      materialNode->removeChild(posTransform_.get());
     }
 
     void DrawObject::seperateMaterial() {
-      if(!sharedStateGroup) {
-        mGroup_->removeChild(stateGroup_.get());
-        posTransform_->setStateSet(materialState.get());
-      }
-      else {
-        // this will be more complicated
-      }
-
+      if(!materialNode.valid()) return;
+      materialNode->removeChild(posTransform_.get());
+      posTransform_->setStateSet(materialNode->getOrCreateStateSet());
     }
 
     void DrawObject::showNormals(bool val) {
@@ -545,113 +341,8 @@ namespace mars {
       }
     }
 
-    void DrawObject::setUseFog(bool val) {
-      if(sharedStateGroup) return;
-      useFog = val;
-      if(val) useFogUniform->set(1);
-      else useFogUniform->set(0);
-    }
-
-    void DrawObject::setUseNoise(bool val) {
-      if(sharedStateGroup) return;
-      useNoise = val;
-      if(sharedStateGroup) return;
-      if(val) useNoiseUniform->set(1);
-      else useNoiseUniform->set(0);
-    }
-
-    void DrawObject::setDrawLineLaser(bool val) {
-      if(sharedStateGroup) return;
-      drawLineLaser = val;
-      if(sharedStateGroup) return;
-      if(val) drawLineLaserUniform->set(1);
-      else drawLineLaserUniform->set(0);
-    }
-
-    void DrawObject::setUseShadow(bool val) {
-      if(sharedStateGroup) return;
-      if(val) useShadowUniform->set(1);
-      else useShadowUniform->set(0);
-    }
-
-    void DrawObject::setBrightness(float val) {
-      if(sharedStateGroup) return;
-      brightnessUniform->set(val);
-    }
 
     void DrawObject::collideSphere(Vector pos, sReal radius) {
-    }
-
-    void DrawObject::setExperimentalLineLaser(Vector pos, Vector n,
-                                              Vector color, Vector laserAngle,
-                                              float openingAngle) {
-      if(sharedStateGroup) return;
-      lineLaserPosUniform->set(osg::Vec3f(pos.x(), pos.y(), pos.z()));
-      lineLaserNormalUniform->set(osg::Vec3f(n.x(), n.y(), n.z()));
-      lineLaserColor->set(osg::Vec4f(color.x(), color.y(), color.z(), 1.0f ) );
-      lineLaserDirection->set(osg::Vec3f(laserAngle.x(), laserAngle.y(), laserAngle.z()));
-      lineLaserOpeningAngle->set( openingAngle);
-    }
-
-    void DrawObject::updateLights(std::vector<mars::interfaces::LightData*> &lightList) {
-      if(sharedStateGroup) return;
-      std::vector<mars::interfaces::LightData*>::iterator it;
-      std::list<mars::interfaces::LightData*> lightList_;
-      std::list<mars::interfaces::LightData*>::iterator it2;
-      double dist1, dist2;
-
-      for(it=lightList.begin(); it!=lightList.end(); ++it) {
-        dist1 = Vector((*it)->pos - position_).norm();
-        for(it2=lightList_.begin(); it2!=lightList_.end(); ++it2) {
-          dist2 = Vector((*it2)->pos - position_).norm();
-          if(dist1 < dist2) {
-            lightList_.insert(it2, *it);
-            break;
-          }
-        }
-        if(it2 == lightList_.end()) {
-          lightList_.push_back(*it);
-        }
-      }
-      int i=0;
-      for(it2=lightList_.begin(); it2!=lightList_.end() && i<maxNumLights; ++it2, ++i) {
-        /*
-        fprintf(stderr, "set light: %d\n", i);
-        fprintf(stderr, "  pos: %g %g %g\n", (*it2)->pos.x(), (*it2)->pos.y(), (*it2)->pos.z());
-        fprintf(stderr, "  ambient: %g %g %g %g\n", (*it2)->ambient.r, (*it2)->ambient.g,
-                (*it2)->ambient.b, (*it2)->ambient.a);
-        fprintf(stderr, "  diffuse: %g %g %g %g\n", (*it2)->diffuse.r, (*it2)->diffuse.g,
-                (*it2)->diffuse.b, (*it2)->diffuse.a);
-        */
-        lightPosUniform->setElement(i, osg::Vec3f((*it2)->pos.x(),
-                                                 (*it2)->pos.y(),
-                                                 (*it2)->pos.z()));
-        lightAmbientUniform->setElement(i, osg::Vec4f((*it2)->ambient.r,
-                                                     (*it2)->ambient.g,
-                                                     (*it2)->ambient.b,
-                                                     (*it2)->ambient.a));
-        lightDiffuseUniform->setElement(i, osg::Vec4f((*it2)->diffuse.r,
-                                                     (*it2)->diffuse.g,
-                                                     (*it2)->diffuse.b,
-                                                     (*it2)->diffuse.a));
-        lightSpecularUniform->setElement(i, osg::Vec4f((*it2)->specular.r,
-                                                      (*it2)->specular.g,
-                                                      (*it2)->specular.b,
-                                                      (*it2)->specular.a));
-        lightIsSpotUniform->setElement(i, (*it2)->type-1);
-        Vector v = (*it2)->lookAt;// - (*it2)->pos;
-        lightSpotDirUniform->setElement(i, osg::Vec3f(v.x(), v.y(), v.z()));
-        lightIsDirectionalUniform->setElement(i, (*it2)->directional);
-        lightConstantAttUniform->setElement(i, (float)(*it2)->constantAttenuation);
-        lightLinearAttUniform->setElement(i, (float)(*it2)->linearAttenuation);
-        lightQuadraticAttUniform->setElement(i, (float)(*it2)->quadraticAttenuation);
-        lightIsSetUniform->setElement(i, 1);
-        lightCosCutoffUniform->setElement(i, (float)cos((*it2)->angle*0.017453292519943));
-        lightSpotExponentUniform->setElement(i, (float)(*it2)->exponent);
-      }
-      for(; i<maxNumLights; ++i) {
-        lightIsSetUniform->setElement(i, 0);
-      }
     }
 
   } // end of namespace graphics

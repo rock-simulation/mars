@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -18,8 +18,8 @@
  *
  */
 
-#ifndef MARS_GRAPHICS_SHADER_GENERATOR_H
-#define MARS_GRAPHICS_SHADER_GENERATOR_H
+#ifndef OSG_MATERIAL_MANAGER_SHADER_GENERATOR_H
+#define OSG_MATERIAL_MANAGER_SHADER_GENERATOR_H
 
 #include "shader-function.h"
 
@@ -28,35 +28,33 @@
 #else
 #include <GL/gl.h>
 #endif
-#include <osg/Shader>
 #include <osg/Program>
 
-#include <string>
 #include <map>
 
-#include <mars/interfaces/MARSDefs.h>
+namespace osg_material_manager {
 
+  enum ShaderType {
+    SHADER_TYPE_FRAGMENT,
+    SHADER_TYPE_GEOMETRY,
+    SHADER_TYPE_VERTEX,
+    SHADER_TYPE_FFP
+  };
+  
+  class ShaderGenerator {
+  public:
+    ShaderGenerator() {};
 
-namespace mars {
-  namespace graphics {
+    void addShaderFunction(ShaderFunc *func, ShaderType shaderType);
 
-    class ShaderGenerator {
-    public:
-      ShaderGenerator() {};
+    std::string generateSource(ShaderType shaderType);
+    osg::Program* generate();
 
-      void addShaderFunction(ShaderFunc *func,
-                             mars::interfaces::ShaderType shaderType);
+  private:
+    std::map<ShaderType, ShaderFunc* > functions;
+  }; // end of class ShaderGenerator
 
-      std::string generateSource(mars::interfaces::ShaderType shaderType);
+} // end of namespace osg_material_manager
 
-      osg::Program* generate();
-
-    private:
-      std::map< mars::interfaces::ShaderType, ShaderFunc* > functions;
-    }; // end of class ShaderGenerator
-
-  } // end of namespace graphics
-} // end of namespace mars
-
-#endif /* MARS_GRAPHICS_SHADER_GENERATOR_H */
+#endif /* OSG_MATERIAL_MANAGER_SHADER_GENERATOR_H */
 

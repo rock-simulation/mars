@@ -27,7 +27,6 @@
 
 #include "GraphicsManager.h"
 #include "config.h"
-#include "MarsMaterial.h"
 
 //#include <osgUtil/Optimizer>
 
@@ -68,6 +67,8 @@
 
 #define SINGLE_THREADED
 
+using namespace osg_material_manager;
+
 namespace mars {
   namespace graphics {
 
@@ -105,13 +106,11 @@ namespace mars {
         ignore_next_resize(0),
         set_window_prop(0),
         initialized(false),
-        activeWindow(NULL)
-    {
+        activeWindow(NULL),
+        materialManager(NULL) {
       //osg::setNotifyLevel( osg::WARN );
 
       // first check if we have the cfg_manager lib
-
-      if(libManager == NULL) return;
 
     }
 
@@ -122,6 +121,7 @@ namespace mars {
         cfg->writeConfig(saveFile.c_str(), "Graphics");
         libManager->releaseLibrary("cfg_manager");
       }
+      if(materialManager) libManager->releaseLibrary("osg_material_manager");
       fprintf(stderr, "Delete mars_graphics\n");
     }
 
@@ -313,9 +313,7 @@ namespace mars {
             //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
           }
         }
-        noiseImage_ = new osg::Image();
-        noiseImage_->allocateImage(128, 128, 4, GL_RGBA, GL_UNSIGNED_BYTE);
-        updateShadowSamples();
+
         // TODO: check this out:
         //   i guess fire.rgb is a 1D texture
         //   there is something to generate these in OGLE
@@ -327,7 +325,13 @@ namespace mars {
         //scene->addChild(effectNode.get());
 
         grid = new GridPrimitive(osgWidget);
-        showCoords();
+        if(showGridProp.bValue) showGrid();
+
+        show_coords = showCoordsProp.bValue;
+        if(show_coords) {
+          showCoords();
+        }
+
 
         // reset number of frames
         framecount = 0;
@@ -346,6 +350,21 @@ namespace mars {
 
         //guiHelper->setGraphicsWidget(graphicsWindows[0]);
         setupCFG();
+
+        // init materialManager
+        materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        if(materialManager) {
+          materialManager->setUseShader(marsShader.bValue);
+          materialManager->setShadowTextureSize(shadowTextureSize.iValue);
+          materialManager->setUseFog(useFog);
+          materialManager->setUseNoise(useNoise);
+          materialManager->setDrawLineLaser(drawLineLaser);
+          materialManager->setUseShadow(marsShadow.bValue);
+          materialManager->setShadowSamples(shadowSamples.iValue);
+          materialManager->setDefaultMaxNumLights(defaultMaxNumNodeLights.iValue);
+          materialManager->setBrightness((float)brightness.dValue);
+          shadowedScene->addChild(materialManager->getMainStateGroup());
+        }
 
         if(backfaceCulling.bValue)
           globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
@@ -495,18 +514,14 @@ namespace mars {
         globalStateset->setMode(GL_FOG, osg::StateAttribute::OFF);
         useFog = false;
       }
-
-      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
-
-      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-        iter->second->object()->setUseFog(useFog);
-
+      if(materialManager) materialManager->setUseFog(useFog);
     }
 
     void GraphicsManager::setWidget(GraphicsWidget *widget) {
       //guiHelper->setGraphicsWidget(widget);
     }
 
+    // this function should be deprecated
     void GraphicsManager::setTexture(unsigned long id, const string &filename) {
       std::vector<nodemanager>::iterator iter;
 
@@ -710,15 +725,13 @@ namespace mars {
         }
       }
 
-      for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter)
-        drawIter->second->object()->updateLights(lightList);
+      if(materialManager) {
+        materialManager->updateLights(lightList);
 
-      if(useNoise) {
-        updateShadowSamples();
-      }
-      std::map<std::string, MarsMaterial*>::iterator mIt = materials.begin();
-      for(; mIt!=materials.end(); ++mIt) {
-        mIt->second->setShadowScale(shadowMap->getTexScale());
+        if(useNoise) {
+          materialManager->updateShadowSamples();
+        }
+        materialManager->setShadowScale(shadowMap->getTexScale());
       }
 
       // Render a complete new frame.
@@ -811,7 +824,7 @@ namespace mars {
 
       getLights(&lightList);
       if(lightList.size() == 0) lightList.push_back(&defaultLight.lStruct);
-      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this, snode, false, id, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
+      osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this, snode, false, id);
       osg::PositionAttitudeTransform *transform = drawObject->object()->getPosTransform();
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
@@ -860,6 +873,7 @@ namespace mars {
                                             offset.w()));
       }
 
+      setDrawObjectMaterial(id, snode.material);
       if(activated) {
         if(mask != 0) {
           drawObject->object()->show();
@@ -877,7 +891,9 @@ namespace mars {
       }
       //osgUtil::Optimizer optimizer;
       //optimizer.optimize(shadowedScene.get());
-      setDrawObjectMaterial(id, snode.material);
+
+      // todo: handle preview mode
+      // todo: this will not work if material.exists = false
       return id;
     }
 
@@ -950,30 +966,28 @@ namespace mars {
     }
     void GraphicsManager::setDrawObjectMaterial(unsigned long id,
                                                 const mars::interfaces::MaterialData &material) {
-      /*
-        OSGNodeStruct *ns = findDrawObject(id);
-        if(ns != NULL) ns->object()->setMaterial(material, useFog, useNoise, drawLineLaser);
-      */
       OSGNodeStruct *ns = findDrawObject(id);
       if(!ns) return;
-      std::map<std::string, MarsMaterial*>::iterator it;
-      it = materials.find(material.name);
-      if(it!=materials.end()) {
-        //fprintf(stderr, "set material %s for id: %lu\n", material.name.c_str(), id);
-        it->second->addDrawObject(id, ns->object());
-        ns->object()->setMaterial(it->second->getMaterialData(),
-                                  useFog, useNoise, drawLineLaser);
-        ns->object()->setMarsMaterial(it->second);
-        //it->second->setMaterial(material);
+      if(materialManager) {
+        mars::interfaces::MaterialData m = material;
+        configmaps::ConfigMap map;
+        m.toConfigMap(&map);
+        // the material is not overridden if it already exists
+        materialManager->createMaterial(material.name, map);
+        ns->object()->setMaterial(material.name);
+        ns->object()->setNodeMask(material.cullMask);
       }
     }
 
     std::vector<interfaces::MaterialData> GraphicsManager::getMaterialList() const {
       std::vector<interfaces::MaterialData> materialList;
-      std::map<std::string, MarsMaterial*>::const_iterator it;
-
-      for(it=materials.begin(); it!=materials.end(); ++it) {
-        materialList.push_back(it->second->getMaterialData());
+      if(!materialManager) return materialList;
+      std::vector<ConfigMap> materials = materialManager->getMaterialList();
+      std::vector<ConfigMap>::iterator it = materials.begin();
+      for(; it!=materials.end(); ++it) {
+        interfaces::MaterialData md;
+        md.fromConfigMap(&(*it), "");
+        materialList.push_back(md);
       }
       return materialList;
     }
@@ -981,11 +995,9 @@ namespace mars {
     void GraphicsManager::editMaterial(std::string materialName,
                                        std::string key,
                                        std::string value) {
-      std::map<std::string, MarsMaterial*>::iterator it;
-      it = materials.find(materialName);
-      if(it!=materials.end()) {
-        it->second->edit(key, value);
-      }
+
+      if(!materialManager) return;
+      materialManager->editMaterial(materialName, key, value);
     }
 
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
@@ -994,16 +1006,13 @@ namespace mars {
     }
 
     void GraphicsManager::setBlending(unsigned long id, bool mode) {
-      OSGNodeStruct *ns = findDrawObject(id);
-      if(ns != NULL) ns->object()->setBlending(mode);
-    }
-    void GraphicsManager::setBumpMap(unsigned long id, const std::string &bumpMap) {
-      fprintf(stderr, "setBumpMap\n\n");
+      fprintf(stderr, "setBlending is deprecated\n\n");
       assert(false);
-      /*
-      OSGNodeStruct *ns = findDrawObject(id);
-      if(ns != NULL) ns->object()->setBumpMap(bumpMap);
-      */
+    }
+
+    void GraphicsManager::setBumpMap(unsigned long id, const std::string &bumpMap) {
+      fprintf(stderr, "setBumpMap is deprecated\n\n");
+      assert(false);
     }
     void GraphicsManager::setSelectable(unsigned long id, bool val) {
       OSGNodeStruct *ns = findDrawObject(id);
@@ -1295,7 +1304,7 @@ namespace mars {
 
       if (allNodes[0].filename=="PRIMITIVE") {
         osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this,
-                                                                   allNodes[0], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
+                                                                   allNodes[0], true, nextPreviewID);
         previewNodes_[nextPreviewID] = drawObject;
         scene->addChild(drawObject->object()->getPosTransform());
       } else {
@@ -1303,7 +1312,7 @@ namespace mars {
         for(DrawObjects::iterator it = previewNodes_.begin();
             it != previewNodes_.end(); ++it) {
           osg::ref_ptr<OSGNodeStruct> drawObject = new OSGNodeStruct(this,
-                                                                     allNodes[++i], true, nextPreviewID, marsShader.bValue, useFog, useNoise, drawLineLaser, marsShadow.bValue, defaultMaxNumNodeLights.iValue);
+                                                                     allNodes[++i], true, nextPreviewID);
           previewNodes_[nextPreviewID] = drawObject;
           scene->addChild(drawObject->object()->getPosTransform());
         }
@@ -1946,33 +1955,23 @@ namespace mars {
       osg::DisplaySettings::instance()->setNumMultiSamples(num_samples);
     }
 
+    // todo: handle brightness as global setting in materialmanager
     void GraphicsManager::setBrightness(double val) {
-      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
-
-      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-        iter->second->object()->setBrightness((float)val);
+      if(materialManager) materialManager->setBrightness(float(val));
     }
 
     void GraphicsManager::setUseNoise(bool val) {
-      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
       useNoise = noiseProp.bValue = val;
-
-      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-        iter->second->object()->setUseNoise(val);
+      if(materialManager) materialManager->setUseNoise(val);
     }
 
     void GraphicsManager::setDrawLineLaser(bool val) {
-      map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
       drawLineLaser = drawLineLaserProp.bValue = val;
-      for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
-        iter->second->object()->setDrawLineLaser(val);
+      if(materialManager) materialManager->setDrawLineLaser(val);
     }
 
     void GraphicsManager::setUseShader(bool val) {
-      std::map<std::string, MarsMaterial*>::iterator it;
-      for(it=materials.begin(); it!=materials.end(); ++it) {
-        it->second->setUseMARSShader(val);
-      }
+      if(materialManager) materialManager->setUseShader(val);
       if(val) {
         shadowMap->addTexture(globalStateset.get());
       }
@@ -1988,19 +1987,19 @@ namespace mars {
     }
 
     void GraphicsManager::setShadowSamples(int v) {
-      std::map<std::string, MarsMaterial*>::iterator it;
       shadowSamples.iValue = v;
-      for(it=materials.begin(); it!=materials.end(); ++it) {
-        it->second->setShadowSamples(v);
+      if(materialManager) {
+        materialManager->setShadowSamples(v);
+        materialManager->updateShadowSamples();
       }
     }
 
     void GraphicsManager::initDefaultLight() {
       defaultLight.lStruct.pos = Vector(2.0, 2.0, 10.0);
-      defaultLight.lStruct.ambient = mars::utils::Color(0.5, 0.5, 0.5, 1.0);
-      defaultLight.lStruct.diffuse = mars::utils::Color(0.7, 0.7, 0.7, 1.0);
+      defaultLight.lStruct.ambient = mars::utils::Color(0.2, 0.2, 0.2, 1.0);
+      defaultLight.lStruct.diffuse = mars::utils::Color(1., 1., 1., 1.0);
       defaultLight.lStruct.specular = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
-      defaultLight.lStruct.constantAttenuation = 1.0;
+      defaultLight.lStruct.constantAttenuation = 0.6;
       defaultLight.lStruct.linearAttenuation = 0.0;
       defaultLight.lStruct.quadraticAttenuation = 0.0;
       defaultLight.lStruct.directional = true;
@@ -2094,10 +2093,9 @@ namespace mars {
     }
 
     void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) {
-
-      for (DrawObjects::iterator iter = drawObjects_.begin();
-           iter != drawObjects_.end(); ++iter) {
-        iter->second->object()->setExperimentalLineLaser(pos, normal, color, laserAngle, openingAngle);
+      if(materialManager) {
+        materialManager->setExperimentalLineLaser(pos, normal, color,
+                                                  laserAngle, openingAngle);
       }
     }
 
@@ -2109,61 +2107,21 @@ namespace mars {
       scene->removeChild((osg::Node*)node);
     }
 
-    osg::StateSet* GraphicsManager::getMaterialStateSet(const MaterialData &mStruct) {
-      std::map<std::string, MarsMaterial*>::iterator it;
-      it = materials.find(mStruct.name);
-      if(it!=materials.end()) {
-        return it->second->getStateSet();
-      }
-      else {
-        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
-                                           shadowTextureSize.iValue);
-        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
-        m->setUseMARSShader(marsShader.bValue);
-        m->setMaterial(mStruct);
-        m->setNoiseImage(noiseImage_.get());
-        m->setShadowSamples(shadowSamples.iValue);
-        materials[mStruct.name] = m;
-        shadowedScene->addChild(m->getGroup());
-        return m->getStateSet();
-      }
-    }
-
-    osg::Group* GraphicsManager::getMaterialGroup(const MaterialData &mStruct) {
-      std::map<std::string, MarsMaterial*>::iterator it;
-      it = materials.find(mStruct.name);
-      if(it!=materials.end()) {
-        return it->second->getGroup();
-      }
-      else {
-        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
-                                           shadowTextureSize.iValue);
-        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
-        m->setUseMARSShader(marsShader.bValue);
-        m->setMaterial(mStruct);
-        m->setNoiseImage(noiseImage_.get());
-        m->setShadowSamples(shadowSamples.iValue);
-        materials[mStruct.name] = m;
-        shadowedScene->addChild(m->getGroup());
-        return m->getGroup();
-      }
+    osg_material_manager::MaterialNode* GraphicsManager::getMaterialNode(const std::string &name) {
+      if(!materialManager) return NULL;
+      return materialManager->getNewMaterialGroup(name);
     }
 
     void GraphicsManager::addMaterial(const interfaces::MaterialData &material) {
-      if(materials.find(material.name) == materials.end()) {
-        MarsMaterial *m = new MarsMaterial(resources_path.sValue,
-                                           shadowTextureSize.iValue);
-        m->setMaxNumLights(defaultMaxNumNodeLights.iValue);
-        m->setUseMARSShader(marsShader.bValue);
-        m->setMaterial(material);
-        m->setNoiseImage(noiseImage_.get());
-        m->setShadowSamples(shadowSamples.iValue);
-        materials[material.name] = m;
-        shadowedScene->addChild(m->getGroup());
+      if(materialManager) {
+        configmaps::ConfigMap map;
+        interfaces::MaterialData m = material;
+        m.toConfigMap(&map);
+        materialManager->createMaterial(material.name, map);
       }
     }
 
-    osg::Group* GraphicsManager::getSharedStateGroup(unsigned long id) {
+    osg_material_manager::MaterialNode* GraphicsManager::getSharedStateGroup(unsigned long id) {
       DrawObjects::iterator iter = drawObjects_.find(id);
       if(iter!=drawObjects_.end()) {
         return iter->second->object()->getStateGroup();
@@ -2180,44 +2138,7 @@ namespace mars {
       else {
         shadowedScene->setShadowTechnique(NULL);
       }
-      for (DrawObjects::iterator iter = drawObjects_.begin();
-           iter != drawObjects_.end(); ++iter) {
-        iter->second->object()->setUseShadow(v);
-      }
-    }
-
-    void GraphicsManager::updateShadowSamples() {
-      static int count = 0;
-      osg::Vec2 v;
-      double x1, y1, r1, r2;
-      double scale1 = 1./shadowSamples.iValue;
-      unsigned char *data = noiseImage_->data();
-      int sampleX = 0, sampleY = 0;
-      double noise = 0.5;
-      for(int i=0; i<128; ++i) {
-        for(int l=0; l<128; ++l) {
-          if(!count) {
-            r1 = ((double) rand()/RAND_MAX)*2-1; // -1 to 1
-            r2 = ((double) rand()/RAND_MAX)*2-1;
-            x1 = scale1*0.5+scale1*sampleX+r1*scale1*0.5*noise;
-            y1 = scale1*0.5+scale1*sampleY+r2*scale1*0.5*noise;
-            r1 = (sqrt(y1)*cos(6.28*x1)*0.5 + .5)*255;
-            r2 = (sqrt(y1)*sin(6.28*x1)*0.5 + .5)*255;
-            data[i*128*4+l*4+0] = (unsigned char) r1;
-            data[i*128*4+l*4+1] = (unsigned char) r2;
-          }
-          data[i*128*4+l*4+2] = (unsigned char) (((double)rand()/RAND_MAX)*255);
-          data[i*128*4+l*4+3] = (unsigned char) (((double)rand()/RAND_MAX)*255);
-          if(++sampleX == shadowSamples.iValue) {
-            sampleX = 0;
-          }
-        }
-        if(++sampleY == shadowSamples.iValue) {
-          sampleY = 0;
-        }
-      }
-      noiseImage_->dirty();
-      //count = 1;
+      if(materialManager) materialManager->setUseShadow(v);
     }
 
     void GraphicsManager::setCameraDefaultView(int view) {

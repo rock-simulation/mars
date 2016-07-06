@@ -54,10 +54,7 @@ namespace mars {
 
     OSGNodeStruct::OSGNodeStruct(GraphicsManager *g,
                                  const NodeData &node, bool isPreview,
-                                 unsigned long id,
-                                 bool useMARSShader, bool useFog,
-                                 bool useNoise, bool drawLineLaser,
-                                 bool marsShadow, int defaultMaxNumNodeLights)
+                                 unsigned long id)
       : osg::Group(), drawObject_(NULL), id_(id), isPreview_(isPreview) {
       configmaps::ConfigMap map = node.map;
       unsigned long sharedID = 0;
@@ -131,10 +128,6 @@ namespace mars {
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
-        else {
-          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
-        }
-        //drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(0.0, 0.0, 0.0), sharedID);
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
           vizSize = node.visual_size;
@@ -159,10 +152,6 @@ namespace mars {
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
-        else {
-          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
-        }
-        //drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, Vector(node.terrain->targetWidth*0.5,
                                              node.terrain->targetHeight*0.5,
                                              0.0),
@@ -178,10 +167,6 @@ namespace mars {
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
-        else {
-          drawObject_->setMaxNumLights(defaultMaxNumNodeLights);
-        }
-        //drawObject_->setUseMARSShader(useMARSShader);
         drawObject_->createObject(id, node.pivot, sharedID);
         drawObject_->setScale(node.visual_scale);
         if(node.visual_size != Vector(0.0, 0.0, 0.0)) {
@@ -189,23 +174,8 @@ namespace mars {
         }
       }
 
-
       drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
-
-      MaterialData ms = node.material;
-
-      if(isPreview) {
-        ms.transparency = 0.8;
-      }
-
-      drawObject_->setMaterial(ms, useFog, useNoise, drawLineLaser, marsShadow);
-
-      /*
-      if(!isPreview) {
-        drawObject_->updateShader(false, node.shaderSources);
-      }
-      */
     }
 
     void OSGNodeStruct::edit(const NodeData &node, bool resize) {

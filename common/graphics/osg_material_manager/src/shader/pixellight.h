@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -18,36 +18,36 @@
  *
  */
 
-/*
- * texgen.h
- *
- *  Created on: 27.04.2011
- *      Author: daniel
- */
 
-#ifndef MARS_GRAPHICS_SHADER_TEXGEN_H
-#define MARS_GRAPHICS_SHADER_TEXGEN_H
+#ifndef OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H
+#define OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H
 
 #include "shader-function.h"
 
 #include <vector>
 #include <string>
 
-namespace mars {
-  namespace graphics {
+namespace osg_material_manager {
 
-    /**
-     * Eye-linear texture coordinate generation in vertex shader.
-     * Using custom shaders disables opengls ffp texgen capability.
-     */
-    class EyeLinearTexgen : public ShaderFunc {
-    public:
-      EyeLinearTexgen(std::vector<std::string> &args, unsigned int index);
-      std::string code() const;
-      unsigned int index;
-    }; // end of class ExeLinearTexgen
+  class PixelLightVert : public ShaderFunc {
+  public:
+    PixelLightVert(std::vector<std::string> &args, int numLights,
+                   std::string resPath);
+    std::string code() const;
+  private:
+    int numLights;
+    std::string source;
+  };
 
-  } // end of namespace graphics
-} // end of namespace mars
+  class PixelLightFrag : public ShaderFunc {
+  public:
+    PixelLightFrag(std::vector<std::string> &args, int numLights,
+                   std::string resPath);
+    std::string code() const;
+  private:
+    std::string source;
+  };
 
-#endif /* MARS_GRAPHICS_SHADER_TEXGEN_H */
+} // end of namespace osg_material_manager
+
+#endif /* OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H */

@@ -30,7 +30,6 @@
 #endif
 
 #include "TerrainDrawObject.h"
-#include "MarsMaterial.h"
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>

@@ -250,6 +250,7 @@ namespace mars {
           physicalRep.material = nodeS->material;
           physicalRep.material.exists = 1;
           physicalRep.material.transparency = 0.3;
+          physicalRep.material.name += "_trans";
           physicalRep.visual_offset_pos = Vector(0.0, 0.0, 0.0);
           physicalRep.visual_offset_rot = Quaternion::Identity();
           physicalRep.visual_size = Vector(0.0, 0.0, 0.0);
