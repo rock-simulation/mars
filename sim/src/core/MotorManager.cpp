@@ -128,6 +128,16 @@ namespace mars {
             maxspeed_coefficients);
         }
       }
+      if (config.find("current_approximation") != config.end()) {
+        std::vector<sReal>* current_coefficients = new std::vector<sReal>;
+        ConfigVector::iterator vIt = config["current_coefficients"].begin();
+        for (; vIt != config["current_coefficients"].end(); ++vIt) {
+          current_coefficients->push_back((double)(*vIt));
+          newMotor->setCurrentApproximation(
+            utils::getApproximationFunction2DFromString((std::string)config["current_approximation"]),
+            current_coefficients);
+        }
+      }
 
       return motorS->index;
     }

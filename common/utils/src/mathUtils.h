@@ -34,7 +34,9 @@ namespace mars {
 
     enum ApproximationFunction {
       FUNCTION_PIPE,
+      FUNCTION_POLYNOM2,
       FUNCTION_POLYNOM3,
+      FUNCTION_POLYNOM4,
       FUNCTION_POLYNOM5,
       FUNCTION_GAUSSIAN, /*
       FUNCTION_BETA_DISTRIBUTION,
@@ -42,15 +44,28 @@ namespace mars {
       FUNCTION_UNKNOWN
     };
 
+    enum ApproximationFunction2D {
+      FUNCTION_UNKNOWN2D,
+      FUNCTION_POLYNOM2D1,
+      FUNCTION_POLYNOM2D2,
+      //FUNCTION_POLYNOM2D3
+    };
+
+
     ApproximationFunction getApproximationFunctionFromString(std::string s);
+    ApproximationFunction2D getApproximationFunction2DFromString(std::string s);
     const double SQRT2PI = 2.5066282746310002;
 
     double pipe(double* x, std::vector<double>* c);
+    double polynom2(double* x, std::vector<double>* c);
     double polynom3(double* x, std::vector<double>* c);
+    double polynom4(double* x, std::vector<double>* c);
     double polynom5(double* x, std::vector<double>* c);
     double gaussian(double* x, std::vector<double>* c);
     double beta_distribution(double* x, std::vector<double>* c);
     double gamma_distribution(double* x, std::vector<double>* c);
+    double polynom2D1(double* x, double* y, std::vector<double>* c);
+    double polynom2D2(double* x, double* y, std::vector<double>* c);
 
     const double EPSILON = Eigen::NumTraits<double>::epsilon();
 
