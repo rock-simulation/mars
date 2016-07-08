@@ -364,6 +364,20 @@ namespace mars {
           materialManager->setDefaultMaxNumLights(defaultMaxNumNodeLights.iValue);
           materialManager->setBrightness((float)brightness.dValue);
           shadowedScene->addChild(materialManager->getMainStateGroup());
+          ConfigMap map = ConfigMap::fromYamlFile(resources_path.sValue+"/defaultMaterials.yml");
+          MaterialData md;
+          ConfigMap defM;
+          if(map.hasKey("Materials")) {
+            for(int i=0; i<(int)map["Materials"].size(); ++i) {
+              md.toConfigMap(&defM);
+              defM.append(map["Materials"][i]);
+              if(defM.hasKey("diffuseTexture")) {
+                defM["diffuseTexture"] = (resources_path.sValue + "/" +
+                                          (std::string)defM["diffuseTexture"]);
+              }
+              materialManager->createMaterial(defM["name"], defM);
+            }
+          }
         }
 
         if(backfaceCulling.bValue)
