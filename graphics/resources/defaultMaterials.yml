@@ -1,8 +1,73 @@
 Materials:
-  - name: grass
-    ambientColor: {a: 1, r: 0.3, g: 0.3, b: 0.3}
-    diffuseColor: {a: 1, r: 1, g: 1, b: 1}
-    exists: true
-    specularFront: {a: 1, r: .1, g: .1, b: .1}
-    shininess: 2.0
-    diffuseTexture: Textures/gras.jpg
+- name: grass
+  ambientColor: {a: 1, r: 0.3, g: 0.3, b: 0.3}
+  diffuseColor: {a: 1, r: 1, g: 1, b: 1}
+  exists: true
+  specularFront: {a: 1, r: .1, g: .1, b: .1}
+  shininess: 2.0
+  diffuseTexture: Textures/gras.jpg
+- name: colored_gravel
+  exists: true
+  ambientColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseTexture: Textures/colored_gravel_seamless.jpg
+  shininess: 0.0
+  specularColor:
+    b: 1
+    g: 1
+    r: 1
+- name: moon
+  exists: true
+  ambientColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseTexture: Textures/moon_surface_seamless.jpg
+  shininess: 0.0
+  specularColor:
+    b: 1
+    g: 1
+    r: 1
+- name: sand
+  exists: true
+  ambientColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseTexture: Textures/sand_seamless.jpg
+  shininess: 0.0
+  specularColor:
+    b: 1
+    g: 1
+    r: 1
+- name: rock
+  exists: true
+  ambientColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseColor:
+    b: 1.0
+    g: 1.0
+    r: 1.0
+  diffuseTexture: Textures/rocks_seamless.jpg
+  shininess: 0.0
+  specularColor:
+    b: 1
+    g: 1
+    r: 1
+
