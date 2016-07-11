@@ -62,7 +62,7 @@ namespace mars {
       /**
        * @return 0 on error.
        */
-      void createModel();
+      void createModel(bool fixed);
       unsigned int parseURDF(std::string filename);
       unsigned int load();
       void addConfigMap(configmaps::ConfigMap &config);
@@ -116,13 +116,13 @@ namespace mars {
       void getSensorIDList(configmaps::ConfigMap *map);
 
       // creating URDF objects
-      void translateLink(boost::shared_ptr<urdf::Link> link); // handleKinematics
+      void translateLink(boost::shared_ptr<urdf::Link> link, bool fixed); // handleKinematics
       void translateJoint(boost::shared_ptr<urdf::Link> childlink); // handleKinematics
       void createMaterial(const boost::shared_ptr<urdf::Material> material); // handleMaterial
-      void createOrigin(const boost::shared_ptr<urdf::Link> &link);
+      void createOrigin(const boost::shared_ptr<urdf::Link> &link, bool fixed);
       void createInertial(const boost::shared_ptr<urdf::Link> &link);
-      void createVisual(const boost::shared_ptr<urdf::Visual> &visual);
-      void createCollision(const boost::shared_ptr<urdf::Collision> &collision);
+      void createVisual(const boost::shared_ptr<urdf::Visual> &visual, bool fixed);
+      void createCollision(const boost::shared_ptr<urdf::Collision> &collision, bool fixed);
       void addEmptyVisualToNode(configmaps::ConfigMap *map); // createFakeVisual
       void addEmptyCollisionToNode(configmaps::ConfigMap *map); // createFakeCollision
       void createEmptyVisualMaterial();
