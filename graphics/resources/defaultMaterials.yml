@@ -92,7 +92,7 @@ Materials:
   ambientColor: {a: 1, r: 0.3, g: 0.6, b: 1.0}
   diffuseColor: {a: 1, r: 0.3, g: 0.6, b: 1.0}
   exists: true
-  specularFront: {a: 1, r: .6, g: .8, b: .1}
+  specularFront: {a: 1, r: .1, g: .2, b: .3}
   shininess: 2.0
   diffuseTexture: Textures/grid.png
   tex_scale: 64
