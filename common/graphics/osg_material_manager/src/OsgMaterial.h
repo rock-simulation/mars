@@ -89,6 +89,7 @@ namespace osg_material_manager {
     void removeMaterialNode(MaterialNode *d);
     void setShadowTextureSize(int size);
     inline configmaps::ConfigMap getMaterialData() {return map;}
+    void update();
 
   protected:
     std::vector<osg::ref_ptr<MaterialNode> > materialNodeVector;
@@ -98,6 +99,8 @@ namespace osg_material_manager {
     osg::ref_ptr<osg::Uniform> baseImageUniform, noiseMapUniform;
     osg::ref_ptr<osg::Uniform> bumpNorFacUniform;
     osg::ref_ptr<osg::Uniform> texScaleUniform;
+    osg::ref_ptr<osg::Uniform> sinUniform;
+    osg::ref_ptr<osg::Uniform> cosUniform;
     osg::ref_ptr<osg::Uniform> shadowScaleUniform;
 
     osg::ref_ptr<osg::Uniform> shadowSamplesUniform, invShadowSamplesUniform;
@@ -116,6 +119,7 @@ namespace osg_material_manager {
     bool getLight;
     double invShadowTextureSize;
     bool useWorldTexCoords;
+    double t;
     std::string name, resPath;
     configmaps::ConfigMap map;
 

@@ -1,3 +1,7 @@
+float rnd(float x, float y) {
+  return fract(sin(dot(vec2(x,y) ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
 void plight(vec4 v) {
   // save the vertex to eye vector in world space
   eyeVec = osg_ViewMatrixInverse[3].xyz-v.xyz;

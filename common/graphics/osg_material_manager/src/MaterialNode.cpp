@@ -127,19 +127,24 @@ namespace osg_material_manager {
     transparencyUniform->set(1-t);
     osg::StateSet *state = getOrCreateStateSet();
     if (t >= 0.00001) {
-      state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+      //state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+      state->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON);
       state->setMode(GL_BLEND,osg::StateAttribute::ON);
+      //state->setRenderBinDetails(1, "TransparentBin");
       state->setRenderBinDetails(1, "DepthSortedBin");
+      /*
       depth = new osg::Depth;
       depth->setWriteMask( false );
       state->setAttributeAndModes(depth.get(),
                                   osg::StateAttribute::ON | osg::StateAttribute::PROTECTED);
+      */
     }
     else {
       if(depth.valid()) {
         state->removeAttribute(depth.get());
       }
       state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
+      state->setMode(GL_ALPHA_TEST, osg::StateAttribute::OFF);
       state->setMode(GL_BLEND,osg::StateAttribute::OFF);
       state->setRenderBinDetails(0, "RenderBin");
     }

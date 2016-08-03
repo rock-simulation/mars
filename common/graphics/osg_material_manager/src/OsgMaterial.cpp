@@ -59,6 +59,8 @@ namespace osg_material_manager {
     bumpMapUniform = new osg::Uniform("BumpMap", BUMP_MAP_UNIT);
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
+    sinUniform = new osg::Uniform("sin_", 0.0f);
+    cosUniform = new osg::Uniform("cos_", 1.0f);
     shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
     bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
     shadowSamplesUniform = new osg::Uniform("shadowSamples", 1);
@@ -100,7 +102,7 @@ namespace osg_material_manager {
     // create the osg::Material
     material = new osg::Material();
     material->setColorMode(osg::Material::OFF);
-    
+
     material->setAmbient(osg::Material::FRONT_AND_BACK, getColor("ambientColor"));
     material->setSpecular(osg::Material::FRONT_AND_BACK, getColor("specularColor"));
     material->setDiffuse(osg::Material::FRONT_AND_BACK, getColor("diffuseColor"));
@@ -123,14 +125,19 @@ namespace osg_material_manager {
       state->setMode(GL_FOG, osg::StateAttribute::OFF);
     }
 
+    float transparency = (float)map.get("transparency", 0.0);
     string texturename = map.get("diffuseTexture", std::string());
     double tex_scale = map.get("tex_scale", 1.0);
     texScaleUniform->set((float)tex_scale);
     if (!texturename.empty()) {
       colorMap = OsgMaterialManager::loadTexture(texturename);
+      if(transparency > 0.000001) {
+        colorMap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
+        colorMap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
+      }
       state->setTextureAttributeAndModes(COLOR_MAP_UNIT, colorMap,
                                          osg::StateAttribute::ON);
-      
+
       if(tex_scale != 1.0) {
         osg::ref_ptr<osg::TexMat> scaleTexture = new osg::TexMat();
         scaleTexture->setMatrix(osg::Matrix::scale(tex_scale, tex_scale, tex_scale));
@@ -150,6 +157,10 @@ namespace osg_material_manager {
     if (!texturename.empty()) {
       generateTangents = true;
       setNormalMap(texturename);
+      if(transparency > 0.000001) {
+        normalMap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
+        normalMap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
+      }
       texturename = map.get("displacementTexture", std::string());
       if(!texturename.empty()) {
         setBumpMap(texturename);
@@ -168,7 +179,6 @@ namespace osg_material_manager {
     useWorldTexCoords = map.get("useWorldTexCoords", false);
     updateShader(true);
 
-    float transparency = (float)map.get("transparency", 0.0);
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodeVector.begin();
     for(; it!=materialNodeVector.end(); ++it) {
       if(generateTangents) {
@@ -187,7 +197,7 @@ namespace osg_material_manager {
     else if(key[key.size()-1] == 'b') map[color]["b"] = v;
     setMaterial(map);
   }
-  
+
   void OsgMaterial::edit(const std::string &key, const std::string &value) {
     if(matchPattern("*/ambientColor/*", key) ||
        matchPattern("*/ambientFront/*", key)) {
@@ -346,8 +356,31 @@ namespace osg_material_manager {
     bool hasTexture = (colorMap.valid() || normalMap.valid());
     {
       ShaderFunc *vertexShader = new ShaderFunc;
+      if(map["instancing"]) {
+        vertexShader->addUniform( (GLSLUniform)
+                                  { "sampler2D", "NoiseMap" } );
+        vertexShader->enableExtension("GL_ARB_draw_instanced");
+        vertexShader->addUniform( (GLSLUniform)
+                                  { "float", "sin_" } );
+        vertexShader->addUniform( (GLSLUniform)
+                                  { "float", "cos_" } );
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "offset", "vec4(1.0*rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.2), 1.0*rnd(float(gl_InstanceIDARB)*0.2, float(gl_InstanceIDARB)*0.3), 0, 0)" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "fPos", "gl_Vertex + offset" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec3", "sc", "vec3(normalize(vec2(fPos.x*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.16, float(gl_InstanceIDARB)*0.8), fPos.y*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.8, float(gl_InstanceIDARB)*0.16))), rnd(float(gl_InstanceIDARB)*0.4, float(gl_InstanceIDARB)*0.4))-0.5" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vPos", "fPos + vec4(sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
+        vertexShader->addExport( (GLSLExport)
+                               {"gl_TexCoord[2].xy", "gl_TexCoord[2].xy + vec2(-offset.y, offset.x)"} );
+      }
+      else {
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vPos", "gl_Vertex " });
+      }
       vertexShader->addExport( (GLSLExport)
-                               {"gl_Position", "gl_ModelViewProjectionMatrix * gl_Vertex"} );
+                               {"gl_Position", "gl_ModelViewProjectionMatrix * vPos"} );
       vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "v1"} );
       if(hasTexture) {
         vertexShader->addExport( (GLSLExport)
@@ -392,8 +425,14 @@ namespace osg_material_manager {
                                     { "vec4", "col", "texture2D(BaseImage, texCoord)" });
       }
       else {
-        fragmentShader->addMainVar( (GLSLVariable)
-                                    { "vec4", "col", "vec4(1.0)" });
+        if(map["insetancing"]) {
+          fragmentShader->addMainVar( (GLSLVariable)
+                                      { "vec4", "col", "vec4(1.0, 1.0, 1.0, texture2D(NormalMap, texCoord).a)" });
+        }
+        else {
+          fragmentShader->addMainVar( (GLSLVariable)
+                                      { "vec4", "col", "vec4(1.0)" });
+        }
       }
       fragmentShader->addExport( (GLSLExport) {"gl_FragColor", "col"} );
       shaderGenerator.addShaderFunction(fragmentShader, SHADER_TYPE_FRAGMENT);
@@ -404,7 +443,7 @@ namespace osg_material_manager {
     PixelLightVert *plightVert = new PixelLightVert(args, maxNumLights,
                                                     resPath);
     plightVert->addMainVar( (GLSLVariable)
-                            { "vec4", "v1", "gl_ModelViewMatrix * gl_Vertex" } );
+                            { "vec4", "v1", "gl_ModelViewMatrix * vPos" } );
     plightVert->addMainVar( (GLSLVariable)
                             { "vec4", "v", "osg_ViewMatrixInverse * v1" } );
     plightVert->addMainVar( (GLSLVariable)
@@ -482,6 +521,8 @@ namespace osg_material_manager {
 
     if(colorMap.valid() || normalMap.valid() || bumpMap.valid()) {
       stateSet->addUniform(texScaleUniform.get());
+      stateSet->addUniform(sinUniform.get());
+      stateSet->addUniform(cosUniform.get());
     }
     else {
       stateSet->removeUniform(texScaleUniform.get());
@@ -516,6 +557,13 @@ namespace osg_material_manager {
     noiseMap->setImage(i);
   }
 
+  void OsgMaterial::update() {
+    t += 0.04;
+    if(t > 6.28) t -= 6.28;
+    sinUniform->set((float)(sin(t)*0.5));
+    cosUniform->set((float)(cos(t)*0.75));
+  }
+
   void OsgMaterial::setShadowSamples(int v) {
     shadowSamplesUniform->set(v);
     invShadowSamplesUniform->set(1.f/(v*v));
@@ -547,7 +595,7 @@ namespace osg_material_manager {
   void OsgMaterial::setMaxNumLights(int n) {
     bool needUpdate = (maxNumLights != n);
     maxNumLights = n;
-    if(needUpdate) updateShader(true);    
+    if(needUpdate) updateShader(true);
   }
 
 } // end of namespace osg_material_manager

@@ -232,9 +232,18 @@ namespace osg_material_manager {
   }
 
   void OsgMaterialManager::updateLights(std::vector<mars::interfaces::LightData*> &lightList) {
-    std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
-    for(; it!=materialNodes.end(); ++it) {
-      (*it)->updateLights(lightList);
+    {
+      std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
+      for(; it!=materialNodes.end(); ++it) {
+        (*it)->updateLights(lightList);
+      }
+    }
+
+    {
+      std::map<std::string, osg::ref_ptr<OsgMaterial> >::iterator it;
+      for(it=materialMap.begin(); it!=materialMap.end(); ++it) {
+        it->second->update();
+      }
     }
   }
 
