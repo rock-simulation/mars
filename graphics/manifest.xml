@@ -9,7 +9,7 @@
     <depend package="simulation/mars/common/cfg_manager" />
     <depend package="simulation/mars/interfaces" />
     <depend package="opencv" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
     <rosdep name="osg" />
     <tags>needs_opt</tags>
 </package>
