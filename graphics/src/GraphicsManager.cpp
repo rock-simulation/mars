@@ -425,7 +425,7 @@ namespace mars {
      * returns actual camera information
      */
     void GraphicsManager::getCameraInfo(mars::interfaces::cameraStruct *cs) const {
-      osgWidget->getCameraInterface()->getCameraInfo(cs);
+      if(activeWindow) activeWindow->getCameraInterface()->getCameraInfo(cs);
     }
 
     void* GraphicsManager::getScene() const {
