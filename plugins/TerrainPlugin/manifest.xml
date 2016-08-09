@@ -8,6 +8,6 @@
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
-    <depend package="simulation/common/graphics/osg_terrain" />
+    <depend package="simulation/mars/common/graphics/osg_terrain" />
     <tags>needs_opt</tags>
 </package>
