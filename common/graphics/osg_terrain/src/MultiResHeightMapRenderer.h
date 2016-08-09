@@ -48,6 +48,9 @@ GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer;
  #include <opencv/highgui.h>
 #endif
 
+#include <mars/utils/Thread.h>
+#include <mars/utils/Mutex.h>
+
 namespace osg_terrain {
 
   class Tile {
@@ -72,7 +75,7 @@ namespace osg_terrain {
 
   struct VertexData;
 
-  class MultiResHeightMapRenderer {
+  class MultiResHeightMapRenderer : public mars::utils::Thread {
   public:
     MultiResHeightMapRenderer(int gridW, int gridH,
                               double visualWidth, double visualHeight,
@@ -134,6 +137,9 @@ namespace osg_terrain {
     void drawPatch(int x, int y, Tile *tile);
     void moveTile(int indicesOffsetPos, int verticesOffsetPos, Tile *tile);
 
+    // inherited from mars::utils::Thread
+    void run(); ///< The simulator main loop.
+
   private:
     //double interpolateCell(int gridX, int gridY, double x, double y);
     void prepare();
@@ -151,9 +157,15 @@ namespace osg_terrain {
     VertexData *highVertices;
     GLuint *highIndices;
 
+    // for thread optimization
+    VertexData *vertexCopy, *highVertexCopy;
+    GLuint *indexCopy, *highIndexCopy;
+    bool swapBuffer, swapBuffer2, finish;
+    mars::utils::Mutex dataMutex, swapMutex;
+
     int numVertices, numIndices;
     int highNumVertices, highNumIndices;
-    int indicesToDraw, highIndicesToDraw;
+    int indicesToDraw, highIndicesToDraw, highIndicesToDrawBuffer;
 
     double highStepX, highStepY;
     int highWidth, highHeight;

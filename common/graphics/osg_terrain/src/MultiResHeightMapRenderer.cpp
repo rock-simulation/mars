@@ -56,12 +56,14 @@ namespace osg_terrain {
       targetWidth(visualW), targetHeight(visualH), width(gridW), height(gridH),
       scaleZ(scaleZ), texScaleX(texScaleX),
       texScaleY(texScaleY), depth(depth) {
- 
+
     maxNumSubTiles = 0; // will be the depth in new version
 
     numSubTiles = 0;
     prepare();
     dirty = true;
+    swapBuffer = false;
+    swapBuffer2 = false;
     wireframe = false;
     highWireframe = false;
     solid = true;
@@ -71,6 +73,7 @@ namespace osg_terrain {
     if(!img) {
       fprintf(stderr, "error loading heightmap file!\n");
     }
+    finish = false;
   }
 
   MultiResHeightMapRenderer::~MultiResHeightMapRenderer() {
@@ -109,6 +112,7 @@ namespace osg_terrain {
     }
     // Initializes cube geometry and transfers it to VBOs
     highIsInitialized = initPlane(true);
+    if(highIsInitialized) this->start();
   }
 
 
@@ -146,6 +150,7 @@ namespace osg_terrain {
     highNumIndices = numIndices*maxNumSubTiles;//maxNumSubTiles*getHighResCellCntX()*getHighResCellCntY()*6;
     indicesToDraw = getLowResCellCntX()*getLowResCellCntY()*6;
     highIndicesToDraw = 0;
+    highIndicesToDrawBuffer = 0;
   }
 
   void MultiResHeightMapRenderer::clear() {
@@ -177,9 +182,6 @@ namespace osg_terrain {
     while(!listSubTiles.empty()) {
       Tile *toRemove = listSubTiles.back();
       listSubTiles.pop_back();
-      // this is probably wrong. because the lastTile is not updated. comment out for now
-      //copyLast(toRemove->indicesArrayOffset, toRemove->verticesArrayOffset);
-      //subTiles.erase(toRemove->mapIndex);
       if(toRemove->heightData) {
         for(int i = 0; i < getHighResVertexCntY(); ++i) {
           delete toRemove->heightData[i];
@@ -205,21 +207,6 @@ namespace osg_terrain {
     highStepY = stepY = targetHeight / double(getLowResCellCntY());
     highStepX = stepX / 3;
     highStepY = stepY / 3;
-    /*
-      highWidth = highHeight = 1;
-      double radius = 0.05;
-      double desiredStep = radius * 0.2;
-
-      while(highStepX > desiredStep) {
-      highStepX *= 0.5;
-      }
-      while(highStepY > desiredStep) {
-      highStepY *= 0.5;
-      }
-
-      highWidth = stepX / highStepX;
-      highHeight = stepY / highStepY;
-    */
     dirty = true;
   }
 
@@ -234,9 +221,8 @@ namespace osg_terrain {
     if(!isInitialized) initialize();
 
     if(dirty) {
-      glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
-      VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
-                                                      GL_WRITE_ONLY);
+      dataMutex.lock();
+      VertexData *vertices = vertexCopy;
       int index;
       double xPos, yPos;
       for(int y = 0; y < mainTile->cols+1; ++y) {
@@ -263,62 +249,61 @@ namespace osg_terrain {
                     vertices[index].tangent, true);
         }
       }
-
-      glUnmapBuffer(GL_ARRAY_BUFFER);
-      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      dataMutex.unlock();
       dirty = false;
+      swapMutex.lock();
+      swapBuffer = true;
+      swapMutex.unlock();
     }
-
-    //collideSphereI(x, y, 0.0, 0.04);
 
     if(!highIsInitialized) highInitialize();
     if(!highIsInitialized) return;
-    //if(mainTile->subTile == 0)
 
-    //x = 5.23;
-    //y = 3.834;
-    //x = 7.22877;
-    //y = 8.32154;
-    static int drawOnce = 144;
-    if(drawOnce) {
-      //drawOnce--;
-      handleCamPos(x, y, mainTile);
-      std::vector<Tile*> nextTiles(1, mainTile);
-      std::vector<Tile*> nextTiles2;
-      std::vector<Tile*>::iterator outer, inner;
+    swapMutex.lock();
+    if(swapBuffer) {
+      swapMutex.unlock();
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
+      VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
+                                                      GL_WRITE_ONLY);
 
-      // handle cam pos on current subtiles
-      int depth = 1;
-      while(depth < this->depth) {
-        //fprintf(stderr, "depth: %d %d\n", depth, offset);
-        for(outer=nextTiles.begin(); outer!=nextTiles.end(); ++outer) {
-          //fprintf(stderr, "outer: %lu\n", *outer);
-          for(inner=(*outer)->subTiles.begin();
-              inner!=(*outer)->subTiles.end();
-              ++inner) {
-            handleCamPos(x, y, *inner);
-            nextTiles2.push_back(*inner);
-            //fprintf(stderr, "-depth: %d %d\n", depth, offset);
-          }
-        }
-        nextTiles.swap(nextTiles2);
-        nextTiles2.clear();
-        depth += 1;
+      GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                                             GL_WRITE_ONLY);
+
+      dataMutex.lock();
+      if(vertices) {
+        memcpy(vertices, highVertexCopy, highNumVertices*sizeof(VertexData));
       }
-      //fprintf(stderr, "num tiles: %d\n", listSubTiles.size());
-    }
+      if(indices) {
+        memcpy(indices, highIndexCopy, highNumIndices*sizeof(GLuint));
+      }
+      glUnmapBuffer(GL_ARRAY_BUFFER);
+      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+      glBindBuffer(GL_ARRAY_BUFFER, vboIds[0]);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[1]);
+      vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
+                                          GL_WRITE_ONLY);
 
-    // int i=0;
-    // Tile *tile = mainTile;
-    // while(i<maxNumSubTiles) {
-    //   if(tile->subTile == 0) {
-    // 	fprintf(stderr, "cut: %d %d\n", mainTile->cols/3, mainTile->rows/3);
-    // 	cutTile(1, 1, tile);
-    // 	createSubTile(1, 1, tile);
-    // 	tile = tile->subTile;
-    //   }
-    //   ++i;
-    // }
+      indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
+                                     GL_WRITE_ONLY);
+
+      if(vertices) {
+        memcpy(vertices, vertexCopy, numVertices*sizeof(VertexData));
+      }
+      if(indices) {
+        memcpy(indices, indexCopy, numIndices*sizeof(GLuint));
+      }
+      glUnmapBuffer(GL_ARRAY_BUFFER);
+      glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
+
+      highIndicesToDraw = highIndicesToDrawBuffer;
+      dataMutex.unlock();
+      glBindBuffer(GL_ARRAY_BUFFER, 0);
+      glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+      swapMutex.lock();
+      swapBuffer = false;
+    }
+    swapMutex.unlock();
     render(false);
 
     if(highIsInitialized && highIndicesToDraw) {
@@ -340,7 +325,7 @@ namespace osg_terrain {
     int cellx2 = floor((-tile->xPos + x + 0.5*cellStepX) / cellStepX);
     int celly2 = floor((-tile->yPos + y + 0.5*cellStepY) / cellStepY);
     std::vector<Tile*> tiles;
-    
+
     // todo: num cell tiles is everywhere in this file hardcoded with 3
     bool skip = false;
     if(x-tile->xPos+0.5*cellStepX < 0 ||
@@ -427,13 +412,13 @@ namespace osg_terrain {
         //fprintf(stderr, "clear: cx: %d cy: %d px: %g py: %g w: %g %lu\n", (*it)->x, (*it)->y, tile->xPos, tile->yPos, tile->width/3, tile);
         clearTile(*it);
       }
-      
+
     }
     tile->subTiles.swap(tiles);
   }
 
   void MultiResHeightMapRenderer::clearTile(Tile *tile) {
-    
+
     std::vector<Tile*>::iterator it;
     //fprintf(stderr, "clear Tile: %lu\n", tile);
     for(it=tile->subTiles.begin(); it!=tile->subTiles.end(); ++it) {
@@ -442,7 +427,7 @@ namespace osg_terrain {
     if(tile->listPos < listSubTiles.size()-1) {
       // copy last entry
       Tile* lastTile = listSubTiles.back();
-      
+
       /*fprintf(stderr, "move: %d %d %d %d\n", tile->indicesArrayOffset/numIndices,
               tile->verticesArrayOffset/numVertices,
               lastTile->indicesArrayOffset/numIndices,
@@ -461,7 +446,7 @@ namespace osg_terrain {
     else {
       fprintf(stderr, "should never ever happen!!!\n");
     }
-    highIndicesToDraw -= numIndices;
+    highIndicesToDrawBuffer -= numIndices;
     //fprintf(stderr, "todraw: %d\n", highIndicesToDraw);
     for(int l = 0; l < tile->cols+1; ++l) {
       delete[] tile->heightData[l];
@@ -495,11 +480,23 @@ namespace osg_terrain {
     }
 
     vertices = (VertexData*)malloc(numVertices*sizeof(VertexData));
+    if(highRes) {
+      highVertexCopy = (VertexData*)malloc(numVertices*sizeof(VertexData));
+    }
+    else {
+      vertexCopy = (VertexData*)malloc(numVertices*sizeof(VertexData));
+    }
     if(!vertices) {
       fprintf(stderr, "MultiResHeightMapRenderer::initPlane error while allocating memory for vertices %d\n", numVertices);
       return false;
     }
     indices = (GLuint*)calloc(numIndices, sizeof(GLuint));
+    if(highRes) {
+      highIndexCopy = (GLuint*)calloc(numIndices, sizeof(GLuint));
+    }
+    else {
+      indexCopy = (GLuint*)calloc(numIndices, sizeof(GLuint));
+    }
     if(!indices) {
       fprintf(stderr, "MultiResHeightMapRenderer::initPlane error while allocating memory for indices %d\n", numIndices);
       free(vertices);
@@ -520,6 +517,12 @@ namespace osg_terrain {
           indices[indexOffset+3] = (y+1) * (width+1) + x+1;
           indices[indexOffset+4] =  y    * (width+1) + x;
           indices[indexOffset+5] =  y    * (width+1) + x+1;
+          indexCopy[indexOffset+0] = indices[indexOffset+0];
+          indexCopy[indexOffset+1] = indices[indexOffset+1];
+          indexCopy[indexOffset+2] = indices[indexOffset+2];
+          indexCopy[indexOffset+3] = indices[indexOffset+3];
+          indexCopy[indexOffset+4] = indices[indexOffset+4];
+          indexCopy[indexOffset+5] = indices[indexOffset+5];
         }
       }
     }
@@ -549,7 +552,7 @@ namespace osg_terrain {
     //if(!isInitialized) return 0;
     int stepx = targetWidth / img->width;
     int stepy = targetHeight / img->height;
-    
+
     x = img->width*x/targetWidth;
     y = img->height*y/targetHeight;
     if(x < 0) x = 0;
@@ -641,10 +644,10 @@ namespace osg_terrain {
     newTile->stepY = tile->stepY / 3;//(getHighResCellCntY()-1);
     newTile->indicesArrayOffset = iOffset+numIndices;
     newTile->verticesArrayOffset = vOffset+numVertices;
-    
+
     //fprintf(stderr, "create: (%d %d) (%d %d)\n", iOffset, numIndices,
     //        vOffset, numVertices);
-    
+
     newTile->heightData = new double*[newTile->cols+1];
     for(int l = 0; l < newTile->cols+1; ++l) {
       newTile->heightData[l] = new double[newTile->rows+1];
@@ -655,7 +658,7 @@ namespace osg_terrain {
         // TODO: Should we interpolate here?
         newTile->heightData[n][m] = getHeight(newTile->xPos+newTile->stepX*m, newTile->yPos+newTile->stepY*n);
     */
-    highIndicesToDraw += numIndices;
+    highIndicesToDrawBuffer += numIndices;
     //fprintf(stderr, "_todraw: %d\n", highIndicesToDraw);
     //fprintf(stderr, "fill subtile\n");
     fillSubTile(newTile);
@@ -672,11 +675,9 @@ namespace osg_terrain {
 
   void MultiResHeightMapRenderer::cutHole(int x, int y, int x2, int y2,
                                           Tile *tile) {
-    int id = 3;
-    if(tile==mainTile) id = 1;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[id]);
-    GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                                           GL_WRITE_ONLY);
+    GLuint *indices = highIndexCopy;
+    if(tile==mainTile) indices = indexCopy;
+    swapBuffer2 = true;
     if(indices) {
       for(int l = x; l<x+x2; ++l) {
         for(int n = y; n<y+y2; ++n) {
@@ -685,19 +686,14 @@ namespace osg_terrain {
         }
       }
     }
-    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
   void MultiResHeightMapRenderer::drawPatch(int x, int y, Tile *tile) {
     int nx = tile->rows/3;
     int ny = tile->cols/3;
-    int id = 3;
-
-    if(tile==mainTile) id = 1;
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[id]);
-    GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                                           GL_WRITE_ONLY);
+    GLuint *indices = highIndexCopy;
+    if(tile==mainTile) indices = indexCopy;
+    swapBuffer2 = true;
     if(indices) {
       int offset = tile->indicesArrayOffset;
       int x2 = tile->verticesArrayOffset;
@@ -715,20 +711,13 @@ namespace osg_terrain {
         }
       }
     }
-    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
   void MultiResHeightMapRenderer::fillSubTile(Tile *tile) {
     // use highResBuffer
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
-    VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
-                                                    GL_WRITE_ONLY);
-
-    GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                                           GL_WRITE_ONLY);
-
+    VertexData *vertices = highVertexCopy;
+    GLuint *indices = highIndexCopy;
+    swapBuffer2 = true;
     if(vertices) {
       int x2 = tile->verticesArrayOffset;
       int index;
@@ -784,12 +773,6 @@ namespace osg_terrain {
       }
     }
     //highIndicesToDraw += tile->cols*tile->rows*6;
-
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
 
@@ -996,19 +979,15 @@ namespace osg_terrain {
   void MultiResHeightMapRenderer::moveTile(int indicesOffsetPos,
                                            int verticesOffsetPos,
                                            Tile *tile) {
-    glBindBuffer(GL_ARRAY_BUFFER, vboIds[2]);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIds[3]);
-    VertexData *vertices = (VertexData*)glMapBuffer(GL_ARRAY_BUFFER,
-                                                    GL_WRITE_ONLY);
-
-    GLuint *indices = (GLuint*)glMapBuffer(GL_ELEMENT_ARRAY_BUFFER,
-                                           GL_WRITE_ONLY);
+    VertexData *vertices = highVertexCopy;
+    GLuint *indices = highIndexCopy;
+    swapBuffer2 = true;
 
     if(vertices) {
       //fprintf(stderr, "copy vertices from %d to %d\n", tile->verticesArrayOffset, verticesOffsetPos);
       memcpy(vertices+verticesOffsetPos, vertices+tile->verticesArrayOffset,
              numVertices*sizeof(VertexData));
-      
+
     }
     else {
       fprintf(stderr, "error in moveTile function\n");
@@ -1029,15 +1008,51 @@ namespace osg_terrain {
       fprintf(stderr, "error in moveTile function\n");
     }
 
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-    glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
 
     tile->indicesArrayOffset = indicesOffsetPos;
     tile->verticesArrayOffset = verticesOffsetPos;
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
   }
 
-  
+  void MultiResHeightMapRenderer::run() {
+    std::vector<Tile*> nextTiles;
+    std::vector<Tile*> nextTiles2;
+    std::vector<Tile*>::iterator outer, inner;
+    int d;
+    double x, y;
+    while(!finish) {
+      swapBuffer2 = false;
+      dataMutex.lock();
+      x = camX;
+      y = camY;
+      handleCamPos(x, y, mainTile);
+      d = 1;
+      // handle cam pos on current subtiles
+      nextTiles.clear();
+      nextTiles.push_back(mainTile);
+      while(d < depth) {
+        //fprintf(stderr, "depth: %d %d\n", depth, offset);
+        for(outer=nextTiles.begin(); outer!=nextTiles.end(); ++outer) {
+          //fprintf(stderr, "outer: %lu\n", *outer);
+          for(inner=(*outer)->subTiles.begin();
+              inner!=(*outer)->subTiles.end();
+              ++inner) {
+            handleCamPos(x, y, *inner);
+            nextTiles2.push_back(*inner);
+            //fprintf(stderr, "-depth: %d %d\n", depth, offset);
+          }
+        }
+        nextTiles.swap(nextTiles2);
+        nextTiles2.clear();
+        d += 1;
+      }
+      dataMutex.unlock();
+      if(swapBuffer2) {
+        swapMutex.lock();
+        swapBuffer = true;
+        swapMutex.unlock();
+      }
+      msleep(20);
+    }
+  }
+
 } // namespace osg_terrain
