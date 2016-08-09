@@ -142,12 +142,16 @@ namespace osg_terrain {
       maxNumSubTiles += f;
       d += 1;
     }
+    double scale = 1;
+    if(depth == 2) scale = 0.5;
+    else if(depth == 3) scale = 0.2;
+    else if(depth == 4) scale = 0.1;
     numVertices = getLowResVertexCntX()*getLowResVertexCntY();
-    highNumVertices = numVertices*maxNumSubTiles;//maxNumSubTiles*getHighResVertexCntX()*getHighResVertexCntY();
+    highNumVertices = scale*numVertices*maxNumSubTiles;//maxNumSubTiles*getHighResVertexCntX()*getHighResVertexCntY();
     fprintf(stderr, "maxNumSubTiles: %d\n", maxNumSubTiles);
     fprintf(stderr, "num vertices: %d\n", numVertices+highNumVertices);
     numIndices = getLowResCellCntX()*getLowResCellCntY()*6;
-    highNumIndices = numIndices*maxNumSubTiles;//maxNumSubTiles*getHighResCellCntX()*getHighResCellCntY()*6;
+    highNumIndices = scale*numIndices*maxNumSubTiles;//maxNumSubTiles*getHighResCellCntX()*getHighResCellCntY()*6;
     indicesToDraw = getLowResCellCntX()*getLowResCellCntY()*6;
     highIndicesToDraw = 0;
     highIndicesToDrawBuffer = 0;
@@ -272,10 +276,10 @@ namespace osg_terrain {
 
       dataMutex.lock();
       if(vertices) {
-        memcpy(vertices, highVertexCopy, highNumVertices*sizeof(VertexData));
+        memcpy(vertices, highVertexCopy, listSubTiles.size()*numVertices*sizeof(VertexData));
       }
       if(indices) {
-        memcpy(indices, highIndexCopy, highNumIndices*sizeof(GLuint));
+        memcpy(indices, highIndexCopy, highIndicesToDrawBuffer*sizeof(GLuint));
       }
       glUnmapBuffer(GL_ARRAY_BUFFER);
       glUnmapBuffer(GL_ELEMENT_ARRAY_BUFFER);
@@ -628,7 +632,12 @@ namespace osg_terrain {
       iOffset = listSubTiles.back()->indicesArrayOffset;
       vOffset = listSubTiles.back()->verticesArrayOffset;
     }
-
+    assert(iOffset + numIndices < highNumIndices);
+    assert(vOffset + numVertices < highNumVertices);
+    if(iOffset + numIndices > highNumIndices) {
+      fprintf(stderr, "not enough memory reserved for subtiles!!!\n");
+      return 0;
+    }
     Tile *newTile = new Tile();
     newTile->parent = tile;
     newTile->x = x;

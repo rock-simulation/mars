@@ -77,6 +77,7 @@ namespace osg_material_manager {
     unitMap["environmentMap"] = 0;
     unitMap["envMapR"] = 5;
     unitMap["envMapG"] = 6;
+    t = 0;
   }
 
   OsgMaterial::~OsgMaterial() {

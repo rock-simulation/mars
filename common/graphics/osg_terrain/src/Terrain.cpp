@@ -86,46 +86,48 @@ namespace osg_terrain {
     ConfigMap map = ConfigMap::fromYamlFile("terrain.yml");
     osg::ref_ptr<MaterialNode> logMaterialGroup;
 
-    if(!map.hasKey("lod")) return;
-    if(map.hasKey("material")) {
+    ConfigVector::iterator it = map["lod"].begin();
+    double start, end;
+    std::string file;
+    osg::ref_ptr<osg::PositionAttitudeTransform> p;
+    bool haveLOD = map.hasKey("lod");
+    if(haveLOD) {
+      if(map.hasKey("material")) {
         ConfigMap mMap = map["material"];
         materialManager->createMaterial(mMap["name"], mMap);
 
         logMaterialGroup = materialManager->getNewMaterialGroup((std::string)mMap["name"]);
-    }
-    ConfigVector::iterator it = map["lod"].begin();
-    double start, end;
-    std::string file;
-    for(; it!=map["lod"].end(); ++it) {
-      start = (*it)["start"];
-      end = (*it)["end"];
-      file << (*it)["file"];
-      osg::ref_ptr<osg::Node> node;
-      if(utils::getFilenameSuffix(file) == ".bobj") {
-        node = graphics::GuiHelper::readBobjFromFile(file);
       }
-      else {
-        node = graphics::GuiHelper::readNodeFromFile(file);
-      }
+      for(; it!=map["lod"].end(); ++it) {
+        start = (*it)["start"];
+        end = (*it)["end"];
+        file << (*it)["file"];
+        osg::ref_ptr<osg::Node> node;
+        if(utils::getFilenameSuffix(file) == ".bobj") {
+          node = graphics::GuiHelper::readBobjFromFile(file);
+        }
+        else {
+          node = graphics::GuiHelper::readNodeFromFile(file);
+        }
 
-      InstancesVisitor visitor;
-      visitor.numInstances = (*it)["instances"];
-      node->accept(visitor);
+        InstancesVisitor visitor;
+        visitor.numInstances = (*it)["instances"];
+        node->accept(visitor);
         
-      lod->addChild(node.get(), start, end);
-    }
-    osg::ref_ptr<osg::PositionAttitudeTransform> p;
-    for(it=map["pos"].begin(); it!=map["pos"].end(); ++it) {
-      p = new osg::PositionAttitudeTransform();
-      p->setPosition(osg::Vec3((double)(*it)["x"], (double)(*it)["y"], 0.0));
-      p->setAttitude(osg::Quat((double)(*it)["a"], osg::Vec3(0, 0, 1)));
-      fprintf(stderr, "add object: %g %g\n", (double)(*it)["x"], (double)(*it)["y"]);
-      p->addChild(lod.get());
-      if(logMaterialGroup.valid()) {
-        logMaterialGroup->addChild(p.get());
+        lod->addChild(node.get(), start, end);
       }
-      else {
-        this->addChild(p.get());
+      for(it=map["pos"].begin(); it!=map["pos"].end(); ++it) {
+        p = new osg::PositionAttitudeTransform();
+        p->setPosition(osg::Vec3((double)(*it)["x"], (double)(*it)["y"], 0.0));
+        p->setAttitude(osg::Quat((double)(*it)["a"], osg::Vec3(0, 0, 1)));
+        fprintf(stderr, "add object: %g %g\n", (double)(*it)["x"], (double)(*it)["y"]);
+        p->addChild(lod.get());
+        if(logMaterialGroup.valid()) {
+          logMaterialGroup->addChild(p.get());
+        }
+        else {
+          this->addChild(p.get());
+        }
       }
     }
     if(map.hasKey("plane")) {

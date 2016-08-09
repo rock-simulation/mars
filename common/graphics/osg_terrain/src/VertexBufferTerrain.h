@@ -64,7 +64,7 @@ namespace osg_terrain {
     virtual osg::BoundingBox computeBound() const;
     void setSelected(bool val);
     void setCameraPosition(double x, double y) {
-      mrhmr->setCameraPosition(x, y);
+      if(mrhmr) mrhmr->setCameraPosition(x, y);
     }
 
   private:

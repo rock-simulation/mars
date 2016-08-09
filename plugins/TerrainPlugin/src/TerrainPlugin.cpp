@@ -61,8 +61,10 @@ namespace mars {
 
       void TerrainPlugin::update(sReal time_ms) {
         cameraStruct cs;
-        control->graphics->getCameraInfo(&cs);
-        terrain->setCameraPos(cs.pos[0], cs.pos[1], cs.pos[2]);
+        if(terrain.valid()) {
+          control->graphics->getCameraInfo(&cs);
+          terrain->setCameraPos(cs.pos[0], cs.pos[1], cs.pos[2]);
+        }
         // control->motors->setMotorValue(id, value);
       }
 
