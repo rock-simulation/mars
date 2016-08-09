@@ -64,6 +64,8 @@ namespace osg_material_manager {
     invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                    (float)(invShadowTextureSize));
 
+    envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec3f(0.0f, 0.0f, 0.0f));
+    envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec3f(0.0f, 0.0f, 0.0f));
     noiseMap = new osg::Texture2D();
     noiseMap->setDataVariance(osg::Object::DYNAMIC);
     noiseMap->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -77,6 +79,7 @@ namespace osg_material_manager {
     unitMap["environmentMap"] = 0;
     unitMap["envMapR"] = 5;
     unitMap["envMapG"] = 6;
+    unitMap["envMapB"] = 8;
     t = 0;
   }
 
@@ -405,6 +408,8 @@ namespace osg_material_manager {
     hasShaderSources = true;
     stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap,
                                           osg::StateAttribute::ON);
+    stateSet->removeUniform(envMapSpecularUniform.get());
+    stateSet->removeUniform(envMapScaleUniform.get());
     ShaderGenerator shaderGenerator;
     vector<string> args;
 
@@ -510,8 +515,11 @@ namespace osg_material_manager {
       }
 
       if(map["shader"].hasKey("EnvMapVertex")) {
-        vertexShader->addUniform( (GLSLUniform) { "sampler2D", "envMapG" } );
-        vertexShader->addUniform( (GLSLUniform) { "sampler2D", "envMapR" } );
+        envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+                                            (double)map["envMapSpecular"]["g"],
+                                            (double)map["envMapSpecular"]["b"]));
+        stateSet->addUniform(envMapSpecularUniform.get());
+        vertexShader->addUniform( (GLSLUniform) { "vec3", "envMapSpecular" } );
         vertexShader->addUniform( (GLSLUniform) { "sampler2D", "environmentMap" } );
 
         vertexShader->addUniform( (GLSLUniform)
@@ -519,29 +527,38 @@ namespace osg_material_manager {
         vertexShader->addMainVar( (GLSLVariable) { "vec4", "scale",
               "texture2D(environmentMap, texCoord)" }, 1);
         vertexShader->addMainVar( (GLSLVariable) { "float", "gcol",
-              "scale.g*(texture2D(envMapG, texCoord.xy*150.0).a)*0" }, 2);
+              "scale.g*envMapSpecular.g" }, 2);
         vertexShader->addMainVar( (GLSLVariable) { "float", "rcol",
-              "scale.r*(texture2D(envMapR, texCoord.xy*450.).a)" }, 3);
+              "scale.r*envMapSpecular.r" }, 3);
+        vertexShader->addMainVar( (GLSLVariable) { "float", "bcol",
+              "scale.b*envMapSpecular.b" }, 3);
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec2", "texCoord", "gl_MultiTexCoord0.xy*texScale" }, true);
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "scol", "vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol, 1)" });
+                                  { "vec4", "scol", "vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol+gl_FrontMaterial.specular.rgb*bcol, 1)" });
 
       }
       if(map["shader"].hasKey("EnvMapFragment")) {
         havePCol = true;
+        envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+                                          (double)map["envMapScale"]["g"],
+                                          (double)map["envMapScale"]["b"]));
+        stateSet->addUniform(envMapScaleUniform.get());
+        fragmentShader->addUniform( (GLSLUniform) { "vec3", "envMapScale" } );
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "scale",
               "texture2D(environmentMap, texCoord)" }, 2);
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_",
-              "texture2D( normalMap, texCoord*450. )" }, 3);
+              "texture2D( normalMap, texCoord*envMapScale.r )" }, 3);
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "rcol",
-              "texture2D(envMapR, texCoord.xy*450.)" });
+              "texture2D(envMapR, texCoord.xy*envMapScale.r)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "gcol",
-              "texture2D(envMapG, texCoord.xy*150.0)" });
+              "texture2D(envMapG, texCoord.xy*envMapScale.g)" });
+        fragmentShader->addMainVar( (GLSLVariable) { "vec4", "bcol",
+              "texture2D(envMapB, texCoord.xy*envMapScale.b)" });
         //fragmentShader->addMainVar( (GLSLVariable) { "vec4", "pcol",
         //      "vec4(scale.r*rcol.r,scale.r*rcol.g,scale.r*rcol.b, 1.0)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "pcol",
-              "vec4(scale.r*rcol.rgb+scale.g*gcol.rgb, 1.0)" });
+              "vec4(scale.r*rcol.rgb+scale.g*gcol.rgb+scale.b*bcol.rgb, 1.0)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt",
               "vec4(scale.r*nt_.xy, (1-scale.r)*nt_.z, 1)" });
 

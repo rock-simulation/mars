@@ -118,6 +118,8 @@ namespace osg_material_manager {
 
     osg::ref_ptr<osg::Uniform> shadowSamplesUniform, invShadowSamplesUniform;
     osg::ref_ptr<osg::Uniform> invShadowTextureSizeUniform;
+    osg::ref_ptr<osg::Uniform> envMapSpecularUniform;
+    osg::ref_ptr<osg::Uniform> envMapScaleUniform;
 
     osg::ref_ptr<osg::Group> group;
     osg::ref_ptr<osg::Material> material;

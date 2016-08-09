@@ -163,7 +163,7 @@ namespace osg_terrain {
     p = new osg::PositionAttitudeTransform();
     tPosX = -width*0.5;
     tPosY = -height*0.5;
-    p->setPosition(osg::Vec3(tPosX, tPosY, -scaleZ*0.5));
+    p->setPosition(osg::Vec3(tPosX, tPosY, -20));
     p->setNodeMask(0xff | 0x1000);
     p->addChild(geode.get());
     if(materialManager) {
