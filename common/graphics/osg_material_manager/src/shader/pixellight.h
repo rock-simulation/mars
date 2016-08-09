@@ -42,7 +42,7 @@ namespace osg_material_manager {
   class PixelLightFrag : public ShaderFunc {
   public:
     PixelLightFrag(std::vector<std::string> &args, int numLights,
-                   std::string resPath);
+                   std::string resPath, bool haveDiffuseMap, bool havePCol);
     std::string code() const;
   private:
     std::string source;

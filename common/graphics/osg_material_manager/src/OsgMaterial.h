@@ -64,6 +64,16 @@ namespace osg_material_manager {
 
   class MaterialNode;
 
+  class TextureInfo {
+  public:
+    osg::ref_ptr<osg::Texture2D> texture;
+    osg::ref_ptr<osg::Uniform> textureUniform;
+    std::string name;
+    int unit;
+    bool enabled;
+    // maybe define more attributes like filter
+  };
+
   class OsgMaterial : public osg::Group {
   public:
     OsgMaterial(std::string resPath);
@@ -90,13 +100,16 @@ namespace osg_material_manager {
     void setShadowTextureSize(int size);
     inline configmaps::ConfigMap getMaterialData() {return map;}
     void update();
+    void addTexture(configmaps::ConfigMap &config, bool nearest=false);
+    void disableTexture(std::string name);
+    void enableTexture(std::string name);
+    bool checkTexture(std::string name);
 
   protected:
     std::vector<osg::ref_ptr<MaterialNode> > materialNodeVector;
 
     osg::ref_ptr<osg::Program> lastProgram;
-    osg::ref_ptr<osg::Uniform> normalMapUniform, bumpMapUniform;
-    osg::ref_ptr<osg::Uniform> baseImageUniform, noiseMapUniform;
+    osg::ref_ptr<osg::Uniform> noiseMapUniform;
     osg::ref_ptr<osg::Uniform> bumpNorFacUniform;
     osg::ref_ptr<osg::Uniform> texScaleUniform;
     osg::ref_ptr<osg::Uniform> sinUniform;
@@ -108,10 +121,10 @@ namespace osg_material_manager {
 
     osg::ref_ptr<osg::Group> group;
     osg::ref_ptr<osg::Material> material;
-    osg::ref_ptr<osg::Texture2D> colorMap;
-    osg::ref_ptr<osg::Texture2D> normalMap;
-    osg::ref_ptr<osg::Texture2D> bumpMap;
     osg::ref_ptr<osg::Texture2D> noiseMap;
+
+    // new implementation for generic texture handling
+    std::map<std::string, TextureInfo> textures;
 
     bool hasShaderSources;
     bool useShader;
@@ -121,7 +134,7 @@ namespace osg_material_manager {
     bool useWorldTexCoords;
     double t;
     std::string name, resPath;
-    configmaps::ConfigMap map;
+    configmaps::ConfigMap map, unitMap;
 
     osg::Vec4 getColor(std::string key);
     void setColor(std::string color, std::string key, std::string value);

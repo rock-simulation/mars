@@ -112,8 +112,22 @@ namespace osg_material_manager {
       return disabledExtensions;
     }
 
-    void addMainVar(GLSLVariable var) {
-      mainVars.push_back(var);
+    void addMainVar(GLSLVariable var, int pos = -1) {
+      std::list<GLSLVariable>::iterator it = mainVars.begin();
+      for(; it!=mainVars.end(); ++it) {
+        if(it->name == var.name) {
+          it->value = var.value;
+          return;
+        }
+      }
+      if(pos > -1) {
+        it = mainVars.begin();
+        for(int i=0; i<pos; ++i, ++it) ;
+        mainVars.insert(it, var);
+      }
+      else {
+        mainVars.push_back(var);
+      }
     }
     const std::list<GLSLVariable>& getMainVars() const {
       return mainVars;

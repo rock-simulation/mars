@@ -31,6 +31,7 @@ namespace osg_material_manager {
 
   BumpMapVert::BumpMapVert(vector<string> &args, std::string resPath)
     : ShaderFunc("bump", args) {
+    funcs[0].second.push_back("n.xyz");
     addAttribute( (GLSLAttribute) { "vec4", "vertexTangent" });
     addVarying( (GLSLVarying) { "mat3", "ttw" } );
 
@@ -53,6 +54,9 @@ namespace osg_material_manager {
    */
   BumpMapFrag::BumpMapFrag(vector<string> &args, std::string resPath)
     : ShaderFunc("bump", args) {
+    funcs[0].second.push_back("nt");
+    funcs[0].second.push_back("n");
+    funcs[0].second.push_back("n");
     addVarying( (GLSLVarying) { "mat3", "ttw" } );
     addUniform( (GLSLUniform) { "float", "bumpNorFac"} );
     resPath += "/shader/normalmap.frag";
@@ -60,6 +64,8 @@ namespace osg_material_manager {
     std::stringstream buffer;
     buffer << t.rdbuf();
     source = buffer.str();
+    addUniform( (GLSLUniform) { "sampler2D", "normalMap" } );
+    addMainVar( (GLSLVariable) { "vec4", "nt", "texture2D( normalMap, texCoord )" });
   }
 
   string BumpMapFrag::code() const {
