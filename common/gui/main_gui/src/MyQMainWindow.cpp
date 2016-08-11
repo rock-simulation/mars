@@ -143,6 +143,10 @@ namespace mars {
 
 
     void MyQMainWindow::addDock(QWidget *window, int priority, int area) {
+      if(!myCentralWidget) {
+        setCentralWidget(window);
+        return;
+      }
       timerAllowed = false;
       //  static int objectName = 42;
       Qt::DockWidgetArea qtarea;
