@@ -427,22 +427,26 @@ namespace osg_material_manager {
         vertexShader->addUniform( (GLSLUniform)
                                   { "float", "cos_" } );
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "offset", "vec4(4.0*rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.2), 4.0*rnd(float(gl_InstanceIDARB)*0.2, float(gl_InstanceIDARB)*0.3), 0, 0)" });
+                                  { "vec4", "offset", "vec4(10.0*rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.2), 10.0*rnd(float(gl_InstanceIDARB)*0.2, float(gl_InstanceIDARB)*0.3), rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.9), rnd(float(gl_InstanceIDARB)*0.7, float(gl_InstanceIDARB)*0.7))" });
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "fPos", "gl_Vertex + offset" });
+                                  { "vec4", "fPos", "vec4(gl_Vertex.xy + offset.xy, gl_Vertex.z*(0.5+offset.z), gl_Vertex.w)" });
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec3", "sc", "vec3(normalize(vec2(fPos.x*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.16, float(gl_InstanceIDARB)*0.8), fPos.y*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.8, float(gl_InstanceIDARB)*0.16))), rnd(float(gl_InstanceIDARB)*0.4, float(gl_InstanceIDARB)*0.4))-0.5" });
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec4", "vPos", "fPos + vec4(sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
         vertexShader->addExport( (GLSLExport)
                                  {"gl_TexCoord[2].xy", "gl_TexCoord[2].xy + vec2(-offset.y, offset.x)"} );
+        vertexShader->addExport( (GLSLExport)
+                                 {"diffuse[0]", "vec4(0.5)+diffuse[0] * (1+offset.x)"} );
+	vertexShader->addMainVar( (GLSLVariable)
+				  { "vec4", "scol", "gl_FrontMaterial.specular*(0.5+offset.w)" });
       }
       else {
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec4", "vPos", "gl_Vertex " });
+	vertexShader->addMainVar( (GLSLVariable)
+				  { "vec4", "scol", "gl_FrontMaterial.specular" });
       }
-      vertexShader->addMainVar( (GLSLVariable)
-                                { "vec4", "scol", "gl_FrontMaterial.specular" });
       vertexShader->addExport( (GLSLExport)
                                {"gl_Position", "gl_ModelViewProjectionMatrix * vPos"} );
       vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "v1"} );
