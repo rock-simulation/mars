@@ -36,6 +36,7 @@
 #include <osg/LOD>
 #include <osg/PositionAttitudeTransform>
 #include <osgUtil/CullVisitor>
+#include <osg/PolygonMode>
 
 namespace osg_terrain {
 
@@ -46,6 +47,21 @@ namespace osg_terrain {
     int numInstances;
   private:
     void generateInstances(osg::Geometry *geom);
+  };
+
+  class BoundVisitor: public osg::NodeVisitor{
+  public:
+  BoundVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {}
+    virtual void apply(osg::Node &searchNode);
+  };
+
+  class TerrainBoundCallback: public osg::Drawable::ComputeBoundingBoxCallback {
+  public:
+    TerrainBoundCallback(){}
+    ~TerrainBoundCallback(){}
+    osg::BoundingBox computeBound(const osg::Drawable &) const {
+      return osg::BoundingBox(-100, -100, 0, 100, 100, 95);
+    }
   };
 
   using namespace configmaps;
@@ -59,7 +75,9 @@ namespace osg_terrain {
       osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
       if (cv) {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
-        eyePointLocal[2] = 0;
+        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 0.2);
+        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 0.2);
+        eyePointLocal[2] = -20;
         matrix.preMultTranslate(eyePointLocal);
       }
       return true;
@@ -70,7 +88,9 @@ namespace osg_terrain {
       osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
       if (cv) {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
-        eyePointLocal[2] = 0;
+        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 0.2);
+        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 0.2);
+        eyePointLocal[2] = -20;
         matrix.postMultTranslate(-eyePointLocal);
       }
       return true;
@@ -86,12 +106,12 @@ namespace osg_terrain {
     ConfigMap map = ConfigMap::fromYamlFile("terrain.yml");
     osg::ref_ptr<MaterialNode> logMaterialGroup;
 
-    ConfigVector::iterator it = map["lod"].begin();
-    double start, end;
-    std::string file;
-    osg::ref_ptr<osg::PositionAttitudeTransform> p;
     bool haveLOD = map.hasKey("lod");
+    osg::ref_ptr<osg::PositionAttitudeTransform> p;
     if(haveLOD) {
+      ConfigVector::iterator it = map["lod"].begin();
+      double start, end;
+      std::string file;
       if(map.hasKey("material")) {
         ConfigMap mMap = map["material"];
         materialManager->createMaterial(mMap["name"], mMap);
@@ -113,7 +133,7 @@ namespace osg_terrain {
         InstancesVisitor visitor;
         visitor.numInstances = (*it)["instances"];
         node->accept(visitor);
-        
+
         lod->addChild(node.get(), start, end);
       }
       for(it=map["pos"].begin(); it!=map["pos"].end(); ++it) {
@@ -149,31 +169,72 @@ namespace osg_terrain {
       }
     }
 
-    int width = map["heightmap"]["width"];
-    int height = map["heightmap"]["height"];
-    double scaleZ = map["heightmap"]["scaleZ"];
-    int resolution = map["heightmap"]["resolution"];
-    int depth = map["heightmap"]["depth"];
-    bool wireframe = map["heightmap"]["wireframe"];
-    vbt = new VertexBufferTerrain(width, height, scaleZ, resolution, depth);
-    vbt->setInitialBound(osg::BoundingBox(0, 0, 0, width, height, scaleZ));
-    vbt->setSelected(wireframe);
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-    geode->addDrawable(vbt.get());
-    p = new osg::PositionAttitudeTransform();
-    tPosX = -width*0.5;
-    tPosY = -height*0.5;
-    p->setPosition(osg::Vec3(tPosX, tPosY, -20));
-    p->setNodeMask(0xff | 0x1000);
-    p->addChild(geode.get());
-    if(materialManager) {
-      ConfigMap mMap = map["heightmap"]["material"];
-      materialManager->createMaterial(mMap["name"], mMap);
-      osg::ref_ptr<MaterialNode> mGroup = materialManager->getNewMaterialGroup(mMap["name"]);
-      mGroup->addChild(p.get());
+    if(map.hasKey("heightmap")) {
+      int width = map["heightmap"]["width"];
+      int height = map["heightmap"]["height"];
+      double scaleZ = map["heightmap"]["scaleZ"];
+      int resolution = map["heightmap"]["resolution"];
+      int depth = map["heightmap"]["depth"];
+      bool wireframe = map["heightmap"]["wireframe"];
+      vbt = new VertexBufferTerrain(width, height, scaleZ, resolution, depth);
+      vbt->setInitialBound(osg::BoundingBox(0, 0, 0, width, height, scaleZ));
+      vbt->setSelected(wireframe);
+      osg::ref_ptr<osg::Geode> geode = new osg::Geode;
+      geode->addDrawable(vbt.get());
+      p = new osg::PositionAttitudeTransform();
+      p->setCullingActive(false);
+      tPosX = -width*0.5;
+      tPosY = -height*0.5;
+      p->setPosition(osg::Vec3(tPosX, tPosY, -20));
+      p->setNodeMask(0xff | 0x1000);
+      p->addChild(geode.get());
+      if(materialManager) {
+        ConfigMap mMap = map["heightmap"]["material"];
+        materialManager->createMaterial(mMap["name"], mMap);
+        osg::ref_ptr<MaterialNode> mGroup = materialManager->getNewMaterialGroup(mMap["name"]);
+        mGroup->addChild(p.get());
+      }
+      else {
+        this->addChild(p.get());
+      }
     }
-    else {
-      this->addChild(p.get());
+
+    if(map.hasKey("terrain")) {
+      fprintf(stderr, "create terrain object");
+      osg::ref_ptr<PlaneTransform> p = new PlaneTransform();
+      p->setCullingActive(false);
+      osg::ref_ptr<osg::Node> node;
+      std::string file = map["terrain"]["file"];
+      if(utils::getFilenameSuffix(file) == ".bobj") {
+        node = graphics::GuiHelper::readBobjFromFile(file);
+      }
+      else {
+        node = graphics::GuiHelper::readNodeFromFile(file);
+      }
+      node->setNodeMask(0xff | 0x1000);
+
+      BoundVisitor visitor;
+      node->accept(visitor);
+
+      //node->setInitialBound(osg::BoundingBox(-10, -10, 0, 10, 10, 40));
+      osg::PolygonMode *polyModeObj = new osg::PolygonMode;
+      polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
+      bool wireframe = map["terrain"]["wireframe"];
+      if(wireframe) {
+        node->getOrCreateStateSet()->setAttribute( polyModeObj );
+      }
+      p->addChild(node.get());
+
+      if(materialManager) {
+        ConfigMap mMap = map["terrain"]["material"];
+        materialManager->createMaterial(mMap["name"], mMap);
+
+        osg::ref_ptr<MaterialNode> mGroup = materialManager->getNewMaterialGroup(mMap["name"]);
+        mGroup->addChild(p.get());
+      }
+      else {
+        this->addChild(p.get());
+      }
     }
   }
 
@@ -211,14 +272,14 @@ namespace osg_terrain {
     geom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::QUADS,
                                               0, // index of first vertex
                                               vertices->size()));
-    
+
     osg::ref_ptr<osg::Geode> geode = new osg::Geode;
     geode->addDrawable(geom.get());
     return geode.get();
   }
 
   void Terrain::setCameraPos(double x, double y, double z) {
-    vbt->setCameraPosition(x-tPosX, y-tPosY);
+    if(vbt) vbt->setCameraPosition(x-tPosX, y-tPosY);
   }
 
   void InstancesVisitor::apply(osg::Node &searchNode){
@@ -238,7 +299,7 @@ namespace osg_terrain {
   }
 
   void InstancesVisitor::generateInstances(osg::Geometry *geom) {
-    // first turn on hardware instancing for every primitive set      
+    // first turn on hardware instancing for every primitive set
     for (unsigned int i = 0; i < geom->getNumPrimitiveSets(); ++i) {
       geom->getPrimitiveSet(i)->setNumInstances(numInstances);
       fprintf(stderr, "set num instances: %d\n", numInstances);
@@ -247,5 +308,21 @@ namespace osg_terrain {
     geom->setUseDisplayList(false);
     geom->setUseVertexBufferObjects(true);
   }
-  
+
+   void BoundVisitor::apply(osg::Node &searchNode){
+     // search for geometries and generate tangents for them
+    osg::Geode* geode=dynamic_cast<osg::Geode*>(&searchNode);
+    if(geode) {
+      for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
+        osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
+        if(geom) {
+          geom->setComputeBoundingBoxCallback(new TerrainBoundCallback());
+          geom->setUseDisplayList(false);
+          geom->setUseVertexBufferObjects(true);
+        }
+      }
+    }
+
+    traverse(searchNode);
+  }
 } // end of namespace: osg_terrain

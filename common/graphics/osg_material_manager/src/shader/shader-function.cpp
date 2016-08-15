@@ -56,9 +56,9 @@ namespace osg_material_manager {
     for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
       mainVars.push_back(*it);
-    for(set<GLSLExport>::iterator it = u->getExports().begin();
+    for(vector<GLSLExport>::const_iterator it = u->getExports().begin();
         it != u->getExports().end(); ++it)
-      exports.insert(*it);
+      exports.push_back(*it);
     for(set<GLSLSuffix>::iterator it = u->getSuffixes().begin();
         it != u->getSuffixes().end(); ++it)
       suffixes.insert(*it);

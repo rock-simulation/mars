@@ -8,6 +8,12 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+if(APPLE)
+ FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
+ include_directories(${OPENGL_LIBRARY}/Headers)
+ SET(APPLE_LIBS ${OPENGL_LIBRARY} -L/opt/local/lib opencv_core opencv_highgui opencv_imgproc)
+endif(APPLE)
+
 find_package(OpenSceneGraph REQUIRED osgDB osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})

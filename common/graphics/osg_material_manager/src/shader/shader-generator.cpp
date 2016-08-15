@@ -102,7 +102,7 @@ namespace osg_material_manager {
     for(vector<string>::iterator it = calls.begin(); it != calls.end(); ++it)
       code << "    " << *it << endl;
 
-    for(set<GLSLExport>::iterator it = u->getExports().begin();
+    for(vector<GLSLExport>::const_iterator it = u->getExports().begin();
         it != u->getExports().end(); ++it)
       code << "    " << *it << ";" << endl;
     for(set<GLSLSuffix>::iterator it = u->getSuffixes().begin();

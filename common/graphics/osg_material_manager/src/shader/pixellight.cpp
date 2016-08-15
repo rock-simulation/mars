@@ -39,8 +39,8 @@ namespace osg_material_manager {
                                  std::string resPath)
     : ShaderFunc("plight", args) {
     std::stringstream s;
-    funcs[0].second.push_back("v");
-    funcs[0].second.push_back("scol");
+    funcs[0].second.push_back("vWorldPos");
+    funcs[0].second.push_back("specularCol");
     s << "[" << numLights << "]";
 
     addVarying( (GLSLVarying) { "vec3", "lightVec" + s.str() } );
@@ -65,14 +65,12 @@ namespace osg_material_manager {
     std::stringstream buffer;
     buffer << t.rdbuf();
     source = buffer.str();
-    addMainVar( (GLSLVariable) { "vec4", "v1", "gl_ModelViewMatrix * vPos" } );
-    addMainVar( (GLSLVariable) { "vec4", "v", "osg_ViewMatrixInverse * v1" } );
     addMainVar( (GLSLVariable) { "vec4", "n", "normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))" } );
 
     addExport( (GLSLExport) { "normalVarying", "n.xyz" } );
 
-    addExport( (GLSLExport) { "positionVarying", "v" } );
-    addExport( (GLSLExport) { "modelVertex", "gl_Vertex" } );
+    addExport( (GLSLExport) { "positionVarying", "vWorldPos" } );
+    addExport( (GLSLExport) { "modelVertex", "vModelPos" } );
     addVarying( (GLSLVarying) { "vec4", "positionVarying" } );
     addVarying( (GLSLVarying) { "vec3", "normalVarying" } );
     addVarying( (GLSLVarying) { "vec4", "modelVertex" } );

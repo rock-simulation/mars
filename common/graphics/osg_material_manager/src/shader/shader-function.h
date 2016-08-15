@@ -114,10 +114,12 @@ namespace osg_material_manager {
 
     void addMainVar(GLSLVariable var, int pos = -1) {
       std::list<GLSLVariable>::iterator it = mainVars.begin();
-      for(; it!=mainVars.end(); ++it) {
-        if(it->name == var.name) {
-          it->value = var.value;
-          return;
+      if(var.type != "") {
+        for(; it!=mainVars.end(); ++it) {
+          if(it->name == var.name) {
+            it->value = var.value;
+            return;
+          }
         }
       }
       if(pos > -1) {
@@ -141,9 +143,9 @@ namespace osg_material_manager {
     }
 
     void addExport(GLSLExport e) {
-      exports.insert(e);
+      exports.push_back(e);
     }
-    const std::set<GLSLExport>& getExports() const {
+    const std::vector<GLSLExport>& getExports() const {
       return exports;
     }
 
@@ -174,7 +176,7 @@ namespace osg_material_manager {
     // needed functions (tuple of name and code)
     std::map<std::string,std::string> deps;
     std::list<GLSLVariable> mainVars;
-    std::set<GLSLExport> exports;
+    std::vector<GLSLExport> exports;
     std::set<GLSLSuffix> suffixes;
     std::set<std::string> enabledExtensions;
     std::set<std::string> disabledExtensions;

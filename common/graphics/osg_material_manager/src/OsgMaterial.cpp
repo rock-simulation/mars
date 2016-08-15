@@ -29,6 +29,7 @@
 #include "OsgMaterial.h"
 #include "OsgMaterialManager.h"
 #include "MaterialNode.h"
+#include <osgDB/WriteFile>
 
 #include "shader/shader-generator.h"
 #include "shader/shader-function.h"
@@ -37,6 +38,16 @@
 
 #include <osg/TexMat>
 #include <osg/CullFace>
+
+#ifdef WIN32
+ #include <cv.h>
+ #include <highgui.h>
+#else
+ #include <opencv/cv.h>
+ #include <opencv/highgui.h>
+#endif
+
+#include <cmath>
 
 namespace osg_material_manager {
 
@@ -66,6 +77,7 @@ namespace osg_material_manager {
 
     envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec3f(0.0f, 0.0f, 0.0f));
     envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec3f(0.0f, 0.0f, 0.0f));
+    terrainScaleZUniform = new osg::Uniform("terrainScaleZ", 0.0f);
     noiseMap = new osg::Texture2D();
     noiseMap->setDataVariance(osg::Object::DYNAMIC);
     noiseMap->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -81,6 +93,7 @@ namespace osg_material_manager {
     unitMap["envMapG"] = 6;
     unitMap["envMapB"] = 8;
     unitMap["envMapD"] = 9;
+    unitMap["terrainMap"] = 3;
     t = 0;
   }
 
@@ -201,7 +214,14 @@ namespace osg_material_manager {
     }
     else {
       TextureInfo info;
-      info.texture = OsgMaterialManager::loadTexture((std::string)config["file"]);
+      info.name << config["name"];
+      if(info.name == "terrainMap") {
+        info.texture = loadTerrainTexture((std::string)config["file"]);
+        nearest = true;
+      }
+      else {
+        info.texture = OsgMaterialManager::loadTexture((std::string)config["file"]);
+      }
       if(nearest) {
         info.texture->setFilter(osg::Texture::MIN_FILTER,
                                 osg::Texture::NEAREST);
@@ -217,7 +237,6 @@ namespace osg_material_manager {
       info.texture->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT );
       info.texture->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT );
       info.texture->setMaxAnisotropy(8);
-      info.name << config["name"];
       info.unit = 0;
       if(unitMap.hasKey(info.name)) {
         info.unit = unitMap[info.name];
@@ -411,14 +430,16 @@ namespace osg_material_manager {
                                           osg::StateAttribute::ON);
     stateSet->removeUniform(envMapSpecularUniform.get());
     stateSet->removeUniform(envMapScaleUniform.get());
+    stateSet->removeUniform(terrainScaleZUniform.get());
     ShaderGenerator shaderGenerator;
     vector<string> args;
 
     bool hasTexture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
 
+
     ShaderFunc *vertexShader = new ShaderFunc;
     {
-      if(map["instancing"]) {
+      if(map.hasKey("instancing")) {
         vertexShader->addUniform( (GLSLUniform)
                                   { "sampler2D", "NoiseMap" } );
         vertexShader->enableExtension("GL_ARB_draw_instanced");
@@ -429,27 +450,31 @@ namespace osg_material_manager {
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec4", "offset", "vec4(10.0*rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.2), 10.0*rnd(float(gl_InstanceIDARB)*0.2, float(gl_InstanceIDARB)*0.3), rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.9), rnd(float(gl_InstanceIDARB)*0.7, float(gl_InstanceIDARB)*0.7))" });
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "fPos", "vec4(gl_Vertex.xy + offset.xy, gl_Vertex.z*(0.5+offset.z), gl_Vertex.w)" });
+                                  { "vec4", "fPos", "vec4(gl_Vertex.xy + offset.xy, gl_Vertex.z/**(0.5+offset.z)*/, gl_Vertex.w)" });
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec3", "sc", "vec3(normalize(vec2(fPos.x*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.16, float(gl_InstanceIDARB)*0.8), fPos.y*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.8, float(gl_InstanceIDARB)*0.16))), rnd(float(gl_InstanceIDARB)*0.4, float(gl_InstanceIDARB)*0.4))-0.5" });
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vPos", "fPos + vec4(sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
+                                  { "vec4", "vPos", "fPos + vec4(0.1*sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), 0.1*sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
         vertexShader->addExport( (GLSLExport)
                                  {"gl_TexCoord[2].xy", "gl_TexCoord[2].xy + vec2(-offset.y, offset.x)"} );
         vertexShader->addExport( (GLSLExport)
                                  {"diffuse[0]", "vec4(0.5)+diffuse[0] * (1+offset.x)"} );
-	vertexShader->addMainVar( (GLSLVariable)
-				  { "vec4", "scol", "gl_FrontMaterial.specular*(0.5+offset.w)" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "specularCol", "gl_FrontMaterial.specular*(0.5+offset.w)" });
       }
       else {
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vPos", "gl_Vertex " });
-	vertexShader->addMainVar( (GLSLVariable)
-				  { "vec4", "scol", "gl_FrontMaterial.specular" });
+                                  { "vec4", "vModelPos", "gl_Vertex" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vWorldPos", "osg_ViewMatrixInverse * vViewPos " });
+        vertexShader->addMainVar( (GLSLVariable)
+                            { "vec4", "specularCol", "gl_FrontMaterial.specular" });
       }
       vertexShader->addExport( (GLSLExport)
-                               {"gl_Position", "gl_ModelViewProjectionMatrix * vPos"} );
-      vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "v1"} );
+                               {"gl_Position", "gl_ModelViewProjectionMatrix * vModelPos"} );
+      vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "vViewPos"} );
       if(hasTexture) {
         vertexShader->addExport( (GLSLExport)
                                  { "gl_TexCoord[0].xy", "gl_MultiTexCoord0.xy" });
@@ -465,7 +490,7 @@ namespace osg_material_manager {
         {
           if(useWorldTexCoords) {
             fragmentShader->addMainVar( (GLSLVariable)
-                                        { "vec2", "texCoord", "positionVarying.xy*texScale" });
+                                        { "vec2", "texCoord", "positionVarying.xy*texScale+vec2(0.5, 0.5)" });
           }
           else {
             fragmentShader->addMainVar( (GLSLVariable)
@@ -505,6 +530,23 @@ namespace osg_material_manager {
     }
     if(map.hasKey("shader")) {
       bool havePCol = false;
+      if(map["shader"].hasKey("TerrainMapVertex")) {
+        vertexShader->addUniform( (GLSLUniform) { "sampler2D", "terrainMap" } );
+        vertexShader->addUniform( (GLSLUniform) { "float", "texScale" } );
+        vertexShader->addUniform( (GLSLUniform) { "float", "terrainScaleZ" } );
+        vertexShader->addMainVar( (GLSLVariable) { "vec4", "terrainCol",
+              "texture2D(terrainMap, vec2(vWorldPos.y, vWorldPos.x)*texScale+vec2(0.5, 0.5))" });
+        vertexShader->addMainVar( (GLSLVariable) { "", "vWorldPos.z",
+              "(terrainCol.r+terrainCol.g*0.00390625)*terrainScaleZ" });
+        vertexShader->addMainVar( (GLSLVariable) { "", "vModelPos.z",
+              "vWorldPos.z" });
+        // need to recalculate view pos
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "", "vViewPos", "gl_ModelViewMatrix * vModelPos " });
+        stateSet->addUniform(terrainScaleZUniform.get());
+        terrainScaleZUniform->set((float)(double)map["scaleZ"]);
+        fprintf(stderr, "set terrainScaleZ: %g\n", (double)map["scaleZ"]);
+      }
       if(map["shader"].hasKey("PixelLightVertex")) {
         PixelLightVert *plightVert = new PixelLightVert(args, maxNumLights,
                                                         resPath);
@@ -540,7 +582,7 @@ namespace osg_material_manager {
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec2", "texCoord", "gl_MultiTexCoord0.xy*texScale" }, true);
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "scol", "vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol+gl_FrontMaterial.specular.rgb*bcol, 1)" });
+                                  { "vec4", "specularCol", "vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol+gl_FrontMaterial.specular.rgb*bcol, 1)" });
 
       }
       if(map["shader"].hasKey("EnvMapFragment")) {
@@ -583,7 +625,35 @@ namespace osg_material_manager {
       }
     }
 
-    glslProgram = shaderGenerator.generate();
+    if(map.hasKey("shaderSources")) {
+      // load shader from text file
+      // todo: handle uniforms in a way that we dont need to create the shader
+      //       sources above
+      glslProgram = new osg::Program();
+      { // load vertex shader
+        string file = map["shaderSources"]["vertexShader"];
+        std::ifstream t(file.c_str());
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        string source = buffer.str();
+        osg::Shader *shader = new osg::Shader(osg::Shader::VERTEX);
+        glslProgram->addShader(shader);
+        shader->setShaderSource( source );
+      }
+      { // load fragment shader
+        string file = map["shaderSources"]["fragmentShader"];
+        std::ifstream t(file.c_str());
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        string source = buffer.str();
+        osg::Shader *shader = new osg::Shader(osg::Shader::FRAGMENT);
+        glslProgram->addShader(shader);
+        shader->setShaderSource( source );
+      }
+    }
+    else {
+      glslProgram = shaderGenerator.generate();
+    }
     if(checkTexture("normalMap")) {
       glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
       stateSet->addUniform(bumpNorFacUniform.get());
@@ -664,6 +734,46 @@ namespace osg_material_manager {
     bool needUpdate = (maxNumLights != n);
     maxNumLights = n;
     if(needUpdate) updateShader(true);
+  }
+
+  osg::Texture2D* OsgMaterial::loadTerrainTexture(std::string filename) {
+    IplImage* img=cvLoadImage(filename.c_str(), -1);
+    osg::Texture2D *texture = NULL;
+    if(img) {
+      texture = new osg::Texture2D;
+      texture->setDataVariance(osg::Object::DYNAMIC);
+      texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP);
+      texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP);
+      texture->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP);
+      osg::Image* image = new osg::Image();
+      image->allocateImage(img->width, img->height,
+                           1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
+      CvScalar s;
+      int v;
+      double imageMaxValue = pow(2., img->depth);
+      fprintf(stderr, "depth: %d\n", img->depth);
+      for(int x=0; x<img->width; ++x) {
+        for(int y=0; y<img->width; ++y) {
+          s=cvGet2D(img,y,x);
+          //fprintf(stderr, "  %g", ((double)s.val[0]*imageMaxValue));
+          v = (int)s.val[0]/256;
+          if(v < 0) v = 0;
+          if(v>255) v = 255;
+          image->data(y, x)[0] = (char)v;
+          v = (int)s.val[0] % 256;
+          if(v < 0) v = 0;
+          if(v>255) v = 255;
+          image->data(y, x)[1] = (char)v;
+          image->data(y, x)[2] = 0;
+          image->data(y, x)[3] = 255;
+        }
+      }
+      //osgDB::writeImageFile(*image, "da.png");
+
+      texture->setImage(image);
+      cvReleaseImage(&img);
+    }
+    return texture;
   }
 
 } // end of namespace osg_material_manager
