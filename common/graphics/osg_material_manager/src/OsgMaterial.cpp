@@ -217,7 +217,7 @@ namespace osg_material_manager {
       info.name << config["name"];
       if(info.name == "terrainMap") {
         info.texture = loadTerrainTexture((std::string)config["file"]);
-        nearest = true;
+        //nearest = true;
       }
       else {
         info.texture = OsgMaterialManager::loadTexture((std::string)config["file"]);
@@ -454,7 +454,11 @@ namespace osg_material_manager {
         vertexShader->addMainVar( (GLSLVariable)
                                   { "vec3", "sc", "vec3(normalize(vec2(fPos.x*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.16, float(gl_InstanceIDARB)*0.8), fPos.y*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.8, float(gl_InstanceIDARB)*0.16))), rnd(float(gl_InstanceIDARB)*0.4, float(gl_InstanceIDARB)*0.4))-0.5" });
         vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vPos", "fPos + vec4(0.1*sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), 0.1*sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
+                                  { "vec4", "vWorldPos", "fPos + vec4(0.1*sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), 0.1*sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vModelPos", "vWorldPos" });
+        vertexShader->addMainVar( (GLSLVariable)
+                                  { "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " });
         vertexShader->addExport( (GLSLExport)
                                  {"gl_TexCoord[2].xy", "gl_TexCoord[2].xy + vec2(-offset.y, offset.x)"} );
         vertexShader->addExport( (GLSLExport)

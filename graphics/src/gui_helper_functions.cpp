@@ -393,7 +393,7 @@ namespace mars {
       osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
       osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
       osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
-
+      osg::ref_ptr<osg::DrawElementsUInt> osgIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
       while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
         o = 0;
         while(o < r+foo-50 || (r<256 && o < r+foo)) {
@@ -426,41 +426,33 @@ namespace mars {
               o+=4;
             }
             // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
+            osgIndices->push_back(iData[0]-1);
             vertices2.push_back(vertices[iData[0]-1]);
             if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
-            osgNormals->push_back(normals[iData[2]-1]);
             normals2.push_back(normals[iData[2]-1]);
-
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
             }
+            osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
             vertices2.push_back(vertices[iData[0]-1]);
             if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
-            osgNormals->push_back(normals[iData[2]-1]);
             normals2.push_back(normals[iData[2]-1]);
-
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
             }
+            osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
-            osgVertices->push_back(vertices[iData[0]-1]);
             vertices2.push_back(vertices[iData[0]-1]);
             if(iData[1] > 0) {
-              osgTexcoords->push_back(texcoords[iData[1]-1]);
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
-            osgNormals->push_back(normals[iData[2]-1]);
             normals2.push_back(normals[iData[2]-1]);
           }
         }
@@ -468,16 +460,43 @@ namespace mars {
         if(r==256) memcpy(buffer, buffer+o, foo);
       }
 
+      bool useIndices = false;
+      if(vertices.size() == normals.size()) {
+        for(size_t i=0; i<vertices.size(); ++i) {
+          osgVertices->push_back(vertices[i]);
+          osgNormals->push_back(normals[i]);
+          if(texcoords.size() > i) {
+            osgTexcoords->push_back(texcoords[i]);
+          }
+        }
+        useIndices = true;
+      }
+      else {
+        for(size_t i=0; i<vertices2.size(); ++i) {
+          osgVertices->push_back(vertices2[i]);
+        }
+        for(size_t i=0; i<normals2.size(); ++i) {
+          osgNormals->push_back(normals2[i]);
+        }
+        for(size_t i=0; i<texcoords2.size(); ++i) {
+          osgTexcoords->push_back(texcoords2[i]);
+        }
+      }
+
       osg::Geometry* geometry = new osg::Geometry;
       geometry->setVertexArray(osgVertices.get());
       geometry->setNormalArray(osgNormals.get());
       geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
-      if(osgTexcoords->size() > 0)
+      if(osgTexcoords->size() > 0) {
         geometry->setTexCoordArray(0, osgTexcoords.get());
-
-      osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
-      geometry->addPrimitiveSet(drawArrays);
-
+      }
+      if(useIndices) {
+        geometry->addPrimitiveSet(osgIndices);
+      }
+      else {
+        osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
+        geometry->addPrimitiveSet(drawArrays);
+      }
       geode->addDrawable(geometry);
       geode->setName("bobj");
 
@@ -554,7 +573,7 @@ namespace mars {
         //image->setDataType(GL_UNSIGNED_SHORT);
         //osgDB::writeImageFile(*image, std::string("test.jpg"));
         float r = 0;
-	//float g = 0, b = 0;
+  //float g = 0, b = 0;
         int count = 0;
         osg::Vec4 pixel;
         for (int y = terrain->height; y >= 1; --y){

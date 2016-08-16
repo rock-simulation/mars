@@ -60,7 +60,7 @@ namespace osg_terrain {
     TerrainBoundCallback(){}
     ~TerrainBoundCallback(){}
     osg::BoundingBox computeBound(const osg::Drawable &) const {
-      return osg::BoundingBox(-100, -100, 0, 100, 100, 95);
+      return osg::BoundingBox(-600, -600, 0, 600, 600, 95);
     }
   };
 
@@ -75,8 +75,8 @@ namespace osg_terrain {
       osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
       if (cv) {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
-        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 0.2);
-        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 0.2);
+        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 6.0);
+        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 6.0);
         eyePointLocal[2] = -20;
         matrix.preMultTranslate(eyePointLocal);
       }
@@ -88,8 +88,8 @@ namespace osg_terrain {
       osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
       if (cv) {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
-        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 0.2);
-        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 0.2);
+        eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 6.0);
+        eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 6.0);
         eyePointLocal[2] = -20;
         matrix.postMultTranslate(-eyePointLocal);
       }
@@ -185,7 +185,7 @@ namespace osg_terrain {
       p->setCullingActive(false);
       tPosX = -width*0.5;
       tPosY = -height*0.5;
-      p->setPosition(osg::Vec3(tPosX, tPosY, -20));
+      p->setPosition(osg::Vec3(tPosX, tPosY, -25));
       p->setNodeMask(0xff | 0x1000);
       p->addChild(geode.get());
       if(materialManager) {
@@ -201,6 +201,7 @@ namespace osg_terrain {
 
     if(map.hasKey("terrain")) {
       fprintf(stderr, "create terrain object");
+      //osg::ref_ptr<osg::PositionAttitudeTransform> p = new osg::PositionAttitudeTransform();
       osg::ref_ptr<PlaneTransform> p = new PlaneTransform();
       p->setCullingActive(false);
       osg::ref_ptr<osg::Node> node;
@@ -289,7 +290,7 @@ namespace osg_terrain {
       for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
         osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
         if(geom) {
-          geom->setInitialBound(osg::BoundingBox(0, 0, 0, 4, 4, 0.4));
+          geom->setInitialBound(osg::BoundingBox(0, 0, 0, 2, 2, 1));
           generateInstances(geom);
         }
       }

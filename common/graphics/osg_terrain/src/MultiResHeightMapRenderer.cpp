@@ -137,6 +137,9 @@ namespace osg_terrain {
 
     int d = 1;
     int f = 1;
+    f = f*4;
+    maxNumSubTiles += f;
+    d += 1;
     while(d < depth+1) {
       f = f*4;
       maxNumSubTiles += f;
@@ -1028,7 +1031,7 @@ namespace osg_terrain {
     std::vector<Tile*>::iterator outer, inner;
     int d;
     double x, y;
-    while(!finish) {
+    while(!finish && depth > 0) {
       swapBuffer2 = false;
       dataMutex.lock();
       x = camX;
@@ -1060,7 +1063,7 @@ namespace osg_terrain {
         swapBuffer = true;
         swapMutex.unlock();
       }
-      msleep(20);
+      msleep(40);
     }
   }
 

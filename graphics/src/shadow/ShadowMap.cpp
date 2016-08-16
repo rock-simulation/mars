@@ -77,6 +77,9 @@ namespace mars {
       ambientBiasUniform = new osg::Uniform("osgShadow_ambientBias",
                                             osg::Vec2(0.5f,0.5f));
       uniformList.push_back(ambientBiasUniform.get());
+      texGenMatrixUniform = new osg::Uniform("osgShadow_texgen",
+                                             osg::Matrixf());
+      uniformList.push_back(texGenMatrixUniform.get());
       textureScaleUniform = new osg::Uniform("osgShadow_textureScale",
                                             1.0f);
       uniformList.push_back(textureScaleUniform.get());
@@ -397,7 +400,7 @@ namespace mars {
           osg::Matrix::scale(0.5f,0.5f,0.5f);
 
         texgen->setPlanesFromMatrix(MVPT);
-
+        texGenMatrixUniform->set(MVPT);
         orig_rs->getPositionalStateContainer()->addPositionedTextureAttribute(shadowTextureUnit, cv.getModelViewMatrix(), texgen.get());
 #endif
       }

@@ -92,6 +92,7 @@ namespace mars {
 
       osg::ref_ptr<osg::Uniform> ambientBiasUniform;
       osg::ref_ptr<osg::Uniform> textureScaleUniform;
+      osg::ref_ptr<osg::Uniform> texGenMatrixUniform;
       std::vector< osg::ref_ptr<osg::Uniform> > uniformList;
       unsigned int shadowTextureUnit;
       int shadowTextureSize;
