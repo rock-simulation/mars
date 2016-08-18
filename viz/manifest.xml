@@ -10,7 +10,7 @@
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/graphics" />
     <depend package="simulation/mars/scene_loader" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
 
     <rosdep name="qt4" />
     <tags>needs_opt</tags>

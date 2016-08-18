@@ -8,7 +8,7 @@
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/interfaces" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
     <depend package="external/minizip" />
     <tags>needs_opt</tags>
 </package>

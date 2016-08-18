@@ -5,7 +5,7 @@
     <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
 
     <depend package="simulation/lib_manager" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/sim" />
     <depend package="simulation/mars/entity_generation/entity_factory" />

@@ -7,5 +7,5 @@
     <depend package="simulation/mars/common/cfg_manager" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/common/graphics/osg_text_factory" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
 </package>

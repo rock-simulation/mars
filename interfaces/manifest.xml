@@ -5,7 +5,7 @@
     <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
 
     <depend package="simulation/mars/scripts/cmake" />
-    <depend package="simulation/configmaps" />
+    <depend package="tools/configmaps" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="base/types" />
     <tags>needs_opt</tags>
