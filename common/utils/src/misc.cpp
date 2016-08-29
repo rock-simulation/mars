@@ -229,6 +229,17 @@ namespace mars {
       return result;
     }
 
+    std::string replaceString(const std::string &source, const std::string &s1,
+                              const std::string &s2) {
+      std::string back = source;
+      size_t found = back.find(s1);
+      while(found != std::string::npos) {
+        back.replace(found, s1.size(), s2);
+        found = back.find(s1, found+s2.size());
+      }
+      return back;
+    }
+
   } // end of namespace utils
 
 } // end of namespace mars

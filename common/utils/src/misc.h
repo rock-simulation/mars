@@ -175,6 +175,8 @@ namespace mars {
 
     std::vector<std::string> explodeString(const char c, const std::string &s);
 
+    std::string replaceString(const std::string &source, const std::string &s1,
+                              const std::string &s2);
   } // end of namespace utils
 } // namespace mars
 
