@@ -3,7 +3,6 @@
       A small library to read, write, and share software parameter using yaml configuration files.
    </description>
    <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
-   <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/lib_manager" />
    <depend package="simulation/mars/common/utils" />
     <depend package="yaml-cpp" />
