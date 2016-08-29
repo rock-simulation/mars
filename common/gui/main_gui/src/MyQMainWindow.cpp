@@ -142,34 +142,35 @@ namespace mars {
     }
 
 
-    void MyQMainWindow::addDock(QWidget *window, int priority, int area) {
-      if(!myCentralWidget) {
+    void MyQMainWindow::addDock(QWidget *window, int priority, int area,
+                                bool possibleCentralWidget) {
+      if(!myCentralWidget && possibleCentralWidget) {
         setCentralWidget(window);
         return;
       }
       timerAllowed = false;
       //  static int objectName = 42;
       Qt::DockWidgetArea qtarea;
+      bool floating = false;
       switch (area) {
       case 1:
-        qtarea = Qt::RightDockWidgetArea;
-        area = 2;
+        area = qtarea = Qt::LeftDockWidgetArea;
         break;
       case 2:
-        qtarea = Qt::BottomDockWidgetArea;
-        area = 8;
+        area = qtarea = Qt::RightDockWidgetArea;
         break;
       case 3:
-        qtarea = Qt::TopDockWidgetArea;
-        area = 4;
+        area = qtarea = Qt::TopDockWidgetArea;
         break;
       case 4:
-        qtarea = Qt::LeftDockWidgetArea;
-        area = 1;
+        area = qtarea = Qt::BottomDockWidgetArea;
+        break;
+      case 5:
+        area = qtarea = Qt::LeftDockWidgetArea;
+        floating = true;
         break;
       default:
-        qtarea = Qt::AllDockWidgetAreas;
-        area = 0;
+        area = qtarea = Qt::LeftDockWidgetArea;
         break;
       }
 
@@ -188,6 +189,7 @@ namespace mars {
           widgetStates.push_back(st); // save the state
           MyQDockWidget *toDock = new MyQDockWidget(this, window, 1, area);
           stDockWidgets.push_back(toDock);
+          toDock->setFloating(floating);
         } else {
           for (dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
             if ((*dockit)->widget() == window) {
@@ -201,6 +203,7 @@ namespace mars {
           widgetStates.push_back(st); // save the state
           MyQDockWidget *toDock = new MyQDockWidget(this, window, 0, area);
           dyDockWidgets.push_back(toDock);
+          toDock->setFloating(floating);
         }
       } else {
         if(priority) {

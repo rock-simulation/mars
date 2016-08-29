@@ -114,6 +114,8 @@ namespace mars {
       void dock(bool checked);
       bool getDocking() const {return mainWindow->dockView;}
 
+      void setWindowTitle(const std::string &title);
+
       // methods from LibInterface
 
       /**
@@ -136,7 +138,8 @@ namespace mars {
        * \brief Makes a widget dockable in the main window.
        * \see GuiInterface::addDockWidget(void*, int, int)
        */
-      void addDockWidget(void *window, int p=0, int a=0);
+      void addDockWidget(void *window, int p=0, int a=0,
+                         bool possibleCentralWidget=false);
 
       /**
        * \brief Removes a widget from the dockables.

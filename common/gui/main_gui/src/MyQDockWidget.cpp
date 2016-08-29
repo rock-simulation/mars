@@ -29,20 +29,7 @@ namespace mars {
                                  int a, Qt::WindowFlags flags)
       : QDockWidget(child->windowTitle(), parent, flags) {
       priority = p;
-      switch (a) {
-      case 1:
-        area = Qt::RightDockWidgetArea;
-        break;
-      case 2:
-        area = Qt::BottomDockWidgetArea;
-        break;
-      case 3:
-        area = Qt::TopDockWidgetArea;
-        break;
-      default:
-        area = Qt::LeftDockWidgetArea;
-        break;
-      }
+      area = (Qt::DockWidgetArea)a;
       this->setWidget(child);
       this->adjustSize();
       this->setFeatures(QDockWidget::AllDockWidgetFeatures);

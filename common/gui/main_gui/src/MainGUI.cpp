@@ -73,6 +73,10 @@ namespace mars {
       mainWindow->show();
     }
 
+    void MainGUI::setWindowTitle(const std::string &title) {
+      mainWindow->setWindowTitle(tr(title.c_str()));
+    }
+
     void MainGUI::setBackgroundImage(const std::string &path) {
       if(path == "") {
         return;
@@ -282,9 +286,10 @@ namespace mars {
       return mainWindow;
     }
 
-    void MainGUI::addDockWidget(void *window, int p, int a) {
+    void MainGUI::addDockWidget(void *window, int p, int a,
+                                bool possibleCentralWidget) {
       if(window) {
-        mainWindow->addDock((QWidget*)window, p, a);
+        mainWindow->addDock((QWidget*)window, p, a, possibleCentralWidget);
       }
     }
 

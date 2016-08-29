@@ -91,7 +91,8 @@ namespace mars {
        * \param area An indicator to the initial docking area of the widget.
        * Default area is Qt::LeftDockWidgetArea.
        */
-      virtual void addDockWidget(void* window, int priority = 0, int area = 0) = 0;
+      virtual void addDockWidget(void* window, int priority = 0, int area = 0,
+                                 bool possibleCentralWidget=false) = 0;
   
       /** \brief Removes a widget from the dockables.
        * \param window The widget being removed.
@@ -110,6 +111,8 @@ namespace mars {
 
       /** \brief Shows the main window with a predefined geometry. */
       virtual void show(void) = 0;
+
+      virtual void setWindowTitle(const std::string &title) = 0;
   
     }; //end class
 

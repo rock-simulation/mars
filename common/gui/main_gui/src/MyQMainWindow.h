@@ -94,7 +94,8 @@ namespace mars {
        * \brief Adds a widget to the dockables.
        * \sa GuiInterface::addDockWidget(void*, int, int)
        */
-      void addDock(QWidget *window, int priority = 0, int area = 0);
+      void addDock(QWidget *window, int priority = 0, int area = 0,
+                   bool possibleCentralWidget=false);
 
       /**
        * \brief Removes a widget from the dockables.
