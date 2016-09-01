@@ -37,7 +37,7 @@
 #include <mars/entity_generation/entity_factory/EntityFactoryInterface.h>
 
 #include <urdf_parser/urdf_parser.h>
-#include <boost/function.hpp>
+//#include <boost/function.hpp>
 #include <urdf_model/model.h>
 #include <urdf_model/link.h>
 #include <urdf_model/joint.h>
@@ -108,7 +108,7 @@ namespace mars {
       configmaps::ConfigMap debugMap;
       configmaps::ConfigMap entityconfig;
       std::string robotname;
-      boost::shared_ptr<urdf::ModelInterface> model;
+      urdf::ModelInterfaceSharedPtr model;
       sim::SimEntity* entity;
 
       void handleURI(configmaps::ConfigMap *map, std::string uri);
@@ -116,21 +116,21 @@ namespace mars {
       void getSensorIDList(configmaps::ConfigMap *map);
 
       // creating URDF objects
-      void translateLink(boost::shared_ptr<urdf::Link> link, bool fixed); // handleKinematics
-      void translateJoint(boost::shared_ptr<urdf::Link> childlink); // handleKinematics
-      void createMaterial(const boost::shared_ptr<urdf::Material> material); // handleMaterial
-      void createOrigin(const boost::shared_ptr<urdf::Link> &link, bool fixed);
-      void createInertial(const boost::shared_ptr<urdf::Link> &link);
-      void createVisual(const boost::shared_ptr<urdf::Visual> &visual, bool fixed);
-      void createCollision(const boost::shared_ptr<urdf::Collision> &collision, bool fixed);
+      void translateLink(urdf::LinkSharedPtr link, bool fixed); // handleKinematics
+      void translateJoint(urdf::LinkSharedPtr childlink); // handleKinematics
+      void createMaterial(const urdf::MaterialSharedPtr material); // handleMaterial
+      void createOrigin(const urdf::LinkSharedPtr &link, bool fixed);
+      void createInertial(const urdf::LinkSharedPtr &link);
+      void createVisual(const urdf::VisualSharedPtr &visual, bool fixed);
+      void createCollision(const urdf::CollisionSharedPtr &collision, bool fixed);
       void addEmptyVisualToNode(configmaps::ConfigMap *map); // createFakeVisual
       void addEmptyCollisionToNode(configmaps::ConfigMap *map); // createFakeCollision
       void createEmptyVisualMaterial();
       void createOriginMaterial();
       
       // geometry calculations
-      urdf::Pose getGlobalPose(const boost::shared_ptr<urdf::Link> &link);
-      void calculatePose(configmaps::ConfigMap *map, const boost::shared_ptr<urdf::Link> &link);
+      urdf::Pose getGlobalPose(const urdf::LinkSharedPtr &link);
+      void calculatePose(configmaps::ConfigMap *map, const urdf::LinkSharedPtr &link);
       void convertPose(const urdf::Pose &pose, const urdf::Pose &toPose, utils::Vector *v,
           utils::Quaternion *q);
       void poseToVectorAndQuaternion(const urdf::Pose &pose, utils::Vector *v, utils::Quaternion *q);
