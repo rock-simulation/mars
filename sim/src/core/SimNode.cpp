@@ -768,20 +768,20 @@ namespace mars {
     }
 
     void SimNode::checkNodeState(void) {
-      if (isnan(sNode.pos.x())) sNode.pos.x() = 0.0;
-      else if (isinf(sNode.pos.x())) sNode.pos.x() = 0.0;
-      if (isnan(sNode.pos.y())) sNode.pos.y() = 0.0;
-      else if (isinf(sNode.pos.y())) sNode.pos.y() = 0.0;
-      if (isnan(sNode.pos.z())) sNode.pos.z() = 0.0;
-      else if (isinf(sNode.pos.z())) sNode.pos.z() = 0.0;
-      if (isnan(sNode.rot.x())) sNode.rot.x() = 0.0;
-      else if (isinf(sNode.rot.x())) sNode.rot.x() = 0.0;
-      if (isnan(sNode.rot.y())) sNode.rot.y() = 0.0;
-      else if (isinf(sNode.rot.y())) sNode.rot.y() = 0.0;
-      if (isnan(sNode.rot.z())) sNode.rot.z() = 0.0;
-      else if (isinf(sNode.rot.z())) sNode.rot.z() = 0.0;
-      if (isnan(sNode.rot.w())) sNode.rot.w() = 1.0;
-      else if (isinf(sNode.rot.w())) sNode.rot.w() = 1.0;
+      if (std::isnan(sNode.pos.x())) sNode.pos.x() = 0.0;
+      else if (std::isinf(sNode.pos.x())) sNode.pos.x() = 0.0;
+      if (std::isnan(sNode.pos.y())) sNode.pos.y() = 0.0;
+      else if (std::isinf(sNode.pos.y())) sNode.pos.y() = 0.0;
+      if (std::isnan(sNode.pos.z())) sNode.pos.z() = 0.0;
+      else if (std::isinf(sNode.pos.z())) sNode.pos.z() = 0.0;
+      if (std::isnan(sNode.rot.x())) sNode.rot.x() = 0.0;
+      else if (std::isinf(sNode.rot.x())) sNode.rot.x() = 0.0;
+      if (std::isnan(sNode.rot.y())) sNode.rot.y() = 0.0;
+      else if (std::isinf(sNode.rot.y())) sNode.rot.y() = 0.0;
+      if (std::isnan(sNode.rot.z())) sNode.rot.z() = 0.0;
+      else if (std::isinf(sNode.rot.z())) sNode.rot.z() = 0.0;
+      if (std::isnan(sNode.rot.w())) sNode.rot.w() = 1.0;
+      else if (std::isinf(sNode.rot.w())) sNode.rot.w() = 1.0;
     }
 
     void SimNode::getContactPoints(std::vector<Vector> *contact_points) const {
