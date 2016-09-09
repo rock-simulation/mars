@@ -82,8 +82,10 @@ namespace mars {
         }
       }
       // config.toYamlFile("foo.yml");
-      std::string path = "../";
-      path += n;
+      std::string path = "..";
+      if(!n.empty()) {
+        path += "/" + n;
+      }
       addConfigMap(path, config);
       ignore_change = 0;
     }
@@ -205,13 +207,7 @@ namespace mars {
                                      const ConfigMap &map) {
       ignore_change = 1;
       ConfigMap tmpMap = map;
-      updateConfigMapI(name, tmpMap);
-      ignore_change = 0;
-    }
-
-    void DataWidget::updateConfigMapI(const std::string &name,
-                                      ConfigMap &map) {
-      ConfigMap::const_iterator it = map.begin();
+      std::string path = "..";
       std::string n = name;
       for(size_t i=0; i<n.size(); ++i) {
         if(n[i] == '/') {
@@ -219,6 +215,17 @@ namespace mars {
           ++i;
         }
       }
+      if(!n.empty()) {
+        path += "/" + n;
+      }
+      updateConfigMapI(path, tmpMap);
+      ignore_change = 0;
+    }
+
+    void DataWidget::updateConfigMapI(const std::string &name,
+                                      ConfigMap &map) {
+      ConfigMap::const_iterator it = map.begin();
+      std::string n;
       for(;it!=map.end(); ++it) {
         n = it->first;
         for(size_t i=0; i<n.size(); ++i) {
@@ -229,13 +236,13 @@ namespace mars {
         }
 
         if(it->second.isAtom()) {
-          updateConfigAtomI(name + "/" + n, it->second);
+          updateConfigAtomI(name+"/"+n, it->second);
         }
         else if(it->second.isVector()) {
-          updateConfigVectorI(name + "/" + n, it->second);
+          updateConfigVectorI(name+"/"+n, it->second);
         }
         else if(it->second.isMap()) {
-          updateConfigMapI(name + "/" + n, it->second);
+          updateConfigMapI(name+"/"+n, it->second);
         }
       }
     }
