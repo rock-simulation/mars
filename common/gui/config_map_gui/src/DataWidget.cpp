@@ -349,8 +349,8 @@ namespace mars {
           else if(type == ConfigAtom::BOOL_TYPE) {
             it->second->setBool(value.toBool());
           }
+	  emit valueChanged(nameMap[(QtVariantProperty*)property], it->second->toString());
         }
-        emit valueChanged(nameMap[(QtVariantProperty*)property], it->second->toString());
       }
       {
         map<QtVariantProperty*, ConfigMap*>::iterator it;
