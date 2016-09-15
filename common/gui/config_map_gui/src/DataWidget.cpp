@@ -263,13 +263,13 @@ namespace mars {
     void DataWidget::updateConfigAtomI(const std::string &name,
                                        ConfigAtom &v) {
 
-      QtVariantProperty *guiElem;
-      std::map<QString, QVariant> attr;
-      attr["singleStep"] = 0.01;
-      attr["decimals"] = 7;
-      ConfigAtom atom = v;
-      ConfigAtom::ItemType type = atom.getType();
       if(propMap.find(name) != propMap.end()) {
+	QtVariantProperty *guiElem;
+	std::map<QString, QVariant> attr;
+	attr["singleStep"] = 0.01;
+	attr["decimals"] = 7;
+	ConfigAtom atom = v;
+	ConfigAtom::ItemType type = atom.getType();
         guiElem = propMap[name];
         *(dataMap[guiElem]) = v;
         if(type == ConfigAtom::UNDEFINED_TYPE) {
@@ -293,6 +293,15 @@ namespace mars {
         else if(type == ConfigAtom::BOOL_TYPE) {
           guiElem->setValue(QVariant(atom.getBool()));
         }
+      }
+      else { // add the element
+	std::vector<std::string> arrPath = utils::explodeString('/', name);
+	ConfigItem *item = config[arrPath[1]];
+	for(size_t i=2; i<arrPath.size(); ++i) {
+	  item = &((*item)[arrPath[i]]);
+	}
+	*item = v;
+	addConfigAtom(name, *item);
       }
     }
 
