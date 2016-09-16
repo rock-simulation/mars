@@ -146,6 +146,10 @@ namespace mars {
       return jointIds.find(id)->second;
     }
 
+    const ConfigMap SimEntity::getConfig() {
+      return config;
+    }
+
     std::vector<unsigned long> SimEntity::getControllerList() {
       return controllerIds;
     }
