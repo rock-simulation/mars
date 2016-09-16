@@ -22,6 +22,7 @@
 #include "SimEntity.h"
 #include <configmaps/ConfigData.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/interfaces/sim/EntitySubscriberInterface.h>
 #include <mars/utils/MutexLocker.h>
 
 #include <iostream>
@@ -45,6 +46,7 @@ namespace mars {
       unsigned long id = 0;
       MutexLocker locker(&iMutex);
       entities[id = getNextId()] = new SimEntity(control, name);
+      notifySubscribers(entities[id]);
       return id;
     }
 
@@ -52,7 +54,20 @@ namespace mars {
       unsigned long id = 0;
       MutexLocker locker(&iMutex);
       entities[id = getNextId()] = entity;
+      notifySubscribers(entity);
       return id;
+    }
+
+    void EntityManager::notifySubscribers(SimEntity* entity) {
+      for (std::vector<interfaces::EntitySubscriberInterface*>::iterator it = subscribers.begin();
+           it != subscribers.end(); ++it) {
+             (*it)->registerEntity(entity);
+           }
+    }
+
+    const std::map<unsigned long, SimEntity*>* EntityManager::subscribeToEntityCreation(interfaces::EntitySubscriberInterface* newsub) {
+      subscribers.push_back(newsub);
+      return &entities;
     }
 
     void EntityManager::addNode(const std::string& entityName, long unsigned int nodeId,
