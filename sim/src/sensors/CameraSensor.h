@@ -140,6 +140,7 @@ namespace mars {
       unsigned int cam_id;
       utils::Mutex mutex;
       int renderCam;
+      unsigned long draw_id;
     };
 
   } // end of namespace sim
