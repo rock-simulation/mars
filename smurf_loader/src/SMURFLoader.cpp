@@ -375,6 +375,30 @@ namespace mars {
             control->sim->setGravity(gravvec);
             }
           }
+        if (map.hasKey("environment")) {
+          configmaps::ConfigMap envmap = map["environment"];
+          if (envmap.hasKey("skybox")) {
+            control->cfg->createParam("Scene","skydome_path", cfg_manager::stringParam);
+            control->cfg->createParam("Scene","skydome_enabled", cfg_manager::boolParam);
+            control->cfg->setPropertyValue("Scene", "skydome_path", "value", std::string(envmap["skybox"]["path"]));
+            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value", true);
+          }
+          if (envmap.hasKey("terrain")) {
+            control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
+            control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
+          }
+        }
+        if (map.hasKey("lights")) {
+          for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
+            LightData light;
+            int valid = light.fromConfigMap(*it, "", control->loadCenter);
+            if(!valid) {
+              fprintf(stderr, "Load: error while loading light\n");
+              return 0;
+            }
+            control->sim->addLight(light);
+          }
+        }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;
