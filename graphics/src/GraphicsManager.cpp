@@ -55,7 +55,6 @@
 #include "wrapper/OSGHudElementStruct.h"
 
 #include "GraphicsWidget.h"
-#include "GraphicsViewer.h"
 #include "HUD.h"
 
 #include "wrapper/OSGNodeStruct.h"
@@ -336,7 +335,7 @@ namespace mars {
         // reset number of frames
         framecount = 0;
 
-        viewer = new GraphicsViewer((GuiEventInterface*)this);
+        viewer = new osgViewer::CompositeViewer();
         viewer->setKeyEventSetsDone(0);
 #ifdef SINGLE_THREADED
         viewer->setThreadingModel(osgViewer::CompositeViewer::SingleThreaded);

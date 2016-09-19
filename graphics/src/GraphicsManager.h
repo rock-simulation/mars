@@ -38,6 +38,7 @@
 #include <osgGA/StateSetManipulator>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
+#include <osgViewer/CompositeViewer>
 #include <osg/CullFace>
 
 #include <osgShadow/ShadowedScene>
@@ -79,7 +80,6 @@ namespace mars {
   namespace graphics {
 
     class GraphicsWidget;
-    class GraphicsViewer;
     class DrawObject;
     class OSGNodeStruct;
     class OSGHudElementStruct;
@@ -242,8 +242,6 @@ namespace mars {
       virtual void setActiveWindow(unsigned long win_id);
       GraphicsWidget* getGraphicsWindow(unsigned long id) const;
 
-      GraphicsViewer* getGraphicsViewer(void) const {return viewer;}
-
       // HUD Interface:
       virtual unsigned long addHUDElement(interfaces::hudElementStruct *new_hud_element);
       void removeHUDElement(unsigned long id);
@@ -325,7 +323,7 @@ namespace mars {
       unsigned long next_window_id;
       unsigned long nextPreviewID;
 
-      GraphicsViewer *viewer;
+      osg::ref_ptr<osgViewer::CompositeViewer> viewer;
 
       // includes osg::lights, osg::lightsource, lightstruct and flag to check if full
       std::vector<lightmanager> myLights;

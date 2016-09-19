@@ -66,7 +66,7 @@ add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #cflags without -I
 set(HEADERS
            src/GraphicsCamera.h
            src/GraphicsManager.h
-           src/GraphicsViewer.h
+           #src/GraphicsViewer.h
            src/GraphicsWidget.h
            src/gui_helper_functions.h
            src/HUD.h
@@ -120,7 +120,7 @@ set(QT_MOC_HEADERS
 set(SOURCES 
            src/GraphicsCamera.cpp
            src/GraphicsManager.cpp
-           src/GraphicsViewer.cpp
+           #src/GraphicsViewer.cpp
            src/GraphicsWidget.cpp
            src/gui_helper_functions.cpp
            src/HUD.cpp
