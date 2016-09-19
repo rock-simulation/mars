@@ -31,6 +31,8 @@
 #include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/interfaces/GraphicData.h>
 #include <mars/sim/SimEntity.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
@@ -387,6 +389,24 @@ namespace mars {
             control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
             control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
           }
+          interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
+          if (envmap.hasKey("background")) {
+            Color bgcol;
+            bgcol.fromConfigItem(envmap["background"]);
+            goptions.clearColor = bgcol;
+          }
+          if (envmap.hasKey("fog")) {
+              goptions.fogEnabled = true;
+              goptions.fogDensity = envmap["fog"]["density"];
+              goptions.fogStart = envmap["fog"]["start"];
+              goptions.fogEnd = envmap["fog"]["end"];
+              Color fogcol;
+              fogcol.fromConfigItem(envmap["fog"]["color"]);
+              goptions.fogColor = fogcol;
+          } else {
+              goptions.fogEnabled = false;
+          }
+          control->graphics->setGraphicOptions(goptions);
         }
         if (map.hasKey("lights")) {
           for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
