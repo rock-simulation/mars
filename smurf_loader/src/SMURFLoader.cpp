@@ -376,7 +376,18 @@ namespace mars {
             gravvec.z() = physicsmap["gravity"]["z"];
             control->sim->setGravity(gravvec);
             }
+          if (physicsmap.hasKey("ode")) {
+            if (physicsmap["ode"].hasKey("cfm")) {
+              control->cfg->setPropertyValue("Simulator", "world cfm", "value", (sReal)(physicsmap["ode"]["cfm"]));
+            }
+            if (physicsmap["ode"].hasKey("erp")) {
+              control->cfg->setPropertyValue("Simulator", "world erp", "value", (sReal)(physicsmap["ode"]["erp"]));
+            }
+            if (physicsmap["ode"].hasKey("stepsize")) {
+              control->cfg->setPropertyValue("Simulator", "calc_ms", "value", (sReal)(physicsmap["ode"]["stepsize"]));
+            }
           }
+        }
         if (map.hasKey("environment")) {
           configmaps::ConfigMap envmap = map["environment"];
           if (envmap.hasKey("skybox")) {
