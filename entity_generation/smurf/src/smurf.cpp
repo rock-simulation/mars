@@ -20,9 +20,6 @@
 
 #include "smurf.h"
 
-#include <QtXml>
-#include <QDomNodeList>
-
 #include <mars/data_broker/DataBrokerInterface.h>
 
 #include <mars/interfaces/sim/EntityManagerInterface.h>
@@ -909,24 +906,11 @@ namespace mars {
     }
 
     unsigned int SMURF::parseURDF(std::string filename) {
-      QString xmlErrorMsg = "";
-
-      //creating a handle for the xmlfile
-      QFile file(filename.c_str());
-
-      QLocale::setDefault(QLocale::C);
-
-      LOG_INFO("SMURF: smurfing scene: %s", filename.c_str());
-
-      //test to open the xmlfile
-      if (!file.open(QIODevice::ReadOnly)) {
-        std::cout << "Error while opening scene file content " << filename
-            << " in SMURF.cpp->parseScene" << std::endl;
-        std::cout << "Make sure your scenefile name corresponds to"
-            << " the name given to the enclosed .scene file" << std::endl;
+      if(!utils::pathExists(filename)) {
+        fprintf(stderr, "ERROR: SMURF:parseURDF no such file: %s\n",
+                filename.c_str());
         return 0;
       }
-
       model = urdf::parseURDFFile(filename);
       if (!model) {
         return 0;
