@@ -7,8 +7,8 @@ include(FindPkgConfig)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(mars)
-mars_defaults()
+find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 pkg_check_modules(PKGCONFIG REQUIRED
