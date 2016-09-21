@@ -93,6 +93,9 @@ namespace osg_material_manager {
     unitMap["envMapG"] = 6;
     unitMap["envMapB"] = 8;
     unitMap["envMapD"] = 9;
+    unitMap["normalMapR"] = 10;
+    unitMap["normalMapG"] = 11;
+    unitMap["normalMapB"] = 12;
     unitMap["terrainMap"] = 3;
     t = 0;
   }
@@ -600,14 +603,20 @@ namespace osg_material_manager {
               "texture2D(environmentMap, texCoord)" }, 2);
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "globalDiffuse",
               "texture2D(envMapD, texCoord)" }, 1);
-        fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_",
-              "texture2D( normalMap, texCoord*envMapScale.r )" }, 3);
+        //fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_",
+        //      "texture2D( normalMap, texCoord*envMapScale.r )" }, 3);
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "rcol",
               "texture2D(envMapR, texCoord.xy*envMapScale.r)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "gcol",
               "texture2D(envMapG, texCoord.xy*envMapScale.g)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "bcol",
               "texture2D(envMapB, texCoord.xy*envMapScale.b)" });
+        fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_r",
+              "texture2D(normalMapR, texCoord*envMapScale.r )" }, 3);
+        fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_g",
+              "texture2D(normalMapG, texCoord*envMapScale.g )" }, 3);
+        fragmentShader->addMainVar( (GLSLVariable) { "vec4", "nt_b",
+              "texture2D(normalMapB, texCoord*envMapScale.b )" }, 3);
         //fragmentShader->addMainVar( (GLSLVariable) { "vec4", "pcol",
         //      "vec4(scale.r*rcol.r,scale.r*rcol.g,scale.r*rcol.b, 1.0)" });
         fragmentShader->addMainVar( (GLSLVariable) { "vec4", "pcol",
