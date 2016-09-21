@@ -126,7 +126,7 @@ namespace mars {
 
     void DataWidget::addConfigVector(const std::string &name,
                                      ConfigVector &v) {
-      for(size_t i=0; i<v.size(); ++i) {
+      for(unsigned long i=0; i<(unsigned long)v.size(); ++i) {
         char iText[64];
         iText[0] = '\0';
         sprintf(iText, "/%d", (int)i);
@@ -250,7 +250,7 @@ namespace mars {
     void DataWidget::updateConfigVectorI(const std::string &name,
                                          ConfigVector &v) {
 
-      for(size_t i=0; i<v.size(); ++i) {
+      for(unsigned long i=0; i<(unsigned long)v.size(); ++i) {
         char iText[64];
         iText[0] = '\0';
         sprintf(iText, "/%d", (int)i);
@@ -298,7 +298,7 @@ namespace mars {
 	std::vector<std::string> arrPath = utils::explodeString('/', name);
 	ConfigItem *item = config[arrPath[1]];
 	for(size_t i=2; i<arrPath.size(); ++i) {
-	  item = &((*item)[arrPath[i]]);
+	  item = ((*item)[arrPath[i]]);
 	}
 	*item = v;
 	addConfigAtom(name, *item);
