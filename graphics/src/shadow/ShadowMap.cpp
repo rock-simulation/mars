@@ -59,6 +59,16 @@ namespace mars {
       createUniforms();
     }
 
+    ShadowMap::ShadowMap(const ShadowMap& copy, const osg::CopyOp& copyop) :
+      ShadowTechnique(copy, copyop) { 
+      shadowTextureUnit = 2;
+      centerObject = copy.centerObject;
+      radius = 1.0;
+      shadowTextureSize = 2048;
+      // create own uniforms
+      createUniforms();
+    }
+
     void ShadowMap::setLight(osg::Light *l) {
       light = l;
     }
@@ -408,6 +418,22 @@ namespace mars {
 
       // reapply the original traversal mask
       cv.setTraversalMask( traversalMask );
+    }
+
+    void ShadowMap::resizeGLObjectBuffers(unsigned int maxSize) {
+      osg::resizeGLObjectBuffers(camera, maxSize);
+      osg::resizeGLObjectBuffers(texgen, maxSize);
+      osg::resizeGLObjectBuffers(texture, maxSize);
+      osg::resizeGLObjectBuffers(stateset, maxSize);
+      osg::resizeGLObjectBuffers(ls, maxSize);
+    }
+
+    void ShadowMap::releaseGLObjects(osg::State* state) const {
+      osg::releaseGLObjects(camera, state);
+      osg::releaseGLObjects(texgen, state);
+      osg::releaseGLObjects(texture, state);
+      osg::releaseGLObjects(stateset, state);
+      osg::releaseGLObjects(ls, state);
     }
 
   } // end of namespace graphics

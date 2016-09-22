@@ -38,6 +38,14 @@
 namespace mars {
   namespace sim {
 
+#ifdef _WIN32
+    using namespace std;
+#endif
+
+// the default check is not working on windows
+#if __cplusplus <= 199711L
+    using namespace std;
+#endif
     using std::string;
     using namespace utils;
     using namespace interfaces;
