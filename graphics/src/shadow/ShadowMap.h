@@ -32,8 +32,7 @@
 #include <osg/Camera>
 #include <osg/Material>
 #include <osg/MatrixTransform>
-#include <osg/LightSource>
-
+#include <osg/Object>
 #include <osgShadow/ShadowTechnique>
 
 #include "DrawObject.h"
@@ -45,7 +44,11 @@ namespace mars {
 
     public:
       ShadowMap(void);
+      ShadowMap(const ShadowMap& copy,
+		const osg::CopyOp& copyop=osg::CopyOp::SHALLOW_COPY);
       virtual ~ShadowMap(void) {}
+
+      META_Object(mars_graphics, ShadowMap);
 
       void setLight(osg::Light* light);
       void setLight(osg::LightSource* ls);
@@ -77,6 +80,9 @@ namespace mars {
       float getTexScale() {
         return texscale;
       }
+
+      virtual void resizeGLObjectBuffers(unsigned int maxSize);
+      virtual void releaseGLObjects(osg::State* = 0) const;
 
     protected:
       virtual void createUniforms();
