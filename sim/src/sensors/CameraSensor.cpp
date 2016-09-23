@@ -226,7 +226,8 @@ namespace mars {
       mutex.lock();
       if(gc) {
         Vector p = control->graphics->getDrawObjectPosition(draw_id);
-        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id);
+        Quaternion qcorrect = Quaternion(0.5, 0.5, -0.5, -0.5);
+        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * qcorrect;
         gc->updateViewportQuat(p.x(), p.y(), p.z(),
                                q.x(), q.y(),
                                q.z(), q.w());
