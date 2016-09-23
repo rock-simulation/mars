@@ -38,6 +38,8 @@
 namespace mars {
   namespace sim {
 
+    using std::isinf;
+    using std::isnan;
     using std::string;
     using namespace utils;
     using namespace interfaces;
