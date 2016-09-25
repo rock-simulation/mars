@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -47,10 +47,13 @@ namespace mars {
 
       ~BaseWidget();
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
+      void setHiddenCloseState(bool v);
+      bool getHiddenCloseState();
 
     protected:
       cfg_manager::CFGManagerInterface *cfg;
       bool setWindowProp;
+      bool hiddenState;
 
       void changeEvent(QEvent *ev);
       void cfgWindow(void);
@@ -59,8 +62,10 @@ namespace mars {
     private:
       cfg_manager::cfgPropertyStruct wTop, wLeft;
       cfg_manager::cfgPropertyStruct wHeight, wWidth;
+      cfg_manager::cfgPropertyStruct hidden;
       std::string widgetName;
 
+      void closeEvent(QCloseEvent *event);
     }; // end class BaseWidget
 
   } // end namespace main_gui

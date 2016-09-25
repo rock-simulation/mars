@@ -45,7 +45,7 @@ namespace mars {
       GuiInterface(theManager) {
       allow_toolbar = true;
 
-      mainWindow = new MyQMainWindow();
+      mainWindow = new MyQMainWindow(NULL, theManager);
       mainWindow->setUnifiedTitleAndToolBarOnMac(true);
       mainWindow->setWindowTitle(tr("MARS"));
 
@@ -66,7 +66,7 @@ namespace mars {
 
 
     MainGUI::~MainGUI(void) {
-      fprintf(stderr, "Delete main_gui\n");
+      delete mainWindow;
     }
 
     void MainGUI::show(void) {

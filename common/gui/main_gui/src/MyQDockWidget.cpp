@@ -34,7 +34,7 @@ namespace mars {
       this->adjustSize();
       this->setFeatures(QDockWidget::AllDockWidgetFeatures);
       this->setAllowedAreas(Qt::AllDockWidgetAreas);
-      ((MyQMainWindow*)parentWidget())->addDockWidget(area, this);
+      ((MyQMainWindow*)parent)->addDockWidget(area, this);
       //  this->setObjectName(child->objectName());
     }
 
@@ -61,6 +61,7 @@ namespace mars {
     void MyQDockWidget::hideEvent(QHideEvent *event) {
       // used when docking; otherwise undesirable effects present
       // when the dock widgets are manually (un)docked
+      return;
       if(priority &&
          ((MyQMainWindow*)parentWidget())->hideChild) {
         widget()->hide();

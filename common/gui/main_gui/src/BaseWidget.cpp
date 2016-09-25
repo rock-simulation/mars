@@ -33,15 +33,20 @@ namespace mars {
       QWidget(parent), cfg(_cfg), setWindowProp(false), widgetName(_widgetName) {
     
       if(cfg) cfgWindow();
+      fprintf(stderr, "set window title: %s\n", widgetName.c_str());
+      fflush(stderr);
       setWindowTitle(QString::fromStdString(_widgetName));
     }
   
     BaseWidget::~BaseWidget() {
+      fprintf(stderr, "delete: %s\n", widgetName.c_str());
+      fflush(stderr);
       if(cfg) {
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
         cfg->unregisterFromParam(wWidth.paramId, this);
         cfg->unregisterFromParam(wHeight.paramId, this);
+	cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
       }
     }
 
@@ -119,24 +124,50 @@ namespace mars {
       wTop = cfg->getOrCreateProperty(group, pName.c_str(), (int)40, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Left");
+      pName.append("/left");
       wLeft = cfg->getOrCreateProperty(group, pName.c_str(), (int)40, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Width");
+      pName.append("/width");
       wWidth = cfg->getOrCreateProperty(group, pName.c_str(),
                                         (int)400, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Height");
+      pName.append("/height");
       wHeight = cfg->getOrCreateProperty(group, pName.c_str(),
                                          (int)400, cfgClient);
+
+      pName = widgetName;
+      pName.append("/hidden");
+      hidden = cfg->getOrCreateProperty(group, pName.c_str(),
+                                        (bool)true);
+      hiddenState = hidden.bValue;
 
       setGeometry(wLeft.iValue, wTop.iValue, wWidth.iValue, wHeight.iValue);
     }
 
     void BaseWidget::applyGeometry() {
       setGeometry(wLeft.iValue, wTop.iValue, wWidth.iValue, wHeight.iValue);    
+    }
+
+    void BaseWidget::setHiddenCloseState(bool v) {
+      hiddenState = v;
+    }
+
+    bool BaseWidget::getHiddenCloseState() {
+      return hiddenState;
+    }
+
+    void BaseWidget::closeEvent(QCloseEvent *event) {
+      fprintf(stderr, "delete: %s\n", widgetName.c_str());
+      fflush(stderr);
+      if(cfg) {
+        cfg->unregisterFromParam(wTop.paramId, this);
+        cfg->unregisterFromParam(wLeft.paramId, this);
+        cfg->unregisterFromParam(wWidth.paramId, this);
+        cfg->unregisterFromParam(wHeight.paramId, this);
+	cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
+      }
     }
 
   } // end namespace main_gui
