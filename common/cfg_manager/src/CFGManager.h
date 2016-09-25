@@ -171,6 +171,18 @@ namespace mars {
                                                           const char *val,
                                                           CFGClient *newClient = NULL);
 
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, bool val);
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, double val);
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, int val);
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name,
+			       const std::string &val);
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, const char *val);
+
     private:
       cfgParamId nextId;
       mutable mars::utils::Mutex mutexNextId;

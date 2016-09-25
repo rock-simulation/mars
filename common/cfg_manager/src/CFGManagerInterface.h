@@ -166,6 +166,18 @@ namespace mars {
                                                           const char *val,
                                                           CFGClient *newClient = 0) = 0;
 
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, bool val) = 0;
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, double val) = 0;
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, int val) = 0;
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name,
+			       const std::string &val) = 0;
+      virtual void setProperty(const std::string &_group,
+			       const std::string &_name, const char *val) = 0;
+
     }; // end class CFGManagerInterface
 
   } // end namespace cfg_manager
