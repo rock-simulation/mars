@@ -17,7 +17,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
-add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
+add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
 set(SOURCES 
     src/Color.cpp
