@@ -4,7 +4,6 @@
     </description>
     <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
 
-    <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/mars/scene_loader" />
     <!--<depend package="simulation/mars/urdf_loader" />-->
     <depend package="simulation/mars/graphics"  optional="1" />
