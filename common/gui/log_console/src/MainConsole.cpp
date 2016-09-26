@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012 DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016 DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file Console.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief "Console" is a template for the widget interface of the MARS GUI
  **/
 
@@ -91,10 +91,9 @@ namespace mars {
         consoleWidget->setMinimumSize(300, 200);
         connect(consoleWidget, SIGNAL(messageTypeChanged(int, bool)),
                 this, SLOT(onMessageTypeChanged(int, bool)));
-	gui->addDockWidget((void*)consoleWidget, 1);
-	if(consoleWidget->getHiddenCloseState()){
-          consoleWidget->hide();
-	}
+        if(!consoleWidget->getHiddenCloseState()){
+          gui->addDockWidget((void*)consoleWidget, 1);
+        }
         startTimer(20);
       
         //if(cfg) setupCFG();
@@ -103,9 +102,9 @@ namespace mars {
 
     MainConsole::~MainConsole() {
       consoleWidget = NULL;
-      libManager->releaseLibrary("data_broker");
-      libManager->releaseLibrary("main_gui");
-      libManager->releaseLibrary("cfg_manager");
+      if(dataBroker) libManager->releaseLibrary("data_broker");
+      if(gui) libManager->releaseLibrary("main_gui");
+      if(cfg) libManager->releaseLibrary("cfg_manager");
     }
 
     void MainConsole::menuAction(int action, bool checked) {
@@ -115,10 +114,10 @@ namespace mars {
       switch(action) {
       case 1:
         if(consoleWidget->isHidden()) {
-          consoleWidget->show();
+          gui->addDockWidget((void*)consoleWidget, 1);
         }
         else {
-          consoleWidget->hide();
+          gui->removeDockWidget((void*)consoleWidget, 1);
         }
         break;
       }
