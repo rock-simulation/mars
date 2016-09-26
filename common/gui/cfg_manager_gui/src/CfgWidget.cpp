@@ -34,7 +34,7 @@ namespace mars {
     using namespace std;
 
     CfgWidget::CfgWidget(MainCfgGui *m, CFGManagerInterface *_cfg,
-			 QWidget *parent) :
+                         QWidget *parent) :
       BaseWidget(parent, _cfg, "cfg"),
       mainCfgGui(m),
       pDialog(new main_gui::PropertyDialog(NULL)),
@@ -173,9 +173,9 @@ namespace mars {
       removeMutex.lock();
       ignore_change = true;
       while (removeList.size() > 0) {
-	theWrapper_p = getWrapperById(removeList[0]);
-	pDialog->removeGenericProperty(theWrapper_p->guiElem);
-	removeList.erase(removeList.begin());
+        theWrapper_p = getWrapperById(removeList[0]);
+        pDialog->removeGenericProperty(theWrapper_p->guiElem);
+        removeList.erase(removeList.begin());
       }
       ignore_change = false;
       removeMutex.unlock();

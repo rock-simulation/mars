@@ -40,7 +40,7 @@ namespace mars {
 
       Q_OBJECT
 
-      public:
+    public:
 
       BaseWidget(QWidget *parent, cfg_manager::CFGManagerInterface *_cfg,
                  std::string _widgetName);
@@ -49,6 +49,9 @@ namespace mars {
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
       void setHiddenCloseState(bool v);
       bool getHiddenCloseState();
+      void show();
+      void hide();
+      bool isHidden();
 
     protected:
       cfg_manager::CFGManagerInterface *cfg;

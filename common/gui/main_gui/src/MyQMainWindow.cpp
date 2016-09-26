@@ -77,6 +77,19 @@ namespace mars {
       stateNamesProp = cfg->getOrCreateProperty("Windows", "Docks",
                                                 std::string("."));
       dockView = dockStyle.bValue;
+
+      // parse arguments
+      char label[55];
+      int i=0;
+      std::string arg;
+      sprintf(label, "arg%d", i++);
+      while (cfg->getPropertyValue("Config", label, "value", &arg)) {
+        if(arg.find("dock") != std::string::npos) {
+          dockView = true;
+        }
+        sprintf(label, "arg%d", i++);
+      };
+
       this->setGeometry(cfgW_left.iValue, cfgW_top.iValue, cfgW_width.iValue,
                         cfgW_height.iValue);
       std::vector<std::string> dockNames;
@@ -162,6 +175,7 @@ namespace mars {
       configPath = cfg->getOrCreateProperty("Config", "config_path", ".");
       std::string saveFile = configPath.sValue;
       saveFile.append("/configWindows.yml");
+      fprintf(stderr, "wirte config widnows\n");
       cfg->writeConfig(saveFile.c_str(), "Windows");
       libManager->releaseLibrary("cfg_manager");
     }
@@ -201,7 +215,6 @@ namespace mars {
           handleState(temp, true, false); // save area
           handleState(temp, false, true); // restore geometry
           stSubWindows.push_back(temp);
-          temp->setParent(0);
           temp->setVisible((*dockit)->isVisible());
           removeDockWidget(*dockit);
         }
@@ -211,7 +224,6 @@ namespace mars {
           handleState(temp, true, false); // save area
           handleState(temp, false, true); // restore geometry
           dySubWindows.push_back(temp);
-          temp->setParent(0);
           temp->show();
           removeDockWidget(*dockit);
         }
@@ -301,6 +313,7 @@ namespace mars {
         if(priority) {
           for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end(); dockit++) {
             if ((*dockit)->widget() == window) {
+              (*dockit)->show();
               return;
             }
           }
@@ -365,7 +378,6 @@ namespace mars {
         if(priority) {
           for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end(); dockit++) {
             if((*dockit)->widget() == window) {
-              (*dockit)->widget()->hide();
               (*dockit)->hide();
               break;
             }
@@ -405,37 +417,26 @@ namespace mars {
       timerAllowed = false;
       (void)event;
       closing = true;
-      fprintf(stderr, "close event\n");
+      //fprintf(stderr, "close event\n");
       for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end();
           dockit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
         if(base) {
           base->setHiddenCloseState(base->isHidden());
-          fprintf(stderr, "trigger window close: %s %d\n", base->windowTitle().toStdString().c_str(), base->isHidden());
-          fflush(stderr);
         }
-        //removeDockWidget(*dockit);
-        (*dockit)->widget()->close();
-        //(*dockit)->setParent(NULL);
-        (*dockit)->setWidget(NULL);
-        //(*dockit)->widget()->close();
+        (*dockit)->close();
       }
       for(dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
         if(base) {
           base->setHiddenCloseState(base->isHidden());
-          fprintf(stderr, "trigger window close2: %s\n", base->windowTitle().toStdString().c_str());
-          fflush(stderr);
         }
-        //(*dockit)->widget()->close();
-        //(*dockit)->close();
+        (*dockit)->close();
       }
       for(subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
         if(base) {
           base->setHiddenCloseState(base->isHidden());
-          fprintf(stderr, "trigger window close3: %s\n", base->windowTitle().toStdString().c_str());
-          fflush(stderr);
         }
         (*subit)->close();
       }
@@ -443,15 +444,11 @@ namespace mars {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
         if(base) {
           base->setHiddenCloseState(base->isHidden());
-          fprintf(stderr, "trigger window close4: %s\n", base->windowTitle().toStdString().c_str());
-          fflush(stderr);
         }
         (*subit)->close();
       }
       if(myCentralWidget) {
-          QMainWindow::setCentralWidget(0);
-
-        //myCentralWidget->close();
+        myCentralWidget->close();
       }
     }
 

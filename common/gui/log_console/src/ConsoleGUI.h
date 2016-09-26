@@ -50,13 +50,13 @@ namespace mars {
       ~ConsoleGUI();
     
       void setTextColor(const QColor &color) {
-        myTextEdit.setTextColor(color);
+        myTextEdit->setTextColor(color);
       }
 
       void setMaxLines(int maxLines);
     public slots:
       void append(const QString &text) {
-        myTextEdit.append(text);
+        myTextEdit->append(text);
       }
       void onCheckBoxToggled(int state);
 
@@ -67,11 +67,9 @@ namespace mars {
       void messageTypeChanged(int, bool);
 
     private:
-      QCheckBox buttons[5];
-      QTextEdit myTextEdit;
-      QTextDocument myText;
-      QHBoxLayout buttonLayout;
-      QVBoxLayout mainLayout;
+      QCheckBox *buttons[5];
+      QTextEdit *myTextEdit;
+      QTextDocument *myText;
       int maxLines;
 
     }; // end of class ConsoleGUI

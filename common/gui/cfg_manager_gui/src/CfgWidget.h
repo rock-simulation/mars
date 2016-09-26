@@ -58,7 +58,7 @@ namespace mars {
 
       public:
       CfgWidget(MainCfgGui *mainCfgGui,
-		cfg_manager::CFGManagerInterface *_cfg, QWidget *parent = 0);
+                cfg_manager::CFGManagerInterface *_cfg, QWidget *parent = 0);
       ~CfgWidget();
 
       void addParam(const cfg_manager::cfgParamInfo &newParam);

@@ -24,6 +24,7 @@
  */
 
 #include "BaseWidget.h"
+#include <QEvent>
 
 namespace mars {
   namespace main_gui {
@@ -33,20 +34,18 @@ namespace mars {
       QWidget(parent), cfg(_cfg), setWindowProp(false), widgetName(_widgetName) {
     
       if(cfg) cfgWindow();
-      fprintf(stderr, "set window title: %s\n", widgetName.c_str());
-      fflush(stderr);
       setWindowTitle(QString::fromStdString(_widgetName));
     }
   
     BaseWidget::~BaseWidget() {
-      fprintf(stderr, "delete: %s\n", widgetName.c_str());
-      fflush(stderr);
       if(cfg) {
+        fprintf(stderr, "delete: %s %d\n", widgetName.c_str(), hiddenState);
+        fflush(stderr);
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
         cfg->unregisterFromParam(wWidth.paramId, this);
         cfg->unregisterFromParam(wHeight.paramId, this);
-	cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
+        cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
       }
     }
 
@@ -83,9 +82,36 @@ namespace mars {
       }
     }
 
+    void BaseWidget::show() {
+      if(parentWidget()) {
+        parentWidget()->show();
+      }
+      else {
+        QWidget::show();
+      }
+    }
+
+    void BaseWidget::hide() {
+      if(parentWidget()) {
+        parentWidget()->hide();
+      }
+      else {
+        QWidget::hide();
+      }
+    }
+
+    bool BaseWidget::isHidden() {
+      if(parentWidget()) {
+        return parentWidget()->isHidden();
+      }
+      else {
+        return QWidget::isHidden();
+      }
+    }
+
     void BaseWidget::changeEvent(QEvent *ev) {
       QWidget::changeEvent(ev);
-    
+
       if(setWindowProp) return;
 
       int top = geometry().y();
@@ -159,14 +185,12 @@ namespace mars {
     }
 
     void BaseWidget::closeEvent(QCloseEvent *event) {
-      fprintf(stderr, "delete: %s\n", widgetName.c_str());
-      fflush(stderr);
       if(cfg) {
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
         cfg->unregisterFromParam(wWidth.paramId, this);
         cfg->unregisterFromParam(wHeight.paramId, this);
-	cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
+        cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);        
       }
     }
 

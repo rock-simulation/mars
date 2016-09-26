@@ -76,7 +76,6 @@ namespace mars {
 
     private:
       void closeEvent(QCloseEvent *event);
-      void hideEvent(QHideEvent *event);
 
     }; // end class MyQDockWidget
 

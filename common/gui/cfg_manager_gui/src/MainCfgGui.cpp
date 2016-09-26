@@ -78,9 +78,8 @@ namespace mars {
       for (unsigned int i = 0; i < allParams.size(); i++)
         cfgParamCreated(allParams[i].id);
 
-      gui->addDockWidget((void*)cfgWidget, 1);
-      if(cfgWidget->getHiddenCloseState()) {
-        cfgWidget->hide();
+      if(!cfgWidget->getHiddenCloseState()) {
+        gui->addDockWidget((void*)cfgWidget, 1);
       }
     }
 
@@ -110,10 +109,10 @@ namespace mars {
       switch(action) {
       case 1:
         if(cfgWidget->isHidden()) {
-          cfgWidget->show();
+          gui->addDockWidget((void*)cfgWidget, 1);
         }
         else {
-          cfgWidget->hide();
+          gui->removeDockWidget((void*)cfgWidget, 1);
         }
         break;
       }
