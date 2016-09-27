@@ -39,8 +39,8 @@ namespace mars {
   
     BaseWidget::~BaseWidget() {
       if(cfg) {
-        fprintf(stderr, "delete: %s %d\n", widgetName.c_str(), hiddenState);
-        fflush(stderr);
+        //fprintf(stderr, "delete: %s %d\n", widgetName.c_str(), hiddenState);
+        //fflush(stderr);
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
         cfg->unregisterFromParam(wWidth.paramId, this);
