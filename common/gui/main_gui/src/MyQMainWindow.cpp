@@ -45,7 +45,6 @@ namespace mars {
       dockGeometry = mWin.rect;
       timerAllowed = true;
       startTimer(500);
-      fprintf(stderr, "check cfg_manager\n");
       if(!cfg) return;
       cfgPropertyStruct configPath;
       cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
@@ -53,7 +52,6 @@ namespace mars {
       cfgPropertyStruct stateNamesProp, dockArea, dockFloat,
         dockLeft, dockTop, dockWidth, dockHeight;
 
-      fprintf(stderr, "load windows info cfg_manager\n");
       configPath = cfg->getOrCreateProperty("Config", "config_path", ".");
       std::string loadFile = configPath.sValue;
       loadFile.append("/configWindows.yml");
@@ -175,7 +173,6 @@ namespace mars {
       configPath = cfg->getOrCreateProperty("Config", "config_path", ".");
       std::string saveFile = configPath.sValue;
       saveFile.append("/configWindows.yml");
-      fprintf(stderr, "wirte config widnows\n");
       cfg->writeConfig(saveFile.c_str(), "Windows");
       libManager->releaseLibrary("cfg_manager");
     }

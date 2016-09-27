@@ -397,7 +397,7 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::setUseShader(bool val) {
-    fprintf(stderr, "use shader: %d %d\n", useShader, val);
+    //fprintf(stderr, "use shader: %d %d\n", useShader, val);
     if(useShader != val) {
       useShader = val;
       updateShader(true);
