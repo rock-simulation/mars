@@ -49,7 +49,7 @@ namespace osg_material_manager {
   }
 
   MaterialNode::~MaterialNode() {
-    if(material!=NULL) material->removeMaterialNode(this);
+    if(material.valid()) material->removeMaterialNode(this);
   }
 
   void MaterialNode::setMaterial(OsgMaterial *m) {

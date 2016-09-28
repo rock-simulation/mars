@@ -59,7 +59,7 @@ namespace mars {
           myWidget = NULL;
         }
         myWidget = new CaptureGUI(control);
-        mainGui->addDockWidget((void*)myWidget->pDialog);
+        //mainGui->addDockWidget((void*)myWidget->pDialog);
         myWidget->show();
         std::vector<CaptureConfig*>::iterator iter;
         myMutex.lock();
@@ -74,7 +74,7 @@ namespace mars {
 
     void CaptureWindow::closeWidget(void) {
       if(myWidget) {
-        mainGui->removeDockWidget((void*)myWidget->pDialog);
+        //mainGui->removeDockWidget((void*)myWidget->pDialog);
         delete myWidget;
         myWidget = NULL;
       }

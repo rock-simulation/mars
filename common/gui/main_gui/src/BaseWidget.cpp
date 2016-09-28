@@ -192,6 +192,12 @@ namespace mars {
         cfg->unregisterFromParam(wHeight.paramId, this);
         cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);        
       }
+      emit closeSignal();
+    }
+
+    void BaseWidget::hideEvent(QHideEvent* event) {
+      (void)event;
+      emit hideSignal();
     }
 
   } // end namespace main_gui

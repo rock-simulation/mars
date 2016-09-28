@@ -32,6 +32,7 @@
 #endif
 
 #include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/main_gui/BaseWidget.h>
 
 #include <vector>
 
@@ -48,7 +49,7 @@ namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
-      class ConnexionWidget : public QWidget {
+      class ConnexionWidget : public main_gui::BaseWidget {
         Q_OBJECT;
 
         public:
@@ -81,8 +82,6 @@ namespace mars {
         void filterValueChanged(double val);
 
       signals:
-        void hideSignal(void);
-        void closeSignal(void);
         void windowSelected(unsigned long);
         void objectSelected(unsigned long);
         void setObjectMode(int);
@@ -115,10 +114,6 @@ namespace mars {
                          QCheckBox *&checkBox, QDoubleSpinBox *&spinBox,
                          const char *checkSlot,const char *spinSlot,
                          const QString &label, int row);
-      protected slots:
-        void hideEvent(QHideEvent* event);
-        void closeEvent(QCloseEvent* event);
-
       }; // end of class ConnexionWidget
 
     } // end of namespace connexion_plugin

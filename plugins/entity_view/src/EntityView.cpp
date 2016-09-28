@@ -99,7 +99,6 @@ namespace mars {
         if(!view) {
           view = new EntityViewMainWindow (control);
           gui->addDockWidget((void*)view, 0);
-          view->show();
         }
         else {
           gui->removeDockWidget((void*)view, 0);

@@ -76,6 +76,9 @@ namespace mars {
           gui->addGenericMenuAction("../Plugins/Connexion", 1,
                                     this, 0,
                                     tmp, true);    
+          if(!control->cfg->getOrCreateProperty("Windows", "ConnexionPlugin/hidden", true).bValue) {
+            menuAction(1, false);
+          }
         }
 
         camReset();
@@ -108,7 +111,7 @@ namespace mars {
       }
 
       ConnexionPlugin::~ConnexionPlugin(void) {
-        fprintf(stderr, "Delete ConnexionPlugin\n");
+        //fprintf(stderr, "Delete ConnexionPlugin\n");
         run_thread = false;
 
         while (!thread_closed && isInit) {
@@ -229,8 +232,7 @@ namespace mars {
         case 1:
           if (!myWidget) {
             myWidget = new ConnexionWidget(control);
-            //      control->gui->addDockWidget((void*)myWidget);
-            myWidget->show();
+            gui->addDockWidget((void*)myWidget, 0, 5);
             //myWidget->setGeometry(40, 40, 200, 200);
             connect(myWidget, SIGNAL(hideSignal()), this, SLOT(hideWidget()));
             connect(myWidget, SIGNAL(closeSignal()), this, SLOT(closeWidget()));
@@ -258,7 +260,8 @@ namespace mars {
                     this, SLOT(setSyncWithFrames(bool)));
           }
           else {
-            closeWidget();//myWidget->hide();
+            myWidget->close();
+            //closeWidget();//myWidget->hide();
           }
           break;
         }
@@ -397,16 +400,18 @@ namespace mars {
         }
       }
 
-
       void ConnexionPlugin::hideWidget(void) {
+        //fprintf(stderr, "hide event");
         //if (myWidget) myWidget->close();
       }
 
       void ConnexionPlugin::closeWidget(void) {
         if (myWidget) {
-          delete myWidget;
-          //    control->gui->removeDockWidget((void*)myWidget);
-          myWidget = NULL;
+          gui->removeDockWidget((void*)myWidget, 0);
+          if(myWidget) {
+            delete myWidget;
+            myWidget = NULL;
+          }
         }
       }
 

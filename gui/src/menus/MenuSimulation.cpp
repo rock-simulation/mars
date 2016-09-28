@@ -207,7 +207,7 @@ namespace mars {
         dn = NULL;
       }
       dn = new DialogNodes(control, mainGui);
-      mainGui->addDockWidget(dn);
+      //mainGui->addDockWidget(dn);
       dn->show();
     }
 
@@ -221,7 +221,7 @@ namespace mars {
         dj = new DialogJoints(control, mainGui, resourcesPath);
         connect(dj, SIGNAL(closeSignal(void*)),
                 this, SLOT(closeWidget(void*)));
-        mainGui->addDockWidget(dj);
+        //mainGui->addDockWidget(dj);
         dj->show();
       }
     }
@@ -237,7 +237,7 @@ namespace mars {
         dl = NULL;
       }
       dl = new DialogLights(control, mainGui);
-      mainGui->addDockWidget(dl->pDialog);
+      //mainGui->addDockWidget(dl->pDialog);
       dl->show();
     }
 
@@ -250,7 +250,7 @@ namespace mars {
         dm = NULL;
       }
       dm = new DialogMotors(control, mainGui);
-      mainGui->addDockWidget(dm->pDialog);
+      //mainGui->addDockWidget(dm->pDialog);
       dm->show();
     }
 
@@ -264,7 +264,7 @@ namespace mars {
         ds = NULL;
       }
       ds = new DialogSensors(control, mainGui);
-      mainGui->addDockWidget(ds->pDialog);
+      //mainGui->addDockWidget(ds->pDialog);
       ds->show();
     }
 
@@ -276,7 +276,7 @@ namespace mars {
         dc = NULL;
       }
       dc = new DialogControllers(control, mainGui);
-      mainGui->addDockWidget(dc->pDialog);
+      //mainGui->addDockWidget(dc->pDialog);
       dc->show();
     }
 
@@ -292,7 +292,7 @@ namespace mars {
       //create new dialog
       if (control->graphics) {
         dgo = new Dialog_Graphics_Options(control, mainGui);
-        mainGui->addDockWidget((void*)dgo->pDialog);
+        //mainGui->addDockWidget((void*)dgo->pDialog);
         dgo->show();
       } else {
         QMessageBox::information(0,
@@ -314,7 +314,7 @@ namespace mars {
       if (control->nodes->getNodeCount() > 0) {
         //create new dialog and show it
         dre = new Dialog_Rescale_Environment(control, mainGui);
-        mainGui->addDockWidget((void*)dre->pDialog);
+        //mainGui->addDockWidget((void*)dre->pDialog);
         dre->show();
       } else {
         QMessageBox::information( 0, "Simulation",
@@ -336,7 +336,7 @@ namespace mars {
         }
 
         dmc = new Dialog_Motor_Control(control);
-        mainGui->addDockWidget((void*)dmc);
+        //mainGui->addDockWidget((void*)dmc);
         connect(dmc, SIGNAL(closeSignal(void*)),
                 this, SLOT(closeWidget(void*)));
         dmc->show();
@@ -349,7 +349,7 @@ namespace mars {
       }
       else {
         djoy = new DialogJoystick(control);
-        mainGui->addDockWidget(djoy);
+        //mainGui->addDockWidget(djoy);
         connect(djoy, SIGNAL(closeSignal(void*)),
                 this, SLOT(closeWidget(void*)));
       djoy->show();
@@ -364,7 +364,7 @@ namespace mars {
       }
       else {
         dd = new DialogDistance(control);
-        mainGui->addDockWidget(dd);
+        //mainGui->addDockWidget(dd);
         connect(dd, SIGNAL(closeSignal(void*)),
                 this, SLOT(closeWidget(void*)));
         dd->show();
@@ -378,7 +378,7 @@ namespace mars {
       }
       else {
         nst = new NodeSelectionTree(control);
-        mainGui->addDockWidget(nst);
+        //mainGui->addDockWidget(nst);
         connect(nst, SIGNAL(closeSignal(void*)),
                 this, SLOT(closeWidget(void*)));
         nst->show();
@@ -397,7 +397,7 @@ namespace mars {
       if (control->nodes->getNodeCount() > 0) {
         // create new dialog
         daf = new Dialog_Add_Force(control, mainGui);
-        mainGui->addDockWidget((void*)daf->pDialog);
+        //mainGui->addDockWidget((void*)daf->pDialog);
         daf->show();
       } else {
         QMessageBox::information(0, "Simulation", "Please create a node first",
@@ -417,7 +417,7 @@ namespace mars {
       if (control->nodes->getNodeCount() > 0) {
         // create new dialog
         dat = new Dialog_Add_Torque(control, mainGui);
-        mainGui->addDockWidget((void*)dat->pDialog);
+        //mainGui->addDockWidget((void*)dat->pDialog);
         dat->show();
       } else {
         QMessageBox::information(0, "Simulation", "Please create a node first",
@@ -435,7 +435,7 @@ namespace mars {
       }
       //create dialog
       dim = new Dialog_Import_Mesh(control, mainGui);
-      mainGui->addDockWidget((void*)dim->pDialog);
+      //mainGui->addDockWidget((void*)dim->pDialog);
       dim->show();
     }
 
@@ -450,8 +450,10 @@ namespace mars {
 
       if(toClose && *toClose) {
         mainGui->removeDockWidget(*toClose);
-        delete (QObject*)*toClose;
-        *toClose = NULL;
+        if(*toClose) {
+          delete (QObject*)*toClose;
+          *toClose = NULL;
+        }
       }
 
     }

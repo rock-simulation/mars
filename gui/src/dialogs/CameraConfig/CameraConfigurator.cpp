@@ -54,12 +54,10 @@ namespace mars {
       switch(action) {
       case 1:
         if (myWidget != NULL && myWidget->pDialog) {
-          myWidget->pDialog->close();
-          delete myWidget;
-          myWidget = NULL;
+          myWidget->close();
         }
         myWidget = new CameraConfiguratorGUI(control);
-        mainGui->addDockWidget((void*)myWidget->pDialog);
+        //mainGui->addDockWidget((void*)myWidget);
         myWidget->show();
         std::vector<CameraConfig*>::iterator iter;
         myMutex.lock();
@@ -74,9 +72,11 @@ namespace mars {
 
     void CameraConfigurator::closeWidget(void) {
       if(myWidget) {
-        mainGui->removeDockWidget((void*)myWidget->pDialog);
-        delete myWidget;
-        myWidget = NULL;
+        //mainGui->removeDockWidget((void*)myWidget->pDialog);
+        if(myWidget) {
+          delete myWidget;
+          myWidget = NULL;
+        }
       }
     }
 

@@ -35,6 +35,12 @@
 #include <osg/CullFace>
 #include <osg/io_utils>
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 #include <cstdio>
 
 using namespace osgShadow;
@@ -421,19 +427,23 @@ namespace mars {
     }
 
     void ShadowMap::resizeGLObjectBuffers(unsigned int maxSize) {
+#if (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 4))
       osg::resizeGLObjectBuffers(camera, maxSize);
       osg::resizeGLObjectBuffers(texgen, maxSize);
       osg::resizeGLObjectBuffers(texture, maxSize);
       osg::resizeGLObjectBuffers(stateset, maxSize);
       osg::resizeGLObjectBuffers(ls, maxSize);
+#endif
     }
 
     void ShadowMap::releaseGLObjects(osg::State* state) const {
+#if (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 4))
       osg::releaseGLObjects(camera, state);
       osg::releaseGLObjects(texgen, state);
       osg::releaseGLObjects(texture, state);
       osg::releaseGLObjects(stateset, state);
       osg::releaseGLObjects(ls, state);
+#endif
     }
 
   } // end of namespace graphics

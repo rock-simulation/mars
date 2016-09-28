@@ -53,6 +53,10 @@ namespace mars {
       void hide();
       bool isHidden();
 
+    signals:
+      void hideSignal(void);
+      void closeSignal(void);
+
     protected:
       cfg_manager::CFGManagerInterface *cfg;
       bool setWindowProp;
@@ -61,14 +65,14 @@ namespace mars {
       void changeEvent(QEvent *ev);
       void cfgWindow(void);
       void applyGeometry();
+      void hideEvent(QHideEvent* event);
+      void closeEvent(QCloseEvent* event);
 
     private:
       cfg_manager::cfgPropertyStruct wTop, wLeft;
       cfg_manager::cfgPropertyStruct wHeight, wWidth;
       cfg_manager::cfgPropertyStruct hidden;
       std::string widgetName;
-
-      void closeEvent(QCloseEvent *event);
     }; // end class BaseWidget
 
   } // end namespace main_gui

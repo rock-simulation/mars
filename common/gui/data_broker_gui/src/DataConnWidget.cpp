@@ -162,7 +162,7 @@ namespace mars {
     }
 
     DataConnWidget::~DataConnWidget(void) {
-      fprintf(stderr, "\nDelete DataConnWidget\n");
+      //fprintf(stderr, "\nDelete DataConnWidget\n");
       dataBroker->unregisterAsyncReceiver(this, "*", "*");
       dataBroker->unregisterTimedReceiver(this, "*", "*", "_REALTIME_");
       dataBroker->unregisterSyncReceiver(this, "data_broker", "newStream");
