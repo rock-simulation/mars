@@ -412,6 +412,7 @@ namespace mars {
               BaseWidget *base = dynamic_cast<BaseWidget*>(window);
               if(base) {
                 base->setHiddenCloseState(true);
+                base->saveState();
               }
               window->close();
               dySubWindows.erase(subit);
@@ -432,6 +433,7 @@ namespace mars {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
         if(base) {
           base->setHiddenCloseState(base->isHidden());
+          base->saveState();
         }
         (*dockit)->close();
       }
@@ -439,6 +441,7 @@ namespace mars {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
         if(base) {
           base->setHiddenCloseState(base->isHidden());
+          base->saveState();
         }
         (*dockit)->close();
       }
@@ -446,6 +449,7 @@ namespace mars {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
         if(base) {
           base->setHiddenCloseState(base->isHidden());
+          base->saveState();
         }
         (*subit)->close();
       }
@@ -453,6 +457,7 @@ namespace mars {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
         if(base) {
           base->setHiddenCloseState(base->isHidden());
+          base->saveState();
         }
         (*subit)->close();
       }

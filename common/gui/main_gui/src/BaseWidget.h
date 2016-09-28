@@ -52,6 +52,7 @@ namespace mars {
       void show();
       void hide();
       bool isHidden();
+      void saveState();
 
     signals:
       void hideSignal(void);

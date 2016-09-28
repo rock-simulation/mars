@@ -185,6 +185,11 @@ namespace mars {
     }
 
     void BaseWidget::closeEvent(QCloseEvent *event) {
+      saveState();
+      emit closeSignal();
+    }
+
+    void BaseWidget::saveState() {
       if(cfg) {
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
@@ -192,7 +197,6 @@ namespace mars {
         cfg->unregisterFromParam(wHeight.paramId, this);
         cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);        
       }
-      emit closeSignal();
     }
 
     void BaseWidget::hideEvent(QHideEvent* event) {
