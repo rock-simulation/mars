@@ -73,6 +73,7 @@ namespace osg_material_manager {
 
   OsgMaterialManager::~OsgMaterialManager(void) {
     if(cfg) libManager->releaseLibrary("cfg_manager");
+    //fprintf(stderr, "Delete osg_material_manager\n");
   }
 
   osg::ref_ptr<osg::Texture2D> OsgMaterialManager::loadTexture(std::string filename) {

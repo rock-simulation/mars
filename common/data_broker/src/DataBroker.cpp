@@ -188,7 +188,7 @@ namespace mars {
       //      destroyLock(&idMutex);
       //      destroyLock(&updatedElementsLock);
       //      destroyLock(&pendingRegistrationLock);
-      fprintf(stderr, "Delete data_broker\n");
+      //fprintf(stderr, "Delete data_broker\n");
     }
 
     //void DataBroker::destroyLock(pthread_rwlock_t *rwlock) {

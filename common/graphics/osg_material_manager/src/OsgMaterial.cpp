@@ -244,7 +244,7 @@ namespace osg_material_manager {
       if(config.hasKey("unit")) {
         info.unit = config["unit"];
       }
-      fprintf(stderr, "add Texture: %s %d\n", info.name.c_str(), info.unit);
+      //xfprintf(stderr, "add Texture: %s %d\n", info.name.c_str(), info.unit);
       info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
       state->setTextureAttributeAndModes(info.unit, info.texture,
                                          osg::StateAttribute::ON);
@@ -549,7 +549,6 @@ namespace osg_material_manager {
                                   { "", "vViewPos", "gl_ModelViewMatrix * vModelPos " });
         stateSet->addUniform(terrainScaleZUniform.get());
         terrainScaleZUniform->set((float)(double)map["scaleZ"]);
-        fprintf(stderr, "set terrainScaleZ: %g\n", (double)map["scaleZ"]);
       }
       if(map["shader"].hasKey("PixelLightVertex")) {
         PixelLightVert *plightVert = new PixelLightVert(args, maxNumLights,
@@ -755,7 +754,6 @@ namespace osg_material_manager {
       CvScalar s;
       int v;
       double imageMaxValue = pow(2., img->depth);
-      fprintf(stderr, "depth: %d\n", img->depth);
       for(int x=0; x<img->width; ++x) {
         for(int y=0; y<img->width; ++y) {
           s=cvGet2D(img,y,x);

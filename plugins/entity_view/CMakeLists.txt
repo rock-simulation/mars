@@ -44,6 +44,11 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 setup_qt()
 
+target_link_libraries(${PROJECT_NAME}
+                      ${PKGCONFIG_LIBRARIES}
+                      ${QT_LIBRARIES}
+                      )
+
 if(WIN32)
   set(LIB_INSTALL_DIR bin) # .dll are in PATH, like executables
 else(WIN32)

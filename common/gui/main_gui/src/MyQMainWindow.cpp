@@ -84,6 +84,7 @@ namespace mars {
       while (cfg->getPropertyValue("Config", label, "value", &arg)) {
         if(arg.find("dock") != std::string::npos) {
           dockView = true;
+          cfg->setProperty("Windows", "Main Window/docking", dockView);
         }
         sprintf(label, "arg%d", i++);
       };
@@ -346,6 +347,7 @@ namespace mars {
           widgetState st = {window, qtarea, window->geometry()};
           widgetStates.push_back(st); // save the state
           stSubWindows.push_back(window);
+          window->show();
         } else {
           for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
             if (*subit == window) {
@@ -359,6 +361,7 @@ namespace mars {
           widgetState st = {window, qtarea, window->geometry()};
           widgetStates.push_back(st); // save the state
           dySubWindows.push_back(window);
+          window->show();
         }
       }
       restoreDockGeometry();
@@ -383,8 +386,13 @@ namespace mars {
           for(dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
             if((*dockit)->widget() == window) {
               handleState(window, true, true, true); // remove from the states
+              BaseWidget *base = dynamic_cast<BaseWidget*>(window);
+              if(base) {
+                base->setHiddenCloseState(true);
+              }
               removeDockWidget(*dockit);
               dyDockWidgets.erase(dockit);
+              window->close();
               break;
             }
           }
@@ -401,6 +409,10 @@ namespace mars {
           for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
             if(*subit == window) {
               handleState(window, true, true, true); // remove from the states
+              BaseWidget *base = dynamic_cast<BaseWidget*>(window);
+              if(base) {
+                base->setHiddenCloseState(true);
+              }
               window->close();
               dySubWindows.erase(subit);
               break;

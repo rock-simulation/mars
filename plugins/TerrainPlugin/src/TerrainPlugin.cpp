@@ -39,7 +39,8 @@ namespace mars {
       using namespace mars::interfaces;
 
       TerrainPlugin::TerrainPlugin(lib_manager::LibManager *theManager)
-        : MarsPluginTemplate(theManager, "TerrainPlugin") {
+        : MarsPluginTemplate(theManager, "TerrainPlugin"),
+          materialManager(NULL) {
       }
 
       void TerrainPlugin::init() {
@@ -56,6 +57,7 @@ namespace mars {
       }
 
       TerrainPlugin::~TerrainPlugin() {
+        if(materialManager) libManager->releaseLibrary("osg_material_manager");
       }
 
 

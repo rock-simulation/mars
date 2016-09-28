@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file MainDataGui.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief
  **/
 
@@ -77,16 +77,36 @@ namespace mars {
 
       dataWidget = NULL;//new DataWidget(dataBroker);
       dataConnWidget = NULL;
+      if(cfg) {
+        if(!cfg->getOrCreateProperty("Windows", "DataBrokerWidget/hidden",
+                                     true).bValue) {
+          menuAction(1, false);
+        }
+        if(!cfg->getOrCreateProperty("Windows",
+                                     "DataBroker_ConnectionWidget/hidden",
+                                     true).bValue) {
+          menuAction(2, false);
+        }
+      }
+
     }
 
 
     MainDataGui::~MainDataGui() {
       if(libManager == NULL) return;
 
+      if(dataWidget) {
+        gui->removeDockWidget((void*)dataWidget, 0);
+        delete dataWidget;
+      }
+      if(dataConnWidget) {
+        gui->removeDockWidget((void*)dataConnWidget, 0);
+        delete dataConnWidget;
+      }
       if(cfg) libManager->releaseLibrary("cfg_manager");
       if(gui) libManager->releaseLibrary("main_gui");
       if(dataBroker) libManager->releaseLibrary("data_broker");
-      fprintf(stderr, "Delete MainDataGui\n");
+      //fprintf(stderr, "Delete MainDataGui\n");
     }
 
 
@@ -101,7 +121,6 @@ namespace mars {
         if(dataWidget == NULL) {
           dataWidget = new DataWidget(dataBroker, cfg);
           gui->addDockWidget((void*)dataWidget, 0);
-          dataWidget->show();
         }
         else {
           gui->removeDockWidget((void*)dataWidget, 0);
@@ -113,7 +132,6 @@ namespace mars {
         if(dataConnWidget == NULL) {
           dataConnWidget = new DataConnWidget(dataBroker, cfg);
           gui->addDockWidget((void*)dataConnWidget, 0);
-          dataConnWidget->show();
         }
         else {
           gui->removeDockWidget((void*)dataConnWidget, 0);

@@ -116,7 +116,7 @@ namespace osg_material_manager {
     osg::ref_ptr<osg::Uniform> lightIsSetUniform, lightCosCutoffUniform, lightSpotExponentUniform;
 
 
-    OsgMaterial *material;
+    osg::ref_ptr<OsgMaterial> material;
     osg::ref_ptr<osg::BlendEquation> blendEquation_;
     osg::ref_ptr<osg::Uniform> brightnessUniform;
     osg::ref_ptr<osg::Uniform> transparencyUniform;

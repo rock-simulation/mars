@@ -314,8 +314,10 @@ namespace mars {
 
       if(toClose && *toClose) {
         mainGui->removeDockWidget(*toClose);
-        delete (QObject*)*toClose;
-        *toClose = NULL;
+        if(*toClose) {
+          delete (QObject*)*toClose;
+          *toClose = NULL;
+        }
       }
     }
 

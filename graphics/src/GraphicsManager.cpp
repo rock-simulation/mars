@@ -121,7 +121,7 @@ namespace mars {
         libManager->releaseLibrary("cfg_manager");
       }
       if(materialManager) libManager->releaseLibrary("osg_material_manager");
-      fprintf(stderr, "Delete mars_graphics\n");
+      //fprintf(stderr, "Delete mars_graphics\n");
     }
 
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {

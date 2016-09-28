@@ -41,7 +41,8 @@ namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
-      ConnexionWidget::ConnexionWidget(mars::interfaces::ControlCenter* c) {
+      ConnexionWidget::ConnexionWidget(mars::interfaces::ControlCenter* c)
+        : main_gui::BaseWidget(0, c->cfg, "ConnexionPlugin") {
         control = c;
 
         //setAttribute(Qt::WA_DeleteOnClose);
@@ -143,17 +144,6 @@ namespace mars {
       ConnexionWidget::~ConnexionWidget(void) {
       }
 
-
-      void ConnexionWidget::hideEvent(QHideEvent* event) {
-        (void)event;
-        emit hideSignal();
-      }
-
-      void ConnexionWidget::closeEvent(QCloseEvent* event) {
-        (void)event;
-        emit closeSignal();
-      }
-
       void ConnexionWidget::windowSelected(int index) {
         if(take_events) {
           win_id = index;
@@ -229,16 +219,18 @@ namespace mars {
           }
         }
 
-        std::vector<interfaces::core_objects_exchange> objectList;
-        std::vector<interfaces::core_objects_exchange>::iterator iter;
-        control->nodes->getListNodes(&objectList);
+        if(control->nodes) {
+          std::vector<interfaces::core_objects_exchange> objectList;
+          std::vector<interfaces::core_objects_exchange>::iterator iter;
+          control->nodes->getListNodes(&objectList);
   
-        objectIDCombo->clear();
-        objectIDs.clear();
-        for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
-          sprintf(text, "Node: %s", (*iter).name.data());
-          objectIDCombo->addItem(QString(text));        
-          objectIDs.push_back((*iter).index);
+          objectIDCombo->clear();
+          objectIDs.clear();
+          for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
+            sprintf(text, "Node: %s", (*iter).name.data());
+            objectIDCombo->addItem(QString(text));        
+            objectIDs.push_back((*iter).index);
+          }
         }
       }
 
