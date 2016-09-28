@@ -44,7 +44,7 @@ namespace mars {
     }
 
     void MyQDockWidget::closeEvent(QCloseEvent *event) {
-      widget()->close();
+      //widget()->close();
       return;
     }
 
