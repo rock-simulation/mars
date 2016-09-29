@@ -47,20 +47,17 @@
 #include <osg/Group>
 #include <osg/PositionAttitudeTransform>
 #include <osg/MatrixTransform>
-#include <osg/BlendEquation>
-#include <osg/Uniform>
 #include <osg/Geode>
-#include <osg/Texture2D>
 #include <osg/LOD>
-#include <osg/Depth>
 
+#include <mars/osg_material_manager/OsgMaterial.h>
+#include <mars/osg_material_manager/MaterialNode.h>
 
 
 namespace mars {
   namespace graphics {
 
     class GraphicsManager;
-    class MarsMaterial;
 
     class DrawObject {
     public:
@@ -78,17 +75,9 @@ namespace mars {
       void exportModel(const std::string &filename);
 
       // the material struct can also contain a static texture (texture file)
-      virtual void setMaterial(const mars::interfaces::MaterialData &mStruct,
-                               bool useFog = false, bool useNoise = false,
-                               bool drawLineLaser = false,
-                               bool marsShadow = false);
-      void setMarsMaterial(MarsMaterial *m) {marsMaterial = m;}
-      // can be used for dynamic textures
-      virtual void setBlending(bool mode);
+      virtual void setMaterial(const std::string &name);
       virtual void collideSphere(mars::utils::Vector pos,
                                  mars::interfaces::sReal radius);
-
-      void updateLights(std::vector<mars::interfaces::LightData*> &lightList);
 
       virtual void setPosition(const mars::utils::Vector &_pos);
       virtual void setQuaternion(const mars::utils::Quaternion &_q);
@@ -99,7 +88,6 @@ namespace mars {
 
       virtual void setScaledSize(const mars::utils::Vector &scaledSize);
       void setScale(const mars::utils::Vector &scale);
-      virtual void generateTangents();
 
       void removeBits(unsigned int bits);
       void setBits(unsigned int bits);
@@ -129,7 +117,6 @@ namespace mars {
       osg::ref_ptr<osg::MatrixTransform> getScaleMatrix() {
         return scaleTransform_;
       }
-      osg::ref_ptr<osg::Material> getMaterial();
 
       osg::Group* getObject(void) const {
         return group_.get();
@@ -141,16 +128,7 @@ namespace mars {
         return scaleTransform_.get();
       }
 
-      void setBrightness(float val);
-      void setUseFog(bool val);
-      void setUseNoise(bool val);
-      void setDrawLineLaser(bool val);
-      void setUseShadow(bool val);
-      void setUseMARSShader(bool val) {
-        fprintf(stderr, "DrawObject: setUserMARSShader no longer valid!\n");
-      }
-
-        /**
+      /**
        * Sets the line laser
        * @pos: position of the laser
        * @normal: normalvector of the laser-plane
@@ -167,13 +145,11 @@ namespace mars {
       void setMaxNumLights(int n) {maxNumLights = n;}
       void show();
       void hide();
-      osg::Group* getStateGroup() {return stateGroup_.get();}
+      osg_material_manager::MaterialNode* getStateGroup() {return materialNode.get();}
       void addLODGeodes(std::list< osg::ref_ptr< osg::Geode > > geodes,
                         float start, float end);
 
-      void generateTangents(osg::ref_ptr<osg::Geometry> g);
       void seperateMaterial();
-      void setTransparency(float t);
 
     protected:
       unsigned long id_;
@@ -181,49 +157,20 @@ namespace mars {
 
       std::string stateFilename_;
       bool selected_, selectable_, showSelected;
-      bool useFog, useNoise;
-      bool getLight;
-      float brightness_;
-      osg::ref_ptr<osg::Uniform> lightPosUniform, lightAmbientUniform, lightDiffuseUniform;
-      osg::ref_ptr<osg::Uniform> lightSpecularUniform, lightIsSpotUniform;
-      osg::ref_ptr<osg::Uniform> lightSpotDirUniform, lightIsDirectionalUniform;
-      osg::ref_ptr<osg::Uniform> lightConstantAttUniform, lightLinearAttUniform, lightQuadraticAttUniform;
-      osg::ref_ptr<osg::Uniform> lightIsSetUniform, lightCosCutoffUniform, lightSpotExponentUniform;
-
-      MarsMaterial* marsMaterial;
-
-      osg::ref_ptr<osg::Group> group_, mGroup_, stateGroup_;
+      osg::ref_ptr<osg_material_manager::MaterialNode> materialNode;
+      osg::ref_ptr<osg::Group> group_;
       std::list< osg::ref_ptr<osg::Geometry> > geometry_;
       osg::ref_ptr<osg::Geode> normal_geode;
       osg::ref_ptr<osg::LOD> lod;
-      MarsMaterial *material_;
       osg::ref_ptr<osg::PositionAttitudeTransform> posTransform_;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform_;
-      osg::ref_ptr<osg::BlendEquation> blendEquation_;
-      osg::ref_ptr<osg::Uniform> brightnessUniform;
-      osg::ref_ptr<osg::Uniform> transparencyUniform;
-      osg::ref_ptr<osg::Uniform> lineLaserPosUniform;
-      osg::ref_ptr<osg::Uniform> lineLaserNormalUniform;
-      osg::ref_ptr<osg::Uniform> lineLaserColor;
-      osg::ref_ptr<osg::Uniform> lineLaserDirection;
-      osg::ref_ptr<osg::Uniform> lineLaserOpeningAngle;
-      osg::ref_ptr<osg::Uniform> useFogUniform, useNoiseUniform;
-      osg::ref_ptr<osg::Uniform> useShadowUniform;
-      osg::ref_ptr<osg::Uniform> numLightsUniform;
-      osg::ref_ptr<osg::Uniform> drawLineLaserUniform;
-      osg::ref_ptr<osg::StateSet> materialState;
-      osg::ref_ptr<osg::Depth> depth;
 
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;
 
-      bool drawLineLaser;
-      bool marsShadow;
       int maxNumLights;
       bool sharedStateGroup;
-      bool tangentsGenerated;
       bool isHidden;
-      utils::Vector lineLasePos, lineLaserNormal;
       GraphicsManager *g;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;
     }; // end of class DrawObject

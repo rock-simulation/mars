@@ -38,6 +38,8 @@
 namespace mars {
   namespace sim {
 
+    using std::isinf;
+    using std::isnan;
     using std::string;
     using namespace utils;
     using namespace interfaces;
@@ -266,7 +268,7 @@ namespace mars {
       }
       return sNode.rot;
     }
-    /** 
+    /**
      * \return \c rotation of the node
      */
     const Quaternion SimNode::getRotation() const {
@@ -386,7 +388,7 @@ namespace mars {
       return sNode.material;
     }
 
-    /** 
+    /**
      * \return name of texture of of node
      */
     const std::string SimNode::getTexture() const {
@@ -637,8 +639,8 @@ namespace mars {
       targetspace = mySpace;
       }
      */
-    
-    /** 
+
+    /**
      * \return collision space of node
      */
     /*

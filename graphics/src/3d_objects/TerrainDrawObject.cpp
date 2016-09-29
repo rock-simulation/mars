@@ -30,7 +30,6 @@
 #endif
 
 #include "TerrainDrawObject.h"
-#include "MarsMaterial.h"
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
@@ -116,8 +115,8 @@ namespace mars {
 
       geom = new osg::Geometry();
       geom->setDataVariance(osg::Object::DYNAMIC);
-      geom->setUseDisplayList(false);
-      //geom->setUseVertexBufferObjects(true);
+      //geom->setUseDisplayList(false);
+      geom->setUseVertexBufferObjects(true);
       tangents = new osg::Vec4Array();
 
       height_data = new double*[info.height+1];
@@ -312,14 +311,14 @@ namespace mars {
       int l1, l2;
       int count = 0;
 
+      primitivSet = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES,
+                                                    0);
       while(y_off < info.height) {
         x_off = 0;
         while(x_off < info.width + 1) {
           y=0;
           while((y < num_y) && (y_off + y < info.height)) {
             y_i = y + y_off;
-            primitivSet = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES,
-                                                    0);
             l1 = (y_i+1)*(info.width+1)+x_off;
             l2 = y_i*(info.width+1)+x_off;
 
@@ -340,7 +339,6 @@ namespace mars {
               primitivSet->push_back(l2);
               x++;
             }
-            geom->addPrimitiveSet(primitivSet.get());
             y++;
           }
           count++;
@@ -349,6 +347,7 @@ namespace mars {
         count = 0;
         y_off += num_y;
       }
+      geom->addPrimitiveSet(primitivSet.get());
 
       geode->addDrawable(geom);
       geodes.push_back(geode);
@@ -385,7 +384,8 @@ namespace mars {
       vbt->collideSphere(pos.x(), pos.y(), pos.z(), radius);
       return;
 #endif
-
+      fprintf(stderr, "The collideSphere() function is not implemented for the default terrain visualization, set the use USE_VERTEX_BUFFER option in the mars/graphics/CMakeLists.txt to use this function.");
+      return;
       std::vector<SubTile*>::iterator iter;
 
       for(iter=vSubTiles.begin(); iter!=vSubTiles.end(); ++iter) {

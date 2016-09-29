@@ -19,10 +19,13 @@
  */
 
 #include "CfgWidget.h"
+#include "MainCfgGui.h"
 
 #include <string>
 #include <utility>
 #include <map>
+
+#include <QVBoxLayout>
 
 namespace mars {
   namespace cfg_manager_gui {
@@ -30,19 +33,23 @@ namespace mars {
     using namespace cfg_manager;
     using namespace std;
 
-    CfgWidget::CfgWidget(CFGManagerInterface *_cfg, QWidget *parent) :
-      pDialog(new main_gui::PropertyDialog(parent)),
-      cfg(_cfg),
+    CfgWidget::CfgWidget(MainCfgGui *m, CFGManagerInterface *_cfg,
+                         QWidget *parent) :
+      BaseWidget(parent, _cfg, "cfg"),
+      mainCfgGui(m),
+      pDialog(new main_gui::PropertyDialog(NULL)),
       ignore_change(0) {
   
       startTimer(200);
-      pDialog->setWindowTitle(tr("cfg"));
       pDialog->setButtonBoxVisibility(false);
       pDialog->setPropCallback(dynamic_cast<PropertyCallback*>(this));
-  
+      QVBoxLayout *layout = new QVBoxLayout();
+      layout->addWidget(pDialog);
+      this->setLayout(layout);
     }
 
     CfgWidget::~CfgWidget(void) {
+      mainCfgGui->unsetWidget();
     }
 
     void CfgWidget::addParam(const cfgParamInfo &newParam) {
@@ -166,9 +173,9 @@ namespace mars {
       removeMutex.lock();
       ignore_change = true;
       while (removeList.size() > 0) {
-	theWrapper_p = getWrapperById(removeList[0]);
-	pDialog->removeGenericProperty(theWrapper_p->guiElem);
-	removeList.erase(removeList.begin());
+        theWrapper_p = getWrapperById(removeList[0]);
+        pDialog->removeGenericProperty(theWrapper_p->guiElem);
+        removeList.erase(removeList.begin());
       }
       ignore_change = false;
       removeMutex.unlock();

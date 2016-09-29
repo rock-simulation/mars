@@ -1,0 +1,13 @@
+<package>
+    <description brief="TerrainPlugin">
+      Terrain
+   </description>
+    <maintainer>Malte/malte.langosz@dfki.de</maintainer>
+    <author>Malte/malte.langosz@dfki.de</author>
+    <depend package="simulation/mars/scripts/cmake" />
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/common/graphics/osg_terrain" />
+    <tags>needs_opt</tags>
+</package>

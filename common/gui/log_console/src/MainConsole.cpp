@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012 DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016 DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file Console.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief "Console" is a template for the widget interface of the MARS GUI
  **/
 
@@ -87,23 +87,24 @@ namespace mars {
                                   dynamic_cast<main_gui::MenuInterface*>(this),
                                   0, path, true);
 	
-        consoleWidget = new ConsoleGUI();
+        consoleWidget = new ConsoleGUI(NULL, cfg);
         consoleWidget->setMinimumSize(300, 200);
-        connect(consoleWidget, SIGNAL(geometryChanged()),
-                this, SLOT(geometryChanged()));
         connect(consoleWidget, SIGNAL(messageTypeChanged(int, bool)),
                 this, SLOT(onMessageTypeChanged(int, bool)));
+        if(!consoleWidget->getHiddenCloseState()){
+          gui->addDockWidget((void*)consoleWidget, 1);
+        }
         startTimer(20);
       
-        if(cfg) setupCFG();
+        //if(cfg) setupCFG();
       }
     }
 
     MainConsole::~MainConsole() {
-      libManager->releaseLibrary("data_broker");
-      libManager->releaseLibrary("main_gui");
-      libManager->releaseLibrary("cfg_manager");
-      fprintf(stderr, "Delete log_console\n");
+      consoleWidget = NULL;
+      if(dataBroker) libManager->releaseLibrary("data_broker");
+      if(gui) libManager->releaseLibrary("main_gui");
+      if(cfg) libManager->releaseLibrary("cfg_manager");
     }
 
     void MainConsole::menuAction(int action, bool checked) {
@@ -114,10 +115,8 @@ namespace mars {
       case 1:
         if(consoleWidget->isHidden()) {
           gui->addDockWidget((void*)consoleWidget, 1);
-          consoleWidget->show();
         }
         else {
-          consoleWidget->hide();
           gui->removeDockWidget((void*)consoleWidget, 1);
         }
         break;
@@ -235,73 +234,6 @@ namespace mars {
       consoleLock.unlock();
     }
 
-    void MainConsole::setupCFG(void) {
-
-      cfgW_top = cfg->getOrCreateProperty("Windows", "Console/Window Top", (int)400,
-                                          dynamic_cast<cfg_manager::CFGClient*>(this));
-  
-      cfgW_left = cfg->getOrCreateProperty("Windows", "Console/Window Left", (int)100,
-                                           dynamic_cast<cfg_manager::CFGClient*>(this));
-  
-      cfgW_width = cfg->getOrCreateProperty("Windows", "Console/Window Width", (int)300,
-                                            dynamic_cast<cfg_manager::CFGClient*>(this));
-  
-      cfgW_height = cfg->getOrCreateProperty("Windows", "Console/Window Height", (int)200,
-                                             dynamic_cast<cfg_manager::CFGClient*>(this));
-  
-
-      consoleWidget->setGeometry(cfgW_left.iValue, cfgW_top.iValue,
-                                 cfgW_width.iValue, cfgW_height.iValue);
-  
-    }
-
-    void MainConsole::getConsoleGeometry(int *top, int *left, int *w, int *h) {
-      *top = consoleWidget->geometry().y();
-      *left = consoleWidget->geometry().x();
-      *w = consoleWidget->geometry().width();
-      *h = consoleWidget->geometry().height();
-    }
-
-    void MainConsole::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
-      bool change_view = 0;
-  
-      if(set_window_prop) return;
-
-      if(_property.paramId == cfgW_top.paramId) {
-        cfgW_top.iValue = _property.iValue;
-        change_view = 1;
-      }
-  
-      else if(_property.paramId == cfgW_left.paramId) {
-        cfgW_left.iValue = _property.iValue;
-        change_view = 1;
-      }
-
-      else if(_property.paramId == cfgW_width.paramId) {
-        cfgW_width.iValue = _property.iValue;
-        change_view = 1;
-      }
-
-      else if(_property.paramId == cfgW_height.paramId) {
-        cfgW_height.iValue = _property.iValue;
-        change_view = 1;
-      }
-
-      else if(_property.paramId == showOnStdError.paramId) {
-        showOnStdError.bValue = _property.bValue;
-      }
-
-      else if(_property.paramId == maxMessages.paramId) {
-        maxMessages.iValue = _property.iValue;
-        consoleWidget->setMaxLines(maxMessages.iValue);
-      }
-  
-      if(change_view) {
-        consoleWidget->setGeometry(cfgW_left.iValue, cfgW_top.iValue,
-                                   cfgW_width.iValue, cfgW_height.iValue);
-      }
-    }
-
     void MainConsole::onMessageTypeChanged(int buttonId, bool state) {
       const char *dataNames[5] = {"fatal", "error", "warning", "info", "debug"};
       if(state == false) {
@@ -313,47 +245,23 @@ namespace mars {
       }
     }
 
-    void MainConsole::geometryChanged() {
-  
-      bool update_cfg = false;
-
-      int top = consoleWidget->geometry().y();
-      int left = consoleWidget->geometry().x();
-      int width = consoleWidget->geometry().width();
-      int height = consoleWidget->geometry().height();
-
-      if(top != cfgW_top.iValue) {
-        cfgW_top.iValue = top;
-        update_cfg = true;
-      }
-      if(left != cfgW_left.iValue) {
-        cfgW_left.iValue = left;
-        update_cfg = true;
-      }
-      if(width != cfgW_width.iValue) {
-        cfgW_width.iValue = width;
-        update_cfg = true;
-      }
-      if(height != cfgW_height.iValue) {
-        cfgW_height.iValue = height;
-        update_cfg = true;
-      }
-      if(update_cfg && cfg) {
-        set_window_prop = true;
-        cfg->setProperty(cfgW_top);
-        cfg->setProperty(cfgW_left);
-        cfg->setProperty(cfgW_width);
-        cfg->setProperty(cfgW_height);
-        set_window_prop = false;
-      }
-    }
-
     int MainConsole::getLibVersion() const {
       return 1;
     }
 
     const std::string MainConsole::getLibName() const {
       return "log_console";
+    }
+
+    void MainConsole::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
+      if(_property.paramId == showOnStdError.paramId) {
+        showOnStdError.bValue = _property.bValue;
+      }
+
+      else if(_property.paramId == maxMessages.paramId) {
+        maxMessages.iValue = _property.iValue;
+        consoleWidget->setMaxLines(maxMessages.iValue);
+      }
     }
 
     void MainConsole::receiveData(const data_broker::DataInfo &info,

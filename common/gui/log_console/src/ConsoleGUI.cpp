@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012 DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016 DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -28,8 +28,16 @@ namespace mars {
 
   namespace log_console {
 
-    ConsoleGUI::ConsoleGUI(QWidget *parent) : QWidget(parent) {
+    ConsoleGUI::ConsoleGUI(QWidget *parent,
+                           cfg_manager::CFGManagerInterface *cfg)
+      : main_gui::BaseWidget(parent, cfg, "Console") {
       maxLines = -1;
+      QHBoxLayout *buttonLayout = new QHBoxLayout();
+      QVBoxLayout *mainLayout = new QVBoxLayout();
+      myTextEdit = new QTextEdit();
+      myText = new QTextDocument();
+
+      //setAttribute(Qt::WA_DeleteOnClose);
       QPalette palette;
       QBrush brush(QColor(0, 0, 0, 255));
       brush.setStyle(Qt::SolidPattern);
@@ -90,34 +98,32 @@ namespace mars {
       font.setPointSize(9);
       setFont(font);
       setAutoFillBackground(false);
-      setWindowTitle(tr("Console"));
-  
-      buttons[0].setText("Fatals");
-      buttons[0].setObjectName("Fatal checkbox");
-      buttons[1].setText("Errors");
-      buttons[1].setObjectName("Error checkbox");
-      buttons[2].setText("Warnings");
-      buttons[2].setObjectName("Warning checkbox");
-      buttons[3].setText("Info");
-      buttons[3].setObjectName("Info checkbox");
-      buttons[4].setText("Debug");
-      buttons[4].setObjectName("Debug checkbox");
-      for(int i = 0; i < 5; ++i) {
-        buttons[i].setChecked(true);
-        connect(&buttons[i], SIGNAL(stateChanged(int)), 
-                this, SLOT(onCheckBoxToggled(int)));
+
+      for(int i=0; i<5; ++i) {
+        buttons[i] = new QCheckBox();
       }
-      buttonLayout.addWidget(&buttons[0]);
-      buttonLayout.addWidget(&buttons[1]);
-      buttonLayout.addWidget(&buttons[2]);
-      buttonLayout.addWidget(&buttons[3]);
-      buttonLayout.addWidget(&buttons[4]);
-  
-      mainLayout.addLayout(&buttonLayout);
-      mainLayout.addWidget(&myTextEdit);
-      setLayout(&mainLayout);
-      myText.setParent(&myTextEdit);
-      myTextEdit.setDocument(&myText);
+      buttons[0]->setText("Fatals");
+      buttons[0]->setObjectName("Fatal checkbox");
+      buttons[1]->setText("Errors");
+      buttons[1]->setObjectName("Error checkbox");
+      buttons[2]->setText("Warnings");
+      buttons[2]->setObjectName("Warning checkbox");
+      buttons[3]->setText("Info");
+      buttons[3]->setObjectName("Info checkbox");
+      buttons[4]->setText("Debug");
+      buttons[4]->setObjectName("Debug checkbox");
+      for(int i = 0; i < 5; ++i) {
+        buttons[i]->setChecked(true);
+        connect(buttons[i], SIGNAL(stateChanged(int)),
+                this, SLOT(onCheckBoxToggled(int)));
+        buttonLayout->addWidget(buttons[i]);
+      }
+
+      mainLayout->addLayout(buttonLayout);
+      mainLayout->addWidget(myTextEdit);
+      setLayout(mainLayout);
+      myText->setParent(myTextEdit);
+      myTextEdit->setDocument(myText);
     }
 
     ConsoleGUI::~ConsoleGUI(void) {
@@ -126,18 +132,18 @@ namespace mars {
 
     void ConsoleGUI::setMaxLines(int maxLines) {
       this->maxLines = maxLines;
-      myText.setMaximumBlockCount(maxLines);
+      myText->setMaximumBlockCount(maxLines);
     }
 
     void ConsoleGUI::paintEvent(QPaintEvent *event) {
       QWidget::paintEvent(event);
-      emit geometryChanged();
+      //emit geometryChanged();
     }
-  
+
 
     void ConsoleGUI::onCheckBoxToggled(int state) {
       for(int i = 0; i < 5; ++i) {
-        if(sender() == &buttons[i]) {
+        if(sender() == buttons[i]) {
           emit messageTypeChanged(i, bool(state==2));
         }
       }

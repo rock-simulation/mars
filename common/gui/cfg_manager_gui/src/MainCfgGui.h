@@ -69,12 +69,7 @@ namespace mars {
       virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _propertyS);
       virtual void cfgParamCreated(cfg_manager::cfgParamId _id);
       virtual void cfgParamRemoved(cfg_manager::cfgParamId _id);
-
-      bool isHidden() const;
-
-    public slots:
-      void show();
-      void hide();
+      void unsetWidget() { cfgWidget = NULL;}
 
     private:
       main_gui::GuiInterface *gui;
@@ -83,7 +78,6 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left;
       cfg_manager::cfgPropertyStruct cfgW_height, cfgW_width;
 
-      void setupCFG(void);
       bool set_window_prop;
       bool ignore_next;
       std::list<cfg_manager::cfgParamId> registeredParams;

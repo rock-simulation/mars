@@ -24,6 +24,7 @@
  */
 
 #include "BaseWidget.h"
+#include <QEvent>
 
 namespace mars {
   namespace main_gui {
@@ -38,10 +39,13 @@ namespace mars {
   
     BaseWidget::~BaseWidget() {
       if(cfg) {
+        //fprintf(stderr, "delete: %s %d\n", widgetName.c_str(), hiddenState);
+        //fflush(stderr);
         cfg->unregisterFromParam(wTop.paramId, this);
         cfg->unregisterFromParam(wLeft.paramId, this);
         cfg->unregisterFromParam(wWidth.paramId, this);
         cfg->unregisterFromParam(wHeight.paramId, this);
+        cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);
       }
     }
 
@@ -78,9 +82,36 @@ namespace mars {
       }
     }
 
+    void BaseWidget::show() {
+      if(parentWidget()) {
+        parentWidget()->show();
+      }
+      else {
+        QWidget::show();
+      }
+    }
+
+    void BaseWidget::hide() {
+      if(parentWidget()) {
+        parentWidget()->hide();
+      }
+      else {
+        QWidget::hide();
+      }
+    }
+
+    bool BaseWidget::isHidden() {
+      if(parentWidget()) {
+        return parentWidget()->isHidden();
+      }
+      else {
+        return QWidget::isHidden();
+      }
+    }
+
     void BaseWidget::changeEvent(QEvent *ev) {
       QWidget::changeEvent(ev);
-    
+
       if(setWindowProp) return;
 
       int top = geometry().y();
@@ -119,24 +150,58 @@ namespace mars {
       wTop = cfg->getOrCreateProperty(group, pName.c_str(), (int)40, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Left");
+      pName.append("/left");
       wLeft = cfg->getOrCreateProperty(group, pName.c_str(), (int)40, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Width");
+      pName.append("/width");
       wWidth = cfg->getOrCreateProperty(group, pName.c_str(),
                                         (int)400, cfgClient);
 
       pName = widgetName;
-      pName.append("/Window Height");
+      pName.append("/height");
       wHeight = cfg->getOrCreateProperty(group, pName.c_str(),
                                          (int)400, cfgClient);
+
+      pName = widgetName;
+      pName.append("/hidden");
+      hidden = cfg->getOrCreateProperty(group, pName.c_str(),
+                                        (bool)true);
+      hiddenState = hidden.bValue;
 
       setGeometry(wLeft.iValue, wTop.iValue, wWidth.iValue, wHeight.iValue);
     }
 
     void BaseWidget::applyGeometry() {
       setGeometry(wLeft.iValue, wTop.iValue, wWidth.iValue, wHeight.iValue);    
+    }
+
+    void BaseWidget::setHiddenCloseState(bool v) {
+      hiddenState = v;
+    }
+
+    bool BaseWidget::getHiddenCloseState() {
+      return hiddenState;
+    }
+
+    void BaseWidget::closeEvent(QCloseEvent *event) {
+      saveState();
+      emit closeSignal();
+    }
+
+    void BaseWidget::saveState() {
+      if(cfg) {
+        cfg->unregisterFromParam(wTop.paramId, this);
+        cfg->unregisterFromParam(wLeft.paramId, this);
+        cfg->unregisterFromParam(wWidth.paramId, this);
+        cfg->unregisterFromParam(wHeight.paramId, this);
+        cfg->setProperty("Windows", widgetName+"/hidden", hiddenState);        
+      }
+    }
+
+    void BaseWidget::hideEvent(QHideEvent* event) {
+      (void)event;
+      emit hideSignal();
     }
 
   } // end namespace main_gui

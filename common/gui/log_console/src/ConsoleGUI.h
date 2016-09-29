@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012 DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016 DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file ConsoleGUI.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief "ConsoleGUI" is a template for the widget interface of the MARS GUI
  **/
 
@@ -31,6 +31,7 @@
 #warning "ConsoleGUI.h"
 #endif
 
+#include <mars/main_gui/BaseWidget.h>
 #include <QTextEdit>
 #include <QCloseEvent>
 #include <QPaintEvent>
@@ -41,21 +42,21 @@ namespace mars {
 
   namespace log_console {
 
-    class ConsoleGUI : public QWidget {
+    class ConsoleGUI : public main_gui::BaseWidget {
       Q_OBJECT;
 
     public:
-      ConsoleGUI(QWidget *parent = 0);
+      ConsoleGUI(QWidget *parent, cfg_manager::CFGManagerInterface *cfg);
       ~ConsoleGUI();
     
       void setTextColor(const QColor &color) {
-        myTextEdit.setTextColor(color);
+        myTextEdit->setTextColor(color);
       }
 
       void setMaxLines(int maxLines);
     public slots:
       void append(const QString &text) {
-        myTextEdit.append(text);
+        myTextEdit->append(text);
       }
       void onCheckBoxToggled(int state);
 
@@ -63,15 +64,12 @@ namespace mars {
       void paintEvent(QPaintEvent *event);
     
     signals:
-      void geometryChanged(void);
       void messageTypeChanged(int, bool);
 
     private:
-      QCheckBox buttons[5];
-      QTextEdit myTextEdit;
-      QTextDocument myText;
-      QHBoxLayout buttonLayout;
-      QVBoxLayout mainLayout;
+      QCheckBox *buttons[5];
+      QTextEdit *myTextEdit;
+      QTextDocument *myText;
       int maxLines;
 
     }; // end of class ConsoleGUI

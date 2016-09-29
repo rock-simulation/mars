@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file Console.h
- * \author Malte Roemmermann
+ * \author Malte Langosz
  * \brief "Console" is a template for the widget interface of the MARS GUI
  **/
 
@@ -69,7 +69,6 @@ namespace mars {
     public:
       MainConsole(lib_manager::LibManager *theManager);
       void setupGUI();
-      void getConsoleGeometry(int *top, int *left, int *w, int *h);
   
       // ConsoleInterface methods
       virtual ~MainConsole(void);
@@ -102,14 +101,13 @@ namespace mars {
       std::vector<con_data> messages;
       // geometry config
       cfg_manager::CFGManagerInterface *cfg;
-      cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width, showOnStdError, maxMessages;
+      cfg_manager::cfgPropertyStruct showOnStdError, maxMessages;
       void setupCFG(void);
       bool set_window_prop;
       int ignore_next_resize;
 
     protected slots:
       void timerEvent(QTimerEvent *event);
-      void geometryChanged();
       void onMessageTypeChanged(int buttonId, bool state);
 
     }; // end of class MainConsole

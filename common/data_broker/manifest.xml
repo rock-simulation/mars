@@ -3,7 +3,6 @@
       A small library to manage data communication within a software framework.
    </description>
    <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
-   <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/lib_manager" />
    <depend package="simulation/mars/common/utils" />
     <tags>needs_opt</tags>

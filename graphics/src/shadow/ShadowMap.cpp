@@ -35,6 +35,12 @@
 #include <osg/CullFace>
 #include <osg/io_utils>
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 #include <cstdio>
 
 using namespace osgShadow;
@@ -59,6 +65,16 @@ namespace mars {
       createUniforms();
     }
 
+    ShadowMap::ShadowMap(const ShadowMap& copy, const osg::CopyOp& copyop) :
+      ShadowTechnique(copy, copyop) { 
+      shadowTextureUnit = 2;
+      centerObject = copy.centerObject;
+      radius = 1.0;
+      shadowTextureSize = 2048;
+      // create own uniforms
+      createUniforms();
+    }
+
     void ShadowMap::setLight(osg::Light *l) {
       light = l;
     }
@@ -77,6 +93,9 @@ namespace mars {
       ambientBiasUniform = new osg::Uniform("osgShadow_ambientBias",
                                             osg::Vec2(0.5f,0.5f));
       uniformList.push_back(ambientBiasUniform.get());
+      texGenMatrixUniform = new osg::Uniform("osgShadow_texgen",
+                                             osg::Matrixf());
+      uniformList.push_back(texGenMatrixUniform.get());
       textureScaleUniform = new osg::Uniform("osgShadow_textureScale",
                                             1.0f);
       uniformList.push_back(textureScaleUniform.get());
@@ -368,8 +387,7 @@ namespace mars {
           }
         }
 
-        cv.setTraversalMask( traversalMask &
-                             getShadowedScene()->getCastsShadowTraversalMask() );
+        cv.setTraversalMask( getShadowedScene()->getCastsShadowTraversalMask() );
 
         // do RTT camera traversal
         camera->accept(cv);
@@ -398,7 +416,7 @@ namespace mars {
           osg::Matrix::scale(0.5f,0.5f,0.5f);
 
         texgen->setPlanesFromMatrix(MVPT);
-
+        texGenMatrixUniform->set(MVPT);
         orig_rs->getPositionalStateContainer()->addPositionedTextureAttribute(shadowTextureUnit, cv.getModelViewMatrix(), texgen.get());
 #endif
       }
@@ -406,6 +424,26 @@ namespace mars {
 
       // reapply the original traversal mask
       cv.setTraversalMask( traversalMask );
+    }
+
+    void ShadowMap::resizeGLObjectBuffers(unsigned int maxSize) {
+#if (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 4))
+      osg::resizeGLObjectBuffers(camera, maxSize);
+      osg::resizeGLObjectBuffers(texgen, maxSize);
+      osg::resizeGLObjectBuffers(texture, maxSize);
+      osg::resizeGLObjectBuffers(stateset, maxSize);
+      osg::resizeGLObjectBuffers(ls, maxSize);
+#endif
+    }
+
+    void ShadowMap::releaseGLObjects(osg::State* state) const {
+#if (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 4))
+      osg::releaseGLObjects(camera, state);
+      osg::releaseGLObjects(texgen, state);
+      osg::releaseGLObjects(texture, state);
+      osg::releaseGLObjects(stateset, state);
+      osg::releaseGLObjects(ls, state);
+#endif
     }
 
   } // end of namespace graphics

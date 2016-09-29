@@ -63,12 +63,12 @@ namespace gui_app {
 
   GuiApp::~GuiApp() {
 
-    std::string saveFile = configDir;
-    saveFile.append("/gui_Windows.yaml");
-    cfg->writeConfig(saveFile.c_str(), "Windows");
-
     //! close simulation
     exit_main(0);
+
+    libManager->releaseLibrary("cfg_manager");
+    libManager->releaseLibrary("lib_manager_gui");
+    libManager->releaseLibrary("main_gui");
 
     libManager->clearLibraries();
     delete libManager;
@@ -108,9 +108,6 @@ namespace gui_app {
     }
     configDir = cfg->getOrCreateProperty("Config", "config_path",
                                          configDir).sValue;
-    std::string loadFile = configDir;
-    loadFile.append("/gui_Windows.yaml");
-    cfg->loadConfig(loadFile.c_str());
     std::string coreConfigFile = configDir+"/libs.txt";
 
     std::string p = configDir+"/preferences.yml";
@@ -133,8 +130,6 @@ namespace gui_app {
     libManager->loadConfigFile(coreConfigFile);
 
     mainGui->show();
-    libManager->releaseLibrary("cfg_manager");
-    libManager->releaseLibrary("main_gui");
   }
 
 } // end of namespace gui_app

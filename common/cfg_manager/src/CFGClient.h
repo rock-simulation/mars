@@ -41,6 +41,8 @@ namespace mars {
     class CFGClient {
 
     public:
+      CFGClient() {}
+      virtual ~CFGClient() {}
 
       virtual void cfgUpdateProperty(cfgPropertyStruct _propertyS) {
         (void) _propertyS;

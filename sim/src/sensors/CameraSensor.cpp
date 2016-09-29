@@ -56,6 +56,7 @@ namespace mars {
     {
       renderCam = 2;
       this->attached_node = config.attached_node;
+      draw_id = control->nodes->getDrawID(attached_node);
       std::vector<unsigned long>::iterator iter;
       dbPosIndices[0] = -1;
 
@@ -67,7 +68,7 @@ namespace mars {
       assert(erg);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
       }
-      
+
 
       cam_id=0;
       if(control->graphics) {
@@ -90,7 +91,7 @@ namespace mars {
         if(config.show_cam)
           cam_id = control->graphics->addHUDElement(&hudCam);
 
-       
+
         cam_window_id = control->graphics->new3DWindow(0, true, config.width,
                                                        config.height, name);
         if(config.show_cam)
@@ -105,11 +106,11 @@ namespace mars {
           gc->setFrustumFromRad(config.opening_width/180.0*M_PI, config.opening_height/180.0*M_PI, 0.5, 100);
         }
       }
-      
+
       if(!this->config.enabled){
         control->graphics->deactivate3DWindow(cam_window_id);
       }
-      
+
     }
 
     CameraSensor::~CameraSensor(void){
@@ -224,9 +225,12 @@ namespace mars {
     void CameraSensor::preGraphicsUpdate(void) {
       mutex.lock();
       if(gc) {
-        gc->updateViewportQuat(position.x(), position.y(), position.z(),
-                               orientation.x(), orientation.y(),
-                               orientation.z(), orientation.w());
+        Vector p = control->graphics->getDrawObjectPosition(draw_id);
+        Quaternion qcorrect = Quaternion(0.5, 0.5, -0.5, -0.5);
+        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * qcorrect;
+        gc->updateViewportQuat(p.x(), p.y(), p.z(),
+                               q.x(), q.y(),
+                               q.z(), q.w());
         if(config.enabled) {
           if(renderCam > 2) --renderCam;
           else if(renderCam == 2) {
@@ -390,7 +394,7 @@ namespace mars {
 
       cfg["width"] = config.width;
       cfg["height"] = config.height;
-        
+
 //      cfg["enabled"] = config.enabled;
 
 

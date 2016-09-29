@@ -66,8 +66,6 @@ namespace mars {
 
       LibManagerGui::~LibManagerGui() {
         timer.stop();
-        if(widget)
-          delete widget;
         if(cfg)
           libManager->releaseLibrary(cfg->getLibName());
         if(gui)
@@ -145,6 +143,8 @@ namespace mars {
       }
 
       void LibManagerGui::menuAction(int action, bool checked) {
+        if(!widget)
+          return;
         switch(action) {
         case CALLBACK_INFO:
           if(widget->isHidden()) {

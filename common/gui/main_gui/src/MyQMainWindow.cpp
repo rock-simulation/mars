@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,29 +20,162 @@
 
 
 #include "MyQMainWindow.h"
-
+#include "BaseWidget.h"
+#include <lib_manager/LibManager.hpp>
 #include <iostream>
 #include <fstream>
 
 namespace mars {
+
+  using namespace cfg_manager;
+
   namespace main_gui {
 
-    MyQMainWindow::MyQMainWindow(QWidget *parent) : QMainWindow(parent) {
+    MyQMainWindow::MyQMainWindow(QWidget *parent,
+                                 lib_manager::LibManager *libManager)
+      : QMainWindow(parent), libManager(libManager) {
       closing = false;
       dockView = false;
       hideChild = false;
       myCentralWidget = 0;
       p = 0;
-
+      cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       widgetState mWin = {this, Qt::NoDockWidgetArea, this->geometry()};
       widgetStates.push_back(mWin);
       dockGeometry = mWin.rect;
       timerAllowed = true;
       startTimer(500);
+      if(!cfg) return;
+      cfgPropertyStruct configPath;
+      cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
+      cfgPropertyStruct marsStyle;
+      cfgPropertyStruct stateNamesProp, dockArea, dockFloat,
+        dockLeft, dockTop, dockWidth, dockHeight;
+
+      configPath = cfg->getOrCreateProperty("Config", "config_path", ".");
+      std::string loadFile = configPath.sValue;
+      loadFile.append("/configWindows.yml");
+      cfg->loadConfig(loadFile.c_str());
+
+
+      cfgW_top = cfg->getOrCreateProperty("Windows", "Main Window/Window Top",
+                                          (int)400);
+      cfgW_left = cfg->getOrCreateProperty("Windows",
+                                           "Main Window/Window Left",
+                                           (int)400);
+      cfgW_width = cfg->getOrCreateProperty("Windows",
+                                            "Main Window/Window Width",
+                                            (int)400);
+      cfgW_height = cfg->getOrCreateProperty("Windows",
+                                             "Main Window/Window Height",
+                                             (int)200);
+      dockStyle = cfg->getOrCreateProperty("Windows", "Main Window/docking",
+                                           dockView);
+      marsStyle = cfg->getOrCreateProperty("Windows", "Mars Style", false);
+      stateNamesProp = cfg->getOrCreateProperty("Windows", "Docks",
+                                                std::string("."));
+      dockView = dockStyle.bValue;
+
+      // parse arguments
+      char label[55];
+      int i=0;
+      std::string arg;
+      sprintf(label, "arg%d", i++);
+      while (cfg->getPropertyValue("Config", label, "value", &arg)) {
+        if(arg.find("dock") != std::string::npos) {
+          dockView = true;
+          cfg->setProperty("Windows", "Main Window/docking", dockView);
+        }
+        sprintf(label, "arg%d", i++);
+      };
+
+      this->setGeometry(cfgW_left.iValue, cfgW_top.iValue, cfgW_width.iValue,
+                        cfgW_height.iValue);
+      std::vector<std::string> dockNames;
+      std::string tmp = stateNamesProp.sValue;
+
+      while (tmp != "") {
+        size_t pos = tmp.find("%%");
+        if (pos == std::string::npos) break;
+        dockNames.push_back(tmp.substr(0, pos));
+        tmp.erase(0, pos+2);
+      }
+      for (size_t i = 0; i < dockNames.size(); i++) {
+        dockArea = cfg->getOrCreateProperty("Windows",
+                                            dockNames[i] + "/area", 1);
+        dockFloat = cfg->getOrCreateProperty("Windows",
+                                             dockNames[i] + "/floating", false);
+        dockLeft = cfg->getOrCreateProperty("Windows",
+                                            dockNames[i] + "/left", 0);
+        dockTop = cfg->getOrCreateProperty("Windows", dockNames[i] + "/top", 0);
+        dockWidth = cfg->getOrCreateProperty("Windows",
+                                             dockNames[i] + "/width", 0);
+        dockHeight = cfg->getOrCreateProperty("Windows",
+                                              dockNames[i] + "/height", 0);
+
+        Qt::DockWidgetArea a= Qt::LeftDockWidgetArea;
+        switch (dockArea.iValue) {
+        case 1: a = Qt::LeftDockWidgetArea; break;
+        case 2: a = Qt::RightDockWidgetArea; break;
+        case 3: a = Qt::TopDockWidgetArea; break;
+        case 4: a = Qt::BottomDockWidgetArea; break;
+        case 5: a = Qt::LeftDockWidgetArea; break;
+        default: a = Qt::NoDockWidgetArea; break;
+        }
+        QRect r(dockLeft.iValue, dockTop.iValue, dockWidth.iValue, dockHeight.iValue);
+        main_gui::dockState add = {QString::fromStdString(dockNames[i]), a, dockFloat.bValue, r};
+        dockStates.push_back(add);
+      }
     }
 
-
     MyQMainWindow::~MyQMainWindow() {
+      if(!cfg) return;
+      int windowTop = geometry().y();
+      int windowLeft = geometry().x();
+      int windowWidth = geometry().width();
+      int windowHeight = geometry().height();
+      bool docking = dockView;
+
+      cfg->setProperty("Windows", "Main Window/Window Top", windowTop);
+      cfg->setProperty("Windows", "Main Window/Window Left", windowLeft);
+      cfg->setProperty("Windows", "Main Window/Window Width", windowWidth);
+      cfg->setProperty("Windows", "Main Window/Window Height", windowHeight);
+      cfg->setProperty("Windows", "Main Window/docking", docking);
+
+      std::vector<dockState> &docks = dockStates;
+      std::string allDocks = "";
+
+      for (unsigned int i = 0; i <docks.size(); i++) {
+        allDocks.append(docks[i].title.toStdString() + "%%"); // %% is delimiter
+        int a = 0;
+        switch (docks[i].area) {
+        case Qt::LeftDockWidgetArea: a = 1; break;
+        case Qt::RightDockWidgetArea: a = 2; break;
+        case Qt::TopDockWidgetArea: a = 3; break;
+        case Qt::BottomDockWidgetArea: a = 4; break;
+        }
+
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/area", a);
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/floating",
+                         docks[i].floating);
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/left",
+                         docks[i].rect.x());
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/top",
+                         docks[i].rect.y());
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/width",
+                         docks[i].rect.width());
+        cfg->setProperty("Windows", docks[i].title.toStdString() + "/height",
+                         docks[i].rect.height());
+      }
+
+      cfg->setProperty("Windows", "Docks", allDocks);
+
+      cfgPropertyStruct configPath;
+      configPath = cfg->getOrCreateProperty("Config", "config_path", ".");
+      std::string saveFile = configPath.sValue;
+      saveFile.append("/configWindows.yml");
+      cfg->writeConfig(saveFile.c_str(), "Windows");
+      libManager->releaseLibrary("cfg_manager");
     }
 
     void MyQMainWindow::setCentralWidget(QWidget *widget) {
@@ -60,8 +193,8 @@ namespace mars {
       }
     }
 
-
     void MyQMainWindow::dock() {
+      return;
       timerAllowed = false;
       if(!dockView) {
         saveDockGeometry();
@@ -80,7 +213,6 @@ namespace mars {
           handleState(temp, true, false); // save area
           handleState(temp, false, true); // restore geometry
           stSubWindows.push_back(temp);
-          temp->setParent(0);
           temp->setVisible((*dockit)->isVisible());
           removeDockWidget(*dockit);
         }
@@ -90,7 +222,6 @@ namespace mars {
           handleState(temp, true, false); // save area
           handleState(temp, false, true); // restore geometry
           dySubWindows.push_back(temp);
-          temp->setParent(0);
           temp->show();
           removeDockWidget(*dockit);
         }
@@ -142,30 +273,35 @@ namespace mars {
     }
 
 
-    void MyQMainWindow::addDock(QWidget *window, int priority, int area) {
+    void MyQMainWindow::addDock(QWidget *window, int priority, int area,
+                                bool possibleCentralWidget) {
+      if(!myCentralWidget && possibleCentralWidget) {
+        setCentralWidget(window);
+        return;
+      }
       timerAllowed = false;
       //  static int objectName = 42;
       Qt::DockWidgetArea qtarea;
+      bool floating = false;
       switch (area) {
       case 1:
-        qtarea = Qt::RightDockWidgetArea;
-        area = 2;
+        area = qtarea = Qt::LeftDockWidgetArea;
         break;
       case 2:
-        qtarea = Qt::BottomDockWidgetArea;
-        area = 8;
+        area = qtarea = Qt::RightDockWidgetArea;
         break;
       case 3:
-        qtarea = Qt::TopDockWidgetArea;
-        area = 4;
+        area = qtarea = Qt::TopDockWidgetArea;
         break;
       case 4:
-        qtarea = Qt::LeftDockWidgetArea;
-        area = 1;
+        area = qtarea = Qt::BottomDockWidgetArea;
+        break;
+      case 5:
+        area = qtarea = Qt::LeftDockWidgetArea;
+        floating = true;
         break;
       default:
-        qtarea = Qt::AllDockWidgetAreas;
-        area = 0;
+        area = qtarea = Qt::LeftDockWidgetArea;
         break;
       }
 
@@ -184,6 +320,7 @@ namespace mars {
           widgetStates.push_back(st); // save the state
           MyQDockWidget *toDock = new MyQDockWidget(this, window, 1, area);
           stDockWidgets.push_back(toDock);
+          toDock->setFloating(floating);
         } else {
           for (dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
             if ((*dockit)->widget() == window) {
@@ -197,6 +334,7 @@ namespace mars {
           widgetStates.push_back(st); // save the state
           MyQDockWidget *toDock = new MyQDockWidget(this, window, 0, area);
           dyDockWidgets.push_back(toDock);
+          toDock->setFloating(floating);
         }
       } else {
         if(priority) {
@@ -209,6 +347,7 @@ namespace mars {
           widgetState st = {window, qtarea, window->geometry()};
           widgetStates.push_back(st); // save the state
           stSubWindows.push_back(window);
+          window->show();
         } else {
           for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
             if (*subit == window) {
@@ -222,6 +361,7 @@ namespace mars {
           widgetState st = {window, qtarea, window->geometry()};
           widgetStates.push_back(st); // save the state
           dySubWindows.push_back(window);
+          window->show();
         }
       }
       restoreDockGeometry();
@@ -238,7 +378,6 @@ namespace mars {
         if(priority) {
           for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end(); dockit++) {
             if((*dockit)->widget() == window) {
-              (*dockit)->widget()->hide();
               (*dockit)->hide();
               break;
             }
@@ -247,8 +386,13 @@ namespace mars {
           for(dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
             if((*dockit)->widget() == window) {
               handleState(window, true, true, true); // remove from the states
+              BaseWidget *base = dynamic_cast<BaseWidget*>(window);
+              if(base) {
+                base->setHiddenCloseState(true);
+              }
               removeDockWidget(*dockit);
               dyDockWidgets.erase(dockit);
+              window->close();
               break;
             }
           }
@@ -265,6 +409,11 @@ namespace mars {
           for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
             if(*subit == window) {
               handleState(window, true, true, true); // remove from the states
+              BaseWidget *base = dynamic_cast<BaseWidget*>(window);
+              if(base) {
+                base->setHiddenCloseState(true);
+                base->saveState();
+              }
               window->close();
               dySubWindows.erase(subit);
               break;
@@ -274,27 +423,46 @@ namespace mars {
       }
     }
 
-
     void MyQMainWindow::closeEvent(QCloseEvent *event) {
       timerAllowed = false;
       (void)event;
       closing = true;
-      if(myCentralWidget) {
-        myCentralWidget->close();
-      }
-      for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end(); dockit++) {
-        (*dockit)->widget()->close();
+      //fprintf(stderr, "close event\n");
+      for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end();
+          dockit++) {
+        BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
+        if(base) {
+          base->setHiddenCloseState(base->isHidden());
+          base->saveState();
+        }
         (*dockit)->close();
       }
       for(dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
-        (*dockit)->widget()->close();
+        BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
+        if(base) {
+          base->setHiddenCloseState(base->isHidden());
+          base->saveState();
+        }
         (*dockit)->close();
       }
       for(subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
+        BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
+        if(base) {
+          base->setHiddenCloseState(base->isHidden());
+          base->saveState();
+        }
         (*subit)->close();
       }
       for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
+        BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
+        if(base) {
+          base->setHiddenCloseState(base->isHidden());
+          base->saveState();
+        }
         (*subit)->close();
+      }
+      if(myCentralWidget) {
+        myCentralWidget->close();
       }
     }
 
@@ -401,4 +569,3 @@ namespace mars {
 
   } // end namespace main_gui
 } // end namespace mars
-

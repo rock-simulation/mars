@@ -47,33 +47,16 @@ if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
 
-find_package(Qt5Widgets)
-if (${Qt5Widgets_FOUND})
-  set(USE_QT5 1)
-  find_package(Qt5Widgets REQUIRED)
-  #find_package(Qt5MacExtras REQUIRED)
-  include_directories(${Qt5Widgets_INCLUDES})
-  add_definitions(-DUSE_QT5)
-  add_definitions(${Qt5Widgets_DEFINITIONS})
-  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-
-else (${Qt5Widgets_FOUND})
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
-  include_directories(${QT_INCLUDE_DIR})
-  link_directories(${QT_LIBRARY_DIR})
-  add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
-  remove_definitions(-DQT_DLL)
-
-endif (${Qt5Widgets_FOUND})
+setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    opencv
-			    lib_manager
-			    mars_interfaces
-			    cfg_manager
-			    configmaps
-			    mars_utils
+                  opencv
+                  lib_manager
+                  mars_interfaces
+                  cfg_manager
+                  configmaps
+                  mars_utils
+                  osg_material_manager
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -83,21 +66,13 @@ add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #cflags without -I
 set(HEADERS
            src/GraphicsCamera.h
            src/GraphicsManager.h
-           src/GraphicsViewer.h
+           #src/GraphicsViewer.h
            src/GraphicsWidget.h
            src/gui_helper_functions.h
            src/HUD.h
            src/PostDrawCallback.h
            src/QtOsgMixGraphicsWidget.h
-           src/MarsMaterial.h
            
-           src/shader/bumpmapping.h
-           src/shader/pixellight.h
-           src/shader/shader-generator.h
-           src/shader/shader-function.h
-           src/shader/shader-types.h
-           src/shader/texgen.h
-
            src/shadow/ShadowMap.h
 )
 
@@ -145,13 +120,12 @@ set(QT_MOC_HEADERS
 set(SOURCES 
            src/GraphicsCamera.cpp
            src/GraphicsManager.cpp
-           src/GraphicsViewer.cpp
+           #src/GraphicsViewer.cpp
            src/GraphicsWidget.cpp
            src/gui_helper_functions.cpp
            src/HUD.cpp
            src/QtOsgMixGraphicsWidget.cpp
            src/PostDrawCallback.cpp
-           src/MarsMaterial.cpp
            
            src/wrapper/OSGDrawItem.cpp
            src/wrapper/OSGHudElementStruct.cpp
@@ -180,13 +154,6 @@ set(SOURCES
            src/2d_objects/HUDLines.cpp
            src/2d_objects/HUDOSGNode.cpp
            
-           src/shader/bumpmapping.cpp
-           src/shader/pixellight.cpp
-           src/shader/shader-generator.cpp
-           src/shader/shader-function.cpp
-           src/shader/shader-types.cpp
-           src/shader/texgen.cpp
-
            src/shadow/ShadowMap.cpp
 )
 

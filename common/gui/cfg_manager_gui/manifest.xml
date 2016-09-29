@@ -3,7 +3,6 @@
 	The library provides a propertybrowser widget to set all registered parameter of the cfg_manager lib.
    </description>
 	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
-   <depend package="simulation/mars/scripts/cmake" />
    <depend package="simulation/lib_manager" />
    <depend package="simulation/mars/common/gui/main_gui" />
    <depend package="simulation/mars/common/cfg_manager" />

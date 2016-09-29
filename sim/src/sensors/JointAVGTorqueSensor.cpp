@@ -49,6 +49,21 @@ namespace mars {
 
       torqueIndices[0] = -1;
       typeName = "JointAVGTorque";
+      dbPackage.add("id", (long)config.id);
+      dbPackage.add("torque", 0.0);
+      char text[55];
+      sprintf(text, "Sensors/AVGTorque_%05lu", config.id);
+      control->dataBroker->pushData("mars_sim", text,
+                                    dbPackage, NULL,
+                                    data_broker::DATA_PACKAGE_READ_FLAG);
+
+      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                 "mars_sim/simTimer", 0);
+    }
+
+    JointAVGTorqueSensor::~JointAVGTorqueSensor(void) {
+      control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                   "mars_sim/simTimer");
     }
 
     // this function should be overwritten by the special sensor to
@@ -56,7 +71,7 @@ namespace mars {
       char *p;
       sReal torque = 0;
       std::vector<double>::const_iterator iter;
-  
+
       p = data;
       for(iter = doubleArray.begin(); iter != doubleArray.end(); iter++) {
         torque += *iter;
@@ -69,7 +84,7 @@ namespace mars {
 
     int JointAVGTorqueSensor::getSensorData(sReal** data) const {
       std::vector<double>::const_iterator iter;
-  
+
       *data = (sReal*)malloc(sizeof(sReal));
       **data = 0;
       for(iter = doubleArray.begin(); iter != doubleArray.end(); iter++) {
@@ -80,6 +95,27 @@ namespace mars {
       return 1;
     }
 
+
+    void JointAVGTorqueSensor::produceData(const data_broker::DataInfo &info,
+                                           data_broker::DataPackage *dbPackage,
+                                           int callbackParam) {
+      (void)callbackParam;
+      (void)info;
+      sReal torque = 0;
+      std::vector<double>::const_iterator iter;
+
+      if(doubleArray.size() == 0) {
+        dbPackage->set(0, (long)id);
+        dbPackage->set(1, torque);
+        return;
+      }
+      for(iter = doubleArray.begin(); iter != doubleArray.end(); iter++) {
+        torque += *iter;
+      }
+      torque /= doubleArray.size();
+      dbPackage->set(0, (long)id);
+      dbPackage->set(1, torque);
+    }
 
     void JointAVGTorqueSensor::receiveData(const data_broker::DataInfo &info,
                                            const data_broker::DataPackage &package,

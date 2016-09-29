@@ -29,25 +29,13 @@ namespace mars {
                                  int a, Qt::WindowFlags flags)
       : QDockWidget(child->windowTitle(), parent, flags) {
       priority = p;
-      switch (a) {
-      case 1:
-        area = Qt::RightDockWidgetArea;
-        break;
-      case 2:
-        area = Qt::BottomDockWidgetArea;
-        break;
-      case 3:
-        area = Qt::TopDockWidgetArea;
-        break;
-      default:
-        area = Qt::LeftDockWidgetArea;
-        break;
-      }
+      area = (Qt::DockWidgetArea)a;
       this->setWidget(child);
+      child->setParent(this);
       this->adjustSize();
       this->setFeatures(QDockWidget::AllDockWidgetFeatures);
       this->setAllowedAreas(Qt::AllDockWidgetAreas);
-      ((MyQMainWindow*)parentWidget())->addDockWidget(area, this);
+      ((MyQMainWindow*)parent)->addDockWidget(area, this);
       //  this->setObjectName(child->objectName());
     }
 
@@ -55,29 +43,9 @@ namespace mars {
     MyQDockWidget::~MyQDockWidget() {
     }
 
-
     void MyQDockWidget::closeEvent(QCloseEvent *event) {
-      // if unclosable hide the child
-      if(priority &&
-         ((MyQMainWindow*)parentWidget())->dockView) {
-        widget()->hide();
-      }
-      // else close it
-      if(!priority &&
-         ((MyQMainWindow*)parentWidget())->dockView &&
-         widget()) {
-        widget()->close();
-      }
-    }
-
-
-    void MyQDockWidget::hideEvent(QHideEvent *event) {
-      // used when docking; otherwise undesirable effects present
-      // when the dock widgets are manually (un)docked
-      if(priority &&
-         ((MyQMainWindow*)parentWidget())->hideChild) {
-        widget()->hide();
-      }
+      //widget()->close();
+      return;
     }
 
   } // namespace main_gui

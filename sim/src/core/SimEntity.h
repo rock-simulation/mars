@@ -115,6 +115,8 @@ namespace mars {
 
       std::string getJoint(unsigned long id);
 
+      const configmaps::ConfigMap getConfig();
+
       void setInitialPose(bool reset=false);
 
       //debug functions

@@ -77,7 +77,6 @@ namespace mars {
       cfgParamsById.clear();
       cfgParamsByString.clear();
       mutexCFGParams.unlock();
-      fprintf(stderr, "Delete cfg_manager\n");
     }
 
 
@@ -966,6 +965,43 @@ namespace mars {
                                                             const char *val,
                                                             CFGClient *newClient) {
       return getOrCreateProperty(_group, _name, std::string(val), newClient);
+    }
+
+
+    void CFGManager::setProperty(const string &_group, const string &_name,
+                                 bool val) {
+      if(!setPropertyValue(_group, _name, "value", val)) {
+        getOrCreateProperty(_group, _name, val);
+      }
+    }
+
+
+    void CFGManager::setProperty(const string &_group, const string &_name,
+                                 double val) {
+      if(!setPropertyValue(_group, _name, "value", val)) {
+        getOrCreateProperty(_group, _name, val);
+      }
+    }
+
+
+    void CFGManager::setProperty(const string &_group, const string &_name,
+                                 int val) {
+      if(!setPropertyValue(_group, _name, "value", val)) {
+        getOrCreateProperty(_group, _name, val);
+      }
+    }
+
+
+    void CFGManager::setProperty(const string &_group, const string &_name,
+                                 const string &val) {
+      if(!setPropertyValue(_group, _name, "value", val)) {
+        getOrCreateProperty(_group, _name, val);
+      }
+    }
+
+    void CFGManager::setProperty(const string &_group, const string &_name,
+                                 const char *val) {
+      return setProperty(_group, _name, std::string(val));
     }
 
   } // end of namespace cfg_manager

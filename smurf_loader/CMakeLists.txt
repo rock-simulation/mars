@@ -30,19 +30,7 @@ find_package(Boost REQUIRED system thread)
 include_directories(${Boost_INCLUDE_DIR})
 link_directories(${Boost_LIBRARY_DIRS})
 
-find_package(Qt5Widgets)
-if (${Qt5Widgets_FOUND})
-  set(USE_QT5 1)
-  find_package(Qt5Widgets REQUIRED)
-  include_directories(${Qt5Widgets_INCLUDES})
-  add_definitions(-DUSE_QT5)
-  add_definitions(${Qt5Widgets_DEFINITIONS})
-  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-else (${Qt5Widgets_FOUND})
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
-  include_directories(${QT_INCLUDE_DIR} ${QT_QTXML_INCLUDE_DIR})
-endif (${Qt5Widgets_FOUND})
+setup_qt()
 
 #Get linker and compiler flags from pkg-config
 pkg_check_modules(PKGCONFIG REQUIRED

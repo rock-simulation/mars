@@ -112,14 +112,14 @@ namespace mars {
         std::string type = entityconfig["geometry"]["type"];
         map["filename"] = "PRIMITIVE";
         if (type == "plane") {
-          map["name"] = "plane";
+          map["name"] = primitivename;
           map["physicmode"] = "plane";
           map["origname"] = "plane";
           map["extend"]["x"] = 10.;
           map["extend"]["y"] = 10.;
         } else
         if (type == "box") {
-          map["name"] = "box";
+          map["name"] = primitivename;
           map["physicmode"] = "box";
           map["origname"] = "box";
           map["extend"]["x"] = 1.;
@@ -129,7 +129,7 @@ namespace mars {
           map["movable"] = true;
         } else
         if (type == "sphere") {
-          map["name"] = "sphere";
+          map["name"] = primitivename;
           map["physicmode"] = "sphere";
           map["visualType"] = "sphere";
           map["extend"]["x"] = 0.5;
@@ -145,7 +145,6 @@ namespace mars {
 
         }
       }
-      entityconfig["name"] = map["name"];
       map.append(entityconfig);
 
       NodeData node;

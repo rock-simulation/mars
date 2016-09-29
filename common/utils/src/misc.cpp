@@ -181,43 +181,47 @@ namespace mars {
         return 2;
       }
 
-#ifdef WIN32
-      int result = mkdir(dir.c_str());
-#else
       char tmp[FILENAME_MAX];
       char *p=0;
       snprintf(tmp,sizeof(tmp),"%s",dir.c_str());
       size_t len = strlen(tmp);
-      if(tmp[len-1] == '/'){
+      if(tmp[len-1] == '/') {
         tmp[len-1] = 0;
       }
       int result=0;
-      struct stat info;
-      for(p=tmp+1;*p;p++){
-        if(*p == '/'){
-            *p=0;
-            if(stat(tmp, &info) == 0 && S_ISDIR(info.st_mode)){
-                //Directory already exists, assuming this is a first already existing part of the path
-            }else{
-                result = mkdir(tmp,mode);
-            }
-            if(result == -1){
-                break; 
-            }
-            *p='/';
+      for(p=tmp+1; *p; p++) {
+        if(*p == '/') {
+          *p=0;
+          if(pathExists(tmp)) {
+            //Directory already exists, assuming this is a first already existing part of the path
+          } else {
+#ifdef WIN32
+            result = mkdir(tmp);
+#else
+            result = mkdir(tmp,mode);
+#endif
+          }
+          if(result == -1) {
+            break;
+          }
+          *p='/';
         }
       }
-      if(result != -1){
-          result = mkdir(tmp, mode);
-      }
+
+      if(result != -1) {
+#ifdef WIN32
+        result = mkdir(tmp);
+#else
+        result = mkdir(tmp,mode);
 #endif
+      }
       if(result == -1) {
         fprintf(stderr, "misc:: could not create dir: %s\n", dir.c_str());
         return 0;
       }
       return 1;
     }
-    
+
     std::vector<std::string> explodeString(const char c, const std::string &s) {
       std::vector<std::string> result;
       std::stringstream  stream(s);
@@ -227,6 +231,17 @@ namespace mars {
         result.push_back(entry);
       }
       return result;
+    }
+
+    std::string replaceString(const std::string &source, const std::string &s1,
+                              const std::string &s2) {
+      std::string back = source;
+      size_t found = back.find(s1);
+      while(found != std::string::npos) {
+        back.replace(found, s1.size(), s2);
+        found = back.find(s1, found+s2.size());
+      }
+      return back;
     }
 
   } // end of namespace utils

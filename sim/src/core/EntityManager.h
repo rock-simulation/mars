@@ -76,6 +76,9 @@ namespace mars {
 
       /**returns the entity with the given name
        */
+      // callback for entity creation
+      virtual const std::map<unsigned long, SimEntity*>* subscribeToEntityCreation(interfaces::EntitySubscriberInterface* newsub);
+
       virtual SimEntity* getEntity(const std::string &name);
 
       /**returns the entity with the given id
@@ -104,6 +107,8 @@ namespace mars {
       virtual void resetPose();
 
     private:
+      std::vector<interfaces::EntitySubscriberInterface*> subscribers;
+      void notifySubscribers(SimEntity* entity);
       interfaces::ControlCenter *control;
       /**the id assigned to the next created entity; use getNextId function*/
       unsigned long next_entity_id;

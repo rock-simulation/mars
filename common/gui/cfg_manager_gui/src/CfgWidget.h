@@ -37,6 +37,7 @@
 
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/main_gui/PropertyDialog.h>
+#include <mars/main_gui/BaseWidget.h>
 #include <vector>
 
 
@@ -49,27 +50,26 @@ namespace mars {
       QtVariantProperty *guiElem;
     };
 
-    class CfgWidget : public QObject, public main_gui::PropertyCallback {
+    class MainCfgGui;
+
+    class CfgWidget : public main_gui::BaseWidget,
+      public main_gui::PropertyCallback {
       Q_OBJECT
 
       public:
-      CfgWidget(cfg_manager::CFGManagerInterface *_cfg, QWidget *parent = 0);
+      CfgWidget(MainCfgGui *mainCfgGui,
+                cfg_manager::CFGManagerInterface *_cfg, QWidget *parent = 0);
       ~CfgWidget();
 
       void addParam(const cfg_manager::cfgParamInfo &newParam);
       void changeParam(const cfg_manager::cfgParamId _id);
       void removeParam(const cfg_manager::cfgParamId _id);
-      void show(void) {pDialog->show();}
-      void hide(void) {pDialog->hide();}
-      bool isHidden(void) const {return pDialog->isHidden();}
       virtual void valueChanged(QtProperty *property, const QVariant &value);
 
       main_gui::PropertyDialog *pDialog;
 
     private:
-
-      cfg_manager::CFGManagerInterface *cfg;
-
+      MainCfgGui *mainCfgGui;
       QMutex listMutex;
       QMutex addMutex;
       QMutex changeMutex;

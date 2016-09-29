@@ -9,30 +9,7 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
-# Widgets finds its own dependencies (QtGui and QtCore).
-find_package(Qt5Widgets)
-if (${Qt5Widgets_FOUND})
-  set(USE_QT5 1)
-
-  # The Qt5Widgets_INCLUDES also includes the include directories for
-  # dependencies QtCore and QtGui
-  include_directories(${Qt5Widgets_INCLUDES})
-  # We need add -DQT_WIDGETS_LIB when using QtWidgets in Qt 5.
-  add_definitions(${Qt5Widgets_DEFINITIONS})
-
-  # Executables fail to build with Qt 5 in the default configuration
-  # without -fPIE. We add that here.
-  set(CMAKE_CXX_FLAGS "${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
-  add_definitions("-DUSE_QT5")
-else (${Qt5Widgets_FOUND})
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
-  include_directories(${QT_INCLUDE_DIR})
-  link_directories(${QT_LIBRARY_DIR})
-  add_definitions("-D_REENTRANT -DQT_NO_DEBUG -DQT_GUI_LIB -DQT_CORE_LIB -DQT_SHARED")
-  remove_definitions(-DQT_DLL)
-endif (${Qt5Widgets_FOUND})
-
+setup_qt()
 
 pkg_check_modules(LIB_MANAGER "lib_manager")
 include_directories(${LIB_MANAGER_INCLUDE_DIRS})

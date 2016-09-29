@@ -20,9 +20,6 @@
 
 #include "smurf.h"
 
-#include <QtXml>
-#include <QDomNodeList>
-
 #include <mars/data_broker/DataBrokerInterface.h>
 
 #include <mars/interfaces/sim/EntityManagerInterface.h>
@@ -261,17 +258,17 @@ namespace mars {
       for (it = config["sensors"].begin(); it != config["sensors"].end(); ++it) {
         handleURIs(*it);
         ConfigMap &tmpmap = *it;
-        tmpmap["attached_node"] = (ulong) nodeIDMap[(std::string) tmpmap["link"]];
+        tmpmap["attached_node"] = (unsigned long) nodeIDMap[(std::string) tmpmap["link"]];
         //FIXME: tmpmap["mapIndex"] = mapIndex;
         if ((std::string) tmpmap["type"] == "Joint6DOF") {
           std::string linkname = (std::string) tmpmap["link"];
           fprintf(stderr, "addConfig: %s\n", linkname.c_str());
           std::string jointname = model->getLink(linkname)->parent_joint->name;
           fprintf(stderr, "addConfig: %s\n", jointname.c_str());
-          tmpmap["nodeID"] = (ulong) nodeIDMap[linkname];
-          tmpmap["jointID"] = (ulong) jointIDMap[jointname];
-          fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (ulong) tmpmap["nodeID"],
-              (ulong) tmpmap["jointID"]);
+          tmpmap["nodeID"] = nodeIDMap[linkname];
+          tmpmap["jointID"] = jointIDMap[jointname];
+          fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (unsigned long) tmpmap["nodeID"],
+              (unsigned long) tmpmap["jointID"]);
         }
         idmap = 0;
         namemap = 0;
@@ -291,11 +288,11 @@ namespace mars {
           for (ConfigVector::iterator idit = tmpmap["id"].begin();
               idit != tmpmap["id"].end(); ++idit) {
             if (idmap) {
-              //(*idit) = (ulong)nodeIDMap[idit->getString()];
+              //(*idit) = (unsigned long)nodeIDMap[idit->getString()];
               if (namemap) {
-                tmpids.append(ConfigAtom((ulong) (*idmap)[(*namemap)[(std::string) (*idit)]]));
+                tmpids.append(ConfigAtom((unsigned long) (*idmap)[(*namemap)[(std::string) (*idit)]]));
               } else {
-                tmpids += ConfigAtom((ulong) (*idmap)[(std::string) (*idit)]);
+                tmpids += ConfigAtom((unsigned long) (*idmap)[(std::string) (*idit)]);
               }
             } else {
               fprintf(stderr, "Found sensor with id list, but of no known category.\n");
@@ -909,24 +906,11 @@ namespace mars {
     }
 
     unsigned int SMURF::parseURDF(std::string filename) {
-      QString xmlErrorMsg = "";
-
-      //creating a handle for the xmlfile
-      QFile file(filename.c_str());
-
-      QLocale::setDefault(QLocale::C);
-
-      LOG_INFO("SMURF: smurfing scene: %s", filename.c_str());
-
-      //test to open the xmlfile
-      if (!file.open(QIODevice::ReadOnly)) {
-        std::cout << "Error while opening scene file content " << filename
-            << " in SMURF.cpp->parseScene" << std::endl;
-        std::cout << "Make sure your scenefile name corresponds to"
-            << " the name given to the enclosed .scene file" << std::endl;
+      if(!utils::pathExists(filename)) {
+        fprintf(stderr, "ERROR: SMURF:parseURDF no such file: %s\n",
+                filename.c_str());
         return 0;
       }
-
       model = urdf::parseURDFFile(filename);
       if (!model) {
         return 0;
@@ -1122,7 +1106,7 @@ namespace mars {
       config["mapIndex"] = mapIndex;
       BaseSensor *sensor = control->sensors->createAndAddSensor(&config);
       if (sensor != 0) {
-        control->loadCenter->setMappedID((ulong) config["index"], sensor->getID(), MAP_TYPE_SENSOR,
+        control->loadCenter->setMappedID(config["index"], sensor->getID(), MAP_TYPE_SENSOR,
             mapIndex);
       }
 

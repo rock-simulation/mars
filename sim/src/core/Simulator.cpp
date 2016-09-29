@@ -131,7 +131,7 @@ namespace mars {
     Simulator::~Simulator() {
       while(((Thread*)this)->isRunning())
         utils::msleep(1);
-      fprintf(stderr, "Delete mars_sim\n");
+      //fprintf(stderr, "Delete mars_sim\n");
 
       if (control->controllers) delete control->controllers;
 

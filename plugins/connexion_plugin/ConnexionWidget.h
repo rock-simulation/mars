@@ -32,6 +32,7 @@
 #endif
 
 #include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/main_gui/BaseWidget.h>
 
 #include <vector>
 
@@ -48,7 +49,7 @@ namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
-      class ConnexionWidget : public QWidget {
+      class ConnexionWidget : public main_gui::BaseWidget {
         Q_OBJECT;
 
         public:
@@ -70,21 +71,25 @@ namespace mars {
         void checkRX(bool val);
         void checkRY(bool val);
         void checkRZ(bool val);
+        void checkFilter(bool val);
+        void checkSyncWithFrames(bool val);
         void sensXChanged(double val);
         void sensYChanged(double val);
         void sensZChanged(double val);
         void sensRXChanged(double val);
         void sensRYChanged(double val);
         void sensRZChanged(double val);
+        void filterValueChanged(double val);
 
       signals:
-        void hideSignal(void);
-        void closeSignal(void);
         void windowSelected(unsigned long);
         void objectSelected(unsigned long);
         void setObjectMode(int);
         void setLockAxis(int, bool);
         void sigSensitivity(int, double);
+        void setUseFilter(bool);
+        void setFilterValue(double);
+        void setSyncWithFrames(bool);
 
       private:
         mars::interfaces::ControlCenter *control;
@@ -94,9 +99,10 @@ namespace mars {
         QComboBox *objectIDCombo;
         QComboBox *objectCombo;
         QCheckBox *checkLockX, *checkLockY, *checkLockZ,
-          *checkLockRX, *checkLockRY, *checkLockRZ;
+          *checkLockRX, *checkLockRY, *checkLockRZ,
+          *checkFilter_;
         QDoubleSpinBox *sensitivityX, *sensitivityY, *sensitivityZ,
-          *sensitivityRX, *sensitivityRY, *sensitivityRZ;
+          *sensitivityRX, *sensitivityRY, *sensitivityRZ, *filterValue_;
         unsigned int win_id, object_id;
         bool take_events;
 
@@ -108,10 +114,6 @@ namespace mars {
                          QCheckBox *&checkBox, QDoubleSpinBox *&spinBox,
                          const char *checkSlot,const char *spinSlot,
                          const QString &label, int row);
-      protected slots:
-        void hideEvent(QHideEvent* event);
-        void closeEvent(QCloseEvent* event);
-
       }; // end of class ConnexionWidget
 
     } // end of namespace connexion_plugin

@@ -1,0 +1,8 @@
+<package>
+    <description brief="osg_terrain">
+	</description>
+	<maintainer>Malte Langosz/malte.langosz@dfki.de</maintainer>
+    <depend package="simulation/mars/common/utils" />
+    <depend package="simulation/mars/common/graphics/osg_material_manager" />
+    <tags>needs_opt</tags>
+</package>

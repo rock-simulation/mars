@@ -4,7 +4,6 @@
     </description>
 	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
     <depend package="eigen3" />
-    <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />
     <depend package="tools/configmaps" />    
     <tags>needs_opt</tags>

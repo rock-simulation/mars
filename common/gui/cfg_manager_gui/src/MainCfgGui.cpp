@@ -21,7 +21,7 @@
 /**
  * \file MainCfgGui.cpp
  * \author Malte Römmermann
- * \brief 
+ * \brief
  **/
 
 #include "MainCfgGui.h"
@@ -36,7 +36,7 @@ namespace mars {
     using std::string;
 
     MainCfgGui::MainCfgGui(lib_manager::LibManager* theManager) :
-      lib_manager::LibInterface(theManager), gui(NULL), 
+      lib_manager::LibInterface(theManager), gui(NULL),
       cfg(NULL), cfgWidget(NULL) {
       set_window_prop = false;
       ignore_next = false;
@@ -46,20 +46,20 @@ namespace mars {
     }
 
     void MainCfgGui::setupGUI(std::string path) {
- 
+
       if(libManager == NULL) return;
 
       cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
       if(cfg) {
         cfg->registerToCFG(dynamic_cast<CFGClient*>(this));
-  
+
         cfgPropertyStruct r_path;
         r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
                                           std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
         path = r_path.sValue;
       } else
         fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");
-  
+
       gui = libManager->getLibraryAs<main_gui::GuiInterface>("main_gui");
       if (gui == NULL)
         return;
@@ -69,20 +69,20 @@ namespace mars {
                                 dynamic_cast<main_gui::MenuInterface*>(this),0,
                                 path, true);
 
-      cfgWidget = new CfgWidget(cfg);
+      cfgWidget = new CfgWidget(this, cfg);
 
-      connect(cfgWidget->pDialog, SIGNAL(geometryChanged()), this, SLOT(geometryChanged()));
-
-      if (cfg)
-        setupCFG();
+      //connect(cfgWidget->pDialog, SIGNAL(geometryChanged()), this, SLOT(geometryChanged()));
 
       vector<cfgParamInfo> allParams;
       cfg->getAllParams(&allParams);
       for (unsigned int i = 0; i < allParams.size(); i++)
         cfgParamCreated(allParams[i].id);
+
+      if(!cfgWidget->getHiddenCloseState()) {
+        gui->addDockWidget((void*)cfgWidget, 1);
+      }
     }
 
-  
     MainCfgGui::~MainCfgGui() {
       if(libManager == NULL) return;
 
@@ -98,9 +98,7 @@ namespace mars {
       if(gui) {
         libManager->releaseLibrary("main_gui");
       }
-      fprintf(stderr, "Delete cfg_manager_gui\n");
     }
-
 
     void MainCfgGui::menuAction(int action, bool checked) {
       (void)checked;
@@ -111,12 +109,10 @@ namespace mars {
       switch(action) {
       case 1:
         if(cfgWidget->isHidden()) {
-          gui->addDockWidget((void*)cfgWidget->pDialog, 1);
-          cfgWidget->show();
+          gui->addDockWidget((void*)cfgWidget, 1);
         }
         else {
-          cfgWidget->hide();
-          gui->removeDockWidget((void*)cfgWidget->pDialog, 1);
+          gui->removeDockWidget((void*)cfgWidget, 1);
         }
         break;
       }
@@ -126,108 +122,18 @@ namespace mars {
       (void)event;
     }
 
-
-
-    void MainCfgGui::setupCFG(void) {
-  
-      cfgW_top = cfg->getOrCreateProperty("Windows", "CFG/Window Top", (int)400,
-                                          dynamic_cast<CFGClient*>(this));
-  
-      cfgW_left = cfg->getOrCreateProperty("Windows", "CFG/Window Left", (int)400,
-                                           dynamic_cast<CFGClient*>(this));
-  
-      cfgW_width = cfg->getOrCreateProperty("Windows", "CFG/Window Width", (int)400,
-                                            dynamic_cast<CFGClient*>(this));
-  
-      cfgW_height = cfg->getOrCreateProperty("Windows", "CFG/Window Height", (int)200,
-                                             dynamic_cast<CFGClient*>(this));
-
-      cfgWidget->pDialog->setGeometry(cfgW_left.iValue, cfgW_top.iValue,
-                                      cfgW_width.iValue, cfgW_height.iValue);
-  
-    }
-
-
     void MainCfgGui::cfgUpdateProperty(cfgPropertyStruct _property) {
       bool change_view = 0;
 
       if(!cfgWidget)
         return;
 
-      cfgWidget->changeParam(_property.paramId);  
-
-      if(set_window_prop) return;
-
-      if(_property.paramId == cfgW_top.paramId) {
-        cfgW_top.iValue = _property.iValue;
-        change_view = 1;
-      }
-  
-      else if(_property.paramId == cfgW_left.paramId) {
-        cfgW_left.iValue = _property.iValue;
-        change_view = 1;
-      }
-
-      else if(_property.paramId == cfgW_width.paramId) {
-        cfgW_width.iValue = _property.iValue;
-        change_view = 1;
-      }
-
-      else if(_property.paramId == cfgW_height.paramId) {
-        cfgW_height.iValue = _property.iValue;
-        change_view = 1;
-      }
-  
-      if(change_view) {
-        ignore_next = true;
-        cfgWidget->pDialog->setGeometry(cfgW_left.iValue, cfgW_top.iValue,
-                                        cfgW_width.iValue, cfgW_height.iValue);
-      }
+      cfgWidget->changeParam(_property.paramId);
     }
 
 
     void MainCfgGui::geometryChanged() {
-      bool update_cfg = false;
- 
-      if (ignore_next) {
-        ignore_next = false;
-        return;
-      }
- 
-      int top = cfgWidget->pDialog->geometry().y();
-      int left = cfgWidget->pDialog->geometry().x();
-      int width = cfgWidget->pDialog->geometry().width();
-      int height = cfgWidget->pDialog->geometry().height();
-
-      if(top != cfgW_top.iValue) {
-        cfgW_top.iValue = top;
-        update_cfg = true;
-      }
-      if(left != cfgW_left.iValue) {
-        cfgW_left.iValue = left;
-        update_cfg = true;
-      }
-      if(width != cfgW_width.iValue) {
-        cfgW_width.iValue = width;
-        update_cfg = true;
-      }
-      if(height != cfgW_height.iValue) {
-        cfgW_height.iValue = height;
-        update_cfg = true;
-      }
-      if(update_cfg && cfg) {
-        set_window_prop = true;
-        cfg->setProperty(cfgW_top);
-        cfg->setProperty(cfgW_left);
-        cfg->setProperty(cfgW_width);
-        cfg->setProperty(cfgW_height);
-        set_window_prop = false;
-      }
     }
-
-
-
-
 
     void MainCfgGui::cfgParamCreated(cfgParamId _id) {
       const cfgParamInfo newParam = cfg->getParamInfo(_id);
@@ -239,29 +145,9 @@ namespace mars {
     }
 
     void MainCfgGui::cfgParamRemoved(cfgParamId _id) {
-      cfgWidget->removeParam(_id);
+      if(cfgWidget) cfgWidget->removeParam(_id);
       registeredParams.remove(_id);
     }
-
-    void MainCfgGui::show() {
-      if (cfgWidget) {
-        cfgWidget->show();
-      }
-    }
-
-    void MainCfgGui::hide() {
-      if (cfgWidget) {
-        cfgWidget->hide();
-      }
-    }
-
-    bool MainCfgGui::isHidden() const {
-      if (cfgWidget) {
-        return cfgWidget->isHidden();
-      }
-      return false;
-    }
-
 
   } // end of namespace cfg_manager_gui
 } // end of namespace mars

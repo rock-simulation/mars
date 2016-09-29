@@ -38,6 +38,7 @@
 #include <osgGA/StateSetManipulator>
 #include <osgViewer/Viewer>
 #include <osgViewer/ViewerEventHandlers>
+#include <osgViewer/CompositeViewer>
 #include <osg/CullFace>
 
 #include <osgShadow/ShadowedScene>
@@ -63,6 +64,10 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 
+#include <mars/osg_material_manager/OsgMaterialManager.h>
+#include <mars/osg_material_manager/MaterialNode.h>
+#include <mars/osg_material_manager/OsgMaterial.h>
+
 #include "gui_helper_functions.h"
 
 
@@ -75,12 +80,10 @@ namespace mars {
   namespace graphics {
 
     class GraphicsWidget;
-    class GraphicsViewer;
     class DrawObject;
     class OSGNodeStruct;
     class OSGHudElementStruct;
     class HUDElement;
-    class MarsMaterial;
 
 
     //mapping and control structs
@@ -147,8 +150,10 @@ namespace mars {
                                          const mars::interfaces::MaterialData &material);
       virtual void addMaterial(const interfaces::MaterialData &material);
       virtual void setDrawObjectNodeMask(unsigned long id, unsigned int bits);
+      // deprecated function
       virtual void setBlending(unsigned long id, bool mode);
       virtual void setBumpMap(unsigned long id, const std::string &bumpMap);
+
       virtual void setDrawObjectSelected(unsigned long id, bool val);
       virtual void setDrawObjectShow(unsigned long id, bool val);
       virtual void setDrawObjectRBN(unsigned long id, int val);
@@ -237,8 +242,6 @@ namespace mars {
       virtual void setActiveWindow(unsigned long win_id);
       GraphicsWidget* getGraphicsWindow(unsigned long id) const;
 
-      GraphicsViewer* getGraphicsViewer(void) const {return viewer;}
-
       // HUD Interface:
       virtual unsigned long addHUDElement(interfaces::hudElementStruct *new_hud_element);
       void removeHUDElement(unsigned long id);
@@ -297,10 +300,9 @@ namespace mars {
 
       void removeGraphicsWidget(unsigned long id);
       virtual bool isInitialized() const {return initialized;}
-      osg::StateSet* getMaterialStateSet(const interfaces::MaterialData &mStruct);
-      osg::Group* getMaterialGroup(const interfaces::MaterialData &mStruct);
+      osg_material_manager::MaterialNode* getMaterialNode(const std::string &name);
       void setDrawLineLaser(bool val);
-      osg::Group* getSharedStateGroup(unsigned long id);
+      osg_material_manager::MaterialNode* getSharedStateGroup(unsigned long id);
       void setUseShadow(bool v);
       void setShadowSamples(int v);
       virtual std::vector<interfaces::MaterialData> getMaterialList() const;
@@ -321,7 +323,7 @@ namespace mars {
       unsigned long next_window_id;
       unsigned long nextPreviewID;
 
-      GraphicsViewer *viewer;
+      osg::ref_ptr<osgViewer::CompositeViewer> viewer;
 
       // includes osg::lights, osg::lightsource, lightstruct and flag to check if full
       std::vector<lightmanager> myLights;
@@ -401,10 +403,8 @@ namespace mars {
       bool set_window_prop;
       osg::ref_ptr<osg::CullFace> cull;
       bool initialized;
-      std::map<std::string, MarsMaterial*> materials;
-      osg::ref_ptr<osg::Image> noiseImage_;
       GraphicsWidget *activeWindow;
-
+      osg_material_manager::OsgMaterialManager *materialManager;
       void setupCFG(void);
 
       unsigned long findCoreObject(unsigned long draw_id) const;
@@ -414,7 +414,6 @@ namespace mars {
       void setUseShader(bool val);
 
       void initDefaultLight();
-      void updateShadowSamples();
 
     }; // end of class GraphicsManager
 

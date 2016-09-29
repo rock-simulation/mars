@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -30,7 +30,11 @@
 #include "MyQDockWidget.h"
 #include <vector>
 #include <map>
+#include <mars/cfg_manager/CFGManagerInterface.h>
 
+namespace lib_manager {
+  class LibManager;
+}
 
 namespace mars {
   namespace main_gui {
@@ -59,13 +63,13 @@ namespace mars {
 
       public:
       //! A constructor.
-      MyQMainWindow(QWidget *parent = 0);
+      MyQMainWindow(QWidget *parent, lib_manager::LibManager *libManager);
 
       //! A destructor.
       ~MyQMainWindow();
 
       //! Indicates the current mode - docked or not.
-      int dockView;
+      bool dockView;
       //! Used when manually undocking.
       int hideChild;
       //! Indicates if the window is being closed.
@@ -94,7 +98,8 @@ namespace mars {
        * \brief Adds a widget to the dockables.
        * \sa GuiInterface::addDockWidget(void*, int, int)
        */
-      void addDock(QWidget *window, int priority = 0, int area = 0);
+      void addDock(QWidget *window, int priority = 0, int area = 0,
+                   bool possibleCentralWidget=false);
 
       /**
        * \brief Removes a widget from the dockables.
@@ -109,6 +114,9 @@ namespace mars {
 
 
     private:
+      cfg_manager::CFGManagerInterface *cfg;
+      lib_manager::LibManager *libManager;
+      cfg_manager::cfgPropertyStruct dockStyle;
 
       void closeEvent(QCloseEvent *event);
 

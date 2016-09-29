@@ -89,7 +89,7 @@ namespace mars {
         angular_treshold = 0;
         angular_low  = 0;
         shadow_id = 0;
-        isShadowCaster = false;
+        isShadowCaster = true;
         isShadowReceiver = true;
         this->name = name;
         pos = position;

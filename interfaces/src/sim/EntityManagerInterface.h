@@ -40,11 +40,16 @@ namespace mars {
 
   namespace interfaces {
 
+    class EntitySubscriberInterface;
+
     class EntityManagerInterface
     {
     public:
       virtual ~EntityManagerInterface() {}
-    
+
+      virtual const std::map<unsigned long, sim::SimEntity*>* subscribeToEntityCreation(
+        EntitySubscriberInterface* newsub) = 0;
+
       /**creates a new entity with the given name and returns its id*/
       virtual unsigned long addEntity(const std::string &name) = 0;
 

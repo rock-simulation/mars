@@ -126,7 +126,7 @@ namespace mars {
         item.texture = "";
         item.t_width = item.t_height = 0;
         item.get_light = 0.0;
-          for(int i=0; i<sensorpoints.size(); ++i) {
+          for(size_t i=0; i<sensorpoints.size(); ++i) {
             item.start = position + offset;
             item.end = item.start + orientation * ray;
             draw.drawItems.push_back(item); // TEST
@@ -208,7 +208,7 @@ namespace mars {
       Vector tmp;
       dbPackage->set(0, (long) id);
       fprintf(stderr, "  HapticFieldSensor: ");
-      for (int i = 0; i < forces.size(); ++i) {
+      for (size_t i = 0; i < forces.size(); ++i) {
         dbPackage->set(i + 1, forces.at(i));
         fprintf(stderr, "%g, ", forces.at(i));
       }
@@ -216,14 +216,13 @@ namespace mars {
     }
 
     void HapticFieldSensor::update(std::vector<draw_item>* drawItems) {
-      unsigned int i = 0;
       if (config.drawRays) {
         if (haveUpdate) {
           control->nodes->updateRay(attached_node);
           haveUpdate = false;
         }
         if (!(*drawItems)[0].draw_state) {
-          for (int i = 0; i < sensorpoints.size(); ++i) {
+          for (size_t i = 0; i < sensorpoints.size(); ++i) {
               (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
               (*drawItems)[i].start = position + orientation*(sensorpoints[i]);
               (*drawItems)[i].end = (*drawItems)[i].start + (1-weights.at(i))*(orientation * ray);
@@ -273,7 +272,7 @@ namespace mars {
 //        fprintf(stderr, "\n");
       }
       double forceQuant = contactForce / weightSum;
-      for (int i = 0; i < forces.size(); ++i) {
+      for (size_t i = 0; i < forces.size(); ++i) {
         forces.at(i) = weights.at(i) * forceQuant;
       }
     }

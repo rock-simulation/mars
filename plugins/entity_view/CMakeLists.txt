@@ -7,8 +7,8 @@ include(FindPkgConfig)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(mars)
-mars_defaults()
+find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 pkg_check_modules(PKGCONFIG REQUIRED
@@ -41,21 +41,13 @@ set(HEADERS
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
-find_package(Qt5Widgets)
-if (${Qt5Widgets_FOUND})
-  qt5_use_modules(${PROJECT_NAME} Widgets)
-  target_link_libraries(${PROJECT_NAME}
-                        ${PKGCONFIG_LIBRARIES}
-  )
-else(${Qt5Widgets_FOUND})
-  find_package(Qt4 REQUIRED)
-  include(${QT_USE_FILE})
-  target_link_libraries(${PROJECT_NAME}
-                        ${PKGCONFIG_LIBRARIES}
-                        ${QT_LIBRARIES}
-  )
-endif(${Qt5Widgets_FOUND})
 
+setup_qt()
+
+target_link_libraries(${PROJECT_NAME}
+                      ${PKGCONFIG_LIBRARIES}
+                      ${QT_LIBRARIES}
+                      )
 
 if(WIN32)
   set(LIB_INSTALL_DIR bin) # .dll are in PATH, like executables

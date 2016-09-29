@@ -4,8 +4,8 @@ set(PROJECT_DESCRIPTION "__description__")
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 
-find_package(mars)
-mars_defaults()
+find_package(lib_manager)
+libs_defaults()
 define_module_info()
 
 

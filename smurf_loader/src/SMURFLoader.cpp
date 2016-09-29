@@ -31,6 +31,8 @@
 #include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars/interfaces/GraphicData.h>
 #include <mars/sim/SimEntity.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
@@ -374,7 +376,60 @@ namespace mars {
             gravvec.z() = physicsmap["gravity"]["z"];
             control->sim->setGravity(gravvec);
             }
+          if (physicsmap.hasKey("ode")) {
+            if (physicsmap["ode"].hasKey("cfm")) {
+              control->cfg->setPropertyValue("Simulator", "world cfm", "value", (sReal)(physicsmap["ode"]["cfm"]));
+            }
+            if (physicsmap["ode"].hasKey("erp")) {
+              control->cfg->setPropertyValue("Simulator", "world erp", "value", (sReal)(physicsmap["ode"]["erp"]));
+            }
+            if (physicsmap["ode"].hasKey("stepsize")) {
+              control->cfg->setPropertyValue("Simulator", "calc_ms", "value", (sReal)(physicsmap["ode"]["stepsize"]));
+            }
           }
+        }
+        if (map.hasKey("environment")) {
+          configmaps::ConfigMap envmap = map["environment"];
+          if (envmap.hasKey("skybox")) {
+            control->cfg->createParam("Scene","skydome_path", cfg_manager::stringParam);
+            control->cfg->createParam("Scene","skydome_enabled", cfg_manager::boolParam);
+            control->cfg->setPropertyValue("Scene", "skydome_path", "value", std::string(envmap["skybox"]["path"]));
+            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value", true);
+          }
+          if (envmap.hasKey("terrain")) {
+            control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
+            control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
+          }
+          interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
+          if (envmap.hasKey("background")) {
+            Color bgcol;
+            bgcol.fromConfigItem(envmap["background"]);
+            goptions.clearColor = bgcol;
+          }
+          if (envmap.hasKey("fog")) {
+              goptions.fogEnabled = true;
+              goptions.fogDensity = envmap["fog"]["density"];
+              goptions.fogStart = envmap["fog"]["start"];
+              goptions.fogEnd = envmap["fog"]["end"];
+              Color fogcol;
+              fogcol.fromConfigItem(envmap["fog"]["color"]);
+              goptions.fogColor = fogcol;
+          } else {
+              goptions.fogEnabled = false;
+          }
+          control->graphics->setGraphicOptions(goptions);
+        }
+        if (map.hasKey("lights")) {
+          for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
+            LightData light;
+            int valid = light.fromConfigMap(*it, "", control->loadCenter);
+            if(!valid) {
+              fprintf(stderr, "Load: error while loading light\n");
+              return 0;
+            }
+            control->sim->addLight(light);
+          }
+        }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
           //map["URI"] = _filename;

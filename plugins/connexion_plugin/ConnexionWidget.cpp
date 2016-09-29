@@ -41,7 +41,8 @@ namespace mars {
   namespace plugins {
     namespace connexion_plugin {
 
-      ConnexionWidget::ConnexionWidget(mars::interfaces::ControlCenter* c) {
+      ConnexionWidget::ConnexionWidget(mars::interfaces::ControlCenter* c)
+        : main_gui::BaseWidget(0, c->cfg, "ConnexionPlugin") {
         control = c;
 
         //setAttribute(Qt::WA_DeleteOnClose);
@@ -121,7 +122,18 @@ namespace mars {
                     SLOT(checkRY(bool)), SLOT(sensRYChanged(double)), "RY", 7);
         generateDoF(mainLayout, checkLockRZ, sensitivityRZ, 
                     SLOT(checkRZ(bool)), SLOT(sensRZChanged(double)), "RZ", 8);
+        generateDoF(mainLayout, checkFilter_, filterValue_,
+                    SLOT(checkFilter(bool)), SLOT(filterValueChanged(double)),
+                    "filter", 9);
 
+        QCheckBox *checkBox = new QCheckBox(this);
+        checkBox->setFont(standardFont);
+        checkBox->setText("syncWithFrames");
+
+        connect(checkBox, SIGNAL(toggled(bool)),
+                this, SLOT(checkSyncWithFrames(bool)), Qt::DirectConnection);
+
+        mainLayout->addWidget(checkBox, 10, 0);
 
         startTimer(500);
 
@@ -130,17 +142,6 @@ namespace mars {
       }
 
       ConnexionWidget::~ConnexionWidget(void) {
-      }
-
-
-      void ConnexionWidget::hideEvent(QHideEvent* event) {
-        (void)event;
-        emit hideSignal();
-      }
-
-      void ConnexionWidget::closeEvent(QCloseEvent* event) {
-        (void)event;
-        emit closeSignal();
       }
 
       void ConnexionWidget::windowSelected(int index) {
@@ -218,16 +219,18 @@ namespace mars {
           }
         }
 
-        std::vector<interfaces::core_objects_exchange> objectList;
-        std::vector<interfaces::core_objects_exchange>::iterator iter;
-        control->nodes->getListNodes(&objectList);
+        if(control->nodes) {
+          std::vector<interfaces::core_objects_exchange> objectList;
+          std::vector<interfaces::core_objects_exchange>::iterator iter;
+          control->nodes->getListNodes(&objectList);
   
-        objectIDCombo->clear();
-        objectIDs.clear();
-        for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
-          sprintf(text, "Node: %s", (*iter).name.data());
-          objectIDCombo->addItem(QString(text));        
-          objectIDs.push_back((*iter).index);
+          objectIDCombo->clear();
+          objectIDs.clear();
+          for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
+            sprintf(text, "Node: %s", (*iter).name.data());
+            objectIDCombo->addItem(QString(text));        
+            objectIDs.push_back((*iter).index);
+          }
         }
       }
 
@@ -255,6 +258,14 @@ namespace mars {
         emit setLockAxis(6, val);
       }
 
+      void ConnexionWidget::checkFilter(bool val) {
+        emit setUseFilter(val);
+      }
+
+      void ConnexionWidget::checkSyncWithFrames(bool val) {
+        emit setSyncWithFrames(val);
+      }
+
       void ConnexionWidget::sensXChanged(double val) {
         emit sigSensitivity(1, val);
       }
@@ -277,6 +288,10 @@ namespace mars {
 
       void ConnexionWidget::sensRZChanged(double val) {
         emit sigSensitivity(6, val);
+      }
+
+      void ConnexionWidget::filterValueChanged(double val) {
+        emit setFilterValue(val);
       }
 
 
@@ -315,6 +330,7 @@ namespace mars {
         spinBox->setStyleSheet(QString::fromUtf8("background-color: rgb(217, 217, 217);"));
         spinBox->setFrame(false);
         spinBox->setSingleStep(0.1);
+        spinBox->setDecimals(5);
         spinBox->setRange(-1000., 1000.);
 
         connect(checkBox, SIGNAL(toggled(bool)),
