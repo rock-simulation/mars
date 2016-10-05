@@ -194,7 +194,6 @@ namespace mars {
     }
 
     void MyQMainWindow::dock() {
-      return;
       timerAllowed = false;
       if(!dockView) {
         saveDockGeometry();
