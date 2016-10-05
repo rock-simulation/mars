@@ -340,6 +340,7 @@ namespace mars {
         if(priority) {
           for (subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
             if (*subit == window) {
+              window->show();
               return;
             }
           }
