@@ -221,7 +221,9 @@ namespace mars {
         return;
       consoleLock.lock();
       while(messages.size() > 0) {
-        if(messages[0].type == data_broker::DB_MESSAGE_TYPE_ERROR)
+        if(messages[0].type == data_broker::DB_MESSAGE_TYPE_FATAL)
+          consoleWidget->setTextColor(QColor(255, 48, 9));
+        else if(messages[0].type == data_broker::DB_MESSAGE_TYPE_ERROR)
           consoleWidget->setTextColor(QColor(212, 148, 90));
         else if(messages[0].type == data_broker::DB_MESSAGE_TYPE_WARNING)
           consoleWidget->setTextColor(QColor(90, 148, 212));
