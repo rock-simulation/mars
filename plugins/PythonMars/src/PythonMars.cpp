@@ -32,9 +32,13 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 
 namespace mars {
+
+  using namespace osg_material_manager;
+
   namespace plugins {
     namespace PythonMars {
 
@@ -45,8 +49,10 @@ namespace mars {
       PythonMars::PythonMars(lib_manager::LibManager *theManager)
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
       }
-  
+
       void PythonMars::init() {
+        pf = new osg_points::PointsFactory();
+        materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
         PythonInterpreter::instance().addToPythonpath("python");
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
@@ -65,6 +71,8 @@ namespace mars {
           LOG_FATAL("Error: %s", e.what());
           pythonException = true;
         }
+        control->sim->switchPluginUpdateMode(PLUGIN_SIM_MODE | PLUGIN_GUI_MODE,
+                                             this);
       }
 
       void PythonMars::interpreteMap(ConfigItem &map) {
@@ -159,6 +167,36 @@ namespace mars {
             }
           }
 
+          if(map.hasKey("PointCloud")) {
+            ConfigMap::iterator it = map["PointCloud"].beginMap();
+            for(; it!=map["PointCloud"].endMap(); ++it) {
+              std::string name = it->first;
+              if(points.find(name) != points.end()) {
+                // todo: free points
+              }
+              int size = it->second;
+              // create point cloud
+              osg_points::Points *p = pf->createPoints();
+              p->setLineWidth(3.0);
+              points[name] = p;
+              double *data = new double[size*3];
+              std::vector<osg_points::Vector> pV;
+              pV.reserve(size);
+              for(int i=0; i<size; ++i) {
+                data[i*3] = ((double)i)/size*2;
+                data[i*3+1] = (i%4)*0.1;
+                data[i*3+2] = 1;
+                pV.push_back(osg_points::Vector(data[i*3], data[i*3+1],
+                                                data[i*3+2]));
+              }
+              p->setData(pV);
+              pointsData[name] = data;
+              pointsSize[name] = size;
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, data, size*3);
+              control->graphics->addOSGNode(p->getOSGNode());
+            }
+          }
+
           if(map.hasKey("request") && map["request"].isVector()) {
             requestMap = map["request"];
           }
@@ -176,92 +214,108 @@ namespace mars {
 
       void PythonMars::update(sReal time_ms) {
         mutex.lock();
-        if(pythonException) {
-          mutex.unlock();
-          return;
-        }
-        ConfigItem map;
-        ConfigMap sendMap;
-        
-        ConfigVector::iterator it = requestMap.begin();
-        for(; it!=requestMap.end(); ++it) {
-          if(!it->hasKey("type")) continue;
-          if(!it->hasKey("name")) continue;
-          std::string type = (*it)["type"];
-          std::string name = (*it)["name"];
-
-          if(type == "Node") {
-            unsigned long id = control->nodes->getID(name);
-            Vector pos = control->nodes->getPosition(id);
-            Quaternion rot = control->nodes->getRotation(id);
-            sendMap["Nodes"][name]["pos"]["x"] = pos.x();
-            sendMap["Nodes"][name]["pos"]["y"] = pos.y();
-            sendMap["Nodes"][name]["pos"]["z"] = pos.z();
-            sendMap["Nodes"][name]["rot"]["x"] = rot.x();
-            sendMap["Nodes"][name]["rot"]["y"] = rot.y();
-            sendMap["Nodes"][name]["rot"]["z"] = rot.z();
-            sendMap["Nodes"][name]["rot"]["w"] = rot.w();
+        if(time_ms > 0) {
+          if(pythonException) {
+            mutex.unlock();
+            return;
           }
+          ConfigItem map;
+          ConfigMap sendMap;
 
-          if(type == "Sensor") {
-            unsigned long id = control->sensors->getSensorID(name);
-            sReal *data;
-            int num = control->sensors->getSensorData(id, &data);
-            for(int i=0; i<num; ++i) {
-              sendMap["Sensors"][name][i] = data[i];
+          ConfigVector::iterator it = requestMap.begin();
+          for(; it!=requestMap.end(); ++it) {
+            if(!it->hasKey("type")) continue;
+            if(!it->hasKey("name")) continue;
+            std::string type = (*it)["type"];
+            std::string name = (*it)["name"];
+
+            if(type == "Node") {
+              unsigned long id = control->nodes->getID(name);
+              Vector pos = control->nodes->getPosition(id);
+              Quaternion rot = control->nodes->getRotation(id);
+              sendMap["Nodes"][name]["pos"]["x"] = pos.x();
+              sendMap["Nodes"][name]["pos"]["y"] = pos.y();
+              sendMap["Nodes"][name]["pos"]["z"] = pos.z();
+              sendMap["Nodes"][name]["rot"]["x"] = rot.x();
+              sendMap["Nodes"][name]["rot"]["y"] = rot.y();
+              sendMap["Nodes"][name]["rot"]["z"] = rot.z();
+              sendMap["Nodes"][name]["rot"]["w"] = rot.w();
             }
-            free(data);
-          }
 
-          if(type == "Config") {
-            if(!it->hasKey("group")) continue;
-            std::string group = (*it)["group"];
-            cfg_manager::cfgParamInfo info;
-            info = control->cfg->getParamInfo(group, name);
-            switch(info.type) {
-            case cfg_manager::boolParam:
-              {
-                bool v;
-                control->cfg->getPropertyValue(group, name, "value", &v);
-                sendMap["Config"][group][name] = v;
-                break;
+            if(type == "Sensor") {
+              unsigned long id = control->sensors->getSensorID(name);
+              sReal *data;
+              int num = control->sensors->getSensorData(id, &data);
+              for(int i=0; i<num; ++i) {
+                sendMap["Sensors"][name][i] = data[i];
               }
-            case cfg_manager::doubleParam:
-              {
-                double v;
-                control->cfg->getPropertyValue(group, name, "value", &v);
-                sendMap["Config"][group][name] = v;
-                break;
-              }
-            case cfg_manager::intParam:
-              {
-                int v;
-                control->cfg->getPropertyValue(group, name, "value", &v);
-                sendMap["Config"][group][name] = v;
-                break;
-              }
-            case cfg_manager::stringParam:
-              {
-                std::string v;
-                control->cfg->getPropertyValue(group, name, "value", &v);
-                sendMap["Config"][group][name] = v;
-                break;
-              }
-            default:
-              break;
+              if(num) free(data);
             }
+
+            if(type == "Config") {
+              if(!it->hasKey("group")) continue;
+              std::string group = (*it)["group"];
+              cfg_manager::cfgParamInfo info;
+              info = control->cfg->getParamInfo(group, name);
+              switch(info.type) {
+              case cfg_manager::boolParam:
+                {
+                  bool v;
+                  control->cfg->getPropertyValue(group, name, "value", &v);
+                  sendMap["Config"][group][name] = v;
+                  break;
+                }
+              case cfg_manager::doubleParam:
+                {
+                  double v;
+                  control->cfg->getPropertyValue(group, name, "value", &v);
+                  sendMap["Config"][group][name] = v;
+                  break;
+                }
+              case cfg_manager::intParam:
+                {
+                  int v;
+                  control->cfg->getPropertyValue(group, name, "value", &v);
+                  sendMap["Config"][group][name] = v;
+                  break;
+                }
+              case cfg_manager::stringParam:
+                {
+                  std::string v;
+                  control->cfg->getPropertyValue(group, name, "value", &v);
+                  sendMap["Config"][group][name] = v;
+                  break;
+                }
+              default:
+                break;
+              }
+            }
+
           }
-          
+          try {
+            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), map);
+            interpreteMap(map);
+          }
+          catch(const std::exception &e) {
+            LOG_FATAL("Error: %s", e.what());
+            pythonException = true;
+          }
         }
-        try {
-          toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), map);
-          interpreteMap(map);
+        else {
+          // udpate point clouds
+          std::map<std::string, osg_points::Points*>::iterator it = points.begin();
+          for(; it!=points.end(); ++it) {
+            double *d = pointsData[it->first];
+            int size = pointsSize[it->first];
+            std::vector<osg_points::Vector> pV;
+            pV.reserve(size);
+            for(int i=0; i<size; ++i) {
+              pV.push_back(osg_points::Vector(d[i*3], d[i*3+1], d[i*3+2]));
+            }
+            it->second->setData(pV);
+          }
         }
-        catch(const std::exception &e) {
-          LOG_FATAL("Error: %s", e.what());
-          pythonException = true;
-        }
-        mutex.unlock();        
+        mutex.unlock();
         // control->motors->setMotorValue(id, value);
       }
 
@@ -270,21 +324,21 @@ namespace mars {
                                     int id) {
         // package.get("force1/x", force);
       }
-  
+
       void PythonMars::cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) {
 
         if(_property.paramId == example.paramId) {
           example.dValue = _property.dValue;
         }
       }
-      
+
       void PythonMars::menuAction (int action, bool checked)
       {
         if(action == 1) {
           mutex.lock();
           pythonException = false;
           try {
-            if(plugin) 
+            if(plugin)
               plugin->reload();
             else
               plugin = PythonInterpreter::instance().import("mars_plugin");

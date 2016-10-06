@@ -66,7 +66,7 @@ namespace osg_points {
 
     this->addChild(pointsTransform.get());
 
-    linew = new osg::LineWidth(2.0);
+    linew = new osg::Point(2.0);
     node->getOrCreateStateSet()->setAttributeAndModes(linew.get(),
                                                       osg::StateAttribute::ON);
 	
@@ -85,8 +85,8 @@ namespace osg_points {
     dirty();
   }
 
-  void PointsP::setData(std::vector<Vector> p) {
-    std::vector<Vector>::iterator it=p.begin();
+  void PointsP::setData(const std::vector<Vector> &p) {
+    std::vector<Vector>::const_iterator it=p.begin();
     points->clear();
     for(;it!=p.end(); ++it) {
       points->push_back(osg::Vec3(it->x, it->y, it->z));
@@ -102,7 +102,7 @@ namespace osg_points {
   }
 
   void PointsP::setLineWidth(double w) {
-    linew->setWidth(w);
+    linew->setSize(w);
     dirty();
   }
 

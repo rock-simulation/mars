@@ -48,7 +48,7 @@ namespace osg_points {
     virtual ~Points() {}
 
     virtual void appendData(Vector v) = 0;
-    virtual void setData(std::vector<Vector> points) = 0;
+    virtual void setData(const std::vector<Vector> &points) = 0;
     virtual void setColor(Color c) = 0;
     virtual void setLineWidth(double w) = 0;
     virtual void* getOSGNode() = 0;

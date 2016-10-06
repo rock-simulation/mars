@@ -20,6 +20,7 @@ def clearDict():
     iDict["commands"] = {}
     iDict["request"] = []
     iDict["config"] = {}
+    iDict["PointCloud"] = {}
 
 def sendDict():
     global iDict
@@ -60,3 +61,7 @@ def logError(s):
 def setConfig(group, name, value):
     global iDict
     iDict["config"][group] = {name: value}
+
+def createPointCloud(name, size):
+    global iDict
+    iDict["PointCloud"][name] = size

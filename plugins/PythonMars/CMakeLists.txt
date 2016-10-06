@@ -7,6 +7,7 @@ include(FindPkgConfig)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+#find_package(Numpy REQUIRED)
 find_package(lib_manager)
 lib_defaults()
 define_module_info()
@@ -24,6 +25,8 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    data_broker
 			    mars_interfaces
           configmaps
+          osg_points
+          osg_material_manager
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -49,12 +52,23 @@ add_definitions(-DUSE_MEMORYVIEWS)
 if (APPLE)
   # here we assume to search for the Python libraries provided by macports
   set(PYTHON_LIBRARY "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python")
-  set(PYTHON_INCLUDE_DIR "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7")
+  set(PYTHON_INCLUDE_DIR "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7" "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include")
   find_package(PythonLibs REQUIRED)
 else (APPLE)
   pkg_check_modules(PYTHON "python")
   find_package(Numpy REQUIRED)
 endif (APPLE)
+
+find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
+include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
+link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
+include(CheckIncludeFileCXX)
+set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
+CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
+if(${HAVE_OSG_VERSION_H})
+    ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
+endif()
+
 include_directories(${PYTHON_INCLUDE_DIRS})
 include_directories(${NUMPY_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARY_DIRS})
@@ -67,7 +81,8 @@ if (${Qt5Widgets_FOUND})
   target_link_libraries(${PROJECT_NAME}
                         ${PKGCONFIG_LIBRARIES}
                         ${PYTHON_LIBRARIES}
-  )
+                        ${OPENSCENEGRAPH_LIBRARIES}
+   )
 else(${Qt5Widgets_FOUND})
   find_package(Qt4 REQUIRED)
   include(${QT_USE_FILE})
@@ -75,6 +90,7 @@ else(${Qt5Widgets_FOUND})
                         ${PKGCONFIG_LIBRARIES}
                         ${QT_LIBRARIES}
                         ${PYTHON_LIBRARIES}
+                        ${OPENSCENEGRAPH_LIBRARIES}
   )
 endif(${Qt5Widgets_FOUND})
 

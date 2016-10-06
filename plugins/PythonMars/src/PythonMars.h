@@ -40,7 +40,9 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/utils/Mutex.h>
-
+#include <osg_points/Points.hpp>
+#include <osg_points/PointsFactory.hpp>
+#include <mars/osg_material_manager/OsgMaterialManager.h>
 #include "PythonInterpreter.hpp"
 
 #include <string>
@@ -95,6 +97,11 @@ namespace mars {
         std::map<std::string, unsigned long> motorMap;
         configmaps::ConfigItem requestMap;
         bool pythonException;
+        std::map<std::string, osg_points::Points*> points;
+        osg_material_manager::OsgMaterialManager *materialManager;
+        osg_points::PointsFactory *pf;
+        std::map<std::string, double*> pointsData;
+        std::map<std::string, int> pointsSize;
       }; // end of class definition PythonMars
 
     } // end of namespace PythonMars

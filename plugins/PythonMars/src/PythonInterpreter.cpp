@@ -5,6 +5,8 @@
 
 #include "PythonInterpreter.hpp"
 #include <Python.h>
+#include <numpy/arrayobject.h>
+
 #include <stdexcept>
 #include <list>
 #include <cstdarg>
@@ -375,6 +377,16 @@ struct ListBuilderState
             args.push_back(mapToPyObjectPtr(map));
             break;
         }
+        case ONEDCARRAY:
+        {
+            double* array = va_arg(cppArgs, double*);
+            int size = va_arg(cppArgs, int);
+            npy_intp dims[1] = {(npy_intp) size};
+            PyObject *obj = PyArray_SimpleNewFromData(1, dims, NPY_DOUBLE,
+                                                      (void*)(array));
+            args.push_back(makePyObjectPtr(obj));
+            break;
+        }
         default:
             throw std::runtime_error("Unknown function argument type");
         }
@@ -390,6 +402,7 @@ PythonInterpreter::PythonInterpreter()
 {
     if(!Py_IsInitialized())
         Py_Initialize();
+    import_array();
 }
 
 PythonInterpreter::~PythonInterpreter()
