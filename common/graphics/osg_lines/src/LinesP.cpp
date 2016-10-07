@@ -97,7 +97,21 @@ namespace osg_lines {
   }
 
   void LinesP::drawStrip(bool strip) {
-    // todo
+    linesGeom->removePrimitiveSet(0);
+    if(strip) {
+      drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,
+                                      0, points->size());
+      drawArray->setFirst(0);
+      drawArray->setCount(points->size());
+      linesGeom->addPrimitiveSet(drawArray.get());
+    }
+    else {
+      drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINES,
+                                      0, points->size());
+      drawArray->setFirst(0);
+      drawArray->setCount(points->size());
+      linesGeom->addPrimitiveSet(drawArray.get());
+    }
   }
 
   void LinesP::setColor(Color c) {
