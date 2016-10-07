@@ -21,6 +21,7 @@ def clearDict():
     iDict["request"] = []
     iDict["config"] = {}
     iDict["PointCloud"] = {}
+    iDict["ConfigPointCloud"] = {}
 
 def sendDict():
     global iDict
@@ -65,3 +66,7 @@ def setConfig(group, name, value):
 def createPointCloud(name, size):
     global iDict
     iDict["PointCloud"][name] = size
+
+def configurePointCloud(name, size, r, g, b):
+    global iDict
+    iDict["ConfigPointCloud"][name] = [size, r, g, b]

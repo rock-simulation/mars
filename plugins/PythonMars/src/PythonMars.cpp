@@ -172,7 +172,11 @@ namespace mars {
             for(; it!=map["PointCloud"].endMap(); ++it) {
               std::string name = it->first;
               if(points.find(name) != points.end()) {
-                // todo: free points
+                control->graphics->removeOSGNode(points[name]->getOSGNode());
+                delete pointsData[name];
+                points.erase(name);
+                pointsData.erase(name);
+                pointsSize.erase(name);
               }
               int size = it->second;
               // create point cloud
@@ -194,6 +198,17 @@ namespace mars {
               pointsSize[name] = size;
               plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, data, size*3);
               control->graphics->addOSGNode(p->getOSGNode());
+            }
+          }
+
+          if(map.hasKey("ConfigPointCloud")) {
+            ConfigMap::iterator it = map["ConfigPointCloud"].beginMap();
+            for(; it!=map["ConfigPointCloud"].endMap(); ++it) {
+              if(points.find(it->first) == points.end()) continue;
+              points[it->first]->setLineWidth(it->second[0]);
+              osg_points::Color c((double)it->second[1], (double)it->second[2],
+                                  (double)it->second[3], 1.0);
+              points[it->first]->setColor(c);
             }
           }
 
