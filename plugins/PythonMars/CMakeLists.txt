@@ -26,6 +26,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_interfaces
           configmaps
           osg_points
+          osg_lines
           osg_material_manager
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

@@ -22,6 +22,7 @@ def clearDict():
     iDict["config"] = {}
     iDict["PointCloud"] = {}
     iDict["ConfigPointCloud"] = {}
+    iDict["Lines"] = {}
 
 def sendDict():
     global iDict
@@ -69,4 +70,23 @@ def createPointCloud(name, size):
 
 def configurePointCloud(name, size, r, g, b):
     global iDict
-    iDict["ConfigPointCloud"][name] = [size, r, g, b]
+    iDict["ConfigPointCloud"][name] = [float(size), float(r),
+                                       float(g), float(b)]
+
+def handleLines(name, args):
+    global iDict
+    if not name in iDict["Lines"]:
+        iDict["Lines"][name] = []
+    iDict["Lines"][name].append(args)
+
+def configureLines(name, size, r, g, b):
+    handleLines(name, {"config": [float(size), float(r), float(g), float(b)]})
+
+def clearLines(name):
+    handleLines(name, "clear")
+
+def removeLines(name):
+    handleLines(name, "remove")
+
+def appendLines(name, x, y, z):
+    handleLines(name, {"append": [float(x), float(y), float(z)]})

@@ -34,6 +34,7 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
+#include <mars/utils/misc.h>
 
 namespace mars {
 
@@ -50,8 +51,15 @@ namespace mars {
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
       }
 
+      PythonMars::~PythonMars() {
+        if(materialManager) libManager->releaseLibrary("osg_material_manager");
+      }
+
       void PythonMars::init() {
+        updateGraphics = false;
+        nextStep = false;
         pf = new osg_points::PointsFactory();
+        lf = new osg_lines::LinesFactory();
         materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
         PythonInterpreter::instance().addToPythonpath("python");
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
@@ -172,32 +180,31 @@ namespace mars {
             for(; it!=map["PointCloud"].endMap(); ++it) {
               std::string name = it->first;
               if(points.find(name) != points.end()) {
-                control->graphics->removeOSGNode(points[name]->getOSGNode());
-                delete pointsData[name];
+                PointStruct &point = points[name];
+                control->graphics->removeOSGNode(point.p->getOSGNode());
+                delete point.data;
                 points.erase(name);
-                pointsData.erase(name);
-                pointsSize.erase(name);
               }
-              int size = it->second;
               // create point cloud
-              osg_points::Points *p = pf->createPoints();
-              p->setLineWidth(3.0);
-              points[name] = p;
-              double *data = new double[size*3];
+              PointStruct point;
+              point.p = pf->createPoints();
+              point.p->setLineWidth(3.0);
+              point.size = it->second;
+              point.data = new double[point.size*3];
               std::vector<osg_points::Vector> pV;
-              pV.reserve(size);
-              for(int i=0; i<size; ++i) {
-                data[i*3] = ((double)i)/size*2;
-                data[i*3+1] = (i%4)*0.1;
-                data[i*3+2] = 1;
-                pV.push_back(osg_points::Vector(data[i*3], data[i*3+1],
-                                                data[i*3+2]));
+              pV.reserve(point.size);
+              for(int i=0; i<point.size; ++i) {
+                point.data[i*3] = ((double)i)/point.size*2;
+                point.data[i*3+1] = (i%4)*0.1;
+                point.data[i*3+2] = 1;
+                pV.push_back(osg_points::Vector(point.data[i*3],
+                                                point.data[i*3+1],
+                                                point.data[i*3+2]));
               }
-              p->setData(pV);
-              pointsData[name] = data;
-              pointsSize[name] = size;
-              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, data, size*3);
-              control->graphics->addOSGNode(p->getOSGNode());
+              points[name] = point;
+              point.p->setData(pV);
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.data, point.size*3);
+              control->graphics->addOSGNode(point.p->getOSGNode());
             }
           }
 
@@ -205,10 +212,56 @@ namespace mars {
             ConfigMap::iterator it = map["ConfigPointCloud"].beginMap();
             for(; it!=map["ConfigPointCloud"].endMap(); ++it) {
               if(points.find(it->first) == points.end()) continue;
-              points[it->first]->setLineWidth(it->second[0]);
+              points[it->first].p->setLineWidth(it->second[0]);
               osg_points::Color c((double)it->second[1], (double)it->second[2],
                                   (double)it->second[3], 1.0);
-              points[it->first]->setColor(c);
+              points[it->first].p->setColor(c);
+            }
+          }
+
+          if(map.hasKey("Lines")) {
+            ConfigMap::iterator it = map["Lines"].beginMap();
+            for(; it!=map["Lines"].endMap(); ++it) {
+              const std::string &name = it->first;
+              ConfigVector::iterator it2 = it->second.begin();
+              for(; it2!=it->second.end(); ++it2) {
+                if(it2->isAtom()) {
+                  if(lines.find(name) == lines.end()) continue;
+                  std::string cmd = *it2;
+                  if(cmd == "clear") {
+                    lines[name].l->setData(std::list<osg_lines::Vector>());
+                  }
+                  else if(cmd == "remove") {
+                    control->graphics->removeOSGNode(lines[name].l->getOSGNode());
+                    lines.erase(name);
+                  }
+                }
+                else {
+                  ConfigMap &cmd = *it2;
+                  if(lines.find(name) == lines.end()) {
+                    LineStruct line;
+                    line.l = lf->createLines();
+                    line.l->setLineWidth(3.0);
+                    line.l->drawStrip(false);
+                    lines[name] = line;
+                    control->graphics->addOSGNode(line.l->getOSGNode());
+                  }
+                  if(cmd.hasKey("append")) {
+                    LineStruct &ls = lines[name];
+                    osg_lines::Vector v((double)cmd["append"][0],
+                                        (double)cmd["append"][1],
+                                          (double)cmd["append"][2]);
+                    ls.toAppend.push_back(v);
+                  }
+                  if(cmd.hasKey("config")) {
+                    lines[name].l->setLineWidth((double)cmd["config"][0]);
+                    osg_lines::Color c((double)cmd["config"][1],
+                                       (double)cmd["config"][2],
+                                       (double)cmd["config"][3], 1.0);
+                    lines[name].l->setColor(c);
+                  }
+                }
+              }
             }
           }
 
@@ -216,6 +269,7 @@ namespace mars {
             requestMap = map["request"];
           }
         }
+        nextStep = true;
       }
 
       void PythonMars::reset() {
@@ -223,18 +277,13 @@ namespace mars {
         //plugin->reload();
       }
 
-      PythonMars::~PythonMars() {
-      }
-
-
       void PythonMars::update(sReal time_ms) {
-        mutex.lock();
         if(time_ms > 0) {
           if(pythonException) {
-            mutex.unlock();
             return;
           }
-          ConfigItem map;
+          while(!nextStep) utils::msleep(2);
+          mutex.lock();
           ConfigMap sendMap;
 
           ConfigVector::iterator it = requestMap.begin();
@@ -308,29 +357,50 @@ namespace mars {
 
           }
           try {
-            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), map);
-            interpreteMap(map);
+            iMap = ConfigItem();
+            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), iMap);
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
             pythonException = true;
           }
+          nextStep = false;
+          updateGraphics = true;
+          mutex.unlock();
         }
         else {
-          // udpate point clouds
-          std::map<std::string, osg_points::Points*>::iterator it = points.begin();
-          for(; it!=points.end(); ++it) {
-            double *d = pointsData[it->first];
-            int size = pointsSize[it->first];
-            std::vector<osg_points::Vector> pV;
-            pV.reserve(size);
-            for(int i=0; i<size; ++i) {
-              pV.push_back(osg_points::Vector(d[i*3], d[i*3+1], d[i*3+2]));
+          if(updateGraphics) {
+            interpreteMap(iMap);
+            mutex.lock();
+            { // udpate point clouds
+              std::map<std::string, PointStruct>::iterator it = points.begin();
+              for(; it!=points.end(); ++it) {
+                std::vector<osg_points::Vector> pV;
+                pV.reserve(it->second.size);
+                for(int i=0; i<it->second.size; ++i) {
+                  pV.push_back(osg_points::Vector(it->second.data[i*3],
+                                                  it->second.data[i*3+1],
+                                                  it->second.data[i*3+2]));
+                }
+                it->second.p->setData(pV);
+              }
             }
-            it->second->setData(pV);
+
+            { // update lines
+              std::map<std::string, LineStruct>::iterator it = lines.begin();
+              for(; it!=lines.end(); ++it) {
+                std::vector<osg_lines::Vector>::iterator vt;
+                for(vt=it->second.toAppend.begin();
+                    vt!=it->second.toAppend.end(); ++vt) {
+                  it->second.l->appendData(*vt);
+                }
+                it->second.toAppend.clear();
+              }
+            }
+            updateGraphics = false;
+            mutex.unlock();
           }
         }
-        mutex.unlock();
         // control->motors->setMotorValue(id, value);
       }
 

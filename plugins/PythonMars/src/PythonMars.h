@@ -42,6 +42,8 @@
 #include <mars/utils/Mutex.h>
 #include <osg_points/Points.hpp>
 #include <osg_points/PointsFactory.hpp>
+#include <osg_lines/Lines.h>
+#include <osg_lines/LinesFactory.h>
 #include <mars/osg_material_manager/OsgMaterialManager.h>
 #include "PythonInterpreter.hpp"
 
@@ -51,6 +53,17 @@ namespace mars {
 
   namespace plugins {
     namespace PythonMars {
+
+      struct PointStruct {
+        osg_points::Points *p;
+        double *data;
+        int size;
+      };
+
+      struct LineStruct {
+        osg_lines::Lines *l;
+        std::vector<osg_lines::Vector> toAppend;
+      };
 
       // inherit from MarsPluginTemplateGUI for extending the gui
       class PythonMars: public mars::interfaces::MarsPluginTemplateGUI,
@@ -97,11 +110,13 @@ namespace mars {
         std::map<std::string, unsigned long> motorMap;
         configmaps::ConfigItem requestMap;
         bool pythonException;
-        std::map<std::string, osg_points::Points*> points;
+        std::map<std::string, PointStruct> points;
+        std::map<std::string, LineStruct> lines;
         osg_material_manager::OsgMaterialManager *materialManager;
         osg_points::PointsFactory *pf;
-        std::map<std::string, double*> pointsData;
-        std::map<std::string, int> pointsSize;
+        osg_lines::LinesFactory *lf;
+        bool updateGraphics, nextStep;
+        configmaps::ConfigItem iMap;
       }; // end of class definition PythonMars
 
     } // end of namespace PythonMars
