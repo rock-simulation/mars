@@ -40,6 +40,9 @@ def setRunning(value):
         iDict["startSim"] = False
         iDict["stopSim"] = True
 
+def setUpdateTime(value):
+    iDict["updateTime"] = float(value)
+
 def requestNode(name):
     global iDict
     iDict["request"].append({"type": "Node", "name": name})

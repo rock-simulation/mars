@@ -22,7 +22,7 @@
 #define JOYSTICKWIDGET_H
 
 // Qt includes
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QKeyEvent>
 #include "ui_JoystickWidget.h"
 #include "CrossWidget.h"

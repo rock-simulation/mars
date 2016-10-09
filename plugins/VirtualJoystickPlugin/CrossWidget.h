@@ -21,7 +21,7 @@
 #ifndef CROSSWIDGET_H
 #define CROSSWIDGET_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QString>
 #include <QEvent>
 #include <QKeyEvent>

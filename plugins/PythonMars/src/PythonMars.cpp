@@ -91,6 +91,9 @@ namespace mars {
           if(map.hasKey("stopSim") && (bool)map["stopSim"]) {
             control->sim->StopSimulation();
           }
+          if(map.hasKey("updateTime")) {
+            updateTime = map["updateTime"];
+          }
           if(map.hasKey("log")) {
             if(map["log"].hasKey("debug")) {
               ConfigVector::iterator it = map["log"]["debug"].begin();
@@ -106,7 +109,7 @@ namespace mars {
             }
           }
 
-          if(map.hasKey("commands")) {
+          if(map.hasKey("commands") && control->sim->isSimRunning()) {
             ConfigMap::iterator it = map["commands"].beginMap();
             for(; it!=map["commands"].endMap(); ++it) {
               std::string name = it->first;
@@ -278,7 +281,17 @@ namespace mars {
       }
 
       void PythonMars::update(sReal time_ms) {
+        static double nextUpdate = 0.0;
         if(time_ms > 0) {
+          if(updateTime > 0) {
+            nextUpdate += time_ms;
+            if(nextUpdate > updateTime) {
+              nextUpdate = fmod(nextUpdate, updateTime);
+            }
+            else {
+              return;
+            }
+          }
           if(pythonException) {
             return;
           }

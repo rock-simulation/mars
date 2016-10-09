@@ -33,7 +33,7 @@
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
-#include <QtGui>
+#include <QObject>
 #include "JoystickWidget.h"
 //#include "JoystickInterface.h"
 

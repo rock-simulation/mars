@@ -117,8 +117,9 @@ namespace mars {
         osg_lines::LinesFactory *lf;
         bool updateGraphics, nextStep;
         configmaps::ConfigItem iMap;
+        double updateTime;
       }; // end of class definition PythonMars
-
+      
     } // end of namespace PythonMars
   } // end of namespace plugins
 } // end of namespace mars
