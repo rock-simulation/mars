@@ -1,0 +1,102 @@
+/*
+ *  Copyright 2011, 2016, DFKI GmbH Robotics Innovation Center
+ *
+ *  This file is part of the MARS simulation framework.
+ *
+ *  MARS is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Lesser General Public License
+ *  as published by the Free Software Foundation, either version 3
+ *  of the License, or (at your option) any later version.
+ *
+ *  MARS is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Lesser General Public License for more details.
+ *
+ *   You should have received a copy of the GNU Lesser General Public License
+ *   along with MARS.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include "yaml-shader.h"
+
+namespace osg_material_manager {
+
+    using namespace std;
+    using namespace configmaps;
+
+    YamlShader::YamlShader(string name, vector<std::string> &args, ConfigMap &map, string resPath)
+            : ShaderFunc(name, args) {
+      if (map.hasKey("source")) {
+        resPath += (string)map["source"];
+        ifstream t(resPath.c_str());
+        stringstream buffer;
+        buffer << t.rdbuf();
+        source = buffer.str();
+      } else {
+        source = "";
+      }
+
+      if (map.hasKey("params")) {
+        ConfigVector::iterator it = map["params"].begin();
+        for (;it!=map["params"].end();it++) {
+          funcs[0].second.push_back(it.base()->getString());
+        }
+      }
+
+      if (map.hasKey("varyings")) {
+        ConfigVector::iterator it = map["varyings"].begin();
+        for (;it!=map["varyings"].end();it++) {
+          ConfigItem &item = *it;
+          std::stringstream s;
+          if (item.hasKey("size")) {
+            string size = map["mappings"][(string)item["size"]];
+            s << "[" << size << "]";
+          } else {
+            s << "";
+          }
+          addVarying( (GLSLVarying) { (string)item["type"], (string)item["name"] + s.str() } );
+        }
+      }
+
+      if (map.hasKey("uniforms")) {
+        ConfigVector::iterator it = map["uniforms"].begin();
+        for (;it!=map["uniforms"].end();it++) {
+          ConfigItem &item = *it;
+          std::stringstream s;
+          if (item.hasKey("size")) {
+            string size = map["mappings"][(string)item["size"]];
+            s << "[" << size << "]";
+          } else {
+            s << "";
+          }
+          addUniform( (GLSLUniform) { (string)item["type"], (string)item["name"] + s.str() } );
+        }
+      }
+
+      if (map.hasKey("exports")) {
+        ConfigVector::iterator it = map["exports"].begin();
+        for (;it!=map["exports"].end();it++) {
+          ConfigItem &item = *it;
+          addExport( (GLSLExport) { (string)item["name"], (string)item["value"] } );
+        }
+      }
+
+      if (map.hasKey("mainVars")) {
+        ConfigVector::iterator it = map["mainVars"].begin();
+        for (;it!=map["mainVars"].end();it++) {
+          ConfigItem &item = *it;
+          addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+        }
+      }
+
+    }
+
+    std::string YamlShader::code() const {
+      return source;
+    }
+
+}
