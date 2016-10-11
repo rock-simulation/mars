@@ -43,6 +43,15 @@ set(HEADERS
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 setup_qt()
+if (${USE_QT5})
+  IF (UNIX)
+    set(PUBLIC_DEPENDECIES Qt5Widgets)
+  ENDIF (UNIX)
+else()
+  IF (UNIX)
+    set(PUBLIC_DEPENDENCIES "QtCore QtGui")
+  ENDIF (UNIX)
+endif()
 
 target_link_libraries(${PROJECT_NAME}
                       ${PKGCONFIG_LIBRARIES}
