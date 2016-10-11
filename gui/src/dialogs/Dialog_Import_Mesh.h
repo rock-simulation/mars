@@ -25,8 +25,11 @@
 #warning "Dialog_Import_Mesh.h"
 #endif
 
+#ifndef Q_MOC_RUN
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/NodeData.h>
+#endif
+
 #include "Dialog_Create_Material.h"
 #include "Widget_Node_Options_ODE.h"
 #include <vector>

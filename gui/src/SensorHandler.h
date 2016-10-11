@@ -25,10 +25,13 @@
 #warning "SensorHandler.h"
 #endif
 
+#ifndef Q_MOC_RUN
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/core_objects_exchange.h>
 #include <mars/interfaces/sensor_bases.h>
+#endif 
+
 #include "SelectionDialog.h"
 
 namespace mars {

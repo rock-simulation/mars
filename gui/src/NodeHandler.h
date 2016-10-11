@@ -32,11 +32,13 @@
 #warning "NodeHandler.h"
 #endif
 
+#ifndef Q_MOC_RUN
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/interfaces/core_objects_exchange.h>
 #include <mars/interfaces/NodeData.h>
+#endif
 
 #include "Dialog_Create_Material.h"
 #include "Dialog_Edit_Material.h"
