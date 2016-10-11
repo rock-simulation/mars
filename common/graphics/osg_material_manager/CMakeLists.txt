@@ -45,6 +45,7 @@ set(SOURCES
 	src/shader/shader-function.cpp
 	src/shader/bumpmapping.cpp
 	src/shader/pixellight.cpp
+	src/shader/yaml-shader.cpp
 )
 
 set(HEADERS
@@ -56,6 +57,7 @@ set(HEADERS
 	src/shader/shader-function.h
 	src/shader/bumpmapping.h
 	src/shader/pixellight.h
+	src/shader/yaml-shader.h
 )
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
