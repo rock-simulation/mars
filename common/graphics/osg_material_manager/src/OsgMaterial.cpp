@@ -35,6 +35,7 @@
 #include "shader/shader-function.h"
 #include "shader/bumpmapping.h"
 #include "shader/pixellight.h"
+#include "shader/yaml-shader.h"
 
 #include <osg/TexMat>
 #include <osg/CullFace>
@@ -554,8 +555,11 @@ namespace osg_material_manager {
         terrainScaleZUniform->set((float)(double)map["scaleZ"]);
       }
       if(map["shader"].hasKey("PixelLightVertex")) {
-        PixelLightVert *plightVert = new PixelLightVert(args, maxNumLights,
-                                                        resPath);
+        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
+        stringstream s;
+        s << maxNumLights;
+        map["mappings"]["numLights"] = s.str();
+        YamlShader *plightVert = new YamlShader((string)map["name"], args, map, resPath);
         shaderGenerator.addShaderFunction(plightVert, SHADER_TYPE_VERTEX);
       }
       if(map["shader"].hasKey("NormalMapVertex")) {
