@@ -1,0 +1,64 @@
+params:
+  - vWorldPos
+  - specularCol
+varyings:
+  - name: lightVec
+    type: vec3
+    size: numLights
+  - name: spotDir
+    type: vec3
+    size: numLights
+  - name: diffuse
+    type: vec4
+    size: numLights
+  - name: specular
+    type: vec4
+    size: numLights
+  - name: eyeVec
+    type: vec3
+  - name: positionVarying
+    type: vec4
+  - name: normalVarying
+    type: vec3
+  - name: modelVertex
+    type: vec4
+uniforms:
+  - name: lightPos
+    type: vec3
+    size: numLights
+  - name: lightSpotDir
+    type: vec3
+    size: numLights
+  - name: lightDiffuse
+    type: vec4
+    size: numLights
+  - name: lightSpecular
+    type: vec4
+    size: numLights
+  - name: lightIsDirectional
+    type: int
+    size: numLights
+  - name: lightIsSet
+    type: int
+    size: numLights
+  - name: osg_ViewMatrixInverse
+    type: mat4
+  - name: osg_ViewMatrix
+    type: vec4
+  - name: useShadow
+    type: int
+  - name: numLights
+    type: int
+mainVars:
+  - name: n
+    type: vec4
+    value: normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))
+exports:
+  - name: normalVarying
+    value: n.xyz
+  - name: positionVarying
+    value: vWorldPos
+  - name: modelVertex
+    value: vModelPos
+source: /shader/plight.vert
+name: plight
