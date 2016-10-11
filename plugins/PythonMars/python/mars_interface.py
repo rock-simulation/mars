@@ -23,6 +23,7 @@ def clearDict():
     iDict["PointCloud"] = {}
     iDict["ConfigPointCloud"] = {}
     iDict["Lines"] = {}
+    iDict["CameraSensor"] = {}
 
 def sendDict():
     global iDict
@@ -93,3 +94,7 @@ def removeLines(name):
 
 def appendLines(name, x, y, z):
     handleLines(name, {"append": [float(x), float(y), float(z)]})
+
+def requestCameraSensor(name):
+    global iDict
+    iDict["CameraSensor"][name] = 1

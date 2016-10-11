@@ -56,13 +56,19 @@ namespace mars {
 
       struct PointStruct {
         osg_points::Points *p;
-        double *data;
+        double *data, *pydata;
         int size;
       };
 
       struct LineStruct {
         osg_lines::Lines *l;
         std::vector<osg_lines::Vector> toAppend;
+      };
+
+      struct CameraStruct {
+        unsigned long id;
+        double *data, *pydata;
+        int size;
       };
 
       // inherit from MarsPluginTemplateGUI for extending the gui
@@ -89,6 +95,7 @@ namespace mars {
         void update(mars::interfaces::sReal time_ms);
 
         void interpreteMap(configmaps::ConfigItem &map);
+        void interpreteGuiMaps();
 
         // DataBrokerReceiver methods
         virtual void receiveData(const data_broker::DataInfo &info,
@@ -105,21 +112,24 @@ namespace mars {
       private:
         cfg_manager::cfgPropertyStruct example;
         //PythonMars_MainWin *plugin_win;
-        utils::Mutex mutex;
+        utils::Mutex gpMutex, mutex, guiMapMutex, mutexPoints, mutexCamera;
         shared_ptr<Module> plugin;
         std::map<std::string, unsigned long> motorMap;
         configmaps::ConfigItem requestMap;
         bool pythonException;
         std::map<std::string, PointStruct> points;
         std::map<std::string, LineStruct> lines;
+        std::map<std::string, CameraStruct> cameras;
         osg_material_manager::OsgMaterialManager *materialManager;
         osg_points::PointsFactory *pf;
         osg_lines::LinesFactory *lf;
         bool updateGraphics, nextStep;
         configmaps::ConfigItem iMap;
         double updateTime;
-      }; // end of class definition PythonMars
-      
+        std::vector<configmaps::ConfigMap> guiMaps;
+
+        }; // end of class definition PythonMars
+
     } // end of namespace PythonMars
   } // end of namespace plugins
 } // end of namespace mars

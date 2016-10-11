@@ -424,10 +424,12 @@ namespace mars {
     }
 
     void MyQMainWindow::closeEvent(QCloseEvent *event) {
+      static bool first = true;
       timerAllowed = false;
       (void)event;
+      if(!first) return;
+      first = false;
       closing = true;
-      //fprintf(stderr, "close event\n");
       for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end();
           dockit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());

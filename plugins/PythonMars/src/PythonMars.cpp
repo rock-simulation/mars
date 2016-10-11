@@ -56,12 +56,21 @@ namespace mars {
       }
 
       void PythonMars::init() {
+        std::string confPath = control->cfg->getOrCreateProperty("Config",
+                                                                "config_path",
+                                                                ".").sValue;
+        ConfigMap map = ConfigMap::fromYamlFile(confPath + "/pypath.yml");
+        if(map.hasKey("pypath")) {
+          ConfigVector::iterator it = map["pypath"].begin();
+          for(; it!=map["pypath"].end(); ++it) {
+            PythonInterpreter::instance().addToPythonpath((std::string)*it);
+          }
+        }
         updateGraphics = false;
         nextStep = false;
         pf = new osg_points::PointsFactory();
         lf = new osg_lines::LinesFactory();
         materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
-        PythonInterpreter::instance().addToPythonpath("python");
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "../../share").sValue;
@@ -74,6 +83,7 @@ namespace mars {
           ConfigItem map;
           toConfigMap(plugin->function("init").call().returnObject(), map);
           interpreteMap(map);
+          interpreteGuiMaps();
         }
         catch(const std::exception &e) {
           LOG_FATAL("Error: %s", e.what());
@@ -87,12 +97,18 @@ namespace mars {
         if(map.isMap()) {
           if(map.hasKey("startSim") && (bool)map["startSim"]) {
             control->sim->StartSimulation();
+            ConfigMap::iterator it = map.find("startSim");
+            map.erase(it);
           }
           if(map.hasKey("stopSim") && (bool)map["stopSim"]) {
             control->sim->StopSimulation();
+            ConfigMap::iterator it = map.find("stopSim");
+            map.erase(it);
           }
           if(map.hasKey("updateTime")) {
             updateTime = map["updateTime"];
+            ConfigMap::iterator it = map.find("updateTime");
+            map.erase(it);
           }
           if(map.hasKey("log")) {
             if(map["log"].hasKey("debug")) {
@@ -107,6 +123,8 @@ namespace mars {
                 LOG_ERROR((std::string)*it);
               }
             }
+            ConfigMap::iterator it = map.find("log");
+            map.erase(it);
           }
 
           if(map.hasKey("commands") && control->sim->isSimRunning()) {
@@ -127,6 +145,8 @@ namespace mars {
                 }
               }
             }
+            ConfigMap::iterator iit = map.find("commands");
+            map.erase(iit);
           }
 
           if(map.hasKey("config")) {
@@ -176,9 +196,31 @@ namespace mars {
                 break;
               }
             }
+            ConfigMap::iterator iit = map.find("config");
+            map.erase(iit);
           }
 
-          if(map.hasKey("PointCloud")) {
+          if(map.hasKey("request") && map["request"].isVector()) {
+            requestMap = map["request"];
+            ConfigMap::iterator it = map.find("request");
+            map.erase(it);
+          }
+
+          guiMapMutex.lock();
+          guiMaps.push_back(map);
+          guiMapMutex.unlock();
+
+        }
+        nextStep = true;
+      }
+
+      void PythonMars::interpreteGuiMaps() {
+        guiMapMutex.lock();
+        std::vector<ConfigMap>::iterator it = guiMaps.begin();
+        for(; it!=guiMaps.end(); ++it) {
+          ConfigMap &map = *it;
+          if(map.hasKey("PointCloud") && map["PointCloud"].isMap()) {
+            mutex.lock();
             ConfigMap::iterator it = map["PointCloud"].beginMap();
             for(; it!=map["PointCloud"].endMap(); ++it) {
               std::string name = it->first;
@@ -186,6 +228,7 @@ namespace mars {
                 PointStruct &point = points[name];
                 control->graphics->removeOSGNode(point.p->getOSGNode());
                 delete point.data;
+                delete point.pydata;
                 points.erase(name);
               }
               // create point cloud
@@ -194,6 +237,7 @@ namespace mars {
               point.p->setLineWidth(3.0);
               point.size = it->second;
               point.data = new double[point.size*3];
+              point.pydata = new double[point.size*3];
               std::vector<osg_points::Vector> pV;
               pV.reserve(point.size);
               for(int i=0; i<point.size; ++i) {
@@ -206,9 +250,38 @@ namespace mars {
               }
               points[name] = point;
               point.p->setData(pV);
-              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.data, point.size*3);
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.pydata, point.size*3);
               control->graphics->addOSGNode(point.p->getOSGNode());
             }
+            mutex.unlock();
+          }
+          if(map.hasKey("CameraSensor") && map["CameraSensor"].isMap()) {
+            mutexCamera.lock();
+            ConfigMap::iterator it = map["CameraSensor"].beginMap();
+            for(; it!=map["CameraSensor"].endMap(); ++it) {
+              std::string name = it->first;
+              if(cameras.find(name) == cameras.end()) {
+                unsigned long id = control->sensors->getSensorID(name);
+                sReal *data;
+                int num = control->sensors->getSensorData(id, &data);
+                if(num) {
+                  CameraStruct cam = {id, data, NULL, num};
+                  cam.pydata = (sReal*)malloc(num*sizeof(sReal));
+                  cameras[name] = cam;
+                  plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+                }
+              }
+              else {
+                CameraStruct &cam = cameras[name];
+                sReal *data;
+                int num = control->sensors->getSensorData(cam.id, &data);
+                if(num == cam.size) {
+                  memcpy(cam.data, data, num*sizeof(sReal));
+                }
+                if(num) free(data);
+              }
+            }
+            mutexCamera.unlock();
           }
 
           if(map.hasKey("ConfigPointCloud")) {
@@ -267,12 +340,10 @@ namespace mars {
               }
             }
           }
-
-          if(map.hasKey("request") && map["request"].isVector()) {
-            requestMap = map["request"];
-          }
         }
         nextStep = true;
+        guiMaps.clear();
+        guiMapMutex.unlock();
       }
 
       void PythonMars::reset() {
@@ -283,20 +354,22 @@ namespace mars {
       void PythonMars::update(sReal time_ms) {
         static double nextUpdate = 0.0;
         if(time_ms > 0) {
+          gpMutex.lock();
           if(updateTime > 0) {
             nextUpdate += time_ms;
             if(nextUpdate > updateTime) {
               nextUpdate = fmod(nextUpdate, updateTime);
             }
             else {
+              gpMutex.unlock();
               return;
             }
           }
           if(pythonException) {
+            gpMutex.unlock();
             return;
           }
           while(!nextStep) utils::msleep(2);
-          mutex.lock();
           ConfigMap sendMap;
 
           ConfigVector::iterator it = requestMap.begin();
@@ -371,20 +444,42 @@ namespace mars {
           }
           try {
             iMap = ConfigItem();
+            mutexCamera.lock();
+            { // udpate point clouds
+              std::map<std::string, CameraStruct>::iterator it = cameras.begin();
+              for(; it!=cameras.end(); ++it) {
+                memcpy(it->second.pydata, it->second.data,
+                       it->second.size*sizeof(sReal));
+              }
+            }
+            mutexCamera.unlock();
+            mutex.lock();
             toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), iMap);
+            nextStep = true;
+            mutex.unlock();
+            mutexPoints.lock();
+            { // udpate point clouds
+              std::map<std::string, PointStruct>::iterator it = points.begin();
+              for(; it!=points.end(); ++it) {
+                memcpy(it->second.data, it->second.pydata,
+                       it->second.size*3*sizeof(double));
+              }
+            }
+            mutexPoints.unlock();
+            interpreteMap(iMap);
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
             pythonException = true;
+            mutex.unlock();
           }
-          nextStep = false;
           updateGraphics = true;
-          mutex.unlock();
+          gpMutex.unlock();
         }
         else {
           if(updateGraphics) {
-            interpreteMap(iMap);
-            mutex.lock();
+            interpreteGuiMaps();
+            mutexPoints.lock();
             { // udpate point clouds
               std::map<std::string, PointStruct>::iterator it = points.begin();
               for(; it!=points.end(); ++it) {
@@ -398,6 +493,7 @@ namespace mars {
                 it->second.p->setData(pV);
               }
             }
+            mutexPoints.unlock();
 
             { // update lines
               std::map<std::string, LineStruct>::iterator it = lines.begin();
@@ -411,7 +507,6 @@ namespace mars {
               }
             }
             updateGraphics = false;
-            mutex.unlock();
           }
         }
         // control->motors->setMotorValue(id, value);
@@ -433,7 +528,7 @@ namespace mars {
       void PythonMars::menuAction (int action, bool checked)
       {
         if(action == 1) {
-          mutex.lock();
+          gpMutex.lock();
           pythonException = false;
           try {
             if(plugin)
@@ -445,19 +540,20 @@ namespace mars {
             LOG_FATAL("Error: %s", e.what());
             plugin.reset();
             pythonException = true;
-            mutex.unlock();
+            gpMutex.unlock();
             return;
           }
           try {
             ConfigItem map;
             toConfigMap(plugin->function("init").call().returnObject(), map);
             interpreteMap(map);
+            interpreteGuiMaps();
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
             pythonException = true;
           }
-          mutex.unlock();
+          gpMutex.unlock();
         }
         //plugin_win->show ();
       }

@@ -162,12 +162,11 @@ namespace mars {
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
     int CameraSensor::getSensorData(sReal** data) const {
-#warning "Work hiere"
-#if 0
       if(gw) {
         // get image
         int width, height;
-        if(s_cfg.depthImage) {
+        /* todo: handle depth image
+        if(false && s_cfg.depthImage) {
           // if there is a depth image, we would like to
           // to also get the normal image data.
           //
@@ -198,12 +197,24 @@ namespace mars {
 
           return data_size;
         }
-        else {
-          gw->getImageData((void**)data, width, height);
-          return width*height*4;
+        else*/
+        {
+          unsigned char *buffer;
+          gw->getImageData((void**)&buffer, width, height);
+          unsigned int size = width*height;
+          if(size == 0) return 0;
+          *data = (sReal*)calloc(size*4, sizeof(sReal));
+          double s = 1./255;
+          for(unsigned int i=0; i<size; ++i) {
+            (*data)[i*4] = buffer[i*4]*s;
+            (*data)[i*4+1] = buffer[i*4+1]*s;
+            (*data)[i*4+2] = buffer[i*4+2]*s;
+            (*data)[i*4+3] = buffer[i*4+3]*s;
+          }
+          free(buffer);
+          return size*4;
         }
       }
-#endif
       return 0;
     }
 
