@@ -6,5 +6,6 @@ includedir=${prefix}/include
 Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
-Libs: -L${libdir} -l@PROJECT_NAME@ -l${@QT_CORE_LIBRARY@} -l${@QT_GUI_LIBRARY@}
+Requires: @PUBLIC_DEPENDENCIES@
+Libs: -L${libdir} -l@PROJECT_NAME@
 Cflags: -I${includedir}
