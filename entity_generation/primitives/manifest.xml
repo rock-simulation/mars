@@ -2,7 +2,6 @@
     <description brief="primitives">
    </description>
    <maintainer>Kai von Szadkowski/kai.von-szadkowski@uni-bremen.de</maintainer>
-    <depend package="simulation/mars/scripts/cmake" />
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
