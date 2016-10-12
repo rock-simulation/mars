@@ -10,6 +10,7 @@
     <depend package="simulation/mars/sim" />    
     <depend package="simulation/mars/entity_generation/entity_factory" />
     <depend package="simulation/smurf_parser" />
+    <depend package="external/minizip" />
 
     <tags>needs_opt</tags>
 </package>
