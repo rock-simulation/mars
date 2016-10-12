@@ -35,7 +35,9 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/utils/misc.h>
-
+#ifdef __unix__
+#include <dlfcn.h>
+#endif
 namespace mars {
 
   using namespace osg_material_manager;
@@ -49,6 +51,10 @@ namespace mars {
 
       PythonMars::PythonMars(lib_manager::LibManager *theManager)
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
+#ifdef __unix__
+        // needed to be able to import numpy
+        dlopen("libpython2.7.so.1", RTLD_LAZY | RTLD_GLOBAL);
+#endif
       }
 
       PythonMars::~PythonMars() {
