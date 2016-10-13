@@ -26,6 +26,8 @@ var namespacemars_1_1sim =
     [ "Pixel", "d4/d6d/classmars_1_1sim_1_1_pixel.html", "d4/d6d/classmars_1_1sim_1_1_pixel" ],
     [ "CameraConfigStruct", "de/d94/structmars_1_1sim_1_1_camera_config_struct.html", "de/d94/structmars_1_1sim_1_1_camera_config_struct" ],
     [ "CameraSensor", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html", "d2/d51/classmars_1_1sim_1_1_camera_sensor" ],
+    [ "HapticFieldConfig", "d8/d94/classmars_1_1sim_1_1_haptic_field_config.html", "d8/d94/classmars_1_1sim_1_1_haptic_field_config" ],
+    [ "HapticFieldSensor", "d0/d67/classmars_1_1sim_1_1_haptic_field_sensor.html", "d0/d67/classmars_1_1sim_1_1_haptic_field_sensor" ],
     [ "IDListConfig", "dc/d9b/classmars_1_1sim_1_1_i_d_list_config.html", "dc/d9b/classmars_1_1sim_1_1_i_d_list_config" ],
     [ "Joint6DOFConfig", "d9/dd4/classmars_1_1sim_1_1_joint6_d_o_f_config.html", "d9/dd4/classmars_1_1sim_1_1_joint6_d_o_f_config" ],
     [ "joint6DOFData", "d4/dcd/structmars_1_1sim_1_1joint6_d_o_f_data.html", "d4/dcd/structmars_1_1sim_1_1joint6_d_o_f_data" ],

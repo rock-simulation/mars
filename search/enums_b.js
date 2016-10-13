@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['nodetype',['NodeType',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813',1,'mars::interfaces']]]
+  ['openmode',['OpenMode',['../d8/dec/namespacemars_1_1interfaces.html#a409d983aca3c249e9423946cbc9fc0e1',1,'mars::interfaces']]]
 ];

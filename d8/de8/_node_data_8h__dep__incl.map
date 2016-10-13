@@ -1,10 +1,10 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/NodeData.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/NodeData.h">
-<area shape="rect" id="node3" href="$d7/d84/_graphics_manager_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/graphics\l/GraphicsManagerInterface.h" alt="" coords="5,118,195,199"/>
-<area shape="rect" id="node5" href="$d5/d60/utils_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/utils.h" alt="" coords="219,127,395,191"/>
-<area shape="rect" id="node11" href="$d2/db6/_node_data_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/NodeData.cpp" alt="" coords="419,127,645,191"/>
-<area shape="rect" id="node13" href="$d0/ddf/_node_interface_8h.html" title="&quot;NodeInterface&quot; declares the interfaces for the Nodes to the physical layer. " alt="" coords="669,118,835,199"/>
-<area shape="rect" id="node17" href="$d1/dd0/_node_manager_interface_8h.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="859,118,1027,199"/>
-<area shape="rect" id="node7" href="$df/d7f/_joint_data_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/JointData.cpp" alt="" coords="81,257,303,321"/>
-<area shape="rect" id="node9" href="$de/d06/utils_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/utils.cpp" alt="" coords="327,257,516,321"/>
-<area shape="rect" id="node15" href="$db/d35/_joint_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/JointInterface.h" alt="" coords="669,249,835,330"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/NodeData.h" name="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/NodeData.h">
+<area shape="rect" id="node2" href="$d7/d84/_graphics_manager_interface_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/graphics/GraphicsManagerInterface.h" alt="" coords="5,109,269,165"/>
+<area shape="rect" id="node3" href="$d5/d60/utils_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/utils.h" alt="" coords="294,109,503,165"/>
+<area shape="rect" id="node6" href="$d2/db6/_node_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/NodeData.cpp" alt="" coords="527,109,736,165"/>
+<area shape="rect" id="node7" href="$d0/ddf/_node_interface_8h.html" title="&quot;NodeInterface&quot; declares the interfaces for the Nodes to the physical layer. " alt="" coords="761,109,969,165"/>
+<area shape="rect" id="node9" href="$d1/dd0/_node_manager_interface_8h.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="995,109,1211,165"/>
+<area shape="rect" id="node4" href="$df/d7f/_joint_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/JointData.cpp" alt="" coords="177,213,385,269"/>
+<area shape="rect" id="node5" href="$de/d06/utils_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/utils.cpp" alt="" coords="410,213,619,269"/>
+<area shape="rect" id="node8" href="$db/d35/_joint_interface_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/JointInterface.h" alt="" coords="761,213,969,269"/>
 </map>

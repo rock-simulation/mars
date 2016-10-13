@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['waitconditionerror',['WaitConditionError',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70',1,'mars::utils']]]
+  ['zipiterror',['ZipitError',['../df/d72/namespacemars_1_1scene__loader.html#aa5920e6ba6ffbd0c149d4c9db6b900e3',1,'mars::scene_loader::ZipitError()'],['../dd/dcd/namespacemars_1_1smurf.html#a02409666f6498694fb4801c9c19095d1',1,'mars::smurf::ZipitError()']]]
 ];

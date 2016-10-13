@@ -1,4 +1,4 @@
 <map id="mars::graphics::lightmanager" name="mars::graphics::lightmanager">
-<area shape="rect" id="node2" href="$d4/d71/classmars_1_1interfaces_1_1_light_data.html" title="LightData is a struct to exchange light information between the Dialog_Add_Light, the MainWindow and ..." alt="" coords="11,136,189,165"/>
-<area shape="rect" id="node6" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="95,5,217,35"/>
+<area shape="rect" id="node2" href="$d4/d71/classmars_1_1interfaces_1_1_light_data.html" title="LightData is a struct to exchange light information between the Dialog_Add_Light, the MainWindow and ..." alt="" coords="10,125,189,152"/>
+<area shape="rect" id="node4" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="96,5,219,32"/>
 </map>

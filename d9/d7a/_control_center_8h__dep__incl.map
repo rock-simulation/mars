@@ -1,9 +1,9 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/ControlCenter.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/ControlCenter.h">
-<area shape="rect" id="node3" href="$df/d7f/_joint_data_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/JointData.cpp" alt="" coords="5,145,227,209"/>
-<area shape="rect" id="node5" href="$d2/db6/_node_data_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/NodeData.cpp" alt="" coords="251,145,477,209"/>
-<area shape="rect" id="node7" href="$dc/d88/_control_center_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/ControlCenter.cpp" alt="" coords="501,137,667,218"/>
-<area shape="rect" id="node9" href="$dd/d91/_mars_plugin_template_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplate.h" alt="" coords="691,137,856,218"/>
-<area shape="rect" id="node11" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplateGUI.h" alt="" coords="880,137,1059,218"/>
-<area shape="rect" id="node13" href="$da/da8/_sensor_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/SensorInterface.h" alt="" coords="1083,137,1248,218"/>
-<area shape="rect" id="node15" href="$d0/ddd/_sensor_manager_interface_8h.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="1272,137,1451,218"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim/ControlCenter.h" name="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim/ControlCenter.h">
+<area shape="rect" id="node2" href="$df/d7f/_joint_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/JointData.cpp" alt="" coords="5,109,213,165"/>
+<area shape="rect" id="node3" href="$d2/db6/_node_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/NodeData.cpp" alt="" coords="238,109,447,165"/>
+<area shape="rect" id="node4" href="$dc/d88/_control_center_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/ControlCenter.cpp" alt="" coords="471,109,680,165"/>
+<area shape="rect" id="node5" href="$dd/d91/_mars_plugin_template_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplate.h" alt="" coords="705,109,913,165"/>
+<area shape="rect" id="node6" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplateGUI.h" alt="" coords="939,109,1165,165"/>
+<area shape="rect" id="node7" href="$da/da8/_sensor_interface_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/SensorInterface.h" alt="" coords="1190,109,1399,165"/>
+<area shape="rect" id="node8" href="$d0/ddd/_sensor_manager_interface_8h.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="1424,109,1651,165"/>
 </map>

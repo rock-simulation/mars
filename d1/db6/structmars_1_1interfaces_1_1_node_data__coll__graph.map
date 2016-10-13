@@ -1,8 +1,7 @@
 <map id="mars::interfaces::NodeData" name="mars::interfaces::NodeData">
-<area shape="rect" id="node2" href="$db/d84/classconfigmaps_1_1_config_map.html" title="configmaps::ConfigMap" alt="" coords="697,13,857,43"/>
-<area shape="rect" id="node8" href="$dc/d1d/structmars_1_1interfaces_1_1contact__params.html" title="mars::interfaces::contact\l_params" alt="" coords="695,66,860,113"/>
-<area shape="rect" id="node10" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="276,283,473,312"/>
-<area shape="rect" id="node16" href="$de/dd2/structmars_1_1interfaces_1_1terrain_struct.html" title="terrainStruct is a struct to exchange height maps between the GUI and the simulation ..." alt="" coords="697,198,857,245"/>
-<area shape="rect" id="node14" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="13,472,136,501"/>
-<area shape="rect" id="node21" href="$d9/dec/structmars_1_1interfaces_1_1snmesh.html" title="mars::interfaces::snmesh" alt="" coords="499,460,669,489"/>
+<area shape="rect" id="node2" href="$dc/d1d/structmars_1_1interfaces_1_1contact__params.html" title="mars::interfaces::contact\l_params" alt="" coords="678,5,845,46"/>
+<area shape="rect" id="node3" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="259,216,458,243"/>
+<area shape="rect" id="node6" href="$de/dd2/structmars_1_1interfaces_1_1terrain_struct.html" title="terrainStruct is a struct to exchange height maps between the GUI and the simulation ..." alt="" coords="681,139,841,181"/>
+<area shape="rect" id="node5" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="5,387,128,413"/>
+<area shape="rect" id="node7" href="$d9/dec/structmars_1_1interfaces_1_1snmesh.html" title="mars::interfaces::snmesh" alt="" coords="483,377,653,404"/>
 </map>

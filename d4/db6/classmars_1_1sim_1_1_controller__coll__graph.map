@@ -1,22 +1,22 @@
 <map id="mars::sim::Controller" name="mars::sim::Controller">
-<area shape="rect" id="node2" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="756,37,887,67"/>
-<area shape="rect" id="node4" href="$db/de7/structmars_1_1utils_1_1_pthread_thread_wrapper.html" title="mars::utils::PthreadThread\lWrapper" alt="" coords="379,5,555,51"/>
-<area shape="rect" id="node6" href="$d6/d90/classmars_1_1utils_1_1_mutex.html" title="mars::utils::Mutex" alt="" coords="404,75,529,104"/>
-<area shape="rect" id="node8" href="$d6/d9e/structmars_1_1utils_1_1_pthread_mutex_wrapper.html" title="mars::utils::PthreadMutex\lWrapper" alt="" coords="28,66,199,113"/>
-<area shape="rect" id="node10" href="$d7/dd6/classmars_1_1interfaces_1_1_controller_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="732,90,911,137"/>
-<area shape="rect" id="node14" href="$d5/d8e/classmars_1_1interfaces_1_1_controller_data.html" title="mars::interfaces::ControllerData" alt="" coords="717,225,925,255"/>
-<area shape="rect" id="node17" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="739,527,904,574"/>
-<area shape="rect" id="node19" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,215,555,262"/>
-<area shape="rect" id="node29" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="392,285,541,331"/>
-<area shape="rect" id="node32" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,354,536,401"/>
-<area shape="rect" id="node23" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,423,556,470"/>
-<area shape="rect" id="node25" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,493,568,539"/>
-<area shape="rect" id="node27" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="388,562,545,609"/>
-<area shape="rect" id="node35" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,631,549,678"/>
-<area shape="rect" id="node37" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="364,701,569,747"/>
-<area shape="rect" id="node39" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="372,771,561,800"/>
-<area shape="rect" id="node41" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="7,727,220,774"/>
-<area shape="rect" id="node43" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,797,205,843"/>
-<area shape="rect" id="node45" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,823,569,870"/>
-<area shape="rect" id="node47" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,893,556,939"/>
+<area shape="rect" id="node2" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="756,35,887,61"/>
+<area shape="rect" id="node3" href="$db/de7/structmars_1_1utils_1_1_pthread_thread_wrapper.html" title="mars::utils::PthreadThread\lWrapper" alt="" coords="379,5,555,46"/>
+<area shape="rect" id="node4" href="$d6/d90/classmars_1_1utils_1_1_mutex.html" title="mars::utils::Mutex" alt="" coords="403,71,530,97"/>
+<area shape="rect" id="node5" href="$d6/d9e/structmars_1_1utils_1_1_pthread_mutex_wrapper.html" title="mars::utils::PthreadMutex\lWrapper" alt="" coords="27,63,199,105"/>
+<area shape="rect" id="node6" href="$d7/dd6/classmars_1_1interfaces_1_1_controller_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="731,86,911,127"/>
+<area shape="rect" id="node8" href="$d5/d8e/classmars_1_1interfaces_1_1_controller_data.html" title="mars::interfaces::ControllerData" alt="" coords="717,215,925,241"/>
+<area shape="rect" id="node9" href="$d7/d4e/classmars_1_1interfaces_1_1_control_center.html" title="The declaration of the ControlCenter. " alt="" coords="738,499,905,541"/>
+<area shape="rect" id="node10" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="379,205,555,246"/>
+<area shape="rect" id="node15" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="391,270,542,311"/>
+<area shape="rect" id="node16" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="397,335,536,377"/>
+<area shape="rect" id="node12" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="377,401,557,442"/>
+<area shape="rect" id="node13" href="$d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html" title="Interface class for the node organization. " alt="" coords="365,466,568,507"/>
+<area shape="rect" id="node14" href="$df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html" title="mars::interfaces::Entity\lManagerInterface" alt="" coords="387,531,546,573"/>
+<area shape="rect" id="node17" href="$db/da9/classmars_1_1interfaces_1_1_sensor_manager_interface.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="384,597,549,638"/>
+<area shape="rect" id="node18" href="$db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html" title="&quot;MotorManagerInterface&quot; declares the interfaces for all motor operations that are used for the commun..." alt="" coords="363,662,570,703"/>
+<area shape="rect" id="node19" href="$d9/d6a/classmars_1_1interfaces_1_1_load_center.html" title="mars::interfaces::LoadCenter" alt="" coords="371,728,562,755"/>
+<area shape="rect" id="node20" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="6,687,221,729"/>
+<area shape="rect" id="node21" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="21,753,205,794"/>
+<area shape="rect" id="node22" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="364,779,569,821"/>
+<area shape="rect" id="node23" href="$dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html" title="mars::interfaces::Simulator\lInterface" alt="" coords="377,845,556,886"/>
 </map>

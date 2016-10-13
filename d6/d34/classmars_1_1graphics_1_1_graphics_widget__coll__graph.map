@@ -1,25 +1,24 @@
 <map id="mars::graphics::GraphicsWidget" name="mars::graphics::GraphicsWidget">
-<area shape="rect" id="node20" href="$dd/d00/classmars_1_1graphics_1_1_graphics_manager.html" title="mars::graphics::Graphics\lManager" alt="" coords="1021,595,1189,642"/>
-<area shape="rect" id="node4" href="$d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html" title="mars::interfaces::Graphics\lWindowInterface" alt="" coords="313,58,489,105"/>
-<area shape="rect" id="node6" href="$d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html" title="Interface for the osgWidget functionality. " alt="" coords="313,197,489,243"/>
-<area shape="rect" id="node8" href="$d7/dc9/classmars_1_1graphics_1_1_post_draw_callback.html" title="mars::graphics::PostDraw\lCallback" alt="" coords="315,266,488,313"/>
-<area shape="rect" id="node12" href="$d7/d67/classmars_1_1graphics_1_1_graphics_camera.html" title="mars::graphics::Graphics\lCamera" alt="" coords="317,127,485,174"/>
-<area shape="rect" id="node14" href="$db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html" title="mars::interfaces::Graphics\lCameraInterface" alt="" coords="5,93,181,139"/>
-<area shape="rect" id="node16" href="$d1/de0/structmars_1_1interfaces_1_1local__settings.html" title="mars::interfaces::local\l_settings" alt="" coords="19,162,168,209"/>
-<area shape="rect" id="node33" href="$d4/d71/classmars_1_1interfaces_1_1_light_data.html" title="LightData is a struct to exchange light information between the Dialog_Add_Light, the MainWindow and ..." alt="" coords="312,633,491,663"/>
-<area shape="rect" id="node38" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="539,390,680,437"/>
-<area shape="rect" id="node47" href="$dc/d0d/structmars_1_1interfaces_1_1core__objects__exchange.html" title="core_objects_exchange is a struct to exchange core objects information between the modules of the sim..." alt="" coords="535,443,684,490"/>
-<area shape="rect" id="node22" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="313,822,489,869"/>
-<area shape="rect" id="node50" href="$d8/d13/classmars_1_1graphics_1_1_gui_helper.html" title="mars::graphics::GuiHelper" alt="" coords="719,883,892,912"/>
-<area shape="rect" id="node41" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="535,731,684,778"/>
-<area shape="rect" id="node26" href="$d7/d0b/classmars_1_1interfaces_1_1_graphics_event_interface.html" title="mars::interfaces::Graphics\lEventInterface" alt="" coords="717,437,893,483"/>
-<area shape="rect" id="node28" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="735,506,876,553"/>
-<area shape="rect" id="node31" href="$d9/da6/structmars_1_1graphics_1_1lightmanager.html" title="internal struct to manage lights " alt="" coords="711,641,900,671"/>
-<area shape="rect" id="node36" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="32,633,155,663"/>
-<area shape="rect" id="node44" href="$da/d84/classmars_1_1interfaces_1_1_graphic_data.html" title="mars::interfaces::GraphicData" alt="" coords="303,699,500,728"/>
-<area shape="rect" id="node64" href="$df/da4/classmars_1_1graphics_1_1_h_u_d.html" title="mars::graphics::HUD" alt="" coords="328,503,475,532"/>
-<area shape="rect" id="node52" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="309,966,493,1013"/>
-<area shape="rect" id="node54" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="295,897,508,943"/>
-<area shape="rect" id="node58" href="$d7/d0c/classmars_1_1graphics_1_1_graphics_viewer.html" title="mars::graphics::Graphics\lViewer" alt="" coords="721,1035,889,1082"/>
-<area shape="rect" id="node62" href="$dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html" title="mars::interfaces::GuiEvent\lInterface" alt="" coords="312,1035,491,1082"/>
+<area shape="rect" id="node11" href="$dd/d00/classmars_1_1graphics_1_1_graphics_manager.html" title="mars::graphics::Graphics\lManager" alt="" coords="1048,615,1216,657"/>
+<area shape="rect" id="node3" href="$d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html" title="mars::interfaces::Graphics\lWindowInterface" alt="" coords="313,189,489,230"/>
+<area shape="rect" id="node4" href="$d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html" title="Interface for the osgWidget functionality. " alt="" coords="313,254,489,295"/>
+<area shape="rect" id="node5" href="$d7/dc9/classmars_1_1graphics_1_1_post_draw_callback.html" title="mars::graphics::PostDraw\lCallback" alt="" coords="314,6,489,47"/>
+<area shape="rect" id="node7" href="$d7/d67/classmars_1_1graphics_1_1_graphics_camera.html" title="mars::graphics::Graphics\lCamera" alt="" coords="317,71,485,113"/>
+<area shape="rect" id="node8" href="$db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html" title="mars::interfaces::Graphics\lCameraInterface" alt="" coords="5,71,181,113"/>
+<area shape="rect" id="node9" href="$d1/de0/structmars_1_1interfaces_1_1local__settings.html" title="mars::interfaces::local\l_settings" alt="" coords="18,137,169,178"/>
+<area shape="rect" id="node17" href="$d4/d71/classmars_1_1interfaces_1_1_light_data.html" title="LightData is a struct to exchange light information between the Dialog_Add_Light, the MainWindow and ..." alt="" coords="311,581,491,608"/>
+<area shape="rect" id="node19" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="330,515,473,557"/>
+<area shape="rect" id="node22" href="$dc/d0d/structmars_1_1interfaces_1_1core__objects__exchange.html" title="core_objects_exchange is a struct to exchange core objects information between the modules of the sim..." alt="" coords="533,419,683,461"/>
+<area shape="rect" id="node12" href="$d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html" title="mars::interfaces::Graphics\lManagerInterface" alt="" coords="313,927,489,969"/>
+<area shape="rect" id="node23" href="$d8/d13/classmars_1_1graphics_1_1_gui_helper.html" title="mars::graphics::GuiHelper" alt="" coords="715,985,890,1012"/>
+<area shape="rect" id="node20" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="326,846,477,887"/>
+<area shape="rect" id="node26" href="$d4/d2e/classosg__material__manager_1_1_osg_material_manager.html" title="osg_material_manager\l::OsgMaterialManager" alt="" coords="726,771,879,813"/>
+<area shape="rect" id="node14" href="$d7/d0b/classmars_1_1interfaces_1_1_graphics_event_interface.html" title="mars::interfaces::Graphics\lEventInterface" alt="" coords="715,321,891,362"/>
+<area shape="rect" id="node15" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="330,635,473,677"/>
+<area shape="rect" id="node16" href="$d9/da6/structmars_1_1graphics_1_1lightmanager.html" title="internal struct to manage lights " alt="" coords="707,596,898,623"/>
+<area shape="rect" id="node18" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="32,659,155,685"/>
+<area shape="rect" id="node21" href="$da/d84/classmars_1_1interfaces_1_1_graphic_data.html" title="mars::interfaces::GraphicData" alt="" coords="303,719,500,745"/>
+<area shape="rect" id="node27" href="$df/da4/classmars_1_1graphics_1_1_h_u_d.html" title="mars::graphics::HUD" alt="" coords="328,383,475,409"/>
+<area shape="rect" id="node24" href="$d7/d02/classmars_1_1interfaces_1_1_load_mesh_interface.html" title="mars::interfaces::LoadMesh\lInterface" alt="" coords="309,1006,493,1047"/>
+<area shape="rect" id="node25" href="$d1/d51/classmars_1_1interfaces_1_1_load_heightmap_interface.html" title="mars::interfaces::LoadHeightmap\lInterface" alt="" coords="294,1071,509,1113"/>
 </map>

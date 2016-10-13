@@ -29,7 +29,7 @@ var classmars_1_1interfaces_1_1_simulator_interface =
     [ "readArguments", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#aecf63adfc0f9f5f1a600674925317fa2", null ],
     [ "removePlugin", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#aeebc47a7aa76a4401d5885e6bbbd293f", null ],
     [ "rescaleEnvironment", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#abb3a7202db71be430889c226fd0761bd", null ],
-    [ "resetSim", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a5c16212c6bda3727b475921c53474889", null ],
+    [ "resetSim", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a4cbb8cf8178e5d98e028992616ba5121", null ],
     [ "runSimulation", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a672fb60aa6016805ff6d758ac3a6af94", null ],
     [ "saveScene", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a50c1c09ed2e314b8f15a91db5ca6833d", null ],
     [ "sceneChanged", "dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a9f937e208d562ee1ecd0c7958656b12b", null ],

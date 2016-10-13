@@ -1,4 +1,4 @@
 <map id="mars::data_broker::DataBroker" name="mars::data_broker::DataBroker">
-<area shape="rect" id="node2" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="5,83,144,130"/>
-<area shape="rect" id="node6" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="168,92,299,121"/>
+<area shape="rect" id="node2" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="5,81,144,122"/>
+<area shape="rect" id="node4" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="168,88,297,115"/>
 </map>

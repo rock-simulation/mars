@@ -18,5 +18,6 @@ var misc_8h =
     [ "radToDeg", "d4/d08/misc_8h.html#a4d35fab58abe361f8ddc08e87c445838", null ],
     [ "removeFilenamePrefix", "d4/d08/misc_8h.html#a477fc46caab8add56c02a812bd44ab0b", null ],
     [ "removeFilenameSuffix", "d4/d08/misc_8h.html#a499113c3643dc39d9b263a6b651cfcf5", null ],
+    [ "replaceString", "d4/d08/misc_8h.html#a2566912504800760839ca41bb00c14e6", null ],
     [ "trim", "d4/d08/misc_8h.html#a13f4cdc3db19206f9b0dee62fea79300", null ]
 ];

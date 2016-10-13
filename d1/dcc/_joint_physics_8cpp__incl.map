@@ -1,5 +1,5 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/physics/JointPhysics.cpp" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/physics/JointPhysics.cpp">
-<area shape="rect" id="node5" href="$dd/dbe/_joint_physics_8h.html" title="JointPhysics.h" alt="" coords="569,136,676,165"/>
-<area shape="rect" id="node29" href="$d7/d43/_node_physics_8h.html" title="&quot;NodePhysics&quot; implements the physical ode stuff for the nodes. " alt="" coords="436,136,545,165"/>
-<area shape="rect" id="node7" href="$d6/d89/_world_physics_8h.html" title="&quot;WorldPhysics&quot; includes the methods to handle the physically world. " alt="" coords="565,223,680,252"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/JointPhysics.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/JointPhysics.cpp">
+<area shape="rect" id="node3" href="$dd/dbe/_joint_physics_8h.html" title="JointPhysics.h" alt="" coords="573,109,680,136"/>
+<area shape="rect" id="node15" href="$d7/d43/_node_physics_8h.html" title="&quot;NodePhysics&quot; implements the physical ode stuff for the nodes. " alt="" coords="438,109,548,136"/>
+<area shape="rect" id="node4" href="$d6/d89/_world_physics_8h.html" title="&quot;WorldPhysics&quot; includes the methods to handle the physically world. " alt="" coords="569,192,684,219"/>
 </map>

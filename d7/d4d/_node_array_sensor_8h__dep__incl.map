@@ -1,16 +1,16 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/sensors/NodeArraySensor.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/sensors/NodeArraySensor.h">
-<area shape="rect" id="node3" href="$df/dba/_node_angular_velocity_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeAngularVelocitySensor.h" alt="" coords="1132,137,1332,218"/>
-<area shape="rect" id="node9" href="$df/dc8/_node_array_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeArraySensor.cpp" alt="" coords="1356,137,1521,218"/>
-<area shape="rect" id="node11" href="$d7/dd2/_node_c_o_m_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeCOMSensor.h" alt="" coords="164,137,329,218"/>
-<area shape="rect" id="node16" href="$d3/d79/_node_contact_force_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeContactForceSensor.h" alt="" coords="353,137,540,218"/>
-<area shape="rect" id="node21" href="$d7/db0/_node_position_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodePositionSensor.h" alt="" coords="564,137,729,218"/>
-<area shape="rect" id="node26" href="$d7/d69/_node_rotation_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeRotationSensor.h" alt="" coords="753,137,919,218"/>
-<area shape="rect" id="node31" href="$d3/d7e/_node_velocity_sensor_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeVelocitySensor.h" alt="" coords="943,137,1108,218"/>
-<area shape="rect" id="node5" href="$d4/d38/_sensor_manager_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/core/SensorManager.cpp" alt="" coords="616,276,867,340"/>
-<area shape="rect" id="node7" href="$d2/d5c/_node_angular_velocity_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeAngularVelocitySensor.cpp" alt="" coords="1280,267,1493,349"/>
-<area shape="rect" id="node14" href="$d6/dbb/_node_c_o_m_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeCOMSensor.cpp" alt="" coords="5,267,171,349"/>
-<area shape="rect" id="node19" href="$df/d4f/_node_contact_force_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeContactForceSensor.cpp" alt="" coords="195,267,397,349"/>
-<area shape="rect" id="node24" href="$db/d5f/_node_position_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodePositionSensor.cpp" alt="" coords="421,267,592,349"/>
-<area shape="rect" id="node29" href="$d3/d2c/_node_rotation_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeRotationSensor.cpp" alt="" coords="891,267,1061,349"/>
-<area shape="rect" id="node34" href="$d5/deb/_node_velocity_sensor_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/sim/src/sensors\l/NodeVelocitySensor.cpp" alt="" coords="1085,267,1256,349"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/sim/src/sensors/NodeArraySensor.h" name="/media/kavonszadkowski/work/marsdocs/mars/sim/src/sensors/NodeArraySensor.h">
+<area shape="rect" id="node2" href="$df/dba/_node_angular_velocity_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeAngularVelocity\lSensor.h" alt="" coords="1437,110,1656,181"/>
+<area shape="rect" id="node5" href="$df/dc8/_node_array_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeArraySensor.cpp" alt="" coords="1681,117,1908,173"/>
+<area shape="rect" id="node6" href="$d7/dd2/_node_c_o_m_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeCOMSensor.h" alt="" coords="158,117,369,173"/>
+<area shape="rect" id="node8" href="$d3/d79/_node_contact_force_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeContactForceSensor.h" alt="" coords="394,117,653,173"/>
+<area shape="rect" id="node10" href="$d7/db0/_node_position_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodePositionSensor.h" alt="" coords="678,117,905,173"/>
+<area shape="rect" id="node12" href="$d7/d69/_node_rotation_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeRotationSensor.h" alt="" coords="930,117,1160,173"/>
+<area shape="rect" id="node14" href="$d3/d7e/_node_velocity_sensor_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeVelocitySensor.h" alt="" coords="1185,117,1412,173"/>
+<area shape="rect" id="node3" href="$d4/d38/_sensor_manager_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/core/SensorManager.cpp" alt="" coords="822,237,1015,293"/>
+<area shape="rect" id="node4" href="$d2/d5c/_node_angular_velocity_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeAngularVelocity\lSensor.cpp" alt="" coords="1575,230,1795,301"/>
+<area shape="rect" id="node7" href="$d6/dbb/_node_c_o_m_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeCOMSensor.cpp" alt="" coords="5,237,232,293"/>
+<area shape="rect" id="node9" href="$df/d4f/_node_contact_force_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeContactForceSensor.cpp" alt="" coords="256,237,531,293"/>
+<area shape="rect" id="node11" href="$db/d5f/_node_position_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodePositionSensor.cpp" alt="" coords="555,237,797,293"/>
+<area shape="rect" id="node13" href="$d3/d2c/_node_rotation_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeRotationSensor.cpp" alt="" coords="1039,237,1283,293"/>
+<area shape="rect" id="node15" href="$d5/deb/_node_velocity_sensor_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/sensors/NodeVelocitySensor.cpp" alt="" coords="1308,237,1551,293"/>
 </map>

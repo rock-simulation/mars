@@ -1,6 +1,6 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/dialogs/BlenderExportGUI.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/dialogs/BlenderExportGUI.h">
-<area shape="rect" id="node3" href="$df/d24/_blender_export_g_u_i_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/BlenderExportGUI.cpp" alt="" coords="5,137,171,218"/>
-<area shape="rect" id="node5" href="$d8/d31/_menu_window_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuWindow.h" alt="" coords="195,145,429,209"/>
-<area shape="rect" id="node7" href="$da/d1e/_mars_gui_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/MarsGui.cpp" alt="" coords="105,267,281,331"/>
-<area shape="rect" id="node9" href="$d0/de2/_menu_window_8cpp.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation and manages the wind..." alt="" coords="305,267,553,331"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/dialogs/BlenderExportGUI.h" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/dialogs/BlenderExportGUI.h">
+<area shape="rect" id="node2" href="$df/d24/_blender_export_g_u_i_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/BlenderExportGUI.cpp" alt="" coords="4,109,227,165"/>
+<area shape="rect" id="node3" href="$d8/d31/_menu_window_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/menus/MenuWindow.h" alt="" coords="252,109,433,165"/>
+<area shape="rect" id="node4" href="$da/d1e/_mars_gui_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/MarsGui.cpp" alt="" coords="154,213,323,269"/>
+<area shape="rect" id="node5" href="$d0/de2/_menu_window_8cpp.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation and manages the wind..." alt="" coords="348,213,543,269"/>
 </map>

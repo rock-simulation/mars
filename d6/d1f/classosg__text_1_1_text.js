@@ -1,15 +1,17 @@
 var classosg__text_1_1_text =
 [
-    [ "Text", "d6/d1f/classosg__text_1_1_text.html#a5684a80401fa957807a72ef0b3a02a91", null ],
+    [ "Text", "d6/d1f/classosg__text_1_1_text.html#ae3419001f966d6ca109cafa6fd4fb6ce", null ],
     [ "~Text", "d6/d1f/classosg__text_1_1_text.html#a583f67979782a586abdd79f081180877", null ],
     [ "createBackground", "d6/d1f/classosg__text_1_1_text.html#af07a3eff42c54e0d51ce4c3d6ffc2d9b", null ],
     [ "createBorder", "d6/d1f/classosg__text_1_1_text.html#add5c4d00a2c64c568cdf8315f938989c", null ],
     [ "getOSGNode", "d6/d1f/classosg__text_1_1_text.html#a4031ff1cdb7da30103811e6e84af6ad1", null ],
+    [ "getRectangle", "d6/d1f/classosg__text_1_1_text.html#a87f7d4451c05da5e2440db106c8bdca3", null ],
     [ "setBackgroundColor", "d6/d1f/classosg__text_1_1_text.html#a96d00f94d96e0f210c96c282aa77358d", null ],
     [ "setBorderColor", "d6/d1f/classosg__text_1_1_text.html#a3dc4d5360dcad18507f1c22914b8c314", null ],
     [ "setBorderWidth", "d6/d1f/classosg__text_1_1_text.html#a7aae9981dc46aa2a4116f0f61dfb589f", null ],
     [ "setFixedHeight", "d6/d1f/classosg__text_1_1_text.html#adb9d677967ae28973c3af5e6f07c0eec", null ],
     [ "setFixedWidth", "d6/d1f/classosg__text_1_1_text.html#acb499a5daf651f09c1872b60a494e333", null ],
+    [ "setFontSize", "d6/d1f/classosg__text_1_1_text.html#aa9c1334f2c4edfb23abc8cf3d73404f2", null ],
     [ "setPadding", "d6/d1f/classosg__text_1_1_text.html#a811078e0adf9d92b3899676e834020c8", null ],
     [ "setPosition", "d6/d1f/classosg__text_1_1_text.html#a9d8ddbd05f6363d9b42ac79ed9aa865c", null ],
     [ "setText", "d6/d1f/classosg__text_1_1_text.html#ac15ec4a95f0f70b476d6a655971c3b17", null ],

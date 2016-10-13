@@ -1,13 +1,13 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/menus/MenuWindow.cpp" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/menus/MenuWindow.cpp">
-<area shape="rect" id="node9" href="$d8/d31/_menu_window_8h.html" title="MenuWindow.h" alt="" coords="501,127,613,156"/>
-<area shape="rect" id="node45" href="$d0/da1/_camera_configurator_8h.html" title="&quot;CameraConfigurator&quot; provides some options to setup the camera of a 3d window " alt="" coords="1133,127,1283,156"/>
-<area shape="rect" id="node71" href="$d9/d50/_capture_window_8h.html" title="&quot;CaptureWindow&quot; provides some options to setup the camera of a 3d window " alt="" coords="1364,127,1489,156"/>
-<area shape="rect" id="node11" href="$de/d0e/_main_g_u_i_defs_8h.html" title="MainGUIDefs.h" alt="" coords="576,223,688,252"/>
-<area shape="rect" id="node13" href="$dd/dcd/_blender_export_g_u_i_8h.html" title="&quot;BlenderExportGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="413,223,552,252"/>
-<area shape="rect" id="node20" href="$df/dd1/_controller_config_g_u_i_8h.html" title="&quot;ControllerConfigGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="240,223,389,252"/>
-<area shape="rect" id="node51" href="$d3/d45/_camera_configurator_g_u_i_8h.html" title="&quot;CameraConfiguratorGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="941,223,1115,252"/>
-<area shape="rect" id="node54" href="$da/dd0/_camera_config_8h.html" title="&quot;CameraConfig&quot; " alt="" coords="839,309,956,339"/>
-<area shape="rect" id="node75" href="$d1/d69/_capture_g_u_i_8h.html" title="&quot;CaptureGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="1483,223,1584,252"/>
-<area shape="rect" id="node79" href="$d3/d28/_capture_config_8h.html" title="&quot;CaptureConfig&quot; " alt="" coords="1467,309,1584,339"/>
-<area shape="rect" id="node84" href="$d9/d5d/_image_process_8h.html" title="ImageProcess.h" alt="" coords="1517,396,1635,425"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/menus/MenuWindow.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/menus/MenuWindow.cpp">
+<area shape="rect" id="node5" href="$d8/d31/_menu_window_8h.html" title="MenuWindow.h" alt="" coords="507,117,617,144"/>
+<area shape="rect" id="node21" href="$d0/da1/_camera_configurator_8h.html" title="&quot;CameraConfigurator&quot; provides some options to setup the camera of a 3d window " alt="" coords="1143,117,1293,144"/>
+<area shape="rect" id="node31" href="$d9/d50/_capture_window_8h.html" title="&quot;CaptureWindow&quot; provides some options to setup the camera of a 3d window " alt="" coords="1375,117,1501,144"/>
+<area shape="rect" id="node6" href="$de/d0e/_main_g_u_i_defs_8h.html" title="MainGUIDefs.h" alt="" coords="581,208,693,235"/>
+<area shape="rect" id="node7" href="$dd/dcd/_blender_export_g_u_i_8h.html" title="&quot;BlenderExportGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="417,208,556,235"/>
+<area shape="rect" id="node10" href="$df/dd1/_controller_config_g_u_i_8h.html" title="&quot;ControllerConfigGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="242,208,392,235"/>
+<area shape="rect" id="node24" href="$d3/d45/_camera_configurator_g_u_i_8h.html" title="&quot;CameraConfiguratorGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="949,208,1123,235"/>
+<area shape="rect" id="node25" href="$da/dd0/_camera_config_8h.html" title="&quot;CameraConfig&quot; " alt="" coords="848,291,964,317"/>
+<area shape="rect" id="node32" href="$d1/d69/_capture_g_u_i_8h.html" title="&quot;CaptureGUI&quot; is a template for the widget interface of the MARS GUI " alt="" coords="1495,208,1597,235"/>
+<area shape="rect" id="node33" href="$d3/d28/_capture_config_8h.html" title="&quot;CaptureConfig&quot; " alt="" coords="1481,291,1597,317"/>
+<area shape="rect" id="node35" href="$d9/d5d/_image_process_8h.html" title="ImageProcess.h" alt="" coords="1532,373,1648,400"/>
 </map>

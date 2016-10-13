@@ -16,5 +16,7 @@ var classmars_1_1interfaces_1_1_entity_manager_interface =
     [ "printEntityControllers", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a1195a7407526f6609c7159a262625360", null ],
     [ "printEntityMotors", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a75ad9a7205921d2ebe2c44869c165804", null ],
     [ "printEntityNodes", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a069df5ab2d9bd29118831727b911b79e", null ],
-    [ "selectEvent", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a38b59f3c50ad14248363e2f66e3a3dce", null ]
+    [ "resetPose", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a3145e800ce539671db829992727c4ea9", null ],
+    [ "selectEvent", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a38b59f3c50ad14248363e2f66e3a3dce", null ],
+    [ "subscribeToEntityCreation", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html#a1958ef1bedda12bae22a3cd0ecf8feff", null ]
 ];

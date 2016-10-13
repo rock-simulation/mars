@@ -1,4 +1,4 @@
 <map id="mars::gui::Widget_Node_State" name="mars::gui::Widget_Node_State">
-<area shape="rect" id="node4" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="99,6,232,53"/>
-<area shape="rect" id="node6" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="256,6,424,53"/>
+<area shape="rect" id="node3" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="99,6,233,47"/>
+<area shape="rect" id="node4" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="259,6,427,47"/>
 </map>

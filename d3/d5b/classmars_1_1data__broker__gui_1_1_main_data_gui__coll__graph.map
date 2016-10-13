@@ -1,14 +1,14 @@
 <map id="mars::data_broker_gui::MainDataGui" name="mars::data_broker_gui::MainDataGui">
-<area shape="rect" id="node20" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="199,182,348,229"/>
-<area shape="rect" id="node27" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="624,345,763,391"/>
-<area shape="rect" id="node32" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="383,57,572,87"/>
-<area shape="rect" id="node6" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="907,527,1109,556"/>
-<area shape="rect" id="node8" href="$d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html" title="mars::data_broker_gui\l::DataConnWidget" alt="" coords="933,238,1083,285"/>
-<area shape="rect" id="node10" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="599,416,788,445"/>
-<area shape="rect" id="node35" href="$de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html" title="mars::data_broker_gui\l::DataWidget" alt="" coords="933,457,1083,503"/>
-<area shape="rect" id="node14" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="203,345,344,391"/>
-<area shape="rect" id="node16" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="203,479,344,526"/>
-<area shape="rect" id="node24" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="627,275,760,322"/>
-<area shape="rect" id="node39" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="189,602,357,649"/>
-<area shape="rect" id="node42" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="609,634,777,681"/>
+<area shape="rect" id="node11" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="198,181,349,222"/>
+<area shape="rect" id="node13" href="$d6/d2e/classmars_1_1data__broker_1_1_data_broker_interface.html" title="The interface every DataBroker should implement. " alt="" coords="624,337,763,378"/>
+<area shape="rect" id="node14" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="382,56,573,83"/>
+<area shape="rect" id="node4" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="907,516,1109,543"/>
+<area shape="rect" id="node5" href="$d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html" title="mars::data_broker_gui\l::DataConnWidget" alt="" coords="933,235,1083,277"/>
+<area shape="rect" id="node6" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="598,403,789,429"/>
+<area shape="rect" id="node15" href="$de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html" title="mars::data_broker_gui\l::DataWidget" alt="" coords="933,450,1083,491"/>
+<area shape="rect" id="node8" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="202,339,345,381"/>
+<area shape="rect" id="node9" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="202,470,345,511"/>
+<area shape="rect" id="node12" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="626,271,761,313"/>
+<area shape="rect" id="node16" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="189,590,357,631"/>
+<area shape="rect" id="node17" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="609,623,777,665"/>
 </map>

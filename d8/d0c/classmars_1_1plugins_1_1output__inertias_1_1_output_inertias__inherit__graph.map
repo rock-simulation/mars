@@ -1,6 +1,0 @@
-<map id="mars::plugins::output_inertias::OutputInertias" name="mars::plugins::output_inertias::OutputInertias">
-<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="213,27,403,74"/>
-<area shape="rect" id="node6" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,58,165,105"/>
-<area shape="rect" id="node8" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="241,97,375,143"/>
-<area shape="rect" id="node10" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="237,166,379,213"/>
-</map>

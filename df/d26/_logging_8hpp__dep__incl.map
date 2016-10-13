@@ -1,0 +1,10 @@
+<map id="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/Logging.hpp" name="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/Logging.hpp">
+<area shape="rect" id="node2" href="$df/d7f/_joint_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/JointData.cpp" alt="" coords="5,213,213,269"/>
+<area shape="rect" id="node3" href="$d8/dbb/_control_center_8h.html" title="&quot;ControlCenter&quot; contains the instances of all modules of the simulation. The modules are connected vi..." alt="" coords="593,109,801,165"/>
+<area shape="rect" id="node4" href="$d2/db6/_node_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/NodeData.cpp" alt="" coords="238,213,447,269"/>
+<area shape="rect" id="node5" href="$dc/d88/_control_center_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/ControlCenter.cpp" alt="" coords="1442,213,1651,269"/>
+<area shape="rect" id="node6" href="$dd/d91/_mars_plugin_template_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplate.h" alt="" coords="471,213,680,269"/>
+<area shape="rect" id="node7" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplateGUI.h" alt="" coords="705,213,932,269"/>
+<area shape="rect" id="node8" href="$da/da8/_sensor_interface_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/SensorInterface.h" alt="" coords="957,213,1165,269"/>
+<area shape="rect" id="node9" href="$d0/ddd/_sensor_manager_interface_8h.html" title="&quot;SensorManagerInterface&quot; declares the interfaces for all sensor operations that are used for the comm..." alt="" coords="1191,213,1417,269"/>
+</map>

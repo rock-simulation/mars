@@ -8,6 +8,7 @@ var classmars_1_1sim_1_1_rotating_ray_config =
     [ "horizontal_resolution", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#a4b25898efdea39adf88fa742d8d51bdd", null ],
     [ "lasers", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#a34707a5595482b31aa7b9a19b03add36", null ],
     [ "maxDistance", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#a455dda640afbda0f256b0cdd7f3aabf8", null ],
+    [ "minDistance", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#a56f218fc3423e5d38f1a37bffffe6cb9", null ],
     [ "opening_height", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#ae1a96fe0b58452e796463f894a082adf", null ],
     [ "opening_width", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#ad1479482760738bfdebf3ee13a8dff77", null ],
     [ "ori_offset", "df/d1a/classmars_1_1sim_1_1_rotating_ray_config.html#a8ed5ac49a87b891987953f179ab6275c", null ],

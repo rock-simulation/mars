@@ -1,8 +1,8 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/SensorHandler.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/SensorHandler.h">
-<area shape="rect" id="node3" href="$d8/d59/_dialog_sensors_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/DialogSensors.h" alt="" coords="120,118,285,199"/>
-<area shape="rect" id="node13" href="$d0/d18/_sensor_handler_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/SensorHandler.cpp" alt="" coords="309,127,523,191"/>
-<area shape="rect" id="node5" href="$dc/d71/_dialog_sensors_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/DialogSensors.cpp" alt="" coords="5,249,171,330"/>
-<area shape="rect" id="node7" href="$d3/d92/_menu_simulation_8h.html" title="Provides the Simulation and Control menu entries. " alt="" coords="195,257,443,321"/>
-<area shape="rect" id="node9" href="$da/d1e/_mars_gui_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/MarsGui.cpp" alt="" coords="109,379,285,443"/>
-<area shape="rect" id="node11" href="$d9/d82/_menu_simulation_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuSimulation.cpp" alt="" coords="309,379,571,443"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/SensorHandler.h" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/SensorHandler.h">
+<area shape="rect" id="node2" href="$d8/d59/_dialog_sensors_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/DialogSensors.h" alt="" coords="123,109,312,165"/>
+<area shape="rect" id="node7" href="$d0/d18/_sensor_handler_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/SensorHandler.cpp" alt="" coords="337,109,505,165"/>
+<area shape="rect" id="node3" href="$dc/d71/_dialog_sensors_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/DialogSensors.cpp" alt="" coords="5,213,208,269"/>
+<area shape="rect" id="node4" href="$d3/d92/_menu_simulation_8h.html" title="Provides the Simulation and Control menu entries. " alt="" coords="232,213,427,269"/>
+<area shape="rect" id="node5" href="$da/d1e/_mars_gui_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/MarsGui.cpp" alt="" coords="138,317,307,373"/>
+<area shape="rect" id="node6" href="$d9/d82/_menu_simulation_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/menus/MenuSimulation.cpp" alt="" coords="331,317,540,373"/>
 </map>

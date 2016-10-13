@@ -1,6 +1,7 @@
 <map id="mars::interfaces::BaseGridIntersectionSensor" name="mars::interfaces::BaseGridIntersectionSensor">
-<area shape="rect" id="node9" href="$d1/d3c/classmars_1_1sim_1_1_ray_grid_sensor.html" title="mars::sim::RayGridSensor" alt="" coords="119,275,295,304"/>
-<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="11,83,195,130"/>
-<area shape="rect" id="node4" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,5,200,35"/>
-<area shape="rect" id="node6" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="219,83,403,130"/>
+<area shape="rect" id="node5" href="$d0/d67/classmars_1_1sim_1_1_haptic_field_sensor.html" title="mars::sim::HapticFieldSensor" alt="" coords="5,261,200,288"/>
+<area shape="rect" id="node6" href="$d1/d3c/classmars_1_1sim_1_1_ray_grid_sensor.html" title="mars::sim::RayGridSensor" alt="" coords="225,261,401,288"/>
+<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="11,81,196,122"/>
+<area shape="rect" id="node3" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="7,5,201,32"/>
+<area shape="rect" id="node4" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="221,81,405,122"/>
 </map>

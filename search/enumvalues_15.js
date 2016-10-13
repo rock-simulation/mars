@@ -1,7 +1,12 @@
 var searchData=
 [
-  ['va_5fbottom',['VA_BOTTOM',['../d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html#adbc2a93d4d2f2aff07f0d2f3542d3339a33e4c8afc8fa89c7469d728d9685c5b0',1,'mars::interfaces::GraphicsGuiInterface']]],
-  ['va_5fcenter',['VA_CENTER',['../d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html#adbc2a93d4d2f2aff07f0d2f3542d3339a0a49d14fc018f55b9dc0faaac8286034',1,'mars::interfaces::GraphicsGuiInterface']]],
-  ['va_5ftop',['VA_TOP',['../d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html#adbc2a93d4d2f2aff07f0d2f3542d3339a283f544051d971bfb7ad8ab8626faaf8',1,'mars::interfaces::GraphicsGuiInterface']]],
-  ['value',['value',['../d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#acc76b8c7a658d0b1247273c20ded6538ab147435b0a8cbcbbbc1133b84a18a1df',1,'mars::cfg_manager::CFGParamBool::value()'],['../d8/d7b/classmars_1_1cfg__manager_1_1_c_f_g_param_double.html#adb788dae850ff0c33cd50db422e9600aa417b2ad62f416a9d2561793ae4d57848',1,'mars::cfg_manager::CFGParamDouble::value()'],['../d9/d42/classmars_1_1cfg__manager_1_1_c_f_g_param_int.html#a908bc1b27c9014ef7aa0834d9b926571a0dfaef0bfe8ee7b131d8df1f8f811ed4',1,'mars::cfg_manager::CFGParamInt::value()'],['../d9/d8a/classmars_1_1cfg__manager_1_1_c_f_g_param_string.html#a1dfd60b26816ad2305cc459ba8c65dfdad9629c326608f0e4fc246045d9a44b1e',1,'mars::cfg_manager::CFGParamString::value()']]]
+  ['waitcond_5finternal_5ferror',['WAITCOND_INTERNAL_ERROR',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70a418057f372e9936e518bef09c2e7c0d0',1,'mars::utils']]],
+  ['waitcond_5fno_5ferror',['WAITCOND_NO_ERROR',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70a3496f0a6cb767076fc3f7e7a03dd018d',1,'mars::utils']]],
+  ['waitcond_5ftimeout',['WAITCOND_TIMEOUT',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70a21d1645beebc70685637691ad45840a3',1,'mars::utils']]],
+  ['waitcond_5funknown',['WAITCOND_UNKNOWN',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70a440d71357e1c2b2096d106603ed2d9c0',1,'mars::utils']]],
+  ['waitcond_5funspecified',['WAITCOND_UNSPECIFIED',['../d3/da5/namespacemars_1_1utils.html#a2a7566bbcd7f4127da4c31c44740fc70a2593099074a49d9d15fe736acfd97894',1,'mars::utils']]],
+  ['ws_5fcbutton',['WS_CBUTTON',['../d8/dec/namespacemars_1_1interfaces.html#a1bdf97121ba3805c36e70175bca87516a94c57d7403abb250ac28c5365f5dab1c',1,'mars::interfaces']]],
+  ['ws_5fedit',['WS_EDIT',['../d8/dec/namespacemars_1_1interfaces.html#a1bdf97121ba3805c36e70175bca87516ae4fb57658e9683459089d66d4f8951dd',1,'mars::interfaces']]],
+  ['ws_5fhslider',['WS_HSLIDER',['../d8/dec/namespacemars_1_1interfaces.html#a1bdf97121ba3805c36e70175bca87516a16c41e0e2de430ce03d4bdae3f7bf787',1,'mars::interfaces']]],
+  ['ws_5fvslider',['WS_VSLIDER',['../d8/dec/namespacemars_1_1interfaces.html#a1bdf97121ba3805c36e70175bca87516a657eebe74f7a457801f9e4dc90201703',1,'mars::interfaces']]]
 ];

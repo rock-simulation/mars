@@ -1,6 +1,6 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/dialogs/ControllerConfigGUI.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/dialogs/ControllerConfigGUI.h">
-<area shape="rect" id="node3" href="$d0/d80/_controller_config_g_u_i_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/ControllerConfigGUI.cpp" alt="" coords="5,137,173,218"/>
-<area shape="rect" id="node5" href="$d8/d31/_menu_window_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuWindow.h" alt="" coords="197,145,432,209"/>
-<area shape="rect" id="node7" href="$da/d1e/_mars_gui_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/MarsGui.cpp" alt="" coords="108,267,284,331"/>
-<area shape="rect" id="node9" href="$d0/de2/_menu_window_8cpp.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation and manages the wind..." alt="" coords="308,267,556,331"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/dialogs/ControllerConfigGUI.h" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/dialogs/ControllerConfigGUI.h">
+<area shape="rect" id="node2" href="$d0/d80/_controller_config_g_u_i_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/ControllerConfigGUI.cpp" alt="" coords="5,109,240,165"/>
+<area shape="rect" id="node3" href="$d8/d31/_menu_window_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/menus/MenuWindow.h" alt="" coords="265,109,447,165"/>
+<area shape="rect" id="node4" href="$da/d1e/_mars_gui_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/MarsGui.cpp" alt="" coords="167,213,336,269"/>
+<area shape="rect" id="node5" href="$d0/de2/_menu_window_8cpp.html" title="MenuWindow creates the menus and menu items in the Window menu of the simulation and manages the wind..." alt="" coords="361,213,556,269"/>
 </map>

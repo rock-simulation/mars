@@ -1,5 +1,0 @@
-<map id="mars::plugins::db_adrf_sender::DBADRFSender" name="mars::plugins::db_adrf_sender::DBADRFSender">
-<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="31,102,220,149"/>
-<area shape="rect" id="node6" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="120,6,280,53"/>
-<area shape="rect" id="node8" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="244,102,377,149"/>
-</map>

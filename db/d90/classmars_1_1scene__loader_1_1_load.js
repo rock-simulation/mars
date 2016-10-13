@@ -15,6 +15,7 @@ var classmars_1_1scene__loader_1_1_load =
     [ "loadScene", "db/d90/classmars_1_1scene__loader_1_1_load.html#a4dffd28e2fbf147a9d99eb665ca49589", null ],
     [ "loadSensor", "db/d90/classmars_1_1scene__loader_1_1_load.html#a88e494c6e03f71a5efb5a00e524f2e15", null ],
     [ "parseScene", "db/d90/classmars_1_1scene__loader_1_1_load.html#a4c05f232550b5533c816c18813221a17", null ],
+    [ "parseYamlScene", "db/d90/classmars_1_1scene__loader_1_1_load.html#ab990ab04fcb65efaf9cfb498c83837f6", null ],
     [ "prepareLoad", "db/d90/classmars_1_1scene__loader_1_1_load.html#aa2ab2f296ba4993261dadd6c15aa58e6", null ],
     [ "unzip", "db/d90/classmars_1_1scene__loader_1_1_load.html#a1462751193d98ebff1ecd85968150977", null ],
     [ "control", "db/d90/classmars_1_1scene__loader_1_1_load.html#aa5c8ccba92ae7be2eb1136ed2cf1759f", null ],
@@ -33,5 +34,6 @@ var classmars_1_1scene__loader_1_1_load =
     [ "nodeList", "db/d90/classmars_1_1scene__loader_1_1_load.html#a54b82240611c6ab191669e56a91160a9", null ],
     [ "sceneFilename", "db/d90/classmars_1_1scene__loader_1_1_load.html#abec4ddd518c408410246fdf5878238cc", null ],
     [ "sensorList", "db/d90/classmars_1_1scene__loader_1_1_load.html#a72c872d64d2fea464ed562025f665b98", null ],
-    [ "tmpPath", "db/d90/classmars_1_1scene__loader_1_1_load.html#ae620fc514f9bc83c1dea48a793958751", null ]
+    [ "tmpPath", "db/d90/classmars_1_1scene__loader_1_1_load.html#ae620fc514f9bc83c1dea48a793958751", null ],
+    [ "useYAML", "db/d90/classmars_1_1scene__loader_1_1_load.html#a5052b7d2d6804b6f67678b60591454e5", null ]
 ];

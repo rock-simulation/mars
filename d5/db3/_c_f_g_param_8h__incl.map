@@ -1,5 +1,5 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/common/cfg_manager/src/CFGParam.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/common/cfg_manager/src/CFGParam.h">
-<area shape="rect" id="node3" href="$d3/d8b/_c_f_g_defs_8h.html" title="This file stores types and structs for the CFG class. " alt="" coords="36,213,124,243"/>
-<area shape="rect" id="node7" href="$da/d11/_c_f_g_property_8h.html" title="CFGProperty holds the value for one property of a CFGParam. " alt="" coords="151,136,260,165"/>
-<area shape="rect" id="node11" href="$d4/dce/_c_f_g_client_8h.html" title="&#39;CFGClient&#39; is a interface to register to a value " alt="" coords="34,136,127,165"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/common/cfg_manager/src/CFGParam.h" name="/media/kavonszadkowski/work/marsdocs/mars/common/cfg_manager/src/CFGParam.h">
+<area shape="rect" id="node2" href="$d3/d8b/_c_f_g_defs_8h.html" title="This file stores types and structs for the CFG class. " alt="" coords="36,184,125,211"/>
+<area shape="rect" id="node4" href="$da/d11/_c_f_g_property_8h.html" title="CFGProperty holds the value for one property of a CFGParam. " alt="" coords="152,109,262,136"/>
+<area shape="rect" id="node5" href="$d4/dce/_c_f_g_client_8h.html" title="&#39;CFGClient&#39; is a interface to register to a value " alt="" coords="34,109,128,136"/>
 </map>

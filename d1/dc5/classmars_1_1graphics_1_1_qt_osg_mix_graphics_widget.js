@@ -6,6 +6,7 @@ var classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget =
     [ "createInstance", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#a8741b62d7d5c0f176099a7bc9a64804d", null ],
     [ "createWidgetContext", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#a59dd60a5e91b6c88e0b873595e960354", null ],
     [ "eventFilter", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#a8635ec1ede5ecd207c2a39baca3d7854", null ],
+    [ "focusInEvent", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#ac6c9fa37cceb060ade1f5641d94aa2ec", null ],
     [ "getWGeometry", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#a2a5d278d28ac4881b9a1faf7836db40a", null ],
     [ "getWidget", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#a150d6efb7364667da53aa6cf529031bd", null ],
     [ "hideEvent", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#ac78a6db9a88b4b0f6290f7abe91197ea", null ],

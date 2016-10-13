@@ -4,6 +4,7 @@ var classmars_1_1sim_1_1_motor_manager =
     [ "~MotorManager", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a974fc07cd5135c8a7c2ac2c74126ac49", null ],
     [ "addMotor", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#ae4fb6de18847dfe4997ca1d8012b73a2", null ],
     [ "clearAllMotors", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a34e9397e68ce2ada60cafe0a106c23ba", null ],
+    [ "connectMimics", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#acb334cc9eb665a0b6e2b7ffdb700ef2d", null ],
     [ "deactivateMotor", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a3be12aea1420a40cba3a133fd7f39b7d", null ],
     [ "editMotor", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a726624a252f1bb2de95dd197e85df7f1", null ],
     [ "getActualPosition", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a2916acf678a6b27d00614b73c1d9ce7a", null ],
@@ -29,6 +30,7 @@ var classmars_1_1sim_1_1_motor_manager =
     [ "updateMotors", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#ad7dbcdae12a7156f66d4d599d884cfe8", null ],
     [ "control", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a462de03020da499b464bee8e5e79b7b2", null ],
     [ "iMutex", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#acbbfc9eb91f84db0a58f75197a8d090b", null ],
+    [ "mimicmotors", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#ade8848db5cd3b6423cb9808e5ad9a175", null ],
     [ "next_motor_id", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a418346cbcc601058fd7da1bb7fa9f70e", null ],
     [ "simMotors", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a939e9d4f0e90d93667e8d1f163a281fc", null ],
     [ "simMotorsReload", "d3/da4/classmars_1_1sim_1_1_motor_manager.html#a5e8f41543a98a42478df8d1f8c469383", null ]

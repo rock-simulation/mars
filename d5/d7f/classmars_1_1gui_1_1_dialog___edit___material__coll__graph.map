@@ -1,6 +1,6 @@
 <map id="mars::gui::Dialog_Edit_Material" name="mars::gui::Dialog_Edit_Material">
-<area shape="rect" id="node4" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="99,249,296,279"/>
-<area shape="rect" id="node8" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="157,15,280,44"/>
-<area shape="rect" id="node10" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="320,241,488,287"/>
-<area shape="rect" id="node14" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="440,6,608,53"/>
+<area shape="rect" id="node3" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="99,221,297,248"/>
+<area shape="rect" id="node5" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="160,13,283,40"/>
+<area shape="rect" id="node6" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="323,214,491,255"/>
+<area shape="rect" id="node8" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="421,6,589,47"/>
 </map>

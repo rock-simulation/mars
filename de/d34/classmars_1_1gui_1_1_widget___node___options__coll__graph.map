@@ -1,5 +1,5 @@
 <map id="mars::gui::Widget_Node_Options" name="mars::gui::Widget_Node_Options">
-<area shape="rect" id="node4" href="$dc/d1d/structmars_1_1interfaces_1_1contact__params.html" title="mars::interfaces::contact\l_params" alt="" coords="99,121,264,167"/>
-<area shape="rect" id="node6" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="288,121,456,167"/>
-<area shape="rect" id="node10" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="359,6,527,53"/>
+<area shape="rect" id="node3" href="$dc/d1d/structmars_1_1interfaces_1_1contact__params.html" title="mars::interfaces::contact\l_params" alt="" coords="99,113,265,154"/>
+<area shape="rect" id="node4" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="291,113,459,154"/>
+<area shape="rect" id="node6" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="361,6,529,47"/>
 </map>

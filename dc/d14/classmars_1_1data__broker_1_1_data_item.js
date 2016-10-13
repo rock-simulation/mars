@@ -4,7 +4,9 @@ var classmars_1_1data__broker_1_1_data_item =
     [ "~DataItem", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a14bf994605b2b9881e131e2b8397ee1a", null ],
     [ "DataItem", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a8d0d70335847dcdb3333206a33a65715", null ],
     [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a2e9dfca2066fb9d817a5c9d9a2ba19b3", null ],
+    [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a4b351e8a294b592bc070a770e8437a03", null ],
     [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a26a0f0fb3705571f239d5dba26f0a11c", null ],
+    [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a59143b443764510d31e302b22a9e4d0f", null ],
     [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#adf87279efeb3f245c7f1cbb3c6a2edbc", null ],
     [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#aa62c5ddf24000b536aebd0f45f82d548", null ],
     [ "get", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a71cb09014fc1b7851060eda8a03aaf67", null ],
@@ -12,7 +14,9 @@ var classmars_1_1data__broker_1_1_data_item =
     [ "getName", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a00b93a50b4db13f2776954b0f6ca232f", null ],
     [ "operator=", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#addd6dbdd5ebc92918e9fa40d442598d3", null ],
     [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#af161576113645b1395b1d973a5d39a7a", null ],
+    [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a4a4a6b97e387d9af8fd570715f8c76a4", null ],
     [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#af5a873af7fc5972a1c9041a464d4a5a7", null ],
+    [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#ac765b2ec67befbfe88e538b7534a7242", null ],
     [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#ab6936bd15731b995b018884c7c87b05d", null ],
     [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a59be80bf67ebc08328a01e58f439ae8f", null ],
     [ "set", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#af64232ac9b4a5b16b933f2787e5122be", null ],
@@ -25,5 +29,7 @@ var classmars_1_1data__broker_1_1_data_item =
     [ "l", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a2906abdfe5105795870eff2ba3b5375e", null ],
     [ "name", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a2567ee392f419e60437d1b0350b0701b", null ],
     [ "s", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#af7721f740a6808e47ecf783690800f86", null ],
-    [ "type", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a3de5ab1edb8adbaba6b0f9382688d6a6", null ]
+    [ "type", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#a3de5ab1edb8adbaba6b0f9382688d6a6", null ],
+    [ "ui", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#aa113a999bcfb5127cdbef1299f239265", null ],
+    [ "ul", "dc/d14/classmars_1_1data__broker_1_1_data_item.html#ac01e2b2f582601f61249673e026a568c", null ]
 ];

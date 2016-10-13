@@ -1,5 +1,11 @@
 <map id="mars::cfg_manager_gui::CfgWidget" name="mars::cfg_manager_gui::CfgWidget">
-<area shape="rect" id="node4" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="5,58,173,105"/>
-<area shape="rect" id="node10" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="325,109,493,155"/>
-<area shape="rect" id="node6" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="335,181,484,227"/>
+<area shape="rect" id="node10" href="$d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html" title="mars::cfg_manager_gui\l::MainCfgGui" alt="" coords="1238,321,1397,362"/>
+<area shape="rect" id="node2" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="598,225,789,252"/>
+<area shape="rect" id="node4" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="202,133,345,174"/>
+<area shape="rect" id="node5" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="202,67,345,109"/>
+<area shape="rect" id="node7" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="198,313,349,354"/>
+<area shape="rect" id="node13" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="382,496,573,523"/>
+<area shape="rect" id="node9" href="$dd/d38/classmars_1_1main__gui_1_1_property_callback.html" title="Introduced for Windows compatibility. " alt="" coords="189,430,357,471"/>
+<area shape="rect" id="node14" href="$de/d11/classmars_1_1main__gui_1_1_property_dialog.html" title="The PropertyDialog provides the QtProperty functionality. " alt="" coords="609,379,777,421"/>
+<area shape="rect" id="node12" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="912,496,1115,523"/>
 </map>

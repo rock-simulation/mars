@@ -1,14 +1,14 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/SelectionDialog.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/SelectionDialog.h">
-<area shape="rect" id="node3" href="$d0/dfb/_controller_handler_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/ControllerHandler.h" alt="" coords="87,117,300,181"/>
-<area shape="rect" id="node17" href="$d7/dae/_selection_dialog_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/SelectionDialog.cpp" alt="" coords="324,117,543,181"/>
-<area shape="rect" id="node19" href="$d4/df0/_sensor_handler_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/SensorHandler.h" alt="" coords="567,117,764,181"/>
-<area shape="rect" id="node5" href="$d5/d58/_controller_handler_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/ControllerHandler.cpp" alt="" coords="5,239,232,303"/>
-<area shape="rect" id="node7" href="$dd/d7e/_dialog_controllers_8h.html" title="A controller tree widget holding all controllers as properties. " alt="" coords="256,230,421,311"/>
-<area shape="rect" id="node9" href="$db/d21/_dialog_controllers_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/DialogControllers.cpp" alt="" coords="129,361,295,442"/>
-<area shape="rect" id="node11" href="$d3/d92/_menu_simulation_8h.html" title="Provides the Simulation and Control menu entries. " alt="" coords="319,369,567,433"/>
-<area shape="rect" id="node13" href="$da/d1e/_mars_gui_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/MarsGui.cpp" alt="" coords="233,491,409,555"/>
-<area shape="rect" id="node15" href="$d9/d82/_menu_simulation_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/menus/MenuSimulation.cpp" alt="" coords="433,491,695,555"/>
-<area shape="rect" id="node21" href="$d8/d59/_dialog_sensors_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/DialogSensors.h" alt="" coords="465,230,631,311"/>
-<area shape="rect" id="node26" href="$d0/d18/_sensor_handler_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/SensorHandler.cpp" alt="" coords="655,239,868,303"/>
-<area shape="rect" id="node23" href="$dc/d71/_dialog_sensors_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/gui/src/dialogs\l/DialogSensors.cpp" alt="" coords="591,361,756,442"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/SelectionDialog.h" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/SelectionDialog.h">
+<area shape="rect" id="node2" href="$d0/dfb/_controller_handler_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/ControllerHandler.h" alt="" coords="159,109,328,165"/>
+<area shape="rect" id="node9" href="$d7/dae/_selection_dialog_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/SelectionDialog.cpp" alt="" coords="353,109,521,165"/>
+<area shape="rect" id="node10" href="$d4/df0/_sensor_handler_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/SensorHandler.h" alt="" coords="546,109,715,165"/>
+<area shape="rect" id="node3" href="$d5/d58/_controller_handler_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/ControllerHandler.cpp" alt="" coords="5,213,179,269"/>
+<area shape="rect" id="node4" href="$dd/d7e/_dialog_controllers_8h.html" title="A controller tree widget holding all controllers as properties. " alt="" coords="203,213,407,269"/>
+<area shape="rect" id="node5" href="$db/d21/_dialog_controllers_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/DialogControllers.cpp" alt="" coords="153,317,372,373"/>
+<area shape="rect" id="node6" href="$d3/d92/_menu_simulation_8h.html" title="Provides the Simulation and Control menu entries. " alt="" coords="396,317,591,373"/>
+<area shape="rect" id="node7" href="$da/d1e/_mars_gui_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/MarsGui.cpp" alt="" coords="302,421,471,477"/>
+<area shape="rect" id="node8" href="$d9/d82/_menu_simulation_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/menus/MenuSimulation.cpp" alt="" coords="495,421,704,477"/>
+<area shape="rect" id="node11" href="$d8/d59/_dialog_sensors_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/DialogSensors.h" alt="" coords="476,213,665,269"/>
+<area shape="rect" id="node13" href="$d0/d18/_sensor_handler_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/SensorHandler.cpp" alt="" coords="690,213,859,269"/>
+<area shape="rect" id="node12" href="$dc/d71/_dialog_sensors_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/gui\l/src/dialogs/DialogSensors.cpp" alt="" coords="615,317,817,373"/>
 </map>

@@ -21,7 +21,10 @@ var classmars_1_1sim_1_1_camera_sensor =
     [ "dbPosIndices", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#af3920caad23d3636480d99555af61adc", null ],
     [ "dbRotIndices", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#ae828a094f0a590d0982f9815abf62f2d", null ],
     [ "depthCamera", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#a8f98212de3ae36a9df5f34fc4ec71f3c", null ],
+    [ "draw_id", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#a43dae65737cdd718c0fc9b9160f377d0", null ],
     [ "gc", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#adb44fa3cd3c3d23e07364a64368c5d99", null ],
     [ "gw", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#aad8cd49513cdbe631c971e19dfbe7224", null ],
-    [ "imageCamera", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#ae857a5cd9135e66d7d33265c46fd1578", null ]
+    [ "imageCamera", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#ae857a5cd9135e66d7d33265c46fd1578", null ],
+    [ "mutex", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#a9936f3322a1e6fac0a86be1ffeb878ea", null ],
+    [ "renderCam", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html#a36e401866c9d27f9ba49b49f3b603846", null ]
 ];

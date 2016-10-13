@@ -1,3 +1,20 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$d4/d80/structmars_1_1log__console_1_1con__data.html" title="mars::log_console::\lcon_data" alt="" coords="5,5,141,51"/>
+<area shape="rect" id="node2" href="$d3/ddd/classmars_1_1graphics_1_1_axis_primitive.html" title="mars::graphics::AxisPrimitive" alt="" coords="223,157,417,184"/>
+<area shape="rect" id="node3" href="$d5/d0d/classmars_1_1graphics_1_1_coords_primitive.html" title="mars::graphics::CoordsPrimitive" alt="" coords="215,208,425,235"/>
+<area shape="rect" id="node4" href="$d4/d47/classmars_1_1graphics_1_1_grid_primitive.html" title="mars::graphics::GridPrimitive" alt="" coords="225,259,415,285"/>
+<area shape="rect" id="node5" href="$da/d4a/classmars_1_1graphics_1_1_o_s_g_draw_item.html" title="Wraps draw_item in osg::Group. " alt="" coords="219,309,421,336"/>
+<area shape="rect" id="node6" href="$d1/dfc/classmars_1_1graphics_1_1_o_s_g_hud_element_struct.html" title="Wraps hudElementStruct in osg::Group. " alt="" coords="211,361,429,402"/>
+<area shape="rect" id="node7" href="$dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html" title="mars::graphics::OSGNodeStruct" alt="" coords="215,427,425,453"/>
+<area shape="rect" id="node8" href="$df/d1a/classosg__lines_1_1_lines_p.html" title="osg_lines::LinesP" alt="" coords="257,5,383,32"/>
+<area shape="rect" id="node9" href="$de/d42/classosg__material__manager_1_1_material_node.html" title="osg_material_manager\l::MaterialNode" alt="" coords="243,478,397,519"/>
+<area shape="rect" id="node10" href="$de/d52/classosg__material__manager_1_1_osg_material.html" title="osg_material_manager\l::OsgMaterial" alt="" coords="243,543,397,585"/>
+<area shape="rect" id="node11" href="$df/daf/classosg__plot_1_1_curve_p.html" title="osg_plot::CurveP" alt="" coords="259,609,381,636"/>
+<area shape="rect" id="node12" href="$d4/da9/classosg__plot_1_1_plot.html" title="osg_plot::Plot" alt="" coords="269,56,371,83"/>
+<area shape="rect" id="node13" href="$d6/db5/classosg__points_1_1_points_p.html" title="osg_points::PointsP" alt="" coords="251,660,389,687"/>
+<area shape="rect" id="node14" href="$d9/dc1/classosg__terrain_1_1_terrain.html" title="osg_terrain::Terrain" alt="" coords="253,107,387,133"/>
+<area shape="rect" id="node15" href="$d6/d1f/classosg__text_1_1_text.html" title="osg_text::Text" alt="" coords="267,711,373,737"/>
+<area shape="rect" id="node16" href="$d0/db3/classosg__lines_1_1_lines.html" title="osg_lines::Lines" alt="" coords="26,5,142,32"/>
+<area shape="rect" id="node17" href="$d1/d47/classosg__plot_1_1_curve.html" title="osg_plot::Curve" alt="" coords="27,609,141,636"/>
+<area shape="rect" id="node18" href="$d8/d45/classosg__points_1_1_points.html" title="osg_points::Points" alt="" coords="19,660,149,687"/>
+<area shape="rect" id="node19" href="$d7/d02/classosg__text_1_1_text_interface.html" title="osg_text::TextInterface" alt="" coords="5,711,163,737"/>
 </map>

@@ -1,11 +1,7 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/3d_objects/DrawObject.cpp" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/3d_objects/DrawObject.cpp">
-<area shape="rect" id="node3" href="$d4/d4b/_draw_object_8h.html" title="DrawObject.h" alt="" coords="959,213,1060,243"/>
-<area shape="rect" id="node39" href="$d7/da2/gui__helper__functions_8h.html" title="gui_helper_functions.h" alt="" coords="949,300,1101,329"/>
-<area shape="rect" id="node60" href="$de/de8/_o_s_g_material_struct_8h.html" title="../wrapper/OSGMaterialStruct.h" alt="" coords="101,213,307,243"/>
-<area shape="rect" id="node64" href="$d3/d70/shader-generator_8h.html" title="../shader/shader&#45;generator.h" alt="" coords="2397,136,2581,165"/>
-<area shape="rect" id="node66" href="$dc/d90/shader-function_8h.html" title="shader&#45;function.h" alt="" coords="2428,213,2551,243"/>
-<area shape="rect" id="node91" href="$dc/db6/bumpmapping_8h.html" title="../shader/bumpmapping.h" alt="" coords="1992,136,2160,165"/>
-<area shape="rect" id="node107" href="$d0/d27/pixellight_8h.html" title="../shader/pixellight.h" alt="" coords="2184,136,2323,165"/>
-<area shape="rect" id="node76" href="$d0/d54/shader-types_8h.html" title="shader&#45;types.h" alt="" coords="2688,300,2795,329"/>
-<area shape="rect" id="node94" href="$d9/d47/_graphics_manager_8h.html" title="GraphicsManager.h" alt="" coords="1493,213,1627,243"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/3d_objects/DrawObject.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/3d_objects/DrawObject.cpp">
+<area shape="rect" id="node2" href="$d4/d4b/_draw_object_8h.html" title="DrawObject.h" alt="" coords="3097,275,3199,301"/>
+<area shape="rect" id="node20" href="$d7/da2/gui__helper__functions_8h.html" title="gui_helper_functions.h" alt="" coords="4516,275,4668,301"/>
+<area shape="rect" id="node29" href="$de/de8/_o_s_g_material_struct_8h.html" title="../wrapper/OSGMaterialStruct.h" alt="" coords="2108,275,2314,301"/>
+<area shape="rect" id="node36" href="$d9/d47/_graphics_manager_8h.html" title="../GraphicsManager.h" alt="" coords="2399,109,2546,136"/>
+<area shape="rect" id="node46" href="$de/df2/_shadow_map_8h.html" title="The ShadowMap is a clone of the original osgShadow::ShadowMap but allows to render the shadow texture..." alt="" coords="2764,192,2868,219"/>
 </map>

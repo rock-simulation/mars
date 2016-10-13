@@ -1,5 +1,6 @@
 <map id="mars::interfaces::GraphicsEventClient" name="mars::interfaces::GraphicsEventClient">
-<area shape="rect" id="node3" href="$dc/d96/classmars_1_1gui_1_1_dialog_nodes.html" title="mars::gui::DialogNodes" alt="" coords="5,101,163,131"/>
-<area shape="rect" id="node5" href="$d8/d72/classmars_1_1gui_1_1_node_selection_tree.html" title="mars::gui::NodeSelectionTree" alt="" coords="187,101,381,131"/>
-<area shape="rect" id="node7" href="$d3/d9f/classmars_1_1sim_1_1_entity_manager.html" title="mars::sim::EntityManager" alt="" coords="405,101,576,131"/>
+<area shape="rect" id="node2" href="$dc/d96/classmars_1_1gui_1_1_dialog_nodes.html" title="mars::gui::DialogNodes" alt="" coords="247,5,406,32"/>
+<area shape="rect" id="node3" href="$d8/d72/classmars_1_1gui_1_1_node_selection_tree.html" title="mars::gui::NodeSelectionTree" alt="" coords="229,56,424,83"/>
+<area shape="rect" id="node4" href="$da/ddf/classmars_1_1plugins_1_1_selection_tree.html" title="mars::plugins::SelectionTree" alt="" coords="233,107,421,133"/>
+<area shape="rect" id="node5" href="$d3/d9f/classmars_1_1sim_1_1_entity_manager.html" title="mars::sim::EntityManager" alt="" coords="241,157,413,184"/>
 </map>

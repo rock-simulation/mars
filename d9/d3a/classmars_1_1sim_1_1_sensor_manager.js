@@ -5,7 +5,7 @@ var classmars_1_1sim_1_1_sensor_manager =
     [ "addMarsParser", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a2919348de200c6295ad2a7fb1d54495b", null ],
     [ "addSensorType", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a01085f82a78e8aebdc53fbf32fab586a", null ],
     [ "clearAllSensors", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#ab72b871e694906654a1dc37f6994e89a", null ],
-    [ "createAndAddSensor", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a41f8619a6c6975fea36001711f156d22", null ],
+    [ "createAndAddSensor", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#ac5fdb01bb6e30929ad75b7a6e42bc347", null ],
     [ "createAndAddSensor", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a27acbe1c03823ddd021fc96306f759dc", null ],
     [ "getFullSensor", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a20b5094260d7646111d5d82e438b89ab", null ],
     [ "getListSensors", "d9/d3a/classmars_1_1sim_1_1_sensor_manager.html#a51cdc0fc32999bdd10c5d34ea166fe8b", null ],

@@ -1,3 +1,5 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$d6/dde/structmars_1_1gui_1_1_controller_config_g_u_i_1_1_controller_elem.html" title="mars::gui::ControllerConfig\lGUI::ControllerElem" alt="" coords="5,5,184,51"/>
+<area shape="rect" id="node1" href="$dd/dd8/structmars_1_1sim_1_1_node_manager_1_1_params.html" title="mars::sim::NodeManager\l::Params" alt="" coords="6,38,175,79"/>
+<area shape="rect" id="node2" href="$d0/d6f/structmars_1_1sim_1_1_node_manager_1_1_move_params.html" title="mars::sim::NodeManager\l::MoveParams" alt="" coords="225,5,394,46"/>
+<area shape="rect" id="node3" href="$de/df9/structmars_1_1sim_1_1_node_manager_1_1_rotation_params.html" title="mars::sim::NodeManager\l::RotationParams" alt="" coords="225,70,394,111"/>
 </map>

@@ -1,6 +1,6 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/ControllerManager.cpp" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/core/ControllerManager.cpp">
-<area shape="rect" id="node3" href="$d4/d2e/_controller_manager_8h.html" title="&quot;ControllerManager&quot; implements the ControllerManagerInterface. It is manages all controllers and all ..." alt="" coords="1969,145,2108,175"/>
-<area shape="rect" id="node5" href="$d2/d94/_controller_8h.html" title="&quot;Controller&quot; provides an architecture to log all relevant data from the simulation in file..." alt="" coords="1391,241,1479,271"/>
-<area shape="rect" id="node7" href="$d6/de5/_sim_motor_8h.html" title="SimMotor.h" alt="" coords="643,337,731,367"/>
-<area shape="rect" id="node9" href="$d0/ddc/_sim_joint_8h.html" title="SimJoint.h" alt="" coords="261,433,344,463"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/sim/src/core/ControllerManager.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/sim/src/core/ControllerManager.cpp">
+<area shape="rect" id="node2" href="$d4/d2e/_controller_manager_8h.html" title="&quot;ControllerManager&quot; implements the ControllerManagerInterface. It is manages all controllers and all ..." alt="" coords="2096,117,2235,144"/>
+<area shape="rect" id="node3" href="$d2/d94/_controller_8h.html" title="&quot;Controller&quot; provides an architecture to log all relevant data from the simulation in file..." alt="" coords="1513,208,1601,235"/>
+<area shape="rect" id="node4" href="$d6/de5/_sim_motor_8h.html" title="SimMotor.h" alt="" coords="757,299,845,325"/>
+<area shape="rect" id="node5" href="$d0/ddc/_sim_joint_8h.html" title="SimJoint.h" alt="" coords="262,389,345,416"/>
 </map>

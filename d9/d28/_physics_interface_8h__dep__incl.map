@@ -1,7 +1,7 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/PhysicsInterface.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim/PhysicsInterface.h">
-<area shape="rect" id="node3" href="$d0/ddf/_node_interface_8h.html" title="&quot;NodeInterface&quot; declares the interfaces for the Nodes to the physical layer. " alt="" coords="5,137,171,218"/>
-<area shape="rect" id="node7" href="$d0/d74/_simulator_interface_8h.html" title="&quot;SimulatorInterface&quot; provides an interface for using the Simulator class " alt="" coords="195,137,360,218"/>
-<area shape="rect" id="node5" href="$db/d35/_joint_interface_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/JointInterface.h" alt="" coords="5,267,171,349"/>
-<area shape="rect" id="node9" href="$dd/d91/_mars_plugin_template_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplate.h" alt="" coords="195,267,360,349"/>
-<area shape="rect" id="node11" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplateGUI.h" alt="" coords="384,267,563,349"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim/PhysicsInterface.h" name="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim/PhysicsInterface.h">
+<area shape="rect" id="node2" href="$d0/ddf/_node_interface_8h.html" title="&quot;NodeInterface&quot; declares the interfaces for the Nodes to the physical layer. " alt="" coords="5,109,213,165"/>
+<area shape="rect" id="node4" href="$d0/d74/_simulator_interface_8h.html" title="&quot;SimulatorInterface&quot; provides an interface for using the Simulator class " alt="" coords="238,109,447,165"/>
+<area shape="rect" id="node3" href="$db/d35/_joint_interface_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/JointInterface.h" alt="" coords="5,213,213,269"/>
+<area shape="rect" id="node5" href="$dd/d91/_mars_plugin_template_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplate.h" alt="" coords="238,213,447,269"/>
+<area shape="rect" id="node6" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplateGUI.h" alt="" coords="472,213,699,269"/>
 </map>

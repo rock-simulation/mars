@@ -1,3 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$de/dd3/struct_d_i_d_e_v_c_a_p_s___d_x3.html" title="DIDEVCAPS_DX3" alt="" coords="7,5,140,35"/>
+<area shape="rect" id="node1" href="$dd/dbd/classmars_1_1graphics_1_1_h_u_d_element.html" title="mars::graphics::HUDElement" alt="" coords="5,107,200,133"/>
+<area shape="rect" id="node2" href="$dd/daa/classmars_1_1graphics_1_1_h_u_d_label.html" title="mars::graphics::HUDLabel" alt="" coords="263,5,441,32"/>
+<area shape="rect" id="node3" href="$d5/d9d/classmars_1_1graphics_1_1_h_u_d_lines.html" title="mars::graphics::HUDLines" alt="" coords="263,56,441,83"/>
+<area shape="rect" id="node4" href="$d5/dbc/classmars_1_1graphics_1_1_h_u_d_o_s_g_node.html" title="mars::graphics::HUDOSGNode" alt="" coords="249,107,455,133"/>
+<area shape="rect" id="node5" href="$d9/d00/classmars_1_1graphics_1_1_h_u_d_terminal.html" title="mars::graphics::HUDTerminal" alt="" coords="254,157,450,184"/>
+<area shape="rect" id="node6" href="$dd/da6/classmars_1_1graphics_1_1_h_u_d_texture.html" title="mars::graphics::HUDTexture" alt="" coords="257,208,447,235"/>
 </map>

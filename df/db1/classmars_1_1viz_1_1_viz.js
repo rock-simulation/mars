@@ -7,7 +7,8 @@ var classmars_1_1viz_1_1_viz =
     [ "getLibName", "df/db1/classmars_1_1viz_1_1_viz.html#a1adf83cbbf2947c6f0a3324445b25c30", null ],
     [ "getLibVersion", "df/db1/classmars_1_1viz_1_1_viz.html#ab38b946e1e24d122821da0f07936f9a5", null ],
     [ "init", "df/db1/classmars_1_1viz_1_1_viz.html#a4908e88b7f7a4421136ce11ae7b869f2", null ],
-    [ "loadScene", "df/db1/classmars_1_1viz_1_1_viz.html#ab4cf06f5a69186bf274b4f00a4cb608b", null ],
+    [ "loadScene", "df/db1/classmars_1_1viz_1_1_viz.html#afb609dde73fc7ccae76d03c3d8a36109", null ],
+    [ "receiveData", "df/db1/classmars_1_1viz_1_1_viz.html#a54c768e0290bb59326f2f43979744145", null ],
     [ "setJointValue", "df/db1/classmars_1_1viz_1_1_viz.html#a2c72647e0d5273a2eb7f344aa4886387", null ],
     [ "setJointValue", "df/db1/classmars_1_1viz_1_1_viz.html#a3d7dae97a49c7bce17aac5f48ff05ce4", null ],
     [ "setJointValue", "df/db1/classmars_1_1viz_1_1_viz.html#a52e3623a67bad5f9b5613e45e0e11560", null ],
@@ -21,6 +22,7 @@ var classmars_1_1viz_1_1_viz =
     [ "jointByControllerIdx", "df/db1/classmars_1_1viz_1_1_viz.html#afe7ffb0fce90afd4535502e0616a0814", null ],
     [ "jointMapById", "df/db1/classmars_1_1viz_1_1_viz.html#a814a5fbf6b965a4a5a214060d89c382f", null ],
     [ "jointMapByName", "df/db1/classmars_1_1viz_1_1_viz.html#acf0064c5e92992dcaea4b8dd4985124b", null ],
+    [ "jointMapByNodeId", "df/db1/classmars_1_1viz_1_1_viz.html#a2f4b5c262619fd49d06afa3d0480e936", null ],
     [ "nodeMapById", "df/db1/classmars_1_1viz_1_1_viz.html#af77f1da186667379de6561a616f2e302", null ],
     [ "nodeMapByName", "df/db1/classmars_1_1viz_1_1_viz.html#ae6dbeb679ebb337fee99b19e4ec643ea", null ]
 ];

@@ -39,6 +39,7 @@ var namespacemars_1_1interfaces =
     [ "ControllerInterface", "d7/dd6/classmars_1_1interfaces_1_1_controller_interface.html", "d7/dd6/classmars_1_1interfaces_1_1_controller_interface" ],
     [ "ControllerManagerInterface", "d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html", "d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface" ],
     [ "EntityManagerInterface", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface.html", "df/d82/classmars_1_1interfaces_1_1_entity_manager_interface" ],
+    [ "EntitySubscriberInterface", "dc/d9e/classmars_1_1interfaces_1_1_entity_subscriber_interface.html", "dc/d9e/classmars_1_1interfaces_1_1_entity_subscriber_interface" ],
     [ "JointInterface", "d7/d2a/classmars_1_1interfaces_1_1_joint_interface.html", "d7/d2a/classmars_1_1interfaces_1_1_joint_interface" ],
     [ "JointManagerInterface", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface" ],
     [ "indexMaps_t", "d0/d46/structmars_1_1interfaces_1_1index_maps__t.html", "d0/d46/structmars_1_1interfaces_1_1index_maps__t" ],

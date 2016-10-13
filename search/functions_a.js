@@ -14,8 +14,5 @@ var searchData=
   ['jointstruct',['jointStruct',['../d1/d2e/structmars_1_1interfaces_1_1joint_struct.html#a4123588c365e4f421ea9913432a5d9de',1,'mars::interfaces::jointStruct']]],
   ['jointtorquesensor',['JointTorqueSensor',['../d2/d73/classmars_1_1sim_1_1_joint_torque_sensor.html#aba4ef1a47b17e8ed76968a5d64eea108',1,'mars::sim::JointTorqueSensor']]],
   ['jointvelocitysensor',['JointVelocitySensor',['../d2/d77/classmars_1_1sim_1_1_joint_velocity_sensor.html#a7f36eee2eb3f72d4e9571ea1fde96c7c',1,'mars::sim::JointVelocitySensor']]],
-  ['joystickinterface',['JoystickInterface',['../d2/d26/class_joystick_interface.html#a74731a704e6376db4d5fe20714fbd40d',1,'JoystickInterface']]],
-  ['joystickplugin',['JoystickPlugin',['../d5/d86/class_joystick_plugin.html#a6f4c5c2ec5074ab7dd741a813675bf56',1,'JoystickPlugin']]],
-  ['joystickwidget',['JoystickWidget',['../dc/df2/classmars_1_1gui_1_1_joystick_widget.html#a6c15b8ad153fe4e3697a53d8a2560c5c',1,'mars::gui::JoystickWidget']]],
-  ['joystickwidget2',['JoystickWidget2',['../dc/d3b/class_joystick_widget2.html#a89214c3f842467a405dee4027aeb3cd6',1,'JoystickWidget2']]]
+  ['joystickwidget',['JoystickWidget',['../dc/df2/classmars_1_1gui_1_1_joystick_widget.html#a6c15b8ad153fe4e3697a53d8a2560c5c',1,'mars::gui::JoystickWidget']]]
 ];

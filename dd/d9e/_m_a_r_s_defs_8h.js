@@ -89,6 +89,9 @@ var _m_a_r_s_defs_8h =
     ] ],
     [ "MotorType", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0", [
       [ "MOTOR_TYPE_UNDEFINED", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0ad1deb2edace9094c1908029cf3c9c197", null ],
+      [ "MOTOR_TYPE_POSITION", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a79e0b6286ee82276ca5da54076efc188", null ],
+      [ "MOTOR_TYPE_VELOCITY", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a2795c76e9da60a9c0ba3e52ba7cd331a", null ],
+      [ "MOTOR_TYPE_EFFORT", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a87fa0ecbf4e0a30153f7698202241d2e", null ],
       [ "MOTOR_TYPE_PID", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a60a81d8f51bbfc80df5b43d965ea9535", null ],
       [ "MOTOR_TYPE_DC", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a4387a6b2a619a74cc2a2008849b63a3c", null ],
       [ "MOTOR_TYPE_PID_FORCE", "dd/d9e/_m_a_r_s_defs_8h.html#a47fd62872b571d9c0ac09a697ee11db0a990d0ff778e661933259140c61b744c6", null ]
@@ -103,6 +106,7 @@ var _m_a_r_s_defs_8h =
       [ "NODE_TYPE_PLANE", "dd/d9e/_m_a_r_s_defs_8h.html#a6c51debc39fb5d9e940799c1c3df7813aea963341b045aba9e061af6adfee7156", null ],
       [ "NODE_TYPE_TERRAIN", "dd/d9e/_m_a_r_s_defs_8h.html#a6c51debc39fb5d9e940799c1c3df7813ad529a8750d865922501a7f4351c7d69f", null ],
       [ "NODE_TYPE_REFERENCE", "dd/d9e/_m_a_r_s_defs_8h.html#a6c51debc39fb5d9e940799c1c3df7813a73d4e551f24d3f0643779bd034e5579b", null ],
+      [ "NODE_TYPE_EMPTY", "dd/d9e/_m_a_r_s_defs_8h.html#a6c51debc39fb5d9e940799c1c3df7813a245e2ba18b26fd158d11fbc9e4725c32", null ],
       [ "NUMBER_OF_NODE_TYPES", "dd/d9e/_m_a_r_s_defs_8h.html#a6c51debc39fb5d9e940799c1c3df7813ad00726a056ce52d0702c7dd5ecf54615", null ]
     ] ],
     [ "OpenMode", "dd/d9e/_m_a_r_s_defs_8h.html#a409d983aca3c249e9423946cbc9fc0e1", [

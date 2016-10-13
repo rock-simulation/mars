@@ -1,6 +1,6 @@
 var classmars_1_1plugins_1_1____namespace_____1_1____classname____ =
 [
-    [ "__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a28575c0f0cfeedc774050802374cf336", null ],
+    [ "__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a1523a98d1752a30821ec9110eb786d1b", null ],
     [ "~__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a634bbf342d702dfac05e2b28ddb89acc", null ],
     [ "__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a1523a98d1752a30821ec9110eb786d1b", null ],
     [ "~__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a634bbf342d702dfac05e2b28ddb89acc", null ],
@@ -14,11 +14,13 @@ var classmars_1_1plugins_1_1____namespace_____1_1____classname____ =
     [ "getLibVersion", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a3fefdfd5585122b49a236633553d727a", null ],
     [ "init", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a3c176f4dfc75a8759938b508b5f2b391", null ],
     [ "init", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a3c176f4dfc75a8759938b508b5f2b391", null ],
+    [ "menuAction", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a1a007e30b544254513aa7768a625e365", null ],
     [ "receiveData", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a7eb3acfb40cb53636e0d71f5f0b81ad5", null ],
     [ "receiveData", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a4f02a592c2559c8b7b77b1c96009ec25", null ],
     [ "reset", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#ae950f63db53f74cd34aaaf8f0f71ffff", null ],
     [ "reset", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#ae950f63db53f74cd34aaaf8f0f71ffff", null ],
     [ "update", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#afdc744643077b6e8c30d275dd6e0bd7c", null ],
     [ "update", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#afdc744643077b6e8c30d275dd6e0bd7c", null ],
-    [ "example", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a41b592b8aea6d7ab167d01bbc215ae43", null ]
+    [ "example", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a41b592b8aea6d7ab167d01bbc215ae43", null ],
+    [ "plugin_win", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html#a02adcf67a36cd906ad36de4cb9db0b4b", null ]
 ];

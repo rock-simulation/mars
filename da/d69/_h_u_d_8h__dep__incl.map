@@ -1,6 +1,6 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/HUD.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/HUD.h">
-<area shape="rect" id="node3" href="$d7/d19/_graphics_manager_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/GraphicsManager.cpp" alt="" coords="5,127,267,191"/>
-<area shape="rect" id="node5" href="$d0/d77/_graphics_widget_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/GraphicsWidget.cpp" alt="" coords="291,127,541,191"/>
-<area shape="rect" id="node7" href="$d9/d2a/_h_u_d_8cpp.html" title="The &quot;HUD&quot; class contains all necessary methods for rendering data into a texture. ..." alt="" coords="565,127,755,191"/>
-<area shape="rect" id="node9" href="$d0/dcf/_qt_osg_mix_graphics_widget_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/QtOsgMixGraphics\lWidget.cpp" alt="" coords="779,118,1024,199"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/HUD.h" name="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/HUD.h">
+<area shape="rect" id="node2" href="$d7/d19/_graphics_manager_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsManager.cpp" alt="" coords="5,109,205,165"/>
+<area shape="rect" id="node3" href="$d0/d77/_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsWidget.cpp" alt="" coords="230,109,431,165"/>
+<area shape="rect" id="node4" href="$d9/d2a/_h_u_d_8cpp.html" title="The &quot;HUD&quot; class contains all necessary methods for rendering data into a texture. ..." alt="" coords="455,109,656,165"/>
+<area shape="rect" id="node5" href="$d0/dcf/_qt_osg_mix_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/QtOsgMixGraphicsWidget.cpp" alt="" coords="681,109,905,165"/>
 </map>

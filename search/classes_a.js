@@ -6,7 +6,6 @@ var searchData=
   ['joint_5fdata',['joint_data',['../d3/d6b/structmars_1_1gui_1_1joint__data.html',1,'mars::gui']]],
   ['jointarraysensor',['JointArraySensor',['../d0/d80/classmars_1_1sim_1_1_joint_array_sensor.html',1,'mars::sim']]],
   ['jointavgtorquesensor',['JointAVGTorqueSensor',['../d1/dae/classmars_1_1sim_1_1_joint_a_v_g_torque_sensor.html',1,'mars::sim']]],
-  ['jointconstraint',['JointConstraint',['../d1/df3/classconstraints__plugin_1_1_joint_constraint.html',1,'constraints_plugin']]],
   ['jointdata',['JointData',['../dd/d5c/classmars_1_1interfaces_1_1_joint_data.html',1,'mars::interfaces']]],
   ['jointhandler',['JointHandler',['../d7/d8e/classmars_1_1gui_1_1_joint_handler.html',1,'mars::gui']]],
   ['jointinfo',['jointInfo',['../d8/db5/structmars_1_1sim_1_1joint_info.html',1,'mars::sim']]],
@@ -19,8 +18,5 @@ var searchData=
   ['jointstruct',['jointStruct',['../d1/d2e/structmars_1_1interfaces_1_1joint_struct.html',1,'mars::interfaces']]],
   ['jointtorquesensor',['JointTorqueSensor',['../d2/d73/classmars_1_1sim_1_1_joint_torque_sensor.html',1,'mars::sim']]],
   ['jointvelocitysensor',['JointVelocitySensor',['../d2/d77/classmars_1_1sim_1_1_joint_velocity_sensor.html',1,'mars::sim']]],
-  ['joystickinterface',['JoystickInterface',['../d2/d26/class_joystick_interface.html',1,'']]],
-  ['joystickplugin',['JoystickPlugin',['../d5/d86/class_joystick_plugin.html',1,'']]],
-  ['joystickwidget',['JoystickWidget',['../dc/df2/classmars_1_1gui_1_1_joystick_widget.html',1,'mars::gui']]],
-  ['joystickwidget2',['JoystickWidget2',['../dc/d3b/class_joystick_widget2.html',1,'']]]
+  ['joystickwidget',['JoystickWidget',['../dc/df2/classmars_1_1gui_1_1_joystick_widget.html',1,'mars::gui']]]
 ];

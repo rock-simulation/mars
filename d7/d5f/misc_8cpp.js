@@ -9,5 +9,6 @@ var misc_8cpp =
     [ "matchPattern", "d7/d5f/misc_8cpp.html#af9e2091c1fce3985e2e6d63d0e317338", null ],
     [ "removeFilenamePrefix", "d7/d5f/misc_8cpp.html#a477fc46caab8add56c02a812bd44ab0b", null ],
     [ "removeFilenameSuffix", "d7/d5f/misc_8cpp.html#a499113c3643dc39d9b263a6b651cfcf5", null ],
+    [ "replaceString", "d7/d5f/misc_8cpp.html#a2566912504800760839ca41bb00c14e6", null ],
     [ "trim", "d7/d5f/misc_8cpp.html#a13f4cdc3db19206f9b0dee62fea79300", null ]
 ];

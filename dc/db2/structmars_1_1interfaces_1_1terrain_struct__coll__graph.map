@@ -1,4 +1,4 @@
 <map id="mars::interfaces::terrainStruct" name="mars::interfaces::terrainStruct">
-<area shape="rect" id="node2" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="109,224,307,253"/>
-<area shape="rect" id="node6" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="147,5,269,35"/>
+<area shape="rect" id="node2" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="110,199,308,225"/>
+<area shape="rect" id="node4" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="148,5,271,32"/>
 </map>

@@ -1,5 +1,5 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/physics/NodePhysics.cpp" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/sim/src/physics/NodePhysics.cpp">
-<area shape="rect" id="node3" href="$d7/d43/_node_physics_8h.html" title="&quot;NodePhysics&quot; implements the physical ode stuff for the nodes. " alt="" coords="829,145,939,175"/>
-<area shape="rect" id="node25" href="$d3/d4f/_rotating_ray_sensor_8h.html" title="../sensors/RotatingRaySensor.h" alt="" coords="1132,241,1340,271"/>
-<area shape="rect" id="node5" href="$d6/d89/_world_physics_8h.html" title="&quot;WorldPhysics&quot; includes the methods to handle the physically world. " alt="" coords="520,241,635,271"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/NodePhysics.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/NodePhysics.cpp">
+<area shape="rect" id="node2" href="$d7/d43/_node_physics_8h.html" title="&quot;NodePhysics&quot; implements the physical ode stuff for the nodes. " alt="" coords="926,117,1036,144"/>
+<area shape="rect" id="node13" href="$d3/d4f/_rotating_ray_sensor_8h.html" title="../sensors/RotatingRaySensor.h" alt="" coords="1322,208,1531,235"/>
+<area shape="rect" id="node3" href="$d6/d89/_world_physics_8h.html" title="&quot;WorldPhysics&quot; includes the methods to handle the physically world. " alt="" coords="525,208,640,235"/>
 </map>

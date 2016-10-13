@@ -1,15 +1,41 @@
 var math_utils_8h =
 [
+    [ "ApproximationFunction", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3", [
+      [ "FUNCTION_PIPE", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3a6bad2f567bc3840ecce6dd1a7c3e2dc3", null ],
+      [ "FUNCTION_POLYNOM2", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3a1794a309d24024ec348940e78bf7f74f", null ],
+      [ "FUNCTION_POLYNOM3", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3aa6cc739f38eaf0ccf27b17b29cba0525", null ],
+      [ "FUNCTION_POLYNOM4", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3a0610d599c4f997350ff67a608976fb47", null ],
+      [ "FUNCTION_POLYNOM5", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3af05ebb7736f1ca727eded91565941278", null ],
+      [ "FUNCTION_GAUSSIAN", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3aaac7974f5e286d8a923b42db29f4dcc8", null ],
+      [ "FUNCTION_UNKNOWN", "dd/d43/math_utils_8h.html#a30b68f067f4172bf380e3725455061e3ab6c3f44fa1337bb796b93a205a33667c", null ]
+    ] ],
+    [ "ApproximationFunction2D", "dd/d43/math_utils_8h.html#a07491a4a431990215a1aca47721c0912", [
+      [ "FUNCTION_UNKNOWN2D", "dd/d43/math_utils_8h.html#a07491a4a431990215a1aca47721c0912a94726d58360ff5af197ac9c23bd8e6eb", null ],
+      [ "FUNCTION_POLYNOM2D1", "dd/d43/math_utils_8h.html#a07491a4a431990215a1aca47721c0912a53ae891f64579229aca6e6e44833ae57", null ],
+      [ "FUNCTION_POLYNOM2D2", "dd/d43/math_utils_8h.html#a07491a4a431990215a1aca47721c0912a556f68ed940d5b73e3e356d0442a13d6", null ]
+    ] ],
     [ "angleAxisToQuaternion", "dd/d43/math_utils_8h.html#a9a2ec2ca14fddfeaf3cc72afb94bf887", null ],
     [ "angleBetween", "dd/d43/math_utils_8h.html#a68fae2ca585635596abcf4f8a0368b05", null ],
+    [ "beta_distribution", "dd/d43/math_utils_8h.html#abf64064acf3ddb1cf4325f1a8ab0c31a", null ],
     [ "distanceBetween", "dd/d43/math_utils_8h.html#af4e788bb534b11fee2926c2ea5cf20d5", null ],
     [ "distanceSquaredBetween", "dd/d43/math_utils_8h.html#a9af9ccdb87e7c23cdfddf4573385b847", null ],
     [ "eulerToQuaternion", "dd/d43/math_utils_8h.html#a57d035b07274c67cc401f81c97463088", null ],
     [ "eulerToQuaternion", "dd/d43/math_utils_8h.html#aff95930b4b9c6c37e33ee4388882cee1", null ],
+    [ "gamma_distribution", "dd/d43/math_utils_8h.html#aafc9ed7ac8720fbffbdcb835425d9ac4", null ],
+    [ "gaussian", "dd/d43/math_utils_8h.html#aef8b397d9e49dce3032fb9467ba25066", null ],
+    [ "getApproximationFunction2DFromString", "dd/d43/math_utils_8h.html#aeab298343528637f5f3cdbdf5347d32d", null ],
+    [ "getApproximationFunctionFromString", "dd/d43/math_utils_8h.html#ac32a51da8504b71ade81102d0bea9172", null ],
     [ "getProjection", "dd/d43/math_utils_8h.html#aba57d688de189be1e5a3c88b81632554", null ],
     [ "getYaw", "dd/d43/math_utils_8h.html#adbf6854aa63566d8fb7ac9828369fc7d", null ],
     [ "isNormalized", "dd/d43/math_utils_8h.html#a8601000ae1594873eb00518c813f3834", null ],
     [ "lerp", "dd/d43/math_utils_8h.html#a34df2e766f1727e29bee173471721b22", null ],
+    [ "pipe", "dd/d43/math_utils_8h.html#a2db06c167ad19b87188c3773e361e375", null ],
+    [ "polynom2", "dd/d43/math_utils_8h.html#a9b260311baa34d3887ea23b2446cb324", null ],
+    [ "polynom2D1", "dd/d43/math_utils_8h.html#ad140799dab9f1acdd3d198d3603dfd09", null ],
+    [ "polynom2D2", "dd/d43/math_utils_8h.html#a1e230ef341840611241ef47a084a4826", null ],
+    [ "polynom3", "dd/d43/math_utils_8h.html#a4ebeb021d0d4fefbce8bb9cc74267256", null ],
+    [ "polynom4", "dd/d43/math_utils_8h.html#a07b95c4f2ced9f5d7c2ee93763f9246f", null ],
+    [ "polynom5", "dd/d43/math_utils_8h.html#ac154d5225d3f06bf7f2b99948168ea30", null ],
     [ "quaternionFromConfigItem", "dd/d43/math_utils_8h.html#a467b80fd587221db21480af3182f0753", null ],
     [ "quaternionFromMembers", "dd/d43/math_utils_8h.html#a4c542e4e63aad5fa95fd95b173565f9b", null ],
     [ "quaternionFromWXYZArray", "dd/d43/math_utils_8h.html#a733e464fe1211692d2ff23c5b24aa9fe", null ],
@@ -24,5 +50,6 @@ var math_utils_8h =
     [ "vectorFromSpherical", "dd/d43/math_utils_8h.html#a190942c31eb543c4a8ad4e38f88087f2", null ],
     [ "vectorToConfigItem", "dd/d43/math_utils_8h.html#a3df24ea3827a36b9aef9080a78ae9db6", null ],
     [ "vectorToSpherical", "dd/d43/math_utils_8h.html#accc54a8c434095aeead45a2adb0b8b8d", null ],
-    [ "EPSILON", "dd/d43/math_utils_8h.html#a3a68c1db8dd384e7f98e97fb22adc508", null ]
+    [ "EPSILON", "dd/d43/math_utils_8h.html#a3a68c1db8dd384e7f98e97fb22adc508", null ],
+    [ "SQRT2PI", "dd/d43/math_utils_8h.html#aef7493b1b7a17dd465c1cfb796cf5b5f", null ]
 ];

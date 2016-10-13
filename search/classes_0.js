@@ -1,21 +1,5 @@
 var searchData=
 [
   ['_5f_5fclassname_5f_5f',['__classname__',['../da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html',1,'mars::plugins::__namespace__']]],
-  ['_5f_5fproject_5f_5f',['__project__',['../dc/d84/class____n__project_____1_1____project____.html',1,'__n_project__']]],
-  ['_5fcpoint',['_CPOINT',['../d0/d4c/struct___c_p_o_i_n_t.html',1,'']]],
-  ['_5fdiactiona',['_DIACTIONA',['../db/d0c/struct___d_i_a_c_t_i_o_n_a.html',1,'']]],
-  ['_5fdiactionformata',['_DIACTIONFORMATA',['../d9/d00/struct___d_i_a_c_t_i_o_n_f_o_r_m_a_t_a.html',1,'']]],
-  ['_5fdiactionformatw',['_DIACTIONFORMATW',['../d5/df5/struct___d_i_a_c_t_i_o_n_f_o_r_m_a_t_w.html',1,'']]],
-  ['_5fdiactionw',['_DIACTIONW',['../dc/d68/struct___d_i_a_c_t_i_o_n_w.html',1,'']]],
-  ['_5fdicolorset',['_DICOLORSET',['../d9/d61/struct___d_i_c_o_l_o_r_s_e_t.html',1,'']]],
-  ['_5fdiconfiguredevicesparamsa',['_DICONFIGUREDEVICESPARAMSA',['../d3/dc4/struct___d_i_c_o_n_f_i_g_u_r_e_d_e_v_i_c_e_s_p_a_r_a_m_s_a.html',1,'']]],
-  ['_5fdiconfiguredevicesparamsw',['_DICONFIGUREDEVICESPARAMSW',['../d1/d36/struct___d_i_c_o_n_f_i_g_u_r_e_d_e_v_i_c_e_s_p_a_r_a_m_s_w.html',1,'']]],
-  ['_5fdidataformat',['_DIDATAFORMAT',['../db/db2/struct___d_i_d_a_t_a_f_o_r_m_a_t.html',1,'']]],
-  ['_5fdideviceimageinfoa',['_DIDEVICEIMAGEINFOA',['../df/d81/struct___d_i_d_e_v_i_c_e_i_m_a_g_e_i_n_f_o_a.html',1,'']]],
-  ['_5fdideviceimageinfoheadera',['_DIDEVICEIMAGEINFOHEADERA',['../d0/d2c/struct___d_i_d_e_v_i_c_e_i_m_a_g_e_i_n_f_o_h_e_a_d_e_r_a.html',1,'']]],
-  ['_5fdideviceimageinfoheaderw',['_DIDEVICEIMAGEINFOHEADERW',['../dd/dab/struct___d_i_d_e_v_i_c_e_i_m_a_g_e_i_n_f_o_h_e_a_d_e_r_w.html',1,'']]],
-  ['_5fdideviceimageinfow',['_DIDEVICEIMAGEINFOW',['../d7/d75/struct___d_i_d_e_v_i_c_e_i_m_a_g_e_i_n_f_o_w.html',1,'']]],
-  ['_5fdimousestate',['_DIMOUSESTATE',['../d0/d78/struct___d_i_m_o_u_s_e_s_t_a_t_e.html',1,'']]],
-  ['_5fdimousestate2',['_DIMOUSESTATE2',['../d7/d68/struct___d_i_m_o_u_s_e_s_t_a_t_e2.html',1,'']]],
-  ['_5fdiobjectdataformat',['_DIOBJECTDATAFORMAT',['../dc/d6c/struct___d_i_o_b_j_e_c_t_d_a_t_a_f_o_r_m_a_t.html',1,'']]]
+  ['_5f_5fclassname_5f_5f_5fmainwin',['__classname___MainWin',['../d1/d20/class____classname_______main_win.html',1,'']]]
 ];

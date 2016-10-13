@@ -1,9 +1,9 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim_common.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/interfaces/src/sim_common.h">
-<area shape="rect" id="node3" href="$d5/d60/utils_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/utils.h" alt="" coords="211,145,387,209"/>
-<area shape="rect" id="node9" href="$d4/d79/_controller_interface_8h.html" title="&quot;ControllerInterface&quot; is an interface to load dynamically Controller into the simulation ..." alt="" coords="411,137,576,218"/>
-<area shape="rect" id="node11" href="$d0/d74/_simulator_interface_8h.html" title="&quot;SimulatorInterface&quot; provides an interface for using the Simulator class " alt="" coords="600,137,765,218"/>
-<area shape="rect" id="node5" href="$df/d7f/_joint_data_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/JointData.cpp" alt="" coords="5,276,227,340"/>
-<area shape="rect" id="node7" href="$de/d06/utils_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/utils.cpp" alt="" coords="251,276,440,340"/>
-<area shape="rect" id="node13" href="$dd/d91/_mars_plugin_template_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplate.h" alt="" coords="555,267,720,349"/>
-<area shape="rect" id="node15" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/interfaces/src/sim\l/MarsPluginTemplateGUI.h" alt="" coords="744,267,923,349"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim_common.h" name="/media/kavonszadkowski/work/marsdocs/mars/interfaces/src/sim_common.h">
+<area shape="rect" id="node2" href="$d5/d60/utils_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/utils.h" alt="" coords="121,109,329,165"/>
+<area shape="rect" id="node5" href="$d4/d79/_controller_interface_8h.html" title="&quot;ControllerInterface&quot; is an interface to load dynamically Controller into the simulation ..." alt="" coords="354,109,563,165"/>
+<area shape="rect" id="node6" href="$d0/d74/_simulator_interface_8h.html" title="&quot;SimulatorInterface&quot; provides an interface for using the Simulator class " alt="" coords="587,109,796,165"/>
+<area shape="rect" id="node3" href="$df/d7f/_joint_data_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/JointData.cpp" alt="" coords="5,213,213,269"/>
+<area shape="rect" id="node4" href="$de/d06/utils_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/utils.cpp" alt="" coords="238,213,447,269"/>
+<area shape="rect" id="node7" href="$dd/d91/_mars_plugin_template_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplate.h" alt="" coords="529,213,737,269"/>
+<area shape="rect" id="node8" href="$d4/d96/_mars_plugin_template_g_u_i_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/interfaces\l/src/sim/MarsPluginTemplateGUI.h" alt="" coords="763,213,989,269"/>
 </map>

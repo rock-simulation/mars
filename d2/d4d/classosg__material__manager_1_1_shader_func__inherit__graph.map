@@ -1,0 +1,6 @@
+<map id="osg_material_manager::ShaderFunc" name="osg_material_manager::ShaderFunc">
+<area shape="rect" id="node2" href="$d9/d62/classosg__material__manager_1_1_bump_map_frag.html" title="osg_material_manager\l::BumpMapFrag" alt="" coords="209,5,362,46"/>
+<area shape="rect" id="node3" href="$da/dae/classosg__material__manager_1_1_bump_map_vert.html" title="osg_material_manager\l::BumpMapVert" alt="" coords="209,70,362,111"/>
+<area shape="rect" id="node4" href="$dd/daf/classosg__material__manager_1_1_pixel_light_frag.html" title="osg_material_manager\l::PixelLightFrag" alt="" coords="209,135,362,177"/>
+<area shape="rect" id="node5" href="$d4/ddb/classosg__material__manager_1_1_pixel_light_vert.html" title="osg_material_manager\l::PixelLightVert" alt="" coords="209,201,362,242"/>
+</map>

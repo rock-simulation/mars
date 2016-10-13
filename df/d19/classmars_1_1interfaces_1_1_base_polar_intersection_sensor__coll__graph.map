@@ -1,5 +1,5 @@
 <map id="mars::interfaces::BasePolarIntersectionSensor" name="mars::interfaces::BasePolarIntersectionSensor">
-<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="11,182,195,229"/>
-<area shape="rect" id="node4" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,101,200,131"/>
-<area shape="rect" id="node8" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="219,182,403,229"/>
+<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="10,174,195,215"/>
+<area shape="rect" id="node3" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,96,200,123"/>
+<area shape="rect" id="node5" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="219,174,404,215"/>
 </map>

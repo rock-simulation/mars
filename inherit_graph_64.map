@@ -1,4 +1,4 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node3" href="$d1/daf/class_game_controller_test_app.html" title="GameControllerTestApp" alt="" coords="191,5,353,35"/>
-<area shape="rect" id="node5" href="$d3/d55/classmars_1_1main__gui_1_1_my_q_main_window.html" title="The main window of the GUI. " alt="" coords="161,59,383,88"/>
+<area shape="rect" id="node1" href="$d2/da9/classmars_1_1interfaces_1_1_controller_manager_interface.html" title="&quot;ControllerManagerInterface&quot; declares the interfaces for all controller operations that are used for ..." alt="" coords="6,5,186,46"/>
+<area shape="rect" id="node2" href="$d8/dcc/classmars_1_1sim_1_1_controller_manager.html" title="&quot;ControllerManager&quot; imlements the interfaces for all controller operations that are used for the comm..." alt="" coords="235,12,429,39"/>
 </map>

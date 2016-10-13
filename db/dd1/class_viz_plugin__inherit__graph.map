@@ -1,5 +1,5 @@
 <map id="VizPlugin" name="VizPlugin">
-<area shape="rect" id="node4" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="5,58,181,105"/>
-<area shape="rect" id="node6" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="27,127,160,174"/>
-<area shape="rect" id="node8" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="23,197,164,243"/>
+<area shape="rect" id="node3" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="5,57,181,98"/>
+<area shape="rect" id="node4" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="26,122,161,163"/>
+<area shape="rect" id="node5" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="22,187,165,229"/>
 </map>

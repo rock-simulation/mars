@@ -1,3 +1,7 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$d4/d67/classdata__broker__plotter_1_1_plot.html" title="data_broker_plotter\l::Plot" alt="" coords="5,5,139,51"/>
+<area shape="rect" id="node2" href="$dd/da8/classmars_1_1graphics_1_1_geode_visitor.html" title="used to get a geode from a nodegroup " alt="" coords="145,5,335,32"/>
+<area shape="rect" id="node3" href="$dc/d4f/classosg__material__manager_1_1_position_visitor.html" title="osg_material_manager\l::PositionVisitor" alt="" coords="163,57,317,98"/>
+<area shape="rect" id="node4" href="$db/d36/classosg__material__manager_1_1_tangent_visitor.html" title="osg_material_manager\l::TangentVisitor" alt="" coords="163,122,317,163"/>
+<area shape="rect" id="node5" href="$df/deb/classosg__terrain_1_1_bound_visitor.html" title="osg_terrain::BoundVisitor" alt="" coords="156,188,324,215"/>
+<area shape="rect" id="node6" href="$dc/d57/classosg__terrain_1_1_instances_visitor.html" title="osg_terrain::InstancesVisitor" alt="" coords="146,239,334,265"/>
 </map>

@@ -1,10 +1,6 @@
 var searchData=
 [
   ['k',['k',['../d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a60542b240535174ba32a26a3b8b53219',1,'mars::sim::SimMotor']]],
-  ['kais_5f3rdcar',['Kais_3rdCar',['../d2/dff/classmars_1_1plugins_1_1kais__3rd__car_1_1_kais__3rd_car.html',1,'mars::plugins::kais_3rd_car']]],
-  ['kais_5f3rdcar',['Kais_3rdCar',['../d2/dff/classmars_1_1plugins_1_1kais__3rd__car_1_1_kais__3rd_car.html#ab6a0e79ded7b5b3b52cc35048cba1d70',1,'mars::plugins::kais_3rd_car::Kais_3rdCar']]],
-  ['kais_5f3rdcar_2ecpp',['Kais_3rdCar.cpp',['../de/d4c/_kais__3rd_car_8cpp.html',1,'']]],
-  ['kais_5f3rdcar_2eh',['Kais_3rdCar.h',['../dd/deb/_kais__3rd_car_8h.html',1,'']]],
   ['key_5f0',['Key_0',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#aa6e37b7460834dbda25666bdc35dbdd8a001ad7686ba9c5bdd4279294c9e6cef7',1,'mars::interfaces::GuiEventInterface']]],
   ['key_5f1',['Key_1',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#aa6e37b7460834dbda25666bdc35dbdd8a8582ac1a7f15f508c1e291b82c87a181',1,'mars::interfaces::GuiEventInterface']]],
   ['key_5f2',['Key_2',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#aa6e37b7460834dbda25666bdc35dbdd8af21b8fba0087fc4a5687ec575e985cac',1,'mars::interfaces::GuiEventInterface']]],
@@ -61,7 +57,6 @@ var searchData=
   ['keytype',['KeyType',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#aa6e37b7460834dbda25666bdc35dbdd8',1,'mars::interfaces::GuiEventInterface']]],
   ['keyupevent',['keyUpEvent',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#a032ac2951bcaebaf8881982e37018421',1,'mars::interfaces::GuiEventInterface']]],
   ['kill_5fsim',['kill_sim',['../d9/d6a/classmars_1_1sim_1_1_simulator.html#aedc5f4487da88ee0a4d534ac175866b7',1,'mars::sim::Simulator']]],
-  ['killthread',['killThread',['../d5/d86/class_joystick_plugin.html#ac77b23018b9a38d4890dfb8f450872e9',1,'JoystickPlugin']]],
   ['kx',['kX',['../d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a626f738f0e6847a0406a915087c8946b',1,'mars::sim::SimMotor']]],
   ['kxy',['kXY',['../d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a0484a28920fc51de6a50f0dae1d41063',1,'mars::sim::SimMotor']]],
   ['ky',['kY',['../d7/dfb/classmars_1_1sim_1_1_sim_motor.html#a3708487e97ad2a2e73ee8098e631e4df',1,'mars::sim::SimMotor']]]

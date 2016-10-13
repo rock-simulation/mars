@@ -1,4 +1,4 @@
 <map id="mars::sim::NodeManager" name="mars::sim::NodeManager">
-<area shape="rect" id="node2" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="5,6,211,53"/>
-<area shape="rect" id="node4" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="235,6,411,53"/>
+<area shape="rect" id="node2" href="$d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html" title="&quot;NodeManagerInterface&quot; declares the interfaces for all NodeOperations that are used for the communica..." alt="" coords="5,6,211,47"/>
+<area shape="rect" id="node3" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="235,6,411,47"/>
 </map>

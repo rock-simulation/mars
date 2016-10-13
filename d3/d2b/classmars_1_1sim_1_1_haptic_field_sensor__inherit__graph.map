@@ -1,0 +1,10 @@
+<map id="mars::sim::HapticFieldSensor" name="mars::sim::HapticFieldSensor">
+<area shape="rect" id="node2" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="504,5,669,46"/>
+<area shape="rect" id="node3" href="$df/d91/classmars_1_1interfaces_1_1_base_grid_intersection_sensor.html" title="mars::interfaces::BaseGrid\lIntersectionSensor" alt="" coords="497,70,676,111"/>
+<area shape="rect" id="node4" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="249,37,434,78"/>
+<area shape="rect" id="node5" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,44,200,71"/>
+<area shape="rect" id="node6" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="249,102,434,143"/>
+<area shape="rect" id="node7" href="$d1/db0/classmars_1_1data__broker_1_1_producer_interface.html" title="Interface for classes producing data to broadcast via a DataBroker. " alt="" coords="519,135,654,177"/>
+<area shape="rect" id="node8" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="519,201,654,242"/>
+<area shape="rect" id="node9" href="$de/ded/classmars_1_1interfaces_1_1_draw_interface.html" title="The interface DrawInterface is used for updating draw_item structs via an update function. " alt="" coords="483,267,690,293"/>
+</map>

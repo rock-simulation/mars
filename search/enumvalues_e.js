@@ -1,21 +1,7 @@
 var searchData=
 [
-  ['node_5ftype_5fbox',['NODE_TYPE_BOX',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a0afbf13e7c105b855b784a8813f9e300',1,'mars::interfaces']]],
-  ['node_5ftype_5fcapsule',['NODE_TYPE_CAPSULE',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813ac89c93bfee23d874368e830de933a01b',1,'mars::interfaces']]],
-  ['node_5ftype_5fcylinder',['NODE_TYPE_CYLINDER',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a84cbc0e703b1bad530008a8c6ad722b8',1,'mars::interfaces']]],
-  ['node_5ftype_5fmesh',['NODE_TYPE_MESH',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a8bb61c79682d299f370b94eeaa0a68fd',1,'mars::interfaces']]],
-  ['node_5ftype_5fplane',['NODE_TYPE_PLANE',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813aea963341b045aba9e061af6adfee7156',1,'mars::interfaces']]],
-  ['node_5ftype_5freference',['NODE_TYPE_REFERENCE',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a73d4e551f24d3f0643779bd034e5579b',1,'mars::interfaces']]],
-  ['node_5ftype_5fsphere',['NODE_TYPE_SPHERE',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a8d4866bda3dcb97d7e1b783a08d41254',1,'mars::interfaces']]],
-  ['node_5ftype_5fterrain',['NODE_TYPE_TERRAIN',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813ad529a8750d865922501a7f4351c7d69f',1,'mars::interfaces']]],
-  ['node_5ftype_5fundefined',['NODE_TYPE_UNDEFINED',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813a1df3135f77f29047d17f2c4ff0d49047',1,'mars::interfaces']]],
-  ['noparam',['noParam',['../d0/d16/namespacemars_1_1cfg__manager.html#a6fd8141f3ab9722585a95ae696c1fdf7a42fc2e1b2a1605eaf2f0b1f5c1f0e1cb',1,'mars::cfg_manager']]],
-  ['noparamoption',['noParamOption',['../d0/d16/namespacemars_1_1cfg__manager.html#ad46be45f889991bbc97bc33126c2e779a16ba92d3a0821be06b776393ccb82a39',1,'mars::cfg_manager']]],
-  ['nothingset',['nothingSet',['../d6/d13/classmars_1_1cfg__manager_1_1_c_f_g_property.html#a73cf3c94d5d88182136e6ab1bd188439a6eac5be10c8086bd2d43aba02d7e8cc4',1,'mars::cfg_manager::CFGProperty']]],
-  ['notypeset',['noTypeSet',['../d0/d16/namespacemars_1_1cfg__manager.html#a441cbfdd8e71e0d12ad46d305b5e8222aedf3a07f433b6df253163ff0d5feec2c',1,'mars::cfg_manager']]],
-  ['nrgctypes',['nrGCTypes',['../df/d64/_game_controller_manager_8h.html#a83be2143eef5fa2b17127fd69686496bac1c8f0b084e20362bcfd70adcc907992',1,'GameControllerManager.h']]],
-  ['num_5fof_5fcols',['NUM_OF_COLS',['../d5/d5f/namespacemars_1_1plugins_1_1lib__manager__gui.html#a3eea51b7c3d0c365da3f6c4cddf99c97a4dd75c4a81e3dd9f68bd13e09b79025f',1,'mars::plugins::lib_manager_gui']]],
-  ['num_5ftransfer_5ffunctions',['num_transfer_functions',['../d6/d20/namespaceneural__soil.html#a17a6c15fa9c1680a94f368f2e4e93eecaf8bdc28d2a92c4e931736023fe7eabe8',1,'neural_soil']]],
-  ['number_5fof_5fjoint_5ftypes',['NUMBER_OF_JOINT_TYPES',['../d8/dec/namespacemars_1_1interfaces.html#aef103340bfaa10b710f439d3f8f11188a55cb557172d7226fc3cdcac7dff1dd89',1,'mars::interfaces']]],
-  ['number_5fof_5fnode_5ftypes',['NUMBER_OF_NODE_TYPES',['../d8/dec/namespacemars_1_1interfaces.html#a6c51debc39fb5d9e940799c1c3df7813ad00726a056ce52d0702c7dd5ecf54615',1,'mars::interfaces']]]
+  ['omnilight',['OMNILIGHT',['../d8/dec/namespacemars_1_1interfaces.html#a64029f2597497ed45b0122a2ceae05eda3e5d8ad6bd13611dd2a02b53f7906d93',1,'mars::interfaces']]],
+  ['open_5factual',['OPEN_ACTUAL',['../d8/dec/namespacemars_1_1interfaces.html#a409d983aca3c249e9423946cbc9fc0e1a3a85569c83f71f1debb1ea8ad862dbfb',1,'mars::interfaces']]],
+  ['open_5finitial',['OPEN_INITIAL',['../d8/dec/namespacemars_1_1interfaces.html#a409d983aca3c249e9423946cbc9fc0e1a2b242d34e6279d4c6c8f63a8c4108f5a',1,'mars::interfaces']]],
+  ['open_5frelative',['OPEN_RELATIVE',['../d8/dec/namespacemars_1_1interfaces.html#a409d983aca3c249e9423946cbc9fc0e1a5ffb6f44f44bcb2f801a2f4adcd255ab',1,'mars::interfaces']]]
 ];

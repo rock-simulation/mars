@@ -1,6 +1,6 @@
 var classmars_1_1graphics_1_1_o_s_g_node_struct =
 [
-    [ "OSGNodeStruct", "dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#ad9ac2fe5e99abba1c609824a29027908", null ],
+    [ "OSGNodeStruct", "dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#a11b41d3ad293de93fb0210c0f7e54530", null ],
     [ "edit", "dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#a20748863c43263860e1c9ec3165a8942", null ],
     [ "id", "dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#a319daad195af1fbbace27753d0669959", null ],
     [ "object", "dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#a722945a76fb330fb801f38333f26ae9c", null ],

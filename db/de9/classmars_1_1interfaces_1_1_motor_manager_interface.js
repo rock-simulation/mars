@@ -3,6 +3,7 @@ var classmars_1_1interfaces_1_1_motor_manager_interface =
     [ "~MotorManagerInterface", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#aa7fdddc98c6ffb4e508c6ba7462aa6c2", null ],
     [ "addMotor", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a2198f6d0b7867287485af2961b90eb1f", null ],
     [ "clearAllMotors", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a4da29eeb7b43d12440cc1095c85af9d1", null ],
+    [ "connectMimics", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a01a3461a5243460044f7ef4b3446f651", null ],
     [ "deactivateMotor", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a9935a576ae7ee9f1ce24039afee369e7", null ],
     [ "editMotor", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a5001f95af4879aea5e8b6a68bf4df1be", null ],
     [ "getActualPosition", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a8e8692295b7bd563fa72c029ed5a9d00", null ],

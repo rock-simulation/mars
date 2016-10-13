@@ -1,9 +1,6 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/GraphicsManager.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/graphics/src/GraphicsManager.h">
-<area shape="rect" id="node3" href="$dc/db6/bumpmapping_8h.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/shader\l/bumpmapping.h" alt="" coords="100,118,273,199"/>
-<area shape="rect" id="node9" href="$d7/d19/_graphics_manager_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/GraphicsManager.cpp" alt="" coords="297,127,559,191"/>
-<area shape="rect" id="node11" href="$d0/d77/_graphics_widget_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/GraphicsWidget.cpp" alt="" coords="583,127,833,191"/>
-<area shape="rect" id="node13" href="$d0/dcf/_qt_osg_mix_graphics_widget_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/QtOsgMixGraphics\lWidget.cpp" alt="" coords="857,118,1103,199"/>
-<area shape="rect" id="node15" href="$dd/df6/pixellight_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/shader\l/pixellight.cpp" alt="" coords="1127,118,1300,199"/>
-<area shape="rect" id="node5" href="$d1/de8/_draw_object_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/3d\l_objects/DrawObject.cpp" alt="" coords="5,249,173,330"/>
-<area shape="rect" id="node7" href="$d8/d5c/bumpmapping_8cpp.html" title="/home/kavonszadkowski\l/limes&#45;dev/simulation\l/mars/graphics/src/shader\l/bumpmapping.cpp" alt="" coords="197,249,371,330"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/GraphicsManager.h" name="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/GraphicsManager.h">
+<area shape="rect" id="node2" href="$d1/de8/_draw_object_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/3d_objects/DrawObject.cpp" alt="" coords="5,109,213,165"/>
+<area shape="rect" id="node3" href="$d7/d19/_graphics_manager_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsManager.cpp" alt="" coords="238,109,439,165"/>
+<area shape="rect" id="node4" href="$d0/d77/_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsWidget.cpp" alt="" coords="463,109,664,165"/>
+<area shape="rect" id="node5" href="$d0/dcf/_qt_osg_mix_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/QtOsgMixGraphicsWidget.cpp" alt="" coords="689,109,913,165"/>
 </map>

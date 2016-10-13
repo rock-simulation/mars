@@ -1,28 +1,29 @@
-<map id="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/menus/MenuSimulation.h" name="/home/kavonszadkowski/limes&#45;dev/simulation/mars/gui/src/menus/MenuSimulation.h">
-<area shape="rect" id="node3" href="$de/d0e/_main_g_u_i_defs_8h.html" title="MainGUIDefs.h" alt="" coords="1552,117,1664,147"/>
-<area shape="rect" id="node9" href="$d7/dd0/_dialog_nodes_8h.html" title="A node tree widget holding all nodes as properties. " alt="" coords="3452,117,3559,147"/>
-<area shape="rect" id="node44" href="$d3/da6/_dialog_joints_8h.html" title="A joint tree widget holding all joints as properties. " alt="" coords="1968,117,2072,147"/>
-<area shape="rect" id="node58" href="$d4/d78/_dialog_lights_8h.html" title="DialogLights.h" alt="" coords="4163,117,4267,147"/>
-<area shape="rect" id="node69" href="$df/d47/_dialog_motors_8h.html" title="DialogMotors.h" alt="" coords="2096,117,2205,147"/>
-<area shape="rect" id="node81" href="$d8/d59/_dialog_sensors_8h.html" title="DialogSensors.h" alt="" coords="2229,117,2347,147"/>
-<area shape="rect" id="node97" href="$dd/d7e/_dialog_controllers_8h.html" title="A controller tree widget holding all controllers as properties. " alt="" coords="2371,117,2504,147"/>
-<area shape="rect" id="node111" href="$df/d07/_dialog_distance_8h.html" title="DialogDistance.h" alt="" coords="3821,117,3944,147"/>
-<area shape="rect" id="node126" href="$de/ddb/_dialog_joystick_8h.html" title="DialogJoystick.h" alt="" coords="3648,117,3765,147"/>
-<area shape="rect" id="node134" href="$d9/de3/_dialog___import___mesh_8h.html" title="Dialog_Import_Mesh.h" alt="" coords="824,195,976,224"/>
-<area shape="rect" id="node143" href="$d1/db3/_dialog___add___force_8h.html" title="Dialog_Add_Force.h" alt="" coords="2767,195,2905,224"/>
-<area shape="rect" id="node149" href="$d5/d64/_dialog___add___torque_8h.html" title="Dialog_Add_Torque.h" alt="" coords="2929,195,3076,224"/>
-<area shape="rect" id="node155" href="$d0/d03/_dialog___rescale___environment_8h.html" title="Dialog_Rescale_Environment.h" alt="" coords="3100,195,3305,224"/>
-<area shape="rect" id="node160" href="$d6/d6d/_dialog___graphics___options_8h.html" title="Dialog_Graphics_Options.h" alt="" coords="4252,195,4433,224"/>
-<area shape="rect" id="node167" href="$d1/d34/_dialog___motor___control_8h.html" title="Dialog_Motor_Control.h" alt="" coords="2585,195,2743,224"/>
-<area shape="rect" id="node18" href="$d7/deb/_node_handler_8h.html" title="GUI handling creating and editing nodes in the simulation &#160;A property in the node tree dialog is crea..." alt="" coords="1387,195,1496,224"/>
-<area shape="rect" id="node28" href="$d2/da5/_dialog___create___material_8h.html" title="Dialog_Create_Material.h" alt="" coords="816,281,984,311"/>
-<area shape="rect" id="node33" href="$db/d60/_dialog___edit___material_8h.html" title="Dialog_Edit_Material.h" alt="" coords="1008,281,1160,311"/>
-<area shape="rect" id="node37" href="$d6/d5e/_widget___node___options___o_d_e_8h.html" title="Widget_Node_Options\l_ODE.h" alt="" coords="640,273,792,319"/>
-<area shape="rect" id="node49" href="$d7/d8d/_joint_handler_8h.html" title="JointHandler.h" alt="" coords="475,195,581,224"/>
-<area shape="rect" id="node63" href="$de/d15/_light_handler_8h.html" title="Provides the GUI properties for handling a light &#45; creating and editing. " alt="" coords="4457,195,4564,224"/>
-<area shape="rect" id="node74" href="$df/dfb/_motor_handler_8h.html" title="MotorHandler.h" alt="" coords="1697,195,1807,224"/>
-<area shape="rect" id="node86" href="$d4/df0/_sensor_handler_8h.html" title="SensorHandler.h" alt="" coords="1831,195,1948,224"/>
-<area shape="rect" id="node93" href="$d6/d43/_selection_dialog_8h.html" title="The SelectionDialog class is used to select a sorted list of objects. " alt="" coords="2149,281,2272,311"/>
-<area shape="rect" id="node103" href="$d0/dfb/_controller_handler_8h.html" title="ControllerHandler.h" alt="" coords="1972,195,2105,224"/>
-<area shape="rect" id="node116" href="$df/d28/_node_selection_tree_8h.html" title="A widget for node selection with different selection options. " alt="" coords="3881,195,4025,224"/>
+<map id="/media/kavonszadkowski/work/marsdocs/mars/gui/src/menus/MenuSimulation.h" name="/media/kavonszadkowski/work/marsdocs/mars/gui/src/menus/MenuSimulation.h">
+<area shape="rect" id="node2" href="$de/d0e/_main_g_u_i_defs_8h.html" title="MainGUIDefs.h" alt="" coords="883,109,996,136"/>
+<area shape="rect" id="node5" href="$d7/dd0/_dialog_nodes_8h.html" title="A node tree widget holding all nodes as properties. " alt="" coords="2525,109,2632,136"/>
+<area shape="rect" id="node18" href="$d3/da6/_dialog_joints_8h.html" title="A joint tree widget holding all joints as properties. " alt="" coords="1431,109,1536,136"/>
+<area shape="rect" id="node22" href="$d4/d78/_dialog_lights_8h.html" title="DialogLights.h" alt="" coords="1302,109,1407,136"/>
+<area shape="rect" id="node25" href="$df/d47/_dialog_motors_8h.html" title="DialogMotors.h" alt="" coords="1566,109,1676,136"/>
+<area shape="rect" id="node28" href="$d8/d59/_dialog_sensors_8h.html" title="DialogSensors.h" alt="" coords="2767,109,2885,136"/>
+<area shape="rect" id="node34" href="$dd/d7e/_dialog_controllers_8h.html" title="A controller tree widget holding all controllers as properties. " alt="" coords="3456,109,3589,136"/>
+<area shape="rect" id="node37" href="$df/d07/_dialog_distance_8h.html" title="DialogDistance.h" alt="" coords="3619,109,3741,136"/>
+<area shape="rect" id="node40" href="$de/ddb/_dialog_joystick_8h.html" title="DialogJoystick.h" alt="" coords="3302,109,3420,136"/>
+<area shape="rect" id="node42" href="$d9/de3/_dialog___import___mesh_8h.html" title="Dialog_Import_Mesh.h" alt="" coords="485,184,637,211"/>
+<area shape="rect" id="node44" href="$d1/db3/_dialog___add___force_8h.html" title="Dialog_Add_Force.h" alt="" coords="2865,184,3004,211"/>
+<area shape="rect" id="node45" href="$d5/d64/_dialog___add___torque_8h.html" title="Dialog_Add_Torque.h" alt="" coords="2440,184,2587,211"/>
+<area shape="rect" id="node46" href="$d0/d03/_dialog___rescale___environment_8h.html" title="Dialog_Rescale_Environment.h" alt="" coords="2005,184,2211,211"/>
+<area shape="rect" id="node47" href="$d6/d6d/_dialog___graphics___options_8h.html" title="Dialog_Graphics_Options.h" alt="" coords="2235,184,2416,211"/>
+<area shape="rect" id="node49" href="$d1/d34/_dialog___motor___control_8h.html" title="Dialog_Motor_Control.h" alt="" coords="3182,184,3340,211"/>
+<area shape="rect" id="node9" href="$d7/deb/_node_handler_8h.html" title="GUI handling creating and editing nodes in the simulation &#160;A property in the node tree dialog is crea..." alt="" coords="1149,184,1259,211"/>
+<area shape="rect" id="node13" href="$d2/da5/_dialog___create___material_8h.html" title="Dialog_Create_Material.h" alt="" coords="477,267,645,293"/>
+<area shape="rect" id="node15" href="$db/d60/_dialog___edit___material_8h.html" title="Dialog_Edit_Material.h" alt="" coords="1031,267,1184,293"/>
+<area shape="rect" id="node16" href="$d6/d5e/_widget___node___options___o_d_e_8h.html" title="Widget_Node_Options\l_ODE.h" alt="" coords="299,259,452,301"/>
+<area shape="rect" id="node19" href="$d7/d8d/_joint_handler_8h.html" title="JointHandler.h" alt="" coords="1333,184,1440,211"/>
+<area shape="rect" id="node23" href="$de/d15/_light_handler_8h.html" title="Provides the GUI properties for handling a light &#45; creating and editing. " alt="" coords="849,184,956,211"/>
+<area shape="rect" id="node26" href="$df/dfb/_motor_handler_8h.html" title="MotorHandler.h" alt="" coords="1515,184,1625,211"/>
+<area shape="rect" id="node29" href="$d4/df0/_sensor_handler_8h.html" title="SensorHandler.h" alt="" coords="3417,184,3535,211"/>
+<area shape="rect" id="node31" href="$d6/d43/_selection_dialog_8h.html" title="The SelectionDialog class is used to select a sorted list of objects. " alt="" coords="3985,267,4108,293"/>
+<area shape="rect" id="node35" href="$d0/dfb/_controller_handler_8h.html" title="ControllerHandler.h" alt="" coords="3977,184,4111,211"/>
+<area shape="rect" id="node38" href="$df/d28/_node_selection_tree_8h.html" title="A widget for node selection with different selection options. " alt="" coords="3611,184,3755,211"/>
+<area shape="rect" id="node41" href="$d8/d17/_joystick_widget_8h.html" title="Provides an interactive joystick for node movement. " alt="" coords="3779,184,3901,211"/>
 </map>

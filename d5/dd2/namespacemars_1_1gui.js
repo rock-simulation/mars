@@ -39,6 +39,7 @@ var namespacemars_1_1gui =
     [ "LightHandler", "d2/d46/classmars_1_1gui_1_1_light_handler.html", "d2/d46/classmars_1_1gui_1_1_light_handler" ],
     [ "MarsGui", "d4/dab/classmars_1_1gui_1_1_mars_gui.html", "d4/dab/classmars_1_1gui_1_1_mars_gui" ],
     [ "MarsStyle", "db/d22/classmars_1_1gui_1_1_mars_style.html", "db/d22/classmars_1_1gui_1_1_mars_style" ],
+    [ "MenuAdd", "d7/d96/classmars_1_1gui_1_1_menu_add.html", "d7/d96/classmars_1_1gui_1_1_menu_add" ],
     [ "MenuFile", "d8/da4/classmars_1_1gui_1_1_menu_file.html", "d8/da4/classmars_1_1gui_1_1_menu_file" ],
     [ "MenuHelp", "d6/dda/classmars_1_1gui_1_1_menu_help.html", "d6/dda/classmars_1_1gui_1_1_menu_help" ],
     [ "MenuSimulation", "d7/d7d/classmars_1_1gui_1_1_menu_simulation.html", "d7/d7d/classmars_1_1gui_1_1_menu_simulation" ],

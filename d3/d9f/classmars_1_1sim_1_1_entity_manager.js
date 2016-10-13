@@ -14,12 +14,16 @@ var classmars_1_1sim_1_1_entity_manager =
     [ "getEntityMotor", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a0d2160d1d4b250d37b918499647a06ef", null ],
     [ "getEntityNode", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a246f078a0ec3f3e5478b2caa1e590853", null ],
     [ "getNextId", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#aa90ff929fe84783e5f3562e80d6b8218", null ],
+    [ "notifySubscribers", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a7fbbb0fa1a1569b1889d76a8c23cbb41", null ],
     [ "printEntityControllers", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a99ad2869b2f2d9f6176059054d802086", null ],
     [ "printEntityMotors", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a972193b4517141bca979653766ee9841", null ],
     [ "printEntityNodes", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#ab1292e9d28e0bfb2f6929f10f1b5152c", null ],
+    [ "resetPose", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a94ffafae2b2bbce4d0f484e9ff05a426", null ],
     [ "selectEvent", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#af550e0379462ac488d2d8c6c56caa80a", null ],
+    [ "subscribeToEntityCreation", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#aee59fa386812b57d43620f27d5383155", null ],
     [ "control", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a5ce78d324d29f7cd5cc016e057dc5d08", null ],
     [ "entities", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#aaacbefd31cfa6fe50573cb5cb0150c5c", null ],
     [ "iMutex", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#a58ea2bc3e099ded5899ad58bb7df57f9", null ],
-    [ "next_entity_id", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#acba64b5cf2c36a9581ccfcb87cf8da16", null ]
+    [ "next_entity_id", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#acba64b5cf2c36a9581ccfcb87cf8da16", null ],
+    [ "subscribers", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html#aeee6bb4c695d3f3613d38f3d238193e0", null ]
 ];
