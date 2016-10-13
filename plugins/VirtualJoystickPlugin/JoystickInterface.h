@@ -18,42 +18,26 @@
  *
  */
 
-/**
- * \file Points.hpp
- * \author Malte Langosz
- * \brief 
- **/
+ /**
+ * \file JoystickInterface.h
+ * \author Michael Rohn
+ * \brief "JoystcikInterface" is an interface to a plugin to get faked joystick values
+ *
+ * Version 0.1 (23.01.09): 
+ *               - 
+ */
 
-#ifndef OSG_POINTS_H
-#define OSG_POINTS_H
+#ifndef JOYSTICK_INTERFACE_H
+#define JOYSTICK_INTERFACE_H
 
-#include <vector>
 
-namespace osg_points {
+//#include "sim_common.h"
 
-  struct Vector {
-    Vector(double x, double y, double z) : x(x), y(y), z(z) {}
-    double x, y, z;
-  };
+class JoystickInterface {
+ public:
+  JoystickInterface(void) {};
+  virtual ~JoystickInterface(void) {};
+  virtual void getNewValue(double* leftValue, double* rightValue) = 0;
+};
 
-  struct Color {
-    Color(float r, float g, float b, float a) : r(r), g(g), b(b), a(a) {}
-    float r, g, b, a;
-  };
-
-  class Points {
-
-  public:
-    Points() {}
-    virtual ~Points() {}
-
-    virtual void appendData(Vector v) = 0;
-    virtual void setData(const std::vector<Vector> &points) = 0;
-    virtual void setColor(Color c) = 0;
-    virtual void setLineWidth(double w) = 0;
-    virtual void* getOSGNode() = 0;
-  };
-
-} // end of namespace: osg_points
-
-#endif // OSG_POINTS_H
+#endif // JOYSTICK_INTERFACE_H

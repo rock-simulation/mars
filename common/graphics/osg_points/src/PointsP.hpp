@@ -32,7 +32,7 @@
 #include <osg/Geode>
 #include <osg/MatrixTransform>
 #include <osg/Geometry>
-#include <osg/LineWidth>
+#include <osg/Point>
 
 namespace osg_points {
 
@@ -43,7 +43,7 @@ namespace osg_points {
     ~PointsP();
 
     void appendData(Vector v);
-    void setData(std::vector<Vector> points);
+    void setData(const std::vector<Vector> &points);
     void setColor(Color c);
     void setLineWidth(double w);
     void dirty(void);
@@ -54,7 +54,7 @@ namespace osg_points {
     osg::ref_ptr<osg::Geometry> pointsGeom;
     osg::ref_ptr<osg::MatrixTransform> pointsTransform;
     osg::ref_ptr<osg::DrawArrays> drawArray;
-    osg::ref_ptr<osg::LineWidth> linew;
+    osg::ref_ptr<osg::Point> linew;
     osg::ref_ptr<osg::Vec4Array> colors;
     osg::ref_ptr<osg::Geode> node;
   };

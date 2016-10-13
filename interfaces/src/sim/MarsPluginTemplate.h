@@ -42,8 +42,8 @@ namespace mars {
                                public PluginInterface {
 
     public:
-  
-        MarsPluginTemplate(lib_manager::LibManager *theManager, std::string libName) : 
+
+        MarsPluginTemplate(lib_manager::LibManager *theManager, std::string libName) :
         LibInterface(theManager), PluginInterface(NULL), mars(NULL) {
 
         lib_manager::LibInterface *lib;
@@ -55,19 +55,21 @@ namespace mars {
             newplugin.name = libName;
             newplugin.p_interface = dynamic_cast<PluginInterface*>(this);
             newplugin.p_destroy = 0;
-      
+            newplugin.timer = newplugin.timer_gui = 0;
+            newplugin.t_count = newplugin.t_count_gui = 0;
+
             if(control->cfg) {
               cfg_manager::cfgPropertyStruct cfgPath;
               cfgPath = control->cfg->getOrCreateProperty("Preferences",
                                                           "resources_path",
                                                           std::string("."));
-          
+
               resourcesPath = cfgPath.sValue;
 
               cfgPath = control->cfg->getOrCreateProperty("Config",
                                                           "config_path",
                                                           std::string("."));
-      
+
               configPath = cfgPath.sValue;
             }
           }

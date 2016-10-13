@@ -73,7 +73,7 @@ namespace mars {
           map = ConfigMap::fromYamlFile("Text3DConfig.yml", true);
           ConfigVector::iterator it;
           osg_text::TextInterface *text;
-          if(map.find("Labels") != map.end()) {
+          if(map.hasKey("Labels")) {
             TextData *td;
             double fixedWidth, fixedHeight;
             bool drawFrame;
@@ -82,50 +82,50 @@ namespace mars {
 
             for(it = map["Labels"].begin(); it!=map["Labels"].end(); ++it) {
               td = new TextData;
-              td->name = (std::string)it->children["name"][0];
-              td->value = (std::string)it->children["value"][0];
-              td->posX = it->children["posX"][0];
-              td->posY = it->children["posY"][0];
+              td->name = (std::string)(*it)["name"];
+              td->value = (std::string)(*it)["value"];
+              td->posX = (*it)["posX"];
+              td->posY = (*it)["posY"];
               fixedWidth = fixedHeight = -1;
               drawFrame = false;
               fontsize = 30;
               align = osg_text::ALIGN_LEFT;
               osg_text::Color c, bgColor(0.0, 0.5, 0.0, 0.5);
               osg_text::Color borderColor(1.0, 1.0, 1.0, 0.5);
-              if(it->children.find("fixedWidth") != it->children.end()) {
-                fixedWidth = it->children["fixedWidth"][0];
+              if(it->hasKey("fixedWidth")) {
+                fixedWidth = (*it)["fixedWidth"];
               }
-              if(it->children.find("fixedHeight") != it->children.end()) {
-                fixedHeight = it->children["fixedHeight"][0];
+              if(it->hasKey("fixedHeight")) {
+                fixedHeight = (*it)["fixedHeight"];
               }
-              if(it->children.find("frame") != it->children.end()) {
-                drawFrame = it->children["frame"][0];
+              if(it->hasKey("frame")) {
+                drawFrame = (*it)["frame"];
               }
-              if(it->children.find("fontsize") != it->children.end()) {
-                fontsize = it->children["fontsize"][0];
+              if(it->hasKey("fontsize")) {
+                fontsize = (*it)["fontsize"];
               }
-              if(it->children.find("align") != it->children.end()) {
-                std::string sAlign = (std::string)it->children["align"][0];
+              if(it->hasKey("align")) {
+                std::string sAlign = (std::string)(*it)["align"];
                 if(sAlign == "right") align = osg_text::ALIGN_RIGHT;
                 else if(sAlign == "center") align = osg_text::ALIGN_CENTER;
               }
-              if(it->children.find("color") != it->children.end()) {
-                c.a = it->children["color"][0]["a"][0];
-                c.r = it->children["color"][0]["r"][0];
-                c.g = it->children["color"][0]["g"][0];
-                c.b = it->children["color"][0]["b"][0];
+              if(it->hasKey("color")) {
+                c.a = (*it)["color"]["a"];
+                c.r = (*it)["color"]["r"];
+                c.g = (*it)["color"]["g"];
+                c.b = (*it)["color"]["b"];
               }
-              if(it->children.find("bgColor") != it->children.end()) {
-                bgColor.a = it->children["bgColor"][0]["a"][0];
-                bgColor.r = it->children["bgColor"][0]["r"][0];
-                bgColor.g = it->children["bgColor"][0]["g"][0];
-                bgColor.b = it->children["bgColor"][0]["b"][0];
+              if(it->hasKey("bgColor")) {
+                bgColor.a = (*it)["bgColor"]["a"];
+                bgColor.r = (*it)["bgColor"]["r"];
+                bgColor.g = (*it)["bgColor"]["g"];
+                bgColor.b = (*it)["bgColor"]["b"];
               }
-              if(it->children.find("borderColor") != it->children.end()) {
-                borderColor.a = it->children["borderColor"][0]["a"][0];
-                borderColor.r = it->children["borderColor"][0]["r"][0];
-                borderColor.g = it->children["borderColor"][0]["g"][0];
-                borderColor.b = it->children["borderColor"][0]["b"][0];
+              if(it->hasKey("borderColor")) {
+                borderColor.a = (*it)["borderColor"]["a"];
+                borderColor.r = (*it)["borderColor"]["r"];
+                borderColor.g = (*it)["borderColor"]["g"];
+                borderColor.b = (*it)["borderColor"]["b"];
               }
               td->text = textFactory->createText(td->value, fontsize,
                                                  c, td->posX, td->posY, align);
@@ -154,7 +154,7 @@ namespace mars {
                                                           td->name+"/posY",
                                                           td->posY, this);
               td->pyId = example.paramId;
-              int mask = it->children["mask"][0].getInt();
+              int mask = (*it)["mask"];
               example = control->cfg->getOrCreateProperty("Text3D",
                                                           td->name+"/mask",
                                                           mask, this);

@@ -53,6 +53,8 @@ namespace mars {
             newplugin.name = libName;
             newplugin.p_interface = dynamic_cast<PluginInterface*>(this);
             newplugin.p_destroy = 0;
+            newplugin.timer = newplugin.timer_gui = 0;
+            newplugin.t_count = newplugin.t_count_gui = 0;
       
             if(control->cfg) {
               cfg_manager::cfgPropertyStruct cfgPath;

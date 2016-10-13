@@ -1,12 +1,14 @@
 <package>
-    <description brief="TerrainPlugin">
-      Terrain
-   </description>
+    <description brief="PythonMars">
+        Allows scripting MARS with python
+     </description>
     <maintainer>Malte/malte.langosz@dfki.de</maintainer>
     <author>Malte/malte.langosz@dfki.de</author>
     <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
-    <depend package="simulation/mars/common/graphics/osg_terrain" />
+    <depend package="simulation/mars/common/graphics/osg_points" />
+    <depend package="simulation/mars/common/graphics/osg_material_manager" />
     <tags>needs_opt</tags>
 </package>

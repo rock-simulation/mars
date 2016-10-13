@@ -194,7 +194,6 @@ namespace mars {
     }
 
     void MyQMainWindow::dock() {
-      return;
       timerAllowed = false;
       if(!dockView) {
         saveDockGeometry();
@@ -340,6 +339,7 @@ namespace mars {
         if(priority) {
           for (subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
             if (*subit == window) {
+              window->show();
               return;
             }
           }
@@ -424,10 +424,12 @@ namespace mars {
     }
 
     void MyQMainWindow::closeEvent(QCloseEvent *event) {
+      static bool first = true;
       timerAllowed = false;
       (void)event;
+      if(!first) return;
+      first = false;
       closing = true;
-      //fprintf(stderr, "close event\n");
       for(dockit = stDockWidgets.begin(); dockit != stDockWidgets.end();
           dockit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());

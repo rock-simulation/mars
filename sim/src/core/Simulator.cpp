@@ -78,11 +78,12 @@ namespace mars {
     Simulator::Simulator(lib_manager::LibManager *theManager) :
       lib_manager::LibInterface(theManager),
       exit_sim(false), allow_draw(true),
-      sync_graphics(false), physics_mutex_count(0), physics(0) {
+      sync_graphics(false), physics_mutex_count(0), physics(0),
+      haveNewPlugin(false) {
 
       config_dir = DEFAULT_CONFIG_DIR;
       calc_time = 0;
-      avg_log_time = 0;
+      avg_step_time = avg_log_time = 0;
       count = 0;
       config_dir = ".";
 
@@ -350,7 +351,6 @@ namespace mars {
     void Simulator::step(bool setState) {
       std::vector<pluginStruct>::iterator p_iter;
       long time;
-
       Status oldState;
 
       physicsThreadLock();
@@ -360,17 +360,16 @@ namespace mars {
         simulationStatus = STEPPING;
       }
 
-#ifdef DEBUG_TIME
-      long startTime = utils::getTime();
+      if(show_time) time = utils::getTime();
 
-#endif
       if(control->dataBroker) {
         control->dataBroker->trigger("mars_sim/prePhysicsUpdate");
       }
       physics->stepTheWorld();
-#ifdef DEBUG_TIME
-      LOG_DEBUG("Step World: %ld", getTimeDiff(startTime));
-#endif
+
+      if(show_time) {
+        avg_step_time += getTimeDiff(time);
+      }
 
       control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
       control->joints->updateJoints(calc_ms);
@@ -391,11 +390,13 @@ namespace mars {
 
       if(show_time) {
         avg_log_time += getTimeDiff(time);
-        if(++count > 100) {
+        if(++count > 20) {
           avg_log_time /= count;
+          avg_step_time /= count;
           count = 0;
+          fprintf(stderr, "Step World: %g\n", avg_step_time);
           fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
-          avg_log_time = 0.0;
+          avg_step_time = avg_log_time = 0.0;
         }
       }
 
@@ -659,7 +660,6 @@ namespace mars {
 
     void Simulator::finishedDraw(void) {
       long time;
-
       processRequests();
 
       if (reloadSim) {
@@ -690,14 +690,17 @@ namespace mars {
       sync_count = 1;
 
       // Add plugins that have been added via Simulator::addPlugin
-      pluginLocker.lockForWrite();
-      for (unsigned int i=0; i<newPlugins.size(); i++) {
-        allPlugins.push_back(newPlugins[i]);
-        activePlugins.push_back(newPlugins[i]);
-        newPlugins[i].p_interface->init();
+      if(haveNewPlugin) {
+        pluginLocker.lockForWrite();
+        for (unsigned int i=0; i<newPlugins.size(); i++) {
+          allPlugins.push_back(newPlugins[i]);
+          activePlugins.push_back(newPlugins[i]);
+          newPlugins[i].p_interface->init();
+        }
+        newPlugins.clear();
+        haveNewPlugin = false;
+        pluginLocker.unlock();
       }
-      newPlugins.clear();
-      pluginLocker.unlock();
 
 
       pluginLocker.lockForRead();
@@ -1034,6 +1037,7 @@ namespace mars {
     void Simulator::addPlugin(const pluginStruct& plugin) {
       pluginLocker.lockForWrite();
       newPlugins.push_back(plugin);
+      haveNewPlugin = true;
       pluginLocker.unlock();
     }
 

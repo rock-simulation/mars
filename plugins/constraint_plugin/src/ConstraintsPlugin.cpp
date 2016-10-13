@@ -112,8 +112,8 @@ namespace mars {
         if(!filename.empty()) {
           configmaps::ConfigMap config = configmaps::ConfigMap::fromYamlFile(filename);
           for(unsigned int i = 0; i < config["MotorValues"].size(); ++i) {
-            std::string name = config["MotorValues"][i]["name"][0].getString();
-            double value = config["MotorValues"][i]["value"][0].getDouble();
+            std::string name = config["MotorValues"][(int)i]["name"];
+            double value = config["MotorValues"][(int)i]["value"];
             unsigned long id = control->motors->getID(name);
             control->motors->setMotorValue(id, value);
           }

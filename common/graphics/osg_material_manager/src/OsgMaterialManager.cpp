@@ -177,6 +177,7 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it == materialMap.end()) {
       OsgMaterial *m = new OsgMaterial(resPath.sValue+"/mars/osg_material_manager/resources");
+      m->setMaxNumLights(defaultMaxNumNodeLights);
       m->setShadowTextureSize(shadowTextureSize);
       m->setMaterial(map);
       m->setUseShader(useShader);
@@ -211,12 +212,12 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it != materialMap.end()) {
       MaterialNode *n = new MaterialNode();
+      n->setMaxNumLights(defaultMaxNumNodeLights);
       n->createNodeState();
       n->setUseFog(useFog);
       n->setUseNoise(useNoise);
       n->setDrawLineLaser(drawLineLaser);
       n->setUseShadow(useShadow);
-      n->setMaxNumLights(defaultMaxNumNodeLights);
       n->setBrightness(brightness);
       it->second->addMaterialNode(n);
       it->second->addChild(n);
