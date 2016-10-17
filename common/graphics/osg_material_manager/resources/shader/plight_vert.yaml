@@ -44,7 +44,7 @@ uniforms:
   - name: osg_ViewMatrixInverse
     type: mat4
   - name: osg_ViewMatrix
-    type: vec4
+    type: mat4
   - name: useShadow
     type: int
   - name: numLights
