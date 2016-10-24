@@ -630,10 +630,17 @@ namespace osg_material_manager {
       }
       if(map["shader"].hasKey("PixelLightFragment")) {
         bool haveDiffuseMap = checkTexture("diffuseMap");
-        PixelLightFrag *plightFrag = new PixelLightFrag(args, maxNumLights,
+        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
+        stringstream s;
+        s << maxNumLights;
+        map["mappings"]["numLights"] = s.str();
+        map["mappings"]["!pcol_diffuse"] = !havePCol && haveDiffuseMap;
+        map["mappings"]["!pcol_!diffuse"] = !havePCol && !haveDiffuseMap;
+        YamlShader *plightFrag = new YamlShader((string)map["name"], args, map, resPath);
+        /*PixelLightFrag *plightFrag = new PixelLightFrag(args, maxNumLights,
                                                         resPath,
                                                         haveDiffuseMap,
-                                                        havePCol);
+                                                        havePCol);*/
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.
         // TODO: check not needed if backfaces not processed.
