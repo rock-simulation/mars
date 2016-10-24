@@ -101,6 +101,33 @@ namespace osg_material_manager {
         }
       }
 
+      if (map.hasKey("attributes")) {
+        ConfigMap::iterator it = map["attributes"].beginMap();
+        for (;it!=map["attributes"].endMap();it++) {
+          string type = it->first;
+          std::size_t a_pos = type.find("[]"); // to determine if value is array or not
+          ConfigVector::iterator it2 = map["attributes"][type].begin();
+          for (;it2!=map["attributes"][type].end();it2++) {
+            ConfigItem &item = *it2;
+            std::stringstream s;
+            string typeName; // should contain type without [] if present at the end
+            if (a_pos != string::npos) {
+              typeName = type.substr(0,a_pos);
+              if (item.hasKey("arraySize")) {
+                string size = map["mappings"][(string)item["arraySize"]];
+                s << "[" << size << "]";
+              } else {
+                s << "[1]"; // fallback arraySize of 1
+              }
+            } else {
+              typeName = type;
+              s << "";
+            }
+            addUniform( (GLSLUniform) { typeName, (string)item["name"] + s.str() } );
+          }
+        }
+      }
+
       if (map.hasKey("exports")) {
         ConfigVector::iterator it = map["exports"].begin();
         for (;it!=map["exports"].end();it++) {
