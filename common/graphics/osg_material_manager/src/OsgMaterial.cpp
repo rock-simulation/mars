@@ -33,8 +33,6 @@
 
 #include "shader/shader-generator.h"
 #include "shader/shader-function.h"
-#include "shader/bumpmapping.h"
-#include "shader/pixellight.h"
 #include "shader/yaml-shader.h"
 
 #include <osg/TexMat>
@@ -563,11 +561,13 @@ namespace osg_material_manager {
         shaderGenerator.addShaderFunction(plightVert, SHADER_TYPE_VERTEX);
       }
       if(map["shader"].hasKey("NormalMapVertex")) {
-        BumpMapVert *bumpVert = new BumpMapVert(args, resPath);
+        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_vert.yaml");
+        YamlShader *bumpVert = new YamlShader((string)map["name"], args, map, resPath);
         shaderGenerator.addShaderFunction(bumpVert, SHADER_TYPE_VERTEX);
       }
       if(map["shader"].hasKey("NormalMapFragment")) {
-        BumpMapFrag *bumpFrag = new BumpMapFrag(args, resPath);
+        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");
+        YamlShader *bumpFrag = new YamlShader((string)map["name"], args, map, resPath);
         shaderGenerator.addShaderFunction(bumpFrag, SHADER_TYPE_FRAGMENT);
       }
 

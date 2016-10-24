@@ -43,7 +43,6 @@ set(SOURCES
 	src/shader/shader-types.cpp
 	src/shader/shader-generator.cpp
 	src/shader/shader-function.cpp
-	src/shader/bumpmapping.cpp
 	src/shader/yaml-shader.cpp
 )
 
@@ -54,7 +53,6 @@ set(HEADERS
 	src/shader/shader-types.h
 	src/shader/shader-generator.h
 	src/shader/shader-function.h
-	src/shader/bumpmapping.h
 	src/shader/yaml-shader.h
 )
 
