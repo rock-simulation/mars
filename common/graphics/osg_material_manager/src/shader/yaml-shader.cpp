@@ -48,32 +48,56 @@ namespace osg_material_manager {
       }
 
       if (map.hasKey("varyings")) {
-        ConfigVector::iterator it = map["varyings"].begin();
-        for (;it!=map["varyings"].end();it++) {
-          ConfigItem &item = *it;
-          std::stringstream s;
-          if (item.hasKey("size")) {
-            string size = map["mappings"][(string)item["size"]];
-            s << "[" << size << "]";
-          } else {
-            s << "";
+        ConfigMap::iterator it = map["varyings"].beginMap();
+        for (;it!=map["varyings"].endMap();it++) {
+          string type = it->first;
+          std::size_t a_pos = type.find("[]"); // to determine if value is array or not
+          ConfigVector::iterator it2 = map["varyings"][type].begin();
+          for (;it2!=map["varyings"][type].end();it2++) {
+            ConfigItem &item = *it2;
+            std::stringstream s;
+            string typeName; // should contain type without [] if present at the end
+            if (a_pos != string::npos) {
+              typeName = type.substr(0,a_pos);
+              if (item.hasKey("arraySize")) {
+                string size = map["mappings"][(string)item["arraySize"]];
+                s << "[" << size << "]";
+              } else {
+                s << "[1]"; // fallback arraySize of 1
+              }
+            } else {
+              typeName = type;
+              s << "";
+            }
+            addVarying( (GLSLVarying) { typeName, (string)item["name"] + s.str() } );
           }
-          addVarying( (GLSLVarying) { (string)item["type"], (string)item["name"] + s.str() } );
         }
       }
 
       if (map.hasKey("uniforms")) {
-        ConfigVector::iterator it = map["uniforms"].begin();
-        for (;it!=map["uniforms"].end();it++) {
-          ConfigItem &item = *it;
-          std::stringstream s;
-          if (item.hasKey("size")) {
-            string size = map["mappings"][(string)item["size"]];
-            s << "[" << size << "]";
-          } else {
-            s << "";
+        ConfigMap::iterator it = map["uniforms"].beginMap();
+        for (;it!=map["uniforms"].endMap();it++) {
+          string type = it->first;
+          std::size_t a_pos = type.find("[]"); // to determine if value is array or not
+          ConfigVector::iterator it2 = map["uniforms"][type].begin();
+          for (;it2!=map["uniforms"][type].end();it2++) {
+            ConfigItem &item = *it2;
+            std::stringstream s;
+            string typeName; // should contain type without [] if present at the end
+            if (a_pos != string::npos) {
+              typeName = type.substr(0,a_pos);
+              if (item.hasKey("arraySize")) {
+                string size = map["mappings"][(string)item["arraySize"]];
+                s << "[" << size << "]";
+              } else {
+                s << "[1]"; // fallback arraySize of 1
+              }
+            } else {
+              typeName = type;
+              s << "";
+            }
+            addUniform( (GLSLUniform) { typeName, (string)item["name"] + s.str() } );
           }
-          addUniform( (GLSLUniform) { (string)item["type"], (string)item["name"] + s.str() } );
         }
       }
 
@@ -89,7 +113,13 @@ namespace osg_material_manager {
         ConfigVector::iterator it = map["mainVars"].begin();
         for (;it!=map["mainVars"].end();it++) {
           ConfigItem &item = *it;
-          addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+          if (item.hasKey("if")) {
+            if (map["mappings"][(string)item["if"]]) {
+              addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+            }
+          } else {
+            addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+          }
         }
       }
 

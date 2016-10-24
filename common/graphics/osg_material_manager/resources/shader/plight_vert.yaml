@@ -2,53 +2,34 @@ params:
   - vWorldPos
   - specularCol
 varyings:
-  - name: lightVec
-    type: vec3
-    size: numLights
-  - name: spotDir
-    type: vec3
-    size: numLights
-  - name: diffuse
-    type: vec4
-    size: numLights
-  - name: specular
-    type: vec4
-    size: numLights
-  - name: eyeVec
-    type: vec3
-  - name: positionVarying
-    type: vec4
-  - name: normalVarying
-    type: vec3
-  - name: modelVertex
-    type: vec4
+  vec3:
+    - {name: eyeVec}
+    - {name: normalVarying}
+  vec3[]:
+    - {name: lightVec, arraySize: numLights}
+    - {name: spotDir, arraySize: numLights}
+  vec4:
+    - {name: positionVarying}
+    - {name: modelVertex}
+  vec4[]:
+    - {name: diffuse, arraySize: numLights}
+    - {name: specular, arraySize: numLights}
 uniforms:
-  - name: lightPos
-    type: vec3
-    size: numLights
-  - name: lightSpotDir
-    type: vec3
-    size: numLights
-  - name: lightDiffuse
-    type: vec4
-    size: numLights
-  - name: lightSpecular
-    type: vec4
-    size: numLights
-  - name: lightIsDirectional
-    type: int
-    size: numLights
-  - name: lightIsSet
-    type: int
-    size: numLights
-  - name: osg_ViewMatrixInverse
-    type: mat4
-  - name: osg_ViewMatrix
-    type: mat4
-  - name: useShadow
-    type: int
-  - name: numLights
-    type: int
+  vec3[]:
+    - {name: lightPos, arraySize: numLights}
+    - {name: lightSpotDir, arraySize: numLights}
+  vec4[]:
+    - {name: lightDiffuse, arraySize: numLights}
+    - {name: lightSpecular, arraySize: numLights}
+  int:
+    - {name: useShadow}
+    - {name: numLights}
+  int[]:
+    - {name: lightIsDirectional, arraySize: numLights}
+    - {name: lightIsSet, arraySize: numLights}
+  mat4:
+    - {name: osg_ViewMatrixInverse}
+    - {name: osg_ViewMatrix}
 mainVars:
   - name: n
     type: vec4
