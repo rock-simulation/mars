@@ -31,9 +31,9 @@ uniforms:
     - {name: osg_ViewMatrixInverse}
     - {name: osg_ViewMatrix}
 mainVars:
-  - name: n
-    type: vec4
-    value: normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))
+  vec4:
+    - name: n
+      value: normalize(osg_ViewMatrixInverse * vec4(gl_NormalMatrix * gl_Normal, 0.0))
 exports:
   - name: normalVarying
     value: n.xyz

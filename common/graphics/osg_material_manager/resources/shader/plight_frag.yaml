@@ -60,16 +60,15 @@ uniforms:
   sampler2DShadow:
     - {name: osgShadow_shadowTexture}
 mainVars:
-  - name: n
-    type: vec3
-    value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"
-  - name: pcol
-    type: vec4
-    value: "texture2D(diffuseMap, texCoord)"
-    if: "!pcol_diffuse"
-  - name: pcol
-    type: vec4
-    value: col
-    if: "!pcol_!diffuse"
+  vec3:
+    - name: n
+      value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"
+  vec4:
+    - name: pcol
+      value: "texture2D(diffuseMap, texCoord)"
+      if: "!pcol_diffuse"
+    - name: pcol
+      value: col
+      if: "!pcol_!diffuse"
 source: /shader/plight.frag
 name: plight

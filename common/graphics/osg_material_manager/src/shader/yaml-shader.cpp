@@ -137,19 +137,37 @@ namespace osg_material_manager {
       }
 
       if (map.hasKey("mainVars")) {
-        ConfigVector::iterator it = map["mainVars"].begin();
-        for (;it!=map["mainVars"].end();it++) {
-          ConfigItem &item = *it;
-          if (item.hasKey("if")) {
-            if (map["mappings"][(string)item["if"]]) {
-              addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+        ConfigMap::iterator it = map["mainVars"].beginMap();
+        for (;it!=map["mainVars"].endMap();it++) {
+          string type = it->first;
+          std::size_t a_pos = type.find("[]"); // to determine if value is array or not
+          ConfigVector::iterator it2 = map["mainVars"][type].begin();
+          for (;it2!=map["mainVars"][type].end();it2++) {
+            ConfigItem &item = *it2;
+            std::stringstream s;
+            string typeName; // should contain type without [] if present at the end
+            if (a_pos != string::npos) {
+              typeName = type.substr(0,a_pos);
+              if (item.hasKey("arraySize")) {
+                string size = map["mappings"][(string)item["arraySize"]];
+                s << "[" << size << "]";
+              } else {
+                s << "[1]"; // fallback arraySize of 1
+              }
+            } else {
+              typeName = type;
+              s << "";
             }
-          } else {
-            addMainVar( (GLSLVariable) { (string)item["type"], (string)item["name"], (string)item["value"] } );
+            if (item.hasKey("if")) {
+              if (map["mappings"][(string)item["if"]]) {
+                addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] } );
+              }
+            } else {
+              addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] } );
+            }
           }
         }
       }
-
     }
 
     std::string YamlShader::code() const {
