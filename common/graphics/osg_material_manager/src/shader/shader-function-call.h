@@ -30,6 +30,7 @@ namespace osg_material_manager {
     public:
         ShaderFunctionCall(std::string name, std::vector<std::string> arguments, unsigned int priority=0);
         std::vector<std::string> getArguments();
+        void addArgument(std::string arg);
         std::string getName();
         int getPriority();
         bool operator<(const ShaderFunctionCall& other) const;

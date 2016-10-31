@@ -45,6 +45,10 @@ namespace osg_material_manager {
       return this->arguments;
     }
 
+    void ShaderFunctionCall::addArgument(std::string arg) {
+      this->arguments.push_back(arg);
+    }
+
     bool ShaderFunctionCall::operator<(const ShaderFunctionCall& other) const
     {
       return this->priority < other.priority;
