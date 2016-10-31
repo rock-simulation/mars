@@ -37,6 +37,10 @@ namespace osg_material_manager {
       return this->priority;
     }
 
+    void ShaderFunctionCall::setPriority(unsigned int newPriority) {
+      this->priority = newPriority;
+    }
+
     std::string ShaderFunctionCall::getName() {
       return this->name;
     }

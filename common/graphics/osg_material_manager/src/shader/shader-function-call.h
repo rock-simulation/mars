@@ -38,6 +38,7 @@ namespace osg_material_manager {
         void addArgument(std::string arg);
         std::string getName();
         int getPriority();
+        void setPriority(unsigned int newPriority);
         bool operator<(const ShaderFunctionCall& other) const;
     protected:
         std::string name;

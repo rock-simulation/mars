@@ -40,6 +40,10 @@ namespace osg_material_manager {
         source = "";
       }
 
+      if (map.hasKey("priority")) {
+        funcs[0].setPriority((unsigned int)map["priority"]);
+      }
+
       if (map.hasKey("params")) {
         ConfigVector::iterator it = map["params"].begin();
         for (;it!=map["params"].end();it++) {
