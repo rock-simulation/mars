@@ -26,6 +26,11 @@
 #include <string>
 
 namespace osg_material_manager {
+    /**
+     * This class is a simple wrapper around a shader function calls name and its arguments.
+     * It is used to be able to use a priority queue for sorting the function calls according to priorities
+     * in the shader function.
+     */
     class ShaderFunctionCall {
     public:
         ShaderFunctionCall(std::string name, std::vector<std::string> arguments, unsigned int priority=0);
