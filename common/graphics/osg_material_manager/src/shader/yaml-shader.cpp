@@ -43,7 +43,7 @@ namespace osg_material_manager {
       if (map.hasKey("params")) {
         ConfigVector::iterator it = map["params"].begin();
         for (;it!=map["params"].end();it++) {
-          funcs[0].second.push_back(it.base()->getString());
+          funcs[0].addArgument(it.base()->getString());
         }
       }
 

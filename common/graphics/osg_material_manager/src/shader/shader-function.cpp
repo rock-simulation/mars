@@ -21,6 +21,7 @@
 
 #include "shader-function.h"
 #include <sstream>
+#include <queue>
 
 namespace osg_material_manager {
 
@@ -28,7 +29,7 @@ namespace osg_material_manager {
 
   void ShaderFunc::merge(ShaderFunc *u) {
     minVersion = max(minVersion, u->minVersion);
-    for(vector< pair< string,vector<string> > >::iterator it = u->funcs.begin();
+    for(vector< ShaderFunctionCall >::iterator it = u->funcs.begin();
         it != u->funcs.end(); ++it)
       funcs.push_back( *it );
     for(set<string>::iterator it = u->getEnabledExtensions().begin();
@@ -66,20 +67,28 @@ namespace osg_material_manager {
   }
 
   vector<string> ShaderFunc::generateFunctionCall() {
+    std::priority_queue<ShaderFunctionCall> funcs_sorted;
+    std::vector<ShaderFunctionCall>::iterator it = funcs.begin();
+    for (;it!=funcs.end();it++) { // better way to initialize already with the vector as argument in constructor?
+      funcs_sorted.push(*it.base());
+    }
     vector<string> calls;
-    for(vector< pair< string,vector<string> > >::iterator it = funcs.begin();
-        it != funcs.end(); ++it) {
-      string call = it->first + "( ";
-      int numArgs = it->second.size();
+
+    while(!funcs_sorted.empty()) {
+      ShaderFunctionCall func = funcs_sorted.top();
+      string call = func.getName() + "( ";
+      std::vector<std::string> args = func.getArguments();
+      unsigned long numArgs = args.size();
 
       if(numArgs > 0) {
-        call += it->second[0];
+        call += args[0];
         for(int i=1; i<numArgs; ++i) {
-          call += ", " + it->second[i];
+          call += ", " + args[i];
         }
       }
       call += " );";
       calls.push_back(call);
+      funcs_sorted.pop();
     }
     return calls;
   }
