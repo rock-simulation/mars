@@ -137,11 +137,16 @@ namespace osg_material_manager {
     }
 
     void addMainVarDec(GLSLAttribute att) {
+      std::list<GLSLAttribute>::const_iterator it = mainVarDecs.begin();
+      for (;it!=mainVarDecs.end();it++) {
+        if (it->name == att.name) {
+          return;
+        }
+      }
       mainVarDecs.push_back(att);
     }
 
-    std::list<GLSLAttribute> getMainVarDecs() {
-      mainVarDecs.unique(ShaderFunc::mainVarDecs_unique_pred);
+    const std::list<GLSLAttribute>& getMainVarDecs() const {
       return mainVarDecs;
     }
 
