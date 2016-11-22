@@ -131,6 +131,7 @@ namespace osg_material_manager {
       else {
         mainVars.push_back(var);
       }
+      addMainVarDec((GLSLAttribute) {var.type, var.name});
     }
     const std::list<GLSLVariable>& getMainVars() const {
       return mainVars;
