@@ -136,6 +136,15 @@ namespace osg_material_manager {
       return mainVars;
     }
 
+    void addMainVarDec(GLSLAttribute att) {
+      mainVarDecs.push_back(att);
+    }
+
+    std::list<GLSLAttribute> getMainVarDecs() {
+      mainVarDecs.unique(ShaderFunc::mainVarDecs_unique_pred);
+      return mainVarDecs;
+    }
+
     void addSuffix(GLSLSuffix suffix) {
       suffixes.insert(suffix);
     }
@@ -177,12 +186,18 @@ namespace osg_material_manager {
     // needed functions (tuple of name and code)
     std::map<std::string,std::string> deps;
     std::list<GLSLVariable> mainVars;
+    std::list<GLSLAttribute> mainVarDecs;
     std::vector<GLSLExport> exports;
     std::set<GLSLSuffix> suffixes;
     std::set<std::string> enabledExtensions;
     std::set<std::string> disabledExtensions;
     // minimum gl version
     int minVersion;
+
+  private:
+    static bool mainVarDecs_unique_pred(GLSLAttribute &first, GLSLAttribute &second) {
+      return first.name == second.name;
+    }
 
   }; // end of class ShaderFunc
 
