@@ -10,6 +10,9 @@ uniforms:
     - {name: bumpNorFac}
   sampler2D:
     - {name: normalmap}
+mainVarDecs:
+  vec4:
+    - {name: nt}
 mainVars:
   vec4:
     - name: nt

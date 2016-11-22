@@ -59,6 +59,11 @@ uniforms:
     - {name: NoiseMap}
   sampler2DShadow:
     - {name: osgShadow_shadowTexture}
+mainVarDecs:
+  vec3:
+    - {name: n}
+    - {name: pcol}
+  vec4:
 mainVars:
   vec3:
     - name: n
