@@ -62,8 +62,8 @@ uniforms:
 mainVarDecs:
   vec3:
     - {name: n}
-    - {name: pcol}
   vec4:
+    - {name: pcol}
 mainVars:
   vec3:
     - name: n
