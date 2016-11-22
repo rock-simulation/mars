@@ -94,9 +94,13 @@ namespace osg_material_manager {
     code << "void main()" << endl;
     code << "{" << endl;
 
+    for(list<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
+        it != u->getMainVarDecs().end(); ++it)
+      code << "    " << *it << ";" << endl;
+
     for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
-      code << "    " << *it << ";" << endl;
+      code << "    " << (*it).name << " = " << (*it).value<< ";" << endl;
 
     vector<string> calls = u->generateFunctionCall();
     for(vector<string>::iterator it = calls.begin(); it != calls.end(); ++it)
