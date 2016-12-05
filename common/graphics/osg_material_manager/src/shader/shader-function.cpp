@@ -29,7 +29,7 @@ namespace osg_material_manager {
 
   void ShaderFunc::merge(ShaderFunc *u) {
     minVersion = max(minVersion, u->minVersion);
-    for(vector< ShaderFunctionCall >::iterator it = u->funcs.begin();
+    for(vector< FunctionCall >::iterator it = u->funcs.begin();
         it != u->funcs.end(); ++it)
       funcs.push_back( *it );
     for(set<string>::iterator it = u->getEnabledExtensions().begin();
@@ -70,17 +70,17 @@ namespace osg_material_manager {
   }
 
   vector<string> ShaderFunc::generateFunctionCall() {
-    std::priority_queue<ShaderFunctionCall> funcs_sorted;
-    std::vector<ShaderFunctionCall>::iterator it = funcs.begin();
+    std::priority_queue<FunctionCall> funcs_sorted;
+    std::vector<FunctionCall>::iterator it = funcs.begin();
     for (;it!=funcs.end();it++) { // better way to initialize already with the vector as argument in constructor?
       funcs_sorted.push(*it.base());
     }
     vector<string> calls;
 
     while(!funcs_sorted.empty()) {
-      ShaderFunctionCall func = funcs_sorted.top();
-      string call = func.getName() + "( ";
-      std::vector<std::string> args = func.getArguments();
+      FunctionCall func = funcs_sorted.top();
+      string call = func.name + "( ";
+      std::vector<std::string> args = func.arguments;
       unsigned long numArgs = args.size();
 
       if(numArgs > 0) {

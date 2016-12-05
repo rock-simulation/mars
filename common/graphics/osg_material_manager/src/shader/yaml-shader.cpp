@@ -41,13 +41,13 @@ namespace osg_material_manager {
       }
 
       if (map.hasKey("priority")) {
-        funcs[0].setPriority((unsigned int)map["priority"]);
+        funcs[0].priority = (unsigned int)map["priority"];
       }
 
       if (map.hasKey("params")) {
         ConfigVector::iterator it = map["params"].begin();
         for (;it!=map["params"].end();it++) {
-          funcs[0].addArgument(it.base()->getString());
+          funcs[0].arguments.push_back(it.base()->getString());
         }
       }
 

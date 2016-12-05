@@ -24,6 +24,7 @@
 
 #include <string>
 #include <ostream>
+#include <vector>
 
 namespace osg_material_manager {
 
@@ -48,6 +49,22 @@ namespace osg_material_manager {
   } GLSLVariable;
 
   typedef GLSLVariable GLSLConstant;
+
+
+  typedef struct PrioritizedValue {
+    unsigned int priority;
+    bool operator<(const PrioritizedValue& other) const {
+      return priority < other.priority;
+    };
+  } PrioritizedValue;
+
+  typedef struct FunctionCall : PrioritizedValue {
+    std::string name;
+    std::vector<std::string> arguments;
+    FunctionCall(std::string name, std::vector<std::string> args, unsigned int prio) : name(name), arguments(args) {
+      priority = prio;
+    };
+  } FunctionCall;
 
   std::ostream& operator<<(std::ostream& os, const GLSLAttribute& a);
   std::ostream& operator<<(std::ostream& os, const GLSLExport& a);

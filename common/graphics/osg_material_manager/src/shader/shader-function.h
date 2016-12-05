@@ -28,8 +28,6 @@
 #include <map>
 #include <string>
 #include <vector>
-
-#include "shader-function-call.h"
 #include "shader-types.h"
 
 namespace osg_material_manager {
@@ -37,7 +35,7 @@ namespace osg_material_manager {
   class ShaderFunc {
   public:
     ShaderFunc(std::string name, std::vector<std::string> args, unsigned int priority=0) {
-      funcs.push_back(ShaderFunctionCall(name, args, priority));
+      funcs.push_back(FunctionCall(name, args, priority));
       this->name = name;
       // minimum gl version
       minVersion = 120;
@@ -178,7 +176,7 @@ namespace osg_material_manager {
     std::vector<std::string> generateFunctionCall();
 
   protected:
-    std::vector<ShaderFunctionCall> funcs;
+    std::vector<FunctionCall> funcs;
     std::string shaderCode;
     std::string name;
     // user variables
