@@ -147,6 +147,14 @@ namespace osg_material_manager {
       return exports;
     }
 
+    void addSnippet(PrioritizedLine l) {
+      snippets.push_back(l);
+    }
+
+    const std::vector<PrioritizedLine>& getSnippets() const {
+      return snippets;
+    }
+
     const std::vector<FunctionCall>& getFunctionCalls() const {
       return funcs;
     }
@@ -183,6 +191,7 @@ namespace osg_material_manager {
     std::set<GLSLSuffix> suffixes;
     std::set<std::string> enabledExtensions;
     std::set<std::string> disabledExtensions;
+    std::vector<PrioritizedLine> snippets;
     // minimum gl version
     int minVersion;
 

@@ -31,8 +31,8 @@ namespace osg_material_manager {
     YamlShader::YamlShader(string name, vector<std::string> &args, ConfigMap &map, string resPath)
             : ShaderFunc(name, args) {
       if (map.hasKey("source")) {
-        resPath += (string)map["source"];
-        ifstream t(resPath.c_str());
+        string path = resPath+(string)map["source"];
+        ifstream t(path.c_str());
         stringstream buffer;
         buffer << t.rdbuf();
         source = buffer.str();
@@ -195,6 +195,26 @@ namespace osg_material_manager {
             }
             addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] }, priority);
           }
+        }
+      }
+
+      if (map.hasKey("snippets")) {
+        ConfigVector::iterator it = map["snippets"].begin();
+        for (;it!=map["snippets"].end();it++) {
+          ConfigItem &item = *it;
+          string snippet = "";
+          if (item.hasKey("source")) {
+            string path = resPath+(string)item["source"];
+            ifstream t(path.c_str());
+            stringstream buffer;
+            buffer << t.rdbuf();
+            snippet = buffer.str();
+          }
+          int priority = 0;
+          if (item.hasKey("priority")) {
+            priority = (int)item["priority"];
+          }
+          addSnippet(PrioritizedLine(snippet, priority));
         }
       }
     }

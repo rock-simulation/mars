@@ -109,6 +109,10 @@ namespace osg_material_manager {
       lines.push(PrioritizedLine((*it).toString(), (*it).priority));
       //code << "    " << *it << endl;
 
+    for(vector<PrioritizedLine>::const_iterator it = u->getSnippets().begin(); it != u->getSnippets().end(); ++it) {
+      lines.push(*it);
+    }
+
     while(!lines.empty()) {
       //cout << "Line: " << lines.top().line << "with PRIO: " << lines.top().priority << endl;
       code << "    " << lines.top().line << ";" << " //Priority: " << lines.top().priority << endl;

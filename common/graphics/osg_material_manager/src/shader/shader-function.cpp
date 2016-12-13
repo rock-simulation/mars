@@ -32,6 +32,9 @@ namespace osg_material_manager {
     for(vector< FunctionCall >::iterator it = u->funcs.begin();
         it != u->funcs.end(); ++it)
       funcs.push_back( *it );
+    for(vector< PrioritizedLine >::iterator it = u->snippets.begin();
+        it != u->snippets.end(); ++it)
+      snippets.push_back( *it );
     for(set<string>::iterator it = u->getEnabledExtensions().begin();
         it != u->getEnabledExtensions().end(); ++it)
       enabledExtensions.insert(*it);
