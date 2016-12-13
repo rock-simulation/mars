@@ -111,27 +111,11 @@ namespace osg_material_manager {
       return disabledExtensions;
     }
 
-    void addMainVar(GLSLVariable var, int pos = -1) {
-      std::list<GLSLVariable>::iterator it = mainVars.begin();
-      if(var.type != "") {
-        for(; it!=mainVars.end(); ++it) {
-          if(it->name == var.name) {
-            it->value = var.value;
-            return;
-          }
-        }
-      }
-      if(pos > -1) {
-        it = mainVars.begin();
-        for(int i=0; i<pos; ++i, ++it) ;
-        mainVars.insert(it, var);
-      }
-      else {
-        mainVars.push_back(var);
-      }
+    void addMainVar(GLSLVariable var, int priority=0) {
+      mainVars.push_back(MainVar(var.name, var.type, var.value, priority));
       addMainVarDec((GLSLAttribute) {var.type, var.name});
     }
-    const std::list<GLSLVariable>& getMainVars() const {
+    const std::list<MainVar>& getMainVars() const {
       return mainVars;
     }
 
@@ -163,6 +147,10 @@ namespace osg_material_manager {
       return exports;
     }
 
+    const std::vector<FunctionCall>& getFunctionCalls() const {
+      return funcs;
+    }
+
     std::string generateFunctionCode() {
       return code() + "\n" + shaderCode;
     }
@@ -189,7 +177,7 @@ namespace osg_material_manager {
     std::set<GLSLAttribute> attributes;
     // needed functions (tuple of name and code)
     std::map<std::string,std::string> deps;
-    std::list<GLSLVariable> mainVars;
+    std::list<MainVar> mainVars;
     std::list<GLSLAttribute> mainVarDecs;
     std::vector<GLSLExport> exports;
     std::set<GLSLSuffix> suffixes;

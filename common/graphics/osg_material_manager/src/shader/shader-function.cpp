@@ -54,7 +54,7 @@ namespace osg_material_manager {
     for(vector< pair<string,string> >::iterator it = uDeps.begin();
         it != uDeps.end(); ++it)
       deps[it->first] = it->second;
-    for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
+    for(list<MainVar>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
       mainVars.push_back(*it);
     for(list<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();

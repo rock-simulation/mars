@@ -41,7 +41,7 @@ namespace osg_material_manager {
       }
 
       if (map.hasKey("priority")) {
-        funcs[0].priority = (unsigned int)map["priority"];
+        funcs[0].priority = (int)map["priority"];
       }
 
       if (map.hasKey("params")) {
@@ -189,13 +189,11 @@ namespace osg_material_manager {
               typeName = type;
               s << "";
             }
-            if (item.hasKey("if")) {
-              if (map["mappings"][(string)item["if"]]) {
-                addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] } );
-              }
-            } else {
-              addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] } );
+            int priority = 0;
+            if (item.hasKey("priority")) {
+              priority = (int)item["priority"];
             }
+            addMainVar( (GLSLVariable) { typeName, (string)item["name"], (string)item["value"] }, priority);
           }
         }
       }

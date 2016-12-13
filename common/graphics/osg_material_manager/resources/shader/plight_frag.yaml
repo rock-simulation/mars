@@ -70,10 +70,6 @@ mainVars:
       value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"
   vec4:
     - name: pcol
-      value: "texture2D(diffuseMap, texCoord)"
-      if: "!pcol_diffuse"
-    - name: pcol
       value: col
-      if: "!pcol_!diffuse"
 source: /shader/plight.frag
 name: plight

@@ -634,8 +634,6 @@ namespace osg_material_manager {
         stringstream s;
         s << maxNumLights;
         map["mappings"]["numLights"] = s.str();
-        map["mappings"]["!pcol_diffuse"] = !havePCol && haveDiffuseMap;
-        map["mappings"]["!pcol_!diffuse"] = !havePCol && !haveDiffuseMap;
         YamlShader *plightFrag = new YamlShader((string)map["name"], args, map, resPath);
         /*PixelLightFrag *plightFrag = new PixelLightFrag(args, maxNumLights,
                                                         resPath,
