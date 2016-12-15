@@ -71,8 +71,10 @@ mainVars:
   vec4:
     - name: pcol
       value: col
+      priority: 10
 snippets:
   - source: /shader/test.snippet
     priority: -1
 source: /shader/plight.frag
+priority: 11
 name: plight
