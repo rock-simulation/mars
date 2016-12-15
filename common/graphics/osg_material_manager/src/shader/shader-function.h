@@ -28,15 +28,14 @@
 #include <map>
 #include <string>
 #include <vector>
-
 #include "shader-types.h"
 
 namespace osg_material_manager {
 
   class ShaderFunc {
   public:
-    ShaderFunc(std::string name, std::vector<std::string> args) {
-      funcs.push_back( std::pair< std::string, std::vector<std::string> >(name,args) );
+    ShaderFunc(std::string name, std::vector<std::string> args, unsigned int priority=0) {
+      funcs.push_back(FunctionCall(name, args, priority));
       this->name = name;
       // minimum gl version
       minVersion = 120;
@@ -112,27 +111,26 @@ namespace osg_material_manager {
       return disabledExtensions;
     }
 
-    void addMainVar(GLSLVariable var, int pos = -1) {
-      std::list<GLSLVariable>::iterator it = mainVars.begin();
-      if(var.type != "") {
-        for(; it!=mainVars.end(); ++it) {
-          if(it->name == var.name) {
-            it->value = var.value;
-            return;
-          }
+    void addMainVar(GLSLVariable var, int priority=0) {
+      mainVars.push_back(MainVar(var.name, var.type, var.value, priority));
+      addMainVarDec((GLSLAttribute) {var.type, var.name});
+    }
+    const std::list<MainVar>& getMainVars() const {
+      return mainVars;
+    }
+
+    void addMainVarDec(GLSLAttribute att) {
+      std::list<GLSLAttribute>::const_iterator it = mainVarDecs.begin();
+      for (;it!=mainVarDecs.end();it++) {
+        if (it->name == att.name) {
+          return;
         }
       }
-      if(pos > -1) {
-        it = mainVars.begin();
-        for(int i=0; i<pos; ++i, ++it) ;
-        mainVars.insert(it, var);
-      }
-      else {
-        mainVars.push_back(var);
-      }
+      mainVarDecs.push_back(att);
     }
-    const std::list<GLSLVariable>& getMainVars() const {
-      return mainVars;
+
+    const std::list<GLSLAttribute>& getMainVarDecs() const {
+      return mainVarDecs;
     }
 
     void addSuffix(GLSLSuffix suffix) {
@@ -149,6 +147,18 @@ namespace osg_material_manager {
       return exports;
     }
 
+    void addSnippet(PrioritizedLine l) {
+      snippets.push_back(l);
+    }
+
+    const std::vector<PrioritizedLine>& getSnippets() const {
+      return snippets;
+    }
+
+    const std::vector<FunctionCall>& getFunctionCalls() const {
+      return funcs;
+    }
+
     std::string generateFunctionCode() {
       return code() + "\n" + shaderCode;
     }
@@ -162,7 +172,7 @@ namespace osg_material_manager {
     std::vector<std::string> generateFunctionCall();
 
   protected:
-    std::vector< std::pair< std::string,std::vector<std::string> > > funcs;
+    std::vector<FunctionCall> funcs;
     std::string shaderCode;
     std::string name;
     // user variables
@@ -175,13 +185,20 @@ namespace osg_material_manager {
     std::set<GLSLAttribute> attributes;
     // needed functions (tuple of name and code)
     std::map<std::string,std::string> deps;
-    std::list<GLSLVariable> mainVars;
+    std::list<MainVar> mainVars;
+    std::list<GLSLAttribute> mainVarDecs;
     std::vector<GLSLExport> exports;
     std::set<GLSLSuffix> suffixes;
     std::set<std::string> enabledExtensions;
     std::set<std::string> disabledExtensions;
+    std::vector<PrioritizedLine> snippets;
     // minimum gl version
     int minVersion;
+
+  private:
+    static bool mainVarDecs_unique_pred(GLSLAttribute &first, GLSLAttribute &second) {
+      return first.name == second.name;
+    }
 
   }; // end of class ShaderFunc
 

@@ -24,6 +24,7 @@
 
 #include <string>
 #include <ostream>
+#include <vector>
 
 namespace osg_material_manager {
 
@@ -48,6 +49,54 @@ namespace osg_material_manager {
   } GLSLVariable;
 
   typedef GLSLVariable GLSLConstant;
+
+
+  typedef struct PrioritizedValue {
+    int priority;
+    bool operator<(const PrioritizedValue& other) const {
+      return priority > other.priority;
+    };
+  } PrioritizedValue;
+
+  typedef struct FunctionCall : PrioritizedValue {
+    std::string name;
+    std::vector<std::string> arguments;
+    FunctionCall(std::string name, std::vector<std::string> args, int prio) : name(name), arguments(args) {
+      priority = prio;
+    }
+    std::string toString() const {
+      std::string call = name + "( ";
+      unsigned long numArgs = arguments.size();
+
+      if(numArgs > 0) {
+        call += arguments[0];
+        for(int i=1; i<numArgs; ++i) {
+          call += ", " + arguments[i];
+        }
+      }
+      call += " )";
+      return call;
+    }
+  } FunctionCall;
+
+  typedef struct MainVar : PrioritizedValue, GLSLVariable {
+    MainVar(std::string p_name, std::string p_type, std::string p_value, int p_priority) {
+      priority = p_priority;
+      name = p_name;
+      value = p_value;
+      type = p_type;
+    }
+    std::string toString() const {
+      return name + " = " + value;
+    }
+  } MainVar;
+
+  typedef struct PrioritizedLine : PrioritizedValue {
+    std::string line;
+    PrioritizedLine(std::string p_line, int p_priority) : line(p_line) {
+      priority = p_priority;
+    }
+  };
 
   std::ostream& operator<<(std::ostream& os, const GLSLAttribute& a);
   std::ostream& operator<<(std::ostream& os, const GLSLExport& a);

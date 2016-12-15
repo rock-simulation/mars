@@ -1,0 +1,10 @@
+params:
+  - n.xyz
+varyings:
+  mat3:
+    - {name: ttw}
+attributes:
+  vec4:
+    - {name: vertexTangent}
+source: /shader/normalmap.vert
+name: bump

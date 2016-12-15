@@ -1,0 +1,21 @@
+params:
+  - nt
+  - n
+  - n
+varyings:
+  mat3:
+    - {name: ttw}
+uniforms:
+  float:
+    - {name: bumpNorFac}
+  sampler2D:
+    - {name: normalmap}
+mainVarDecs:
+  vec4:
+    - {name: nt}
+mainVars:
+  vec4:
+    - name: nt
+      value: "texture2D( normalMap, texCoord )"
+source: /shader/normalmap.frag
+name: bump

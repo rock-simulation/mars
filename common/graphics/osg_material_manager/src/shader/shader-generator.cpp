@@ -25,6 +25,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 
 namespace osg_material_manager {
 
@@ -94,13 +95,29 @@ namespace osg_material_manager {
     code << "void main()" << endl;
     code << "{" << endl;
 
-    for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
-        it != u->getMainVars().end(); ++it)
+    for(list<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
+        it != u->getMainVarDecs().end(); ++it)
       code << "    " << *it << ";" << endl;
 
-    vector<string> calls = u->generateFunctionCall();
-    for(vector<string>::iterator it = calls.begin(); it != calls.end(); ++it)
-      code << "    " << *it << endl;
+    std::priority_queue<PrioritizedLine> lines;
+    for(list<MainVar>::const_iterator it = u->getMainVars().begin();
+        it != u->getMainVars().end(); ++it)
+      lines.push(PrioritizedLine((*it).toString(), (*it).priority));
+      //code << "    " << (*it).name << " = " << (*it).value<< ";" << endl;
+
+    for(vector<FunctionCall>::const_iterator it = u->getFunctionCalls().begin(); it != u->getFunctionCalls().end(); ++it)
+      lines.push(PrioritizedLine((*it).toString(), (*it).priority));
+      //code << "    " << *it << endl;
+
+    for(vector<PrioritizedLine>::const_iterator it = u->getSnippets().begin(); it != u->getSnippets().end(); ++it) {
+      lines.push(*it);
+    }
+
+    while(!lines.empty()) {
+      //cout << "Line: " << lines.top().line << "with PRIO: " << lines.top().priority << endl;
+      code << "    " << lines.top().line << ";" << " //Priority: " << lines.top().priority << endl;
+      lines.pop();
+    }
 
     for(vector<GLSLExport>::const_iterator it = u->getExports().begin();
         it != u->getExports().end(); ++it)

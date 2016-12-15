@@ -18,36 +18,24 @@
  *
  */
 
-
-#ifndef OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H
-#define OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H
+#ifndef MARS_GRAPHICS_YAML_SHADER_H
+#define MARS_GRAPHICS_YAML_SHADER_H
 
 #include "shader-function.h"
+#include "configmaps/ConfigData.h"
 
 #include <vector>
 #include <string>
 
 namespace osg_material_manager {
 
-  class PixelLightVert : public ShaderFunc {
-  public:
-    PixelLightVert(std::vector<std::string> &args, int numLights,
-                   std::string resPath);
-    std::string code() const;
-  private:
-    int numLights;
-    std::string source;
-  };
-
-  class PixelLightFrag : public ShaderFunc {
-  public:
-    PixelLightFrag(std::vector<std::string> &args, int numLights,
-                   std::string resPath, bool haveDiffuseMap, bool havePCol);
-    std::string code() const;
-  private:
-    std::string source;
-  };
-
+    class YamlShader : public ShaderFunc {
+    public:
+        YamlShader(std::string name, std::vector<std::string> &args, configmaps::ConfigMap &map, std::string resPath);
+        std::string code() const;
+    private:
+        std::string source;
+    };
 } // end of namespace osg_material_manager
 
-#endif /* OSG_MATERIAL_MANAGER_GL_PIXEL_LIGHT_H */
+#endif //MARS_GRAPHICS_YAML_SHADER_H
