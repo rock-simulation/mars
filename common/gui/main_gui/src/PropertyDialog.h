@@ -153,6 +153,12 @@ namespace mars {
        */
       QColor getPropertyColor(QtVariantProperty *property) const;
 
+
+      /**
+       * \brief Returns the item that is currently focused on.
+       */
+      QtProperty* activeItem(void);
+
       /**
        * \brief Returns the top level item that is currently focused on.
        */

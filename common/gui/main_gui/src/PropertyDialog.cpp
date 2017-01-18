@@ -463,6 +463,22 @@ namespace mars {
       }
     }
 
+    QtProperty* PropertyDialog::activeItem(void) {
+      switch (viewMode) {
+      case TreeViewMode:
+        if (variantEditorTree->currentItem()) {
+          return variantEditorTree->currentItem()->property();
+        }
+      case ButtonViewMode:
+        if (variantEditorButton->currentItem()) {
+          return variantEditorButton->currentItem()->property();
+        }
+      default:
+        break;
+      }
+      return NULL;
+    }
+
     QtProperty* PropertyDialog::currentItem(void) {
       switch (viewMode) {
       case TreeViewMode:

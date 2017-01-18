@@ -41,6 +41,8 @@
 #include <QWidget>
 #include <QCloseEvent>
 #include <QMutex>
+#include <QComboBox>
+#include <QLineEdit>
 
 namespace mars {
 
@@ -63,9 +65,9 @@ namespace mars {
       main_gui::PropertyDialog *pDialog;
       void setConfigMap(const std::string &name,
                         const configmaps::ConfigMap &map);
-      void setConfigMap(const std::string &name,
-                        const configmaps::ConfigMap &map,
-                        const std::vector<std::string> &editPattern);
+      void setEditPattern(const std::vector<std::string> &pattern);
+      void setColorPattern(const std::vector<std::string> &pattern);
+      void setFilePattern(const std::vector<std::string> &pattern);
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
@@ -83,21 +85,29 @@ namespace mars {
     signals:
       void mapChanged();
       void valueChanged(std::string, std::string);
+      void colorChanged(std::string, float r, float g, float b, float a);
 
     private:
       QMutex addMutex;
       configmaps::ConfigMap config;
-      std::vector<std::string> editPattern;
+      std::vector<std::string> editPattern, colorPattern, filePattern;
       map<QtVariantProperty*, configmaps::ConfigAtom*> dataMap;
-      map<QtVariantProperty*, configmaps::ConfigMap*> addMap;
+      map<QtVariantProperty*, configmaps::ConfigMap*> addMap, colorMap;
+      map<QtVariantProperty*, configmaps::ConfigVector*> addVector;
       map<std::string, QtVariantProperty*> propMap;
       map<QtVariantProperty*, std::string> nameMap;
       std::string addKeyStr, cname;
       bool ignore_change;
       QtVariantProperty* addProperty;
+      QComboBox *typeBox;
+      QLineEdit *keyEdit, *valueEdit;
+
+      bool checkInPattern(const std::string &v,
+                          const std::vector<std::string> &pattern);
 
     private slots:
       void addKey();
+      void addKey2();
 
     protected slots:
       void timerEvent(QTimerEvent* event);
