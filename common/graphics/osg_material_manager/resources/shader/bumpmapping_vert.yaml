@@ -8,3 +8,4 @@ attributes:
     - {name: vertexTangent}
 source: /shader/normalmap.vert
 name: bump
+priority: 2

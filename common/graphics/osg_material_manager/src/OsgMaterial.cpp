@@ -158,6 +158,7 @@ namespace osg_material_manager {
       state->setTextureAttributeAndModes(it->second.unit,
                                          it->second.texture,
                                          osg::StateAttribute::OFF);
+      state->removeUniform(it->second.textureUniform);
     }
     if (!texturename.empty()) {
       ConfigMap config;
@@ -193,7 +194,7 @@ namespace osg_material_manager {
       for(; it!=materialNodeVector.end(); ++it) {
         if(generateTangents) {
           (*it)->setNeedTangents(true);
-          (*it)->generateTangents();
+          //(*it)->generateTangents();
         }
         (*it)->setTransparency(transparency);
       }
@@ -330,7 +331,7 @@ namespace osg_material_manager {
         fprintf(stderr, "edit material: %s\n", map["diffuseTexture"].c_str());
       }
       else if(pathExists(value)) {
-        map["diffuseTexture"] = value;
+        map["diffuseTexture"] = mars::utils::trim(value);
         fprintf(stderr, "edit material: %s\n", map["diffuseTexture"].c_str());
       }
       setMaterial(map);
@@ -342,7 +343,7 @@ namespace osg_material_manager {
         fprintf(stderr, "edit material: %s\n", map["normalTexture"].c_str());
       }
       else if(pathExists(value)) {
-        map["normalTexture"] = value;
+        map["normalTexture"] = mars::utils::trim(value);
         fprintf(stderr, "edit material: %s\n", map["normalTexture"].c_str());
       }
       setMaterial(map);
@@ -353,7 +354,7 @@ namespace osg_material_manager {
         map["displacementTexture"] = string();
       }
       else if(pathExists(value)) {
-        map["displacementTexture"] = value;
+        map["displacementTexture"] = mars::utils::trim(value);
       }
       setMaterial(map);
     }
@@ -421,7 +422,7 @@ namespace osg_material_manager {
                                             osg::StateAttribute::OFF);
       return;
     }
-    enableTexture("normalMap");
+    //enableTexture("normalMap");
 
     if(!reload && hasShaderSources) {
       // no need to regenerate, shader source did not changed
@@ -526,14 +527,18 @@ namespace osg_material_manager {
 
     osg::Program *glslProgram;
     args.clear();
+    bool clearShaderEntry = false;
     if(!map.hasKey("shader")) {
-      map["shader"]["PixelLightVertex"] = 1;
-      map["shader"]["PixelLightFragment"] = 1;
+      clearShaderEntry = true;
+      map["shader"]["PixelLightVertex"] = true;
+      map["shader"]["PixelLightFragment"] = true;
       if(checkTexture("normalMap")) {
-        map["shader"]["NormalMapVertex"] = 1;
-        map["shader"]["NormalMapFragment"] = 1;
+        fprintf(stderr, "add normal shader\n");
+        map["shader"]["NormalMapVertex"] = true;
+        map["shader"]["NormalMapFragment"] = true;
       }
     }
+
     if(map.hasKey("shader")) {
       bool havePCol = false;
       if(map["shader"].hasKey("TerrainMapVertex")) {
@@ -642,6 +647,11 @@ namespace osg_material_manager {
         // invert the normal if gl_FrontFacing=true to handle back faces
         // correctly.
         // TODO: check not needed if backfaces not processed.
+        if(checkTexture("diffuseMap")) {
+          plightFrag->addMainVar( (GLSLVariable)
+                                  { "vec4", "pcol", "texture2D(diffuseMap, texCoord)" }, 10);
+
+        }
         shaderGenerator.addShaderFunction(plightFrag, SHADER_TYPE_FRAGMENT);
       }
     }
@@ -710,6 +720,9 @@ namespace osg_material_manager {
     stateSet->addUniform(shadowScaleUniform.get());
 
     lastProgram = glslProgram;
+    if(clearShaderEntry) {
+      map.erase("shader");
+    }
   }
 
   void OsgMaterial::setNoiseImage(osg::Image *i) {
@@ -776,14 +789,20 @@ namespace osg_material_manager {
         for(int y=0; y<img->width; ++y) {
           s=cvGet2D(img,y,x);
           //fprintf(stderr, "  %g", ((double)s.val[0]*imageMaxValue));
-          v = (int)s.val[0]/256;
-          if(v < 0) v = 0;
-          if(v>255) v = 255;
-          image->data(y, x)[0] = (char)v;
-          v = (int)s.val[0] % 256;
-          if(v < 0) v = 0;
-          if(v>255) v = 255;
-          image->data(y, x)[1] = (char)v;
+          if(img->depth == 16) {
+            v = (int)s.val[0]/256;
+            if(v < 0) v = 0;
+            if(v>255) v = 255;
+            image->data(y, x)[0] = (char)v;
+            v = (int)s.val[0] % 256;
+            if(v < 0) v = 0;
+            if(v>255) v = 255;
+            image->data(y, x)[1] = (char)v;
+          }
+          else {
+            image->data(y, x)[0] = (char)s.val[0];
+            image->data(y, x)[1] = 0;
+          }
           image->data(y, x)[2] = 0;
           image->data(y, x)[3] = 255;
         }

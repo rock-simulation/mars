@@ -43,3 +43,4 @@ exports:
     value: vModelPos
 source: /shader/plight.vert
 name: plight
+priority: 3

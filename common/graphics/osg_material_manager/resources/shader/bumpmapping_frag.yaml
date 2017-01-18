@@ -8,8 +8,6 @@ varyings:
 uniforms:
   float:
     - {name: bumpNorFac}
-  sampler2D:
-    - {name: normalmap}
 mainVarDecs:
   vec4:
     - {name: nt}
@@ -17,5 +15,7 @@ mainVars:
   vec4:
     - name: nt
       value: "texture2D( normalMap, texCoord )"
+      priority: 5
 source: /shader/normalmap.frag
 name: bump
+priority: 6

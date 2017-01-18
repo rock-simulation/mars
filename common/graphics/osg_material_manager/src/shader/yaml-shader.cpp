@@ -127,7 +127,7 @@ namespace osg_material_manager {
               typeName = type;
               s << "";
             }
-            addUniform( (GLSLUniform) { typeName, (string)item["name"] + s.str() } );
+            addAttribute( (GLSLAttribute) { typeName, (string)item["name"] + s.str() } );
           }
         }
       }
