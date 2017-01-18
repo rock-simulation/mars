@@ -163,7 +163,7 @@ namespace mars {
         configmaps::ConfigMap map;
         mList[i].toConfigMap(&map);
         materialMap[mList[i].name] = map;
-        map.toYamlStream(std::cerr);
+        //map.toYamlStream(std::cerr);
         QTreeWidgetItem *next = new QTreeWidgetItem(temp);
         current->addChild(next);
       }
@@ -220,22 +220,26 @@ namespace mars {
           while(parent->parent()) parent = parent->parent();
           int n = currentItem->text(0).indexOf(":");
           if(n>-1) {
+            std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
+            configmaps::ConfigMap map;
+            std::string name;
             unsigned long id = currentItem->text(0).left(n).toULong();
             if(parent->text(0) == "nodes") {
-              std::vector<std::string> editPattern;
               editPattern.push_back("*/position/*");
               editPattern.push_back("*/extend/*");
               editPattern.push_back("*/material");
               editPattern.push_back("*/c*");
               nodeData = control->nodes->getFullNode(id);
-              configmaps::ConfigMap map = nodeData.map;
+              name = nodeData.name;
+              map = nodeData.map;
               if(!map.hasKey("cfdir1")) {
                 map["cfdir1"]["x"] = 0.;
                 map["cfdir1"]["y"] = 0.;
                 map["cfdir1"]["z"] = 0.;
               }
               nodeData.toConfigMap(&map, false, true);
-              dw->setConfigMap(nodeData.name, map, editPattern);
               editCategory = 1;
             }
             else if(parent->text(0) == "joints") {
@@ -243,9 +247,8 @@ namespace mars {
               // fake pattern to disable everthing
               editPattern.push_back("//");
               jointData = control->joints->getFullJoint(id);
-              configmaps::ConfigMap map;
               jointData.toConfigMap(&map);
-              dw->setConfigMap(jointData.name, map, editPattern);
+              name = jointData.name;
               editCategory = 2;
             }
             else if(parent->text(0) == "motors") {
@@ -253,17 +256,22 @@ namespace mars {
               // fake pattern to disable everthing
               editPattern.push_back("//");
               motorData = control->motors->getFullMotor(id);
-              configmaps::ConfigMap map;
               motorData.toConfigMap(&map);
-              dw->setConfigMap(motorData.name, map, editPattern);
+              name = motorData.name;
               editCategory = 3;
             }
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setConfigMap(name, map);
           }
           else if(parent->text(0) == "controllers") {
             editCategory = 4;
           }
           else if(parent->text(0) == "materials") {
             std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
             // fake pattern to disable everthing
             editPattern.push_back("*/ambientColor/*");
             editPattern.push_back("*/diffuseColor/*");
@@ -277,11 +285,22 @@ namespace mars {
             editPattern.push_back("*/shininess");
             editPattern.push_back("*/tex_scale");
 
+            filePattern.push_back("*/diffuseTexture");
+            filePattern.push_back("*/normalTexture");
+            //filePattern.push_back("*/diaplacementTexture");
+
+            colorPattern.push_back("*/ambientColor");
+            colorPattern.push_back("*/diffuseColor");
+            colorPattern.push_back("*/specularColor");
+            colorPattern.push_back("*/emissionColor");
+
             currentMaterial = materialMap[currentItem->text(0).toStdString()];
             configmaps::ConfigMap map = defaultMaterial;
             map.append(currentMaterial);
-            dw->setConfigMap(currentMaterial["name"], map,
-                             editPattern);
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setConfigMap(currentMaterial["name"], map);
             editCategory = 5;
           }
         }
@@ -335,6 +354,17 @@ namespace mars {
       }
       else if(editCategory == 5) {
         control->graphics->editMaterial(currentMaterial["name"], name, value);
+        // update material internal
+        std::vector<interfaces::MaterialData> mList;
+        mList = control->graphics->getMaterialList();
+        for(size_t i=0; i<mList.size(); ++i) {
+          if(mList[i].name == (std::string)currentMaterial["name"]) {
+            configmaps::ConfigMap map;
+            mList[i].toConfigMap(&map);
+            materialMap[mList[i].name] = map;
+            break;
+          }
+        }
       }
     }
 
