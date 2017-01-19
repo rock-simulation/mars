@@ -988,7 +988,6 @@ namespace mars {
         // the material is not overridden if it already exists
         materialManager->createMaterial(material.name, map);
         ns->object()->setMaterial(material.name);
-        ns->object()->setNodeMask(material.cullMask);
       }
     }
 
@@ -1016,6 +1015,11 @@ namespace mars {
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setBits(bits);
+    }
+
+    void GraphicsManager::setDrawObjectBrightness(unsigned long id, double v) {
+      OSGNodeStruct *ns = findDrawObject(id);
+      if(ns != NULL) ns->object()->setBrightness(v);
     }
 
     void GraphicsManager::setBlending(unsigned long id, bool mode) {

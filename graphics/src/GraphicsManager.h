@@ -310,6 +310,7 @@ namespace mars {
                                 std::string value);
       virtual void setCameraDefaultView(int view);
       inline void setActiveWindow(GraphicsWidget *g) {activeWindow = g;}
+      virtual void setDrawObjectBrightness(unsigned long id, double v);
 
     private:
       mars::interfaces::GraphicData graphicOptions;

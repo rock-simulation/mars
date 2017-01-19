@@ -75,7 +75,8 @@ namespace mars {
         g(g),
         sharedStateGroup(false),
         showSelected(true),
-        isHidden(true) {
+        isHidden(true),
+        brightness(1.0) {
     }
 
     DrawObject::~DrawObject() {
@@ -205,6 +206,7 @@ namespace mars {
       if(!sharedStateGroup) {
         // todo: remove materialNode from manager
         materialNode = g->getMaterialNode(name);
+        materialNode->setBrightness(brightness);
       }
       if(show_) {
         show();
@@ -341,6 +343,12 @@ namespace mars {
       }
     }
 
+    void DrawObject::setBrightness(double v) {
+      brightness = v;
+      if(materialNode.valid()) {
+        materialNode->setBrightness(brightness);
+      }
+    }
 
     void DrawObject::collideSphere(Vector pos, sReal radius) {
     }

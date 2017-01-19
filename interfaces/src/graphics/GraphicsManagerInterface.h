@@ -238,6 +238,7 @@ namespace mars {
        *       6: down
        */
       virtual void setCameraDefaultView(int view) = 0;
+      virtual void setDrawObjectBrightness(unsigned long id, double v) = 0;
     }; // end of class GraphicsManagerInterface
 
   } // end of namespace interfaces

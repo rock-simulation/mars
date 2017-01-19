@@ -230,6 +230,8 @@ namespace mars {
               editPattern.push_back("*/position/*");
               editPattern.push_back("*/extend/*");
               editPattern.push_back("*/material");
+              editPattern.push_back("*/cullMask");
+              editPattern.push_back("*/brightness");
               editPattern.push_back("*/c*");
               nodeData = control->nodes->getFullNode(id);
               name = nodeData.name;
@@ -284,6 +286,7 @@ namespace mars {
             editPattern.push_back("*/transparency");
             editPattern.push_back("*/shininess");
             editPattern.push_back("*/tex_scale");
+            editPattern.push_back("*/getLight");
 
             filePattern.push_back("*/diffuseTexture");
             filePattern.push_back("*/normalTexture");

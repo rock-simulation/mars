@@ -184,6 +184,8 @@ namespace mars {
                     const utils::Quaternion &visOffsetRot);
 
       interfaces::NodeId getParentID() {return sNode.relative_id;}
+      void setCullMask(int mask);
+      void setBrightness(double v);
 
     private:
       interfaces::ControlCenter *control;

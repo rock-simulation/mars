@@ -176,6 +176,12 @@ namespace mars {
 
       drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
+      if(map.hasKey("cullMask")) {
+        drawObject_->setNodeMask(map["cullMask"]);
+      }
+      if(map.hasKey("brightness")) {
+        drawObject_->setBrightness(map["brightness"]);
+      }
     }
 
     void OSGNodeStruct::edit(const NodeData &node, bool resize) {

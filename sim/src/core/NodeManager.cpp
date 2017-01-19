@@ -1698,6 +1698,15 @@ namespace mars {
           }
         }
       }
+      else if(matchPattern("*/cullMask", key)) {
+        MutexLocker locker(&iMutex);
+        NodeMap::iterator iter;
+        // todo: cfdir1 is a vector
+        iter = simNodes.find(id);
+        if(iter == simNodes.end()) return;
+        int v = atoi(value.c_str());
+        iter->second->setCullMask(v);
+      }
       else if(matchPattern("*/c*", key)) {
         MutexLocker locker(&iMutex);
         NodeMap::iterator iter;
@@ -1735,6 +1744,15 @@ namespace mars {
           }
         }
         iter->second->setContactParams(c);
+      }
+      else if(matchPattern("*/brightness", key)) {
+        MutexLocker locker(&iMutex);
+        NodeMap::iterator iter;
+        // todo: cfdir1 is a vector
+        iter = simNodes.find(id);
+        if(iter == simNodes.end()) return;
+        double v = atof(value.c_str());
+        iter->second->setBrightness(v);
       }
     }
 

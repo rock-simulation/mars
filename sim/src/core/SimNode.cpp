@@ -832,5 +832,17 @@ namespace mars {
       *dataName = buffer;
     }
 
+    void SimNode::setCullMask(int mask) {
+      sNode.map["cullMask"] = mask;
+      if(control->graphics)
+        control->graphics->setDrawObjectNodeMask(graphics_id, mask);
+    }
+
+    void SimNode::setBrightness(double v) {
+      sNode.map["brightness"] = v;
+      if(control->graphics)
+        control->graphics->setDrawObjectBrightness(graphics_id, v);
+    }
+
   } // end of namespace sim
 } // end of namespace mars

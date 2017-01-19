@@ -247,7 +247,6 @@ namespace osg_material_manager {
       if(config.hasKey("unit")) {
         info.unit = config["unit"];
       }
-      //xfprintf(stderr, "add Texture: %s %d\n", info.name.c_str(), info.unit);
       info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
       state->setTextureAttributeAndModes(info.unit, info.texture,
                                          osg::StateAttribute::ON);
@@ -372,6 +371,11 @@ namespace osg_material_manager {
     }
     if(matchPattern("*/tex_scale", key)) {
       map["tex_scale"] = atof(value.c_str());
+      setMaterial(map);
+    }
+    if(matchPattern("*/getLight", key)) {
+      bool b = atoi(value.c_str());
+      map["getLight"] = b;
       setMaterial(map);
     }
   }
@@ -533,7 +537,6 @@ namespace osg_material_manager {
       map["shader"]["PixelLightVertex"] = true;
       map["shader"]["PixelLightFragment"] = true;
       if(checkTexture("normalMap")) {
-        fprintf(stderr, "add normal shader\n");
         map["shader"]["NormalMapVertex"] = true;
         map["shader"]["NormalMapFragment"] = true;
       }
@@ -788,7 +791,6 @@ namespace osg_material_manager {
       for(int x=0; x<img->width; ++x) {
         for(int y=0; y<img->width; ++y) {
           s=cvGet2D(img,y,x);
-          //fprintf(stderr, "  %g", ((double)s.val[0]*imageMaxValue));
           if(img->depth == 16) {
             v = (int)s.val[0]/256;
             if(v < 0) v = 0;
