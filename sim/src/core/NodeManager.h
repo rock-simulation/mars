@@ -217,6 +217,7 @@ namespace mars {
       void pushToUpdate(SimNode* node);
 
       void printNodeMasses(bool onlysum);
+      void changeNode(SimNode *editedNode, interfaces::NodeData *nodeS);
 
       // for passing parameters to the recursiveHelper.
       struct Params

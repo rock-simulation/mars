@@ -232,7 +232,11 @@ namespace mars {
               editPattern.push_back("*/material");
               editPattern.push_back("*/cullMask");
               editPattern.push_back("*/brightness");
+              editPattern.push_back("*/name");
               editPattern.push_back("*/c*");
+              editPattern.push_back("*/mass");
+              editPattern.push_back("*/density");
+              editPattern.push_back("*/movable");
               nodeData = control->nodes->getFullNode(id);
               name = nodeData.name;
               map = nodeData.map;

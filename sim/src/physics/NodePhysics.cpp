@@ -1046,17 +1046,39 @@ namespace mars {
         dGeomDestroy(tmpGeomId);
         // now the geom is rebuild and we have to reconnect it to the body
         // and reset the mass of the body
-        if(nBody) {
+        if(!node->movable) {
+          if(nBody) {
+            theWorld->destroyBody(nBody, this);
+          }
+          nBody = NULL;
           dGeomSetBody(nGeom, nBody);
-          if(!composite) {
-            dBodySetMass(nBody, &nMass);
+          dGeomSetQuaternion(nGeom, rotation);
+          dGeomSetPosition(nGeom, (dReal)node->pos.x(),
+                           (dReal)node->pos.y(), (dReal)node->pos.z());
+        }
+        else {
+          if(node->groupID) {
+            theWorld->getCompositeBody(node->groupID, &nBody, this);
+            composite = true;
           }
           else {
-            // if the geom is part of a composite object
-            // we have to translate and rotate the geom mass
-            dGeomSetOffsetWorldQuaternion(nGeom, rotation);
-            dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
-            theWorld->resetCompositeMass(nBody);
+            composite = false;
+            if(!nBody) nBody = dBodyCreate(theWorld->getWorld());
+          }
+          if(nBody) {
+            dGeomSetBody(nGeom, nBody);
+            if(!composite) {
+              dBodySetMass(nBody, &nMass);
+              dGeomSetQuaternion(nGeom, rotation);
+              dGeomSetPosition(nGeom, pos[0], pos[1], pos[2]);
+            }
+            else {
+              // if the geom is part of a composite object
+              // we have to translate and rotate the geom mass
+              dGeomSetOffsetWorldQuaternion(nGeom, rotation);
+              dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+              theWorld->resetCompositeMass(nBody);
+            }
           }
         }
         dGeomSetData(nGeom, &node_data);

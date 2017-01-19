@@ -504,28 +504,7 @@ namespace mars {
           (changes & EDIT_NODE_MASS) || (changes & EDIT_NODE_NAME) ||
           (changes & EDIT_NODE_GROUP) || (changes & EDIT_NODE_PHYSICS)) {
         //cout << "EDIT_NODE_SIZE !!!" << endl;
-        NodeData sNode = editedNode->getSNode();
-        if(control->graphics) {
-          Vector scale;
-          if(sNode.filename == "PRIMITIVE") {
-            scale = nodeS->ext;
-            if(sNode.physicMode == NODE_TYPE_SPHERE) {
-              scale.x() *= 2;
-              scale.y() = scale.z() = scale.x();
-            }
-            // todo: set scale for cylinder and capsule
-          } else {
-            scale = sNode.visual_size-sNode.ext;
-            scale += nodeS->ext;
-            nodeS->visual_size = scale;
-          }
-          control->graphics->setDrawObjectScale(editedNode->getGraphicsID(), scale);
-          control->graphics->setDrawObjectScale(editedNode->getGraphicsID2(), nodeS->ext);
-        }
-        editedNode->changeNode(nodeS);
-        if(nodeS->groupID > maxGroupID) {
-          maxGroupID = nodeS->groupID;
-        }
+        changeNode(editedNode, &sNode);
         /*
           if (changes & EDIT_NODE_SIZE) {
           NodeMap nodes = simNodes;
@@ -1669,12 +1648,18 @@ namespace mars {
 
     void NodeManager::edit(NodeId id, const std::string &key,
                            const std::string &value) {
-      NodeData nd = getFullNode(id);
+      iMutex.lock();
+      NodeMap::iterator iter;
+      // todo: cfdir1 is a vector
+      iter = simNodes.find(id);
+      if(iter == simNodes.end()) return;
+      NodeData nd = iter->second->getSNode();
       if(matchPattern("*/position/*", key)) {
         double v = atof(value.c_str());
         if(key[key.size()-1] == 'x') nd.pos.x() = v;
         else if(key[key.size()-1] == 'y') nd.pos.y() = v;
         else if(key[key.size()-1] == 'z') nd.pos.z() = v;
+        iMutex.unlock();
         control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
       }
       else if(matchPattern("*/extend/*", key)) {
@@ -1682,9 +1667,11 @@ namespace mars {
         if(key[key.size()-1] == 'x') nd.ext.x() = v;
         else if(key[key.size()-1] == 'y') nd.ext.y() = v;
         else if(key[key.size()-1] == 'z') nd.ext.z() = v;
+        iMutex.unlock();
         control->nodes->editNode(&nd, EDIT_NODE_SIZE);
       }
       else if(matchPattern("*/material", key)) {
+        iMutex.unlock();
         if(control->graphics) {
           std::vector<interfaces::MaterialData> mList;
           std::vector<interfaces::MaterialData>::iterator it;
@@ -1699,20 +1686,11 @@ namespace mars {
         }
       }
       else if(matchPattern("*/cullMask", key)) {
-        MutexLocker locker(&iMutex);
-        NodeMap::iterator iter;
-        // todo: cfdir1 is a vector
-        iter = simNodes.find(id);
-        if(iter == simNodes.end()) return;
         int v = atoi(value.c_str());
         iter->second->setCullMask(v);
+        iMutex.unlock();
       }
       else if(matchPattern("*/c*", key)) {
-        MutexLocker locker(&iMutex);
-        NodeMap::iterator iter;
-        // todo: cfdir1 is a vector
-        iter = simNodes.find(id);
-        if(iter == simNodes.end()) return;
         contact_params c = iter->second->getContactParams();
         if(matchPattern("*/cmax_num_contacts", key)) {
           c.max_num_contacts = atoi(value.c_str());;
@@ -1744,15 +1722,59 @@ namespace mars {
           }
         }
         iter->second->setContactParams(c);
+        iMutex.unlock();
       }
       else if(matchPattern("*/brightness", key)) {
-        MutexLocker locker(&iMutex);
-        NodeMap::iterator iter;
-        // todo: cfdir1 is a vector
-        iter = simNodes.find(id);
-        if(iter == simNodes.end()) return;
         double v = atof(value.c_str());
         iter->second->setBrightness(v);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/name", key)) {
+        nd.name = value;
+        changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/mass", key)) {
+        nd.mass = atof(value.c_str());
+        changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/density", key)) {
+        nd.density = atof(value.c_str());
+        changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/movable", key)) {
+        ConfigMap b;
+        b["bool"] = value;
+        nd.movable = b["bool"];
+        changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+    }
+
+    void NodeManager::changeNode(SimNode *editedNode, NodeData *nodeS) {
+      NodeData sNode = editedNode->getSNode();
+      if(control->graphics) {
+        Vector scale;
+        if(sNode.filename == "PRIMITIVE") {
+          scale = nodeS->ext;
+          if(sNode.physicMode == NODE_TYPE_SPHERE) {
+            scale.x() *= 2;
+            scale.y() = scale.z() = scale.x();
+          }
+          // todo: set scale for cylinder and capsule
+        } else {
+          scale = sNode.visual_size-sNode.ext;
+          scale += nodeS->ext;
+          nodeS->visual_size = scale;
+        }
+        control->graphics->setDrawObjectScale(editedNode->getGraphicsID(), scale);
+        control->graphics->setDrawObjectScale(editedNode->getGraphicsID2(), nodeS->ext);
+      }
+      editedNode->changeNode(nodeS);
+      if(nodeS->groupID > maxGroupID) {
+        maxGroupID = nodeS->groupID;
       }
     }
 

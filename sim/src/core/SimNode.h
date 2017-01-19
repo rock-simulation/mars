@@ -211,6 +211,10 @@ namespace mars {
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication
       data_broker::DataPackageMapping dbPackageMapping;
+
+      void addToDataBroker();
+      void removeFromDataBroker();
+
     };
 
   } // end of namespace sim
