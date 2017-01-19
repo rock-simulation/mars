@@ -512,9 +512,9 @@ namespace mars {
           }
           else {
             (*m)[key] = value;
-            fprintf(stderr, "da: %s: %s\n", key.c_str(), value.c_str());
+            emit valueChanged(nameMap[prop]+"/"+key, value);
           }
-          config.toYamlFile("da.yml");
+          //config.toYamlFile("da.yml");
           setConfigMap(cname, config);
           emit mapChanged();
         }
@@ -532,11 +532,13 @@ namespace mars {
             }
             else {
               it->second->append(ConfigAtom(value));
-              fprintf(stderr, "da: %s: %s %lu\n", key.c_str(), value.c_str(), it->second->size());
+              char da[10];
+              sprintf(da, "/%d", (int)it->second->size()-1);
+              emit valueChanged(nameMap[prop]+da, value);
             }
           }
         }
-        config.toYamlFile("da.yml");
+        //config.toYamlFile("da.yml");
         setConfigMap(cname, config);
         emit mapChanged();
       }
