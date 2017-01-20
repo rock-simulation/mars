@@ -191,7 +191,18 @@ namespace mars {
     }
 
     void DrawObject::exportModel(const std::string &filename) {
-      osgDB::writeNodeFile(*(materialNode.get()), filename.data());
+      // note obj export ignores stateset's of groups
+      if(materialNode.valid()) {
+        osg::ref_ptr<osg::Group> tmpNode = new osg::Group;
+        osg::ref_ptr<osg_material_manager::OsgMaterial> material = materialNode->getMaterial();
+        if(material.valid()) {
+          osg::StateSet *set = material->getStateSet();
+          tmpNode->setStateSet(set);
+        }
+        tmpNode->getOrCreateStateSet()->merge(*(materialNode->getStateSet()));
+        tmpNode->addChild(posTransform_.get());
+        osgDB::writeNodeFile(*(tmpNode.get()), filename.data());
+      }
     }
 
     // the material struct can also contain a static texture (texture file)

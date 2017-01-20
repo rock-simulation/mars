@@ -220,6 +220,7 @@ namespace osg_material_manager {
       n->setUseShadow(useShadow);
       n->setBrightness(brightness);
       it->second->addMaterialNode(n);
+      n->setMaterial(it->second);
       it->second->addChild(n);
       materialNodes.push_back(n);
       return n;
