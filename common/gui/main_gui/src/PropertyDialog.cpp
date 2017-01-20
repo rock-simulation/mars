@@ -592,5 +592,34 @@ namespace mars {
       propertyCallback = pc;
     }
 
+    bool PropertyDialog::isPropertyVisible(QtProperty *prop) const {
+      if(tabView) {
+        PropertyDialog *pd = dynamic_cast<PropertyDialog*>(tabWidget->currentWidget());
+        return pd->isPropertyVisible(prop);
+      }
+
+      QList<QtBrowserItem*> list;
+      switch (viewMode) {
+      case TreeViewMode:
+        {
+          list = variantEditorTree->items(prop);
+          if(list.size() == 0) return false;
+          QtBrowserItem* parentItem = list[0]->parent();
+          if(!parentItem) return true;
+          return variantEditorTree->isExpanded(parentItem);
+        }
+      case ButtonViewMode:
+        {
+          list = variantEditorButton->items(prop);
+          if(list.size() == 0) return false;
+          QtBrowserItem* parentItem = list[0]->parent();
+          if(!parentItem) return true;
+          return variantEditorButton->isExpanded(parentItem);
+        }
+      default:
+        break;
+      }
+    }
+
   } // end namespace main_gui
 } // end namespace mars

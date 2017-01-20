@@ -217,6 +217,7 @@ namespace mars {
 
       //! Collapses the branch of the property \c item.
       void collapseTree(QtProperty *item);
+      bool isPropertyVisible(QtProperty *prop) const;
 
     protected:
       //! A vertical layout.

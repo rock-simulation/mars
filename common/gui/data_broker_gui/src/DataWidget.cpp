@@ -43,7 +43,7 @@ namespace mars {
       dataBroker(_dataBroker),
       ignore_change(0) {
 
-      startTimer(500);
+      startTimer(250);
 
       setStyleSheet("padding:0px;");
       QVBoxLayout *vLayout = new QVBoxLayout();
@@ -212,6 +212,8 @@ namespace mars {
         if(it != paramList.end() && !it->second.guiElements.empty()) {
           for(unsigned int i = 0; i < it->second.guiElements.size(); ++i) {
             QtVariantProperty *guiElem = it->second.guiElements[i];
+            if(!guiElem) continue;
+            if(!pDialog->isPropertyVisible(guiElem)) continue;
             item = &it->second.dataPackage[i];
             //item2 = &guiToWrapper[it->second.guiElements.front()]->dataPackage[i];
             switch(item->type) {
