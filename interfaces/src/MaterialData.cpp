@@ -96,10 +96,10 @@ namespace mars {
       bumpNorFac = config->get("bumpNorFac", bumpNorFac);
 
       if((it = config->find("name")) != config->end())
-        name = (std::string)it->second;
+        name = trim((std::string)it->second);
       else {
         std::stringstream s;
-        s << "material" << anonymCount++ << std::endl;
+        s << "material" << anonymCount++;
         name = s.str();
       }
 

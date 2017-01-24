@@ -42,6 +42,7 @@
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/misc.h>
 
 namespace mars {
   namespace sim {
@@ -538,6 +539,32 @@ namespace mars {
         SimMotor* parentmotor = getSimMotorByName(it->second);
         if (parentmotor != NULL)
           parentmotor->addMimic(simMotors[it->first]);
+      }
+    }
+
+    void MotorManager::edit(interfaces::MotorId id, const std::string &key,
+                            const std::string &value) {
+      MutexLocker locker(&iMutex);
+      map<unsigned long, SimMotor*>::iterator iter = simMotors.find(id);
+      if(iter != simMotors.end()) {
+        if(matchPattern("*/p", key)) {
+          iter->second->setP(atof(value.c_str()));
+        }
+        if(matchPattern("*/i", key)) {
+          iter->second->setI(atof(value.c_str()));
+        }
+        if(matchPattern("*/d", key)) {
+          iter->second->setI(atof(value.c_str()));
+        }
+        if(matchPattern("*/maxSpeed", key)) {
+          iter->second->setMaxSpeed(atof(value.c_str()));
+        }
+        if(matchPattern("*/maxEffort", key)) {
+          iter->second->setMaxEffort(atof(value.c_str()));
+        }
+        if(matchPattern("*/type", key)) {
+          iter->second->setType((interfaces::MotorType)atoi(value.c_str()));
+        }
       }
     }
 

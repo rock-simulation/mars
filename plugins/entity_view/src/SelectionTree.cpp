@@ -61,6 +61,9 @@ namespace mars {
       MaterialData md;
       md.toConfigMap(&defaultMaterial, false, true);
 
+      LightData ld;
+      ld.toConfigMap(&defaultLight);
+
       createTree();
 
       QVBoxLayout *layout = new QVBoxLayout;
@@ -168,6 +171,25 @@ namespace mars {
         current->addChild(next);
       }
 
+      if(control->graphics) {
+        lightMap.clear();
+        temp.clear();
+        temp << "lights";
+        current = new QTreeWidgetItem(temp);
+        treeWidget->addTopLevelItem(current);
+        std::vector<interfaces::LightData*> simLights;
+        control->graphics->getLights(&simLights);
+        for(size_t i=0; i<simLights.size(); ++i) {
+          temp.clear();
+          temp << QString::fromStdString(simLights[i]->name);
+          configmaps::ConfigMap map;
+          simLights[i]->toConfigMap(&map);
+          lightMap[simLights[i]->name] = map;
+          //map.toYamlStream(std::cerr);
+          QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+          current->addChild(next);
+        }
+      }
     }
 
 
@@ -249,7 +271,6 @@ namespace mars {
               editCategory = 1;
             }
             else if(parent->text(0) == "joints") {
-              std::vector<std::string> editPattern;
               // fake pattern to disable everthing
               editPattern.push_back("//");
               jointData = control->joints->getFullJoint(id);
@@ -258,9 +279,13 @@ namespace mars {
               editCategory = 2;
             }
             else if(parent->text(0) == "motors") {
-              std::vector<std::string> editPattern;
               // fake pattern to disable everthing
-              editPattern.push_back("//");
+              editPattern.push_back("*/p");
+              editPattern.push_back("*/i");
+              editPattern.push_back("*/d");
+              editPattern.push_back("*/type");
+              editPattern.push_back("*/maxSpeed");
+              editPattern.push_back("*/maxEffort");
               motorData = control->motors->getFullMotor(id);
               motorData.toConfigMap(&map);
               name = motorData.name;
@@ -310,6 +335,22 @@ namespace mars {
             dw->setConfigMap(currentMaterial["name"], map);
             editCategory = 5;
           }
+          else if(parent->text(0) == "lights") {
+            std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
+            // fake pattern to disable everthing
+            editPattern.push_back("*/ambient/*");
+            colorPattern.push_back("*/ambient");
+            currentLight = lightMap[currentItem->text(0).toStdString()];
+            configmaps::ConfigMap map = defaultLight;
+            map.append(currentLight);
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setConfigMap(currentLight["name"], map);
+            editCategory = 6;
+          }
         }
       }
     }
@@ -334,8 +375,20 @@ namespace mars {
           if(nodeData.index == id) dw->clearGUI();
 
         }
+        // todo: delete joints / motors / etc.
+        else if(parent->text(0) == "joints") {
+        }
+        else if(parent->text(0) == "motors") {
+        }
+        else if(parent->text(0) == "sensors") {
+        }
+        else if(parent->text(0) == "controllers") {
+        }
+        else if(parent->text(0) == "materials") {
+        }
+        else if(parent->text(0) == "lights") {
+        }
       }
-      // todo: delete joints / motors / etc.
     }
 
     void SelectionTree::update(void) {
@@ -356,8 +409,8 @@ namespace mars {
       if(editCategory == 1) {
         control->nodes->edit(nodeData.index, name, value);
       }
-      else if(editCategory == 2) {
-
+      else if(editCategory == 3) {
+        control->motors->edit(motorData.index, name, value);
       }
       else if(editCategory == 5) {
         control->graphics->editMaterial(currentMaterial["name"], name, value);
