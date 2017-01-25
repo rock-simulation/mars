@@ -29,13 +29,13 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/main_gui/GuiInterface.h>
 #include <lib_manager/LibManager.hpp>
 #include <QtGui>
 #include <QPushButton>
 #include <QHBoxLayout>
-#include <QLabel>
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -44,6 +44,8 @@
 #define GUI_ACTION_ADD_BOX      2
 #define GUI_ACTION_ADD_SPHERE   3
 #define GUI_ACTION_ADD_MATERIAL 4
+#define GUI_ACTION_ADD_LIGHT    5
+#define GUI_ACTION_ADD_MOTOR    6
 
 namespace mars {
   namespace gui {
@@ -61,20 +63,28 @@ namespace mars {
       tmp1 = resPath + "/images";
       tmp1.append("/plane.png");
       mainGui->addGenericMenuAction("../Edit/Add Plane", GUI_ACTION_ADD_PLANE,
-                                    (main_gui::MenuInterface*)this, 0, tmp1, true);
+                                    this, 0, tmp1, true);
 
       tmp1 = resPath + "/images";
       tmp1.append("/box.png");
       mainGui->addGenericMenuAction("../Edit/Add Box", GUI_ACTION_ADD_BOX,
-                                    (main_gui::MenuInterface*)this, 0, tmp1, true);
+                                    this, 0, tmp1, true);
 
       tmp1 = resPath + "/images";
       tmp1.append("/sphere.png");
       mainGui->addGenericMenuAction("../Edit/Add Sphere", GUI_ACTION_ADD_SPHERE,
-                                    (main_gui::MenuInterface*)this, 0, tmp1, true);
+                                    this, 0, tmp1, true);
+      // add separator
+      mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
       mainGui->addGenericMenuAction("../Edit/Add Material",
-                                    GUI_ACTION_ADD_MATERIAL,
-                                    (main_gui::MenuInterface*)this);
+                                    GUI_ACTION_ADD_MATERIAL, this);
+      mainGui->addGenericMenuAction("../Edit/Add Light",
+                                    GUI_ACTION_ADD_LIGHT, this);
+      // add separator
+      mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
+
+      mainGui->addGenericMenuAction("../Edit/Add Motor",
+                                    GUI_ACTION_ADD_MOTOR, this);
 
       material["name"] = "defaultGrey";
       material["diffuseColor"]["a"] = 1.0;
@@ -91,16 +101,32 @@ namespace mars {
       material["ambientColor"]["b"] = 0.7;
       material["shininess"] = 100.;
 
-      widgetAddMaterial = new QWidget();
+      interfaces::LightData light;
+      light.pos.x() = light.pos.x() = 0.00;
+      light.pos.z() = 3.00;
+      light.lookAt.x() = light.lookAt.x() = 0.00;
+      light.lookAt.z() = -1.00;
+      light.name = "light";
+      light.constantAttenuation = 1.0000;
+      light.quadraticAttenuation = 0.00002;
+      light.angle = 180;
+      light.directional = false;
+      light.ambient = utils::Color(50/255.,50/255.,50/255.,1);
+      light.diffuse = utils::Color(1,1,1,1);
+      light.specular = utils::Color(1,1,1,1);
+      light.toConfigMap(&defaultLight);
+
+      addType = 0;
+      widgetAdd = new QWidget();
       QPushButton *button = new QPushButton("ok");
-      QLabel *label = new QLabel("Material Name:");
-      materialLineEdit = new QLineEdit();
+      addLabel = new QLabel("Name:");
+      addLineEdit = new QLineEdit();
       QHBoxLayout *layout = new QHBoxLayout();
-      layout->addWidget(label);
-      layout->addWidget(materialLineEdit);
+      layout->addWidget(addLabel);
+      layout->addWidget(addLineEdit);
       layout->addWidget(button);
-      widgetAddMaterial->setLayout(layout);
-      connect(button, SIGNAL(clicked()), this, SLOT(addMaterial()));
+      widgetAdd->setLayout(layout);
+      connect(button, SIGNAL(clicked()), this, SLOT(addObject()));
     }
 
     MenuAdd::~MenuAdd() {
@@ -110,29 +136,68 @@ namespace mars {
     void MenuAdd::menuAction(int action, bool checked)
     {
       (void)checked;
+      std::string label, name;
       switch (action) {
-      case GUI_ACTION_ADD_PLANE: menu_addPlane(); break;
-      case GUI_ACTION_ADD_BOX: menu_addBox(); break;
-      case GUI_ACTION_ADD_SPHERE: menu_addSphere(); break;
-      case GUI_ACTION_ADD_MATERIAL: menu_addMaterial(); break;
+      case GUI_ACTION_ADD_PLANE:    label="Plane Name:"; name="plane"; break;
+      case GUI_ACTION_ADD_BOX:      label="Box Name:"; name="box"; break;
+      case GUI_ACTION_ADD_SPHERE:   label="Sphere Name:"; name="sphere"; break;
+      case GUI_ACTION_ADD_MATERIAL: label="Material Name:"; name="material"; break;
+      case GUI_ACTION_ADD_LIGHT:    label="Light Name:"; name<<defaultLight["name"]; break;
+      case GUI_ACTION_ADD_MOTOR:    label="Motor Name:"; name="motor"; break;
+      default: break;
+      }
+      addType = action;
+      addLabel->setText(label.c_str());
+      addLineEdit->setText(name.c_str());
+      widgetAdd->show();
+    }
+
+    void MenuAdd::addObject() {
+      std::string name = addLineEdit->text().toStdString();
+      switch (addType) {
+      case GUI_ACTION_ADD_PLANE: menu_addPlane(name); break;
+      case GUI_ACTION_ADD_BOX: menu_addBox(name); break;
+      case GUI_ACTION_ADD_SPHERE: menu_addSphere(name); break;
+      case GUI_ACTION_ADD_MATERIAL: menu_addMaterial(name); break;
+      case GUI_ACTION_ADD_LIGHT: menu_addLight(name); break;
+      case GUI_ACTION_ADD_MOTOR: menu_addMotor(name); break;
+      default: break;
+      }
+      widgetAdd->hide();
+      addType = 0;
+    }
+
+    // todo: add widget to select joints
+    void MenuAdd::menu_addMotor(const std::string &name) {
+      configmaps::ConfigMap map;
+      map["name"] = name;
+      map["jointIndex"] = 0lu;
+      map["jointIndex2"] = 0lu;
+      interfaces::MotorData data;
+      data.fromConfigMap(&map, "");
+      control->motors->addMotor(&data);
+    }
+
+    void MenuAdd::menu_addLight(const std::string &name) {
+      interfaces::LightData data;
+      defaultLight["name"] = name;
+      data.fromConfigMap(&defaultLight, "");
+      if(control->graphics) {
+        control->graphics->addLight(data);
       }
     }
 
-    void MenuAdd::addMaterial() {
+    // todo: handle name clash
+    void MenuAdd::menu_addMaterial(const std::string &name) {
       interfaces::MaterialData md;
-      md.name = materialLineEdit->text().toStdString();
-      fprintf(stderr, "add material: %s\n", md.name.c_str());
+      md.name = name;
+      //fprintf(stderr, "add material: %s\n", md.name.c_str());
       control->graphics->addMaterial(md);
-      widgetAddMaterial->hide();
     }
 
-    void MenuAdd::menu_addMaterial(void) {
-      widgetAddMaterial->show();
-    }
-
-    void MenuAdd::menu_addPlane(void) {
+    void MenuAdd::menu_addPlane(const std::string &name) {
       configmaps::ConfigMap map;
-      map["name"] = "plane";
+      map["name"] = name;
       map["physicmode"] = "plane";
       map["origname"] = "plane";
       map["filename"] = "PRIMITIVE";
@@ -146,9 +211,9 @@ namespace mars {
       control->nodes->addNode(&node);
     }
 
-    void MenuAdd::menu_addBox(void) {
+    void MenuAdd::menu_addBox(const std::string &name) {
       configmaps::ConfigMap map;
-      map["name"] = "box";
+      map["name"] = name;
       map["physicmode"] = "box";
       map["origname"] = "box";
       map["filename"] = "PRIMITIVE";
@@ -163,9 +228,9 @@ namespace mars {
       control->nodes->addNode(&node);
     }
 
-    void MenuAdd::menu_addSphere(void) {
+    void MenuAdd::menu_addSphere(const std::string &name) {
       configmaps::ConfigMap map;
-      map["name"] = "sphere";
+      map["name"] = name;
       map["physicmode"] = "sphere";
       map["visualType"] = "sphere";
       fprintf(stderr, "add with visual type\n");

@@ -627,6 +627,14 @@ namespace mars {
       return velocity;
     }
 
+    void SimMotor::setMinValue(interfaces::sReal d) {
+      sMotor.minValue = d;
+    }
+
+    void SimMotor::setMaxValue(interfaces::sReal d) {
+      sMotor.maxValue = d;
+    }
+
     void SimMotor::setP(sReal p) {
       sMotor.p = p;
     }

@@ -239,6 +239,8 @@ namespace mars {
        */
       virtual void setCameraDefaultView(int view) = 0;
       virtual void setDrawObjectBrightness(unsigned long id, double v) = 0;
+      virtual void editLight(unsigned long id, const std::string &key,
+                             const std::string &value) = 0;
     }; // end of class GraphicsManagerInterface
 
   } // end of namespace interfaces

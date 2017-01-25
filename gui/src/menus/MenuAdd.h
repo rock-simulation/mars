@@ -39,6 +39,7 @@
 #include <string>
 #include <QLineEdit>
 #include <QWidget>
+#include <QLabel>
 
 namespace lib_manager {
   class LibManager;
@@ -77,21 +78,25 @@ namespace mars {
       virtual void menuAction(int action, bool checked = false);
 
     private slots:
-      void addMaterial();
+      void addObject();
 
     private:
 
       lib_manager::LibManager *libManager;
       main_gui::GuiInterface *mainGui;
       interfaces::ControlCenter *control;
-      configmaps::ConfigMap material;
-      QWidget *widgetAddMaterial;
-      QLineEdit *materialLineEdit;
+      configmaps::ConfigMap material, defaultLight;
+      QWidget *widgetAdd;
+      QLabel *addLabel;
+      QLineEdit *addLineEdit;
+      int addType;
 
-      void menu_addBox();
-      void menu_addSphere();
-      void menu_addPlane();
-      void menu_addMaterial();
+      void menu_addBox(const std::string &name);
+      void menu_addSphere(const std::string &name);
+      void menu_addPlane(const std::string &name);
+      void menu_addMaterial(const std::string &name);
+      void menu_addLight(const std::string &name);
+      void menu_addMotor(const std::string &name);
 
     };
 

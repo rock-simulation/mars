@@ -562,6 +562,12 @@ namespace mars {
         if(matchPattern("*/maxEffort", key)) {
           iter->second->setMaxEffort(atof(value.c_str()));
         }
+        if(matchPattern("*/minValue", key)) {
+          iter->second->setMinValue(atof(value.c_str()));
+        }
+        if(matchPattern("*/maxValue", key)) {
+          iter->second->setMaxValue(atof(value.c_str()));
+        }
         if(matchPattern("*/type", key)) {
           iter->second->setType((interfaces::MotorType)atoi(value.c_str()));
         }

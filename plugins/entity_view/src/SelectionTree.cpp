@@ -286,6 +286,8 @@ namespace mars {
               editPattern.push_back("*/type");
               editPattern.push_back("*/maxSpeed");
               editPattern.push_back("*/maxEffort");
+              editPattern.push_back("*/minValue");
+              editPattern.push_back("*/maxValue");
               motorData = control->motors->getFullMotor(id);
               motorData.toConfigMap(&map);
               name = motorData.name;
@@ -341,7 +343,11 @@ namespace mars {
             std::vector<std::string> colorPattern;
             // fake pattern to disable everthing
             editPattern.push_back("*/ambient/*");
+            editPattern.push_back("*/diffuse/*");
+            editPattern.push_back("*/specular/*");
             colorPattern.push_back("*/ambient");
+            colorPattern.push_back("*/diffuse");
+            colorPattern.push_back("*/specular");
             currentLight = lightMap[currentItem->text(0).toStdString()];
             configmaps::ConfigMap map = defaultLight;
             map.append(currentLight);
@@ -422,6 +428,19 @@ namespace mars {
             configmaps::ConfigMap map;
             mList[i].toConfigMap(&map);
             materialMap[mList[i].name] = map;
+            break;
+          }
+        }
+      }
+      else if(editCategory == 6) {
+        control->graphics->editLight(currentLight["index"], name, value);
+        std::vector<interfaces::LightData*> simLights;
+        control->graphics->getLights(&simLights);
+        for(size_t i=0; i<simLights.size(); ++i) {
+          if(simLights[i]->index == (unsigned long)currentLight["index"]) {
+            configmaps::ConfigMap map;
+            simLights[i]->toConfigMap(&map);
+            lightMap[simLights[i]->name] = map;
             break;
           }
         }

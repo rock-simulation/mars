@@ -134,6 +134,8 @@ namespace mars {
 
       virtual void addLight(mars::interfaces::LightData &ls); ///< adds a light to the scene
       virtual void removeLight(unsigned int index); ///< removes a light from the scene
+      virtual void editLight(unsigned long id, const std::string &key,
+                             const std::string &value);
       virtual void updateLight(unsigned int index, bool recompileShader=false);
       virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList);
       virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const;
@@ -415,6 +417,8 @@ namespace mars {
       void setUseShader(bool val);
 
       void initDefaultLight();
+      void setColor(utils::Color *c, const std::string &key,
+                    const std::string &value);
 
     }; // end of class GraphicsManager
 

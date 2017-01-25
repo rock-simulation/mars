@@ -39,6 +39,8 @@
 #include <osgParticle/SmokeTrailEffect>
 #include <osgParticle/FireEffect>
 
+#include <mars/utils/misc.h>
+
 #include "3d_objects/GridPrimitive.h"
 #include "3d_objects/DrawObject.h"
 #include "3d_objects/CoordsPrimitive.h"
@@ -1167,6 +1169,36 @@ namespace mars {
 
         //for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
         //iter->second->object()->updateShader(lightList, true);
+      }
+    }
+
+    void GraphicsManager::setColor(utils::Color *c, const std::string &key,
+                                   const std::string &value) {
+      double v = atof(value.c_str());
+      if(key[key.size()-1] == 'a') c->a = v;
+      else if(key[key.size()-1] == 'r') c->r = v;
+      else if(key[key.size()-1] == 'g') c->g = v;
+      else if(key[key.size()-1] == 'b') c->b = v;
+    }
+
+    void GraphicsManager::editLight(unsigned long id, const std::string &key,
+                                    const std::string &value) {
+      for(size_t i=0; i<myLights.size(); ++i) {
+        if(myLights[i].lStruct.index == id) {
+          if(utils::matchPattern("*/ambient/*", key)) {
+            setColor(&(myLights[i].lStruct.ambient), key, value);
+            updateLight(i);
+          }
+          else if(utils::matchPattern("*/diffuse/*", key)) {
+            setColor(&(myLights[i].lStruct.diffuse), key, value);
+            updateLight(i);
+          }
+          else if(utils::matchPattern("*/specular/*", key)) {
+            setColor(&(myLights[i].lStruct.specular), key, value);
+            updateLight(i);
+          }
+          break;
+        }
       }
     }
 
