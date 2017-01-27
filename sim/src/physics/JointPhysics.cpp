@@ -674,10 +674,13 @@ namespace mars {
     void JointPhysics::setJointAsMotor(int axis) {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
+        // todo: need to handle the distinction whether to set or not to
+        //       set the hi and low stop differently
       case  JOINT_TYPE_HINGE:
-        if(!lo1 && !hi1) {
-          //dJointSetHingeParam(jointId, dParamLoStop, -dInfinity);
-          //dJointSetHingeParam(jointId, dParamHiStop, dInfinity);
+        //if(!lo1 && !hi)
+        {
+          dJointSetHingeParam(jointId, dParamLoStop, -dInfinity);
+          dJointSetHingeParam(jointId, dParamHiStop, dInfinity);
         }
         break;
       case JOINT_TYPE_HINGE2:

@@ -30,12 +30,19 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/main_gui/GuiInterface.h>
 #include <lib_manager/LibManager.hpp>
 #include <QtGui>
 #include <QPushButton>
 #include <QHBoxLayout>
+
+#include <QLineEdit>
+#include <QWidget>
+#include <QLabel>
+#include <QComboBox>
+#include <QGridLayout>
 
 #include <QMessageBox>
 #include <QFileDialog>
@@ -78,8 +85,10 @@ namespace mars {
       mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
       mainGui->addGenericMenuAction("../Edit/Add Material",
                                     GUI_ACTION_ADD_MATERIAL, this);
-      mainGui->addGenericMenuAction("../Edit/Add Light",
-                                    GUI_ACTION_ADD_LIGHT, this);
+      tmp1 = resPath + "/images";
+      tmp1.append("/lamp.png");
+      mainGui->addGenericMenuAction("../Edit/Add Light", GUI_ACTION_ADD_LIGHT,
+                                    this, 0, tmp1, true);
       // add separator
       mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
 
@@ -109,6 +118,7 @@ namespace mars {
       light.name = "light";
       light.constantAttenuation = 1.0000;
       light.quadraticAttenuation = 0.00002;
+      light.type = 1;
       light.angle = 180;
       light.directional = false;
       light.ambient = utils::Color(50/255.,50/255.,50/255.,1);
@@ -121,12 +131,29 @@ namespace mars {
       QPushButton *button = new QPushButton("ok");
       addLabel = new QLabel("Name:");
       addLineEdit = new QLineEdit();
+      vLayout = new QVBoxLayout();
       QHBoxLayout *layout = new QHBoxLayout();
       layout->addWidget(addLabel);
       layout->addWidget(addLineEdit);
       layout->addWidget(button);
-      widgetAdd->setLayout(layout);
+      vLayout->addLayout(layout);
+      widgetAdd->setLayout(vLayout);
       connect(button, SIGNAL(clicked()), this, SLOT(addObject()));
+
+      comboLabel1 = new QLabel();
+      comboLabel2 = new QLabel();
+      combo1 = new QComboBox();
+      combo2 = new QComboBox();
+      gridLayout = new QGridLayout();
+      gridLayout->addWidget(comboLabel1, 0, 0);
+      gridLayout->addWidget(combo1, 0, 1);
+      gridLayout->addWidget(comboLabel2, 1, 0);
+      gridLayout->addWidget(combo2, 1, 1);
+      comboLabel1->hide();
+      comboLabel2->hide();
+      combo1->hide();
+      combo2->hide();
+      vLayout->addLayout(gridLayout);
     }
 
     MenuAdd::~MenuAdd() {
@@ -143,7 +170,22 @@ namespace mars {
       case GUI_ACTION_ADD_SPHERE:   label="Sphere Name:"; name="sphere"; break;
       case GUI_ACTION_ADD_MATERIAL: label="Material Name:"; name="material"; break;
       case GUI_ACTION_ADD_LIGHT:    label="Light Name:"; name<<defaultLight["name"]; break;
-      case GUI_ACTION_ADD_MOTOR:    label="Motor Name:"; name="motor"; break;
+      case GUI_ACTION_ADD_MOTOR: {
+        std::vector<interfaces::core_objects_exchange>::iterator it;
+        std::vector<interfaces::core_objects_exchange> simJoints;
+        control->joints->getListJoints(&simJoints);
+        combo1->clear();
+        for(it=simJoints.begin(); it!=simJoints.end(); ++it) {
+          combo1->addItem(it->name.c_str());
+        }
+        comboLabel1->setText("Add to joint:");
+        comboLabel1->show();
+        combo1->show();
+        comboLabel2->hide();
+        combo2->hide();
+        label="Motor Name:";
+        name="motor"; break;
+      }
       default: break;
       }
       addType = action;
@@ -171,11 +213,14 @@ namespace mars {
     void MenuAdd::menu_addMotor(const std::string &name) {
       configmaps::ConfigMap map;
       map["name"] = name;
-      map["jointIndex"] = 0lu;
+      map["jointIndex"] = control->joints->getID(combo1->currentText().toStdString());
       map["jointIndex2"] = 0lu;
       interfaces::MotorData data;
       data.fromConfigMap(&map, "");
       control->motors->addMotor(&data);
+      comboLabel1->hide();
+      combo1->hide();
+      vLayout->removeItem(gridLayout);
     }
 
     void MenuAdd::menu_addLight(const std::string &name) {

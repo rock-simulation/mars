@@ -58,6 +58,7 @@ namespace mars {
         control->graphics->addEventClient((interfaces::GraphicsEventClient*)this);
       }
 
+      // todo: improve default handling for all entities
       MaterialData md;
       md.toConfigMap(&defaultMaterial, false, true);
 
@@ -241,6 +242,7 @@ namespace mars {
           if(!parent) return;
           while(parent->parent()) parent = parent->parent();
           int n = currentItem->text(0).indexOf(":");
+          // todo: remove current information (motorData, currentLigth etc.)
           if(n>-1) {
             std::vector<std::string> editPattern;
             std::vector<std::string> filePattern;
@@ -279,7 +281,7 @@ namespace mars {
               editCategory = 2;
             }
             else if(parent->text(0) == "motors") {
-              // fake pattern to disable everthing
+              // todo: remove index from pattern
               editPattern.push_back("*/p");
               editPattern.push_back("*/i");
               editPattern.push_back("*/d");
@@ -345,6 +347,17 @@ namespace mars {
             editPattern.push_back("*/ambient/*");
             editPattern.push_back("*/diffuse/*");
             editPattern.push_back("*/specular/*");
+            editPattern.push_back("*/position/*");
+            editPattern.push_back("*/lookat/*");
+            editPattern.push_back("*/constantAttenuation");
+            editPattern.push_back("*/linearAttenuation");
+            editPattern.push_back("*/quadraticAttenuation");
+            editPattern.push_back("*/type");
+            editPattern.push_back("*/angle");
+            editPattern.push_back("*/exponent");
+            editPattern.push_back("*/directional");
+            editPattern.push_back("*/nodeName");
+
             colorPattern.push_back("*/ambient");
             colorPattern.push_back("*/diffuse");
             colorPattern.push_back("*/specular");
@@ -385,6 +398,10 @@ namespace mars {
         else if(parent->text(0) == "joints") {
         }
         else if(parent->text(0) == "motors") {
+          id = selectedItems[i]->text(0).left(n).toULong();
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+          control->motors->removeMotor(id);
+          if(motorData.index == id) dw->clearGUI();
         }
         else if(parent->text(0) == "sensors") {
         }
@@ -393,6 +410,18 @@ namespace mars {
         else if(parent->text(0) == "materials") {
         }
         else if(parent->text(0) == "lights") {
+          if(control->graphics) {
+            std::string name = selectedItems[i]->text(0).toStdString();
+            std::vector<interfaces::LightData*> simLights;
+            control->graphics->getLights(&simLights);
+            for(size_t i=0; i<simLights.size(); ++i) {
+              if(simLights[i]->name == name) {
+                control->graphics->removeLight(i);
+                break;
+              }
+            }
+          }
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
         }
       }
     }

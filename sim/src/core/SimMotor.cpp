@@ -124,7 +124,10 @@ namespace mars {
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here
-      if(myJoint) myJoint->detachMotor(sMotor.axis);
+      if(myJoint) {
+        myJoint->setEffortLimit(0, sMotor.axis);
+        myJoint->detachMotor(sMotor.axis);
+      }
 
       // delete any coefficient vectors we might have created
       delete maxspeed_coefficients;

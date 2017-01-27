@@ -60,6 +60,8 @@ namespace mars {
       unsigned long sharedID = 0;
       std::string filename, origname;
       std::string visualType;
+
+      name_ = node.name;
       if(map.find("sharedDrawID") != map.end()) {
         sharedID = map["sharedDrawID"];
       }
@@ -190,6 +192,7 @@ namespace mars {
       osg::Quat oquat;
       Vector ex;
 
+      name_ = node.name;
       // get old size, create bounding box to get center point
       drawObject_->getObject()->accept(cbbv);
       // compute bounding box has to be done in this way

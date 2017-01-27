@@ -39,8 +39,6 @@ namespace mars {
 
       dn = NULL; // nodes
       dj = NULL; // joints
-      dl = NULL; // lights
-      dm = NULL; // motors
       ds = NULL; // sensors
       dc = NULL; // controllers
 
@@ -132,12 +130,6 @@ namespace mars {
       mainGui->addGenericMenuAction("../Deprecated/Joints", GUI_ACTION_JOINT_TREE,
                                     (main_gui::MenuInterface*)this,
                                     QKeySequence("CTRL+J")[0]);
-      mainGui->addGenericMenuAction("../Deprecated/Lights", GUI_ACTION_LIGHT_TREE,
-                                    (main_gui::MenuInterface*)this,
-                                    QKeySequence("CTRL+L")[0]);
-      mainGui->addGenericMenuAction("../Deprecated/Motors", GUI_ACTION_MOTOR_TREE,
-                                    (main_gui::MenuInterface*)this,
-                                    QKeySequence("CTRL+M")[0]);
       mainGui->addGenericMenuAction("../Deprecated/Sensors", GUI_ACTION_SENSOR_TREE,
                                     (main_gui::MenuInterface*)this,
                                     QKeySequence("CTRL+E")[0]);
@@ -162,8 +154,6 @@ namespace mars {
       switch (action) {
       case GUI_ACTION_NODE_TREE: menu_nodes(); break;
       case GUI_ACTION_JOINT_TREE: menu_joints(); break;
-      case GUI_ACTION_LIGHT_TREE: menu_lights(); break;
-      case GUI_ACTION_MOTOR_TREE: menu_motors(); break;
       case GUI_ACTION_SENSOR_TREE: menu_sensors(); break;
       case GUI_ACTION_CONTROLLER_TREE: menu_controllers(); break;
       case GUI_ACTION_DISTANCE: menu_distance(); break;
@@ -224,34 +214,6 @@ namespace mars {
         //mainGui->addDockWidget(dj);
         dj->show();
       }
-    }
-
-
-
-    void MenuSimulation::menu_lights() {
-      if (dl != NULL) {
-        if (dl->pDialog) {
-          dl->pDialog->close();
-        }
-        delete dl;
-        dl = NULL;
-      }
-      dl = new DialogLights(control, mainGui);
-      //mainGui->addDockWidget(dl->pDialog);
-      dl->show();
-    }
-
-    void MenuSimulation::menu_motors() {
-      if (dm != NULL) {
-        if (dm->pDialog) {
-          dm->pDialog->close();
-        }
-        delete dm;
-        dm = NULL;
-      }
-      dm = new DialogMotors(control, mainGui);
-      //mainGui->addDockWidget(dm->pDialog);
-      dm->show();
     }
 
 

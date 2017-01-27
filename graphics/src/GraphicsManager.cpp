@@ -1187,16 +1187,66 @@ namespace mars {
         if(myLights[i].lStruct.index == id) {
           if(utils::matchPattern("*/ambient/*", key)) {
             setColor(&(myLights[i].lStruct.ambient), key, value);
-            updateLight(i);
           }
           else if(utils::matchPattern("*/diffuse/*", key)) {
             setColor(&(myLights[i].lStruct.diffuse), key, value);
-            updateLight(i);
           }
           else if(utils::matchPattern("*/specular/*", key)) {
             setColor(&(myLights[i].lStruct.specular), key, value);
-            updateLight(i);
           }
+          else if(utils::matchPattern("*/position/x", key)) {
+            myLights[i].lStruct.pos.x() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/position/y", key)) {
+            myLights[i].lStruct.pos.y() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/position/z", key)) {
+            myLights[i].lStruct.pos.z() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/x", key)) {
+            myLights[i].lStruct.lookAt.x() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/y", key)) {
+            myLights[i].lStruct.lookAt.y() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/z", key)) {
+            myLights[i].lStruct.lookAt.z() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/constantAttenuation", key)) {
+            myLights[i].lStruct.constantAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/linearAttenuation", key)) {
+            myLights[i].lStruct.linearAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/quadraticAttenuation", key)) {
+            myLights[i].lStruct.quadraticAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/type", key)) {
+            myLights[i].lStruct.type = atoi(value.c_str());
+          }
+          else if(utils::matchPattern("*/angle", key)) {
+            myLights[i].lStruct.angle = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/exponent", key)) {
+            myLights[i].lStruct.exponent = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/directional", key)) {
+            ConfigItem b;
+            b = value;
+            myLights[i].lStruct.directional << b;
+            fprintf(stderr, "directional: %d", myLights[i].lStruct.directional);
+          }
+          else if(utils::matchPattern("*/nodeName", key)) {
+            myLights[i].lStruct.node = value;
+            map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator it;
+            for(it=drawObjects_.begin(); it!=drawObjects_.end(); ++it) {
+              if(it->second->name() == value) {
+                myLights[i].lStruct.drawID = it->first;
+                break;
+              }
+            }
+          }
+          updateLight(i);
           break;
         }
       }

@@ -37,9 +37,14 @@
 #include <configmaps/ConfigData.h>
 
 #include <string>
-#include <QLineEdit>
-#include <QWidget>
-#include <QLabel>
+#include <QObject>
+
+class QLineEdit;
+class QWidget;
+class QLabel;
+class QComboBox;
+class QVBoxLayout;
+class QGridLayout;
 
 namespace lib_manager {
   class LibManager;
@@ -87,8 +92,11 @@ namespace mars {
       interfaces::ControlCenter *control;
       configmaps::ConfigMap material, defaultLight;
       QWidget *widgetAdd;
-      QLabel *addLabel;
+      QLabel *addLabel, *comboLabel1, *comboLabel2;
       QLineEdit *addLineEdit;
+      QGridLayout *gridLayout;
+      QVBoxLayout *vLayout;
+      QComboBox *combo1, *combo2;
       int addType;
 
       void menu_addBox(const std::string &name);

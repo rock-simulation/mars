@@ -66,11 +66,9 @@ set(HEADERS
         src/ControllerHandler.h
         src/JointHandler.h
         src/JoystickWidget.h
-        src/LightHandler.h
         src/MainGUIDefs.h
         src/MarsGui.h
         #src/MarsStyle.h
-        src/MotorHandler.h
         src/NodeHandler.h
         src/NodeSelectionTree.h
         src/SelectionDialog.h
@@ -94,8 +92,6 @@ set(HEADERS
         src/dialogs/DialogDistance.h
         src/dialogs/DialogJoints.h
         src/dialogs/DialogJoystick.h
-        src/dialogs/DialogLights.h
-        src/dialogs/DialogMotors.h
         src/dialogs/DialogNodes.h
         src/dialogs/DialogSensors.h
         
@@ -119,9 +115,7 @@ set(QT_MOC_HEADER
         src/ControllerHandler.h
         src/JointHandler.h
         src/JoystickWidget.h
-        src/LightHandler.h
         #src/MarsStyle.h
-        src/MotorHandler.h
         src/NodeHandler.h
         src/NodeSelectionTree.h
         src/SelectionDialog.h
@@ -145,8 +139,6 @@ set(QT_MOC_HEADER
         src/dialogs/DialogDistance.h
         src/dialogs/DialogJoints.h
         src/dialogs/DialogJoystick.h
-        src/dialogs/DialogLights.h
-        src/dialogs/DialogMotors.h
         src/dialogs/DialogNodes.h
         src/dialogs/DialogSensors.h
 
@@ -174,10 +166,8 @@ set(TARGET_SRC
             src/JointHandler.cpp
             src/JoystickWidget.cpp
             src/SelectionDialog.cpp
-            src/LightHandler.cpp
             src/MarsGui.cpp
             #src/MarsStyle.cpp
-            src/MotorHandler.cpp
             src/NodeHandler.cpp
             src/NodeSelectionTree.cpp
             src/SensorHandler.cpp
@@ -200,8 +190,6 @@ set(TARGET_SRC
             src/dialogs/DialogDistance.cpp
             src/dialogs/DialogJoints.cpp
             src/dialogs/DialogJoystick.cpp
-            src/dialogs/DialogLights.cpp
-            src/dialogs/DialogMotors.cpp
             src/dialogs/DialogNodes.cpp
             src/dialogs/DialogSensors.cpp
 

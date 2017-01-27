@@ -37,8 +37,6 @@
 
 #include "DialogNodes.h"
 #include "DialogJoints.h"
-#include "DialogLights.h"
-#include "DialogMotors.h"
 #include "DialogSensors.h"
 #include "DialogControllers.h"
 
@@ -80,8 +78,6 @@ namespace mars {
     protected:
       void menu_nodes(void);
       void menu_joints(void);
-      void menu_lights(void);
-      void menu_motors(void);
       void menu_sensors(void);
       void menu_controllers(void);
 
@@ -102,8 +98,6 @@ namespace mars {
 
       DialogNodes *dn;
       DialogJoints *dj;
-      DialogLights *dl;
-      DialogMotors *dm;
       DialogSensors *ds;
       DialogControllers *dc;
 
