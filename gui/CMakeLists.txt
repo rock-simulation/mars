@@ -64,7 +64,6 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set(HEADERS 
         src/ControllerHandler.h
-        src/JointHandler.h
         src/JoystickWidget.h
         src/MainGUIDefs.h
         src/MarsGui.h
@@ -73,7 +72,6 @@ set(HEADERS
         src/NodeSelectionTree.h
         src/SelectionDialog.h
         src/SensorHandler.h
-        src/Widget_Joint_State.h 
         src/Widget_Node_Options_ODE.h 
         src/Widget_Node_State.h 
 
@@ -90,7 +88,6 @@ set(HEADERS
         src/dialogs/Dialog_Rescale_Environment.h 
         src/dialogs/DialogControllers.h
         src/dialogs/DialogDistance.h
-        src/dialogs/DialogJoints.h
         src/dialogs/DialogJoystick.h
         src/dialogs/DialogNodes.h
         src/dialogs/DialogSensors.h
@@ -113,14 +110,12 @@ set(HEADERS
 
 set(QT_MOC_HEADER
         src/ControllerHandler.h
-        src/JointHandler.h
         src/JoystickWidget.h
         #src/MarsStyle.h
         src/NodeHandler.h
         src/NodeSelectionTree.h
         src/SelectionDialog.h
         src/SensorHandler.h
-        src/Widget_Joint_State.h 
         src/Widget_Node_Options_ODE.h 
         src/Widget_Node_State.h 
 
@@ -137,7 +132,6 @@ set(QT_MOC_HEADER
         src/dialogs/Dialog_Graphics_Options.h 
         src/dialogs/DialogControllers.h
         src/dialogs/DialogDistance.h
-        src/dialogs/DialogJoints.h
         src/dialogs/DialogJoystick.h
         src/dialogs/DialogNodes.h
         src/dialogs/DialogSensors.h
@@ -163,7 +157,6 @@ endif (${USE_QT5})
 set(TARGET_SRC 
             ${QT_MOC_HEADER_SRC} 
             src/ControllerHandler.cpp
-            src/JointHandler.cpp
             src/JoystickWidget.cpp
             src/SelectionDialog.cpp
             src/MarsGui.cpp
@@ -171,7 +164,6 @@ set(TARGET_SRC
             src/NodeHandler.cpp
             src/NodeSelectionTree.cpp
             src/SensorHandler.cpp
-            src/Widget_Joint_State.cpp 
             src/Widget_Node_Options_ODE.cpp 
             src/Widget_Node_State.cpp 
 
@@ -188,7 +180,6 @@ set(TARGET_SRC
             src/dialogs/Dialog_Rescale_Environment.cpp 
             src/dialogs/DialogControllers.cpp
             src/dialogs/DialogDistance.cpp
-            src/dialogs/DialogJoints.cpp
             src/dialogs/DialogJoystick.cpp
             src/dialogs/DialogNodes.cpp
             src/dialogs/DialogSensors.cpp

@@ -242,6 +242,9 @@ namespace mars {
           if(!parent) return;
           while(parent->parent()) parent = parent->parent();
           int n = currentItem->text(0).indexOf(":");
+          nodeData.index = motorData.index = jointData.index = 0;
+          currentLight.clear();
+          currentMaterial.clear();
           // todo: remove current information (motorData, currentLigth etc.)
           if(n>-1) {
             std::vector<std::string> editPattern;
@@ -274,7 +277,14 @@ namespace mars {
             }
             else if(parent->text(0) == "joints") {
               // fake pattern to disable everthing
-              editPattern.push_back("//");
+              editPattern.push_back("*/type");
+              editPattern.push_back("*/axis*");
+              editPattern.push_back("*/anchor*");
+              editPattern.push_back("*/lowStop*");
+              editPattern.push_back("*/highStop*");
+              editPattern.push_back("*/damping_const_*");
+              editPattern.push_back("*/spring_const_*");
+              editPattern.push_back("*/invertAxis");
               jointData = control->joints->getFullJoint(id);
               jointData.toConfigMap(&map);
               name = jointData.name;
@@ -396,6 +406,10 @@ namespace mars {
         }
         // todo: delete joints / motors / etc.
         else if(parent->text(0) == "joints") {
+          id = selectedItems[i]->text(0).left(n).toULong();
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+          control->joints->removeJoint(id);
+          if(jointData.index == id) dw->clearGUI();
         }
         else if(parent->text(0) == "motors") {
           id = selectedItems[i]->text(0).left(n).toULong();
@@ -443,6 +457,9 @@ namespace mars {
       //fprintf(stderr, "get feedback: %s\n", name.c_str());
       if(editCategory == 1) {
         control->nodes->edit(nodeData.index, name, value);
+      }
+      else if(editCategory == 2) {
+        control->joints->edit(jointData.index, name, value);
       }
       else if(editCategory == 3) {
         control->motors->edit(motorData.index, name, value);

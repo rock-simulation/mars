@@ -89,6 +89,8 @@ namespace mars {
       virtual void setHighStop(unsigned long id, interfaces::sReal highStop);
       virtual void setLowStop2(unsigned long id, interfaces::sReal lowStop2);
       virtual void setHighStop2(unsigned long id, interfaces::sReal highStop2);
+      virtual void edit(interfaces::JointId id, const std::string &key,
+                        const std::string &value);
 
     private:
       unsigned long next_joint_id;

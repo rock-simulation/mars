@@ -47,7 +47,6 @@
 #define GUI_ACTION_APPLY_TORQUE        409
 #define GUI_ACTION_IMPORT_MESH         410
 #define GUI_ACTION_NODE_TREE           411
-#define GUI_ACTION_JOINT_TREE          412
 #define GUI_ACTION_SENSOR_TREE         415
 #define GUI_ACTION_CONTROLLER_TREE     416
 #define GUI_ACTION_RESCALE_ENV         507

@@ -38,7 +38,6 @@ namespace mars {
                                                           mainGui(gui) {
 
       dn = NULL; // nodes
-      dj = NULL; // joints
       ds = NULL; // sensors
       dc = NULL; // controllers
 
@@ -127,9 +126,6 @@ namespace mars {
       mainGui->addGenericMenuAction("../Deprecated/Nodes", GUI_ACTION_NODE_TREE,
                                     (main_gui::MenuInterface*)this,
                                     QKeySequence("CTRL+N")[0]);
-      mainGui->addGenericMenuAction("../Deprecated/Joints", GUI_ACTION_JOINT_TREE,
-                                    (main_gui::MenuInterface*)this,
-                                    QKeySequence("CTRL+J")[0]);
       mainGui->addGenericMenuAction("../Deprecated/Sensors", GUI_ACTION_SENSOR_TREE,
                                     (main_gui::MenuInterface*)this,
                                     QKeySequence("CTRL+E")[0]);
@@ -153,7 +149,6 @@ namespace mars {
 
       switch (action) {
       case GUI_ACTION_NODE_TREE: menu_nodes(); break;
-      case GUI_ACTION_JOINT_TREE: menu_joints(); break;
       case GUI_ACTION_SENSOR_TREE: menu_sensors(); break;
       case GUI_ACTION_CONTROLLER_TREE: menu_controllers(); break;
       case GUI_ACTION_DISTANCE: menu_distance(); break;
@@ -199,21 +194,6 @@ namespace mars {
       dn = new DialogNodes(control, mainGui);
       //mainGui->addDockWidget(dn);
       dn->show();
-    }
-
-
-
-    void MenuSimulation::menu_joints() {
-      if (dj != NULL) {
-          dj->close();
-      }
-      else {
-        dj = new DialogJoints(control, mainGui, resourcesPath);
-        connect(dj, SIGNAL(closeSignal(void*)),
-                this, SLOT(closeWidget(void*)));
-        //mainGui->addDockWidget(dj);
-        dj->show();
-      }
     }
 
 
@@ -408,7 +388,6 @@ namespace mars {
       else if(widget == djoy) toClose = (void**)&djoy;
       else if(widget == nst) toClose = (void**)&nst;
       else if(widget == dmc) toClose = (void**)&dmc;
-      else if(widget == dj) toClose = (void**)&dj;
 
       if(toClose && *toClose) {
         mainGui->removeDockWidget(*toClose);

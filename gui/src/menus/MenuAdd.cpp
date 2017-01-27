@@ -53,6 +53,7 @@
 #define GUI_ACTION_ADD_MATERIAL 4
 #define GUI_ACTION_ADD_LIGHT    5
 #define GUI_ACTION_ADD_MOTOR    6
+#define GUI_ACTION_ADD_JOINT    7
 
 namespace mars {
   namespace gui {
@@ -82,7 +83,7 @@ namespace mars {
       mainGui->addGenericMenuAction("../Edit/Add Sphere", GUI_ACTION_ADD_SPHERE,
                                     this, 0, tmp1, true);
       // add separator
-      mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
+      mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
       mainGui->addGenericMenuAction("../Edit/Add Material",
                                     GUI_ACTION_ADD_MATERIAL, this);
       tmp1 = resPath + "/images";
@@ -90,10 +91,14 @@ namespace mars {
       mainGui->addGenericMenuAction("../Edit/Add Light", GUI_ACTION_ADD_LIGHT,
                                     this, 0, tmp1, true);
       // add separator
-      mainGui->addGenericMenuAction("../File/", 0, NULL, 0, "", 0, -1);
+      mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
+
+      mainGui->addGenericMenuAction("../Edit/Add Joint",
+                                    GUI_ACTION_ADD_JOINT, this);
 
       mainGui->addGenericMenuAction("../Edit/Add Motor",
                                     GUI_ACTION_ADD_MOTOR, this);
+
 
       material["name"] = "defaultGrey";
       material["diffuseColor"]["a"] = 1.0;
@@ -186,6 +191,26 @@ namespace mars {
         label="Motor Name:";
         name="motor"; break;
       }
+      case GUI_ACTION_ADD_JOINT: {
+        std::vector<interfaces::core_objects_exchange>::iterator it;
+        std::vector<interfaces::core_objects_exchange> simNodes;
+        control->nodes->getListNodes(&simNodes);
+        combo1->clear();
+        combo2->clear();
+        combo2->addItem("world");
+        for(it=simNodes.begin(); it!=simNodes.end(); ++it) {
+          combo1->addItem(it->name.c_str());
+          combo2->addItem(it->name.c_str());
+        }
+        comboLabel1->setText("Add to first node:");
+        comboLabel1->show();
+        combo1->show();
+        comboLabel2->setText("Add to second node:");
+        comboLabel2->show();
+        combo2->show();
+        label="Joint Name:";
+        name="joint"; break;
+      }
       default: break;
       }
       addType = action;
@@ -203,13 +228,13 @@ namespace mars {
       case GUI_ACTION_ADD_MATERIAL: menu_addMaterial(name); break;
       case GUI_ACTION_ADD_LIGHT: menu_addLight(name); break;
       case GUI_ACTION_ADD_MOTOR: menu_addMotor(name); break;
+      case GUI_ACTION_ADD_JOINT: menu_addJoint(name); break;
       default: break;
       }
       widgetAdd->hide();
       addType = 0;
     }
 
-    // todo: add widget to select joints
     void MenuAdd::menu_addMotor(const std::string &name) {
       configmaps::ConfigMap map;
       map["name"] = name;
@@ -220,7 +245,29 @@ namespace mars {
       control->motors->addMotor(&data);
       comboLabel1->hide();
       combo1->hide();
-      vLayout->removeItem(gridLayout);
+    }
+
+    void MenuAdd::menu_addJoint(const std::string &name) {
+      configmaps::ConfigMap map;
+      map["name"] = name;
+      map["type"] = "hinge";
+      map["axis1"]["x"] = 0.0;
+      map["axis1"]["y"] = 0.0;
+      map["axis1"]["z"] = 1.0;
+      map["nodeindex1"] = control->nodes->getID(combo1->currentText().toStdString());
+      if(combo2->currentText() == "world") {
+        map["nodeindex2"] = 0lu;
+      }
+      else {
+        map["nodeindex2"] = control->nodes->getID(combo2->currentText().toStdString());
+      }
+      interfaces::JointData data;
+      data.fromConfigMap(&map, "");
+      control->joints->addJoint(&data);
+      comboLabel1->hide();
+      combo1->hide();
+      comboLabel2->hide();
+      combo2->hide();
     }
 
     void MenuAdd::menu_addLight(const std::string &name) {

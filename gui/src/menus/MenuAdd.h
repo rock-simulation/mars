@@ -105,6 +105,7 @@ namespace mars {
       void menu_addMaterial(const std::string &name);
       void menu_addLight(const std::string &name);
       void menu_addMotor(const std::string &name);
+      void menu_addJoint(const std::string &name);
 
     };
 

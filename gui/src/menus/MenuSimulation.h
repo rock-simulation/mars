@@ -36,7 +36,6 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 
 #include "DialogNodes.h"
-#include "DialogJoints.h"
 #include "DialogSensors.h"
 #include "DialogControllers.h"
 
@@ -77,7 +76,6 @@ namespace mars {
   
     protected:
       void menu_nodes(void);
-      void menu_joints(void);
       void menu_sensors(void);
       void menu_controllers(void);
 
@@ -97,7 +95,6 @@ namespace mars {
       std::string resourcesPath;
 
       DialogNodes *dn;
-      DialogJoints *dj;
       DialogSensors *ds;
       DialogControllers *dc;
 
