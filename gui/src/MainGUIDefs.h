@@ -45,7 +45,6 @@
 #define GUI_ACTION_ADD_WINDOW          401
 #define GUI_ACTION_APPLY_FORCE         408
 #define GUI_ACTION_APPLY_TORQUE        409
-#define GUI_ACTION_IMPORT_MESH         410
 #define GUI_ACTION_NODE_TREE           411
 #define GUI_ACTION_SENSOR_TREE         415
 #define GUI_ACTION_CONTROLLER_TREE     416

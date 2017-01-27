@@ -215,7 +215,7 @@ namespace mars {
       return mesh;
     }
 
-    Vector GuiHelper::getExtend(osg::Group *oGroup){
+    Vector GuiHelper::getExtend(osg::Node *oGroup){
       osg::ComputeBoundsVisitor cbbv;
       oGroup->accept(cbbv);
       osg::BoundingBox bb = cbbv.getBoundingBox();
@@ -229,6 +229,21 @@ namespace mars {
         : ex.z() = fabs(bb.zMin() - bb.zMax());
 
       return ex;
+    }
+
+    std::vector<double> GuiHelper::getMeshSize(const std::string &filename) {
+      std::vector<double> r;
+      Vector size(0, 0, 0);
+      if(filename.substr(filename.size()-5, 5) == ".bobj") {
+        size = getExtend(GuiHelper::readBobjFromFile(filename));
+      }
+      else {
+        size = getExtend(GuiHelper::readNodeFromFile(filename));
+      }
+      r.push_back(size.x());
+      r.push_back(size.y());
+      r.push_back(size.z());
+      return r;
     }
 
     void GuiHelper::getPhysicsFromMesh(mars::interfaces::NodeData* node) {

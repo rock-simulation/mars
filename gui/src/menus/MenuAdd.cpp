@@ -54,6 +54,7 @@
 #define GUI_ACTION_ADD_LIGHT    5
 #define GUI_ACTION_ADD_MOTOR    6
 #define GUI_ACTION_ADD_JOINT    7
+#define GUI_ACTION_ADD_MESH     8
 
 namespace mars {
   namespace gui {
@@ -82,6 +83,11 @@ namespace mars {
       tmp1.append("/sphere.png");
       mainGui->addGenericMenuAction("../Edit/Add Sphere", GUI_ACTION_ADD_SPHERE,
                                     this, 0, tmp1, true);
+      tmp1 = resPath + "/images";
+      tmp1.append("/mesh.png");
+      mainGui->addGenericMenuAction("../Edit/Add Mesh", GUI_ACTION_ADD_MESH,
+                                    this, 0, tmp1, true);
+
       // add separator
       mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
       mainGui->addGenericMenuAction("../Edit/Add Material",
@@ -149,15 +155,25 @@ namespace mars {
       comboLabel2 = new QLabel();
       combo1 = new QComboBox();
       combo2 = new QComboBox();
+      label3 = new QLabel();
+      addLineEdit2 = new QLineEdit();
+      openFile = new QPushButton("...");
+      connect(openFile, SIGNAL(clicked()), this, SLOT(selectFile()));
       gridLayout = new QGridLayout();
       gridLayout->addWidget(comboLabel1, 0, 0);
       gridLayout->addWidget(combo1, 0, 1);
       gridLayout->addWidget(comboLabel2, 1, 0);
       gridLayout->addWidget(combo2, 1, 1);
+      gridLayout->addWidget(label3, 2, 0);
+      gridLayout->addWidget(addLineEdit2, 2, 1);
+      gridLayout->addWidget(openFile, 2, 2);
       comboLabel1->hide();
       comboLabel2->hide();
       combo1->hide();
       combo2->hide();
+      label3->hide();
+      addLineEdit2->hide();
+      openFile->hide();
       vLayout->addLayout(gridLayout);
     }
 
@@ -209,7 +225,26 @@ namespace mars {
         comboLabel2->show();
         combo2->show();
         label="Joint Name:";
-        name="joint"; break;
+        name="joint";
+        break;
+      }
+      case GUI_ACTION_ADD_MESH: {
+        comboLabel1->setText("Select physic mode:");
+        combo1->clear();
+        combo1->addItem("box");
+        combo1->addItem("sphere");
+        combo1->addItem("cylinder");
+        combo1->addItem("capsule");
+        combo1->addItem("mesh");
+        comboLabel1->show();
+        combo1->show();
+        label3->setText("Import file:");
+        label3->show();
+        addLineEdit2->show();
+        openFile->show();
+        label="Node Name:";
+        name="mesh";
+        break;
       }
       default: break;
       }
@@ -217,6 +252,13 @@ namespace mars {
       addLabel->setText(label.c_str());
       addLineEdit->setText(name.c_str());
       widgetAdd->show();
+    }
+
+    void MenuAdd::selectFile() {
+      QString fileName = QFileDialog::getOpenFileName(NULL, QObject::tr("Select Mesh"));
+      if(!fileName.isNull()) {
+        addLineEdit2->setText(fileName);
+      }
     }
 
     void MenuAdd::addObject() {
@@ -229,6 +271,7 @@ namespace mars {
       case GUI_ACTION_ADD_LIGHT: menu_addLight(name); break;
       case GUI_ACTION_ADD_MOTOR: menu_addMotor(name); break;
       case GUI_ACTION_ADD_JOINT: menu_addJoint(name); break;
+      case GUI_ACTION_ADD_MESH: menu_addMesh(name); break;
       default: break;
       }
       widgetAdd->hide();
@@ -335,6 +378,37 @@ namespace mars {
       node.fromConfigMap(&map, "");
       node.material.fromConfigMap(&material, "");
       control->nodes->addNode(&node);
+    }
+
+    void MenuAdd::menu_addMesh(const std::string &name) {
+      std::string mesh = addLineEdit2->text().toStdString();
+      std::string mode = combo1->currentText().toStdString();
+      configmaps::ConfigMap map;
+      map["name"] = name;
+      map["physicmode"] = mode;
+      map["origname"] = "";
+      map["filename"] = mesh;
+      map["extend"]["x"] = 1.;
+      map["extend"]["y"] = 1.;
+      map["extend"]["z"] = 1.;
+      if(control->loadCenter && control->loadCenter->loadMesh) {
+        std::vector<double> size = control->loadCenter->loadMesh->getMeshSize(mesh);
+        map["extend"]["x"] = size[0];
+        map["extend"]["y"] = size[1];
+        map["extend"]["z"] = size[2];
+      }
+      map["position"]["z"] = 0.0;
+      map["movable"] = true;
+      interfaces::NodeData node;
+      node.fromConfigMap(&map, "");
+      node.material.fromConfigMap(&material, "");
+      control->nodes->addNode(&node);
+
+      comboLabel1->hide();
+      combo1->hide();
+      label3->hide();
+      addLineEdit2->hide();
+      openFile->hide();
     }
 
   } // end of namespace gui

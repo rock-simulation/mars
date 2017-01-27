@@ -56,6 +56,7 @@ namespace mars {
     public:
       virtual ~LoadMeshInterface() {}
       virtual void getPhysicsFromMesh(NodeData *node) = 0;
+      virtual std::vector<double> getMeshSize(const std::string &filename) = 0;
     };
 
 

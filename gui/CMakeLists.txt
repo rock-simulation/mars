@@ -83,7 +83,6 @@ set(HEADERS
         src/dialogs/Dialog_Create_Material.h 
         src/dialogs/Dialog_Edit_Material.h
         src/dialogs/Dialog_Graphics_Options.h 
-        src/dialogs/Dialog_Import_Mesh.h 
         src/dialogs/Dialog_Motor_Control.h 
         src/dialogs/Dialog_Rescale_Environment.h 
         src/dialogs/DialogControllers.h
@@ -126,7 +125,6 @@ set(QT_MOC_HEADER
         src/dialogs/Dialog_Add_Torque.h 
         src/dialogs/Dialog_Create_Material.h 
         src/dialogs/Dialog_Edit_Material.h
-        src/dialogs/Dialog_Import_Mesh.h 
         src/dialogs/Dialog_Motor_Control.h 
         src/dialogs/Dialog_Rescale_Environment.h 
         src/dialogs/Dialog_Graphics_Options.h 
@@ -175,7 +173,6 @@ set(TARGET_SRC
             src/dialogs/Dialog_Create_Material.cpp 
             src/dialogs/Dialog_Edit_Material.cpp
             src/dialogs/Dialog_Graphics_Options.cpp 
-            src/dialogs/Dialog_Import_Mesh.cpp 
             src/dialogs/Dialog_Motor_Control.cpp 
             src/dialogs/Dialog_Rescale_Environment.cpp 
             src/dialogs/DialogControllers.cpp

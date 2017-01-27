@@ -41,7 +41,6 @@
 
 #include "DialogDistance.h"
 #include "DialogJoystick.h"
-#include "Dialog_Import_Mesh.h"
 #include "Dialog_Add_Force.h"
 #include "Dialog_Add_Torque.h"
 #include "Dialog_Rescale_Environment.h"
@@ -101,7 +100,6 @@ namespace mars {
       DialogDistance *dd;
       NodeSelectionTree *nst;
       DialogJoystick *djoy;
-      Dialog_Import_Mesh *dim;
       Dialog_Add_Force *daf;
       Dialog_Add_Torque *dat;
       Dialog_Rescale_Environment *dre;

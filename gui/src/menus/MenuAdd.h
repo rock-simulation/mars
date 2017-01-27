@@ -45,6 +45,7 @@ class QLabel;
 class QComboBox;
 class QVBoxLayout;
 class QGridLayout;
+class QPushButton;
 
 namespace lib_manager {
   class LibManager;
@@ -84,6 +85,7 @@ namespace mars {
 
     private slots:
       void addObject();
+      void selectFile();
 
     private:
 
@@ -92,8 +94,9 @@ namespace mars {
       interfaces::ControlCenter *control;
       configmaps::ConfigMap material, defaultLight;
       QWidget *widgetAdd;
-      QLabel *addLabel, *comboLabel1, *comboLabel2;
-      QLineEdit *addLineEdit;
+      QLabel *addLabel, *comboLabel1, *comboLabel2, *label3;
+      QLineEdit *addLineEdit, *addLineEdit2;
+      QPushButton *openFile;
       QGridLayout *gridLayout;
       QVBoxLayout *vLayout;
       QComboBox *combo1, *combo2;
@@ -106,6 +109,7 @@ namespace mars {
       void menu_addLight(const std::string &name);
       void menu_addMotor(const std::string &name);
       void menu_addJoint(const std::string &name);
+      void menu_addMesh(const std::string &name);
 
     };
 

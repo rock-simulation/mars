@@ -43,7 +43,6 @@ namespace mars {
 
       daf = NULL; // dialog add force
       dat = NULL; // dialog apply torque
-      dim = NULL; // dialog import mesh
 
       dd = NULL; // distance
       nst = NULL; // selection
@@ -105,12 +104,6 @@ namespace mars {
 
       tmp1 = resPath + "/images";
       tmp1.append("/mesh.png");
-      mainGui->addGenericMenuAction("../Edit/Add Mesh",
-                                    GUI_ACTION_IMPORT_MESH,
-                                    (main_gui::MenuInterface*)this, 0,
-                                    tmp1, true);
-      //mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1); // separator
-
 
       mainGui->addGenericMenuAction("../Deprecated/Graphics Options",
                                     GUI_ACTION_EDIT_GRAPHICS,
@@ -155,7 +148,6 @@ namespace mars {
       case GUI_ACTION_SELECTION: menu_selection(); break;
       case GUI_ACTION_JOYSTICK: menu_joystick();  break;
       case GUI_ACTION_MOTOR_CONTROL:  menu_motorControl(); break;
-      case GUI_ACTION_IMPORT_MESH: menu_importMesh(); break;
       case GUI_ACTION_APPLY_FORCE: menu_applyForce(); break;
       case GUI_ACTION_APPLY_TORQUE: menu_applyTorque(); break;
       case GUI_ACTION_EDIT_GRAPHICS: menu_graphicsOptions(); break;
@@ -365,20 +357,6 @@ namespace mars {
         QMessageBox::information(0, "Simulation", "Please create a node first",
                                  "OK", 0); // ok == button 0
       }
-    }
-
-    void MenuSimulation::menu_importMesh() {
-      //close and delete existing dialog
-      if (dim != NULL) {
-        if(dim->pDialog)
-          dim->pDialog->close();
-        delete dim;
-        dim = NULL;
-      }
-      //create dialog
-      dim = new Dialog_Import_Mesh(control, mainGui);
-      //mainGui->addDockWidget((void*)dim->pDialog);
-      dim->show();
     }
 
     void MenuSimulation::closeWidget(void* widget) {
