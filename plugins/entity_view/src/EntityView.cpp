@@ -58,15 +58,19 @@ namespace mars {
            example = control->cfg->getOrCreateProperty("plugin", "example",
            0.0, this);
         */
+        std::string rPath = control->cfg->getOrCreateProperty("MarsGui",
+                                                              "resources_path",
+                                                              ".").sValue;
 
         // Create a nonphysical box:
 
         // Create a camera fixed on the box:
 
         // Create a HUD texture element:
-
-        gui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1); // separator
-        gui->addGenericMenuAction("../Edit/Entity Viewer", 1, this);
+        // separator
+        gui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
+        gui->addGenericMenuAction("../Edit/Entity Viewer", 1, this, 0,
+                                  rPath + "/images/entity_view.png", true);
 
       }
 

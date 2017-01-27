@@ -197,6 +197,7 @@ namespace mars {
             libManager->loadLibrary("main_gui");
             libManager->loadLibrary("mars_graphics");
             libManager->loadLibrary("mars_gui");
+            libManager->loadLibrary("entity_view");
           }
         }
       }
@@ -255,7 +256,6 @@ namespace mars {
             libManager->loadLibrary("data_broker_gui", NULL, true);
             libManager->loadLibrary("cfg_manager_gui", NULL, true);
             libManager->loadLibrary("lib_manager_gui", NULL, true);
-            libManager->loadLibrary("entity_view", NULL, true);
             libManager->loadLibrary("SkyDomePlugin", NULL, true);
           }
         }
