@@ -69,41 +69,41 @@ namespace mars {
 
       std::string tmp1;
 
-      tmp1 = resPath + "/images";
-      tmp1.append("/plane.png");
+      tmp1 = resPath + "/images/plane.png";
       mainGui->addGenericMenuAction("../Edit/Add Plane", GUI_ACTION_ADD_PLANE,
                                     this, 0, tmp1, true);
 
-      tmp1 = resPath + "/images";
-      tmp1.append("/box.png");
+      tmp1 = resPath + "/images/box.png";
       mainGui->addGenericMenuAction("../Edit/Add Box", GUI_ACTION_ADD_BOX,
                                     this, 0, tmp1, true);
 
-      tmp1 = resPath + "/images";
-      tmp1.append("/sphere.png");
+      tmp1 = resPath + "/images/sphere.png";
       mainGui->addGenericMenuAction("../Edit/Add Sphere", GUI_ACTION_ADD_SPHERE,
                                     this, 0, tmp1, true);
-      tmp1 = resPath + "/images";
-      tmp1.append("/mesh.png");
+      tmp1 = resPath + "/images/mesh.png";
       mainGui->addGenericMenuAction("../Edit/Add Mesh", GUI_ACTION_ADD_MESH,
                                     this, 0, tmp1, true);
 
       // add separator
       mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
+
+      tmp1 = resPath + "/images/material.png";
       mainGui->addGenericMenuAction("../Edit/Add Material",
-                                    GUI_ACTION_ADD_MATERIAL, this);
-      tmp1 = resPath + "/images";
-      tmp1.append("/lamp.png");
+                                    GUI_ACTION_ADD_MATERIAL, this,
+                                    0, tmp1, true);
+      tmp1 = resPath + "/images/lamp.png";
       mainGui->addGenericMenuAction("../Edit/Add Light", GUI_ACTION_ADD_LIGHT,
                                     this, 0, tmp1, true);
       // add separator
       mainGui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
 
+      tmp1 = resPath + "/images/joint.png";
       mainGui->addGenericMenuAction("../Edit/Add Joint",
-                                    GUI_ACTION_ADD_JOINT, this);
+                                    GUI_ACTION_ADD_JOINT, this, 0, tmp1, true);
 
+      tmp1 = resPath + "/images/motor.png";
       mainGui->addGenericMenuAction("../Edit/Add Motor",
-                                    GUI_ACTION_ADD_MOTOR, this);
+                                    GUI_ACTION_ADD_MOTOR, this, 0, tmp1, true);
 
 
       material["name"] = "defaultGrey";
@@ -283,6 +283,10 @@ namespace mars {
       map["name"] = name;
       map["jointIndex"] = control->joints->getID(combo1->currentText().toStdString());
       map["jointIndex2"] = 0lu;
+      map["type"] = "PID";
+      map["maxSpeed"] = 6.;
+      map["maxEffort"] = 100.;
+      map["p"] = 20.;
       interfaces::MotorData data;
       data.fromConfigMap(&map, "");
       control->motors->addMotor(&data);
