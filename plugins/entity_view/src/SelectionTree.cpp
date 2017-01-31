@@ -305,6 +305,12 @@ namespace mars {
               name = motorData.name;
               editCategory = 3;
             }
+            else if(parent->text(0) == "sensors") {
+              const BaseSensor *sensor = control->sensors->getFullSensor(id);
+              map = sensor->createConfig();
+              name = sensor->name;
+              editCategory = 7;
+            }
             dw->setEditPattern(editPattern);
             dw->setFilePattern(filePattern);
             dw->setColorPattern(colorPattern);
