@@ -161,6 +161,12 @@ namespace mars {
     SocketError TCPServer::reopen()
     {assert(false);}
 
+    void TCPServer::setTimeout(double timeout)
+    { if(s) s->setTimeout(timeout); }
+
+    double TCPServer::getTimeout() const
+    { return (s ? s->getTimeout() : 0.); }
+
     /* disallow copying */
     TCPServer::TCPServer(const TCPServer &other)
     {assert(false);}
