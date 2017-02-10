@@ -433,8 +433,8 @@ namespace mars {
                              sizeof(servAddr));
       if(result != 0) {
         close();
-        fprintf(stderr, "TCPBaseSocket::connect: connect failed to %s:%hu\n",
-                host.c_str(), port);
+        // fprintf(stderr, "TCPBaseSocket::connect: connect failed to %s:%hu\n",
+        //         host.c_str(), port);
         return SOCKET_CONNECTION_FAILED;
       }
       return SOCKET_SUCCESS;

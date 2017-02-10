@@ -504,6 +504,9 @@ namespace mars {
           m = &config;
         }
         if(m) {
+	  if(m->hasKey(key)) {
+	    m->erase(key);
+	  }
           if(typeBox->currentIndex() == 0) { // map
             (*m)[key] = ConfigMap();
           }
