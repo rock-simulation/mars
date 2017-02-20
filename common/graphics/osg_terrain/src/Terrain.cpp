@@ -70,6 +70,7 @@ namespace osg_terrain {
 
   class PlaneTransform : public osg::Transform {
   public:
+    double zOffset;
     virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,
                                            osg::NodeVisitor* nv) const  {
       osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
@@ -77,7 +78,7 @@ namespace osg_terrain {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
         eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 6.0);
         eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 6.0);
-        eyePointLocal[2] = -20;
+        eyePointLocal[2] = zOffset;
         matrix.preMultTranslate(eyePointLocal);
       }
       return true;
@@ -90,7 +91,7 @@ namespace osg_terrain {
         osg::Vec3 eyePointLocal = cv->getEyeLocal();
         eyePointLocal[0] = eyePointLocal[0]-fmod(eyePointLocal[0], 6.0);
         eyePointLocal[1] = eyePointLocal[1]-fmod(eyePointLocal[1], 6.0);
-        eyePointLocal[2] = -20;
+        eyePointLocal[2] = zOffset;
         matrix.postMultTranslate(-eyePointLocal);
       }
       return true;
@@ -153,6 +154,7 @@ namespace osg_terrain {
     if(map.hasKey("plane")) {
       fprintf(stderr, "create plane object");
       osg::ref_ptr<PlaneTransform> p = new PlaneTransform();
+      p->zOffset = 0;
       osg::ref_ptr<osg::Node> node = createPlane();
       node->setNodeMask(0xff | 0x1000);
       p->addChild(node.get());
@@ -206,6 +208,12 @@ namespace osg_terrain {
       p->setCullingActive(false);
       osg::ref_ptr<osg::Node> node;
       std::string file = map["terrain"]["file"];
+      if(map["terrain"].hasKey("pos/z")) {
+        p->zOffset = map["terrain"]["pos/z"];
+      }
+      else {
+        p->zOffset = 0.;
+      }
       if(utils::getFilenameSuffix(file) == ".bobj") {
         node = graphics::GuiHelper::readBobjFromFile(file);
       }

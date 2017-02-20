@@ -1,0 +1,11 @@
+params:
+  - vModelPos
+uniforms:
+  float:
+    - {name: texScale}
+    - {name: terrainScaleZ}
+  sampler2D:
+    - {name: terrainMap}
+source: /shader/terrainMap.vert
+name: terrain_map
+priority: -119

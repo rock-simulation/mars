@@ -1,0 +1,13 @@
+params:
+  - col
+  - n
+uniforms:
+  float:
+    - {name: bumpNorFac}
+  vec3:
+    - {name: envMapScale}
+  sampler2D:
+    - {name: terrainMap}
+source: /shader/envmap.frag
+name: envMap
+priority: 1
