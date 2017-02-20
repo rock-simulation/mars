@@ -7,7 +7,11 @@ uniforms:
   vec3:
     - {name: envMapScale}
   sampler2D:
-    - {name: terrainMap}
+    - {name: envMapD}
+    - {name: envMapR}
+    - {name: envMapG}
+    - {name: envMapB}
+    - {name: environmentMap}
 source: /shader/envmap.frag
 name: envMap
 priority: 1
