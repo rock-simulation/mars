@@ -42,6 +42,8 @@ namespace osg_material_manager {
 
       if (map.hasKey("priority")) {
         funcs[0].priority = (int)map["priority"];
+      } else {
+        funcs[0].priority = 0;
       }
 
       if (map.hasKey("params")) {
@@ -189,7 +191,7 @@ namespace osg_material_manager {
               typeName = type;
               s << "";
             }
-            int priority = 0;
+            int priority = funcs[0].priority;
             if (item.hasKey("priority")) {
               priority = (int)item["priority"];
             }
@@ -210,11 +212,11 @@ namespace osg_material_manager {
             buffer << t.rdbuf();
             snippet = buffer.str();
           }
-          int priority = 0;
+          int priority = funcs[0].priority;
           if (item.hasKey("priority")) {
             priority = (int)item["priority"];
           }
-          addSnippet(PrioritizedLine(snippet, priority));
+          addSnippet(snippet, priority);
         }
       }
     }

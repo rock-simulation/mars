@@ -53,7 +53,11 @@ namespace osg_material_manager {
 
   typedef struct PrioritizedValue {
     int priority;
+    int s_priority; // used to preserve order in case of same priority
     bool operator<(const PrioritizedValue& other) const {
+      if (priority == other.priority) {
+        return s_priority > other.s_priority;
+      }
       return priority > other.priority;
     };
   } PrioritizedValue;
@@ -61,7 +65,7 @@ namespace osg_material_manager {
   typedef struct FunctionCall : PrioritizedValue {
     std::string name;
     std::vector<std::string> arguments;
-    FunctionCall(std::string name, std::vector<std::string> args, int prio) : name(name), arguments(args) {
+    FunctionCall(std::string name, std::vector<std::string> args, int prio, int s_prio) : name(name), arguments(args) {
       priority = prio;
     }
     std::string toString() const {
@@ -80,8 +84,9 @@ namespace osg_material_manager {
   } FunctionCall;
 
   typedef struct MainVar : PrioritizedValue, GLSLVariable {
-    MainVar(std::string p_name, std::string p_type, std::string p_value, int p_priority) {
+    MainVar(std::string p_name, std::string p_type, std::string p_value, int p_priority, int p_s_priority) {
       priority = p_priority;
+      s_priority = p_s_priority;
       name = p_name;
       value = p_value;
       type = p_type;
@@ -93,8 +98,9 @@ namespace osg_material_manager {
 
   typedef struct PrioritizedLine : PrioritizedValue {
     std::string line;
-    PrioritizedLine(std::string p_line, int p_priority) : line(p_line) {
+    PrioritizedLine(std::string p_line, int p_priority, int p_s_priority) : line(p_line) {
       priority = p_priority;
+      s_priority = p_s_priority;
     }
   };
 

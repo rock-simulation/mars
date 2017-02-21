@@ -102,11 +102,11 @@ namespace osg_material_manager {
     std::priority_queue<PrioritizedLine> lines;
     for(list<MainVar>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
-      lines.push(PrioritizedLine((*it).toString(), (*it).priority));
+      lines.push(PrioritizedLine((*it).toString(), (*it).priority, lines.size()));
       //code << "    " << (*it).name << " = " << (*it).value<< ";" << endl;
 
     for(vector<FunctionCall>::const_iterator it = u->getFunctionCalls().begin(); it != u->getFunctionCalls().end(); ++it)
-      lines.push(PrioritizedLine((*it).toString(), (*it).priority));
+      lines.push(PrioritizedLine((*it).toString(), (*it).priority, lines.size()));
       //code << "    " << *it << endl;
 
     for(vector<PrioritizedLine>::const_iterator it = u->getSnippets().begin(); it != u->getSnippets().end(); ++it) {
