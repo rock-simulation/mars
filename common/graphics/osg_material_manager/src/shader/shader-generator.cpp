@@ -95,7 +95,7 @@ namespace osg_material_manager {
     code << "void main()" << endl;
     code << "{" << endl;
 
-    for(list<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
+    for(set<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
         it != u->getMainVarDecs().end(); ++it)
       code << "    " << *it << ";" << endl;
 

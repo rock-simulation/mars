@@ -120,16 +120,11 @@ namespace osg_material_manager {
     }
 
     void addMainVarDec(GLSLAttribute att) {
-      std::list<GLSLAttribute>::const_iterator it = mainVarDecs.begin();
-      for (;it!=mainVarDecs.end();it++) {
-        if (it->name == att.name) {
-          return;
-        }
-      }
-      mainVarDecs.push_back(att);
+      std::set<GLSLAttribute>::const_iterator it = mainVarDecs.begin();
+      mainVarDecs.insert(att);
     }
 
-    const std::list<GLSLAttribute>& getMainVarDecs() const {
+    const std::set<GLSLAttribute>& getMainVarDecs() const {
       return mainVarDecs;
     }
 
@@ -186,7 +181,7 @@ namespace osg_material_manager {
     // needed functions (tuple of name and code)
     std::map<std::string,std::string> deps;
     std::list<MainVar> mainVars;
-    std::list<GLSLAttribute> mainVarDecs;
+    std::set<GLSLAttribute> mainVarDecs;
     std::vector<GLSLExport> exports;
     std::set<GLSLSuffix> suffixes;
     std::set<std::string> enabledExtensions;

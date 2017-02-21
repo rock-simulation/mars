@@ -60,9 +60,10 @@ namespace osg_material_manager {
     for(list<MainVar>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
       mainVars.push_back(*it);
-    for(list<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
-        it != u->getMainVarDecs().end(); ++it)
-      mainVarDecs.push_back(*it);
+    for(set<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
+        it != u->getMainVarDecs().end(); ++it) {
+      mainVarDecs.insert(*it);
+    }
     for(vector<GLSLExport>::const_iterator it = u->getExports().begin();
         it != u->getExports().end(); ++it)
       exports.push_back(*it);
