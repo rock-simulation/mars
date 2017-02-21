@@ -35,7 +35,7 @@ namespace osg_material_manager {
   class ShaderFunc {
   public:
     ShaderFunc(std::string name, std::vector<std::string> args, unsigned int priority=0) {
-      funcs.push_back(FunctionCall(name, args, priority));
+      funcs.push_back(FunctionCall(name, args, priority, 0));
       this->name = name;
       // minimum gl version
       minVersion = 120;
@@ -112,7 +112,7 @@ namespace osg_material_manager {
     }
 
     void addMainVar(GLSLVariable var, int priority=0) {
-      mainVars.push_back(MainVar(var.name, var.type, var.value, priority));
+      mainVars.push_back(MainVar(var.name, var.type, var.value, priority, mainVars.size()));
       addMainVarDec((GLSLAttribute) {var.type, var.name});
     }
     const std::list<MainVar>& getMainVars() const {
@@ -142,8 +142,8 @@ namespace osg_material_manager {
       return exports;
     }
 
-    void addSnippet(PrioritizedLine l) {
-      snippets.push_back(l);
+    void addSnippet(std::string line, int priority=0) {
+      snippets.push_back(PrioritizedLine(line, priority, snippets.size()));
     }
 
     const std::vector<PrioritizedLine>& getSnippets() const {
