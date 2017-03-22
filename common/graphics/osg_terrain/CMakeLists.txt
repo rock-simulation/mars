@@ -18,9 +18,7 @@ endif()
 include_directories(src)
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    mars_graphics
-			    configmaps
-			    mars_utils
+          eigen3
           osg_material_manager
           opencv
 )
