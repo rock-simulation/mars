@@ -61,7 +61,8 @@ namespace osg_material_manager {
       maxNumLights(1),
       resPath(resPath),
       invShadowTextureSize(1./1024),
-      useWorldTexCoords(false) {
+      useWorldTexCoords(false),
+      loadPath("") {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
     sinUniform = new osg::Uniform("sin_", 0.0f);
@@ -117,6 +118,12 @@ namespace osg_material_manager {
   void OsgMaterial::setMaterial(const ConfigMap &map_) {
     //return;
     map = map_;
+    if(map.hasKey("loadPath")) {
+      loadPath << map["loadPath"];
+      if(loadPath[loadPath.size()-1] != '/') {
+        loadPath.append("/");
+      }
+    }
     name << map["name"];
     getLight = map.get("getLight", true);
 
@@ -207,7 +214,11 @@ namespace osg_material_manager {
     if(it != textures.end()) {
       TextureInfo &info = it->second;
       // todo: handle changes in texture unit etc.
-      info.texture = OsgMaterialManager::loadTexture((std::string)config["file"]);
+      std::string file = config["file"];
+      if(!loadPath.empty() && file[0] != '/') {
+        file = loadPath + file;
+      }
+      info.texture = OsgMaterialManager::loadTexture(file);
       if(!info.enabled) {
         state->setTextureAttributeAndModes(info.unit, info.texture,
                                            osg::StateAttribute::ON);
@@ -218,12 +229,16 @@ namespace osg_material_manager {
     else {
       TextureInfo info;
       info.name << config["name"];
+      std::string file = config["file"];
+      if(!loadPath.empty() && file[0] != '/') {
+        file = loadPath + file;
+      }
       if(info.name == "terrainMap") {
-        info.texture = loadTerrainTexture((std::string)config["file"]);
+        info.texture = loadTerrainTexture(file);
         //nearest = true;
       }
       else {
-        info.texture = OsgMaterialManager::loadTexture((std::string)config["file"]);
+        info.texture = OsgMaterialManager::loadTexture(file);
       }
       if(nearest) {
         info.texture->setFilter(osg::Texture::MIN_FILTER,
@@ -619,6 +634,9 @@ namespace osg_material_manager {
       glslProgram = new osg::Program();
       { // load vertex shader
         string file = map["shaderSources"]["vertexShader"];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
         std::ifstream t(file.c_str());
         std::stringstream buffer;
         buffer << t.rdbuf();
@@ -629,6 +647,9 @@ namespace osg_material_manager {
       }
       { // load fragment shader
         string file = map["shaderSources"]["fragmentShader"];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
         std::ifstream t(file.c_str());
         std::stringstream buffer;
         buffer << t.rdbuf();

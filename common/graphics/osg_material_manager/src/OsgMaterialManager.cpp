@@ -46,8 +46,10 @@ namespace osg_material_manager {
   OsgMaterialManager::OsgMaterialManager(lib_manager::LibManager *theManager) :
     lib_manager::LibInterface(theManager) {
     mainStateGroup = new osg::Group();
-    
-    cfg = theManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
+    cfg = NULL;
+    if(theManager) {
+      cfg = theManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
+    }
     resPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
     shadowSamples.iValue = 1;
     if(cfg) {

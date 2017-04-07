@@ -138,6 +138,7 @@ namespace osg_material_manager {
     double t;
     std::string name, resPath;
     configmaps::ConfigMap map, unitMap;
+    std::string loadPath;
 
     osg::Vec4 getColor(std::string key);
     void setColor(std::string color, std::string key, std::string value);
