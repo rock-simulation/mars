@@ -124,7 +124,7 @@ namespace mars {
       std::string bumpmap_ = bumpmap;
       std::string normalmap_ = normalmap;
 
-      *config = name;
+      *config = map;
 
       if(skipFilenamePrefix) {
         removeFilenamePrefix(&texturename_);
