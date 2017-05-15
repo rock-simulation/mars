@@ -35,15 +35,6 @@ add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 
 setup_qt()
-if (${USE_QT5})
-  IF (UNIX)
-    set(PUBLIC_DEPENDECIES Qt5Widgets)
-  ENDIF (UNIX)
-else()
-  IF (UNIX)
-    set(PUBLIC_DEPENDENCIES QtCore)
-  ENDIF (UNIX)
-endif()
 
 set(SOURCES
     src/GraphicsTimer.cpp
@@ -114,6 +105,11 @@ ELSE (WIN32)
     SET (PRELIB "lib")
     SET (LIBPATH "lib")
   ELSE (APPLE)
+    if (${USE_QT5})
+      set(PUBLIC_DEPENDECIES Qt5Widgets)
+    else()
+      set(PUBLIC_DEPENDENCIES QtCore)
+    endif()
     SET (POSTLIB ".so")
     SET (PRELIB "lib")
     SET (LIBPATH "lib")
