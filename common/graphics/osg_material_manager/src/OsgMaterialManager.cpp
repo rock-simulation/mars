@@ -43,14 +43,23 @@ namespace osg_material_manager {
   std::vector<OsgMaterialManager::textureFileStruct> OsgMaterialManager::textureFiles;
   std::vector<OsgMaterialManager::imageFileStruct> OsgMaterialManager::imageFiles;
 
+  OsgMaterialManager::OsgMaterialManager(const std::string &resourcesPath) : lib_manager::LibInterface(NULL) {
+    resPath.sValue = resourcesPath;
+    init();
+  }
+
   OsgMaterialManager::OsgMaterialManager(lib_manager::LibManager *theManager) :
     lib_manager::LibInterface(theManager) {
+    resPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
+    init();
+  }
+
+  void OsgMaterialManager::init(void) {
     mainStateGroup = new osg::Group();
     cfg = NULL;
-    if(theManager) {
-      cfg = theManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
+    if(libManager) {
+      cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>("cfg_manager", true);
     }
-    resPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
     shadowSamples.iValue = 1;
     if(cfg) {
       resPath = cfg->getOrCreateProperty("Preferences", "resources_path",
@@ -286,7 +295,7 @@ namespace osg_material_manager {
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setUseFog(useFog);
-    }    
+    }
   }
 
   void OsgMaterialManager::setUseNoise(bool v) {
@@ -294,23 +303,23 @@ namespace osg_material_manager {
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setUseNoise(useNoise);
-    }    
+    }
   }
-  
+
   void OsgMaterialManager::setDrawLineLaser(bool v) {
     drawLineLaser = v;
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setDrawLineLaser(drawLineLaser);
-    }    
+    }
   }
-  
+
   void OsgMaterialManager::setUseShadow(bool v) {
     useShadow = v;
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setUseShadow(useShadow);
-    }    
+    }
   }
 
   void OsgMaterialManager::setBrightness(float v) {
@@ -318,7 +327,7 @@ namespace osg_material_manager {
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setBrightness(brightness);
-    }    
+    }
   }
 
   std::vector<configmaps::ConfigMap> OsgMaterialManager::getMaterialList() {
@@ -339,9 +348,9 @@ namespace osg_material_manager {
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setExperimentalLineLaser(pos, normal, color,
                                       laserAngle, openingAngle);
-    }    
+    }
   }
-  
+
 } // end of namespace: osg_material_manager
 
 DESTROY_LIB(osg_material_manager::OsgMaterialManager);
