@@ -8,6 +8,8 @@ varyings:
 uniforms:
   float:
     - {name: bumpNorFac}
+  sampler2D:
+    - {name: normalMap}
 mainVarDecs:
   vec4:
     - {name: nt}
