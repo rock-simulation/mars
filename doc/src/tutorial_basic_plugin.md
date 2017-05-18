@@ -73,6 +73,8 @@ is started from within that configuration folder. Alternatively, you can start
     cp -r mars_default mars_basic_plugin
     cd mars_basic_plugin
     cp other_libs.txt.example other_libs.txt
+    cp core_libs.txt.example core_libs.txt
+    echo "basic_plugin" >> other_libs.txt
 
 Content of other_libs.txt:
 
@@ -124,8 +126,8 @@ some motor values:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
-    static unsigned long id1 = control->motors->getID("motor1");
-    static unsigned long id2 = control->motors->getID("motor2");
+    static unsigned long id1 = control->motors->getID("motor_left");
+    static unsigned long id2 = control->motors->getID("motor_right");
 
     control->motors->setMotorValue(id1, 1.0);
     control->motors->setMotorValue(id2, 3.0);
@@ -143,8 +145,8 @@ simulation:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
-    static unsigned long id1 = control->motors->getID("motor1");
-    static unsigned long id2 = control->motors->getID("motor2");
+    static unsigned long id1 = control->motors->getID("motor_left");
+    static unsigned long id2 = control->motors->getID("motor_right");
     static unsigned long laserId = control->sensors->getSensorID("laser");
 
     control->motors->setMotorValue(id1, 1.0);
@@ -160,8 +162,8 @@ method returns the number of values representing the sensor data.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
-    static unsigned long id1 = control->motors->getID("motor1");
-    static unsigned long id2 = control->motors->getID("motor2");
+    static unsigned long id1 = control->motors->getID("motor_left");
+    static unsigned long id2 = control->motors->getID("motor_right");
     static unsigned long laserId = control->sensors->getSensorID("laser");
     sReal *sensorData;
     int numSensorValues = control->sensors->getSensorData(laserId, &sensorData);
