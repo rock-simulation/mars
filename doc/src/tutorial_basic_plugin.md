@@ -15,18 +15,19 @@ plugin, load your scene, and control the simulation.
 ## Prerequisites
 
 We assume you already have a MARS development environment setup in
-"$MARS_DEV_ROOT". You should also have a simulation scene or SMURF file
-to load into the simulation.
+´MARS_DEV_ROOT´. Within the documentation we use ´MARS_DEV_ROOT´ as alias to
+the folder where you installed MARS. You should also have a simulation scene
+or SMURF file to load into the simulation.
 Open a terminal and source your environment:
 
-    cd $MARS_DEV_ROOT;
+    cd MARS_DEV_ROOT
     . env.sh
 
 ## Basic Plugin
 
 ### Create and build a new plugin
 
-To setup your first plugin you can use a script wich will create a new
+To setup your first plugin you can use a script which will create a new
 plugin:
 
     cd simulation/mars/plugins/plugin_template
@@ -47,25 +48,31 @@ Dashes ( **-** ) and underscores ( **_** ) are fine.
 plugin created by following the guide of the basic plugin tutorial.").
 Afterwards, enter the author name, email, and confirm your data.  The
 script will create a folder containing your plugin one directory above
-the script location ("$MARS_DEV_ROOT/mars/plugins/basic_plugin").  You
+the script location ("MARS_DEV_ROOT/mars/plugins/basic_plugin").  You
 can go into that folder and use the build.sh script to build the
 plugin for a first test if everything went well.  To install the
 plugin you have to use "make install" within the newly created build
 folder.
 
-    cd $MARS_DEV_ROOT/mars/plugins/basic_plugin
+    cd MARS_DEV_ROOT/mars/plugins/basic_plugin
     ./build.sh
     cd build
     make install
 
 If you want to create a custom configuration to work with your plugin,
 copy the "mars_default" configuration to "mars_basic_plugin", rename your
-example additional lib configuration file "other_libs.txt.example" into "other_libs.txt" and add your plugin to the list in the file. This will
-cause your plugin to be loaded upon startup of MARS.
+example additional lib configuration file "other_libs.txt.example" into
+"other_libs.txt" and add your plugin to the list in the file. Additionally,
+you have to rename the "core_libs.txt.example" into "core_libs.txt", too.
+This will cause your plugin to be loaded upon startup of MARS if  ´mars_app´
+is started from within that configuration folder. Alternatively, you can start
+´mars_app´ from anywhere and pass the configuration folder:
+´mars_app -C path_to_configuration´.
 
-    cd $MARS_DEV_ROOT/install/configuration
+    cd MARS_DEV_ROOT/install/configuration
     cp -r mars_default mars_basic_plugin
     cd mars_basic_plugin
+    cp other_libs.txt.example other_libs.txt
 
 Content of other_libs.txt:
 
@@ -87,7 +94,7 @@ File->Library Info...
 
 ### Adapt the plugin
 
-In the "$MARS_DEV_ROOT/mars/plugins/basic_plugin/src/BasicPlugin.cpp"
+In the "MARS_DEV_ROOT/mars/plugins/basic_plugin/src/BasicPlugin.cpp"
 you will find a "init()" function that is called by the simulation to
 initialize the plugin.  If your initialization code depends on the
 simulation or other plugins you should rather perform it in the init()
@@ -117,14 +124,16 @@ some motor values:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
+    static unsigned long id1 = control->motors->getID("motor1");
+    static unsigned long id2 = control->motors->getID("motor2");
 
-    control->motors->setMotorValue(1, 1.0);
-    control->motors->setMotorValue(2, 3.0);
+    control->motors->setMotorValue(id1, 1.0);
+    control->motors->setMotorValue(id2, 3.0);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 After doing "make install" in
-"$MARS_DEV_ROOT/mars/plugins/basic_plugin/build" we should have a
+"MARS_DEV_ROOT/mars/plugins/basic_plugin/build" we should have a
 small robot driving in circles when we start the simulation.
 
 In the next step we want to read the sensor values from the laser
@@ -134,10 +143,12 @@ simulation:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
+    static unsigned long id1 = control->motors->getID("motor1");
+    static unsigned long id2 = control->motors->getID("motor2");
     static unsigned long laserId = control->sensors->getSensorID("laser");
 
-    control->motors->setMotorValue(1, 1.0);
-    control->motors->setMotorValue(2, 3.0);
+    control->motors->setMotorValue(id1, 1.0);
+    control->motors->setMotorValue(id2, 3.0);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -149,26 +160,28 @@ method returns the number of values representing the sensor data.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 void BasicPlugin::update(sReal time_ms) {
+    static unsigned long id1 = control->motors->getID("motor1");
+    static unsigned long id2 = control->motors->getID("motor2");
     static unsigned long laserId = control->sensors->getSensorID("laser");
     sReal *sensorData;
     int numSensorValues = control->sensors->getSensorData(laserId, &sensorData);
     assert(numSensorValues == 8);
     if(sensorData[3] < 1.0 || sensorData[0] < 0.4) {
-      control->motors->setMotorValue(2, 12.0);
+      control->motors->setMotorValue(id2, 12.0);
     } else if(sensorData[0] > 0.7) {
-      control->motors->setMotorValue(2, 4.8);
+      control->motors->setMotorValue(id2, 4.8);
     } else {
-      control->motors->setMotorValue(2, 5.0);
+      control->motors->setMotorValue(id2, 5.0);
     }
-    control->motors->setMotorValue(1, 5.0);
+    control->motors->setMotorValue(id1, 5.0);
     free(sensorData);
 }
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Now we can do "make install" again, start the simulation, and we
-should see the robot following the wall!
+Now we can do "make install" again, start the simulation, and we should see
+the robot following the wall!
 
-The plugin source generated by the "cnp.sh" script includes many
-commented code, that gives examples of how to use the simulation
-modules like the "DataBroker", the "CFGManager", or the "MainGUI".  A
-seperated documentation of these modules will be created soon.
+The plugin source generated by the "cnp.sh" script includes many commented code,
+that gives examples of how to use the simulation modules like the "DataBroker",
+the "CFGManager", or the "MainGUI".  A separated documentation of these modules
+will be created soon.
