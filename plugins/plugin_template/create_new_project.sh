@@ -45,12 +45,20 @@ if [ $answer = "y" ]; then
 
   echo "replace variables ..."
 
-  FILES="${projDir}/CMakeLists.txt
-         ${projDir}/manifest.xml
-         ${projDir}/src/${classname}.h
-         ${projDir}/src/${classname}.cpp
-         ${projDir}/src/${classname}_MainWin.h
-         ${projDir}/src/${classname}_MainWin.cpp"
+  if [ $gui = "y" ]; then
+    FILES="${projDir}/CMakeLists.txt
+           ${projDir}/manifest.xml
+           ${projDir}/src/${classname}.h
+           ${projDir}/src/${classname}.cpp
+           ${projDir}/src/${classname}_MainWin.h
+           ${projDir}/src/${classname}_MainWin.cpp"
+  else
+    FILES="${projDir}/CMakeLists.txt
+           ${projDir}/manifest.xml
+           ${projDir}/src/${classname}.h
+           ${projDir}/src/${classname}.cpp"
+  fi
+
   SED_PAIRS="__project__:${projName}
              __classname__:${classname}
              __description__:${description}

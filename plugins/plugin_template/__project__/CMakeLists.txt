@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 
 find_package(lib_manager)
-libs_defaults()
+lib_defaults()
 define_module_info()
 
 
