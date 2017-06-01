@@ -57,7 +57,7 @@ namespace mars {
       
     public:
       DataWidget(mars::cfg_manager::CFGManagerInterface *cfg,
-                 QWidget *parent = 0, bool onlyCompactView = false);
+                 QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
       ~DataWidget();
     
       virtual void valueChanged(QtProperty *property, const QVariant &value);

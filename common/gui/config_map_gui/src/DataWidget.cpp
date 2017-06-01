@@ -35,7 +35,8 @@ namespace mars {
 
 
     DataWidget::DataWidget(cfg_manager::CFGManagerInterface *cfg,
-                           QWidget *parent, bool onlyCompactView) :
+                           QWidget *parent, bool onlyCompactView,
+                           bool allowAdd) :
       main_gui::BaseWidget(parent, cfg, "ConfigMapWidget"),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
@@ -44,25 +45,27 @@ namespace mars {
 
       QVBoxLayout *vLayout = new QVBoxLayout();
       vLayout->addWidget(pDialog);
-      QHBoxLayout *hLayout = new QHBoxLayout();
-      QLabel *label = new QLabel("type:");
-      typeBox = new QComboBox();
-      typeBox->addItem("Map");
-      typeBox->addItem("Vector");
-      typeBox->addItem("Item");
-      hLayout->addWidget(label);
-      hLayout->addWidget(typeBox);
-      vLayout->addLayout(hLayout);
-      hLayout = new QHBoxLayout();
-      keyEdit = new QLineEdit();
-      valueEdit = new QLineEdit();
-      hLayout->addWidget(keyEdit);
-      hLayout->addWidget(valueEdit);
-      QPushButton *button = new QPushButton("add");
-      connect(button, SIGNAL(clicked()), this, SLOT(addKey2()));
-      hLayout->addWidget(button);
-      hLayout->setSpacing(4);
-      vLayout->addLayout(hLayout);
+      if(allowAdd) {
+        QHBoxLayout *hLayout = new QHBoxLayout();
+        QLabel *label = new QLabel("type:");
+        typeBox = new QComboBox();
+        typeBox->addItem("Map");
+        typeBox->addItem("Vector");
+        typeBox->addItem("Item");
+        hLayout->addWidget(label);
+        hLayout->addWidget(typeBox);
+        vLayout->addLayout(hLayout);
+        hLayout = new QHBoxLayout();
+        keyEdit = new QLineEdit();
+        valueEdit = new QLineEdit();
+        hLayout->addWidget(keyEdit);
+        hLayout->addWidget(valueEdit);
+        QPushButton *button = new QPushButton("add");
+        connect(button, SIGNAL(clicked()), this, SLOT(addKey2()));
+        hLayout->addWidget(button);
+        hLayout->setSpacing(4);
+        vLayout->addLayout(hLayout);
+      }
       vLayout->setSpacing(0);
       setLayout(vLayout);
 
