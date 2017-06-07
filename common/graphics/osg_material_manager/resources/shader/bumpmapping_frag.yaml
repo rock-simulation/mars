@@ -17,7 +17,7 @@ mainVars:
   vec4:
     - name: nt
       value: "texture2D( normalMap, texCoord )"
-      priority: 5
+      priority: 0
 source: /shader/normalmap.frag
 name: bump
 priority: 6
