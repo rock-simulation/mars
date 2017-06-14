@@ -1,6 +1,6 @@
 params:
   - col
-  - n
+  - nt
 uniforms:
   float:
     - {name: bumpNorFac}
@@ -11,7 +11,13 @@ uniforms:
     - {name: envMapR}
     - {name: envMapG}
     - {name: envMapB}
+    - {name: normalMapR}
+    - {name: normalMapG}
+    - {name: normalMapB}
     - {name: environmentMap}
+mainVarDecs:
+  vec4:
+    - {name: nt}
 source: /shader/envmap.frag
 name: envMap
 priority: 1

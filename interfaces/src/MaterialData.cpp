@@ -109,6 +109,11 @@ namespace mars {
         handleFilenamePrefix(&normalmap, filenamePrefix);
       }
 
+      map = *config;
+      if(!filenamePrefix.empty()) {
+        map["filePrefix"] = filenamePrefix;
+      }
+
       return true;
     }
 
@@ -118,6 +123,8 @@ namespace mars {
       std::string texturename_ = texturename;
       std::string bumpmap_ = bumpmap;
       std::string normalmap_ = normalmap;
+
+      *config = map;
 
       if(skipFilenamePrefix) {
         removeFilenamePrefix(&texturename_);

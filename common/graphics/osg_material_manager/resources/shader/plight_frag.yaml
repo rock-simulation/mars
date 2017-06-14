@@ -68,6 +68,7 @@ mainVars:
   vec3:
     - name: n
       value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"
+      priority: 0
   vec4:
     - name: pcol
       value: col

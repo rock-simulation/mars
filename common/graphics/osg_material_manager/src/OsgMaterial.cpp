@@ -675,7 +675,7 @@ namespace osg_material_manager {
         fclose(f);
       }
     }
-    if(checkTexture("normalMap")) {
+    if(checkTexture("normalMap") || checkTexture("environmentMap")) {
       glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
       stateSet->addUniform(bumpNorFacUniform.get());
     }
@@ -748,7 +748,7 @@ namespace osg_material_manager {
 
   void OsgMaterial::addMaterialNode(MaterialNode *d) {
     materialNodeVector.push_back(d);
-    if(checkTexture("normalMap") || checkTexture("displacementMap")) {
+    if(checkTexture("normalMap") || checkTexture("displacementMap") || checkTexture("environmentMap")) {
       d->setNeedTangents(true);
     }
     d->setTransparency((float)map.get("transparency", 0.0));

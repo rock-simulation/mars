@@ -101,6 +101,12 @@ namespace mars {
       std::string name;
 
       static int anonymCount;
+
+      /**
+       * If the data is created from a ConfigMap map the original map is
+       * stored here.
+       */
+      configmaps::ConfigMap map;
     }; // end of struct MaterialData
 
   } // end of namespace interfaces
