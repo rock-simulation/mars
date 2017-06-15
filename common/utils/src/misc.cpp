@@ -244,6 +244,22 @@ namespace mars {
       return back;
     }
 
+    std::string toupper(const std::string &s) {
+      std::string result;
+      for(size_t i=0; i<s.size(); ++i) {
+        result += std::toupper(s[i]);
+      }
+      return result;
+    }
+
+    std::string tolower(const std::string &s) {
+      std::string result;
+      for(size_t i=0; i<s.size(); ++i) {
+        result += std::tolower(s[i]);
+      }
+      return result;
+    }
+
   } // end of namespace utils
 
 } // end of namespace mars
