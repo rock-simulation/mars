@@ -64,6 +64,7 @@ namespace osg_text {
     void setFixedWidth(double w);
     void setFixedHeight(double h);
     void setPosition(double x, double y);
+    void setFontResolution(int x, int y);
     void getRectangle(double *left, double *right,
                       double *top, double *bottom) {
       *left = posX+posXB-pl;
@@ -82,15 +83,17 @@ namespace osg_text {
     osg::ref_ptr<osg::Geometry> borderGeom;
     osg::ref_ptr<osg::Vec3Array> backgroundVertices;
     osg::ref_ptr<osg::Vec3Array> borderVertices;
+    osg::ref_ptr<osg::MatrixTransform> resolutionCorrection;
 
     double width, height;
     double posX, posXI, posY;
     TextAlign textAlign;
     double pl, pt, pr, pb;
     double fixedWidth, fixedHeight, w, h, posXB;
-
+    double fontSize;
     osg::ref_ptr<osg::Vec4Array> backgroundColor, borderColor;
     double borderWidth;
+    double resolutionCorrectionX, resolutionCorrectionY;
 
     void updateSize();
     void updateBoundingBox();
