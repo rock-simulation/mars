@@ -125,6 +125,7 @@ namespace mars {
           control->loadCenter->loadHeightmap->readPixelData(reloadNode.terrain);
           if(!reloadNode.terrain->pixelData) {
             LOG_ERROR("NodeManager::addNode: could not load image for terrain");
+            iMutex.unlock();
             return INVALID_ID;
           }
         }
