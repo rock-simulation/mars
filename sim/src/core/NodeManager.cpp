@@ -118,6 +118,7 @@ namespace mars {
         if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
           if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
             LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
+            iMutex.unlock();
             return INVALID_ID;
           }
           reloadNode.terrain = new(terrainStruct);
