@@ -4,6 +4,8 @@ uniforms:
   float:
     - {name: texScale}
     - {name: terrainScaleZ}
+  int:
+    - {name: terrainDim}
   sampler2D:
     - {name: terrainMap}
 source: /shader/terrainMap.vert

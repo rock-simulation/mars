@@ -311,14 +311,16 @@ namespace mars {
       if ((std::string)(*it)["type"] == "")
         (*it)["type"] = uri_extension.substr(1);
       // handle absolute paths
+      std::string path2;
       if (uri.substr(0,1) == "/") {
-        (*it)["path"] = utils::getPathOfFile(uri);
+        path2 = utils::getPathOfFile(uri);
       } else {
-        (*it)["path"] = path+utils::getPathOfFile(uri);
+        path2 = path+utils::getPathOfFile(uri);
       }
+      if(path2[path2.size()-1] != '/') path2.append("/");
       utils::removeFilenamePrefix(&uri);
       (*it)["file"] = uri;
-      std::string fulluri = (std::string)((*it)["path"])+"/"+uri;
+      std::string fulluri = path2+uri;
       // the following allows adding an old MARS scene file in a smurf scene
       if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene") || ((std::string)(*it)["type"] == "yml")) {
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,

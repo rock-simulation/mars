@@ -33,12 +33,14 @@ add_definitions(-DMARS_PREFERENCES_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREF
 
 set(SOURCES 
 	src/Terrain.cpp
+	src/ShaderTerrain.cpp
 	src/MultiResHeightMapRenderer.cpp
 	src/VertexBufferTerrain.cpp
 )
 
 set(HEADERS
 	src/Terrain.h
+	src/ShaderTerrain.hpp
 	src/MultiResHeightMapRenderer.h
 	src/VertexBufferTerrain.h
 )

@@ -66,9 +66,9 @@ namespace mars {
       DrawObject(GraphicsManager *g);
       virtual ~DrawObject();
 
-      void createObject(unsigned long id,
-                        const mars::utils::Vector &_pivot,
-                        unsigned long sharedID);
+      virtual void createObject(unsigned long id,
+                                const mars::utils::Vector &_pivot,
+                                unsigned long sharedID);
 
       void setStateFilename(const std::string &filename, int create);
       void exportState(void);

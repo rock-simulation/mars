@@ -36,6 +36,8 @@
 #include <mars/utils/Vector.h>
 #include <mars/interfaces/terrainStruct.h>
 
+#include <configmaps/ConfigMap.hpp>
+
 #include <string>
 #include <vector>
 #include <list>
@@ -83,7 +85,8 @@ namespace mars {
 
     public:
       TerrainDrawObject(GraphicsManager *g,
-                        const mars::interfaces::terrainStruct *ts);
+                        const mars::interfaces::terrainStruct *ts,
+                        std::string gridFile = "");
       virtual ~TerrainDrawObject(void);
       virtual void generateTangents();
       virtual void collideSphere(mars::utils::Vector pos,
@@ -93,6 +96,9 @@ namespace mars {
 #ifdef USE_VERTEX_BUFFER
       virtual void setSelected(bool val);
 #endif
+      void createObject(unsigned long id, const utils::Vector &pivot,
+                        unsigned long sharedID);
+      void setData(configmaps::ConfigMap map);
 
     private:
 
@@ -117,11 +123,13 @@ namespace mars {
       double x_step, y_step;
       double x_step2, y_step2;
       double tex_scale_x, tex_scale_y;
+      std::string gridFile;
       std::vector<std::vector<LoadDrawObjectPSetBox*>*> gridPSets;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry();
 
       std::map<int, SubTile*> subTiles;
       std::vector<SubTile*> vSubTiles;
+      configmaps::ConfigMap map;
 
       void createNewSubTile(SubTile *newSubTile, mars::utils::Vector pos,
                             double radius);

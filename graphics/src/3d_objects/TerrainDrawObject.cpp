@@ -30,6 +30,10 @@
 #endif
 
 #include "TerrainDrawObject.h"
+#include "../GraphicsManager.h"
+
+#include <mars/utils/misc.h>
+#include <mars/osg_terrain/ShaderTerrain.hpp>
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/CullFace>
@@ -44,22 +48,27 @@
 
 namespace mars {
   namespace graphics {
-  
+
     using mars::utils::Vector;
     using mars::interfaces::sReal;
 
     int TerrainDrawObject::countSubTiles = 0;
 
     TerrainDrawObject::TerrainDrawObject(GraphicsManager *g,
-                                         const mars::interfaces::terrainStruct *ts)
+                                         const mars::interfaces::terrainStruct *ts,
+                                         std::string gridFile)
       : DrawObject(g), info(*ts) {
       info.name = ts->name;
       info.srcname = ts->srcname;
       info.texScaleX = ts->texScaleX;
       info.texScaleY = ts->texScaleY;
       height_data = NULL;
+      this->gridFile = gridFile;
+
 #ifdef USE_VERTEX_BUFFER
-      vbt = new VertexBufferTerrain(ts);
+      if(gridFile.empty() || !utils::pathExists(gridFile)) {
+        vbt = new VertexBufferTerrain(ts);
+      }
 #endif
     }
 
@@ -69,6 +78,56 @@ namespace mars {
           delete height_data[i];
         delete height_data;
       }
+    }
+
+    void TerrainDrawObject::setData(configmaps::ConfigMap map) {
+      this->map["pos/z"] = map["position/z"];
+      this->map["size/z"] = map["t_scale"];
+      this->map["file"] = gridFile;
+      this->map["wireframe"] = false;
+    }
+
+    void TerrainDrawObject::createObject(unsigned long id,
+                                         const utils::Vector &pivot,
+                                         unsigned long sharedID) {
+      if(gridFile.empty() || !utils::pathExists(gridFile)) {
+        DrawObject::createObject(id, pivot, sharedID);
+        return;
+      }
+      id_ = id;
+      pivot_ = pivot;
+
+      scaleTransform_ = new osg::MatrixTransform();
+      scaleTransform_->setMatrix(osg::Matrix::scale(1.0, 1.0, 1.0));
+      scaleTransform_->setDataVariance(osg::Node::STATIC);
+      posTransform_ = new osg::PositionAttitudeTransform();
+      //posTransform_->setPivotPoint(osg::Vec3(pivot_.x(), pivot_.y(), pivot_.z()));
+      posTransform_->setPosition(osg::Vec3(0.0, 0.0, 0.0));
+      posTransform_->addChild(scaleTransform_.get());
+      posTransform_->setNodeMask(nodeMask_);
+      osg::ref_ptr<osg_terrain::ShaderTerrain> p = new osg_terrain::ShaderTerrain(map);
+
+      group_ = new osg::Group;
+      if(sharedID) {
+        materialNode = g->getSharedStateGroup(sharedID);
+        if(materialNode.valid()) {
+          sharedStateGroup = true;
+        }
+        else {
+          sharedStateGroup = false;
+        }
+      }
+      group_->addChild(p.get());
+
+      // get the size of the object
+      osg::ComputeBoundsVisitor cbbv;
+      // group_->accept(cbbv);
+      // osg::BoundingBox bb = cbbv.getBoundingBox();
+      // geometrySize_.x() = fabs(bb.xMax() - bb.xMin());
+      // geometrySize_.y() = fabs(bb.yMax() - bb.yMin());
+      // geometrySize_.z() = fabs(bb.zMax() - bb.zMin());
+
+      scaleTransform_->addChild(group_.get());
     }
 
     std::list< osg::ref_ptr< osg::Geode > > TerrainDrawObject::createGeometry() {
@@ -1061,20 +1120,20 @@ namespace mars {
 
     void TerrainDrawObject::removeSubTile(SubTile *tile) {
       int da = (int)ceil(((double)info.width+1.0)/(double)num_x);
-  
+
       //geom->removePrimitiveSet(geom->getPrimitiveSetIndex(tile->pSet.get()));
       int id = tile->geom->getPrimitiveSetIndex(tile->pSet.get());
       tile->geom->removePrimitiveSet(id);
 
       for(int i=0; i<tile->yCount; ++i) delete tile->heightData[i];
       delete tile->heightData;
-  
+
       // check for subtile neihbours
       std::map<int, SubTile*>::iterator it;
       if(tile->y > 0) {
         it = subTiles.find((tile->y-1)*(info.width)+tile->x);
         if(it != subTiles.end()) {
-          for(int x=0; x<tile->xCount; ++x) 
+          for(int x=0; x<tile->xCount; ++x)
             (it->second)->heightData[(it->second)->yCount-1][x] = getHeight(x, it->second->yCount-1, it->second);
           drawSubTile(it->second);
         }
@@ -1092,7 +1151,7 @@ namespace mars {
       if(tile->x > 0) {
         it = subTiles.find((tile->y)*(info.width)+tile->x-1);
         if(it != subTiles.end()) {
-          for(int y=0; y<tile->yCount; ++y) 
+          for(int y=0; y<tile->yCount; ++y)
             (it->second)->heightData[y][(it->second)->xCount-1] = getHeight(it->second->xCount-1, y, it->second);
           drawSubTile(it->second);
         }
@@ -1101,7 +1160,7 @@ namespace mars {
       if(tile->y < info.height) {
         it = subTiles.find((tile->y+1)*(info.width)+tile->x);
         if(it != subTiles.end()) {
-          for(int x=0; x<tile->xCount; ++x) 
+          for(int x=0; x<tile->xCount; ++x)
             (it->second)->heightData[0][x] = getHeight(x, 0, it->second);
           drawSubTile(it->second);
         }
@@ -1118,7 +1177,7 @@ namespace mars {
       if(tile->x < info.width) {
         it = subTiles.find((tile->y)*(info.width)+tile->x+1);
         if(it != subTiles.end()) {
-          for(int y=0; y<tile->yCount; ++y) 
+          for(int y=0; y<tile->yCount; ++y)
             (it->second)->heightData[y][0] = getHeight(0, y, it->second);
           drawSubTile(it->second);
         }
@@ -1202,7 +1261,7 @@ namespace mars {
 
         geometry2 = drawable2->asGeometry();
         if(!geometry2) return;
-  
+
         v2 = dynamic_cast<osg::Vec3Array*>(geometry2->getVertexArray());
         if(!v2) return;
 
@@ -1216,41 +1275,41 @@ namespace mars {
         off = scaleTransform->getMatrix() * off;
         off[2] += 0.002;
         off += posTransform->getPosition();
-    
+
         shadowNode = new osg::Group();
         geometry->setUseDisplayList(false);
-    
+
         for(i=0; i<v2->size(); i++) v->push_back((scaleTransform->getMatrix()*(*v2)[i])+off);
         geometry->setVertexArray(v.get());
-    
+
         geometry->setDataVariance(osg::Object::DYNAMIC);
         normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
         geometry->setNormalArray(normals.get());
         geometry->setNormalBinding(osg::Geometry::BIND_OVERALL);
         osg::Vec4Array* colours = new osg::Vec4Array(1);
-      
+
         (*colours)[0].set(1.0, 1.0, 1.0, 1.0);
-  
+
         geometry->setColorArray(colours);
         geometry->setColorBinding(osg::Geometry::BIND_OVERALL);
 
         geometry->setTexCoordArray(0, geometry2->getTexCoordArray(0));
-    
+
         geode->addDrawable(geometry.get());
         shadowNode->addChild(geode.get());
         osg::StateSet *state = shadowNode->getOrCreateStateSet();
         state->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
         state->setMode(GL_BLEND,osg::StateAttribute::ON);
         state->setRenderBinDetails(1, "DepthSortedBin");
-        osg::CullFace *cull = new osg::CullFace(); 
-        cull->setMode(osg::CullFace::BACK); 
-        state->setAttributeAndModes(cull, osg::StateAttribute::ON); 
-    
+        osg::CullFace *cull = new osg::CullFace();
+        cull->setMode(osg::CullFace::BACK);
+        state->setAttributeAndModes(cull, osg::StateAttribute::ON);
+
         osg::Texture2D* theTexture = new osg::Texture2D;
         theTexture->setDataVariance(osg::Object::DYNAMIC);
         theTexture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
         theTexture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
-  
+
         osg::Image *textureImage = osgDB::readImageFile("diffuse.jpg");
         theTexture->setImage(textureImage);
         state->setTextureAttributeAndModes(0, theTexture,
@@ -1264,8 +1323,8 @@ namespace mars {
         * /
 
         //scaleTransform->addChild(shadowNode.get());
-        theFactory->addShadowObject(shadowNode.get());    
-    
+        theFactory->addShadowObject(shadowNode.get());
+
         osg::Program* myShaderProgram = new osg::Program;
         osg::Shader* myShader = new osg::Shader(osg::Shader::FRAGMENT,
         myFragmentShaderSource);
@@ -1278,14 +1337,14 @@ namespace mars {
         state->setAttributeAndModes(myShaderProgram, osg::StateAttribute::ON);
 
         }
-  
+
         osg::Node* node3 = shadowNode->getChild(0);
         osg::Geode* geode3;
         osg::Drawable* drawable3;
         osg::Geometry* geometry3;
         osg::DrawElementsUShort* draw;
         osg::Vec3Array* v3;
-  
+
         if(!node3) return;
         geode3 = dynamic_cast<osg::Geode*>(node3);
         if(!geode3) return;
@@ -1293,7 +1352,7 @@ namespace mars {
         if(!drawable3) return;
         geometry3 = drawable3->asGeometry();
         if(!geometry3) return;
-  
+
 
         geometry3->removePrimitiveSet(0, geometry3->getNumPrimitiveSets());
 
@@ -1318,7 +1377,7 @@ namespace mars {
         break;
         }
         }
-        }       
+        }
         }
         }
         }
@@ -1330,7 +1389,7 @@ namespace mars {
 #ifdef USE_VERTEX_BUFFER
     void TerrainDrawObject::setSelected(bool val) {
       DrawObject::setSelected(val);
-      vbt->setSelected(val);     
+      vbt->setSelected(val);
     }
 #endif
 

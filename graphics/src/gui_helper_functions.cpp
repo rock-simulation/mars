@@ -551,12 +551,12 @@ namespace mars {
           for(int x=0; x<terrain->width; x++) {
 
             s=cvGet2D(img,y,x);
-            terrain->pixelData[count++] = ((double)s.val[0])/imageMaxValue;
-            if(y==0 || y == terrain->height-1 ||
-               x==0 || x == terrain->width-1)
-              terrain->pixelData[count-1] -= 0.002;
-            if(terrain->pixelData[count-1] <= 0.0)
-              terrain->pixelData[count-1] = 0.001;
+            terrain->pixelData[count++] = ((double)s.val[0])/(imageMaxValue-1);
+            // if(y==0 || y == terrain->height-1 ||
+            //    x==0 || x == terrain->width-1)
+            //   terrain->pixelData[count-1] -= 0.002;
+            // if(terrain->pixelData[count-1] <= 0.0)
+            //   terrain->pixelData[count-1] = 0.001;
 
           }
         }

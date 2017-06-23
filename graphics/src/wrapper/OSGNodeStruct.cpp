@@ -135,11 +135,10 @@ namespace mars {
           vizSize = node.visual_size;
         }
         drawObject_->setScaledSize(vizSize);
-      } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
+      } else if (origname.compare("terrain") == 0) {
         // we have a heightfield
         if (!node.terrain->pixelData) {
-          node.terrain->pixelData = (double*)calloc(
-                                                    (node.terrain->width*node.terrain->height), sizeof(double));
+          node.terrain->pixelData = (double*)calloc((node.terrain->width*node.terrain->height), sizeof(double));
           //QImage image(QString::fromStdString(snode->filename));
           int r = 0, g = 0, b = 0;
           int count = 0;
@@ -150,7 +149,21 @@ namespace mars {
             }
           }
         }
-        drawObject_ = new TerrainDrawObject(g, node.terrain);
+        if(map.hasKey("t_grid")) {
+          std::string p = ".";
+          if(map.hasKey("filePrefix")) {
+            p << map["filePrefix"];
+          };
+          std::string gridFile = map["t_grid"];
+          if(gridFile[0] != '/') {
+            gridFile = p + "/" + gridFile;
+          }
+          drawObject_ = new TerrainDrawObject(g, node.terrain, gridFile);
+          ((TerrainDrawObject*)drawObject_)->setData(map);
+        }
+        else {
+          drawObject_ = new TerrainDrawObject(g, node.terrain);
+        }
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }

@@ -27,6 +27,7 @@
  */
 
 #include "Terrain.h"
+#include "ShaderTerrain.hpp"
 
 #include <configmaps/ConfigData.h>
 #include <mars/graphics/gui_helper_functions.h>
@@ -37,6 +38,7 @@
 #include <osg/PositionAttitudeTransform>
 #include <osgUtil/CullVisitor>
 #include <osg/PolygonMode>
+#include <osg/LineWidth>
 
 namespace osg_terrain {
 
@@ -202,40 +204,10 @@ namespace osg_terrain {
     }
 
     if(map.hasKey("terrain")) {
-      fprintf(stderr, "create terrain object");
-      //osg::ref_ptr<osg::PositionAttitudeTransform> p = new osg::PositionAttitudeTransform();
-      osg::ref_ptr<PlaneTransform> p = new PlaneTransform();
-      p->setCullingActive(false);
-      osg::ref_ptr<osg::Node> node;
-      std::string file = map["terrain"]["file"];
-      if(map["terrain"].hasKey("pos/z")) {
-        p->zOffset = map["terrain"]["pos/z"];
-      }
-      else {
-        p->zOffset = 0.;
-      }
-      if(utils::getFilenameSuffix(file) == ".bobj") {
-        node = graphics::GuiHelper::readBobjFromFile(file);
-      }
-      else {
-        node = graphics::GuiHelper::readNodeFromFile(file);
-      }
-      node->setNodeMask(0xff | 0x1000);
-
-      BoundVisitor visitor;
-      node->accept(visitor);
-
-      //node->setInitialBound(osg::BoundingBox(-10, -10, 0, 10, 10, 40));
-      osg::PolygonMode *polyModeObj = new osg::PolygonMode;
-      polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
-      bool wireframe = map["terrain"]["wireframe"];
-      if(wireframe) {
-        node->getOrCreateStateSet()->setAttribute( polyModeObj );
-      }
-      p->addChild(node.get());
-
+      osg::ref_ptr<ShaderTerrain> p = new ShaderTerrain(map["terrain"]);
       if(materialManager) {
         ConfigMap mMap = map["terrain"]["material"];
+        fprintf(stderr, "create material: %s\n", mMap["name"].getString().c_str());
         materialManager->createMaterial(mMap["name"], mMap);
 
         osg::ref_ptr<MaterialNode> mGroup = materialManager->getNewMaterialGroup(mMap["name"]);
@@ -250,6 +222,7 @@ namespace osg_terrain {
   Terrain::~Terrain(void) {
   }
 
+  
   osg::ref_ptr<osg::Node> Terrain::createPlane() {
     osg::ref_ptr<osg::Vec3Array> vertices(new osg::Vec3Array());
     osg::ref_ptr<osg::Vec2Array> texcoords(new osg::Vec2Array());

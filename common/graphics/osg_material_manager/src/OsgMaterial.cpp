@@ -78,6 +78,7 @@ namespace osg_material_manager {
     envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec3f(0.0f, 0.0f, 0.0f));
     envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec3f(0.0f, 0.0f, 0.0f));
     terrainScaleZUniform = new osg::Uniform("terrainScaleZ", 0.0f);
+    terrainDimUniform = new osg::Uniform("terrainDim", 0);
     noiseMap = new osg::Texture2D();
     noiseMap->setDataVariance(osg::Object::DYNAMIC);
     noiseMap->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
@@ -118,8 +119,15 @@ namespace osg_material_manager {
   void OsgMaterial::setMaterial(const ConfigMap &map_) {
     //return;
     map = map_;
+    map.toYamlFile("material.yml");
     if(map.hasKey("loadPath")) {
       loadPath << map["loadPath"];
+      if(loadPath[loadPath.size()-1] != '/') {
+        loadPath.append("/");
+      }
+    }
+    if(map.hasKey("filePrefix")) {
+      loadPath << map["filePrefix"];
       if(loadPath[loadPath.size()-1] != '/') {
         loadPath.append("/");
       }
@@ -229,10 +237,12 @@ namespace osg_material_manager {
     else {
       TextureInfo info;
       info.name << config["name"];
+      fprintf(stderr, "load texture: %s\n", info.name.c_str());
       std::string file = config["file"];
       if(!loadPath.empty() && file[0] != '/') {
         file = loadPath + file;
       }
+      fprintf(stderr, "     texture file: %s\n", file.c_str());
       if(info.name == "terrainMap") {
         info.texture = loadTerrainTexture(file);
         //nearest = true;
@@ -453,6 +463,7 @@ namespace osg_material_manager {
     stateSet->removeUniform(envMapSpecularUniform.get());
     stateSet->removeUniform(envMapScaleUniform.get());
     stateSet->removeUniform(terrainScaleZUniform.get());
+    stateSet->removeUniform(terrainDimUniform.get());
     ShaderGenerator shaderGenerator;
     vector<string> args;
 
@@ -563,6 +574,7 @@ namespace osg_material_manager {
         YamlShader *terrainMapVert = new YamlShader((string)map2["name"], args, map2, resPath);
         shaderGenerator.addShaderFunction(terrainMapVert, SHADER_TYPE_VERTEX);
         stateSet->addUniform(terrainScaleZUniform.get());
+        stateSet->addUniform(terrainDimUniform.get());
         terrainScaleZUniform->set((float)(double)map["scaleZ"]);
       }
       if(map["shader"].hasKey("PixelLightVertex")) {
@@ -772,14 +784,17 @@ namespace osg_material_manager {
       osg::Image* image = new osg::Image();
       image->allocateImage(img->width, img->height,
                            1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
+      assert(img->width = img->height);
+      terrainDimUniform->set((int)img->width);
       CvScalar s;
       int v;
       double imageMaxValue = pow(2., img->depth);
+      double s256 = 1./256;
       for(int x=0; x<img->width; ++x) {
         for(int y=0; y<img->width; ++y) {
           s=cvGet2D(img,y,x);
           if(img->depth == 16) {
-            v = (int)s.val[0]/256;
+            v = floor(s.val[0]*s256);
             if(v < 0) v = 0;
             if(v>255) v = 255;
             image->data(y, x)[0] = (char)v;
