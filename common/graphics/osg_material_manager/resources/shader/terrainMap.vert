@@ -5,7 +5,7 @@ float d(float x, float step) {
   return ceil(x/step)*step;
 }
 
-void terrain_map(out vec4 vModelPos) {
+void terrain_map(out vec3 n, out vec4 vModelPos) {
   vec2 tex = vec2(-gl_Vertex.y+d(-osg_ViewMatrixInverse[3].y, 6.),
                   gl_Vertex.x+d(osg_ViewMatrixInverse[3].x, 6.))*texScale+vec2(0.5);
   //clamp(tex, 0, 1);
@@ -44,4 +44,12 @@ void terrain_map(out vec4 vModelPos) {
   if(tex.x < 0.001 || tex.x > 0.999 || tex.y < 0.001 || tex.y > 0.999) {
     vModelPos.z = 0;
   } 
+
+  // load normal and calculate ttw
+  n = texture2D(normalMap, vec2(tex.y, -tex.x)).xyz;
+  vec3 t = cross(vec3(1.0, 0, 0), n);
+  //vec3 t = normalize( (osg_ViewMatrixInverse*vec4(gl_NormalMatrix * vertexTangent.xyz, 0.0)).xyz );
+  vec3 b = cross(n, t);
+  ttw = mat3(t, b, n);
+
 }

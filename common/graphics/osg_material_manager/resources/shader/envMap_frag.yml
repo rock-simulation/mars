@@ -17,7 +17,7 @@ uniforms:
     - {name: environmentMap}
 mainVarDecs:
   vec4:
-    - {name: nt}
+    - name: nt
 source: /shader/envmap.frag
 name: envMap
-priority: 1
+priority: 2
