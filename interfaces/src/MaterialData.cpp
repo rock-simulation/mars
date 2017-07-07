@@ -103,11 +103,11 @@ namespace mars {
         name = s.str();
       }
 
-      if(!filenamePrefix.empty()) {
-        handleFilenamePrefix(&texturename, filenamePrefix);
-        handleFilenamePrefix(&bumpmap, filenamePrefix);
-        handleFilenamePrefix(&normalmap, filenamePrefix);
-      }
+      // if(!filenamePrefix.empty()) {
+      //   handleFilenamePrefix(&texturename, filenamePrefix);
+      //   handleFilenamePrefix(&bumpmap, filenamePrefix);
+      //   handleFilenamePrefix(&normalmap, filenamePrefix);
+      // }
 
       map = *config;
       if(!filenamePrefix.empty()) {
