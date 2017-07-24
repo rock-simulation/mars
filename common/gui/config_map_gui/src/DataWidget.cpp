@@ -95,6 +95,12 @@ namespace mars {
       filePattern = pattern;
     }
 
+    void DataWidget::setDropDownPattern(const std::vector<std::string> &pattern,
+                                        const std::vector<std::vector<std::string> > &values) {
+      dropDownPattern = pattern;
+      dropDownValues = values;
+    }
+
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
       ignore_change = 1;
@@ -120,7 +126,7 @@ namespace mars {
     }
 
     void DataWidget::addConfigMap(const std::string &name,
-                               ConfigMap &map) {
+                                  ConfigMap &map) {
       ConfigMap::iterator it = map.begin();
       QtVariantProperty *guiElem;
       if(checkInPattern(name, colorPattern)) {
@@ -183,16 +189,17 @@ namespace mars {
       }
     }
 
-    bool DataWidget::checkInPattern(const std::string &v,
+    int DataWidget::checkInPattern(const std::string &v,
                                     const std::vector<std::string> &pattern) {
       std::vector<std::string>::const_iterator it = pattern.begin();
-      for(; it!=pattern.end(); ++it) {
+      int i=0;
+      for(; it!=pattern.end(); ++it, ++i) {
         //fprintf(stderr, "check: %s pattern: %s\n", v.c_str(), it->c_str());
         if(utils::matchPattern(*it, v)) {
-          return true;
+          return i+1;
         }
       }
-      return false;
+      return 0;
     }
 
     void DataWidget::addConfigAtom(const std::string &name,
@@ -211,9 +218,29 @@ namespace mars {
             type = VariantManager::filePathTypeId();
             attr["directory"] = ".";
           }
-          guiElem = pDialog->addGenericProperty(name, type,
-                                                QString::fromStdString(v.getUnparsedString()),
-                                                &attr);
+          int index = 0;
+          if((index = checkInPattern(name, dropDownPattern))) {
+            index -= 1;
+            QStringList enumNames;
+            std::string value = v.getUnparsedString();
+            int index2 = 0;
+            int i=0;
+            for(std::vector<std::string>::iterator it=dropDownValues[index].begin();
+                it!=dropDownValues[index].end(); ++it, ++i) {
+              enumNames << it->c_str();
+              if(value == *it) {
+                index2 = i;
+              }
+            }
+            guiElem = pDialog->addGenericProperty(name,
+                                                  QtVariantPropertyManager::enumTypeId(),
+                                                  index2, NULL, &enumNames);
+          }
+          else {
+            guiElem = pDialog->addGenericProperty(name, type,
+                                                  QString::fromStdString(v.getUnparsedString()),
+                                                  &attr);
+          }
         }
         else if(type == ConfigAtom::STRING_TYPE) {
           int type = QVariant::String;
@@ -221,9 +248,29 @@ namespace mars {
             type = VariantManager::filePathTypeId();
             attr["directory"] = ".";
           }
-          guiElem = pDialog->addGenericProperty(name, type,
-                                                QString::fromStdString(v.getString()),
-                                                &attr);
+          int index;
+          if((index = checkInPattern(name, dropDownPattern))) {
+            index -= 1;
+            QStringList enumNames;
+            std::string value = v.getString();
+            int index2 = 0;
+            int i=0;
+            for(std::vector<std::string>::iterator it=dropDownValues[index].begin();
+                it!=dropDownValues[index].end(); ++it, ++i) {
+              enumNames << it->c_str();
+              if(value == *it) {
+                index2 = i;
+              }
+            }
+            guiElem = pDialog->addGenericProperty(name,
+                                                  QtVariantPropertyManager::enumTypeId(),
+                                                  index2, NULL, &enumNames);
+          }
+          else {
+            guiElem = pDialog->addGenericProperty(name, type,
+                                                  QString::fromStdString(v.getString()),
+                                                  &attr);
+          }
         }
         else if(type == ConfigAtom::INT_TYPE) {
           guiElem = pDialog->addGenericProperty(name,
@@ -345,6 +392,7 @@ namespace mars {
         ConfigAtom::ItemType type = atom.getType();
         guiElem = propMap[name];
         *(dataMap[guiElem]) = v;
+        // todo: handle dropDownPattern
         if(type == ConfigAtom::UNDEFINED_TYPE) {
           guiElem->setValue(QVariant(QString::fromStdString(atom.getUnparsedString())));
         }
@@ -428,6 +476,21 @@ namespace mars {
             emit valueChanged(n+"/g", (*(it->second))["g"].toString());
             emit valueChanged(n+"/b", (*(it->second))["b"].toString());
             emit valueChanged(n+"/a", (*(it->second))["a"].toString());
+          }
+        }
+        else if(vp->propertyType() == QtVariantPropertyManager::enumTypeId()) {
+          map<QtVariantProperty*, ConfigAtom*>::iterator it;
+          it = dataMap.find((QtVariantProperty*)property);
+          if(it != dataMap.end()) {
+            ConfigAtom::ItemType type = it->second->getType();
+            if(type == ConfigAtom::UNDEFINED_TYPE) {
+              it->second->setUnparsedString(property->valueText().toStdString());
+            }
+            else if(type == ConfigAtom::STRING_TYPE) {
+              it->second->setString(property->valueText().toStdString());
+            }
+            emit valueChanged(nameMap[(QtVariantProperty*)property],
+                              it->second->toString());
           }
         }
         else {
