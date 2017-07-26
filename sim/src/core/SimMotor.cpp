@@ -663,6 +663,7 @@ namespace mars {
     }
 
     void SimMotor::setSMotor(const MotorData &sMotor) {
+      // todo: handle name change correctly
       this->sMotor = sMotor;
       if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
           myJoint->attachMotor(axis);

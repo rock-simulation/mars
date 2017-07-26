@@ -28,6 +28,7 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/utils/misc.h>
+#include <mars/utils/mathUtils.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -36,6 +37,7 @@ using namespace std;
 
 namespace mars {
   using namespace interfaces;
+  using namespace utils;
   namespace plugins {
 
     SelectionTree::SelectionTree(interfaces::ControlCenter *c,
@@ -250,59 +252,73 @@ namespace mars {
             std::vector<std::string> editPattern;
             std::vector<std::string> filePattern;
             std::vector<std::string> colorPattern;
+            std::vector<std::string> dropDownPattern;
+            std::vector<std::vector<std::string> > dropDownValues;
             configmaps::ConfigMap map;
             std::string name;
             unsigned long id = currentItem->text(0).left(n).toULong();
             if(parent->text(0) == "nodes") {
-              editPattern.push_back("*/position/*");
-              editPattern.push_back("*/extend/*");
-              editPattern.push_back("*/material");
-              editPattern.push_back("*/cullMask");
-              editPattern.push_back("*/brightness");
-              editPattern.push_back("*/name");
-              editPattern.push_back("*/c*");
-              editPattern.push_back("*/mass");
-              editPattern.push_back("*/density");
-              editPattern.push_back("*/movable");
               nodeData = control->nodes->getFullNode(id);
               name = nodeData.name;
-              map = nodeData.map;
-              if(!map.hasKey("cfdir1")) {
-                map["cfdir1"]["x"] = 0.;
-                map["cfdir1"]["y"] = 0.;
-                map["cfdir1"]["z"] = 0.;
-              }
+              std::string preStr = "../"+name+"/";
+              editPattern.push_back(preStr+"pose/*");
+              editPattern.push_back(preStr+"extend/*");
+              editPattern.push_back(preStr+"visual/material");
+              editPattern.push_back(preStr+"visual/cullMask");
+              editPattern.push_back(preStr+"visual/brightness");
+              editPattern.push_back(preStr+"name");
+              editPattern.push_back(preStr+"c*");
+              editPattern.push_back(preStr+"mass");
+              editPattern.push_back(preStr+"density");
+              editPattern.push_back(preStr+"movable");
+              editPattern.push_back(preStr+"groupid");
+              //editPattern.push_back(preStr+"rotation*");
               nodeData.toConfigMap(&map, false, true);
+              updateNodeMap(map);
               editCategory = 1;
             }
             else if(parent->text(0) == "joints") {
-              // fake pattern to disable everthing
-              editPattern.push_back("*/type");
-              editPattern.push_back("*/axis*");
-              editPattern.push_back("*/anchor*");
-              editPattern.push_back("*/lowStop*");
-              editPattern.push_back("*/highStop*");
-              editPattern.push_back("*/damping_const_*");
-              editPattern.push_back("*/spring_const_*");
-              editPattern.push_back("*/invertAxis");
               jointData = control->joints->getFullJoint(id);
               jointData.toConfigMap(&map);
+              fprintf(stderr, "%s\n", map.toYamlString().c_str());
               name = jointData.name;
+              std::string preStr = "../"+name+"/";
+              //editPattern.push_back(preStr+"type");
+              editPattern.push_back(preStr+"axis*");
+              editPattern.push_back(preStr+"anchor*");
+              editPattern.push_back(preStr+"lowStop*");
+              editPattern.push_back(preStr+"highStop*");
+              editPattern.push_back(preStr+"damping_const_*");
+              editPattern.push_back(preStr+"spring_const_*");
+              editPattern.push_back(preStr+"invertAxis");
+              dropDownPattern.push_back(preStr+"anchorpos");
+              dropDownValues.resize(1);
+              dropDownValues[0].push_back("node1");
+              dropDownValues[0].push_back("node2");
+              dropDownValues[0].push_back("center");
+              dropDownValues[0].push_back("custom");
               editCategory = 2;
             }
             else if(parent->text(0) == "motors") {
-              // todo: remove index from pattern
-              editPattern.push_back("*/p");
-              editPattern.push_back("*/i");
-              editPattern.push_back("*/d");
-              editPattern.push_back("*/type");
-              editPattern.push_back("*/maxSpeed");
-              editPattern.push_back("*/maxEffort");
-              editPattern.push_back("*/minValue");
-              editPattern.push_back("*/maxValue");
               motorData = control->motors->getFullMotor(id);
               motorData.toConfigMap(&map);
               name = motorData.name;
+              // todo: remove index from pattern
+              std::string preStr = "../"+name+"/";
+              //editPattern.push_back(preStr+"name");
+              editPattern.push_back(preStr+"p");
+              editPattern.push_back(preStr+"i");
+              editPattern.push_back(preStr+"d");
+              editPattern.push_back(preStr+"type");
+              editPattern.push_back(preStr+"maxSpeed");
+              editPattern.push_back(preStr+"maxEffort");
+              editPattern.push_back(preStr+"minValue");
+              editPattern.push_back(preStr+"maxValue");
+              //editPattern.push_back(preStr+"jointIndex");
+              dropDownPattern.push_back("*/type");
+              dropDownValues.resize(1);
+              dropDownValues[0].push_back("PID");
+              dropDownValues[0].push_back("DC");
               editCategory = 3;
             }
             else if(parent->text(0) == "sensors") {
@@ -314,6 +330,7 @@ namespace mars {
             dw->setEditPattern(editPattern);
             dw->setFilePattern(filePattern);
             dw->setColorPattern(colorPattern);
+            dw->setDropDownPattern(dropDownPattern, dropDownValues);
             dw->setConfigMap(name, map);
           }
           else if(parent->text(0) == "controllers") {
@@ -390,6 +407,62 @@ namespace mars {
       }
     }
 
+    void SelectionTree::updateNodeMap(ConfigMap &map) {
+      Vector p(map["position"]["x"], map["position"]["y"],
+               map["position"]["z"]);
+      Quaternion q;
+      q.x() = map["rotation"]["x"];
+      q.y() = map["rotation"]["y"];
+      q.z() = map["rotation"]["z"];
+      q.w() = map["rotation"]["w"];
+      sRotation r = quaternionTosRotation(q);
+      map["rotation"]["alpha"] = r.alpha;
+      map["rotation"]["beta"] = r.beta;
+      map["rotation"]["gamma"] = r.gamma;
+      if(!map.hasKey("cfdir1")) {
+        map["contact"]["cfdir1"]["x"] = 0.;
+        map["contact"]["cfdir1"]["y"] = 0.;
+        map["contact"]["cfdir1"]["z"] = 0.;
+      }
+      std::vector<std::string> move {"cmax_num_contacts", "cerp", "ccfm", "cfriction1", "cfriction2", "cmotion1", "cmotion2", "cfds1", "cfds2", "cbounce", "cbounce_vel", "capprox", "coll_bitmask", "cfdir1"};
+      for(auto it: move) {
+        if(map.hasKey(it)) {
+          map["contact"][it] = map[it];
+          map.erase(it);
+        }
+      }
+      move = {"material", "cullMask", "brightness", "pivot", "visualsize", "visualscale", "visualposition", "visualrotation", "filename", "origname", "shadow_id", "shadowcaster", "shadowreceiver"};
+      for(auto it: move) {
+        if(map.hasKey(it)) {
+          map["visual"][it] = map[it];
+          map.erase(it);
+        }
+      }
+      if((ulong)map["relativeid"] != 0) {
+        NodeData parent = control->nodes->getFullNode(map["relativeid"]);
+        // inverse calculation to convert world to relative
+        p = parent.rot.inverse() * (p-parent.pos);
+        q = parent.rot.inverse() * q;
+      }
+      map["pose"]["local"]["relativeid"] = map["relativeid"];
+      map.erase("relativeid");
+      map["pose"]["world"]["position"] = map["position"];
+      map.erase("position");
+      map["pose"]["world"]["rotation"] = map["rotation"];
+      map.erase("rotation");
+      r = quaternionTosRotation(q);
+      map["pose"]["local"]["rotation"]["x"] = q.x();
+      map["pose"]["local"]["rotation"]["y"] = q.y();
+      map["pose"]["local"]["rotation"]["z"] = q.z();
+      map["pose"]["local"]["rotation"]["w"] = q.w();
+      map["pose"]["local"]["rotation"]["alpha"] = r.alpha;
+      map["pose"]["local"]["rotation"]["beta"] = r.beta;
+      map["pose"]["local"]["rotation"]["gamma"] = r.gamma;
+      map["pose"]["local"]["position"]["x"] = p.x();
+      map["pose"]["local"]["position"]["y"] = p.y();
+      map["pose"]["local"]["position"]["z"] = p.z();
+    }
+
     void SelectionTree::deleteEntities(void) {
       int n;
       unsigned long id;
@@ -460,9 +533,84 @@ namespace mars {
 
     void SelectionTree::valueChanged(std::string name, std::string value) {
       if(name.empty()) return;
+      // remove name prefix, otherwise the name could influence the pattern matching
+      // done in the edit mehtods
+      size_t p = name.find('/', 3);
+      if(p != std::string::npos) {
+        name = name.substr(p);
+      }
       //fprintf(stderr, "get feedback: %s\n", name.c_str());
       if(editCategory == 1) {
-        control->nodes->edit(nodeData.index, name, value);
+        // convert local / global pose
+        if(matchPattern("*pose/", name) && !matchPattern("*relativeid", name)) {
+          if(matchPattern("*local/", name)) {
+            p = name.find("local/");
+            if(p!=std::string::npos) {
+              name = name.substr(p+5);
+            }
+            // calculate global pose
+            nodeData = control->nodes->getFullNode(nodeData.index);
+            ConfigMap map;
+            nodeData.toConfigMap(&map, false, true);
+            updateNodeMap(map);
+            ConfigMap &posMap = map["pose"]["local"]["position"];
+            ConfigMap &qMap = map["pose"]["local"]["rotation"];
+            Vector pos(posMap["x"], posMap["y"], posMap["z"]);
+            Quaternion q;
+            q.x() = qMap["x"];
+            q.y() = qMap["y"];
+            q.z() = qMap["z"];
+            q.w() = qMap["w"];
+            sRotation r = quaternionTosRotation(q);
+            double v = atof(value.c_str());
+            bool euler = false;
+            bool editPos = true;
+            if(matchPattern("*position/x", name)) pos.x() = v;
+            if(matchPattern("*position/y", name)) pos.y() = v;
+            if(matchPattern("*position/z", name)) pos.z() = v;
+            if(matchPattern("*rotation/x", name)) q.x() = v, editPos=false;
+            if(matchPattern("*rotation/y", name)) q.y() = v, editPos=false;
+            if(matchPattern("*rotation/z", name)) q.z() = v, editPos=false;
+            if(matchPattern("*rotation/w", name)) q.w() = v, editPos=false;
+            if(matchPattern("*rotation/alpha", name)) r.alpha = v, euler=true, editPos=false;
+            if(matchPattern("*rotation/beta", name)) r.beta = v, euler=true, editPos=false;
+            if(matchPattern("*rotation/gamma", name)) r.gamma = v, euler=true, editPos=false;
+            if(euler) {
+              q = eulerToQuaternion(r);
+            }
+            /* this transformation is already done in editNode
+            if((ulong)map["pose"]["local"]["relativeid"] != 0) {
+              NodeData parent = control->nodes->getFullNode(map["relativeid"]);
+              pos = parent.rot.inverse() * (pos-parent.pos);
+              q = parent.rot.inverse() * q;
+            }
+            */
+            nodeData.pos = pos;
+            nodeData.rot = q;
+            if(editPos) {
+              control->nodes->editNode(&nodeData, EDIT_NODE_POS);
+            }
+            else {
+              control->nodes->editNode(&nodeData, EDIT_NODE_ROT);
+            }
+          }
+          else {
+            p = name.find("world/");
+            if(p!=std::string::npos) {
+              name = name.substr(p+5);
+            }
+            control->nodes->edit(nodeData.index, name, value);
+          }
+        }
+        else {
+          control->nodes->edit(nodeData.index, name, value);
+        }
+        // todo: update map
+        nodeData = control->nodes->getFullNode(nodeData.index);
+        ConfigMap map;
+        nodeData.toConfigMap(&map, false, true);
+        updateNodeMap(map);
+        dw->updateConfigMap(nodeData.name, map);
       }
       else if(editCategory == 2) {
         control->joints->edit(jointData.index, name, value);
@@ -528,7 +676,7 @@ namespace mars {
       top = new QTreeWidgetItem(temp);
       treeWidget->addTopLevelItem(top);
       for(it=objects.begin(); it!=objects.end(); ++it) {
-        path = utils::explodeString('/', it->name);
+        path = explodeString('/', it->name);
         current = top;
         for(pt=path.begin(); pt!=path.end(); ++pt) {
           temp.clear();

@@ -94,12 +94,12 @@ namespace mars {
       interfaces::ControlCenter *control;
       configmaps::ConfigMap material, defaultLight;
       QWidget *widgetAdd;
-      QLabel *addLabel, *comboLabel1, *comboLabel2, *label3;
+      QLabel *addLabel, *comboLabel1, *comboLabel2, *comboLabel3, *label3;
       QLineEdit *addLineEdit, *addLineEdit2;
       QPushButton *openFile;
       QGridLayout *gridLayout;
       QVBoxLayout *vLayout;
-      QComboBox *combo1, *combo2;
+      QComboBox *combo1, *combo2, *combo3;
       int addType;
 
       void menu_addBox(const std::string &name);

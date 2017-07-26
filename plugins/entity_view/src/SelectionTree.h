@@ -84,6 +84,7 @@ namespace mars {
       void reset(void);
       void createTree();
       void addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category);
+      void updateNodeMap(configmaps::ConfigMap &map);
 
     signals:
       void closeSignal(void* widget);

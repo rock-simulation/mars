@@ -61,7 +61,7 @@ namespace mars {
       while(1) {
         pos2 = pattern.find("*", pos1);
         if(pos2 == pattern.npos) {
-          if(pos1 != pattern.length())
+          if(pos1 != 0)
             patternList.push_back(pattern.substr(pos1));
           break;
         }
@@ -70,8 +70,9 @@ namespace mars {
       }
 
       // no wildcards. do direct test
-      if(patternList.empty())
+      if(patternList.empty()) {
         return pattern == str;
+      }
 
       // special case the first pattern because it must match at pos == 0
       std::vector<std::string>::iterator patternListIt = patternList.begin();

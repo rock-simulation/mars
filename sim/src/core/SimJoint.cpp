@@ -84,7 +84,7 @@ namespace mars {
         pos = (snode1->getPosition() + snode2->getPosition()) / 2.;
         setAnchor(pos);
       }
-      else if(physical_joint) {
+      if(physical_joint) {
         physical_joint->reattacheJoint();
         physical_joint->getAnchor(&sJoint.anchor);
       }

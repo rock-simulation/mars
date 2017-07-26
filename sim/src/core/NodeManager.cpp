@@ -205,6 +205,7 @@ namespace mars {
 
       if(nodeS->relative_id != 0) {
         setNodeStructPositionFromRelative(nodeS);
+        //nodeS->relative_id = 0;
       }
 
       // create a node object
@@ -506,7 +507,7 @@ namespace mars {
           (changes & EDIT_NODE_MASS) || (changes & EDIT_NODE_NAME) ||
           (changes & EDIT_NODE_GROUP) || (changes & EDIT_NODE_PHYSICS)) {
         //cout << "EDIT_NODE_SIZE !!!" << endl;
-        changeNode(editedNode, &sNode);
+        changeNode(editedNode, nodeS);
         /*
           if (changes & EDIT_NODE_SIZE) {
           NodeMap nodes = simNodes;
@@ -1656,7 +1657,9 @@ namespace mars {
       iter = simNodes.find(id);
       if(iter == simNodes.end()) return;
       NodeData nd = iter->second->getSNode();
-      if(matchPattern("*/position/*", key)) {
+      //// fprintf(stderr, "change: %s %s\n", key.c_str(), value.c_str());
+      if(matchPattern("*/position", key)) {
+        //// fprintf(stderr, "position\n");
         double v = atof(value.c_str());
         if(key[key.size()-1] == 'x') nd.pos.x() = v;
         else if(key[key.size()-1] == 'y') nd.pos.y() = v;
@@ -1664,15 +1667,33 @@ namespace mars {
         iMutex.unlock();
         control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
       }
+      else if(matchPattern("*/rotation", key)) {
+        //// fprintf(stderr, "rotation\n");
+        double v = atof(value.c_str());
+        sRotation r = quaternionTosRotation(nd.rot);
+        bool setEuler = false;
+        if(key.find("alpha") != string::npos) r.alpha = v, setEuler = true;
+        else if(key.find("beta") != string::npos) r.beta = v, setEuler = true;
+        else if(key.find("gamma") != string::npos) r.gamma = v, setEuler = true;
+        else if(key[key.size()-1] == 'x') nd.rot.x() = v;
+        else if(key[key.size()-1] == 'y') nd.rot.y() = v;
+        else if(key[key.size()-1] == 'z') nd.rot.z() = v;
+        else if(key[key.size()-1] == 'w') nd.rot.w() = v;
+        if(setEuler) nd.rot = eulerToQuaternion(r);
+        iMutex.unlock();
+        control->nodes->editNode(&nd, (EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL));
+      }
       else if(matchPattern("*/extend/*", key)) {
+        //// fprintf(stderr, "extend\n");
         double v = atof(value.c_str());
         if(key[key.size()-1] == 'x') nd.ext.x() = v;
         else if(key[key.size()-1] == 'y') nd.ext.y() = v;
         else if(key[key.size()-1] == 'z') nd.ext.z() = v;
+        changeNode(iter->second, &nd);
         iMutex.unlock();
-        control->nodes->editNode(&nd, EDIT_NODE_SIZE);
       }
       else if(matchPattern("*/material", key)) {
+        //// fprintf(stderr, "material\n");
         iMutex.unlock();
         if(control->graphics) {
           std::vector<interfaces::MaterialData> mList;
@@ -1682,17 +1703,20 @@ namespace mars {
             if(it->name == value) {
               unsigned long drawID = getDrawID(id);
               control->graphics->setDrawObjectMaterial(drawID, *it);
+              iter->second->setMaterialName(it->name);
               break;
             }
           }
         }
       }
       else if(matchPattern("*/cullMask", key)) {
+        //// fprintf(stderr, "cullMask\n");
         int v = atoi(value.c_str());
         iter->second->setCullMask(v);
         iMutex.unlock();
       }
       else if(matchPattern("*/c*", key)) {
+        //// fprintf(stderr, "contact\n");
         contact_params c = iter->second->getContactParams();
         if(matchPattern("*/cmax_num_contacts", key)) {
           c.max_num_contacts = atoi(value.c_str());;
@@ -1727,30 +1751,52 @@ namespace mars {
         iMutex.unlock();
       }
       else if(matchPattern("*/brightness", key)) {
+        //// fprintf(stderr, "brightness\n");
         double v = atof(value.c_str());
         iter->second->setBrightness(v);
         iMutex.unlock();
       }
       else if(matchPattern("*/name", key)) {
+        //// fprintf(stderr, "name\n");
         nd.name = value;
         changeNode(iter->second, &nd);
         iMutex.unlock();
       }
       else if(matchPattern("*/mass", key)) {
+        //// fprintf(stderr, "mass\n");
         nd.mass = atof(value.c_str());
         changeNode(iter->second, &nd);
         iMutex.unlock();
       }
       else if(matchPattern("*/density", key)) {
+        //// fprintf(stderr, "density\n");
         nd.density = atof(value.c_str());
         changeNode(iter->second, &nd);
         iMutex.unlock();
       }
       else if(matchPattern("*/movable", key)) {
+        //// fprintf(stderr, "movable\n");
         ConfigMap b;
         b["bool"] = value;
         nd.movable = b["bool"];
         changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/groupid", key)) {
+        //// fprintf(stderr, "groupid\n");
+        nd.groupID = atoi(value.c_str());
+        changeNode(iter->second, &nd);
+        iMutex.unlock();
+      }
+      else if(matchPattern("*/relativeid", key)) {
+        //// fprintf(stderr, "relativeid\n");
+        nd.relative_id = atoi(value.c_str());
+        iter->second->setRelativeID(nd.relative_id);
+        iMutex.unlock();
+      }
+      else {
+        fprintf(stderr, "pattern not found: %s %s\n", key.c_str(),
+                value.c_str());
         iMutex.unlock();
       }
     }
@@ -1775,6 +1821,16 @@ namespace mars {
         control->graphics->setDrawObjectScale(editedNode->getGraphicsID2(), nodeS->ext);
       }
       editedNode->changeNode(nodeS);
+      if(sNode.groupID != 0 || nodeS->groupID != 0) {
+        for(auto it: simNodes) {
+          if(it.second->getGroupID() == sNode.groupID ||
+             it.second->getGroupID() == nodeS->groupID) {
+            control->joints->reattacheJoints(it.second->getID());
+          }
+        }
+      }
+      control->joints->reattacheJoints(nodeS->index);
+
       if(nodeS->groupID > maxGroupID) {
         maxGroupID = nodeS->groupID;
       }

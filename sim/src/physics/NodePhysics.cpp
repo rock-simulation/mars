@@ -990,8 +990,12 @@ namespace mars {
      *     - the geom should be rebuild with the new properties
      */
     bool NodePhysics::changeNode(NodeData* node) {
-      dReal pos[3] = {0,0,0};
+      dReal pos[3] = {node->pos.x(), node->pos.y(), node->pos.z()};
       dQuaternion rotation;
+      rotation[1] = node->rot.x();
+      rotation[2] = node->rot.y();
+      rotation[3] = node->rot.z();
+      rotation[0] = node->rot.w();
       const dReal *tpos;
 #ifdef _VERIFY_WORLD_
       sRotation euler = utils::quaternionTosRotation(node->rot);
@@ -1043,22 +1047,23 @@ namespace mars {
           fprintf(stderr, "creation of body geometry failed.\n");
           return 0;
         }
+        if(nBody) {
+          theWorld->destroyBody(nBody, this);
+          nBody = NULL;
+        }
         dGeomDestroy(tmpGeomId);
         // now the geom is rebuild and we have to reconnect it to the body
         // and reset the mass of the body
         if(!node->movable) {
-          if(nBody) {
-            theWorld->destroyBody(nBody, this);
-          }
-          nBody = NULL;
           dGeomSetBody(nGeom, nBody);
           dGeomSetQuaternion(nGeom, rotation);
           dGeomSetPosition(nGeom, (dReal)node->pos.x(),
                            (dReal)node->pos.y(), (dReal)node->pos.z());
         }
         else {
+          bool body_created = false;
           if(node->groupID) {
-            theWorld->getCompositeBody(node->groupID, &nBody, this);
+            body_created = theWorld->getCompositeBody(node->groupID, &nBody, this);
             composite = true;
           }
           else {
@@ -1075,9 +1080,16 @@ namespace mars {
             else {
               // if the geom is part of a composite object
               // we have to translate and rotate the geom mass
-              dGeomSetOffsetWorldQuaternion(nGeom, rotation);
-              dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
-              theWorld->resetCompositeMass(nBody);
+              if(body_created) {
+                dBodySetMass(nBody, &nMass);
+                dBodySetPosition(nBody, pos[0], pos[1], pos[2]);
+                dBodySetQuaternion(nBody, rotation);
+              }
+              else {
+                dGeomSetOffsetWorldQuaternion(nGeom, rotation);
+                dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+                theWorld->resetCompositeMass(nBody);
+              }
             }
           }
         }

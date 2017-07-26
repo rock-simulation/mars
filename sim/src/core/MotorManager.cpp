@@ -22,8 +22,8 @@
  * \file MotorManager.cpp
  * \author  Vladimir Komsiyski
  * \brief "MotorManager" implements MotorManagerInterface.
- * It is manages all motors and all motor 
- * operations that are used for the communication between the simulation 
+ * It is manages all motors and all motor
+ * operations that are used for the communication between the simulation
  * modules.
  *
  * \version 1.3
@@ -46,7 +46,7 @@
 
 namespace mars {
   namespace sim {
-  
+
     using namespace std;
     using namespace utils;
     using namespace interfaces;
@@ -55,7 +55,7 @@ namespace mars {
      * \brief Constructor.
      *
      * \param c The pointer to the ControlCenter of the simulation.
-     */ 
+     */
     MotorManager::MotorManager(ControlCenter *c)
     {
       control = c;
@@ -74,25 +74,25 @@ namespace mars {
      *
      * \return The unique id of the newly added motor.
      */
-    unsigned long MotorManager::addMotor(MotorData *motorS, bool reload) 
-    {  
+    unsigned long MotorManager::addMotor(MotorData *motorS, bool reload)
+    {
       iMutex.lock();
       motorS->index = next_motor_id;
       next_motor_id++;
       iMutex.unlock();
-  
+
       if (!reload) {
         iMutex.lock();
         simMotorsReload.push_back(*motorS);
         iMutex.unlock();
       }
-  
+
       SimMotor* newMotor = new SimMotor(control, *motorS);
       newMotor->attachJoint(control->joints->getSimJoint(motorS->jointIndex));
-  
+
       if(motorS->jointIndex2)
         newMotor->attachPlayJoint(control->joints->getSimJoint(motorS->jointIndex2));
-  
+
       newMotor->setSMotor(*motorS);
       iMutex.lock();
       simMotors[newMotor->getIndex()] = newMotor;
@@ -146,7 +146,7 @@ namespace mars {
 
     /**
      *\brief Returns the number of motors that are currently present in the simulation.
-     * 
+     *
      *\return The number of all motors.
      */
     int MotorManager::getMotorCount() const {
@@ -158,12 +158,12 @@ namespace mars {
     /**
      * \brief Change motor properties.
      *
-     * \details The old struct is replaced 
-     * by the new one completely, so prior to calling this function, one must 
+     * \details The old struct is replaced
+     * by the new one completely, so prior to calling this function, one must
      * ensure that all properties of this parameter are valid and as desired.
      *
      * \param motorS The id of the MotorData referred by this pointer must be the
-     * same as the id of the motor that is to be edited. 
+     * same as the id of the motor that is to be edited.
      */
     void MotorManager::editMotor(const MotorData &motorS) {
       MutexLocker locker(&iMutex);
@@ -230,7 +230,7 @@ namespace mars {
           delete tmpMotor;
       }
       iMutex.unlock();
-  
+
       control->sim->sceneHasChanged(false);
     }
 
@@ -312,7 +312,7 @@ namespace mars {
      * \brief Sets the proportional term of the motor with the given id to the given value.
      *
      * \details Only has effect on a PID motor. If the type of the motor with
-     * the given id is different from PID, no effect is observed, although the 
+     * the given id is different from PID, no effect is observed, although the
      * P value of the motor object is still changed.
      *
      * \param id The id of the motor whose P value is to be changed.
@@ -331,7 +331,7 @@ namespace mars {
      * \brief Sets the integral term of the motor with the given id to the given value.
      *
      * \details Only has effect on a PID motor. If the type of the motor with
-     * the given id is different from PID, no effect is observed, although the 
+     * the given id is different from PID, no effect is observed, although the
      * I value of the motor object is still changed.
      *
      * \param id The id of the motor whose I value is to be changed.
@@ -350,7 +350,7 @@ namespace mars {
      * \brief Sets the derivative term of the motor with the given id to the given value.
      *
      * \details Only has effect on a PID motor. If the type of the motor with
-     * the given id is different from PID, no effect is observed, although the 
+     * the given id is different from PID, no effect is observed, although the
      * D value of the motor object is still changed.
      *
      * \param id The id of the motor whose D value is to be changed.
@@ -365,7 +365,7 @@ namespace mars {
     }
 
 
-    /** 
+    /**
      * \brief Deactivates the motor with the given id.
      *
      * \param id The id of the motor that is to be deactivated.
@@ -416,7 +416,7 @@ namespace mars {
     }
 
 
-    /** 
+    /**
      * \brief Destroys all motors in the simulation.
      *
      * \details The \c clear_all flag indicates if the reload motors should
@@ -441,7 +441,7 @@ namespace mars {
      * \brief This function reloads all motors from a temporary motor pool.
      *
      * \details All motors that have been added with \c reload value as \c true
-     * are added back to the simulation again with a \c reload value of \c true. 
+     * are added back to the simulation again with a \c reload value of \c true.
      */
     void MotorManager::reloadMotors(void) {
       list<MotorData>::iterator iter;
@@ -458,10 +458,10 @@ namespace mars {
     /**
      * \brief This function updates all motors with timing value \c calc_ms in miliseconds.
      *
-     * \warning This function is only used internally and should not be called 
+     * \warning This function is only used internally and should not be called
      * outside the core.
      *
-     * \param calc_ms The timing value in miliseconds. 
+     * \param calc_ms The timing value in miliseconds.
      */
     void MotorManager::updateMotors(double calc_ms) {
       map<unsigned long, SimMotor*>::iterator iter;
@@ -509,9 +509,9 @@ namespace mars {
     /**
      * \brief Detaches the joint with the given index from all motors that act on
      * it, if any. Used when a joint is destroyed.
-     * 
-     * \warning The detached motors are not destroyed and are still present in the 
-     * simulation, although they do not have any effect on it. A call to 
+     *
+     * \warning The detached motors are not destroyed and are still present in the
+     * simulation, although they do not have any effect on it. A call to
      * \c removeMotor must be made to remove the motor completely.
      *
      * \param joint_index The id of the joint that is to be detached.
@@ -519,13 +519,13 @@ namespace mars {
     void MotorManager::removeJointFromMotors(unsigned long joint_index) {
       map<unsigned long, SimMotor*>::iterator iter;
       MutexLocker locker(&iMutex);
-      for (iter = simMotors.begin(); iter != simMotors.end(); iter++) 
-        if (iter->second->getJointIndex() == joint_index) 
+      for (iter = simMotors.begin(); iter != simMotors.end(); iter++)
+        if (iter->second->getJointIndex() == joint_index)
           iter->second->attachJoint(0);
     }
 
-    void MotorManager::getDataBrokerNames(unsigned long jointId, 
-                                          std::string *groupName, 
+    void MotorManager::getDataBrokerNames(unsigned long jointId,
+                                          std::string *groupName,
                                           std::string *dataName) const {
       MutexLocker locker(&iMutex);
       map<unsigned long, SimMotor*>::const_iterator iter = simMotors.find(jointId);
@@ -569,7 +569,12 @@ namespace mars {
           iter->second->setMaxValue(atof(value.c_str()));
         }
         if(matchPattern("*/type", key)) {
-          iter->second->setType((interfaces::MotorType)atoi(value.c_str()));
+          if(value == "DC" || value == "2") {
+            iter->second->setType(MOTOR_TYPE_VELOCITY);
+          }
+          else {
+            iter->second->setType(MOTOR_TYPE_POSITION);
+          }
         }
       }
     }

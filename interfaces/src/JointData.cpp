@@ -142,7 +142,19 @@ namespace mars {
         GET_VALUE("angle2_offset", angle2_offset, Double);
       }
 
-      GET_VALUE("anchorpos", anchorPos, Int);
+      std::string tmpanchorpos = config->get("anchorpos", std::string("1"));
+      if(tmpanchorpos == "1" || tmpanchorpos == "node1") {
+        anchorPos = 1;
+      }
+      else if(tmpanchorpos == "2" || tmpanchorpos == "node2") {
+        anchorPos = 2;
+      }
+      else if(tmpanchorpos == "3" || tmpanchorpos == "center") {
+        anchorPos = 3;
+      }
+      else if(tmpanchorpos == "4" || tmpanchorpos == "custom") {
+        anchorPos = 4;
+      }
       GET_OBJECT("anchor", anchor, vector);        
       GET_VALUE("invertAxis", invertAxis, Bool);
 
@@ -164,7 +176,7 @@ namespace mars {
       SET_VALUE("nodeindex1", nodeIndex1);
       SET_VALUE("nodeindex2", nodeIndex2);
 
-      { // handle axis 1
+      if(type != 0 && type != 4 && type != 6) { // handle axis 1
         SET_OBJECT("axis1", axis1, vector);
         SET_VALUE("lowStopAxis1", lowStopAxis1);
         SET_VALUE("highStopAxis1", highStopAxis1);
@@ -175,7 +187,8 @@ namespace mars {
         SET_VALUE("angle1_offset", angle1_offset);
       }
 
-      { // handle axis 2
+      // todo: hande this via utils
+      if(type == 2 || type == 5) { // handle axis 2
         SET_OBJECT("axis2", axis2, vector);
         SET_VALUE("lowStopAxis2", lowStopAxis2);
         SET_VALUE("highStopAxis2", highStopAxis2);
@@ -186,7 +199,18 @@ namespace mars {
         SET_VALUE("angle2_offset", angle2_offset);
       }
 
-      SET_VALUE("anchorpos", anchorPos);
+      if(anchorPos == 1) {
+        (*config)["anchorpos"] = "node1";
+      }
+      else if(anchorPos == 2) {
+        (*config)["anchorpos"] = "node2";
+      }
+      else if(anchorPos == 3) {
+        (*config)["anchorpos"] = "center";
+      }
+      else if(anchorPos == 4) {
+        (*config)["anchorpos"] = "custom";
+      }
       SET_OBJECT("anchor", anchor, vector);        
       SET_VALUE("invertAxis", invertAxis);
     }

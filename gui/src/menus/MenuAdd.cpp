@@ -153,8 +153,10 @@ namespace mars {
 
       comboLabel1 = new QLabel();
       comboLabel2 = new QLabel();
+      comboLabel3 = new QLabel();
       combo1 = new QComboBox();
       combo2 = new QComboBox();
+      combo3 = new QComboBox();
       label3 = new QLabel();
       addLineEdit2 = new QLineEdit();
       openFile = new QPushButton("...");
@@ -164,13 +166,17 @@ namespace mars {
       gridLayout->addWidget(combo1, 0, 1);
       gridLayout->addWidget(comboLabel2, 1, 0);
       gridLayout->addWidget(combo2, 1, 1);
+      gridLayout->addWidget(comboLabel3, 2, 0);
+      gridLayout->addWidget(combo3, 2, 1);
       gridLayout->addWidget(label3, 2, 0);
       gridLayout->addWidget(addLineEdit2, 2, 1);
       gridLayout->addWidget(openFile, 2, 2);
       comboLabel1->hide();
       comboLabel2->hide();
+      comboLabel3->hide();
       combo1->hide();
       combo2->hide();
+      combo3->hide();
       label3->hide();
       addLineEdit2->hide();
       openFile->hide();
@@ -204,8 +210,11 @@ namespace mars {
         combo1->show();
         comboLabel2->hide();
         combo2->hide();
+        comboLabel3->hide();
+        combo3->hide();
         label="Motor Name:";
-        name="motor"; break;
+        name="motor";
+        break;
       }
       case GUI_ACTION_ADD_JOINT: {
         std::vector<interfaces::core_objects_exchange>::iterator it;
@@ -213,17 +222,28 @@ namespace mars {
         control->nodes->getListNodes(&simNodes);
         combo1->clear();
         combo2->clear();
-        combo2->addItem("world");
+        combo3->clear();
+        combo3->addItem("world");
         for(it=simNodes.begin(); it!=simNodes.end(); ++it) {
-          combo1->addItem(it->name.c_str());
           combo2->addItem(it->name.c_str());
+          combo3->addItem(it->name.c_str());
         }
-        comboLabel1->setText("Add to first node:");
+        comboLabel1->setText("Joint type:");
         comboLabel1->show();
+        // todo: create this list from mars_interfaces
+        combo1->addItem("hinge");
+        combo1->addItem("slider");
+        combo1->addItem("hinge2");
+        combo1->addItem("ball");
+        //combo1->addItem("universal");
+        combo1->addItem("fixed");
         combo1->show();
-        comboLabel2->setText("Add to second node:");
+        comboLabel2->setText("Add to first node:");
         comboLabel2->show();
         combo2->show();
+        comboLabel3->setText("Add to second node:");
+        comboLabel3->show();
+        combo3->show();
         label="Joint Name:";
         name="joint";
         break;
@@ -297,16 +317,16 @@ namespace mars {
     void MenuAdd::menu_addJoint(const std::string &name) {
       configmaps::ConfigMap map;
       map["name"] = name;
-      map["type"] = "hinge";
+      map["type"] = combo1->currentText().toStdString();
       map["axis1"]["x"] = 0.0;
       map["axis1"]["y"] = 0.0;
       map["axis1"]["z"] = 1.0;
-      map["nodeindex1"] = control->nodes->getID(combo1->currentText().toStdString());
+      map["nodeindex1"] = control->nodes->getID(combo2->currentText().toStdString());
       if(combo2->currentText() == "world") {
         map["nodeindex2"] = 0lu;
       }
       else {
-        map["nodeindex2"] = control->nodes->getID(combo2->currentText().toStdString());
+        map["nodeindex2"] = control->nodes->getID(combo3->currentText().toStdString());
       }
       interfaces::JointData data;
       data.fromConfigMap(&map, "");
@@ -315,6 +335,8 @@ namespace mars {
       combo1->hide();
       comboLabel2->hide();
       combo2->hide();
+      comboLabel3->hide();
+      combo3->hide();
     }
 
     void MenuAdd::menu_addLight(const std::string &name) {
