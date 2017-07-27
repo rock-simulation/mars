@@ -30,13 +30,14 @@
 #include "ShaderTerrain.hpp"
 
 #include <configmaps/ConfigData.h>
-#include <mars/graphics/gui_helper_functions.h>
 #include <mars/utils/misc.h>
 #include <mars/osg_material_manager/OsgMaterial.h>
 
+#include <osgDB/ReadFile>
 #include <osg/LOD>
 #include <osg/PositionAttitudeTransform>
 #include <osgUtil/CullVisitor>
+#include <osgUtil/Optimizer>
 #include <osg/PolygonMode>
 #include <osg/LineWidth>
 
@@ -100,6 +101,143 @@ namespace osg_terrain {
     }
   };
 
+  osg::ref_ptr<osg::Node> readBobjFromFile(const std::string &filename) {
+    FILE* input = fopen(filename.c_str(), "rb");
+    if(!input) return 0;
+
+    char buffer[312];
+
+    int da, i, r, o, foo=0;
+    int iData[3];
+    float fData[4];
+
+    osg::Geode *geode = new osg::Geode();
+    std::vector<osg::Vec3> vertices;
+    std::vector<osg::Vec3> normals;
+    std::vector<osg::Vec2> texcoords;
+
+    std::vector<osg::Vec3> vertices2;
+    std::vector<osg::Vec3> normals2;
+    std::vector<osg::Vec2> texcoords2;
+
+    osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
+    osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
+    osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
+    osg::ref_ptr<osg::DrawElementsUInt> osgIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
+    while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
+      o = 0;
+      while(o < r+foo-50 || (r<256 && o < r+foo)) {
+	da = *(int*)(buffer+o);
+	o += 4;
+	if(da == 1) {
+	  for(i=0; i<3; i++) {
+	    fData[i] = *(float*)(buffer+o);
+	    o+=4;
+	  }
+	  vertices.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
+	}
+	else if(da == 2) {
+	  for(i=0; i<2; i++) {
+	    fData[i] = *(float*)(buffer+o);
+	    o+=4;
+	  }
+	  texcoords.push_back(osg::Vec2(fData[0], fData[1]));
+	}
+	else if(da == 3) {
+	  for(i=0; i<3; i++) {
+	    fData[i] = *(float*)(buffer+o);
+	    o+=4;
+	  }
+	  normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
+	}
+	else if(da == 4) {
+	  for(i=0; i<3; i++) {
+	    iData[i] = *(int*)(buffer+o);
+	    o+=4;
+	  }
+	  // add osg vertices etc.
+	  osgIndices->push_back(iData[0]-1);
+	  vertices2.push_back(vertices[iData[0]-1]);
+	  if(iData[1] > 0) {
+	    texcoords2.push_back(texcoords[iData[1]-1]);
+	  }
+	  normals2.push_back(normals[iData[2]-1]);
+	  for(i=0; i<3; i++) {
+	    iData[i] = *(int*)(buffer+o);
+	    o+=4;
+	  }
+	  osgIndices->push_back(iData[0]-1);
+	  // add osg vertices etc.
+	  vertices2.push_back(vertices[iData[0]-1]);
+	  if(iData[1] > 0) {
+	    texcoords2.push_back(texcoords[iData[1]-1]);
+	  }
+	  normals2.push_back(normals[iData[2]-1]);
+	  for(i=0; i<3; i++) {
+	    iData[i] = *(int*)(buffer+o);
+	    o+=4;
+	  }
+	  osgIndices->push_back(iData[0]-1);
+	  // add osg vertices etc.
+	  vertices2.push_back(vertices[iData[0]-1]);
+	  if(iData[1] > 0) {
+	    texcoords2.push_back(texcoords[iData[1]-1]);
+	  }
+	  normals2.push_back(normals[iData[2]-1]);
+	}
+      }
+      foo = r+foo-o;
+      if(r==256) memcpy(buffer, buffer+o, foo);
+    }
+
+    bool useIndices = false;
+    if(vertices.size() == normals.size()) {
+      for(size_t i=0; i<vertices.size(); ++i) {
+	osgVertices->push_back(vertices[i]);
+	osgNormals->push_back(normals[i]);
+	if(texcoords.size() > i) {
+	  osgTexcoords->push_back(texcoords[i]);
+	}
+      }
+      useIndices = true;
+    }
+    else {
+      for(size_t i=0; i<vertices2.size(); ++i) {
+	osgVertices->push_back(vertices2[i]);
+      }
+      for(size_t i=0; i<normals2.size(); ++i) {
+	osgNormals->push_back(normals2[i]);
+      }
+      for(size_t i=0; i<texcoords2.size(); ++i) {
+	osgTexcoords->push_back(texcoords2[i]);
+      }
+    }
+
+    osg::Geometry* geometry = new osg::Geometry;
+    geometry->setVertexArray(osgVertices.get());
+    geometry->setNormalArray(osgNormals.get());
+    geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+    if(osgTexcoords->size() > 0) {
+      geometry->setTexCoordArray(0, osgTexcoords.get());
+    }
+    if(useIndices) {
+      geometry->addPrimitiveSet(osgIndices);
+    }
+    else {
+      osg::DrawArrays* drawArrays = new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES,0,osgVertices->size());
+      geometry->addPrimitiveSet(drawArrays);
+    }
+    geode->addDrawable(geometry);
+    geode->setName("bobj");
+
+    fclose(input);
+    osgUtil::Optimizer optimizer;
+    optimizer.optimize( geode );
+
+    return geode;
+  }
+
+
   /** In the first version everthing is created statically by parsing a
    *  yaml file.
    */
@@ -127,10 +265,10 @@ namespace osg_terrain {
         file << (*it)["file"];
         osg::ref_ptr<osg::Node> node;
         if(utils::getFilenameSuffix(file) == ".bobj") {
-          node = graphics::GuiHelper::readBobjFromFile(file);
+          node = readBobjFromFile(file);
         }
         else {
-          node = graphics::GuiHelper::readNodeFromFile(file);
+          node = osgDB::readNodeFile(file);
         }
 
         InstancesVisitor visitor;

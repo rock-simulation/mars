@@ -2,8 +2,9 @@
     <description brief="mars_app">
        DFKI Robot simulator application loader
     </description>
-    <maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
+    <maintainer>Malte Langosz/malte.langosz@dfki.de</maintainer>
 
+    <depend package="tools/configmaps" />
     <depend package="simulation/mars/scene_loader" />
     <!--<depend package="simulation/mars/urdf_loader" />-->
     <depend package="simulation/mars/graphics"  optional="1" />
@@ -13,9 +14,11 @@
     <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/plugins/connexion_plugin" optional="1" />
+    <depend package="simulation/mars/plugins/SkyDomePlugin" optional="1" />
     <depend package="simulation/mars/common/gui/data_broker_gui" optional="1" />
     <depend package="simulation/mars/common/gui/cfg_manager_gui" optional="1" />
     <depend package="simulation/mars/common/gui/lib_manager_gui" optional="1" />
+    <depend package="simulation/mars/common/gui/log_console" optional="1" />
 
     <rosdep name="qt4" />
     <tags>needs_opt</tags>

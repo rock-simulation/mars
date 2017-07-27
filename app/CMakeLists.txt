@@ -28,6 +28,7 @@ pkg_check_modules(PKGCONFIG
         lib_manager
         main_gui
         mars_interfaces
+	configmaps
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

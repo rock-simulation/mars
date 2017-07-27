@@ -25,13 +25,14 @@
  **/
 
 #include "ShaderTerrain.hpp"
+#include "Terrain.h"
 
 #include <mars/utils/misc.h>
-#include <mars/graphics/gui_helper_functions.h>
 
 #include <osg/ComputeBoundsVisitor>
 #include <osg/PolygonMode>
 #include <osg/LineWidth>
+#include <osg/Geode>
 
 
 namespace osg_terrain {
@@ -90,10 +91,10 @@ namespace osg_terrain {
     }
     posTransform->overridePos = false;
     if(mars::utils::getFilenameSuffix(file) == ".bobj") {
-      node = mars::graphics::GuiHelper::readBobjFromFile(file);
+      node = readBobjFromFile(file);
     }
     else {
-      node = mars::graphics::GuiHelper::readNodeFromFile(file);
+      node = osgDB::readNodeFile(file);
     }
     node->setNodeMask(0xff | 0x1000);
 
