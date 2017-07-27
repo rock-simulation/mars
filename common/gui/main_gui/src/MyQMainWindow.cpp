@@ -221,6 +221,8 @@ namespace mars {
           handleState(temp, true, false); // save area
           handleState(temp, false, true); // restore geometry
           dySubWindows.push_back(temp);
+          temp->setParent(0);
+          (*dockit)->setWidget(0);
           temp->show();
           removeDockWidget(*dockit);
         }

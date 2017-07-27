@@ -579,6 +579,10 @@ namespace mars {
       gw->setName(name);
       gw->setClearColor(graphicOptions.clearColor);
       viewer->addView(gw->getView());
+      if(graphicsWindows.size() == 0) {
+        gw->grabFocus();
+        viewer->setCameraWithFocus(gw->getMainCamera());
+      }
       graphicsWindows.push_back(gw);
 
       if(!rtt) {
@@ -764,7 +768,15 @@ namespace mars {
     }
 
     void GraphicsManager::setActiveWindow(unsigned long win_id) {
-      get3DWindow(win_id)->grabFocus();
+      for(auto w: graphicsWindows) {
+        if(w->getID() == win_id) {
+          w->grabFocus();
+          viewer->setCameraWithFocus(w->getMainCamera());
+        }
+        else {
+          w->unsetFocus();
+        }
+      }
     }
 
     void* GraphicsManager::getQTWidget(unsigned long id) const {
