@@ -14,12 +14,14 @@
     <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/plugins/connexion_plugin" optional="1" />
-    <depend package="simulation/mars/plugins/SkyDomePlugin" optional="1" />
     <depend package="simulation/mars/common/gui/data_broker_gui" optional="1" />
     <depend package="simulation/mars/common/gui/cfg_manager_gui" optional="1" />
     <depend package="simulation/mars/common/gui/lib_manager_gui" optional="1" />
     <depend package="simulation/mars/common/gui/log_console" optional="1" />
-
+    <depend package="simulation/mars/plugins/SkyDomePlugin" optional="1" />
+    <depend package="simulation/mars/plugins/entity_view" optional="1" />
+    <depend package="simulation/mars/entity_generation/smurf" optional="1" />
+    <depend package="simulation/mars/smurf_loader" optional="1" />
     <rosdep name="qt4" />
     <tags>needs_opt</tags>
 </package>

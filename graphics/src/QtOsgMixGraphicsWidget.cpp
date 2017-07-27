@@ -197,6 +197,7 @@ namespace mars {
 
     void QtOsgMixGraphicsWidget::focusInEvent( QFocusEvent *event) {
       gm->setActiveWindow(this);
+      gm->setActiveWindow(widgetID);
     }
 
     static int qtToOsgKey(QKeyEvent* e) {
@@ -277,6 +278,7 @@ namespace mars {
       view->getEventQueue()->mouseButtonPress(e->x(), -e->y(), button);
 #endif
 #endif
+
       grabKeyboard();
     }
 
@@ -322,6 +324,11 @@ namespace mars {
     }
 
     bool QtOsgMixGraphicsWidget::eventFilter(QObject *obj, QEvent *event) {
+      if(event->type() == QEvent::Enter) {
+        gm->setActiveWindow(this);
+        gm->setActiveWindow(widgetID);
+        return false;
+      }
       if (obj != parent()) {
         return false;
       }
