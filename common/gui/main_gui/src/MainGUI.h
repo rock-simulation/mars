@@ -132,7 +132,7 @@ namespace mars {
       CREATE_MODULE_INFO();
 
 
-    protected slots:
+    public slots:
 
       /**
        * \brief Makes a widget dockable in the main window.

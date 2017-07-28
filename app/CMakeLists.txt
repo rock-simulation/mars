@@ -134,6 +134,7 @@ add_plugin_if_available("data_broker_gui")
 add_plugin_if_available("cfg_manager_gui")
 add_plugin_if_available("lib_manager_gui")
 add_plugin_if_available("SkyDomePlugin")
+add_plugin_if_available("PythonMars")
 
 if(NOT ROCK)
     add_plugin_if_available("log_console")
@@ -149,6 +150,9 @@ configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt.exam
 configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt.example @ONLY)
 configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt.example ${CMAKE_BINARY_DIR}/other_libs.txt.example ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example DESTINATION configuration/mars_default/)
+
+install(FILES configuration/pypath.yml  DESTINATION configuration/mars_default/)
+install(DIRECTORY configuration/python DESTINATION configuration/mars_default/)
 
 configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)

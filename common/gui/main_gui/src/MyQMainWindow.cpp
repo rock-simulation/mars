@@ -179,7 +179,9 @@ namespace mars {
     }
 
     void MyQMainWindow::setCentralWidget(QWidget *widget) {
-      handleState(myCentralWidget, true, true, true); // remove the previous central widget
+      if(myCentralWidget) {
+        handleState(myCentralWidget, true, true, true); // remove the previous central widget
+      }
       widgetState central = {widget, Qt::NoDockWidgetArea, widget->geometry()};
       widgetStates.push_back(central);
 
@@ -187,6 +189,7 @@ namespace mars {
       widget->show();
       myCentralWidget = widget;
       p = (void*)widget->parentWidget();
+      if(p) ((QWidget*)p)->hide();
       myCentralWidget->setMinimumSize(720, 405);
       if(dockView) {
         QMainWindow::setCentralWidget(widget);
@@ -200,10 +203,11 @@ namespace mars {
         dockGeometry = this->geometry(); // save the geometry when docked
 
         // undock central widget
-        if(myCentralWidget == centralWidget()) {
+        if(myCentralWidget && myCentralWidget == centralWidget()) {
           myCentralWidget->setParent((QWidget*)p);
           handleState(myCentralWidget, false, true); // restore geometry
-          myCentralWidget->show();
+          if(p) ((QWidget*)p)->show();
+          else myCentralWidget->show();
           QMainWindow::setCentralWidget(0);
         }
         // undock unclosable widgets
@@ -242,6 +246,7 @@ namespace mars {
         if(myCentralWidget) {
           handleState(myCentralWidget, true, true); // save geometry
           QMainWindow::setCentralWidget(myCentralWidget);
+          if(p) ((QWidget*)p)->hide();
         }
         // dock unclosable widgets
         for(subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
