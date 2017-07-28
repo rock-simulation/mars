@@ -248,7 +248,7 @@ namespace data_broker_plotter {
   void DataBrokerPlotter::hideEvent(QHideEvent *event) {
     (void)event;
 
-    mainLib->destroyPlotWindow(this);
+    //mainLib->destroyPlotWindow(this);
   }
 
 } // end of namespace: data_broker_plotter
