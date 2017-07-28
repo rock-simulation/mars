@@ -172,6 +172,14 @@ namespace mars {
     void QtOsgMixGraphicsWidget::resizeEvent( QResizeEvent * event ) {
       const QSize & geometrySize = event->size();
       if(graphicsWindow) {
+        //fprintf(stderr, "resize: %d %d %d %d\n", window()->geometry().x(),
+        //        window()->geometry().y(), geometrySize.width(), geometrySize.height());
+        widgetWidth = geometrySize.width();
+        widgetHeight = geometrySize.height();
+        widgetX = window()->geometry().x();
+        widgetY = window()->geometry().y();
+        applyResize();
+        /*
         graphicsWindow->resized(window()->geometry().x(),
                                 window()->geometry().y(),
                                 geometrySize.width(),
@@ -184,6 +192,7 @@ namespace mars {
         if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
         postDrawCallback->setSize(geometrySize.width(), geometrySize.height());
+        */
       }
     }
 

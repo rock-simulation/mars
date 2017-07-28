@@ -104,6 +104,7 @@ namespace mars {
 
       /**\brief sets the clear color */
       void setClearColor(mars::utils::Color color);
+      const mars::utils::Color& getClearColor() const;
 
       void setGrabFrames(bool grab);
       void setSaveFrames(bool grab);
@@ -268,8 +269,10 @@ namespace mars {
 
       bool hasFocus;
 
-    private:
+      void applyResize();
 
+    private:
+      utils::Color clearColor;
       // toggle for fullscreen display
       bool isFullscreen;
 
@@ -326,8 +329,6 @@ namespace mars {
       bool pick(const double x, const double y);
 
       virtual void setWidgetFullscreen(bool val) {};
-
-      void applyResize();
 
     }; // end of class GraphicsWidget
 

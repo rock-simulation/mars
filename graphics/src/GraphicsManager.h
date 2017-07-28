@@ -126,7 +126,8 @@ namespace mars {
       virtual void removeGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
 
       virtual const mars::interfaces::GraphicData getGraphicOptions(void) const;
-      virtual void setGraphicOptions(const mars::interfaces::GraphicData &options);
+      virtual void setGraphicOptions(const mars::interfaces::GraphicData &options,
+                                     bool ignoreClearColor=false);
 
       virtual void addDrawItems(interfaces::drawStruct *draw); ///< Adds drawStruct items to the graphics scene.
       virtual void removeDrawItems(interfaces::DrawInterface *iface);
@@ -313,6 +314,9 @@ namespace mars {
       virtual void setCameraDefaultView(int view);
       inline void setActiveWindow(GraphicsWidget *g) {activeWindow = g;}
       virtual void setDrawObjectBrightness(unsigned long id, double v);
+      virtual void edit(const std::string &key, const std::string &value);
+      void edit(unsigned long widgetID, const std::string &key,
+                const std::string &value);
 
     private:
       mars::interfaces::GraphicData graphicOptions;

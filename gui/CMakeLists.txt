@@ -64,32 +64,21 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 
 set(HEADERS 
         src/ControllerHandler.h
-        src/JoystickWidget.h
         src/MainGUIDefs.h
         src/MarsGui.h
         #src/MarsStyle.h
-        src/NodeHandler.h
-        src/NodeSelectionTree.h
         src/SelectionDialog.h
-        src/SensorHandler.h
-        src/Widget_Node_Options_ODE.h 
-        src/Widget_Node_State.h 
+        src/NodeSelectionTree.h
 
         src/dialogs/AboutDialog.h 
         src/dialogs/BlenderExportGUI.h
         src/dialogs/ControllerConfigGUI.h
         src/dialogs/Dialog_Add_Force.h 
         src/dialogs/Dialog_Add_Torque.h 
-        src/dialogs/Dialog_Create_Material.h 
-        src/dialogs/Dialog_Edit_Material.h
-        src/dialogs/Dialog_Graphics_Options.h 
         src/dialogs/Dialog_Motor_Control.h 
         src/dialogs/Dialog_Rescale_Environment.h 
         src/dialogs/DialogControllers.h
         src/dialogs/DialogDistance.h
-        src/dialogs/DialogJoystick.h
-        src/dialogs/DialogNodes.h
-        src/dialogs/DialogSensors.h
         
         src/dialogs/CameraConfig/CameraConfig.h
         src/dialogs/CameraConfig/CameraConfigurator.h
@@ -109,30 +98,19 @@ set(HEADERS
 
 set(QT_MOC_HEADER
         src/ControllerHandler.h
-        src/JoystickWidget.h
         #src/MarsStyle.h
-        src/NodeHandler.h
-        src/NodeSelectionTree.h
         src/SelectionDialog.h
-        src/SensorHandler.h
-        src/Widget_Node_Options_ODE.h 
-        src/Widget_Node_State.h 
+        src/NodeSelectionTree.h
 
         src/dialogs/AboutDialog.h 
         src/dialogs/BlenderExportGUI.h
         src/dialogs/ControllerConfigGUI.h
         src/dialogs/Dialog_Add_Force.h 
         src/dialogs/Dialog_Add_Torque.h 
-        src/dialogs/Dialog_Create_Material.h 
-        src/dialogs/Dialog_Edit_Material.h
         src/dialogs/Dialog_Motor_Control.h 
         src/dialogs/Dialog_Rescale_Environment.h 
-        src/dialogs/Dialog_Graphics_Options.h 
         src/dialogs/DialogControllers.h
         src/dialogs/DialogDistance.h
-        src/dialogs/DialogJoystick.h
-        src/dialogs/DialogNodes.h
-        src/dialogs/DialogSensors.h
 
         src/dialogs/CameraConfig/CameraConfigurator.h
         src/dialogs/CameraConfig/CameraConfiguratorGUI.h
@@ -155,31 +133,20 @@ endif (${USE_QT5})
 set(TARGET_SRC 
             ${QT_MOC_HEADER_SRC} 
             src/ControllerHandler.cpp
-            src/JoystickWidget.cpp
-            src/SelectionDialog.cpp
             src/MarsGui.cpp
             #src/MarsStyle.cpp
-            src/NodeHandler.cpp
+            src/SelectionDialog.cpp
             src/NodeSelectionTree.cpp
-            src/SensorHandler.cpp
-            src/Widget_Node_Options_ODE.cpp 
-            src/Widget_Node_State.cpp 
 
             src/dialogs/AboutDialog.cpp 
             src/dialogs/BlenderExportGUI.cpp
             src/dialogs/ControllerConfigGUI.cpp
             src/dialogs/Dialog_Add_Force.cpp 
             src/dialogs/Dialog_Add_Torque.cpp 
-            src/dialogs/Dialog_Create_Material.cpp 
-            src/dialogs/Dialog_Edit_Material.cpp
-            src/dialogs/Dialog_Graphics_Options.cpp 
             src/dialogs/Dialog_Motor_Control.cpp 
             src/dialogs/Dialog_Rescale_Environment.cpp 
             src/dialogs/DialogControllers.cpp
             src/dialogs/DialogDistance.cpp
-            src/dialogs/DialogJoystick.cpp
-            src/dialogs/DialogNodes.cpp
-            src/dialogs/DialogSensors.cpp
 
             src/dialogs/CameraConfig/CameraConfig.cpp
             src/dialogs/CameraConfig/CameraConfigurator.cpp

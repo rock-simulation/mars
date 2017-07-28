@@ -175,26 +175,53 @@ namespace mars {
       }
 
       if(control->graphics) {
-        lightMap.clear();
-        temp.clear();
-        temp << "lights";
-        current = new QTreeWidgetItem(temp);
-        treeWidget->addTopLevelItem(current);
-        std::vector<interfaces::LightData*> simLights;
-        control->graphics->getLights(&simLights);
-        for(size_t i=0; i<simLights.size(); ++i) {
+        { // handle lights
+          lightMap.clear();
           temp.clear();
-          temp << QString::fromStdString(simLights[i]->name);
-          configmaps::ConfigMap map;
-          simLights[i]->toConfigMap(&map);
-          lightMap[simLights[i]->name] = map;
-          //map.toYamlStream(std::cerr);
+          temp << "lights";
+          current = new QTreeWidgetItem(temp);
+          treeWidget->addTopLevelItem(current);
+          std::vector<interfaces::LightData*> simLights;
+          control->graphics->getLights(&simLights);
+          for(size_t i=0; i<simLights.size(); ++i) {
+            temp.clear();
+            temp << QString::fromStdString(simLights[i]->name);
+            configmaps::ConfigMap map;
+            simLights[i]->toConfigMap(&map);
+            lightMap[simLights[i]->name] = map;
+            //map.toYamlStream(std::cerr);
+            QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+            current->addChild(next);
+          }
+        }
+        { // handle windows
+          lightMap.clear();
+          temp.clear();
+          temp << "graphics";
+          current = new QTreeWidgetItem(temp);
+          treeWidget->addTopLevelItem(current);
+          temp.clear();
+          temp << "scene";
           QTreeWidgetItem *next = new QTreeWidgetItem(temp);
           current->addChild(next);
+          std::vector<unsigned long> ids;
+          control->graphics->getList3DWindowIDs(&ids);
+          for(auto it: ids) {
+            GraphicsWindowInterface *gw = control->graphics->get3DWindow(it);
+            temp.clear();
+            std::string gwName = gw->getName();
+            if(gwName.empty()) {
+              temp << QString::number(it) + ":window";
+            }
+            else {
+              temp << QString::number(it) + gwName.c_str();
+            }
+            QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+            current->addChild(next);
+          }
         }
       }
     }
-
 
     void SelectionTree::reset(void) {
       while (treeWidget->topLevelItemCount() > 0)
@@ -248,7 +275,7 @@ namespace mars {
           currentLight.clear();
           currentMaterial.clear();
           // todo: remove current information (motorData, currentLigth etc.)
-          if(n>-1) {
+          if(n>-1 && parent->text(0) != "graphics") {
             std::vector<std::string> editPattern;
             std::vector<std::string> filePattern;
             std::vector<std::string> colorPattern;
@@ -280,7 +307,6 @@ namespace mars {
             else if(parent->text(0) == "joints") {
               jointData = control->joints->getFullJoint(id);
               jointData.toConfigMap(&map);
-              fprintf(stderr, "%s\n", map.toYamlString().c_str());
               name = jointData.name;
               std::string preStr = "../"+name+"/";
               //editPattern.push_back(preStr+"type");
@@ -402,6 +428,84 @@ namespace mars {
             dw->setColorPattern(colorPattern);
             dw->setConfigMap(currentLight["name"], map);
             editCategory = 6;
+          }
+          else if(parent->text(0) == "graphics") {
+            std::string item = currentItem->text(0).toStdString();
+            if(item == "scene") {
+              std::vector<std::string> editPattern;
+              std::vector<std::string> filePattern;
+              std::vector<std::string> colorPattern;
+              editPattern.push_back("*/");
+              colorPattern.push_back("*/fogColor");
+              GraphicData gd = control->graphics->getGraphicOptions();
+              configmaps::ConfigMap map;
+              gd.toConfigMap(&map);
+              map.erase("clearColor");
+              dw->setEditPattern(editPattern);
+              dw->setFilePattern(filePattern);
+              dw->setColorPattern(colorPattern);
+              dw->setConfigMap("general", map);
+              editCategory = 8;
+            }
+            else {
+              // const GraphicData gd = control->graphics->getGraphicOptions();
+              // configmaps::ConfigMap map = gd.toConfigMap();
+              std::vector<std::string> editPattern;
+              std::vector<std::string> filePattern;
+              std::vector<std::string> colorPattern;
+              std::vector<std::string> dropDownPattern;
+              std::vector<std::vector<std::string> > dropDownValues;
+              editPattern.push_back("*/");
+              colorPattern.push_back("*/clearColor");
+              dropDownPattern.push_back("*/projection");
+              dropDownPattern.push_back("*/mouse");
+              dropDownValues.resize(2);
+              dropDownValues[0].push_back("perspective");
+              dropDownValues[0].push_back("orthogonal");
+              dropDownValues[1].push_back("default");
+              dropDownValues[1].push_back("invert");
+              dropDownValues[1].push_back("osg");
+              dropDownValues[1].push_back("iso");
+
+              dw->setEditPattern(editPattern);
+              dw->setFilePattern(filePattern);
+              dw->setColorPattern(colorPattern);
+              dw->setDropDownPattern(dropDownPattern, dropDownValues);
+
+              std::vector<std::string> arrString = explodeString(':', item);
+              currentWindowID = atoi(arrString[0].c_str());
+              GraphicsWindowInterface *gw = control->graphics->get3DWindow(currentWindowID);
+              GraphicsCameraInterface *gc = gw->getCameraInterface();
+              ConfigMap map;
+              int mouse = gc->getCamera();
+
+              if(gc->getCameraType() == 1) map["projection"] = "perspective";
+              else map["projection"] = "orthogonal";
+
+              if(mouse == ODE_CAM) map["mouse"] = "default";
+              else if(mouse == MICHA_CAM) map["mouse"] = "invert";
+              else if(mouse == OSG_CAM) map["mouse"] = "osg";
+              else if(mouse == ISO_CAM) map["mouse"] = "iso";
+
+              Color c = gw->getClearColor();
+              c.toConfigItem(map["clearColor"]);
+              double v[7];
+              gc->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+              Quaternion q;
+              q.x() = v[3];
+              q.y() = v[4];
+              q.z() = v[5];
+              q.w() = v[6];
+              sRotation r = quaternionTosRotation(q);
+              map["pose"]["position"]["x"] = v[0];
+              map["pose"]["position"]["y"] = v[1];
+              map["pose"]["position"]["z"] = v[2];
+              map["pose"]["euler"]["alpha"] = r.alpha;
+              map["pose"]["euler"]["beta"] = r.beta;
+              map["pose"]["euler"]["gamma"] = r.gamma;
+              dw->setConfigMap(arrString[1], map);
+              editCategory = 9;
+            }
           }
         }
       }
@@ -644,6 +748,12 @@ namespace mars {
             break;
           }
         }
+      }
+      else if(editCategory == 8) {
+        control->graphics->edit(name, value);
+      }
+      else if(editCategory == 9) {
+        control->graphics->edit(currentWindowID, name, value);
       }
     }
 

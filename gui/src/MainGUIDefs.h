@@ -32,11 +32,8 @@
 #define GUI_ACTION_SIM_START           101
 #define GUI_ACTION_SIM_PAUSE           102
 #define GUI_ACTION_SIM_STEP            103
-#define GUI_ACTION_VEHICLE_CONTROL     104
 #define GUI_ACTION_MOTOR_CONTROL       105
-#define GUI_ACTION_JOYSTICK            106
 #define GUI_ACTION_DISTANCE            107
-#define GUI_ACTION_SELECTION           108
 #define GUI_ACTION_PARAMETER_WIDGET    201
 #define GUI_ACTION_DOCK_WINDOWS        202
 #define GUI_ACTION_TILE_WINDOWS        203 // tiling not implemented
@@ -45,11 +42,9 @@
 #define GUI_ACTION_ADD_WINDOW          401
 #define GUI_ACTION_APPLY_FORCE         408
 #define GUI_ACTION_APPLY_TORQUE        409
-#define GUI_ACTION_NODE_TREE           411
 #define GUI_ACTION_SENSOR_TREE         415
 #define GUI_ACTION_CONTROLLER_TREE     416
 #define GUI_ACTION_RESCALE_ENV         507
-#define GUI_ACTION_EDIT_GRAPHICS       508
 #define GUI_ACTION_HELP_ABOUT          701
 #define GUI_ACTION_HELP_ABOUT_QT       702
 

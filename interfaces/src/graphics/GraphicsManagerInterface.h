@@ -140,7 +140,8 @@ namespace mars {
       virtual void update() = 0; ///< Update the scene.
       virtual void saveScene(const std::string &filename) const = 0;
       virtual const GraphicData getGraphicOptions(void) const = 0;
-      virtual void setGraphicOptions(const GraphicData &options) = 0;
+      virtual void setGraphicOptions(const GraphicData &options,
+                                     bool ignoreClearColor=false) = 0;
       virtual void showGrid(void) = 0;
       virtual void hideGrid(void) = 0;
       virtual void updateLight(unsigned int index, bool recompileShader=false) = 0;
@@ -241,6 +242,9 @@ namespace mars {
       virtual void setDrawObjectBrightness(unsigned long id, double v) = 0;
       virtual void editLight(unsigned long id, const std::string &key,
                              const std::string &value) = 0;
+      virtual void edit(const std::string &key, const std::string &value) = 0;
+      virtual void edit(unsigned long widgetID, const std::string &key,
+                        const std::string &value) = 0;
     }; // end of class GraphicsManagerInterface
 
   } // end of namespace interfaces

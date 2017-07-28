@@ -1046,8 +1046,13 @@ namespace mars {
     }
 
     void GraphicsWidget::setClearColor(mars::utils::Color color){
+      clearColor = color;
       graphicsCamera->getOSGCamera()->setClearColor(
                                                     osg::Vec4(color.r, color.g, color.b, color.a));
+    }
+
+    const mars::utils::Color& GraphicsWidget::getClearColor() const {
+      return clearColor;
     }
 
     void GraphicsWidget::grabFocus() {
@@ -1172,9 +1177,9 @@ namespace mars {
         // the view does not receive release events for CTRL+D when the view is (un)docked
         // setting an empty event queue fixes his problem.
         // todo: currently qt handles the resize check other possibilities
-        return true;
         view->setEventQueue(new osgGA::EventQueue);
         gm->setActiveWindow(this);
+        return true;
         return handleResizeEvent(ea);
       case osgGA::GUIEventAdapter::FRAME :
         return false;

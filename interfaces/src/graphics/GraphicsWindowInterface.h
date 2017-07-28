@@ -48,9 +48,11 @@ namespace mars {
     public:
 
       virtual ~GraphicsWindowInterface() {}
+      virtual const std::string getName() const = 0;
       virtual GraphicsCameraInterface* getCameraInterface() const = 0;
       virtual void grabFocus() = 0;
       virtual void setClearColor(mars::utils::Color color) = 0;
+      virtual const mars::utils::Color& getClearColor() const = 0;
       virtual void switchHudElemtVis(int num_element) = 0;
       virtual void setFullscreen(bool val, int display = 1) = 0;
       virtual void setGrabFrames(bool grab) = 0;
