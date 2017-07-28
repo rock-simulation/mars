@@ -232,10 +232,14 @@ namespace mars {
             QWidget *parent = new QWidget();
             parent->setWindowTitle("main view");
             unsigned long id = marsGraphics->new3DWindow(parent);
-            QWidget *widget = (QWidget*)marsGraphics->getQTWidget(id);
             parent->resize(QSize(720, 405));
             parent->setMinimumSize(QSize(50, 50));
+#ifdef __APPLE__
+            QWidget *widget = (QWidget*)marsGraphics->getQTWidget(id);
             mainGui->mainWindow_p()->setCentralWidget(widget);
+#else
+            mainGui->mainWindow_p()->setCentralWidget(parent);
+#endif
             //mainGui->addDockWidget((void*)parent,0);
             //parent->show();
             //parent->show();
