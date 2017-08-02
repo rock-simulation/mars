@@ -56,7 +56,7 @@ namespace mars {
 
 
       control->motors->getListMotors(&motors);
-      for (uint i = 1; i<motors.size(); ++i) {
+      for (uint i = 0; i<motors.size(); ++i) {
         interfaces::MotorData motordata = control->motors->getFullMotor(motors[i].index);
 
         // add label
@@ -184,7 +184,7 @@ namespace mars {
 
     void Dialog_Motor_Control::zerobuttonclicked() {
       slideractive = true;
-      for (uint i = 1; i<sliders.size(); ++i) {
+      for (uint i = 0; i<sliders.size(); ++i) {
         sliders[i]->setValue(0);
       }
       slideractive = false;
