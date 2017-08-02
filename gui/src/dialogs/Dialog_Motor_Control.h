@@ -27,10 +27,13 @@
 
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/core_objects_exchange.h>
-#include <mars/main_gui/PropertyDialog.h>
 #include <mars/main_gui/BaseWidget.h>
 
 #include <QSlider>
+#include <QDoubleSpinBox>
+#include <QGridLayout>
+#include <QVBoxLayout>
+#include <QLabel>
 
 namespace mars {
   namespace gui {
@@ -39,29 +42,29 @@ namespace mars {
      * \brief Dialog_Motor_Control is a widget that creates MotorSet widgets for each
      * available motor to change its values
      */
-    class Dialog_Motor_Control : public main_gui::BaseWidget,
-                                 public main_gui::PropertyCallback {
+    class Dialog_Motor_Control : public main_gui::BaseWidget {
 
       Q_OBJECT
-    
+
       public:
       /**\brief creates the dialog */
       Dialog_Motor_Control(interfaces::ControlCenter *c);
       ~Dialog_Motor_Control();
 
-      /**\brief add the motor control property and its slider */
-      void addMotor(interfaces::core_objects_exchange *motor);
-
-      main_gui::PropertyDialog *pDialog;  
-
     private:
-      std::vector<interfaces::core_objects_exchange> myMotors;
-      std::vector<QtVariantProperty*> motorWidgets;
+      std::vector<interfaces::core_objects_exchange> motors;
+      std::vector<QDoubleSpinBox*> radspinboxes;
+      std::vector<QDoubleSpinBox*> degspinboxes;
       std::vector<QSlider*> sliders;
-    
-      QVBoxLayout* vLayout;
+      double scale;
+
+      bool slideractive;
+      bool radboxactive;
+      bool degboxactive;
+
+      QGridLayout* grLayout;
+      QVBoxLayout* mainLayout;
       interfaces::ControlCenter* control;
-      bool filled;
 
       void closeEvent(QCloseEvent *event);
 
@@ -69,8 +72,10 @@ namespace mars {
       void closeSignal(void*);
 
     private slots:
+      void zerobuttonclicked();
       void sliderValueChanged(int);
-      virtual void valueChanged(QtProperty *property, const QVariant &value);
+      void radspinboxValueChanged(double);
+      void degspinboxValueChanged(double);
     };
 
   } // end of namespace gui
