@@ -66,7 +66,7 @@ namespace data_broker_plotter2 {
     // LibInterface methods
     int getLibVersion() const {return 1;}
     const std::string getLibName() const {
-      return std::string("data_broker_plotter");
+      return std::string("data_broker_plotter2");
     }
     CREATE_MODULE_INFO();
 
