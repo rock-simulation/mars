@@ -343,7 +343,13 @@ namespace mars {
           it->second->setValue(c);
         }
         else { // add the element
-          addConfigMap(name, map);
+          std::vector<std::string> arrPath = utils::explodeString('/', name);
+          ConfigItem *item = config[arrPath[1]];
+          for(size_t i=2; i<arrPath.size(); ++i) {
+            item = ((*item)[arrPath[i]]);
+          }
+          *item = map;
+          addConfigMap(name, *item);
         }
         return;
       }
