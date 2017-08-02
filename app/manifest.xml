@@ -18,6 +18,7 @@
     <depend package="simulation/mars/common/gui/cfg_manager_gui" optional="1" />
     <depend package="simulation/mars/common/gui/lib_manager_gui" optional="1" />
     <depend package="simulation/mars/common/gui/log_console" optional="1" />
+    <depend package="simulation/mars/common/gui/data_broker_plotter2" optional="1" />
     <depend package="simulation/mars/plugins/SkyDomePlugin" optional="1" />
     <depend package="simulation/mars/plugins/PythonMars" optional="1" />
     <depend package="simulation/mars/plugins/entity_view" optional="1" />
