@@ -480,6 +480,8 @@ void QtTreePropertyBrowserPrivate::init(QWidget *parent)
     m_treeWidget->setHeaderLabels(labels);
     m_treeWidget->setAlternatingRowColors(true);
     m_treeWidget->setEditTriggers(QAbstractItemView::EditKeyPressed);
+    m_treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
+    m_treeWidget->header()->setResizeMode(1, QHeaderView::Stretch);
     m_delegate = new QtPropertyEditorDelegate(parent);
     m_delegate->setEditorPrivate(this);
     m_treeWidget->setItemDelegate(m_delegate);
