@@ -53,7 +53,7 @@ namespace data_broker_plotter2 {
 
     gui->addGenericMenuAction("../Tools/Plotter", 1, this, 0);
 
-    startTimer(20);
+    startTimer(50);
   }
 
 

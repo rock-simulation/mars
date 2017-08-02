@@ -90,9 +90,9 @@ namespace data_broker_plotter2 {
     mars::data_broker::DataBrokerInterface *dataBroker;
     DataBrokerPlotterLib *mainLib;
     QCustomPlot *qcPlot;
-    QMutex dataLock;
+    QMutex dataLock, plotLock;
     std::string name;
-    std::list<PackageData> packageList;
+    std::map<std::string, mars::data_broker::DataPackage> packageList;
     std::vector<std::string> filter;
     unsigned long xRange;
 

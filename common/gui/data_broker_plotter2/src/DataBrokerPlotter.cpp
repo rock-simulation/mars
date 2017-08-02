@@ -67,7 +67,7 @@ namespace data_broker_plotter2 {
          it->groupName != "_MESSAGES_") {
         if(it->flags & mars::data_broker::DATA_PACKAGE_READ_FLAG) {
           dataBroker->registerTimedReceiver(this, it->groupName, it->dataName,
-                                            "mars_sim/simTimer", 20);
+                                            "mars_sim/simTimer", 50);
           mars::data_broker::DataPackage package = dataBroker->getDataPackage(it->dataId);
           receiveData(*it, package, 0);
         }
@@ -94,29 +94,35 @@ namespace data_broker_plotter2 {
 
     // first handle panding dataPackages
     dataLock.lock();
+    std::map<std::string, mars::data_broker::DataPackage> packageList_;
+    packageList.swap(packageList_);
+
     while(!pendingIDs.empty()) {
       std::map<std::string, unsigned long>::iterator it = pendingIDs.begin();
       mars::data_broker::DataPackage package = dataBroker->getDataPackage(it->second);
-      packageList.push_back((PackageData){package, it->first});
+      packageList_[it->first] = package;
       pendingIDs.erase(it);
     }
+    dataLock.unlock();
     if(updateMap) {
       dw->updateConfigMap("", map);
       updateMap = false;
     }
-    while(!packageList.empty()) {
-      mars::data_broker::DataPackage &package = packageList.front().dp;
-      if(packageList.front().label == "mars_sim/simTime") {
+    plotLock.lock();
+    for(auto p: packageList_) {
+      mars::data_broker::DataPackage &package = p.second;
+      if(p.first == "mars_sim/simTime") {
         package.get(0, &simTime);
       }
       else {
         for(size_t i=0; i<package.size(); ++i) {
-          std::string label2 = packageList.front().label + "/" + package[i].getName();
+          std::string label2 = p.first + "/" + package[i].getName();
 
-          if(plotMap.find(label2) == plotMap.end()) {
-            createNewPlot(label2);
-          }
           auto it = plotMap.find(label2);
+          if(it == plotMap.end()) {
+            createNewPlot(label2);
+            it = plotMap.find(label2);
+          }
           if(package[i].type == mars::data_broker::DOUBLE_TYPE) {
             package.get(i, &x);
           }
@@ -138,9 +144,7 @@ namespace data_broker_plotter2 {
           it->second->gotData = true;
         }
       }
-      packageList.pop_front();
     }
-    dataLock.unlock();
 
     bool onlyEnlarge = false;
     for(auto it: plotMap) {
@@ -157,6 +161,7 @@ namespace data_broker_plotter2 {
       qcPlot->replot();
       needReplot = false;
     }
+    plotLock.unlock();
   }
 
   void DataBrokerPlotter::receiveData(const mars::data_broker::DataInfo &info,
@@ -176,7 +181,7 @@ namespace data_broker_plotter2 {
         if(newInfo.groupName != "data_broker" &&
            newInfo.groupName != "_MESSAGES_") {
           dataBroker->registerTimedReceiver(this, newInfo.groupName, newInfo.dataName,
-                                            "mars_sim/simTimer", 20);
+                                            "mars_sim/simTimer", 50);
           std::string label = newInfo.groupName + "/" + newInfo.dataName;
           pendingIDs[label] = newInfo.dataId;
         }
@@ -184,7 +189,7 @@ namespace data_broker_plotter2 {
     }
     else {
       std::string label = info.groupName + "/" + info.dataName;
-      packageList.push_back((PackageData){package, label});
+      packageList[label] = package;
     }
     dataLock.unlock();
   }
@@ -198,7 +203,7 @@ namespace data_broker_plotter2 {
 
     configmaps::ConfigItem *item;
     std::uniform_real_distribution<double> distribution(0.0,1.0);
-    
+
     newPlot->options["color"]["r"] = distribution(generator);
     newPlot->options["color"]["g"] = distribution(generator);
     newPlot->options["color"]["b"] = distribution(generator);
@@ -264,13 +269,17 @@ namespace data_broker_plotter2 {
             QColor c(255*(double)it.second->options["color"]["r"],
                      255*(double)it.second->options["color"]["g"],
                      255*(double)it.second->options["color"]["b"]);
-            it.second->curve->setPen( QPen(c, penSize) );          
+            plotLock.lock();
+            it.second->curve->setPen( QPen(c, penSize) );
+            plotLock.unlock();
             needReplot = true;
           }
         }
       }
       else {
+        plotLock.lock();
         xRange = atoi(value.c_str());
+        plotLock.unlock();
         map["Properties"]["X-Range in ms"] = xRange;
       }
       return;
@@ -294,6 +303,7 @@ namespace data_broker_plotter2 {
         if(mars::utils::tolower(value) == "true" ||
            value == "1") {
           if(!it->second->curve) {
+            plotLock.lock();
             it->second->curve = qcPlot->addGraph();
             it->second->curve->setAntialiasedFill(false);
             QColor c(255*(double)it->second->options["color"]["r"],
@@ -303,14 +313,17 @@ namespace data_broker_plotter2 {
             it->second->curve->setLineStyle( QCPGraph::lsLine );
             it->second->options["show"] = true;
             needReplot = true;
+            plotLock.unlock();
           }
         }
         else {
           if(it->second->curve) {
+            plotLock.lock();
             qcPlot->removeGraph(it->second->curve);
             it->second->curve = NULL;
             it->second->options["show"] = false;
             needReplot = true;
+            plotLock.unlock();
           }
         }
       }
@@ -328,7 +341,9 @@ namespace data_broker_plotter2 {
           QColor c(255*(double)it->second->options["color"]["r"],
                    255*(double)it->second->options["color"]["g"],
                    255*(double)it->second->options["color"]["b"]);
-          it->second->curve->setPen( QPen(c, penSize) );          
+          plotLock.lock();
+          it->second->curve->setPen( QPen(c, penSize) );
+          plotLock.unlock();
           needReplot = true;
         }
       }
