@@ -56,7 +56,7 @@ namespace mars {
 
 
       control->motors->getListMotors(&motors);
-      for (uint i = 1; i<motors.size(); ++i) {
+      for (uint i = 0; i<motors.size(); ++i) {
         interfaces::MotorData motordata = control->motors->getFullMotor(motors[i].index);
 
         // add label
