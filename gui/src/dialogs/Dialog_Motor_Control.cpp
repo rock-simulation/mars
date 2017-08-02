@@ -184,7 +184,7 @@ namespace mars {
 
     void Dialog_Motor_Control::zerobuttonclicked() {
       slideractive = true;
-      for (uint i = 1; i<sliders.size(); ++i) {
+      for (uint i = 0; i<sliders.size(); ++i) {
         sliders[i]->setValue(0);
       }
       slideractive = false;
