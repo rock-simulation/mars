@@ -85,6 +85,7 @@ namespace data_broker_plotter2 {
 
   public slots:
     void valueChanged(std::string key, std::string value);
+    void exportPlot();
 
   protected:
     void hideEvent(QHideEvent *event);
@@ -97,7 +98,7 @@ namespace data_broker_plotter2 {
     DataBrokerPlotterLib *mainLib;
     QCustomPlot *qcPlot;
     QMutex dataLock, plotLock;
-    std::string name;
+    std::string name, exportPath;
     std::vector<PackageData> packageList;
     std::vector<std::string> filter;
     unsigned long xRange;

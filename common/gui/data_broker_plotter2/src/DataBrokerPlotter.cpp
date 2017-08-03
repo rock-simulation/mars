@@ -5,6 +5,9 @@
 #include<QVBoxLayout>
 #include<QHBoxLayout>
 #include<QSplitter>
+#include<QPushButton>
+#include <QFileDialog>
+#include <cstdio>
 
 namespace data_broker_plotter2 {
 
@@ -20,6 +23,7 @@ namespace data_broker_plotter2 {
     threadRunning(false), simTime(0) {
 
     setStyleSheet("background-color:#eeeeee;");
+    exportPath = cfg->getOrCreateProperty("Config", "config_path", string(".")).sValue;
 
     qcPlot = new QCustomPlot;
 
@@ -44,7 +48,16 @@ namespace data_broker_plotter2 {
     QVBoxLayout *vLayout = new QVBoxLayout();
     QSplitter *splitter = new QSplitter();
     splitter->addWidget(qcPlot);
-    splitter->addWidget(dw);
+    QWidget *w = new QWidget();
+    QVBoxLayout *vLayout2 = new QVBoxLayout();
+    vLayout2->addWidget(dw);
+    QPushButton *button = new QPushButton("export plot");
+    button->setMaximumWidth(500);
+    w->setMaximumWidth(500);
+    connect(button, SIGNAL(clicked()), this, SLOT(exportPlot()));
+    vLayout2->addWidget(button);
+    w->setLayout(vLayout2);
+    splitter->addWidget(w);
     vLayout->addWidget(splitter);
 
     xRange = 10000;
@@ -408,6 +421,32 @@ namespace data_broker_plotter2 {
       msleep(10);
     }
     threadRunning = false;
+  }
+
+  void DataBrokerPlotter::exportPlot() {
+    QString folder = QFileDialog::getExistingDirectory(NULL,
+                                                       QObject::tr("Select Export Folder"),
+                                                       exportPath.c_str());
+    if(!folder.isNull()) {
+      exportPath = folder.toStdString();
+    }
+    if(exportPath.back() != '/') exportPath += '/';
+    plotLock.lock();
+    for(auto p: plotMap) {
+      if(!p.second->curve) continue;
+      std::string filePath = mars::utils::replaceString(p.second->name, "/", "_");
+      filePath = exportPath + filePath + ".csv";
+      FILE *file = fopen(filePath.c_str(), "w");
+      if(!file) {
+        fprintf(stderr, "Error open File: %s\n", filePath.c_str());
+        continue;
+      }
+      for(size_t i=0; i<p.second->xValues.size(); ++i) {
+        fprintf(file, "%g %g\n", p.second->xValues[i], p.second->yValues[i]);
+      }
+      fclose(file);
+    }
+    plotLock.unlock();
   }
 
 } // end of namespace: data_broker_plotter2
