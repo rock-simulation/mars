@@ -15,6 +15,7 @@
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/main_gui/BaseWidget.h>
+#include <mars/utils/Thread.h>
 #include <configmaps/ConfigData.h>
 
 // todo: add config_map_gui add correct layout
@@ -46,6 +47,7 @@ namespace data_broker_plotter2 {
   public:
     std::string name;
     QCPGraph *curve;
+    mars::data_broker::DataInfo dataInfo;
     QVector<double> xValues;
     QVector<double> yValues;
     bool gotData, show;
@@ -55,12 +57,15 @@ namespace data_broker_plotter2 {
 
   class PackageData {
   public:
-    mars::data_broker::DataPackage dp;
     std::string label;
+    double simTime;
+    mars::data_broker::DataInfo di;
+    mars::data_broker::DataPackage dp;
   };
 
   class DataBrokerPlotter : public mars::main_gui::BaseWidget,
-                            public mars::data_broker::ReceiverInterface {
+                            public mars::data_broker::ReceiverInterface,
+                            public mars::utils::Thread {
     Q_OBJECT;
 
   public:
@@ -83,6 +88,7 @@ namespace data_broker_plotter2 {
 
   protected:
     void hideEvent(QHideEvent *event);
+    void run();
 
   private:
     mars::config_map_gui::DataWidget *dw;
@@ -92,23 +98,23 @@ namespace data_broker_plotter2 {
     QCustomPlot *qcPlot;
     QMutex dataLock, plotLock;
     std::string name;
-    std::map<std::string, mars::data_broker::DataPackage> packageList;
+    std::vector<PackageData> packageList;
     std::vector<std::string> filter;
     unsigned long xRange;
 
-    void shiftDown( QRect &rect, int offset ) const;
-
+    std::map<unsigned long, int> registerMap;
     std::map<std::string, Plot*> plotMap;
     std::vector<Plot*> plots;
-    std::map<std::string, unsigned long> pendingIDs;
+    std::map<std::string, mars::data_broker::DataInfo> pendingIDs;
     std::map<mars::cfg_manager::cfgParamId, Plot*> cfgParamIdToPlot;
 
     int nextPlotId;
-    bool updateMap, needReplot;
-    double penSize;
+    bool updateMap, needReplot, inReceive, exit, threadRunning;
+    double penSize, dataUpdateRate, simTime;
     std::default_random_engine generator;
 
-    void createNewPlot(std::string label);
+    void createNewPlot(std::string label, const mars::data_broker::DataInfo &info);
+    void shiftDown( QRect &rect, int offset ) const;
 
   };
 
