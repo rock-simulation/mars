@@ -398,9 +398,9 @@ namespace mars {
                 base->setHiddenCloseState(true);
               }
               removeDockWidget(*dockit);
-              dyDockWidgets.erase(dockit);
               window->close();
               delete *dockit;
+              dyDockWidgets.erase(dockit);
               break;
             }
           }
@@ -503,7 +503,7 @@ namespace mars {
     void MyQMainWindow::timerEvent(QTimerEvent *event) {
       (void)event;
       if(dockView && timerAllowed) {
-        saveDockGeometry();
+        //saveDockGeometry();
       }
     }
 
