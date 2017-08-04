@@ -40,7 +40,7 @@ namespace data_broker_plotter2 {
             qcPlot->yAxis2, SLOT(setRange(QCPRange)));
     //qcPlot->setInteraction(QCustomPlot::iSelectPlottables);
 
-    dw = new mars::config_map_gui::DataWidget(0, true, false);
+    dw = new mars::config_map_gui::DataWidget(cfg, 0, true, false);
     std::vector<std::string> pattern {"*color"};
     dw->setColorPattern(pattern);
     dw->setMaximumWidth(500);
@@ -447,7 +447,7 @@ namespace data_broker_plotter2 {
         fprintf(stderr, "Error open File: %s\n", filePath.c_str());
         continue;
       }
-      for(size_t i=0; i<p.second->xValues.size(); ++i) {
+      for(long i=0; i<p.second->xValues.size(); ++i) {
         fprintf(file, "%g %g\n", p.second->xValues[i], p.second->yValues[i]);
       }
       fclose(file);
