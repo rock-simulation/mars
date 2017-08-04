@@ -8,6 +8,7 @@
 #include<QPushButton>
 #include <QFileDialog>
 #include <cstdio>
+#include <cstdlib>
 
 namespace data_broker_plotter2 {
 
@@ -39,7 +40,7 @@ namespace data_broker_plotter2 {
             qcPlot->yAxis2, SLOT(setRange(QCPRange)));
     //qcPlot->setInteraction(QCustomPlot::iSelectPlottables);
 
-    dw = new mars::config_map_gui::DataWidget(cfg, 0, true, false);
+    dw = new mars::config_map_gui::DataWidget(0, true, false);
     std::vector<std::string> pattern {"*color"};
     dw->setColorPattern(pattern);
     dw->setMaximumWidth(500);
@@ -106,7 +107,6 @@ namespace data_broker_plotter2 {
     while(inReceive || threadRunning) {
       msleep(10);
     }
-    delete qcPlot;
   }
 
   void DataBrokerPlotter::update() {
@@ -430,6 +430,7 @@ namespace data_broker_plotter2 {
     QString folder = QFileDialog::getExistingDirectory(NULL,
                                                        QObject::tr("Select Export Folder"),
                                                        exportPath.c_str());
+    configmaps::ConfigMap infoMap;
     if(!folder.isNull()) {
       exportPath = folder.toStdString();
     }
@@ -437,7 +438,9 @@ namespace data_broker_plotter2 {
     plotLock.lock();
     for(auto p: plotMap) {
       if(!p.second->curve) continue;
+      infoMap[p.second->name] = p.second->options;
       std::string filePath = mars::utils::replaceString(p.second->name, "/", "_");
+      infoMap[p.second->name]["file"] = filePath;
       filePath = exportPath + filePath + ".csv";
       FILE *file = fopen(filePath.c_str(), "w");
       if(!file) {
@@ -449,6 +452,12 @@ namespace data_broker_plotter2 {
       }
       fclose(file);
     }
+    infoMap.toYamlFile(exportPath+"config.yml");
+    std::string resourcesPath = cfg->getOrCreateProperty("Preferences", "resources_path",
+                                                          string(".")).sValue;
+    resourcesPath += "/data_broker_plotter2/plot.py";
+    std::string cmd = "cp " + resourcesPath + " " + exportPath;
+    system(cmd.c_str());
     plotLock.unlock();
   }
 

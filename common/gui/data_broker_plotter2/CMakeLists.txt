@@ -99,5 +99,4 @@ install(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME})
 # using pkg-config
 configure_file(${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
-
-
+INSTALL(PROGRAMS resources/plot.py DESTINATION share/data_broker_plotter2)
