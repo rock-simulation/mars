@@ -72,6 +72,12 @@ namespace mars {
         gui->addGenericMenuAction("../Edit/Entity Viewer", 1, this, 0,
                                   rPath + "/images/entity_view.png", true);
 
+        bool show = control->cfg->getOrCreateProperty("Windows",
+                                                      "Entity View/hidden",
+                                                      true).bValue;
+        if(!show) {
+          menuAction(1, false);
+        }
       }
 
       void EntityView::reset() {
@@ -101,14 +107,17 @@ namespace mars {
 
       void EntityView::menuAction (int action, bool checked) {
         if(!view) {
-          view = new EntityViewMainWindow (control);
+          view = new EntityViewMainWindow (this, control);
           gui->addDockWidget((void*)view, 0);
         }
         else {
           gui->removeDockWidget((void*)view, 0);
-          delete view;
           view = NULL;
         }
+      }
+
+      void EntityView::closedWidget() {
+        view = NULL;
       }
 
     } // end of namespace EntityView

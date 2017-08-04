@@ -71,15 +71,6 @@ namespace mars {
       void ConnexionPlugin::init() {
         if(!control->graphics || isInit) return;
         // add options to the menu
-        if(gui) {
-          std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
-          gui->addGenericMenuAction("../Plugins/Connexion", 1,
-                                    this, 0,
-                                    tmp, true);    
-          if(!control->cfg->getOrCreateProperty("Windows", "ConnexionPlugin/hidden", true).bValue) {
-            menuAction(1, false);
-          }
-        }
 
         camReset();
         if (initConnexionHID(0)) {
@@ -96,6 +87,15 @@ namespace mars {
           run_thread = true;
           LOG_INFO("%s: starting ...",name.c_str());
           this->start();
+          if(gui) {
+            std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
+            gui->addGenericMenuAction("../Plugins/Connexion", 1,
+                                      this, 0,
+                                      tmp, true);
+            if(!control->cfg->getOrCreateProperty("Windows", "ConnexionPlugin/hidden", true).bValue) {
+              menuAction(1, false);
+            }
+          }
         }
         else {
           run_thread = false;
@@ -166,7 +166,7 @@ namespace mars {
 
         if (object_mode == 1) {
           interfaces::GraphicsWindowInterface *gw = control->graphics->get3DWindow(win_id);
-    
+
           if (gw) {
             if (resetCam) {
               gw->getCameraInterface()->updateViewportQuat(tmpCamState[0],
@@ -184,7 +184,7 @@ namespace mars {
             q = Quaternion(data[6], data[3], data[4], data[5]);
             trans = q*fp;
             q = q * fq;
-      
+
             data[0] += trans.x();
             data[1] += trans.y();
             data[2] += trans.z();
@@ -194,7 +194,7 @@ namespace mars {
         }
         else if (object_mode == 2) {
           interfaces::GraphicsWindowInterface *gw = control->graphics->get3DWindow(win_id);
-    
+
           if (gw) {
             gw->getCameraInterface()->getViewportQuat(data, data+1, data+2,
                                                       data+3, data+4, data+5,
@@ -234,7 +234,7 @@ namespace mars {
             myWidget = new ConnexionWidget(control);
             gui->addDockWidget((void*)myWidget, 0, 5);
             //myWidget->setGeometry(40, 40, 200, 200);
-            connect(myWidget, SIGNAL(hideSignal()), this, SLOT(hideWidget()));
+            //connect(myWidget, SIGNAL(hideSignal()), this, SLOT(hideWidget()));
             connect(myWidget, SIGNAL(closeSignal()), this, SLOT(closeWidget()));
 
             myWidget->setWindowID(win_id);
@@ -260,7 +260,9 @@ namespace mars {
                     this, SLOT(setSyncWithFrames(bool)));
           }
           else {
-            myWidget->close();
+            //myWidget->close();
+            gui->removeDockWidget((void*)myWidget, 0);
+            myWidget = NULL;
             //closeWidget();//myWidget->hide();
           }
           break;
@@ -406,13 +408,7 @@ namespace mars {
       }
 
       void ConnexionPlugin::closeWidget(void) {
-        if (myWidget) {
-          gui->removeDockWidget((void*)myWidget, 0);
-          if(myWidget) {
-            delete myWidget;
-            myWidget = NULL;
-          }
-        }
+        myWidget = NULL;
       }
 
       void ConnexionPlugin::objectSelected(unsigned long id) {

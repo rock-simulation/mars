@@ -44,8 +44,9 @@ namespace mars {
     }
 
     void MyQDockWidget::closeEvent(QCloseEvent *event) {
-      //widget()->close();
-      return;
+      if(priority==0) {
+        ((MyQMainWindow*)parentWidget())->removeDock(widget(), 0);
+      }
     }
 
   } // namespace main_gui

@@ -14,11 +14,12 @@ namespace data_broker_plotter2 {
   enum { CALLBACK_OTHER=0, CALLBACK_NEW_STREAM=-1 };
 
   DataBrokerPlotter::DataBrokerPlotter(DataBrokerPlotterLib *_mainLib,
-                               mars::data_broker::DataBrokerInterface *_dataBroker,
-                               mars::cfg_manager::CFGManagerInterface *cfg,
-                               std::string _name, QWidget *parent) :
+                                       lib_manager::LibManager* theManager,
+                                       mars::data_broker::DataBrokerInterface *_dataBroker,
+                                       mars::cfg_manager::CFGManagerInterface *cfg,
+                                       std::string _name, QWidget *parent) :
     mars::main_gui::BaseWidget(parent, cfg, _name),
-    dataBroker(_dataBroker), mainLib(_mainLib),
+    libManager(theManager), dataBroker(_dataBroker), mainLib(_mainLib),
     name(_name), nextPlotId(1), updateMap(false), needReplot(false), inReceive(false), exit(false),
     threadRunning(false), simTime(0) {
 
@@ -71,7 +72,7 @@ namespace data_broker_plotter2 {
     filter.push_back("*root");
     setLayout(vLayout);
     dw->setConfigMap("", map);
-
+    libManager->acquireLibrary("data_broker");
     dataBroker->registerSyncReceiver(this, "data_broker", "newStream",
                                      CALLBACK_NEW_STREAM);
     dataBroker->registerTimedReceiver(this, "mars_sim", "simTime",
@@ -95,12 +96,14 @@ namespace data_broker_plotter2 {
   }
 
   DataBrokerPlotter::~DataBrokerPlotter(void) {
+    fprintf(stderr, "close: %s\n", name.c_str());
     exit = true;
     dataLock.lock();
     dataBroker->unregisterSyncReceiver(this, "*", "*");
     dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+    libManager->releaseLibrary("data_broker");
     dataLock.unlock();
-    while(inReceive) {
+    while(inReceive || threadRunning) {
       msleep(10);
     }
     delete qcPlot;
@@ -208,11 +211,11 @@ namespace data_broker_plotter2 {
     mars::main_gui::BaseWidget::cfgUpdateProperty(_property);
   }
 
-  void DataBrokerPlotter::hideEvent(QHideEvent *event) {
-    (void)event;
+  // void DataBrokerPlotter::hideEvent(QHideEvent *event) {
+  //   (void)event;
 
-    mainLib->destroyPlotWindow(this);
-  }
+  //   mainLib->destroyPlotWindow(this);
+  // }
 
   void DataBrokerPlotter::valueChanged(std::string key, std::string value) {
     int color = 0;
@@ -448,5 +451,10 @@ namespace data_broker_plotter2 {
     }
     plotLock.unlock();
   }
+
+  void DataBrokerPlotter::closeEvent(QCloseEvent *e) {
+    mainLib->destroyPlotWindow(this);
+  }
+
 
 } // end of namespace: data_broker_plotter2

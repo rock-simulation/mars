@@ -70,6 +70,7 @@ namespace data_broker_plotter2 {
 
   public:
     DataBrokerPlotter(DataBrokerPlotterLib *_mainLib,
+                      lib_manager::LibManager* theManager,
                       mars::data_broker::DataBrokerInterface *_dataBroker,
                       mars::cfg_manager::CFGManagerInterface *cfg,
                       std::string _name, QWidget* parent = 0);
@@ -88,12 +89,13 @@ namespace data_broker_plotter2 {
     void exportPlot();
 
   protected:
-    void hideEvent(QHideEvent *event);
+    void closeEvent(QCloseEvent *event);
     void run();
 
   private:
     mars::config_map_gui::DataWidget *dw;
     configmaps::ConfigMap map;
+    lib_manager::LibManager* libManager;
     mars::data_broker::DataBrokerInterface *dataBroker;
     DataBrokerPlotterLib *mainLib;
     QCustomPlot *qcPlot;

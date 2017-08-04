@@ -19,6 +19,8 @@
  */
 
 #include "DataWidget.h"
+#include "MainDataGui.h"
+
 #include <mars/data_broker/DataBrokerInterface.h>
 
 #include <QVBoxLayout>
@@ -35,10 +37,12 @@ namespace mars {
 
     enum { CALLBACK_OTHER=0, CALLBACK_NEW_STREAM };
 
-    DataWidget::DataWidget(DataBrokerInterface *_dataBroker,
+    DataWidget::DataWidget(MainDataGui *mainLib, lib_manager::LibManager* libManager,
+                           DataBrokerInterface *_dataBroker,
                            cfg_manager::CFGManagerInterface *cfg,
                            QWidget *parent) : 
       main_gui::BaseWidget(parent, cfg, "DataBrokerWidget"),
+      mainLib(mainLib), libManager(libManager),
       pDialog(new main_gui::PropertyDialog(parent)),
       dataBroker(_dataBroker),
       ignore_change(0) {
@@ -51,7 +55,7 @@ namespace mars {
       pDialog->setStyleSheet("margin: 0px;");
       vLayout->addWidget(pDialog);
       setLayout(vLayout);
-
+      libManager->getLibrary("data_broker");
       pDialog->setButtonBoxVisibility(false);
       pDialog->setPropCallback(dynamic_cast<main_gui::PropertyCallback*>(this));
       showAll = false;
@@ -80,6 +84,7 @@ namespace mars {
       dataBroker->unregisterAsyncReceiver(this, "*", "*");
       dataBroker->unregisterTimedReceiver(this, "*", "*", "_REALTIME_");
       dataBroker->unregisterSyncReceiver(this, "data_broker", "newStream");
+      libManager->releaseLibrary("data_broker");
     }
 
     void DataWidget::addParam(const DataInfo _info) {
@@ -368,8 +373,9 @@ namespace mars {
       }
     }
 
-    void DataWidget::accept() {}
-    void DataWidget::reject() {}
+    void DataWidget::closeEvent(QCloseEvent *e) {
+      mainLib->destroyWindow(this);
+    }
 
   } // end of namespace data_broker_widget
 

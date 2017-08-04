@@ -56,6 +56,8 @@ namespace mars {
 
   namespace data_broker_gui {
 
+    class MainDataGui;
+
     struct DataItemWrapper {
       std::string groupName;
       std::string dataName;
@@ -87,7 +89,8 @@ namespace mars {
       Q_OBJECT;
       
     public:
-      DataConnWidget(mars::data_broker::DataBrokerInterface *_dataBroker,
+      DataConnWidget(MainDataGui *mainLib, lib_manager::LibManager* libManager,
+                     mars::data_broker::DataBrokerInterface *_dataBroker,
                      mars::cfg_manager::CFGManagerInterface *_cfg,
                      QWidget *parent = 0);
       ~DataConnWidget();
@@ -96,7 +99,12 @@ namespace mars {
                        const mars::data_broker::DataPackage &data_package,
                        int callbackParam);
 
+    protected:
+      void closeEvent(QCloseEvent *event);
+
     private:
+      MainDataGui *mainLib;
+      lib_manager::LibManager* libManager;
       mars::data_broker::DataBrokerInterface *dataBroker;
       mars::cfg_manager::CFGManagerInterface *cfg;
 
@@ -123,8 +131,6 @@ namespace mars {
       void slotConnectDataItems();
       void slotUnconnectDataItems();
       void slotSaveConfiguration(void);
-      virtual void accept();
-      virtual void reject();
       void addDataPackage(const mars::data_broker::DataInfo &info,
                           const mars::data_broker::DataPackage &dbPackage);
       bool getCfgStringList(std::string configFile, std::string group,

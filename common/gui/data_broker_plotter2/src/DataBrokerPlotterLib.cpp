@@ -61,12 +61,7 @@ namespace data_broker_plotter2 {
     if(libManager == NULL) return;
 
     std::map<std::string, DataBrokerPlotter*>::iterator itMap;
-
-    // deleting plot windows existing
-    for(itMap=plotWindows.begin(); itMap!=plotWindows.end(); ++itMap) {
-      gui->removeDockWidget((void*)itMap->second, 0);
-      delete itMap->second;
-    }
+    std::map<std::string, DataBrokerPlotter*> pw = plotWindows;
 
     if(cfg) libManager->releaseLibrary("cfg_manager");
     if(gui) libManager->releaseLibrary("main_gui");
@@ -87,18 +82,18 @@ namespace data_broker_plotter2 {
         std::map<std::string, DataBrokerPlotter*>::iterator it;
         char text[25];
         std::string name;
-        do {
-          sprintf(text, "Plotter %d", ++num);
-          name = std::string(text);
-          it = plotWindows.find(name);
-        } while(it != plotWindows.end());
-        if(it == plotWindows.end()) {
-          DataBrokerPlotter *dataBrokerPlotter;
-          dataBrokerPlotter = new DataBrokerPlotter(this, dataBroker, cfg, name);
-          gui->addDockWidget((void*)dataBrokerPlotter, 0);
-          dataBrokerPlotter->show();
-          plotWindows[name] = dataBrokerPlotter;
+        int i=1;
+        sprintf(text, "Plotter %d", i);
+        while(plotWindows.find(text) != plotWindows.end()) {
+          sprintf(text, "Plotter %d", ++i);
         }
+        name = text;
+        DataBrokerPlotter *dataBrokerPlotter;
+        dataBrokerPlotter = new DataBrokerPlotter(this, libManager, dataBroker,
+                                                  cfg, name);
+        gui->addDockWidget((void*)dataBrokerPlotter, 0);
+        dataBrokerPlotter->show();
+        plotWindows[name] = dataBrokerPlotter;
       }
       break;
     }
@@ -114,8 +109,6 @@ namespace data_broker_plotter2 {
       itMap = plotWindows.find((*it)->getName());
       if(itMap != plotWindows.end()) {
         plotWindows.erase(itMap);
-        gui->removeDockWidget((void*)(*it), 0);
-        delete (*it);
       }
     }
     toDelete.clear();
@@ -127,7 +120,11 @@ namespace data_broker_plotter2 {
   }
 
   void DataBrokerPlotterLib::destroyPlotWindow(DataBrokerPlotter *plotWindow) {
-    toDelete.push_back(plotWindow);
+    //toDelete.push_back(plotWindow);
+    auto itMap = plotWindows.find(plotWindow->getName());
+    if(itMap != plotWindows.end()) {
+      plotWindows.erase(itMap);
+    }
   }
 
 } // end of namespace: data_broker_plotter2

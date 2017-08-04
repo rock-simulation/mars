@@ -400,6 +400,7 @@ namespace mars {
               removeDockWidget(*dockit);
               dyDockWidgets.erase(dockit);
               window->close();
+              delete *dockit;
               break;
             }
           }

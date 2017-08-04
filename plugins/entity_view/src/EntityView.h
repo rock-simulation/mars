@@ -83,6 +83,7 @@ namespace mars {
         void menuAction(int action, bool checked = false);
 
         // EntityView methods
+        void closedWidget();
 
       private:
         cfg_manager::cfgPropertyStruct example;

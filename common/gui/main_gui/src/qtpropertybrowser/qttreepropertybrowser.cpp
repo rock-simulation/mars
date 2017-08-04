@@ -480,16 +480,19 @@ void QtTreePropertyBrowserPrivate::init(QWidget *parent)
     m_treeWidget->setHeaderLabels(labels);
     m_treeWidget->setAlternatingRowColors(true);
     m_treeWidget->setEditTriggers(QAbstractItemView::EditKeyPressed);
-    m_treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
-    m_treeWidget->header()->setResizeMode(1, QHeaderView::Stretch);
     m_delegate = new QtPropertyEditorDelegate(parent);
     m_delegate->setEditorPrivate(this);
     m_treeWidget->setItemDelegate(m_delegate);
     //m_treeWidget->header()->setMovable(false);
+    m_treeWidget->header()->setStretchLastSection(false);
 #ifdef USE_QT5
-    m_treeWidget->header()->sectionResizeMode(QHeaderView::Stretch);
+    m_treeWidget->header()->setSectionResizeMode(0, QHeaderView::Stretch);
+    m_treeWidget->header()->setSectionResizeMode(1, QHeaderView::Stretch);
+    m_treeWidget->header()->sectionResizeMode(QHeaderView::Interactive);
 #else
-    m_treeWidget->header()->resizeMode(QHeaderView::Stretch);
+    m_treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
+    m_treeWidget->header()->setResizeMode(1, QHeaderView::Stretch);
+    m_treeWidget->header()->resizeMode(QHeaderView::Interactive);
 #endif
     m_expandIcon = drawIndicatorIcon(q_ptr->palette(), q_ptr->style());
 
