@@ -108,7 +108,7 @@ def doPlot():
                           linewidth=1.5)
             ll.append(l)
 
-    legend = plt.legend(handles=ll, bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+    legend = plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
                         ncol=len(ll), mode="expand", borderaxespad=0.,
                         handletextpad=0.4, markerscale=2.0)
 
