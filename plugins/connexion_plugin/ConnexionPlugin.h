@@ -108,6 +108,7 @@ namespace mars {
 
         bool run_thread;
         bool thread_closed;
+        bool open_thread;
 
         void camReset(void);
 

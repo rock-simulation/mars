@@ -45,6 +45,7 @@ namespace mars {
         : QThread(),
           MarsPluginTemplateGUI(theManager, std::string("ConnexionPlugin")) {
 
+        open_thread = false;
         thread_closed = false;
         myWidget = NULL;
         object_id = 0;
@@ -85,8 +86,7 @@ namespace mars {
         LOG_INFO("%s: loaded",name.c_str());
         if (isInit) {
           run_thread = true;
-          LOG_INFO("%s: starting ...",name.c_str());
-          this->start();
+
           if(gui) {
             std::string tmp = resourcesPath + "/mars/plugins/connexion_plugin/connexion.png";
             gui->addGenericMenuAction("../Plugins/Connexion", 1,
@@ -96,6 +96,7 @@ namespace mars {
               menuAction(1, false);
             }
           }
+          open_thread = true;
         }
         else {
           run_thread = false;
@@ -129,6 +130,11 @@ namespace mars {
         static Vector fp(0, 0, 0);
         camMutex.lock();
         sReal tmpCamState[7];
+        if(open_thread) {
+          open_thread = false;
+          LOG_INFO("%s: starting ...",name.c_str());
+          this->start();
+        }
         tmpCamState[0] = camState[0];
         tmpCamState[1] = camState[1];
         tmpCamState[2] = camState[2];
