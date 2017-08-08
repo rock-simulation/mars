@@ -486,8 +486,14 @@ namespace mars {
         for(receiverIt = timerIt->second.receivers.begin();
             receiverIt != timerIt->second.receivers.end(); /* do nothing */){
           if(receiverIt->receiver == receiver) {
-            receiverIt = timerIt->second.receivers.erase(receiverIt);
-            ok = true;
+            if(matchPattern(groupName, receiverIt->element->info.groupName) &&
+               matchPattern(dataName, receiverIt->element->info.dataName)) {
+              receiverIt = timerIt->second.receivers.erase(receiverIt);
+              ok = true;
+            }
+            else {
+              ++receiverIt;
+            }
           } else {
             ++receiverIt;
           }
@@ -582,6 +588,7 @@ namespace mars {
         for(producerIt = timerIt->second.producers.begin();
             producerIt != timerIt->second.producers.end(); /* do nothing */) {
           if(producerIt->producer == producer) {
+            // todo: match group and data name
             producerIt = timerIt->second.producers.erase(producerIt);
             ok = true;
           } else {
