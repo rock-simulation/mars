@@ -100,7 +100,6 @@ namespace mars {
       SET_VALUE("exponent", exponent);
       SET_VALUE("directional", directional);
       SET_VALUE("nodeName", node);
-      drawID = 0;
     }
 
     void LightData::getFilesToSave(std::vector<std::string> *fileList) {

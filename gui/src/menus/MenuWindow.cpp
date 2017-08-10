@@ -293,12 +293,18 @@ namespace mars {
     }
 
     void MenuWindow::menu_addWindow(){
+      static int num = 1;
       QWidget* newWidget = new QWidget();
 
-      newWidget->resize(QSize(720, 405));
       newWidget->setWindowTitle("marsGraphics");
-      control->graphics->new3DWindow(newWidget);
-      mainGui->addDockWidget((void*)newWidget,1);
+      unsigned long id = control->graphics->new3DWindow(newWidget);
+      //QWidget* newWidget = (QWidget*)control->graphics->getQTWidget(id);
+      char title[55];
+      sprintf(title, "graphics %d", num++);
+      newWidget->setWindowTitle(title);
+      newWidget->resize(QSize(720, 405));
+      newWidget->setMinimumSize(QSize(50, 50));
+      mainGui->addDockWidget((void*)newWidget,0);
       newWidget->show();
     }
 

@@ -124,7 +124,10 @@ namespace mars {
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here
-      if(myJoint) myJoint->detachMotor(sMotor.axis);
+      if(myJoint) {
+        myJoint->setEffortLimit(0, sMotor.axis);
+        myJoint->detachMotor(sMotor.axis);
+      }
 
       // delete any coefficient vectors we might have created
       delete maxspeed_coefficients;
@@ -627,6 +630,14 @@ namespace mars {
       return velocity;
     }
 
+    void SimMotor::setMinValue(interfaces::sReal d) {
+      sMotor.minValue = d;
+    }
+
+    void SimMotor::setMaxValue(interfaces::sReal d) {
+      sMotor.maxValue = d;
+    }
+
     void SimMotor::setP(sReal p) {
       sMotor.p = p;
     }
@@ -652,6 +663,7 @@ namespace mars {
     }
 
     void SimMotor::setSMotor(const MotorData &sMotor) {
+      // todo: handle name change correctly
       this->sMotor = sMotor;
       if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
           myJoint->attachMotor(axis);

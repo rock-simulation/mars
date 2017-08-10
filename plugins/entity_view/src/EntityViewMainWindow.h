@@ -40,14 +40,21 @@ namespace mars {
   namespace plugins {
     namespace EntityView {
 
+      class EntityView;
+
       // TODO: use the base widget
       class EntityViewMainWindow : public main_gui::BaseWidget {
+Q_OBJECT
 
       public:
-        EntityViewMainWindow (interfaces::ControlCenter *c);
+        EntityViewMainWindow (EntityView *mainLib, interfaces::ControlCenter *c);
         virtual ~EntityViewMainWindow ();
 
+      protected:
+        void closeEvent(QCloseEvent *);
+
       private:
+        EntityView *mainLib;
         SelectionTree *tree;
         interfaces::ControlCenter *c;
         config_map_gui::DataWidget *dw;

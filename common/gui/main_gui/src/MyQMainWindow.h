@@ -112,7 +112,6 @@ namespace mars {
 
       void saveDockGeometry();
 
-
     private:
       cfg_manager::CFGManagerInterface *cfg;
       lib_manager::LibManager *libManager;

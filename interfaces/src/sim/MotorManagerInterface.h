@@ -322,6 +322,8 @@ namespace mars {
                                       std::string *dataName) const = 0;
 
       virtual void connectMimics() = 0;
+      virtual void edit(MotorId id, const std::string &key,
+                        const std::string &value) = 0;
     }; // class MotorManagerInterface
 
   } // end of namespace interfaces

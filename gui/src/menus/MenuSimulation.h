@@ -35,20 +35,12 @@
 #include <mars/main_gui/MenuInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 
-#include "DialogNodes.h"
-#include "DialogJoints.h"
-#include "DialogLights.h"
-#include "DialogMotors.h"
-#include "DialogSensors.h"
 #include "DialogControllers.h"
 
 #include "DialogDistance.h"
-#include "DialogJoystick.h"
-#include "Dialog_Import_Mesh.h"
 #include "Dialog_Add_Force.h"
 #include "Dialog_Add_Torque.h"
 #include "Dialog_Rescale_Environment.h"
-#include "Dialog_Graphics_Options.h"
 #include "Dialog_Motor_Control.h"
 
 namespace mars {
@@ -78,21 +70,14 @@ namespace mars {
       virtual void menuAction(int action, bool checked = false);
   
     protected:
-      void menu_nodes(void);
-      void menu_joints(void);
-      void menu_lights(void);
-      void menu_motors(void);
-      void menu_sensors(void);
       void menu_controllers(void);
 
       void menu_distance(void);
       void menu_selection(void);
-      void menu_joystick(void);
       void menu_importMesh(void);
       void menu_applyForce(void);
       void menu_applyTorque(void);
       void menu_rescaleEnvironment();
-      void menu_graphicsOptions();  
       void menu_motorControl();
 
     private:
@@ -100,21 +85,13 @@ namespace mars {
       main_gui::GuiInterface *mainGui;
       std::string resourcesPath;
 
-      DialogNodes *dn;
-      DialogJoints *dj;
-      DialogLights *dl;
-      DialogMotors *dm;
-      DialogSensors *ds;
       DialogControllers *dc;
 
       DialogDistance *dd;
       NodeSelectionTree *nst;
-      DialogJoystick *djoy;
-      Dialog_Import_Mesh *dim;
       Dialog_Add_Force *daf;
       Dialog_Add_Torque *dat;
       Dialog_Rescale_Environment *dre;
-      Dialog_Graphics_Options *dgo;
       Dialog_Motor_Control *dmc;
 
     private slots:

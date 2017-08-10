@@ -115,6 +115,10 @@ namespace mars {
 
       /** Not Implemented yet */
       SocketError reopen();
+      /** Not Implemented Yet */
+      void setTimeout(double timeout);
+      /** Not Implemented Yet */
+      double getTimeout() const;
 
     private:
       TCPServer(const TCPServer &other);

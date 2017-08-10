@@ -31,6 +31,7 @@
 #warning "Terrain.h"
 #endif
 
+#include <osgDB/ReadFile>
 #include <osg/Group>
 #include <osg/Geometry>
 #include <mars/osg_material_manager/OsgMaterialManager.h>
@@ -39,6 +40,8 @@
 #include "VertexBufferTerrain.h"
 
 namespace osg_terrain {
+
+  osg::ref_ptr<osg::Node> readBobjFromFile(const std::string &filename);
 
   class Terrain : public osg::Group {
 

@@ -153,6 +153,12 @@ namespace mars {
        */
       QColor getPropertyColor(QtVariantProperty *property) const;
 
+
+      /**
+       * \brief Returns the item that is currently focused on.
+       */
+      QtProperty* activeItem(void);
+
       /**
        * \brief Returns the top level item that is currently focused on.
        */
@@ -211,6 +217,7 @@ namespace mars {
 
       //! Collapses the branch of the property \c item.
       void collapseTree(QtProperty *item);
+      bool isPropertyVisible(QtProperty *prop) const;
 
     protected:
       //! A vertical layout.

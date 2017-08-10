@@ -58,16 +58,26 @@ namespace mars {
            example = control->cfg->getOrCreateProperty("plugin", "example",
            0.0, this);
         */
+        std::string rPath = control->cfg->getOrCreateProperty("MarsGui",
+                                                              "resources_path",
+                                                              ".").sValue;
 
         // Create a nonphysical box:
 
         // Create a camera fixed on the box:
 
         // Create a HUD texture element:
+        // separator
+        gui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1);
+        gui->addGenericMenuAction("../Edit/Entity Viewer", 1, this, 0,
+                                  rPath + "/images/entity_view.png", true);
 
-        gui->addGenericMenuAction("../Edit/", 0, NULL, 0, "", 0, -1); // separator
-        gui->addGenericMenuAction("../Edit/Entity Viewer", 1, this);
-
+        bool show = control->cfg->getOrCreateProperty("Windows",
+                                                      "Entity View/hidden",
+                                                      true).bValue;
+        if(!show) {
+          menuAction(1, false);
+        }
       }
 
       void EntityView::reset() {
@@ -97,14 +107,17 @@ namespace mars {
 
       void EntityView::menuAction (int action, bool checked) {
         if(!view) {
-          view = new EntityViewMainWindow (control);
+          view = new EntityViewMainWindow (this, control);
           gui->addDockWidget((void*)view, 0);
         }
         else {
           gui->removeDockWidget((void*)view, 0);
-          delete view;
           view = NULL;
         }
+      }
+
+      void EntityView::closedWidget() {
+        view = NULL;
       }
 
     } // end of namespace EntityView

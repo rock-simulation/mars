@@ -129,7 +129,7 @@ namespace mars {
       cfg["rate"] = config.updateRate;
 
       for(it=config.ids.begin(); it!= config.ids.end(); ++it) {
-        cfg["id"] << *it;
+        cfg["id"] += *it;
       }
 
       return cfg;

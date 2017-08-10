@@ -37,6 +37,7 @@
 
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/MutexLocker.h>
 #include <mars/interfaces/Logging.hpp>
@@ -459,6 +460,94 @@ namespace mars {
       if(iter == simJoints.end())
         return;
       return iter->second->setUpperLimit(highStop2, 2);
+    }
+
+    // todo: do we need to edit angle offsets
+    void JointManager::edit(interfaces::JointId id, const std::string &key,
+                            const std::string &value) {
+      MutexLocker locker(&iMutex);
+      std::map<unsigned long, SimJoint*>::iterator iter = simJoints.find(id);
+      if (iter != simJoints.end()) {
+        if(matchPattern("*/type", key)) {
+        }
+        else if(matchPattern("*/axis1/*", key)) {
+          double v = atof(value.c_str());
+          Vector axis = iter->second->getAxis();
+          if(key[key.size()-1] == 'x') axis.x() = v;
+          else if(key[key.size()-1] == 'y') axis.y() = v;
+          else if(key[key.size()-1] == 'z') axis.z() = v;
+          iter->second->setAxis(axis);
+        }
+        else if(matchPattern("*/lowStopAxis1", key)) {
+          iter->second->setLowerLimit(atof(value.c_str()));
+        }
+        else if(matchPattern("*/highStopAxis1", key)) {
+          iter->second->setUpperLimit(atof(value.c_str()));
+        }
+        else if(matchPattern("*/damping_const_constraint_axis1", key)) {
+          JointData jd = iter->second->getSJoint();
+          jd.damping_const_constraint_axis1 = atof(value.c_str());
+          iter->second->setSDParams(&jd);
+        }
+        else if(matchPattern("*/spring_const_constraint_axis1", key)) {
+          JointData jd = iter->second->getSJoint();
+          jd.spring_const_constraint_axis1 = atof(value.c_str());
+          iter->second->setSDParams(&jd);
+        }
+        else if(matchPattern("*/axis2/*", key)) {
+          double v = atof(value.c_str());
+          Vector axis = iter->second->getAxis(2);
+          if(key[key.size()-1] == 'x') axis.x() = v;
+          else if(key[key.size()-1] == 'y') axis.y() = v;
+          else if(key[key.size()-1] == 'z') axis.z() = v;
+          iter->second->setAxis(axis, 2);
+        }
+        else if(matchPattern("*/lowStopAxis2", key)) {
+          iter->second->setLowerLimit(atof(value.c_str()), 2);
+        }
+        else if(matchPattern("*/highStopAxis2", key)) {
+          iter->second->setUpperLimit(atof(value.c_str()), 2);
+        }
+        else if(matchPattern("*/damping_const_constraint_axis2", key)) {
+          JointData jd = iter->second->getSJoint();
+          jd.damping_const_constraint_axis2 = atof(value.c_str());
+          iter->second->setSDParams(&jd);
+        }
+        else if(matchPattern("*/spring_const_constraint_axis2", key)) {
+          JointData jd = iter->second->getSJoint();
+          jd.spring_const_constraint_axis2 = atof(value.c_str());
+          iter->second->setSDParams(&jd);
+        }
+        else if(matchPattern("*/anchorpos", key)) {
+          NodeId id1 = iter->second->getNodeId();
+          NodeId id2 = iter->second->getNodeId(2);
+          if(value == "node1") {
+            iter->second->setAnchor(control->nodes->getPosition(id1));
+          }
+          else if(value == "node2") {
+            iter->second->setAnchor(control->nodes->getPosition(id2));
+          }
+          else if(value == "center") {
+            Vector pos1 = control->nodes->getPosition(id1);
+            Vector pos2 = control->nodes->getPosition(id2);
+            iter->second->setAnchor((pos1 + pos2) / 2.);
+          }
+        }
+        else if(matchPattern("*/anchor/*", key)) {
+          double v = atof(value.c_str());
+          Vector anchor = iter->second->getAnchor();
+          if(key[key.size()-1] == 'x') anchor.x() = v;
+          else if(key[key.size()-1] == 'y') anchor.y() = v;
+          else if(key[key.size()-1] == 'z') anchor.z() = v;
+          iter->second->setAnchor(anchor);
+
+        }
+        else if(matchPattern("*/invertAxis", key)) {
+          ConfigItem b;
+          b = key;
+          iter->second->setInvertAxis(b);
+        }
+      }
     }
 
   } // end of namespace sim

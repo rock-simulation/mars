@@ -60,6 +60,8 @@ namespace mars {
       unsigned long sharedID = 0;
       std::string filename, origname;
       std::string visualType;
+
+      name_ = node.name;
       if(map.find("sharedDrawID") != map.end()) {
         sharedID = map["sharedDrawID"];
       }
@@ -133,11 +135,10 @@ namespace mars {
           vizSize = node.visual_size;
         }
         drawObject_->setScaledSize(vizSize);
-      } else if (node.physicMode == mars::interfaces::NODE_TYPE_TERRAIN) {
+      } else if (origname.compare("terrain") == 0) {
         // we have a heightfield
         if (!node.terrain->pixelData) {
-          node.terrain->pixelData = (double*)calloc(
-                                                    (node.terrain->width*node.terrain->height), sizeof(double));
+          node.terrain->pixelData = (double*)calloc((node.terrain->width*node.terrain->height), sizeof(double));
           //QImage image(QString::fromStdString(snode->filename));
           int r = 0, g = 0, b = 0;
           int count = 0;
@@ -148,7 +149,21 @@ namespace mars {
             }
           }
         }
-        drawObject_ = new TerrainDrawObject(g, node.terrain);
+        if(map.hasKey("t_grid")) {
+          std::string p = ".";
+          if(map.hasKey("filePrefix")) {
+            p << map["filePrefix"];
+          };
+          std::string gridFile = map["t_grid"];
+          if(gridFile[0] != '/') {
+            gridFile = p + "/" + gridFile;
+          }
+          drawObject_ = new TerrainDrawObject(g, node.terrain, gridFile);
+          ((TerrainDrawObject*)drawObject_)->setData(map);
+        }
+        else {
+          drawObject_ = new TerrainDrawObject(g, node.terrain);
+        }
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }
@@ -176,6 +191,12 @@ namespace mars {
 
       drawObject_->setPosition(node.pos + node.rot * node.visual_offset_pos);
       drawObject_->setQuaternion(node.rot * node.visual_offset_rot);
+      if(map.hasKey("cullMask")) {
+        drawObject_->setNodeMask(map["cullMask"]);
+      }
+      if(map.hasKey("brightness")) {
+        drawObject_->setBrightness(map["brightness"]);
+      }
     }
 
     void OSGNodeStruct::edit(const NodeData &node, bool resize) {
@@ -184,6 +205,7 @@ namespace mars {
       osg::Quat oquat;
       Vector ex;
 
+      name_ = node.name;
       // get old size, create bounding box to get center point
       drawObject_->getObject()->accept(cbbv);
       // compute bounding box has to be done in this way

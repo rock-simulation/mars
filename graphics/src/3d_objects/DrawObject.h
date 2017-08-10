@@ -66,9 +66,9 @@ namespace mars {
       DrawObject(GraphicsManager *g);
       virtual ~DrawObject();
 
-      void createObject(unsigned long id,
-                        const mars::utils::Vector &_pivot,
-                        unsigned long sharedID);
+      virtual void createObject(unsigned long id,
+                                const mars::utils::Vector &_pivot,
+                                unsigned long sharedID);
 
       void setStateFilename(const std::string &filename, int create);
       void exportState(void);
@@ -95,7 +95,7 @@ namespace mars {
         nodeMask_ = mask;
         group_->setNodeMask(mask);
       }
-
+      void setBrightness(double v);
       void setRenderBinNumber(int number);
       bool containsNode(osg::Node* node);
 
@@ -171,6 +171,7 @@ namespace mars {
       int maxNumLights;
       bool sharedStateGroup;
       bool isHidden;
+      double brightness;
       GraphicsManager *g;
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;
     }; // end of class DrawObject

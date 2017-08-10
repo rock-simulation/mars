@@ -27,6 +27,7 @@
 
 #include "GraphicsManager.h"
 #include "config.h"
+#include <mars/utils/misc.h>
 
 //#include <osgUtil/Optimizer>
 
@@ -38,6 +39,8 @@
 #include <osgParticle/SmokeEffect>
 #include <osgParticle/SmokeTrailEffect>
 #include <osgParticle/FireEffect>
+
+#include <mars/utils/misc.h>
 
 #include "3d_objects/GridPrimitive.h"
 #include "3d_objects/DrawObject.h"
@@ -75,6 +78,7 @@ namespace mars {
     using mars::utils::Vector;
     using mars::utils::Quaternion;
     using namespace mars::interfaces;
+    using namespace utils;
 
     static int ReceivesShadowTraversalMask = 0x1000;
     static int CastsShadowTraversalMask = 0x2000;
@@ -503,14 +507,18 @@ namespace mars {
       return graphicOptions;
     }
 
-    void GraphicsManager::setGraphicOptions(const mars::interfaces::GraphicData &options) {
+    void GraphicsManager::setGraphicOptions(const mars::interfaces::GraphicData &options,
+                                            bool ignoreClearColor) {
       osg::Fog *myFog;
 
       myFog = (osg::Fog*)globalStateset->getAttribute(osg::StateAttribute::FOG);
 
       graphicOptions = options;
-      for(unsigned int i=0; i<graphicsWindows.size(); i++)
-        graphicsWindows[i]->setClearColor(graphicOptions.clearColor);
+      if(!ignoreClearColor) {
+        for(unsigned int i=0; i<graphicsWindows.size(); i++) {
+          graphicsWindows[i]->setClearColor(graphicOptions.clearColor);
+        }
+      }
 
       myFog->setColor(osg::Vec4(graphicOptions.fogColor.r,
                                 graphicOptions.fogColor.g,
@@ -577,6 +585,10 @@ namespace mars {
       gw->setName(name);
       gw->setClearColor(graphicOptions.clearColor);
       viewer->addView(gw->getView());
+      if(graphicsWindows.size() == 0) {
+        gw->grabFocus();
+        viewer->setCameraWithFocus(gw->getMainCamera());
+      }
       graphicsWindows.push_back(gw);
 
       if(!rtt) {
@@ -762,7 +774,15 @@ namespace mars {
     }
 
     void GraphicsManager::setActiveWindow(unsigned long win_id) {
-      get3DWindow(win_id)->grabFocus();
+      for(auto w: graphicsWindows) {
+        if(w->getID() == win_id) {
+          w->grabFocus();
+          viewer->setCameraWithFocus(w->getMainCamera());
+        }
+        else {
+          w->unsetFocus();
+        }
+      }
     }
 
     void* GraphicsManager::getQTWidget(unsigned long id) const {
@@ -988,7 +1008,6 @@ namespace mars {
         // the material is not overridden if it already exists
         materialManager->createMaterial(material.name, map);
         ns->object()->setMaterial(material.name);
-        ns->object()->setNodeMask(material.cullMask);
       }
     }
 
@@ -1016,6 +1035,11 @@ namespace mars {
     void GraphicsManager::setDrawObjectNodeMask(unsigned long id, unsigned int bits) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setBits(bits);
+    }
+
+    void GraphicsManager::setDrawObjectBrightness(unsigned long id, double v) {
+      OSGNodeStruct *ns = findDrawObject(id);
+      if(ns != NULL) ns->object()->setBrightness(v);
     }
 
     void GraphicsManager::setBlending(unsigned long id, bool mode) {
@@ -1163,6 +1187,86 @@ namespace mars {
 
         //for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
         //iter->second->object()->updateShader(lightList, true);
+      }
+    }
+
+    void GraphicsManager::setColor(utils::Color *c, const std::string &key,
+                                   const std::string &value) {
+      double v = atof(value.c_str());
+      if(key[key.size()-1] == 'a') c->a = v;
+      else if(key[key.size()-1] == 'r') c->r = v;
+      else if(key[key.size()-1] == 'g') c->g = v;
+      else if(key[key.size()-1] == 'b') c->b = v;
+    }
+
+    void GraphicsManager::editLight(unsigned long id, const std::string &key,
+                                    const std::string &value) {
+      for(size_t i=0; i<myLights.size(); ++i) {
+        if(myLights[i].lStruct.index == id) {
+          if(utils::matchPattern("*/ambient/*", key)) {
+            setColor(&(myLights[i].lStruct.ambient), key, value);
+          }
+          else if(utils::matchPattern("*/diffuse/*", key)) {
+            setColor(&(myLights[i].lStruct.diffuse), key, value);
+          }
+          else if(utils::matchPattern("*/specular/*", key)) {
+            setColor(&(myLights[i].lStruct.specular), key, value);
+          }
+          else if(utils::matchPattern("*/position/x", key)) {
+            myLights[i].lStruct.pos.x() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/position/y", key)) {
+            myLights[i].lStruct.pos.y() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/position/z", key)) {
+            myLights[i].lStruct.pos.z() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/x", key)) {
+            myLights[i].lStruct.lookAt.x() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/y", key)) {
+            myLights[i].lStruct.lookAt.y() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/lookat/z", key)) {
+            myLights[i].lStruct.lookAt.z() = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/constantAttenuation", key)) {
+            myLights[i].lStruct.constantAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/linearAttenuation", key)) {
+            myLights[i].lStruct.linearAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/quadraticAttenuation", key)) {
+            myLights[i].lStruct.quadraticAttenuation = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/type", key)) {
+            myLights[i].lStruct.type = atoi(value.c_str());
+          }
+          else if(utils::matchPattern("*/angle", key)) {
+            myLights[i].lStruct.angle = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/exponent", key)) {
+            myLights[i].lStruct.exponent = atof(value.c_str());
+          }
+          else if(utils::matchPattern("*/directional", key)) {
+            ConfigItem b;
+            b = value;
+            myLights[i].lStruct.directional << b;
+            fprintf(stderr, "directional: %d", myLights[i].lStruct.directional);
+          }
+          else if(utils::matchPattern("*/nodeName", key)) {
+            myLights[i].lStruct.node = value;
+            map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator it;
+            for(it=drawObjects_.begin(); it!=drawObjects_.end(); ++it) {
+              if(it->second->name() == value) {
+                myLights[i].lStruct.drawID = it->first;
+                break;
+              }
+            }
+          }
+          updateLight(i);
+          break;
+        }
       }
     }
 
@@ -2182,6 +2286,97 @@ namespace mars {
       }
     }
 
+    void GraphicsManager::edit(const std::string &key,
+                               const std::string &value) {
+      fprintf(stderr, "GraphicsManager::edit(%s, %s)\n", key.c_str(), value.c_str());
+      if(matchPattern("*/fogEnable", key)) {
+        if(tolower(value) == "true" || value == "1") {
+          graphicOptions.fogEnabled = true;
+        }
+        else if(tolower(value) == "false" || value == "0") {
+          graphicOptions.fogEnabled = false;
+        }
+      }
+      else if(matchPattern("*/fogColor", key)) {
+        double v = atof(value.c_str());
+        if(key[key.size()-1] == 'a') graphicOptions.fogColor.a = v;
+        else if(key[key.size()-1] == 'r') graphicOptions.fogColor.r = v;
+        else if(key[key.size()-1] == 'g') graphicOptions.fogColor.g = v;
+        else if(key[key.size()-1] == 'b') graphicOptions.fogColor.b = v;
+      }
+      else if(matchPattern("*/fogStart", key)) {
+        graphicOptions.fogStart = atof(value.c_str());
+      }
+      else if(matchPattern("*/fogEnd", key)) {
+        graphicOptions.fogEnd = atof(value.c_str());
+      }
+      else if(matchPattern("*/fogDensity", key)) {
+        graphicOptions.fogDensity = atof(value.c_str());
+      }
+      setGraphicOptions(graphicOptions);
+    }
+
+    void GraphicsManager::edit(unsigned long widgetID, const std::string &key,
+                               const std::string &value) {
+      GraphicsWindowInterface *win = get3DWindow(widgetID);
+      GraphicsCameraInterface *cam = win->getCameraInterface();
+      if(matchPattern("*/projection", key)) {
+        if(value == "perspective") {
+          cam->changeCameraTypeToPerspective();
+        }
+        else if(value == "orthogonal") {
+          cam->changeCameraTypeToOrtho();
+        }
+      }
+      else if(matchPattern("*/mouse", key)) {
+        if(value == "default") {
+          cam->setCamera(ODE_CAM);
+        }
+        else if(value == "invert") {
+          cam->setCamera(MICHA_CAM);
+        }
+        else if(value == "osg") {
+          cam->setCamera(OSG_CAM);
+        }
+        else if(value == "iso") {
+          cam->setCamera(ISO_CAM);
+        }
+      }
+      else if(matchPattern("*/clearColor", key)) {
+        double v = atof(value.c_str());
+        Color clearColor = win->getClearColor();
+        if(key[key.size()-1] == 'a') clearColor.a = v;
+        if(key[key.size()-1] == 'r') clearColor.r = v;
+        if(key[key.size()-1] == 'g') clearColor.g = v;
+        if(key[key.size()-1] == 'b') clearColor.b = v;
+        win->setClearColor(clearColor);
+      }
+      else if(matchPattern("*/position", key)) {
+        double d = atof(value.c_str());
+        double v[7];
+        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        if(key[key.size()-1] == 'x') v[0] = d;
+        else if(key[key.size()-1] == 'y') v[1] = d;
+        else if(key[key.size()-1] == 'z') v[2] = d;
+        cam->updateViewportQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+      }
+      else if(matchPattern("*/euler", key)) {
+        double d = atof(value.c_str());
+        double v[7];
+        Quaternion q;
+        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        q.x() = v[3];
+        q.y() = v[4];
+        q.z() = v[5];
+        q.w() = v[6];
+        sRotation r = quaternionTosRotation(q);
+        if(key.find("alpha") != string::npos) r.alpha = d;
+        else if(key.find("beta") != string::npos) r.beta = d;
+        else if(key.find("gamma") != string::npos) r.gamma = d;
+        q = eulerToQuaternion(r);
+        cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+      }
+    }
   } // end of namespace graphics
 } // end of namespace mars
 

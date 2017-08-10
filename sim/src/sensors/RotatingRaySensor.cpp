@@ -189,14 +189,12 @@ namespace mars {
       mars::utils::MutexLocker lock(&mutex_pointcloud);
       *data_ = (double*)malloc(pointcloud_full.size()*3*sizeof(double));
       for(unsigned int i=0; i<pointcloud_full.size(); i++) {
-        if((pointcloud_full[i]).norm() <= config.maxDistance) {
-          int array_pos = i*3;
-          (*data_)[array_pos] = (pointcloud_full[i])[0];
-          (*data_)[array_pos+1] = (pointcloud_full[i])[1];
-          (*data_)[array_pos+2] = (pointcloud_full[i])[2];
-        }
+        int array_pos = i*3;
+        (*data_)[array_pos] = (pointcloud_full[i])[0];
+        (*data_)[array_pos+1] = (pointcloud_full[i])[1];
+        (*data_)[array_pos+2] = (pointcloud_full[i])[2];
       }
-      return pointcloud_full.size();
+      return pointcloud_full.size()*3;
     }
 
     void RotatingRaySensor::receiveData(const data_broker::DataInfo &info,
@@ -250,7 +248,7 @@ namespace mars {
 
         // If min/max are exceeded distance will be ignored.
         for(int l=0; l<config.lasers; ++l, ++i){
-          if (data[i] >= config.minDistance && data[i] <= config.maxDistance) {
+          if (data[i] >= config.minDistance && data[i] < config.maxDistance-0.01) {
             // Calculates the ray/vector within the sensor frame.
             local_ray = orientation_offset * directions[i] * data[i];
             // Gathers pointcloud in the world frame to prevent/reduce movement distortion.
@@ -328,6 +326,7 @@ namespace mars {
 
           // Copies current full pointcloud to pointcloud_full.
           std::list<utils::Vector>::iterator it = fromCloud->begin();
+          mutex_pointcloud.lock();
           pointcloud_full.clear();
           pointcloud_full.reserve(fromCloud->size());
           base::Vector3d vec_local;
@@ -339,6 +338,7 @@ namespace mars {
             vec_local = rot * current_pose2.inverse() * (*it);
             pointcloud_full.push_back(vec_local);
           }
+          mutex_pointcloud.unlock();
           fromCloud->clear();
           convertPointCloud = false;
           full_scan = true;

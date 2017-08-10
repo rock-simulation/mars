@@ -61,7 +61,7 @@ namespace mars {
       while(1) {
         pos2 = pattern.find("*", pos1);
         if(pos2 == pattern.npos) {
-          if(pos1 != pattern.length())
+          if(pos1 != 0)
             patternList.push_back(pattern.substr(pos1));
           break;
         }
@@ -70,8 +70,9 @@ namespace mars {
       }
 
       // no wildcards. do direct test
-      if(patternList.empty())
+      if(patternList.empty()) {
         return pattern == str;
+      }
 
       // special case the first pattern because it must match at pos == 0
       std::vector<std::string>::iterator patternListIt = patternList.begin();
@@ -92,16 +93,16 @@ namespace mars {
 
     std::string trim(const std::string& str) {
 
-        int front_idx, back_idx, len;
+      int front_idx, back_idx, len;
 
-        front_idx = 0;
-        back_idx = ( len = str.size() ) - 1;
+      front_idx = 0;
+      back_idx = ( len = str.size() ) - 1;
 
-        while (isspace(str[front_idx]) && front_idx < len ) front_idx++;
-        while (isspace(str[back_idx]) && back_idx > 0 ) back_idx--;
+      while (isspace(str[front_idx]) && front_idx < len ) front_idx++;
+      while (isspace(str[back_idx]) && back_idx > 0 ) back_idx--;
 
-        if ( front_idx >= back_idx ) return "";
-        else return str.substr(front_idx, back_idx-front_idx+1);
+      if ( front_idx > back_idx ) return "";
+      else return str.substr(front_idx, back_idx-front_idx+1);
     }
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix) {
@@ -242,6 +243,22 @@ namespace mars {
         found = back.find(s1, found+s2.size());
       }
       return back;
+    }
+
+    std::string toupper(const std::string &s) {
+      std::string result;
+      for(size_t i=0; i<s.size(); ++i) {
+        result += std::toupper(s[i]);
+      }
+      return result;
+    }
+
+    std::string tolower(const std::string &s) {
+      std::string result;
+      for(size_t i=0; i<s.size(); ++i) {
+        result += std::tolower(s[i]);
+      }
+      return result;
     }
 
   } // end of namespace utils

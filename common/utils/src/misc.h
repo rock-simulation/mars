@@ -177,6 +177,10 @@ namespace mars {
 
     std::string replaceString(const std::string &source, const std::string &s1,
                               const std::string &s2);
+
+    std::string toupper(const std::string &s);
+    std::string tolower(const std::string &s);
+
   } // end of namespace utils
 } // namespace mars
 

@@ -76,8 +76,8 @@ Materials:
 - name: wood
   ambientColor: {a: 1, r: 0.3, g: 0.3, b: 0.3}
   diffuseColor: {a: 1, r: 1, g: 1, b: 1}
+  specularColor: {a: 1, r: 0.1, g: .1, b: .1}
   exists: true
-  specularFront: {a: 1, r: .1, g: .1, b: .1}
   shininess: 2.0
   diffuseTexture: Textures/wood.jpg
 - name: grid

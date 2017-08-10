@@ -28,6 +28,7 @@ pkg_check_modules(PKGCONFIG
         lib_manager
         main_gui
         mars_interfaces
+	configmaps
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -35,15 +36,6 @@ add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 
 setup_qt()
-if (${USE_QT5})
-  IF (UNIX)
-    set(PUBLIC_DEPENDECIES Qt5Widgets)
-  ENDIF (UNIX)
-else()
-  IF (UNIX)
-    set(PUBLIC_DEPENDENCIES QtCore)
-  ENDIF (UNIX)
-endif()
 
 set(SOURCES
     src/GraphicsTimer.cpp
@@ -114,6 +106,11 @@ ELSE (WIN32)
     SET (PRELIB "lib")
     SET (LIBPATH "lib")
   ELSE (APPLE)
+    if (${USE_QT5})
+      set(PUBLIC_DEPENDECIES Qt5Widgets)
+    else()
+      set(PUBLIC_DEPENDENCIES QtCore)
+    endif()
     SET (POSTLIB ".so")
     SET (PRELIB "lib")
     SET (LIBPATH "lib")
@@ -136,8 +133,9 @@ add_plugin_if_available("connexion_plugin")
 add_plugin_if_available("data_broker_gui")
 add_plugin_if_available("cfg_manager_gui")
 add_plugin_if_available("lib_manager_gui")
-add_plugin_if_available("entity_view")
 add_plugin_if_available("SkyDomePlugin")
+add_plugin_if_available("PythonMars")
+add_plugin_if_available("data_broker_plotter2")
 
 if(NOT ROCK)
     add_plugin_if_available("log_console")
@@ -153,6 +151,9 @@ configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt.exam
 configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt.example @ONLY)
 configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt.example ${CMAKE_BINARY_DIR}/other_libs.txt.example ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example DESTINATION configuration/mars_default/)
+
+install(FILES configuration/pypath.yml  DESTINATION configuration/mars_default/)
+install(DIRECTORY configuration/python DESTINATION configuration/mars_default/)
 
 configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)

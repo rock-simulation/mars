@@ -206,6 +206,8 @@ namespace mars {
                                interfaces::sReal lowStop2) = 0;
       virtual void setHighStop2(unsigned long id,
                                 interfaces::sReal highStop2) = 0;
+      virtual void edit(interfaces::JointId id, const std::string &key,
+                        const std::string &value) = 0;
     };
 
   } // end of namespace interfaces

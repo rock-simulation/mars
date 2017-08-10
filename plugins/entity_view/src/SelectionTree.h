@@ -64,10 +64,11 @@ namespace mars {
       interfaces::ControlCenter *control;
       bool filled, selectAllowed;
       int editCategory;
+      int currentWindowID;
       std::vector<interfaces::core_objects_exchange> simNodes, simJoints;
       std::vector<interfaces::core_objects_exchange> simMotors, simSensors;
       std::vector<interfaces::core_objects_exchange> simControllers;
-      std::map<std::string, configmaps::ConfigMap> materialMap;
+      std::map<std::string, configmaps::ConfigMap> materialMap, lightMap;
       std::vector<unsigned long> present;
       std::map<unsigned long, QTreeWidgetItem*> nodeItemMap;
       QTreeWidget *treeWidget;
@@ -76,14 +77,15 @@ namespace mars {
       interfaces::MotorData motorData;
       interfaces::BaseSensor sensorData;
       interfaces::ControllerData controllerData;
-      configmaps::ConfigMap currentMaterial;
-      configmaps::ConfigMap defaultMaterial;
+      configmaps::ConfigMap currentMaterial, currentLight;
+      configmaps::ConfigMap defaultMaterial, defaultLight;
 
       void closeEvent(QCloseEvent* event);
       void fill(unsigned long id, QTreeWidgetItem *current = NULL);
       void reset(void);
       void createTree();
       void addCoreExchange(const std::vector<interfaces::core_objects_exchange> &objects, std::string category);
+      void updateNodeMap(configmaps::ConfigMap &map);
 
     signals:
       void closeSignal(void* widget);

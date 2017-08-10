@@ -84,7 +84,7 @@ namespace mars {
         pos = (snode1->getPosition() + snode2->getPosition()) / 2.;
         setAnchor(pos);
       }
-      else if(physical_joint) {
+      if(physical_joint) {
         physical_joint->reattacheJoint();
         physical_joint->getAnchor(&sJoint.anchor);
       }
@@ -267,6 +267,15 @@ namespace mars {
       }
     }
 
+    void SimJoint::setInvertAxis(bool v) {
+      if(v) {
+        invert = -1;
+      }
+      else {
+        invert = 1;
+      }
+    }
+
     const JointData SimJoint::getSJoint(void) const {
       JointData tmp = sJoint;
 
@@ -279,6 +288,8 @@ namespace mars {
       tmp.highStopAxis1 = upperLimit1;
       tmp.lowStopAxis2 = lowerLimit2;
       tmp.highStopAxis2 = upperLimit2;
+      if(invert == -1) tmp.invertAxis = true;
+      else tmp.invertAxis = false;
       return tmp;
     }
 

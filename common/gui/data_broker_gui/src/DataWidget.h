@@ -54,6 +54,8 @@ namespace mars {
   
   namespace data_broker_gui {
 
+    class MainDataGui;
+
     struct paramWrapper {
       data_broker::DataInfo info;
       data_broker::DataPackage dataPackage;
@@ -67,7 +69,8 @@ namespace mars {
       Q_OBJECT;
       
     public:
-      DataWidget(mars::data_broker::DataBrokerInterface *_dataBroker,
+      DataWidget(MainDataGui *mainLib, lib_manager::LibManager* libManager,
+                 mars::data_broker::DataBrokerInterface *_dataBroker,
                  mars::cfg_manager::CFGManagerInterface *cfg, QWidget *parent = 0);
       ~DataWidget();
     
@@ -81,7 +84,12 @@ namespace mars {
       //    void receiveAddProducer(const data_broker::data_info &info) {}
       //    void receiveRemoveProducer(const data_broker::data_info &info) {}
     
+    protected:
+      void closeEvent(QCloseEvent *event);
+
     private:
+      MainDataGui *mainLib;
+      lib_manager::LibManager* libManager;
       mars::data_broker::DataBrokerInterface *dataBroker;
       QtProperty *showAllProperty;
       bool showAll;
@@ -98,8 +106,6 @@ namespace mars {
     
     protected slots:
       void timerEvent(QTimerEvent* event);
-      virtual void accept();
-      virtual void reject();
     
     };
   

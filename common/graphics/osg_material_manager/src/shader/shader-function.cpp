@@ -21,6 +21,7 @@
 
 #include "shader-function.h"
 #include <sstream>
+#include <queue>
 
 namespace osg_material_manager {
 
@@ -28,9 +29,12 @@ namespace osg_material_manager {
 
   void ShaderFunc::merge(ShaderFunc *u) {
     minVersion = max(minVersion, u->minVersion);
-    for(vector< pair< string,vector<string> > >::iterator it = u->funcs.begin();
+    for(vector< FunctionCall >::iterator it = u->funcs.begin();
         it != u->funcs.end(); ++it)
       funcs.push_back( *it );
+    for(vector< PrioritizedLine >::iterator it = u->snippets.begin();
+        it != u->snippets.end(); ++it)
+      snippets.push_back( *it );
     for(set<string>::iterator it = u->getEnabledExtensions().begin();
         it != u->getEnabledExtensions().end(); ++it)
       enabledExtensions.insert(*it);
@@ -53,9 +57,13 @@ namespace osg_material_manager {
     for(vector< pair<string,string> >::iterator it = uDeps.begin();
         it != uDeps.end(); ++it)
       deps[it->first] = it->second;
-    for(list<GLSLVariable>::const_iterator it = u->getMainVars().begin();
+    for(list<MainVar>::const_iterator it = u->getMainVars().begin();
         it != u->getMainVars().end(); ++it)
       mainVars.push_back(*it);
+    for(set<GLSLAttribute>::const_iterator it = u->getMainVarDecs().begin();
+        it != u->getMainVarDecs().end(); ++it) {
+      mainVarDecs.insert(*it);
+    }
     for(vector<GLSLExport>::const_iterator it = u->getExports().begin();
         it != u->getExports().end(); ++it)
       exports.push_back(*it);
@@ -66,20 +74,28 @@ namespace osg_material_manager {
   }
 
   vector<string> ShaderFunc::generateFunctionCall() {
+    std::priority_queue<FunctionCall> funcs_sorted;
+    std::vector<FunctionCall>::iterator it = funcs.begin();
+    for (;it!=funcs.end();it++) { // better way to initialize already with the vector as argument in constructor?
+      funcs_sorted.push(*it.base());
+    }
     vector<string> calls;
-    for(vector< pair< string,vector<string> > >::iterator it = funcs.begin();
-        it != funcs.end(); ++it) {
-      string call = it->first + "( ";
-      int numArgs = it->second.size();
+
+    while(!funcs_sorted.empty()) {
+      FunctionCall func = funcs_sorted.top();
+      string call = func.name + "( ";
+      std::vector<std::string> args = func.arguments;
+      unsigned long numArgs = args.size();
 
       if(numArgs > 0) {
-        call += it->second[0];
+        call += args[0];
         for(int i=1; i<numArgs; ++i) {
-          call += ", " + it->second[i];
+          call += ", " + args[i];
         }
       }
       call += " );";
       calls.push_back(call);
+      funcs_sorted.pop();
     }
     return calls;
   }

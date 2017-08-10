@@ -146,7 +146,7 @@ namespace mars {
       void setEffort(interfaces::sReal torque, unsigned char axis_index=1);
       void setLowerLimit(interfaces::sReal limit, unsigned char axis_index=1);
       void setUpperLimit(interfaces::sReal limit, unsigned char axis_index=1);
-
+      void setInvertAxis(bool v);
       // inherited from DataBroker ProducerInterface
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;
       virtual void produceData(const data_broker::DataInfo &info,

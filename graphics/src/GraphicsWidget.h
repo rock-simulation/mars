@@ -54,7 +54,7 @@ namespace mars {
     class HUD;
     class HUDElement;
     const unsigned int MASK_2D = 0xF0000000;
-    
+
     /**
      * Widget with OpenGL context and event handling.
      */
@@ -104,6 +104,7 @@ namespace mars {
 
       /**\brief sets the clear color */
       void setClearColor(mars::utils::Color color);
+      const mars::utils::Color& getClearColor() const;
 
       void setGrabFrames(bool grab);
       void setSaveFrames(bool grab);
@@ -115,13 +116,13 @@ namespace mars {
 
       virtual int createBox(const std::string& name,int type=0);
       virtual int createCanvas(const std::string& name);
-      virtual int createFrame(const std::string& name,float x1, float y1,float x2,float y2); 
-   
+      virtual int createFrame(const std::string& name,float x1, float y1,float x2,float y2);
+
       virtual bool showWindow(int wndId);
-      virtual bool hideWindow(int wndId);  
-      virtual bool deleteWindow(int wndId);  
-      virtual bool deleteWidget(int wdgId);  
-   
+      virtual bool hideWindow(int wndId);
+      virtual bool deleteWindow(int wndId);
+      virtual bool deleteWidget(int wdgId);
+
       virtual void setName(const std::string &name){
         this->name = name;
       }
@@ -136,11 +137,11 @@ namespace mars {
       virtual bool addWidgetToWindow(int window,int widget);
       virtual bool addWidgetToWindow(int window,int widget,float x, float y);
       virtual bool addWidgetToWindow(int window,int widget,int x, int y);
-  
+
       virtual int createLabel(const std::string &name,const std::string &text);
       virtual int createInput(const std::string &name,const std::string &text,int count);
       virtual bool setLabel(int id,const std::string& text);
-     
+
       virtual bool setFont(int id,const std::string &fontname);
       virtual bool setFontColor(int id,float r, float g,float b,float a);
       virtual bool setFontSize(int id,int size);
@@ -151,20 +152,20 @@ namespace mars {
       virtual bool addMouseReleaseEventCallback(int id, guiClickCallBack function,guiClickCallBackBind *bindptr=0);
       virtual bool addMouseEnterEventCallback(int id, guiClickCallBack function,guiClickCallBackBind *bindptr=0);
       virtual bool addMouseLeaveEventCallback(int id, guiClickCallBack function,guiClickCallBackBind *bindptr=0);
-    
+
       bool addEventToWidget(int id,guiClickCallBack function,guiClickCallBackBind *bindptr, osgWidget::EventType type);
-    
+
       virtual bool setImage(int id,const std::string& path);
-      virtual int createTable(const std::string& name,int row, int colums); 
+      virtual int createTable(const std::string& name,int row, int colums);
       virtual bool setLayer(int id,int layer, int offset=0);
       virtual bool getLayer(int id,int &layer);
       virtual bool setAlignHorizontal(int id,int h);
-      virtual bool setAlignVertical(int id, int v); 
+      virtual bool setAlignVertical(int id, int v);
       virtual bool getAlignHorizontal(int id,int &h);
-      virtual bool getAlignVertical(int id, int &v); 
+      virtual bool getAlignVertical(int id, int &v);
       virtual bool setAnchorVertical(int id,int va);
       virtual bool setAnchorHorizontal(int id,int ha);
- 
+
       virtual bool setCanFill(int id, bool state);
       virtual bool setShadow(int id,float intensity);
       virtual bool addSize(int id, float x, float y);
@@ -173,26 +174,26 @@ namespace mars {
        * This function copies the image data in the given buffer.
        * It assumes that the buffer ist correctly initalized
        * with a char array of the size width * height * 4
-       * 
+       *
        * @param buffer buffer in which the image gets copied
        * @param width returns the width of the image
        * @param height returns the height of the image
        * */
       virtual void getImageData(char *buffer, int &width, int &height);
       virtual void getImageData(void **data, int &width, int &height);
-      
+
       /**
        * This function copies the depth image in the given buffer.
        * It assumes that the buffer ist correctly initalized
        * with a double array of the size width * height
-       * 
+       *
        * @param buffer buffer in which the image gets copied
        * @param width returns the width of the image
        * @param height returns the height of the image
        * */
       virtual void getRTTDepthData(float *buffer, int &width, int &height);
       virtual void getRTTDepthData(float **data, int &width, int &height);
-  
+
       virtual osg::Group* getScene(){
         return scene;
       }
@@ -202,29 +203,32 @@ namespace mars {
 
       virtual void setHUDViewOffsets(double x1, double y1,
                                      double x2, double y2);
-    
+
+      void grabFocus();
+      void unsetFocus();
+
     protected:
       // the widget size
       int widgetWidth, widgetHeight, widgetX, widgetY;
 
       // protected for osg reference counter
-  
+
       bool manageClickEvent(osgWidget::Event& event);
-      std::string name; 
+      std::string name;
       osgWidget::Window* getWindowById(int wndId);
       osgWidget::Widget* getWidgetById(int wdId);
-     
+
       int addOsgWidget(osgWidget::Widget *wid);
       int addOsgWindow(osgWidget::Window* wnd);
       osgWidget::WindowManager* _osgWidgetWindowManager;
       //   typedef std::map<int,void* > WindowCallackMapType;
       //  WindowCallackMapType _osgWindowIdMap;
-     
+
       typedef std::map<int,osg::ref_ptr<osgWidget::Window> > WindowIdMapType;
       WindowIdMapType _osgWindowIdMap;
       typedef std::map<int,osg::ref_ptr<osgWidget::Widget> > WidgetIdMapType;
       WidgetIdMapType _osgWidgetIdMap;
-     
+
 #ifdef NO_TR1
       typedef std::pair<guiClickCallBack,std::shared_ptr<guiClickCallBackBind> > WidgetCallBackPairType;
 #else
@@ -233,9 +237,9 @@ namespace mars {
       typedef std::list<WidgetCallBackPairType > WidgetCallBackList;
       typedef std::map<int,WidgetCallBackList > WidgetCallBackMapType;
       WidgetCallBackMapType _widgetCallBackMap;
-     
-      unsigned int _osgWidgetWindowCnt;     
-     
+
+      unsigned int _osgWidgetWindowCnt;
+
       // holds a single view on a scene, this view may be composed of one or more slave cameras
       osg::ref_ptr<osgViewer::View> view;
       // root of the scene
@@ -260,10 +264,15 @@ namespace mars {
       PostDrawCallback *postDrawCallback;
       GraphicsManager *gm;
 
-    private:
       // the widget id
       unsigned long widgetID;
 
+      bool hasFocus;
+
+      void applyResize();
+
+    private:
+      utils::Color clearColor;
       // toggle for fullscreen display
       bool isFullscreen;
 
@@ -321,13 +330,9 @@ namespace mars {
 
       virtual void setWidgetFullscreen(bool val) {};
 
-      void grabFocus();
-
-      void applyResize();
-
     }; // end of class GraphicsWidget
 
-  } // end of namespace graphics 
+  } // end of namespace graphics
 } // end of namespace mars
 
 #endif // GRAPHICS_WIDGET_H

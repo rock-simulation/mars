@@ -65,7 +65,7 @@ namespace mars {
                                    osg::Group* scene, unsigned long id,
                                    bool isRTTWidget, int f,
                                    GraphicsManager *gm):
-      _osgWidgetWindowManager(0), _osgWidgetWindowCnt(0), gm(gm) {
+      _osgWidgetWindowManager(0), _osgWidgetWindowCnt(0), gm(gm), hasFocus(false) {
       (void)f;
       (void)parent;
 
@@ -781,7 +781,10 @@ namespace mars {
         initialize();
         view->addEventHandler(this);
         view->addEventHandler(keyswitchManipulator.get());
-        view->addEventHandler(new osgViewer::StatsHandler);
+        // osg doen't handle the focus correctly
+        if(widgetID == 1) {
+          view->addEventHandler(new osgViewer::StatsHandler);
+        }
       }
       view->setSceneData(scene);
 
@@ -917,9 +920,9 @@ namespace mars {
                                      1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
 
         osgCamera->attach(osg::Camera::DEPTH_BUFFER, rttDepthImage.get());
-        
+
         std::fill(rttDepthImage->data(), rttDepthImage->data() + widgetWidth * widgetHeight * sizeof(GLuint), 0);
-        
+
         rttDepthTexture->setImage(rttDepthImage);
 
 
@@ -1043,12 +1046,22 @@ namespace mars {
     }
 
     void GraphicsWidget::setClearColor(mars::utils::Color color){
+      clearColor = color;
       graphicsCamera->getOSGCamera()->setClearColor(
                                                     osg::Vec4(color.r, color.g, color.b, color.a));
     }
 
+    const mars::utils::Color& GraphicsWidget::getClearColor() const {
+      return clearColor;
+    }
+
     void GraphicsWidget::grabFocus() {
+      hasFocus = true;
       getGraphicsWindow()->grabFocus();
+    }
+
+    void GraphicsWidget::unsetFocus() {
+      hasFocus = false;
     }
 
     void GraphicsWidget::getImageData(char* buffer, int& width, int& height)
@@ -1094,7 +1107,7 @@ namespace mars {
         for(int i=height-1; i>=0; --i) {
           for(int k=0; k<width; ++k) {
               GLuint di = data2[i*width+k];
-              
+
             const float dv = ((float) di) / std::numeric_limits< GLuint >::max() ;
             // 1.0 is the max depth in the depth buffer, and
             // is represented as a nan in the distance image
@@ -1130,6 +1143,7 @@ namespace mars {
         graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
       }
       */
+      if(!hasFocus) return false;
 
       // wrap events to class methods
       switch (ea.getEventType()) {
@@ -1162,8 +1176,10 @@ namespace mars {
       case osgGA::GUIEventAdapter::RESIZE :
         // the view does not receive release events for CTRL+D when the view is (un)docked
         // setting an empty event queue fixes his problem.
+        // todo: currently qt handles the resize check other possibilities
         view->setEventQueue(new osgGA::EventQueue);
         gm->setActiveWindow(this);
+        return true;
         return handleResizeEvent(ea);
       case osgGA::GUIEventAdapter::FRAME :
         return false;

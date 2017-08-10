@@ -314,6 +314,8 @@ namespace mars {
                                       std::string *dataName) const;
 
       virtual void connectMimics();
+      virtual void edit(interfaces::MotorId id, const std::string &key,
+                        const std::string &value);
 
     private:
       //! the id of the next motor that is added to the simulation

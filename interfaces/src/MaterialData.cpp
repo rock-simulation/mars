@@ -89,23 +89,29 @@ namespace mars {
       normalmap = config->get("normalTexture", normalmap); // new SMURF naming
       tex_scale = config->get("tex_scale", tex_scale);
       reflect = config->get("reflect", reflect);
-      brightness = config->get("brightness", brightness);
+      //brightness = config->get("brightness", brightness);
       getLight = config->get("getLight", getLight);
-      cullMask = config->get("cullMask", cullMask);
+      // cullmask have to become a node option
+      //cullMask = config->get("cullMask", cullMask);
       bumpNorFac = config->get("bumpNorFac", bumpNorFac);
 
       if((it = config->find("name")) != config->end())
-        name = (std::string)it->second;
+        name = trim((std::string)it->second);
       else {
         std::stringstream s;
-        s << "material" << anonymCount++ << std::endl;
+        s << "material" << anonymCount++;
         name = s.str();
       }
 
+      // if(!filenamePrefix.empty()) {
+      //   handleFilenamePrefix(&texturename, filenamePrefix);
+      //   handleFilenamePrefix(&bumpmap, filenamePrefix);
+      //   handleFilenamePrefix(&normalmap, filenamePrefix);
+      // }
+
+      map = *config;
       if(!filenamePrefix.empty()) {
-        handleFilenamePrefix(&texturename, filenamePrefix);
-        handleFilenamePrefix(&bumpmap, filenamePrefix);
-        handleFilenamePrefix(&normalmap, filenamePrefix);
+        map["filePrefix"] = filenamePrefix;
       }
 
       return true;
@@ -117,6 +123,8 @@ namespace mars {
       std::string texturename_ = texturename;
       std::string bumpmap_ = bumpmap;
       std::string normalmap_ = normalmap;
+
+      *config = map;
 
       if(skipFilenamePrefix) {
         removeFilenamePrefix(&texturename_);
@@ -170,12 +178,13 @@ namespace mars {
       // feature is currently not working (no default export)
       if(reflect != defaultMaterial.reflect)
         (*config)["reflect"] = reflect;
-      if(exportDefault || brightness != defaultMaterial.brightness)
-        (*config)["brightness"] = brightness;
+      // brightness as material feature is redundant (emission color)
+      //if(exportDefault || brightness != defaultMaterial.brightness)
+      //  (*config)["brightness"] = brightness;
       if(exportDefault || getLight != defaultMaterial.getLight)
-        (*config)["getLigth"] = getLight;
-      if(exportDefault || cullMask != defaultMaterial.cullMask)
-        (*config)["cullMask"] = cullMask;
+        (*config)["getLight"] = getLight;
+      // if(exportDefault || cullMask != defaultMaterial.cullMask)
+      //   (*config)["cullMask"] = cullMask;
       if(exportDefault || bumpNorFac != defaultMaterial.bumpNorFac)
         (*config)["bumpNorFac"] = bumpNorFac;
       // can not be changed online currently

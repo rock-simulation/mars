@@ -128,6 +128,8 @@ namespace mars {
       void setI(interfaces::sReal i);
       void setD(interfaces::sReal d);
       void setPID(interfaces::sReal mP, interfaces::sReal mI, interfaces::sReal mD);
+      void setMinValue(interfaces::sReal d);
+      void setMaxValue(interfaces::sReal d);
       void setVelocity(interfaces::sReal v);
       void setControlValue(interfaces::sReal value);
       void setMimic(interfaces::sReal multiplier, interfaces::sReal offset);

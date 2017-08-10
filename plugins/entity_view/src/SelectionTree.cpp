@@ -28,6 +28,7 @@
 #include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/utils/misc.h>
+#include <mars/utils/mathUtils.h>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
 #include <QPushButton>
@@ -36,6 +37,7 @@ using namespace std;
 
 namespace mars {
   using namespace interfaces;
+  using namespace utils;
   namespace plugins {
 
     SelectionTree::SelectionTree(interfaces::ControlCenter *c,
@@ -58,8 +60,12 @@ namespace mars {
         control->graphics->addEventClient((interfaces::GraphicsEventClient*)this);
       }
 
+      // todo: improve default handling for all entities
       MaterialData md;
       md.toConfigMap(&defaultMaterial, false, true);
+
+      LightData ld;
+      ld.toConfigMap(&defaultLight);
 
       createTree();
 
@@ -163,13 +169,59 @@ namespace mars {
         configmaps::ConfigMap map;
         mList[i].toConfigMap(&map);
         materialMap[mList[i].name] = map;
-        map.toYamlStream(std::cerr);
+        //map.toYamlStream(std::cerr);
         QTreeWidgetItem *next = new QTreeWidgetItem(temp);
         current->addChild(next);
       }
 
+      if(control->graphics) {
+        { // handle lights
+          lightMap.clear();
+          temp.clear();
+          temp << "lights";
+          current = new QTreeWidgetItem(temp);
+          treeWidget->addTopLevelItem(current);
+          std::vector<interfaces::LightData*> simLights;
+          control->graphics->getLights(&simLights);
+          for(size_t i=0; i<simLights.size(); ++i) {
+            temp.clear();
+            temp << QString::fromStdString(simLights[i]->name);
+            configmaps::ConfigMap map;
+            simLights[i]->toConfigMap(&map);
+            lightMap[simLights[i]->name] = map;
+            //map.toYamlStream(std::cerr);
+            QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+            current->addChild(next);
+          }
+        }
+        { // handle windows
+          lightMap.clear();
+          temp.clear();
+          temp << "graphics";
+          current = new QTreeWidgetItem(temp);
+          treeWidget->addTopLevelItem(current);
+          temp.clear();
+          temp << "scene";
+          QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+          current->addChild(next);
+          std::vector<unsigned long> ids;
+          control->graphics->getList3DWindowIDs(&ids);
+          for(auto it: ids) {
+            GraphicsWindowInterface *gw = control->graphics->get3DWindow(it);
+            temp.clear();
+            std::string gwName = gw->getName();
+            if(gwName.empty()) {
+              temp << QString::number(it) + ":window";
+            }
+            else {
+              temp << QString::number(it) + gwName.c_str();
+            }
+            QTreeWidgetItem *next = new QTreeWidgetItem(temp);
+            current->addChild(next);
+          }
+        }
+      }
     }
-
 
     void SelectionTree::reset(void) {
       while (treeWidget->topLevelItemCount() > 0)
@@ -219,51 +271,101 @@ namespace mars {
           if(!parent) return;
           while(parent->parent()) parent = parent->parent();
           int n = currentItem->text(0).indexOf(":");
-          if(n>-1) {
+          nodeData.index = motorData.index = jointData.index = 0;
+          currentLight.clear();
+          currentMaterial.clear();
+          // todo: remove current information (motorData, currentLigth etc.)
+          if(n>-1 && parent->text(0) != "graphics") {
+            std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
+            std::vector<std::string> dropDownPattern;
+            std::vector<std::vector<std::string> > dropDownValues;
+            configmaps::ConfigMap map;
+            std::string name;
             unsigned long id = currentItem->text(0).left(n).toULong();
             if(parent->text(0) == "nodes") {
-              std::vector<std::string> editPattern;
-              editPattern.push_back("*/position/*");
-              editPattern.push_back("*/extend/*");
-              editPattern.push_back("*/material");
-              editPattern.push_back("*/c*");
               nodeData = control->nodes->getFullNode(id);
-              configmaps::ConfigMap map = nodeData.map;
-              if(!map.hasKey("cfdir1")) {
-                map["cfdir1"]["x"] = 0.;
-                map["cfdir1"]["y"] = 0.;
-                map["cfdir1"]["z"] = 0.;
-              }
+              name = nodeData.name;
+              std::string preStr = "../"+name+"/";
+              editPattern.push_back(preStr+"pose/*");
+              editPattern.push_back(preStr+"extend/*");
+              editPattern.push_back(preStr+"visual/material");
+              editPattern.push_back(preStr+"visual/cullMask");
+              editPattern.push_back(preStr+"visual/brightness");
+              editPattern.push_back(preStr+"name");
+              editPattern.push_back(preStr+"c*");
+              editPattern.push_back(preStr+"mass");
+              editPattern.push_back(preStr+"density");
+              editPattern.push_back(preStr+"movable");
+              editPattern.push_back(preStr+"groupid");
+              //editPattern.push_back(preStr+"rotation*");
               nodeData.toConfigMap(&map, false, true);
-              dw->setConfigMap(nodeData.name, map, editPattern);
+              updateNodeMap(map);
               editCategory = 1;
             }
             else if(parent->text(0) == "joints") {
-              std::vector<std::string> editPattern;
-              // fake pattern to disable everthing
-              editPattern.push_back("//");
               jointData = control->joints->getFullJoint(id);
-              configmaps::ConfigMap map;
               jointData.toConfigMap(&map);
-              dw->setConfigMap(jointData.name, map, editPattern);
+              name = jointData.name;
+              std::string preStr = "../"+name+"/";
+              //editPattern.push_back(preStr+"type");
+              editPattern.push_back(preStr+"axis*");
+              editPattern.push_back(preStr+"anchor*");
+              editPattern.push_back(preStr+"lowStop*");
+              editPattern.push_back(preStr+"highStop*");
+              editPattern.push_back(preStr+"damping_const_*");
+              editPattern.push_back(preStr+"spring_const_*");
+              editPattern.push_back(preStr+"invertAxis");
+              dropDownPattern.push_back(preStr+"anchorpos");
+              dropDownValues.resize(1);
+              dropDownValues[0].push_back("node1");
+              dropDownValues[0].push_back("node2");
+              dropDownValues[0].push_back("center");
+              dropDownValues[0].push_back("custom");
               editCategory = 2;
             }
             else if(parent->text(0) == "motors") {
-              std::vector<std::string> editPattern;
-              // fake pattern to disable everthing
-              editPattern.push_back("//");
               motorData = control->motors->getFullMotor(id);
-              configmaps::ConfigMap map;
               motorData.toConfigMap(&map);
-              dw->setConfigMap(motorData.name, map, editPattern);
+              name = motorData.name;
+              // todo: remove index from pattern
+              std::string preStr = "../"+name+"/";
+              //editPattern.push_back(preStr+"name");
+              editPattern.push_back(preStr+"p");
+              editPattern.push_back(preStr+"i");
+              editPattern.push_back(preStr+"d");
+              editPattern.push_back(preStr+"type");
+              editPattern.push_back(preStr+"maxSpeed");
+              editPattern.push_back(preStr+"maxEffort");
+              editPattern.push_back(preStr+"minValue");
+              editPattern.push_back(preStr+"maxValue");
+              //editPattern.push_back(preStr+"jointIndex");
+              dropDownPattern.push_back("*/type");
+              dropDownValues.resize(1);
+              dropDownValues[0].push_back("PID");
+              dropDownValues[0].push_back("DC");
               editCategory = 3;
             }
+            else if(parent->text(0) == "sensors") {
+              const BaseSensor *sensor = control->sensors->getFullSensor(id);
+              map = sensor->createConfig();
+              name = sensor->name;
+              editCategory = 7;
+            }
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setDropDownPattern(dropDownPattern, dropDownValues);
+            dw->setConfigMap(name, map);
           }
           else if(parent->text(0) == "controllers") {
             editCategory = 4;
           }
           else if(parent->text(0) == "materials") {
             std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
             // fake pattern to disable everthing
             editPattern.push_back("*/ambientColor/*");
             editPattern.push_back("*/diffuseColor/*");
@@ -276,16 +378,193 @@ namespace mars {
             editPattern.push_back("*/transparency");
             editPattern.push_back("*/shininess");
             editPattern.push_back("*/tex_scale");
+            editPattern.push_back("*/getLight");
+
+            filePattern.push_back("*/diffuseTexture");
+            filePattern.push_back("*/normalTexture");
+            //filePattern.push_back("*/diaplacementTexture");
+
+            colorPattern.push_back("*/ambientColor");
+            colorPattern.push_back("*/diffuseColor");
+            colorPattern.push_back("*/specularColor");
+            colorPattern.push_back("*/emissionColor");
 
             currentMaterial = materialMap[currentItem->text(0).toStdString()];
             configmaps::ConfigMap map = defaultMaterial;
             map.append(currentMaterial);
-            dw->setConfigMap(currentMaterial["name"], map,
-                             editPattern);
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setConfigMap(currentMaterial["name"], map);
             editCategory = 5;
+          }
+          else if(parent->text(0) == "lights") {
+            std::vector<std::string> editPattern;
+            std::vector<std::string> filePattern;
+            std::vector<std::string> colorPattern;
+            // fake pattern to disable everthing
+            editPattern.push_back("*/ambient/*");
+            editPattern.push_back("*/diffuse/*");
+            editPattern.push_back("*/specular/*");
+            editPattern.push_back("*/position/*");
+            editPattern.push_back("*/lookat/*");
+            editPattern.push_back("*/constantAttenuation");
+            editPattern.push_back("*/linearAttenuation");
+            editPattern.push_back("*/quadraticAttenuation");
+            editPattern.push_back("*/type");
+            editPattern.push_back("*/angle");
+            editPattern.push_back("*/exponent");
+            editPattern.push_back("*/directional");
+            editPattern.push_back("*/nodeName");
+
+            colorPattern.push_back("*/ambient");
+            colorPattern.push_back("*/diffuse");
+            colorPattern.push_back("*/specular");
+            currentLight = lightMap[currentItem->text(0).toStdString()];
+            configmaps::ConfigMap map = defaultLight;
+            map.append(currentLight);
+            dw->setEditPattern(editPattern);
+            dw->setFilePattern(filePattern);
+            dw->setColorPattern(colorPattern);
+            dw->setConfigMap(currentLight["name"], map);
+            editCategory = 6;
+          }
+          else if(parent->text(0) == "graphics") {
+            std::string item = currentItem->text(0).toStdString();
+            if(item == "scene") {
+              std::vector<std::string> editPattern;
+              std::vector<std::string> filePattern;
+              std::vector<std::string> colorPattern;
+              editPattern.push_back("*/");
+              colorPattern.push_back("*/fogColor");
+              GraphicData gd = control->graphics->getGraphicOptions();
+              configmaps::ConfigMap map;
+              gd.toConfigMap(&map);
+              map.erase("clearColor");
+              dw->setEditPattern(editPattern);
+              dw->setFilePattern(filePattern);
+              dw->setColorPattern(colorPattern);
+              dw->setConfigMap("general", map);
+              editCategory = 8;
+            }
+            else {
+              // const GraphicData gd = control->graphics->getGraphicOptions();
+              // configmaps::ConfigMap map = gd.toConfigMap();
+              std::vector<std::string> editPattern;
+              std::vector<std::string> filePattern;
+              std::vector<std::string> colorPattern;
+              std::vector<std::string> dropDownPattern;
+              std::vector<std::vector<std::string> > dropDownValues;
+              editPattern.push_back("*/");
+              colorPattern.push_back("*/clearColor");
+              dropDownPattern.push_back("*/projection");
+              dropDownPattern.push_back("*/mouse");
+              dropDownValues.resize(2);
+              dropDownValues[0].push_back("perspective");
+              dropDownValues[0].push_back("orthogonal");
+              dropDownValues[1].push_back("default");
+              dropDownValues[1].push_back("invert");
+              dropDownValues[1].push_back("osg");
+              dropDownValues[1].push_back("iso");
+
+              dw->setEditPattern(editPattern);
+              dw->setFilePattern(filePattern);
+              dw->setColorPattern(colorPattern);
+              dw->setDropDownPattern(dropDownPattern, dropDownValues);
+
+              std::vector<std::string> arrString = explodeString(':', item);
+              currentWindowID = atoi(arrString[0].c_str());
+              GraphicsWindowInterface *gw = control->graphics->get3DWindow(currentWindowID);
+              GraphicsCameraInterface *gc = gw->getCameraInterface();
+              ConfigMap map;
+              int mouse = gc->getCamera();
+
+              if(gc->getCameraType() == 1) map["projection"] = "perspective";
+              else map["projection"] = "orthogonal";
+
+              if(mouse == ODE_CAM) map["mouse"] = "default";
+              else if(mouse == MICHA_CAM) map["mouse"] = "invert";
+              else if(mouse == OSG_CAM) map["mouse"] = "osg";
+              else if(mouse == ISO_CAM) map["mouse"] = "iso";
+
+              Color c = gw->getClearColor();
+              c.toConfigItem(map["clearColor"]);
+              double v[7];
+              gc->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+              Quaternion q;
+              q.x() = v[3];
+              q.y() = v[4];
+              q.z() = v[5];
+              q.w() = v[6];
+              sRotation r = quaternionTosRotation(q);
+              map["pose"]["position"]["x"] = v[0];
+              map["pose"]["position"]["y"] = v[1];
+              map["pose"]["position"]["z"] = v[2];
+              map["pose"]["euler"]["alpha"] = r.alpha;
+              map["pose"]["euler"]["beta"] = r.beta;
+              map["pose"]["euler"]["gamma"] = r.gamma;
+              dw->setConfigMap(arrString[1], map);
+              editCategory = 9;
+            }
           }
         }
       }
+    }
+
+    void SelectionTree::updateNodeMap(ConfigMap &map) {
+      Vector p(map["position"]["x"], map["position"]["y"],
+               map["position"]["z"]);
+      Quaternion q;
+      q.x() = map["rotation"]["x"];
+      q.y() = map["rotation"]["y"];
+      q.z() = map["rotation"]["z"];
+      q.w() = map["rotation"]["w"];
+      sRotation r = quaternionTosRotation(q);
+      map["rotation"]["alpha"] = r.alpha;
+      map["rotation"]["beta"] = r.beta;
+      map["rotation"]["gamma"] = r.gamma;
+      if(!map.hasKey("cfdir1")) {
+        map["contact"]["cfdir1"]["x"] = 0.;
+        map["contact"]["cfdir1"]["y"] = 0.;
+        map["contact"]["cfdir1"]["z"] = 0.;
+      }
+      std::vector<std::string> move {"cmax_num_contacts", "cerp", "ccfm", "cfriction1", "cfriction2", "cmotion1", "cmotion2", "cfds1", "cfds2", "cbounce", "cbounce_vel", "capprox", "coll_bitmask", "cfdir1"};
+      for(auto it: move) {
+        if(map.hasKey(it)) {
+          map["contact"][it] = map[it];
+          map.erase(it);
+        }
+      }
+      move = {"material", "cullMask", "brightness", "pivot", "visualsize", "visualscale", "visualposition", "visualrotation", "filename", "origname", "shadow_id", "shadowcaster", "shadowreceiver"};
+      for(auto it: move) {
+        if(map.hasKey(it)) {
+          map["visual"][it] = map[it];
+          map.erase(it);
+        }
+      }
+      if((ulong)map["relativeid"] != 0) {
+        NodeData parent = control->nodes->getFullNode(map["relativeid"]);
+        // inverse calculation to convert world to relative
+        p = parent.rot.inverse() * (p-parent.pos);
+        q = parent.rot.inverse() * q;
+      }
+      map["pose"]["local"]["relativeid"] = map["relativeid"];
+      map.erase("relativeid");
+      map["pose"]["world"]["position"] = map["position"];
+      map.erase("position");
+      map["pose"]["world"]["rotation"] = map["rotation"];
+      map.erase("rotation");
+      r = quaternionTosRotation(q);
+      map["pose"]["local"]["rotation"]["x"] = q.x();
+      map["pose"]["local"]["rotation"]["y"] = q.y();
+      map["pose"]["local"]["rotation"]["z"] = q.z();
+      map["pose"]["local"]["rotation"]["w"] = q.w();
+      map["pose"]["local"]["rotation"]["alpha"] = r.alpha;
+      map["pose"]["local"]["rotation"]["beta"] = r.beta;
+      map["pose"]["local"]["rotation"]["gamma"] = r.gamma;
+      map["pose"]["local"]["position"]["x"] = p.x();
+      map["pose"]["local"]["position"]["y"] = p.y();
+      map["pose"]["local"]["position"]["z"] = p.z();
     }
 
     void SelectionTree::deleteEntities(void) {
@@ -308,8 +587,40 @@ namespace mars {
           if(nodeData.index == id) dw->clearGUI();
 
         }
+        // todo: delete joints / motors / etc.
+        else if(parent->text(0) == "joints") {
+          id = selectedItems[i]->text(0).left(n).toULong();
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+          control->joints->removeJoint(id);
+          if(jointData.index == id) dw->clearGUI();
+        }
+        else if(parent->text(0) == "motors") {
+          id = selectedItems[i]->text(0).left(n).toULong();
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+          control->motors->removeMotor(id);
+          if(motorData.index == id) dw->clearGUI();
+        }
+        else if(parent->text(0) == "sensors") {
+        }
+        else if(parent->text(0) == "controllers") {
+        }
+        else if(parent->text(0) == "materials") {
+        }
+        else if(parent->text(0) == "lights") {
+          if(control->graphics) {
+            std::string name = selectedItems[i]->text(0).toStdString();
+            std::vector<interfaces::LightData*> simLights;
+            control->graphics->getLights(&simLights);
+            for(size_t i=0; i<simLights.size(); ++i) {
+              if(simLights[i]->name == name) {
+                control->graphics->removeLight(i);
+                break;
+              }
+            }
+          }
+          selectedItems[i]->parent()->removeChild(selectedItems[i]);
+        }
       }
-      // todo: delete joints / motors / etc.
     }
 
     void SelectionTree::update(void) {
@@ -326,15 +637,123 @@ namespace mars {
 
     void SelectionTree::valueChanged(std::string name, std::string value) {
       if(name.empty()) return;
+      // remove name prefix, otherwise the name could influence the pattern matching
+      // done in the edit mehtods
+      size_t p = name.find('/', 3);
+      if(p != std::string::npos) {
+        name = name.substr(p);
+      }
       //fprintf(stderr, "get feedback: %s\n", name.c_str());
       if(editCategory == 1) {
-        control->nodes->edit(nodeData.index, name, value);
+        // convert local / global pose
+        if(matchPattern("*pose/", name) && !matchPattern("*relativeid", name)) {
+          if(matchPattern("*local/", name)) {
+            p = name.find("local/");
+            if(p!=std::string::npos) {
+              name = name.substr(p+5);
+            }
+            // calculate global pose
+            nodeData = control->nodes->getFullNode(nodeData.index);
+            ConfigMap map;
+            nodeData.toConfigMap(&map, false, true);
+            updateNodeMap(map);
+            ConfigMap &posMap = map["pose"]["local"]["position"];
+            ConfigMap &qMap = map["pose"]["local"]["rotation"];
+            Vector pos(posMap["x"], posMap["y"], posMap["z"]);
+            Quaternion q;
+            q.x() = qMap["x"];
+            q.y() = qMap["y"];
+            q.z() = qMap["z"];
+            q.w() = qMap["w"];
+            sRotation r = quaternionTosRotation(q);
+            double v = atof(value.c_str());
+            bool euler = false;
+            bool editPos = true;
+            if(matchPattern("*position/x", name)) pos.x() = v;
+            if(matchPattern("*position/y", name)) pos.y() = v;
+            if(matchPattern("*position/z", name)) pos.z() = v;
+            if(matchPattern("*rotation/x", name)) q.x() = v, editPos=false;
+            if(matchPattern("*rotation/y", name)) q.y() = v, editPos=false;
+            if(matchPattern("*rotation/z", name)) q.z() = v, editPos=false;
+            if(matchPattern("*rotation/w", name)) q.w() = v, editPos=false;
+            if(matchPattern("*rotation/alpha", name)) r.alpha = v, euler=true, editPos=false;
+            if(matchPattern("*rotation/beta", name)) r.beta = v, euler=true, editPos=false;
+            if(matchPattern("*rotation/gamma", name)) r.gamma = v, euler=true, editPos=false;
+            if(euler) {
+              q = eulerToQuaternion(r);
+            }
+            /* this transformation is already done in editNode
+            if((ulong)map["pose"]["local"]["relativeid"] != 0) {
+              NodeData parent = control->nodes->getFullNode(map["relativeid"]);
+              pos = parent.rot.inverse() * (pos-parent.pos);
+              q = parent.rot.inverse() * q;
+            }
+            */
+            nodeData.pos = pos;
+            nodeData.rot = q;
+            if(editPos) {
+              control->nodes->editNode(&nodeData, EDIT_NODE_POS);
+            }
+            else {
+              control->nodes->editNode(&nodeData, EDIT_NODE_ROT);
+            }
+          }
+          else {
+            p = name.find("world/");
+            if(p!=std::string::npos) {
+              name = name.substr(p+5);
+            }
+            control->nodes->edit(nodeData.index, name, value);
+          }
+        }
+        else {
+          control->nodes->edit(nodeData.index, name, value);
+        }
+        // todo: update map
+        nodeData = control->nodes->getFullNode(nodeData.index);
+        ConfigMap map;
+        nodeData.toConfigMap(&map, false, true);
+        updateNodeMap(map);
+        dw->updateConfigMap(nodeData.name, map);
       }
       else if(editCategory == 2) {
-
+        control->joints->edit(jointData.index, name, value);
+      }
+      else if(editCategory == 3) {
+        control->motors->edit(motorData.index, name, value);
       }
       else if(editCategory == 5) {
         control->graphics->editMaterial(currentMaterial["name"], name, value);
+        // update material internal
+        std::vector<interfaces::MaterialData> mList;
+        mList = control->graphics->getMaterialList();
+        for(size_t i=0; i<mList.size(); ++i) {
+          if(mList[i].name == (std::string)currentMaterial["name"]) {
+            configmaps::ConfigMap map;
+            mList[i].toConfigMap(&map);
+            materialMap[mList[i].name] = map;
+            break;
+          }
+        }
+      }
+      else if(editCategory == 6) {
+        control->graphics->editLight(currentLight["index"], name, value);
+        std::vector<interfaces::LightData*> simLights;
+        control->graphics->getLights(&simLights);
+        for(size_t i=0; i<simLights.size(); ++i) {
+          if(simLights[i]->index == (unsigned long)currentLight["index"]) {
+            configmaps::ConfigMap map;
+            simLights[i]->toConfigMap(&map);
+            lightMap[simLights[i]->name] = map;
+            break;
+          }
+        }
+      }
+      else if(editCategory == 8) {
+        control->graphics->edit(name, value);
+      }
+      else if(editCategory == 9) {
+        control->graphics->edit(currentWindowID, name, value);
       }
     }
 
@@ -367,7 +786,7 @@ namespace mars {
       top = new QTreeWidgetItem(temp);
       treeWidget->addTopLevelItem(top);
       for(it=objects.begin(); it!=objects.end(); ++it) {
-        path = utils::explodeString('/', it->name);
+        path = explodeString('/', it->name);
         current = top;
         for(pt=path.begin(); pt!=path.end(); ++pt) {
           temp.clear();

@@ -95,14 +95,6 @@ namespace mars {
     MainDataGui::~MainDataGui() {
       if(libManager == NULL) return;
 
-      if(dataWidget) {
-        gui->removeDockWidget((void*)dataWidget, 0);
-        delete dataWidget;
-      }
-      if(dataConnWidget) {
-        gui->removeDockWidget((void*)dataConnWidget, 0);
-        delete dataConnWidget;
-      }
       if(cfg) libManager->releaseLibrary("cfg_manager");
       if(gui) libManager->releaseLibrary("main_gui");
       if(dataBroker) libManager->releaseLibrary("data_broker");
@@ -119,23 +111,21 @@ namespace mars {
       switch(action) {
       case 1:
         if(dataWidget == NULL) {
-          dataWidget = new DataWidget(dataBroker, cfg);
+          dataWidget = new DataWidget(this, libManager, dataBroker, cfg);
           gui->addDockWidget((void*)dataWidget, 0);
         }
         else {
           gui->removeDockWidget((void*)dataWidget, 0);
-          delete dataWidget;
           dataWidget = NULL;
         }
         break;
       case 2:
         if(dataConnWidget == NULL) {
-          dataConnWidget = new DataConnWidget(dataBroker, cfg);
+          dataConnWidget = new DataConnWidget(this, libManager, dataBroker, cfg);
           gui->addDockWidget((void*)dataConnWidget, 0);
         }
         else {
           gui->removeDockWidget((void*)dataConnWidget, 0);
-          delete dataConnWidget;
           dataConnWidget = NULL;
         }
         break;
@@ -144,6 +134,11 @@ namespace mars {
 
     void MainDataGui::timerEvent(QTimerEvent *event) {
       (void)event;
+    }
+
+    void MainDataGui::destroyWindow(QWidget *w) {
+      if(w == dataWidget) dataWidget = NULL;
+      else if(w == dataConnWidget) dataConnWidget = NULL;
     }
 
   } // end of namespace: data_broker_gui

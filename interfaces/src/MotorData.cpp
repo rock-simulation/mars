@@ -153,7 +153,12 @@ namespace mars {
       SET_VALUE("maxSpeed", maxSpeed);
       SET_VALUE("maxEffort", maxEffort);
 
-      (*config)["type"] = (int)type;
+      if(type==2) {
+        (*config)["type"] = "DC";
+      }
+      else {
+        (*config)["type"] = "PID";
+      }
 
       SET_VALUE("p", p);
       SET_VALUE("i", i);

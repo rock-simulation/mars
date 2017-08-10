@@ -73,6 +73,8 @@ namespace mars {
       { return std::string("data_broker_gui"); }
       CREATE_MODULE_INFO();
       
+      void destroyWindow(QWidget *w);
+
     private:
       mars::main_gui::GuiInterface* gui;
       mars::cfg_manager::CFGManagerInterface *cfg;

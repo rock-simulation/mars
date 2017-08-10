@@ -120,7 +120,7 @@ namespace osg_material_manager {
     osg::ref_ptr<osg::Uniform> invShadowTextureSizeUniform;
     osg::ref_ptr<osg::Uniform> envMapSpecularUniform;
     osg::ref_ptr<osg::Uniform> envMapScaleUniform;
-    osg::ref_ptr<osg::Uniform> terrainScaleZUniform;
+    osg::ref_ptr<osg::Uniform> terrainScaleZUniform, terrainDimUniform;
 
     osg::ref_ptr<osg::Group> group;
     osg::ref_ptr<osg::Material> material;
@@ -138,6 +138,7 @@ namespace osg_material_manager {
     double t;
     std::string name, resPath;
     configmaps::ConfigMap map, unitMap;
+    std::string loadPath;
 
     osg::Vec4 getColor(std::string key);
     void setColor(std::string color, std::string key, std::string value);

@@ -463,6 +463,22 @@ namespace mars {
       }
     }
 
+    QtProperty* PropertyDialog::activeItem(void) {
+      switch (viewMode) {
+      case TreeViewMode:
+        if (variantEditorTree->currentItem()) {
+          return variantEditorTree->currentItem()->property();
+        }
+      case ButtonViewMode:
+        if (variantEditorButton->currentItem()) {
+          return variantEditorButton->currentItem()->property();
+        }
+      default:
+        break;
+      }
+      return NULL;
+    }
+
     QtProperty* PropertyDialog::currentItem(void) {
       switch (viewMode) {
       case TreeViewMode:
@@ -574,6 +590,35 @@ namespace mars {
 
     void PropertyDialog::setPropCallback(PropertyCallback *pc) {
       propertyCallback = pc;
+    }
+
+    bool PropertyDialog::isPropertyVisible(QtProperty *prop) const {
+      if(tabView) {
+        PropertyDialog *pd = dynamic_cast<PropertyDialog*>(tabWidget->currentWidget());
+        return pd->isPropertyVisible(prop);
+      }
+
+      QList<QtBrowserItem*> list;
+      switch (viewMode) {
+      case TreeViewMode:
+        {
+          list = variantEditorTree->items(prop);
+          if(list.size() == 0) return false;
+          QtBrowserItem* parentItem = list[0]->parent();
+          if(!parentItem) return true;
+          return variantEditorTree->isExpanded(parentItem);
+        }
+      case ButtonViewMode:
+        {
+          list = variantEditorButton->items(prop);
+          if(list.size() == 0) return false;
+          QtBrowserItem* parentItem = list[0]->parent();
+          if(!parentItem) return true;
+          return variantEditorButton->isExpanded(parentItem);
+        }
+      default:
+        break;
+      }
     }
 
   } // end namespace main_gui

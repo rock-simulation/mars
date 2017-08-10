@@ -172,6 +172,14 @@ namespace mars {
     void QtOsgMixGraphicsWidget::resizeEvent( QResizeEvent * event ) {
       const QSize & geometrySize = event->size();
       if(graphicsWindow) {
+        //fprintf(stderr, "resize: %d %d %d %d\n", window()->geometry().x(),
+        //        window()->geometry().y(), geometrySize.width(), geometrySize.height());
+        widgetWidth = geometrySize.width();
+        widgetHeight = geometrySize.height();
+        widgetX = window()->geometry().x();
+        widgetY = window()->geometry().y();
+        applyResize();
+        /*
         graphicsWindow->resized(window()->geometry().x(),
                                 window()->geometry().y(),
                                 geometrySize.width(),
@@ -184,6 +192,7 @@ namespace mars {
         if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
         if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
         postDrawCallback->setSize(geometrySize.width(), geometrySize.height());
+        */
       }
     }
 
@@ -197,6 +206,7 @@ namespace mars {
 
     void QtOsgMixGraphicsWidget::focusInEvent( QFocusEvent *event) {
       gm->setActiveWindow(this);
+      gm->setActiveWindow(widgetID);
     }
 
     static int qtToOsgKey(QKeyEvent* e) {
@@ -277,6 +287,7 @@ namespace mars {
       view->getEventQueue()->mouseButtonPress(e->x(), -e->y(), button);
 #endif
 #endif
+
       grabKeyboard();
     }
 
@@ -322,6 +333,11 @@ namespace mars {
     }
 
     bool QtOsgMixGraphicsWidget::eventFilter(QObject *obj, QEvent *event) {
+      if(event->type() == QEvent::Enter) {
+        gm->setActiveWindow(this);
+        gm->setActiveWindow(widgetID);
+        return false;
+      }
       if (obj != parent()) {
         return false;
       }

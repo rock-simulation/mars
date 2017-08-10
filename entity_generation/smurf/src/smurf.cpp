@@ -129,7 +129,7 @@ namespace mars {
 
     void SMURF::handleURIs(ConfigMap *map) {
       if (map->find("URI") != map->end()) {
-        std::string file = (std::string) (*map)["URI"][0];
+        std::string file = (*map)["URI"];
         if (!file.empty() && file[0] != '/') {
           file = tmpPath + file;
         }
@@ -152,10 +152,10 @@ namespace mars {
       // TODO: check if objects exist in maps
 
       if (map->find("link") != map->end()) {
-        (*map)["nodeID"] = nodeIDMap[(*map)["link"][0]];
+        (*map)["nodeID"] = nodeIDMap[(*map)["link"]];
       }
       if (map->find("joint") != map->end()) {
-        (*map)["jointID"] = jointIDMap[(*map)["joint"][0]];
+        (*map)["jointID"] = jointIDMap[(*map)["joint"]];
       }
       if (map->find("links") != map->end()) {
         for (it = (*map)["links"].begin(); it != (*map)["links"].end(); ++it) {
@@ -498,10 +498,10 @@ namespace mars {
       config["id"] = nextMaterialID++;
       config["name"] = "_emptyVisualMaterial";
       config["exists"] = true;
-      config["diffuseFront"][0]["a"] = 1.0;
-      config["diffuseFront"][0]["r"] = 1.0;
-      config["diffuseFront"][0]["g"] = 0.0;
-      config["diffuseFront"][0]["b"] = 0.0;
+      config["diffuseFront"]["a"] = 1.0;
+      config["diffuseFront"]["r"] = 1.0;
+      config["diffuseFront"]["g"] = 0.0;
+      config["diffuseFront"]["b"] = 0.0;
       config["texturename"] = "";
       //config["cullMask"] = 0; // this makes the object invisible
 #ifdef DEBUG_SCENE_MAP
@@ -516,10 +516,10 @@ namespace mars {
       config["id"] = nextMaterialID++;
       config["name"] = "_originMaterial";
       config["exists"] = true;
-      config["diffuseFront"][0]["a"] = 1.0;
-      config["diffuseFront"][0]["r"] = 0.0;
-      config["diffuseFront"][0]["g"] = 0.0;
-      config["diffuseFront"][0]["b"] = 1.0;
+      config["diffuseFront"]["a"] = 1.0;
+      config["diffuseFront"]["r"] = 0.0;
+      config["diffuseFront"]["g"] = 0.0;
+      config["diffuseFront"]["b"] = 1.0;
       config["texturename"] = "";
       config["cullMask"] = 0;
 #ifdef DEBUG_SCENE_MAP
@@ -539,7 +539,7 @@ namespace mars {
       Vector size(0.01, 0.01, 0.01);
       (*map)["physicmode"] = "box";
       (*map)["coll_bitmask"] = 0;
-      vectorToConfigItem(&(*map)["extend"][0], &size);
+      vectorToConfigItem(&(*map)["extend"], &size);
     }
 
     void SMURF::createOrigin(const urdf::LinkSharedPtr &link, bool fixed) {
@@ -572,8 +572,8 @@ namespace mars {
       if (link->parent_joint)
         pose = link->parent_joint->parent_to_joint_origin_transform;
       poseToVectorAndQuaternion(pose, &v, &q);
-      vectorToConfigItem(&config["position"][0], &v);
-      quaternionToConfigItem(&config["rotation"][0], &q);
+      vectorToConfigItem(&config["position"], &v);
+      quaternionToConfigItem(&config["rotation"], &q);
 
       // complete node
       addEmptyVisualToNode(&config);
@@ -626,8 +626,8 @@ namespace mars {
       urdf::Pose pose;
       pose = link->inertial->origin;
       poseToVectorAndQuaternion(pose, &v, &q);
-      vectorToConfigItem(&config["position"][0], &v);
-      quaternionToConfigItem(&config["rotation"][0], &q);
+      vectorToConfigItem(&config["position"], &v);
+      quaternionToConfigItem(&config["rotation"], &q);
 
       // complete node
       addEmptyVisualToNode(&config);
@@ -681,7 +681,7 @@ namespace mars {
       case urdf::Geometry::MESH:
         tmpV = ((urdf::Mesh*) tmpGeometry.get())->scale;
         scale = Vector(tmpV.x, tmpV.y, tmpV.z);
-        vectorToConfigItem(&config["physicalScale"][0], &scale);
+        vectorToConfigItem(&config["physicalScale"], &scale);
         config["filename"] = ((urdf::Mesh*) tmpGeometry.get())->filename;
         config["origname"] = "";
         config["physicmode"] = "mesh";
@@ -691,8 +691,8 @@ namespace mars {
         config["physicmode"] = "undefined";
         break;
       }
-      vectorToConfigItem(&config["extend"][0], &size);
-      vectorToConfigItem(&config["scale"][0], &scale);
+      vectorToConfigItem(&config["extend"], &size);
+      vectorToConfigItem(&config["scale"], &scale);
       // FIXME: We need to correctly deal with scale and size in MARS
       //       if we have a mesh here, as a first hack we use the scale as size
 
@@ -700,8 +700,8 @@ namespace mars {
       Vector v;
       Quaternion q;
       poseToVectorAndQuaternion(collision->origin, &v, &q);
-      vectorToConfigItem(&config["position"][0], &v);
-      quaternionToConfigItem(&config["rotation"][0], &q);
+      vectorToConfigItem(&config["position"], &v);
+      quaternionToConfigItem(&config["rotation"], &q);
 
       collisionNameMap[name] = name;
       addEmptyVisualToNode(&config);
@@ -731,13 +731,13 @@ namespace mars {
       config["mass"] = 0.001;
       config["density"] = 0.0;
       Vector v(0.001, 0.001, 0.001);
-      vectorToConfigItem(&config["extend"][0], &v);
+      vectorToConfigItem(&config["extend"], &v);
 
       // parse position
       Quaternion q;
       poseToVectorAndQuaternion(visual->origin, &v, &q);
-      vectorToConfigItem(&config["position"][0], &v);
-      quaternionToConfigItem(&config["rotation"][0], &q);
+      vectorToConfigItem(&config["position"], &v);
+      quaternionToConfigItem(&config["rotation"], &q);
 
       // parse geometry
       urdf::GeometrySharedPtr tmpGeometry = visual->geometry;
@@ -772,8 +772,8 @@ namespace mars {
       default:
         break;
       }
-      vectorToConfigItem(&config["visualsize"][0], &size);
-      vectorToConfigItem(&config["visualscale"][0], &scale);
+      vectorToConfigItem(&config["visualsize"], &size);
+      vectorToConfigItem(&config["visualscale"], &scale);
       config["materialName"] = visual->material_name;
 
       addEmptyCollisionToNode(&config);
@@ -833,7 +833,7 @@ namespace mars {
         jointIDMap[joint->name] = nextJointID - 1;
         config["nodeindex1"] = nodeIDMap[joint->parent_link_name];
         config["nodeindex2"] = nodeIDMap[joint->child_link_name];
-        config["anchorpos"] = 2; // always use the child_link as the anchor since joint and child_link are in the same frame
+        config["anchorpos"] = "node2"; // always use the child_link as the anchor since joint and child_link are in the same frame
         // FIXME: reading in the limits was discarded until further notice as joint
         //   limits can lead ODE to become unstable
         // if (link->parent_joint->limits) {
@@ -862,7 +862,7 @@ namespace mars {
         axispose.position = pose.rotation * joint->axis;
         Vector v;
         v = Vector(axispose.position.x, axispose.position.y, axispose.position.z);
-        vectorToConfigItem(&config["axis1"][0], &v);
+        vectorToConfigItem(&config["axis1"], &v);
 
         // add to debug and joint list
 #ifdef DEBUG_SCENE_MAP
@@ -892,10 +892,10 @@ namespace mars {
       config["id"] = nextMaterialID++;
       config["name"] = material->name;
       config["exists"] = true;
-      config["diffuseFront"][0]["a"] = (double) material->color.a;
-      config["diffuseFront"][0]["r"] = (double) material->color.r;
-      config["diffuseFront"][0]["g"] = (double) material->color.g;
-      config["diffuseFront"][0]["b"] = (double) material->color.b;
+      config["diffuseFront"]["a"] = (double) material->color.a;
+      config["diffuseFront"]["r"] = (double) material->color.r;
+      config["diffuseFront"]["g"] = (double) material->color.g;
+      config["diffuseFront"]["b"] = (double) material->color.b;
       config["texturename"] = material->texture_filename;
 
       // add to debug and material list

@@ -674,10 +674,13 @@ namespace mars {
     void JointPhysics::setJointAsMotor(int axis) {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
+        // todo: need to handle the distinction whether to set or not to
+        //       set the hi and low stop differently
       case  JOINT_TYPE_HINGE:
-        if(!lo1 && !hi1) {
-          //dJointSetHingeParam(jointId, dParamLoStop, -dInfinity);
-          //dJointSetHingeParam(jointId, dParamHiStop, dInfinity);
+        //if(!lo1 && !hi)
+        {
+          dJointSetHingeParam(jointId, dParamLoStop, -dInfinity);
+          dJointSetHingeParam(jointId, dParamHiStop, dInfinity);
         }
         break;
       case JOINT_TYPE_HINGE2:
@@ -828,14 +831,14 @@ namespace mars {
       case JOINT_TYPE_HINGE2:
         dJointGetHinge2Anchor(jointId, pos);    
         dJointSetHinge2Anchor(jointId, pos[0], pos[1], pos[2]);
-	break;
+        break;
       case JOINT_TYPE_SLIDER:
         // the slider joint has no ancher point
-	break;
+        break;
       case JOINT_TYPE_BALL:
         dJointGetBallAnchor(jointId, pos);
         dJointSetBallAnchor(jointId, pos[0], pos[1], pos[2]);
-	break;
+        break;
       case JOINT_TYPE_UNIVERSAL:
         dJointGetUniversalAnchor(jointId, pos);
         dJointSetUniversalAnchor(jointId, pos[0], pos[1], pos[2]);
@@ -845,8 +848,9 @@ namespace mars {
         jointId = dJointCreateFixed(theWorld->getWorld(), 0);
         dJointAttach(jointId, body1, body2);
         dJointSetFixed(jointId);
+        dJointSetFeedback(jointId, &feedback);
         // used for the integration study of the SpaceClimber
-        dJointSetFixedParam(jointId, dParamCFM, cfm1);//0.0002);
+        //dJointSetFixedParam(jointId, dParamCFM, cfm1);//0.0002);
         break;
       default:
         // no correct type is spezified, so no physically node will be created
@@ -1064,7 +1068,7 @@ namespace mars {
      */
     void JointPhysics::createFixed(JointData *jointS, dBodyID body1,
                                    dBodyID body2){
-      jointS = jointS;
+      CPP_UNUSED(jointS);
       jointId = dJointCreateFixed(theWorld->getWorld(), 0);
       dJointAttach(jointId, body1, body2);
       dJointSetFixed(jointId);

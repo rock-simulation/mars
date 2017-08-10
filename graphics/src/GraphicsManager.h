@@ -126,7 +126,8 @@ namespace mars {
       virtual void removeGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
 
       virtual const mars::interfaces::GraphicData getGraphicOptions(void) const;
-      virtual void setGraphicOptions(const mars::interfaces::GraphicData &options);
+      virtual void setGraphicOptions(const mars::interfaces::GraphicData &options,
+                                     bool ignoreClearColor=false);
 
       virtual void addDrawItems(interfaces::drawStruct *draw); ///< Adds drawStruct items to the graphics scene.
       virtual void removeDrawItems(interfaces::DrawInterface *iface);
@@ -134,6 +135,8 @@ namespace mars {
 
       virtual void addLight(mars::interfaces::LightData &ls); ///< adds a light to the scene
       virtual void removeLight(unsigned int index); ///< removes a light from the scene
+      virtual void editLight(unsigned long id, const std::string &key,
+                             const std::string &value);
       virtual void updateLight(unsigned int index, bool recompileShader=false);
       virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList);
       virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const;
@@ -310,6 +313,10 @@ namespace mars {
                                 std::string value);
       virtual void setCameraDefaultView(int view);
       inline void setActiveWindow(GraphicsWidget *g) {activeWindow = g;}
+      virtual void setDrawObjectBrightness(unsigned long id, double v);
+      virtual void edit(const std::string &key, const std::string &value);
+      void edit(unsigned long widgetID, const std::string &key,
+                const std::string &value);
 
     private:
       mars::interfaces::GraphicData graphicOptions;
@@ -414,6 +421,8 @@ namespace mars {
       void setUseShader(bool val);
 
       void initDefaultLight();
+      void setColor(utils::Color *c, const std::string &key,
+                    const std::string &value);
 
     }; // end of class GraphicsManager
 

@@ -19,6 +19,8 @@
  */
 
 #include "DataConnWidget.h"
+#include "MainDataGui.h"
+
 #include <mars/data_broker/DataBrokerInterface.h>
 //#include <QtUiTools>
 #include <QHBoxLayout>
@@ -36,14 +38,17 @@ namespace mars {
 
     enum { CALLBACK_OTHER=0, CALLBACK_NEW_STREAM };
 
-    DataConnWidget::DataConnWidget(mars::data_broker::DataBrokerInterface *_dataBroker, 
+    DataConnWidget::DataConnWidget(MainDataGui *mainLib, lib_manager::LibManager* libManager,
+                                   mars::data_broker::DataBrokerInterface *_dataBroker,
                                    mars::cfg_manager::CFGManagerInterface *_cfg,
-                                   QWidget *parent) : 
+                                   QWidget *parent) :
       mars::main_gui::BaseWidget(parent, _cfg, "DataBroker_ConnectionWidget"),
+      mainLib(mainLib), libManager(libManager),
       dataBroker(_dataBroker), cfg(_cfg) {
 #ifdef VERBOSE
       fprintf(stderr, "\n");
 #endif
+      libManager->getLibrary("data_broker");
       QHBoxLayout *horizontalListLayout = new QHBoxLayout();
       //fromListWidget = new QListWidget(this);
       //toListWidget = new QListWidget(this);
@@ -63,22 +68,22 @@ namespace mars {
       horizontalButtonLayout->addStretch();
       verticalLayout->addLayout(horizontalButtonLayout);
       this->setLayout(verticalLayout);
-      connect(connectButton, SIGNAL(clicked()), 
+      connect(connectButton, SIGNAL(clicked()),
               this, SLOT(slotConnectDataItems()));
 
       unconnectButton = new QPushButton("unconnect");
       horizontalButtonLayout->addWidget(unconnectButton);
       //horizontalButtonLayout->addStretch();
       //verticalLayout->addLayout(horizontalButtonLayout);
-      connect(unconnectButton, SIGNAL(clicked()), 
+      connect(unconnectButton, SIGNAL(clicked()),
               this, SLOT(slotUnconnectDataItems()));
 
       QPushButton *saveButton = new QPushButton("save");
       horizontalButtonLayout->addWidget(saveButton);
-      connect(saveButton, SIGNAL(clicked()), 
+      connect(saveButton, SIGNAL(clicked()),
               this, SLOT(slotSaveConfiguration()));
 
-   
+
       if(dataBroker) {
         dataBroker->registerSyncReceiver(this, "data_broker", "newStream",
                                          CALLBACK_NEW_STREAM);
@@ -91,7 +96,7 @@ namespace mars {
           dbPackage = dataBroker->getDataPackage(it->dataId);
           addDataPackage(*it, dbPackage);
         }
-      }  
+      }
       connectColor = QColor(17, 110, 163);
 
       // load config
@@ -112,8 +117,8 @@ namespace mars {
           fprintf(stderr, "DataConnWidget:fromDataNameList %s\n", cfgString.c_str());
 #endif
           getCfgStringList(configFile, group, "fromDataNameList", &fromDataNameList, -1);
-       
-        
+
+
           if((num = fromDataNameList.size()) > 0) {
             err = !getCfgStringList(configFile, group, "fromGroupNameList", &fromGroupNameList, num);
 
@@ -166,6 +171,7 @@ namespace mars {
       dataBroker->unregisterAsyncReceiver(this, "*", "*");
       dataBroker->unregisterTimedReceiver(this, "*", "*", "_REALTIME_");
       dataBroker->unregisterSyncReceiver(this, "data_broker", "newStream");
+      libManager->releaseLibrary("data_broker");
     }
 
     void DataConnWidget::slotSaveConfiguration(void) {
@@ -270,7 +276,7 @@ namespace mars {
           fromTreeWidget->addTopLevelItem(&fromItems[info.groupName]);
         }
         treeItem = &fromItems[info.groupName];
-      
+
         // split data name by /
         npos = 0;
         levels.clear();
@@ -288,7 +294,7 @@ namespace mars {
           }
           treeItem = &treeItem->childs[*it];
         }
-      
+
         if(dbPackage.size() > 1) {
           treeIt = treeItem->childs.find(name);
           if(treeIt == treeItem->childs.end()) {
@@ -315,7 +321,7 @@ namespace mars {
             toTreeWidget->addTopLevelItem(&toItems[info.groupName]);
           }
           treeItem = &toItems[info.groupName];
-        
+
           for(it=levels.begin(); it!=levels.end(); ++it) {
             treeIt = treeItem->childs.find(*it);
             if(treeIt == treeItem->childs.end()) {
@@ -393,7 +399,7 @@ namespace mars {
         removeConnection(toItem);
       }
       printf("DataConnWidget::makeConnection: %s -> %s\n", makeName(*(fromItem->wrapper)).c_str(),
-             makeName(*(toItem->wrapper)).c_str());        
+             makeName(*(toItem->wrapper)).c_str());
       dataBroker->connectDataItems(fromItem->wrapper->groupName,
                                    fromItem->wrapper->dataName,
                                    fromItem->wrapper->itemName,
@@ -412,12 +418,12 @@ namespace mars {
     }
 
     void DataConnWidget::removeConnection(TreeItem *toItem) {
-      printf("DataConnWidget::removeConnection: %s\n", makeName(*(toItem->wrapper)).c_str());        
+      printf("DataConnWidget::removeConnection: %s\n", makeName(*(toItem->wrapper)).c_str());
 
       dataBroker->disconnectDataItems(toItem->wrapper->groupName,
                                       toItem->wrapper->dataName,
                                       toItem->wrapper->itemName);
-        
+
       toItem->fromItem->outCount--;
       if(toItem->fromItem->outCount == 0) {
         toItem->fromItem->setText(0, QString::fromStdString(toItem->fromItem->wrapper->itemName));
@@ -426,10 +432,10 @@ namespace mars {
       toItem->setText(0, QString::fromStdString(toItem->wrapper->itemName));
       toItem->setForeground(0, QBrush(QColor(0, 0, 0)));
     }
-  
+
     TreeItem* DataConnWidget::getEndTreeItem(const DataItemWrapper &wrapper) {
       std::vector<TreeItem*>::iterator it;
-    
+
       for(it=endItems.begin(); it!=endItems.end(); ++it) {
         if(wrapperEqual((*it)->wrapper, &wrapper)) {
           return *it;
@@ -453,7 +459,7 @@ namespace mars {
           }
           else copy.push_back(*it);
         }
-        else copy.push_back(*it);      
+        else copy.push_back(*it);
       }
       copy.swap(pendingConnections);
     }
@@ -473,13 +479,15 @@ namespace mars {
           }
           else copy.push_back(*it);
         }
-        else copy.push_back(*it);      
+        else copy.push_back(*it);
       }
       copy.swap(pendingConnections);
     }
 
-    void DataConnWidget::accept() {}
-    void DataConnWidget::reject() {}
+
+    void DataConnWidget::closeEvent(QCloseEvent *e) {
+      mainLib->destroyWindow(this);
+    }
 
   } // end of namespace: data_broker_gui
 } // end of namespace: mars

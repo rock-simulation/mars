@@ -69,7 +69,11 @@ namespace mars {
         if(map.hasKey("pypath")) {
           ConfigVector::iterator it = map["pypath"].begin();
           for(; it!=map["pypath"].end(); ++it) {
-            PythonInterpreter::instance().addToPythonpath((std::string)*it);
+            std::string path = (*it);
+            if(path[0] != '/') {
+              path = confPath + "/" + path;
+            }
+            PythonInterpreter::instance().addToPythonpath(path);
           }
         }
         updateGraphics = false;

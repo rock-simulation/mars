@@ -34,6 +34,7 @@
 #include <mars/main_gui/BaseWidget.h>
 #include <mars/main_gui/PropertyDialog.h>
 #include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/data_broker/ReceiverInterface.h>
 
 namespace mars {
 
@@ -44,7 +45,8 @@ namespace mars {
   namespace gui {
 
     class BlenderExportGUI : public main_gui::BaseWidget,
-                             public main_gui::PropertyCallback {
+                             public main_gui::PropertyCallback,
+                             public data_broker::ReceiverInterface {
       Q_OBJECT
 
       public:
@@ -54,6 +56,9 @@ namespace mars {
       virtual void writeGenericData(unsigned long id, void *data) const;
 
       main_gui::PropertyDialog *pDialog;
+      void receiveData(const mars::data_broker::DataInfo &info,
+                       const mars::data_broker::DataPackage &data_package,
+                       int callbackParam);
 
     public slots:
       void startButton(void);
@@ -70,6 +75,7 @@ namespace mars {
       int state;
       FILE *fileHandle;
       unsigned long generic_id;
+      std::string rPath;
 
       QtVariantProperty *status;
 

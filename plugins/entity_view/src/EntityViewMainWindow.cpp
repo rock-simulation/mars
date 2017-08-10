@@ -27,6 +27,7 @@
  */
 
 #include "EntityViewMainWindow.h"
+#include "EntityView.h"
 
 #include <QHBoxLayout>
 #include <QVBoxLayout>
@@ -36,10 +37,11 @@ namespace mars {
   namespace plugins {
     namespace EntityView {
 
-      EntityViewMainWindow::EntityViewMainWindow (interfaces::ControlCenter *c)
-        : main_gui::BaseWidget(0, c->cfg, "Entity View"), c(c) {
+      EntityViewMainWindow::EntityViewMainWindow (EntityView *mainLib,
+                                                  interfaces::ControlCenter *c)
+        : main_gui::BaseWidget(0, c->cfg, "Entity View"), mainLib(mainLib), c(c) {
         setWindowTitle ("Entity View");
-
+        setAttribute(Qt::WA_DeleteOnClose);
         setStyleSheet("padding:0px;");
         dw = new config_map_gui::DataWidget(c->cfg, 0, true);
         tree = new SelectionTree(c, dw);
@@ -59,6 +61,11 @@ namespace mars {
         delete tree;
         delete dw;
       }
+
+      void EntityViewMainWindow::closeEvent(QCloseEvent *e) {
+        mainLib->closedWidget();
+      }
+
     } // end of namespace EntityView
   } // end of namespace plugins
 } // end of namespace mars

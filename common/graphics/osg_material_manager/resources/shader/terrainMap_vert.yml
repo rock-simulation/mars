@@ -1,0 +1,30 @@
+params:
+  - nt
+  - vModelPos
+
+varyings:
+  mat3:
+    - {name: ttw}
+
+uniforms:
+  float:
+    - {name: texScale}
+    - {name: terrainScaleZ}
+  int:
+    - {name: terrainDim}
+  sampler2D:
+    - {name: terrainMap}
+    - {name: normalMap}
+
+mainVars:
+  vec3:
+    - name: nt
+      value: vec3(0)
+  vec4:
+    - name: n
+      value: vec4(nt, 0)
+      priority: 2
+
+source: /shader/terrainMap.vert
+name: terrain_map
+priority: -119

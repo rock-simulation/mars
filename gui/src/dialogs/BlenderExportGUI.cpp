@@ -63,11 +63,14 @@ namespace mars {
       pDialog->addGenericButton("Start", this, SLOT(startButton()));
       pDialog->addGenericButton("Stop", this, SLOT(stopButton()));  
 
-      // ToDo: register to physic timer update with framerate
+      rPath = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
+                                                ".").sValue;
     }
 
 
     BlenderExportGUI::~BlenderExportGUI(void) {
+      control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                   "mars_sim/simTimer");
       delete pDialog;
       if(fileHandle) fclose(fileHandle);
     }
@@ -85,18 +88,23 @@ namespace mars {
     void BlenderExportGUI::startButton(void) {
       if(state == 1) {
         if(fileHandle) fclose(fileHandle);
-        std::string filename_str = filename->value().toString().toStdString() +std::string("/export.dat");
+        std::string path = filename->value().toString().toStdString();
+        std::string filename_str = path +std::string("/export.dat");
         if ((fileHandle = fopen(filename_str.data(), "w")) == 0) {
           status->setValue("Cannot open file. Aborted.");
           status = 0;
         }
-        control->nodes->exportGraphicNodesByID(filename->value().toString().toStdString());
+        control->nodes->exportGraphicNodesByID(path);
+        std::string cmd = "cp "+rPath+"/blender/export.blend " + path;
+        system(cmd.c_str());
         state = 2;
       }
       if(state == 2) {
         state = 3;
         writeGenericData(0, NULL);
         status->setValue(tr("Exporting started..."));
+        control->dataBroker->registerTimedReceiver(this, "mars_sim", "simTime",
+                                                   "mars_sim/simTimer", 40);
       }
     }
 
@@ -104,6 +112,8 @@ namespace mars {
       if(state == 3) {
         state = 2;
         status->setValue(tr("Exporting stopped."));
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
       }
     }
 
@@ -113,6 +123,11 @@ namespace mars {
       filename->setValue("");
     }
 
+    void BlenderExportGUI::receiveData(const data_broker::DataInfo &info,
+                                       const data_broker::DataPackage &dataPackage,
+                                       int callbackParam) {
+      writeGenericData(0, 0);
+    }
 
     void BlenderExportGUI::writeGenericData(unsigned long id, 
                                             void* data) const {

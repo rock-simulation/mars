@@ -1,0 +1,12 @@
+params:
+  - specularCol
+uniforms:
+  float:
+    - {name: texScale}
+  vec3:
+    - {name: envMapSpecular}
+  sampler2D:
+    - {name: environmentMap}
+source: /shader/envmap.vert
+name: envMap
+priority: 1

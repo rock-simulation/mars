@@ -105,18 +105,7 @@ namespace mars {
       dbPackageMapping.add("contact", &ground_contact);
       dbPackageMapping.add("contactForce", &ground_contact_force);
 
-      if(control->dataBroker) {
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      // initialize the dataBroker Package
-      data_broker::DataPackage dbPackage;
-      dbPackageMapping.writePackage(&dbPackage);
-        control->dataBroker->pushData(groupName, dataName, dbPackage, NULL,
-                                      data_broker::DATA_PACKAGE_READ_FLAG);
-        // register as producer
-        control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer", 0);
-      }
+      addToDataBroker();
     }
 
     /**
@@ -127,12 +116,7 @@ namespace mars {
      */
     SimNode::~SimNode(void) {
       MutexLocker locker(&iMutex);
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      if(control->dataBroker) {
-        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                     "mars_sim/simTimer");
-      }
+      removeFromDataBroker();
       if (my_interface) {
         delete my_interface;
         my_interface = 0;
@@ -652,7 +636,16 @@ namespace mars {
     void SimNode::changeNode(NodeData *node) {
       MutexLocker locker(&iMutex);
       if (my_interface) my_interface->changeNode(node);
+      bool handleDataBroker = false;
+      if(sNode.name != node->name) {
+        // handle databroker
+        removeFromDataBroker();
+        handleDataBroker = true;
+      }
       sNode = *node;
+      if(handleDataBroker) {
+        addToDataBroker();
+      }
     }
 
     void SimNode::setPhysicalState(const nodeState &state) {
@@ -832,5 +825,40 @@ namespace mars {
       *dataName = buffer;
     }
 
+    void SimNode::setCullMask(int mask) {
+      sNode.map["cullMask"] = mask;
+      if(control->graphics)
+        control->graphics->setDrawObjectNodeMask(graphics_id, mask);
+    }
+
+    void SimNode::setBrightness(double v) {
+      sNode.map["brightness"] = v;
+      if(control->graphics)
+        control->graphics->setDrawObjectBrightness(graphics_id, v);
+    }
+
+    void SimNode::addToDataBroker() {
+      if(control->dataBroker) {
+        std::string groupName, dataName;
+        getDataBrokerNames(&groupName, &dataName);
+        // initialize the dataBroker Package
+        data_broker::DataPackage dbPackage;
+        dbPackageMapping.writePackage(&dbPackage);
+        control->dataBroker->pushData(groupName, dataName, dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        // register as producer
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer", 0);
+      }
+    }
+
+    void SimNode::removeFromDataBroker() {
+      std::string groupName, dataName;
+      getDataBrokerNames(&groupName, &dataName);
+      if(control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer");
+      }
+    }
   } // end of namespace sim
 } // end of namespace mars

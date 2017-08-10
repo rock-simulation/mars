@@ -34,7 +34,7 @@
 #include <cstdio>
 
 namespace osg_text {
-  
+
   Text::Text(std::string text, double fontSize, Color textColor,
              double posX, double posY, TextAlign textAlign,
              double paddingL, double paddingT,
@@ -46,7 +46,8 @@ namespace osg_text {
                                      pl(paddingL), pt(paddingT),
                                      pr(paddingR), pb(paddingB),
                                      borderWidth(borderWidth),
-                                     fixedWidth(-1), fixedHeight(-1) {
+                                     fixedWidth(-1), fixedHeight(-1),
+                                     fontSize(fontSize) {
 
     labelGeode = new osg::Geode();
     std::string font;
@@ -58,11 +59,11 @@ namespace osg_text {
     else {
       font = fontPath;
     }
-    // fprintf(stderr, "font: %s\n", font.c_str());
+    //fprintf(stderr, "font: %s\n", font.c_str());
     labelText = new osgText::Text;
 
     labelGeode->addDrawable(labelText.get());
- 
+
     osg::StateSet* stateset = labelGeode->getOrCreateStateSet();
     stateset->setRenderBinDetails(22, "RenderBin");
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
@@ -72,15 +73,22 @@ namespace osg_text {
 
     labelText->setFont(font);
     labelText->setPosition(osg::Vec3(0.0f, 0.0f, 0.0f));
+    //fprintf(stderr, "set: %g, %s\n", fontSize, text.c_str());
     labelText->setCharacterSize(fontSize);
+    //labelText->setCharacterSizeMode(osgText::Text::SCREEN_COORDS);
     labelText->setAxisAlignment(osgText::Text::XY_PLANE);
     labelText->setAlignment(osgText::Text::LEFT_TOP);
     labelText->setText(text);
     labelText->setColor(osg::Vec4(textColor.r, textColor.g,
                                   textColor.b, textColor.a));
-    
+
+
+    resolutionCorrectionX = resolutionCorrectionY = 1.;
+    resolutionCorrection = new osg::MatrixTransform();
+    resolutionCorrection->setMatrix(osg::Matrix::scale(1., 1., 1.));
+    resolutionCorrection->addChild(labelGeode.get());
     transform = new osg::PositionAttitudeTransform();
-    transform->addChild(labelGeode.get());
+    transform->addChild(resolutionCorrection.get());
 
     updateBoundingBox();
     updatePosition();
@@ -100,6 +108,7 @@ namespace osg_text {
   }
 
   void Text::setFontSize(const double fontSize) {
+    this->fontSize = fontSize;
     labelText->setCharacterSize(fontSize);
     updateSize();
   }
@@ -130,7 +139,7 @@ namespace osg_text {
     fixedWidth = w;
     updateSize();
   }
-  
+
   void Text::setFixedHeight(double h) {
      fixedHeight = h;
      updateSize();
@@ -157,8 +166,8 @@ namespace osg_text {
     osg::BoundingBox bb;
     bb.expandBy(labelText->getBound());
     //d = bb.zMin()-2.0;
-    width = bb.xMax() - bb.xMin() + pl + pr;
-    height = bb.yMax() - bb.yMin() + pt + pb;
+    width = resolutionCorrectionX*(bb.xMax() - bb.xMin()) + pl + pr;
+    height = resolutionCorrectionY*(bb.yMax() - bb.yMin()) + pt + pb;
   }
 
   void Text::updatePosition() {
@@ -176,7 +185,7 @@ namespace osg_text {
     }
     if(textAlign == ALIGN_LEFT) {
       posXB = posXI = 0.0;
-    }     
+    }
     else if (textAlign == ALIGN_CENTER) {
       posXI = - width*0.5;
       posXB = - w*0.5;
@@ -185,7 +194,10 @@ namespace osg_text {
       posXI = - width;
       posXB = - w;
     }
-    labelText->setPosition(osg::Vec3(posXI, 0.0, 0.0f));
+    resolutionCorrection->setMatrix(osg::Matrix::translate(posXI, 0.0, 0.0f));
+    resolutionCorrection->preMult(osg::Matrix::scale(resolutionCorrectionX,
+                                                     resolutionCorrectionY, 1.));
+    //labelText->setPosition(osg::Vec3(posXI, 0.0, 0.0f));
     transform->setPosition(osg::Vec3(posX, posY, -1.501f));
   }
 
@@ -202,15 +214,15 @@ namespace osg_text {
     normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
     backgroundGeom->setNormalArray(normals);
     backgroundGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    
+
     backgroundColor = new osg::Vec4Array;
     backgroundColor->push_back(osg::Vec4(bgColor.r, bgColor.g,
                                          bgColor.b, bgColor.a));
     backgroundGeom->setColorArray(backgroundColor);
     backgroundGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-    
+
     backgroundGeom->addPrimitiveSet(new osg::DrawArrays(GL_QUADS,0,4));
-    
+
     osg::StateSet* stateset = backgroundGeom->getOrCreateStateSet();
     stateset->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     stateset->setMode(GL_BLEND,osg::StateAttribute::ON);
@@ -240,25 +252,25 @@ namespace osg_text {
   void Text::createBorder(Color bColor) {
     borderGeom = new osg::Geometry;
     //nodemanager tempnode;
-    
+
     borderVertices = new osg::Vec3Array(8);
     updateBorderPos();
 
     // pass the created vertex array to the points geometry object.
     borderGeom->setVertexArray(borderVertices);
-    
+
     // set the colors as before, plus using the above
     borderColor = new osg::Vec4Array;
     borderColor->push_back(osg::Vec4(bColor.r, bColor.g, bColor.b, bColor.a));
     borderGeom->setColorArray(borderColor);
     borderGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-    
+
     // set the normal in the same way color.
     osg::Vec3Array* normals = new osg::Vec3Array;
     normals->push_back(osg::Vec3(0.0f,0.0f,1.0f));
     borderGeom->setNormalArray(normals);
     borderGeom->setNormalBinding(osg::Geometry::BIND_OVERALL);
-    
+
     // since we know up front,
     borderGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES,
                                                    0,8));
@@ -299,6 +311,21 @@ namespace osg_text {
     borderGeom->dirtyDisplayList();
     //borderGeom->setVertexArray(borderVertices);
     //borderGeom->dirty();
+  }
+
+  void Text::setFontResolution(int x, int y) {
+    labelText->setFontResolution(round(x), round(y));
+    //labelText->setCharacterSize(fontSize);
+    osg::BoundingBox bb;
+    bb.expandBy(labelText->getBound());
+    //d = bb.zMin()-2.0;
+    double w = bb.xMax() - bb.xMin();
+    double h = bb.yMax() - bb.yMin();
+    resolutionCorrectionX = (width - pl - pr)/w;
+    resolutionCorrectionY = (height - pt - pb)/h;
+    resolutionCorrection->setMatrix(osg::Matrix::translate(posXI, 0.0, 0.0f));
+    resolutionCorrection->preMult(osg::Matrix::scale(resolutionCorrectionX,
+                                                     resolutionCorrectionY, 1.));
   }
 
 } // end of namespace: osg_text

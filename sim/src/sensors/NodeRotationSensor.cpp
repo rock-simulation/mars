@@ -59,6 +59,26 @@ namespace mars {
         rotationIndices[i] = -1;
 
       typeName = "NodeRotation";
+      data_broker::DataPackage dbPackage;
+
+      dbPackage.add("roll", 0.0);
+      dbPackage.add("pitch", 0.0);
+      dbPackage.add("yaw", 0.0);
+      std::string groupName = "mars_sim";
+      std::string dataName = "Sensors/"+name;
+      control->dataBroker->pushData(groupName, dataName,
+                                    dbPackage, NULL,
+                                    data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                 "mars_sim/simTimer",
+                                                 updateRate);
+    }
+    NodeRotationSensor::~NodeRotationSensor() {
+      std::string groupName = "mars_sim";
+      std::string dataName = "Sensors/"+name;
+      control->dataBroker->unregisterTimedProducer(this, groupName,
+                                                   dataName,
+                                                   "mars_sim/simTimer");
     }
 
     // this function should be overwritten by the special sensor to
@@ -105,6 +125,16 @@ namespace mars {
       package.get(rotationIndices[3], &q.w());
       //values[callbackParam].rot = q.toEuler();
       values[callbackParam] = quaternionTosRotation(q);
+    }
+
+    void NodeRotationSensor::produceData(const data_broker::DataInfo &info,
+                                         data_broker::DataPackage *package,
+                                         int callbackParam) {
+      if(values.size() == 0) return;
+      sRotation &r = values.back();
+      package->set(0, r.alpha);
+      package->set(1, r.beta);
+      package->set(2, r.gamma);
     }
 
   } // end of namespace sim

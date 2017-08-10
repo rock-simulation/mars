@@ -114,9 +114,10 @@ namespace mars {
                                                        double pivotY,
                                                        double pivotZ);
 
-      mars::utils::Vector getExtend(osg::Group* oGroup);
+      mars::utils::Vector getExtend(osg::Node* oGroup);
       void initGraphics();
 
+      virtual std::vector<double> getMeshSize(const std::string &filename);
       virtual void getPhysicsFromMesh(mars::interfaces::NodeData *node);
       virtual void readPixelData(mars::interfaces::terrainStruct *terrain);
 

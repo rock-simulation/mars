@@ -57,6 +57,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   configmaps
                   mars_utils
                   osg_material_manager
+                  osg_terrain
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

@@ -55,6 +55,8 @@ namespace osg_material_manager {
 
   public:
     OsgMaterialManager(lib_manager::LibManager *theManager);
+    OsgMaterialManager(const std::string &resourcesPath);
+    void init();
     ~OsgMaterialManager();
 
 

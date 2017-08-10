@@ -127,7 +127,6 @@ namespace mars {
       const interfaces::contact_params getContactParams() const;
       const utils::Vector getContactForce(void) const;
       interfaces::sReal getGroundContactForce(void) const;
-
       
       // setter
       void setDensity(interfaces::sReal objectdensity); ///< Sets the density of the node.
@@ -157,7 +156,8 @@ namespace mars {
       void setAngularDamping(interfaces::sReal damping);
       void setVisualRep(int val);
       void setContactMotion1(interfaces::sReal motion);
-      
+      void setMaterialName(const std::string &name) {sNode.material.name = name;}
+      void setRelativeID(interfaces::NodeId id) {sNode.relative_id = id;}
       inline void setVisQOffset(utils::Quaternion q) {
         sNode.visual_offset_rot = q;
       }
@@ -184,6 +184,8 @@ namespace mars {
                     const utils::Quaternion &visOffsetRot);
 
       interfaces::NodeId getParentID() {return sNode.relative_id;}
+      void setCullMask(int mask);
+      void setBrightness(double v);
 
     private:
       interfaces::ControlCenter *control;
@@ -209,6 +211,10 @@ namespace mars {
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication
       data_broker::DataPackageMapping dbPackageMapping;
+
+      void addToDataBroker();
+      void removeFromDataBroker();
+
     };
 
   } // end of namespace sim

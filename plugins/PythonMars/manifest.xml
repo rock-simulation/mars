@@ -8,7 +8,12 @@
     <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/common/graphics/osg_lines" />
     <depend package="simulation/mars/common/graphics/osg_points" />
     <depend package="simulation/mars/common/graphics/osg_material_manager" />
+    <rosdep name="python" />
+    <rosdep name="python-dev" />
+    <rosdep name="cython" />
+    <rosdep name="python-numpy" />
     <tags>needs_opt</tags>
 </package>

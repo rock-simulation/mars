@@ -1,0 +1,23 @@
+params:
+  - col
+  - nt
+uniforms:
+  float:
+    - {name: bumpNorFac}
+  vec3:
+    - {name: envMapScale}
+  sampler2D:
+    - {name: envMapD}
+    - {name: envMapR}
+    - {name: envMapG}
+    - {name: envMapB}
+    - {name: normalMapR}
+    - {name: normalMapG}
+    - {name: normalMapB}
+    - {name: environmentMap}
+mainVarDecs:
+  vec4:
+    - name: nt
+source: /shader/envmap.frag
+name: envMap
+priority: 2

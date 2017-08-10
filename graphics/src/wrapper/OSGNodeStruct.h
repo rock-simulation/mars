@@ -61,9 +61,12 @@ namespace mars {
       inline DrawObject* object() {return drawObject_;}
 
       inline unsigned int id() const {return id_;}
+      inline const std::string& name() const {return name_;}
+
     private:
       DrawObject *drawObject_;
       unsigned long id_;
+      std::string name_;
       bool isPreview_;
     }; // end of class OSGNodeStruct
 
