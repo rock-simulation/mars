@@ -44,6 +44,8 @@ set(SOURCES
 	src/shader/shader-generator.cpp
 	src/shader/shader-function.cpp
 	src/shader/yaml-shader.cpp
+	src/shader/ShaderFactory.cpp
+	src/shader/DRockGraphSP.cpp
         )
 
 set(HEADERS
@@ -54,6 +56,9 @@ set(HEADERS
 	src/shader/shader-generator.h
 	src/shader/shader-function.h
 	src/shader/yaml-shader.h
+	src/shader/ShaderFactory.h
+	src/shader/DRockGraphSP.h
+	src/shader/IShaderProvider.h
 		)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
