@@ -470,6 +470,12 @@ namespace osg_material_manager {
 
     osg::Program *glslProgram;
 
+    if(map.hasKey("shader")) {
+      // TODO: determine which provider to use, create provider and set it in the factory
+    } else {
+      // TODO: Add default Pixellight shader (probably a predefined DRockGraphShader)
+    }
+
     glslProgram = factory.generateProgram();
 
     if(lastProgram.valid()) {
