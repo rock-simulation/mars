@@ -137,6 +137,7 @@ namespace osg_material_manager {
       function = unique_ptr<ShaderFunc>(func);
     } else {
       function.get()->merge(func);
+      delete(func);
     }
   }
 }
