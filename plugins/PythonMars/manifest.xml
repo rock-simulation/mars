@@ -12,8 +12,7 @@
     <depend package="simulation/mars/common/graphics/osg_points" />
     <depend package="simulation/mars/common/graphics/osg_material_manager" />
     <rosdep name="python" />
-    <rosdep name="python-dev" />
     <rosdep name="cython" />
-    <rosdep name="python-numpy" />
+    <rosdep name="numpy" />
     <tags>needs_opt</tags>
 </package>
