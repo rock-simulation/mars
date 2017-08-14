@@ -33,6 +33,8 @@
 
 #include "shader/ShaderFactory.h"
 #include "shader/DRockGraphSP.h"
+#include "shader/YamlSP.h"
+#include "shader/yaml-shader.h"
 
 #include <osg/TexMat>
 #include <osg/CullFace>
@@ -464,20 +466,37 @@ namespace osg_material_manager {
     stateSet->removeUniform(terrainScaleZUniform.get());
     stateSet->removeUniform(terrainDimUniform.get());
     ShaderFactory factory;
-    ConfigMap dummyGraph;
-    IShaderProvider *provider = new DRockGraphSP(resPath, dummyGraph);
-    factory.setShaderProvider(provider, SHADER_TYPE_VERTEX);
-
     osg::Program *glslProgram;
 
     if(map.hasKey("shader")) {
       // TODO: determine which provider to use, create provider and set it in the factory
     } else {
-      // TODO: Add default Pixellight shader (probably a predefined DRockGraphShader)
+      // TODO: This is using old Yaml Shaders as default PixelLight. Should be replaced by a graph to get rid of overhead
+      vector<string> args;
+      YamlSP *vertexShader = new YamlSP(resPath);
+      ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
+      stringstream s;
+      s << maxNumLights;
+      map["mappings"]["numLights"] = s.str();
+      YamlShader *plightVert = new YamlShader((string)map["name"], args, map, resPath);
+      plightVert->addMainVar( (GLSLVariable){ "vec4", "vModelPos", "gl_Vertex" }, -120);
+      plightVert->addMainVar( (GLSLVariable){ "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " }, -110);
+      plightVert->addMainVar( (GLSLVariable){ "vec4", "vWorldPos", "osg_ViewMatrixInverse * vViewPos " }, -100);
+      plightVert->addMainVar( (GLSLVariable){ "vec4", "specularCol", "gl_FrontMaterial.specular" }, -90);
+      plightVert->addExport( (GLSLExport){"gl_Position", "gl_ModelViewProjectionMatrix * vModelPos"} );
+      plightVert->addExport( (GLSLExport) {"gl_ClipVertex", "vViewPos"} );
+      vertexShader->addShaderFunction(plightVert);
+      factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
+      YamlSP *fragmentShader = new YamlSP(resPath);
+      ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
+      map2["mappings"]["numLights"] = s.str();
+      YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
+      plightFrag->addMainVar( (GLSLVariable){ "vec4", "col", "vec4(1.0)" }, -200);
+      plightFrag->addExport( (GLSLExport) {"gl_FragColor", "col"} );
+      fragmentShader->addShaderFunction(plightFrag);
+      factory.setShaderProvider(fragmentShader, SHADER_TYPE_FRAGMENT);
     }
-
     glslProgram = factory.generateProgram();
-
     if(lastProgram.valid()) {
       stateSet->removeAttribute(lastProgram.get());
     }

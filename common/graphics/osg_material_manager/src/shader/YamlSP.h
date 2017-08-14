@@ -18,20 +18,24 @@
  *
  */
 
-#ifndef MARS_DEV_DROCKGRAPHSP_H
-#define MARS_DEV_DROCKGRAPHSP_H
+#ifndef MARS_DEV_YAMLSP_H
+#define MARS_DEV_YAMLSP_H
+
+#include <memory>
 
 #include "IShaderProvider.h"
 #include "configmaps/ConfigData.h"
+#include "shader-function.h"
+#include "ShaderFactory.h"
 
 namespace osg_material_manager {
 
   using namespace std;
   using namespace configmaps;
 
-  class DRockGraphSP : public IShaderProvider {
+  class YamlSP : public IShaderProvider {
   public:
-    DRockGraphSP(string res_path, ConfigMap graph);
+    YamlSP(string res_path);
 
     int getMinVersion();
 
@@ -53,10 +57,12 @@ namespace osg_material_manager {
 
     string generateDefinitions();
 
+    void addShaderFunction(ShaderFunc *func);
+
   private:
-    ConfigMap graph;
+    unique_ptr<ShaderFunc> function;
   };
 }
 
 
-#endif //MARS_DEV_DROCKGRAPHSP_H
+#endif //MARS_DEV_YAMLSP_H

@@ -21,6 +21,7 @@
 #ifndef MARS_DEV_ISHADERPROVIDER_H
 #define MARS_DEV_ISHADERPROVIDER_H
 
+#include <set>
 #include <vector>
 #include "shader-types.h"
 
@@ -36,12 +37,15 @@ namespace osg_material_manager {
     }
 
     virtual int getMinVersion() = 0;
-    virtual vector<GLSLUniform> getUniforms() = 0;
-    virtual vector<GLSLAttribute> getVaryings() = 0;
-    virtual vector<string> getEnabledExtensions() = 0;
-    virtual vector<string> getDisabledExtensions() = 0;
-    virtual vector<string> getDependencies() = 0;
+    virtual const set<GLSLUniform>& getUniforms() const = 0;
+    virtual const set<GLSLAttribute>& getVaryings() const = 0;
+    virtual const set<string>& getEnabledExtensions() const = 0;
+    virtual const set<string>& getDisabledExtensions() const = 0;
+    virtual const vector<pair<string, string> >& getDependencies() const = 0;
+    virtual const std::set<GLSLConstant>& getConstants() const = 0;
+    virtual const std::set<GLSLAttribute>& getAttributes() const = 0;
     virtual string generateMainSource() = 0;
+    virtual string generateDefinitions() = 0;
 
   protected:
     string resPath;

@@ -30,27 +30,39 @@ namespace osg_material_manager {
     return 0;
   }
 
-  vector<GLSLUniform> DRockGraphSP::getUniforms() {
-    return vector<GLSLUniform>();
+  const set<GLSLUniform>& DRockGraphSP::getUniforms() const {
+    return set<GLSLUniform>();
   }
 
-  vector<GLSLAttribute> DRockGraphSP::getVaryings() {
-    return vector<GLSLAttribute>();
+  const set<GLSLAttribute>& DRockGraphSP::getVaryings() const {
+    return set<GLSLAttribute>();
   }
 
   string DRockGraphSP::generateMainSource() {
     return "not implemented yet!";
   }
 
-  vector<string> DRockGraphSP::getEnabledExtensions() {
-    return vector<string>();
+  const set<string>& DRockGraphSP::getEnabledExtensions() const {
+    return set<string>();
   }
 
-  vector<string> DRockGraphSP::getDisabledExtensions() {
-    return vector<string>();
+  const set<string>& DRockGraphSP::getDisabledExtensions() const {
+    return set<string>();
   }
 
-  vector<string> DRockGraphSP::getDependencies() {
-    return vector<string>();
+  const std::set<GLSLConstant>& DRockGraphSP::getConstants() const {
+    return set<GLSLConstant>();
+  }
+
+  const std::set<GLSLAttribute>& DRockGraphSP::getAttributes() const {
+    return set<GLSLAttribute>();
+  }
+
+  const vector<pair<string, string> >& DRockGraphSP::getDependencies() const {
+    return vector<pair<string, string> >();
+  }
+
+  string DRockGraphSP::generateDefinitions() {
+    return "";
   }
 }
