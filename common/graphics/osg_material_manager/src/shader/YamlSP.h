@@ -33,6 +33,11 @@ namespace osg_material_manager {
   using namespace std;
   using namespace configmaps;
 
+  /**
+   * Implementation (not much more than a wrapper) of the IShaderProvider for use with the old YamlShader files.
+   * Intended only for demonstration and not recommended for productive use anymore.
+   * (The shader functions still have to be created manually by code or YamlShader instances)
+   */
   class YamlSP : public IShaderProvider {
   public:
     YamlSP(string res_path);
@@ -57,9 +62,17 @@ namespace osg_material_manager {
 
     string generateDefinitions();
 
+    /**
+     * Adds a shader function to this Provider or merges it with an existing one if present.
+     * This function takes ownership of the given pointer and manages its memory.
+     * @param func The function to add/merge to this provider
+     */
     void addShaderFunction(ShaderFunc *func);
 
   private:
+    /**
+     *
+     */
     unique_ptr<ShaderFunc> function;
   };
 }
