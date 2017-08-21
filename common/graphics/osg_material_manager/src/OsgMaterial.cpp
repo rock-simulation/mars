@@ -525,6 +525,11 @@ namespace osg_material_manager {
         }
         fragmentShader->addShaderFunction(plightFrag);
       }
+      if(map["shader"].hasKey("NormalMapFragment")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");
+        YamlShader *bumpFrag = new YamlShader((string)map2["name"], args, map2, resPath);
+        fragmentShader->addShaderFunction(bumpFrag);
+      }
       if(map["shader"].hasKey("EnvMapFragment")) {
         envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
                                           (double)map["envMapScale"]["g"],
