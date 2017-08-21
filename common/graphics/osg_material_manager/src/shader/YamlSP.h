@@ -69,11 +69,18 @@ namespace osg_material_manager {
      */
     void addShaderFunction(ShaderFunc *func);
 
+    /**
+     * Sets up uniforms, exports, etc in code needed by the Yaml Shader Files
+     * @param shader_type The Shader Type this YamlSP is the provider for
+     * @param material The entire material ConfigMap
+     * @param has_texture Bool determining if a texture is used in the shader or not
+     * @param use_world_tex_coords Determines if to use global texture coordinates or not
+     */
     void setupShaderEnv(ShaderType shader_type, ConfigMap material, bool has_texture, bool use_world_tex_coords);
 
   private:
     /**
-     *
+     * Pointer to the shader function containing all necessary information to generate the shader code
      */
     unique_ptr<ShaderFunc> function;
   };
