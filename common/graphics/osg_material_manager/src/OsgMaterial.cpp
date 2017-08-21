@@ -525,6 +525,16 @@ namespace osg_material_manager {
         }
         fragmentShader->addShaderFunction(plightFrag);
       }
+      if(map["shader"].hasKey("EnvMapFragment")) {
+        envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+                                          (double)map["envMapScale"]["g"],
+                                          (double)map["envMapScale"]["b"]));
+        stateSet->addUniform(envMapScaleUniform.get());
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_frag.yml");
+        YamlShader *frag = new YamlShader((string)map2["name"], args, map2, resPath);
+        fragmentShader->addShaderFunction(frag);
+
+      }
 
       vertexShader->setupShaderEnv(SHADER_TYPE_VERTEX, map, has_texture, useWorldTexCoords);
       factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
