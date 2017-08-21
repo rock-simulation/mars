@@ -556,6 +556,12 @@ namespace osg_material_manager {
       }
     }
     glslProgram = factory.generateProgram();
+    if(checkTexture("normalMap") || checkTexture("environmentMap")) {
+      glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
+      stateSet->addUniform(bumpNorFacUniform.get());
+    } else {
+      stateSet->removeUniform(bumpNorFacUniform.get());
+    }
     if(lastProgram.valid()) {
       stateSet->removeAttribute(lastProgram.get());
     }
