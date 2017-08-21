@@ -93,12 +93,9 @@ namespace osg_material_manager {
       shader->setShaderSource(generateShaderSource(SHADER_TYPE_GEOMETRY));
     }
     if (providers.count(SHADER_TYPE_VERTEX) == 1) {
-      cout << "Generating vertex" << endl;
       osg::Shader *shader = new osg::Shader(osg::Shader::VERTEX);
       program->addShader(shader);
-      cout << "Added shader" << endl;
       shader->setShaderSource(generateShaderSource(SHADER_TYPE_VERTEX));
-      cout << "Generated vertex" << endl;
     }
     if (providers.count(SHADER_TYPE_FRAGMENT) == 1) {
       osg::Shader *shader = new osg::Shader(osg::Shader::FRAGMENT);
