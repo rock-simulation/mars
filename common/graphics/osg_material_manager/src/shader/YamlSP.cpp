@@ -109,9 +109,7 @@ namespace osg_material_manager {
     if (function.get() == nullptr) {
       return "";
     }
-    cout << "code: " << endl;
-    cout << function.get()->code() << endl;
-    return function.get()->code();
+    return function.get()->generateFunctionCode();
   }
 
   const set<string> &YamlSP::getEnabledExtensions() const {
@@ -135,10 +133,8 @@ namespace osg_material_manager {
 
   void YamlSP::addShaderFunction(ShaderFunc *func) {
     if (function.get() == nullptr) {
-      cout << "new!"<<endl;
       function = unique_ptr<ShaderFunc>(func);
     } else {
-      cout << "merging " << endl;
       function.get()->merge(func);
       delete (func);
     }
