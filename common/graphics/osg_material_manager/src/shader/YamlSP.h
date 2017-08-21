@@ -69,6 +69,8 @@ namespace osg_material_manager {
      */
     void addShaderFunction(ShaderFunc *func);
 
+    void setupShaderEnv(ShaderType shader_type, ConfigMap material, bool has_texture, bool use_world_tex_coords);
+
   private:
     /**
      *

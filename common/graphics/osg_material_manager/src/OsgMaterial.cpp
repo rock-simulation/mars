@@ -468,33 +468,73 @@ namespace osg_material_manager {
     ShaderFactory factory;
     osg::Program *glslProgram;
 
-    if(map.hasKey("shader")) {
-      // TODO: determine which provider to use, create provider and set it in the factory
+    if(!map.hasKey("shader")) {
+      map["shader"]["PixelLightVertex"] = true;
+      map["shader"]["PixelLightFragment"] = true;
+      if(checkTexture("normalMap")) {
+        map["shader"]["NormalMapVertex"] = true;
+        map["shader"]["NormalMapFragment"] = true;
+      }
+    }
+
+    if (map["shader"].hasKey("provider")) {
+
     } else {
-      // TODO: This is using old Yaml Shaders as default PixelLight. Should be replaced by a graph to get rid of overhead
       vector<string> args;
-      YamlSP *vertexShader = new YamlSP(resPath);
-      ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
+      bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
       stringstream s;
       s << maxNumLights;
-      map["mappings"]["numLights"] = s.str();
-      YamlShader *plightVert = new YamlShader((string)map["name"], args, map, resPath);
-      plightVert->addMainVar( (GLSLVariable){ "vec4", "vModelPos", "gl_Vertex" }, -120);
-      plightVert->addMainVar( (GLSLVariable){ "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " }, -110);
-      plightVert->addMainVar( (GLSLVariable){ "vec4", "vWorldPos", "osg_ViewMatrixInverse * vViewPos " }, -100);
-      plightVert->addMainVar( (GLSLVariable){ "vec4", "specularCol", "gl_FrontMaterial.specular" }, -90);
-      plightVert->addExport( (GLSLExport){"gl_Position", "gl_ModelViewProjectionMatrix * vModelPos"} );
-      plightVert->addExport( (GLSLExport) {"gl_ClipVertex", "vViewPos"} );
-      vertexShader->addShaderFunction(plightVert);
-      factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
+      YamlSP *vertexShader = new YamlSP(resPath);
       YamlSP *fragmentShader = new YamlSP(resPath);
-      ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
-      map2["mappings"]["numLights"] = s.str();
-      YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
-      plightFrag->addMainVar( (GLSLVariable){ "vec4", "col", "vec4(1.0)" }, -200);
-      plightFrag->addExport( (GLSLExport) {"gl_FragColor", "col"} );
-      fragmentShader->addShaderFunction(plightFrag);
+      if(map["shader"].hasKey("TerrainMapVertex")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/terrainMap_vert.yml");
+        YamlShader *terrainMapVert = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(terrainMapVert);
+        stateSet->addUniform(terrainScaleZUniform.get());
+        stateSet->addUniform(terrainDimUniform.get());
+        terrainScaleZUniform->set((float)(double)map["scaleZ"]);
+      }
+      if (map["shader"].hasKey("PixelLightVertex")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
+        map2["mappings"]["numLights"] = s.str();
+        YamlShader *plightVert = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(plightVert);
+      }
+      if(map["shader"].hasKey("NormalMapVertex")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_vert.yaml");
+        YamlShader *bumpVert = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(bumpVert);
+      }
+      if(map["shader"].hasKey("EnvMapVertex")) {
+        envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+                                             (double)map["envMapSpecular"]["g"],
+                                             (double)map["envMapSpecular"]["b"]));
+        stateSet->addUniform(envMapSpecularUniform.get());
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_vert.yml");
+        YamlShader *shader = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(shader);
+
+      }
+      if (map["shader"].hasKey("PixelLightFragment")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
+        map2["mappings"]["numLights"] = s.str();
+        YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
+        if(checkTexture("diffuseMap")) {
+          plightFrag->addMainVar( (GLSLVariable) { "vec4", "col", "texture2D(diffuseMap, texCoord)" }, 1);
+          plightFrag->addUniform((GLSLUniform) {"sampler2D", "diffuseMap"});
+        }
+        fragmentShader->addShaderFunction(plightFrag);
+      }
+
+      vertexShader->setupShaderEnv(SHADER_TYPE_VERTEX, map, has_texture, useWorldTexCoords);
+      factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
+      fragmentShader->setupShaderEnv(SHADER_TYPE_FRAGMENT, map, has_texture, useWorldTexCoords);
       factory.setShaderProvider(fragmentShader, SHADER_TYPE_FRAGMENT);
+      if(has_texture) {
+        stateSet->addUniform(texScaleUniform.get());
+        stateSet->addUniform(sinUniform.get());
+        stateSet->addUniform(cosUniform.get());
+      }
     }
     glslProgram = factory.generateProgram();
     if(lastProgram.valid()) {
