@@ -22,8 +22,9 @@
 
 namespace osg_material_manager {
 
-  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap graph) : IShaderProvider(res_path) {
+  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap graph, ConfigMap options) : IShaderProvider(res_path) {
     this->graph = graph;
+    this->options = options;
   }
 
   int DRockGraphSP::getMinVersion() {

@@ -31,7 +31,7 @@ namespace osg_material_manager {
 
   class DRockGraphSP : public IShaderProvider {
   public:
-    DRockGraphSP(string res_path, ConfigMap graph);
+    DRockGraphSP(string res_path, ConfigMap graph, ConfigMap options);
 
     int getMinVersion();
 
@@ -55,6 +55,12 @@ namespace osg_material_manager {
 
   private:
     ConfigMap graph;
+    /**
+     * Containing options needed for shader generation.
+     * Fields:
+     * num_lights: needed
+     */
+    ConfigMap options;
   };
 }
 
