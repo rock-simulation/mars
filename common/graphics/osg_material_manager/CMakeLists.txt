@@ -46,6 +46,7 @@ set(SOURCES
 	src/shader/ShaderFactory.cpp
 	src/shader/DRockGraphSP.cpp
 	src/shader/YamlSP.cpp
+	src/tsort/tsort.c
         )
 
 set(HEADERS
@@ -59,6 +60,7 @@ set(HEADERS
 	src/shader/DRockGraphSP.h
 	src/shader/IShaderProvider.h
 	src/shader/YamlSP.h
+	src/tsort/tsort.h
 		)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
