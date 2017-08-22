@@ -555,7 +555,53 @@ namespace osg_material_manager {
         stateSet->removeUniform(texScaleUniform.get());
       }
     }
-    glslProgram = factory.generateProgram();
+    if(map.hasKey("shaderSources")) {
+      // load shader from text file
+      // todo: handle uniforms in a way that we dont need to create the shader
+      //       sources above
+      glslProgram = new osg::Program();
+      { // load vertex shader
+        string file = map["shaderSources"]["vertexShader"];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
+        std::ifstream t(file.c_str());
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        string source = buffer.str();
+        osg::Shader *shader = new osg::Shader(osg::Shader::VERTEX);
+        glslProgram->addShader(shader);
+        shader->setShaderSource( source );
+      }
+      { // load fragment shader
+        string file = map["shaderSources"]["fragmentShader"];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
+        std::ifstream t(file.c_str());
+        std::stringstream buffer;
+        buffer << t.rdbuf();
+        string source = buffer.str();
+        osg::Shader *shader = new osg::Shader(osg::Shader::FRAGMENT);
+        glslProgram->addShader(shader);
+        shader->setShaderSource( source );
+      }
+    } else {
+      glslProgram = factory.generateProgram();
+      if(map.hasKey("printShader") && (bool)map["printShader"]) {
+        std::string source = factory.generateShaderSource(SHADER_TYPE_VERTEX);
+        std::string filename = "shader_sources/" + name + "_vert.c";
+        createDirectory("shader_sources");
+        FILE *f = fopen(filename.c_str(), "w");
+        fprintf(f, "%s", source.c_str());
+        fclose(f);
+        source = factory.generateShaderSource(SHADER_TYPE_FRAGMENT);
+        filename = "shader_sources/" + name + "_frag.c";
+        f = fopen(filename.c_str(), "w");
+        fprintf(f, "%s", source.c_str());
+        fclose(f);
+      }
+    }
     if(checkTexture("normalMap") || checkTexture("environmentMap")) {
       glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
       stateSet->addUniform(bumpNorFacUniform.get());
