@@ -127,7 +127,7 @@ namespace osg_material_manager {
     return function.get()->getDisabledExtensions();
   }
 
-  const vector<pair<string, string> > &YamlSP::getDependencies() const {
+  const vector<pair<string, string> > YamlSP::getDependencies() const {
     return function.get()->getDeps();
   }
 

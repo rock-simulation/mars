@@ -68,7 +68,7 @@ namespace osg_material_manager {
     /**
      * Returns this shaders dependencies
      */
-    virtual const vector<pair<string, string> >& getDependencies() const = 0;
+    virtual const vector<pair<string, string> > getDependencies() const = 0;
 
     /**
      * Returns the set of constants created by this shader

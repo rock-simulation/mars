@@ -58,7 +58,7 @@ namespace osg_material_manager {
     return set<GLSLAttribute>();
   }
 
-  const vector<pair<string, string> >& DRockGraphSP::getDependencies() const {
+  const vector<pair<string, string> > DRockGraphSP::getDependencies() const {
     return vector<pair<string, string> >();
   }
 

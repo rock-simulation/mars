@@ -43,7 +43,7 @@ namespace osg_material_manager {
 
     const set<string>& getDisabledExtensions() const;
 
-    const vector<pair<string, string> >& getDependencies() const;
+    const vector<pair<string, string> > getDependencies() const;
 
     const std::set<GLSLConstant>& getConstants() const;
 
