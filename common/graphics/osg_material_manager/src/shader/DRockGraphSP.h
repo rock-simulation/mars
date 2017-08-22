@@ -45,9 +45,9 @@ namespace osg_material_manager {
 
     const vector<pair<string, string> > getDependencies() const;
 
-    const std::set<GLSLConstant>& getConstants() const;
+    const set<GLSLConstant>& getConstants() const;
 
-    const std::set<GLSLAttribute>& getAttributes() const;
+    const set<GLSLAttribute>& getAttributes() const;
 
     string generateMainSource();
 
@@ -61,6 +61,14 @@ namespace osg_material_manager {
      * num_lights: needed
      */
     ConfigMap options;
+
+    set<GLSLUniform> uniforms;
+    set<GLSLAttribute> varyings;
+    set<string> enabledExtensions;
+    set<string> disabledExtensions;
+    vector<pair<string, string> > dependencies;
+    set<GLSLConstant> constants;
+    set<GLSLAttribute> attributes;
   };
 }
 

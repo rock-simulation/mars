@@ -32,11 +32,11 @@ namespace osg_material_manager {
   }
 
   const set<GLSLUniform>& DRockGraphSP::getUniforms() const {
-    return set<GLSLUniform>();
+    return uniforms;
   }
 
   const set<GLSLAttribute>& DRockGraphSP::getVaryings() const {
-    return set<GLSLAttribute>();
+    return varyings;
   }
 
   string DRockGraphSP::generateMainSource() {
@@ -44,23 +44,23 @@ namespace osg_material_manager {
   }
 
   const set<string>& DRockGraphSP::getEnabledExtensions() const {
-    return set<string>();
+    return enabledExtensions;
   }
 
   const set<string>& DRockGraphSP::getDisabledExtensions() const {
-    return set<string>();
+    return disabledExtensions;
   }
 
   const std::set<GLSLConstant>& DRockGraphSP::getConstants() const {
-    return set<GLSLConstant>();
+    return constants;
   }
 
   const std::set<GLSLAttribute>& DRockGraphSP::getAttributes() const {
-    return set<GLSLAttribute>();
+    return attributes;
   }
 
   const vector<pair<string, string> > DRockGraphSP::getDependencies() const {
-    return vector<pair<string, string> >();
+    return dependencies;
   }
 
   string DRockGraphSP::generateDefinitions() {
