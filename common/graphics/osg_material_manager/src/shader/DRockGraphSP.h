@@ -54,7 +54,7 @@ namespace osg_material_manager {
     string generateDefinitions();
 
   private:
-    ConfigMap graph;
+    ConfigMap model;
     /**
      * Containing options needed for shader generation.
      * Fields:
@@ -69,6 +69,11 @@ namespace osg_material_manager {
     vector<pair<string, string> > dependencies;
     set<GLSLConstant> constants;
     set<GLSLAttribute> attributes;
+
+    /**
+     * Parses the graph file to fill the fields with the correct content
+     */
+    void parseGraph();
   };
 }
 

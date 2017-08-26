@@ -20,22 +20,27 @@
 
 #include "DRockGraphSP.h"
 
+extern "C" {
+#include "tsort/tsort.h"
+}
+
 namespace osg_material_manager {
 
-  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap graph, ConfigMap options) : IShaderProvider(res_path) {
-    this->graph = graph;
+  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options) : IShaderProvider(res_path) {
+    this->model = model;
     this->options = options;
+    parseGraph();
   }
 
   int DRockGraphSP::getMinVersion() {
     return 0;
   }
 
-  const set<GLSLUniform>& DRockGraphSP::getUniforms() const {
+  const set<GLSLUniform> &DRockGraphSP::getUniforms() const {
     return uniforms;
   }
 
-  const set<GLSLAttribute>& DRockGraphSP::getVaryings() const {
+  const set<GLSLAttribute> &DRockGraphSP::getVaryings() const {
     return varyings;
   }
 
@@ -43,19 +48,19 @@ namespace osg_material_manager {
     return "not implemented yet!";
   }
 
-  const set<string>& DRockGraphSP::getEnabledExtensions() const {
+  const set<string> &DRockGraphSP::getEnabledExtensions() const {
     return enabledExtensions;
   }
 
-  const set<string>& DRockGraphSP::getDisabledExtensions() const {
+  const set<string> &DRockGraphSP::getDisabledExtensions() const {
     return disabledExtensions;
   }
 
-  const std::set<GLSLConstant>& DRockGraphSP::getConstants() const {
+  const std::set<GLSLConstant> &DRockGraphSP::getConstants() const {
     return constants;
   }
 
-  const std::set<GLSLAttribute>& DRockGraphSP::getAttributes() const {
+  const std::set<GLSLAttribute> &DRockGraphSP::getAttributes() const {
     return attributes;
   }
 
@@ -65,5 +70,8 @@ namespace osg_material_manager {
 
   string DRockGraphSP::generateDefinitions() {
     return "";
+  }
+
+  void DRockGraphSP::parseGraph() {
   }
 }

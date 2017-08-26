@@ -478,7 +478,24 @@ namespace osg_material_manager {
     }
 
     if (map["shader"].hasKey("provider")) {
-
+      if ((string)map["shader"]["provider"] == "DRockGraph") {
+        ConfigMap options;
+        options["num_lights"] = maxNumLights;
+        string vertexPath = map["shader"]["vertex"];
+        string fragmentPath = map["shader"]["fragment"];
+        if(!loadPath.empty() && vertexPath[0] != '/') {
+          vertexPath = loadPath + vertexPath;
+        }
+        if(!loadPath.empty() && fragmentPath[0] != '/') {
+          fragmentPath = loadPath + fragmentPath;
+        }
+        ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
+        ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
+        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
+        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
+        factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
+        factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
+      }
     } else {
       vector<string> args;
       bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
