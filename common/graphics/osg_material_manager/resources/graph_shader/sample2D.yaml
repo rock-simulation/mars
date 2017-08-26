@@ -1,0 +1,6 @@
+params:
+  in:
+    texCoord: {index: 0, type: vec2}
+    texture: {index: 1, type: sampler2D}
+  out:
+    color: {index: 0, type: vec4}

@@ -1,0 +1,5 @@
+params:
+  in:
+    viewPos: {index: 0, type: vec4}
+    modelPos: {index: 1, type: vec4}
+    normalVarying: {index: 2, type: vec3}

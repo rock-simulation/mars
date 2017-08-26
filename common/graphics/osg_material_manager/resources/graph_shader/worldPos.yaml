@@ -1,0 +1,5 @@
+params:
+  in:
+    viewPos: {index: 0, type: vec4}
+  out:
+    worldPos: {index: 0, type: vec4}

@@ -1,0 +1,3 @@
+params:
+  out:
+    normal: {index: 0, type: vec3}

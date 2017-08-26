@@ -1,7 +1,11 @@
 params:
-  - pcol
-  - n
-  - col
+  in:
+    baseColor: {index: 0, type: vec4}
+    normal: {index: 1, type: vec3}
+  out:
+    shadedColor: {index: 0, type: vec4}
+source: /shader/plight.frag
+minVersion: 120
 varyings:
   vec3:
     - {name: eyeVec}
@@ -59,23 +63,3 @@ uniforms:
     - {name: NoiseMap}
   sampler2DShadow:
     - {name: osgShadow_shadowTexture}
-mainVarDecs:
-  vec3:
-    - {name: n}
-  vec4:
-    - {name: pcol}
-mainVars:
-  vec3:
-    - name: n
-      value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"
-      priority: 0
-  vec4:
-    - name: pcol
-      value: col
-      priority: 10
-snippets:
-  - source: /shader/test.snippet
-    priority: -1
-source: /shader/plight.frag
-priority: 11
-name: pixellight_frag

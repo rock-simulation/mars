@@ -1,0 +1,6 @@
+params:
+  out:
+    texCoord: {index: 0, type: vec2}
+uniforms:
+  vec2:
+    - {name: texScale}

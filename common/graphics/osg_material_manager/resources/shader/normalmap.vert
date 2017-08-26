@@ -9,7 +9,7 @@
  * @param n: the normal attribute at the processed vertex in eye space.
  **/
 
-void bump(vec3 n) {
+void normalmap_vert(vec3 n) {
   // get the tangent in world space (multiplication by gl_NormalMatrix
   // transforms to eye space)
   // the tangent should point in positive u direction on the uv plane in the tangent space.
