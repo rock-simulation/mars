@@ -459,6 +459,7 @@ namespace osg_material_manager {
       return;
     }
     hasShaderSources = true;
+    bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
     stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap,
                                           osg::StateAttribute::ON);
     stateSet->removeUniform(envMapSpecularUniform.get());
@@ -480,7 +481,7 @@ namespace osg_material_manager {
     if (map["shader"].hasKey("provider")) {
       if ((string)map["shader"]["provider"] == "DRockGraph") {
         ConfigMap options;
-        options["num_lights"] = maxNumLights;
+        options["numLights"] = maxNumLights;
         string vertexPath = map["shader"]["vertex"];
         string fragmentPath = map["shader"]["fragment"];
         if(!loadPath.empty() && vertexPath[0] != '/') {
@@ -498,7 +499,6 @@ namespace osg_material_manager {
       }
     } else {
       vector<string> args;
-      bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
       stringstream s;
       s << maxNumLights;
       YamlSP *vertexShader = new YamlSP(resPath);
@@ -563,14 +563,14 @@ namespace osg_material_manager {
       fragmentShader->setupShaderEnv(SHADER_TYPE_FRAGMENT, map, has_texture, useWorldTexCoords);
       factory.setShaderProvider(fragmentShader, SHADER_TYPE_FRAGMENT);
       stateSet->addUniform(noiseMapUniform.get());
-      if(has_texture) {
-        stateSet->addUniform(texScaleUniform.get());
-        stateSet->addUniform(sinUniform.get());
-        stateSet->addUniform(cosUniform.get());
-      }
-      else {
-        stateSet->removeUniform(texScaleUniform.get());
-      }
+    }
+    if(has_texture) {
+      stateSet->addUniform(texScaleUniform.get());
+      stateSet->addUniform(sinUniform.get());
+      stateSet->addUniform(cosUniform.get());
+    }
+    else {
+      stateSet->removeUniform(texScaleUniform.get());
     }
     if(map.hasKey("shaderSources")) {
       // load shader from text file
