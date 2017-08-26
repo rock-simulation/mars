@@ -62,6 +62,17 @@ namespace osg_material_manager {
      */
     ConfigMap options;
 
+    /**
+     * Contains the shaders main function generated from the graph definition
+     */
+    string main_source;
+
+    /**
+     * Contains resource path to all source code needed by the main function
+     */
+    vector<string> source_files;
+
+    int minVersion;
     set<GLSLUniform> uniforms;
     set<GLSLAttribute> varyings;
     set<string> enabledExtensions;
@@ -74,6 +85,11 @@ namespace osg_material_manager {
      * Parses the graph file to fill the fields with the correct content
      */
     void parseGraph();
+
+    /**
+     * Parses a functionInfo and adds varyings, uniforms and function source code to the provider
+     */
+    void parse_functionInfo(ConfigMap functionInfo);
   };
 }
 
