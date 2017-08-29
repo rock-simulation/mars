@@ -202,7 +202,6 @@ namespace osg_material_manager {
       std::stringstream call;
       call.clear();
       if (!filterMap.hasKey(function)) {
-        // todo: make shader-type sensitive!
         ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + function + ".yaml");
         parse_functionInfo(functionInfo);
         call << "  " << function << "(";
