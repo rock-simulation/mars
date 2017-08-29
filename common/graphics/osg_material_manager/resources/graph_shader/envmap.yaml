@@ -1,4 +1,0 @@
-params:
-  out:
-    col: {index: 0, type: vec4}
-    nt: {index: 1, type: vec4}

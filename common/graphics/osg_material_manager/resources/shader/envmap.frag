@@ -1,4 +1,4 @@
-void envMap(out vec4 col, out vec4 nt) {
+void envmap_frag(out vec4 col, out vec4 nt) {
   vec2 texCoord;
   vec4 rcol;
   vec4 gcol;
