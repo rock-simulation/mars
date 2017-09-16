@@ -65,8 +65,8 @@ namespace data_broker_plotter2 {
     splitter->addWidget(w);
     vLayout->addWidget(splitter);
 
-    map["Properties"]["X-Range in ms"] = 10000;
-    map["Properties"]["Data Update Rate"] = 40;
+    map["Properties"]["X-Range in ms"] = 10000UL;
+    map["Properties"]["Data Update Rate"] = 40.0;
     map["Properties"]["Pen Size"] = 1.0;
     map["Properties"]["Filter"] = "*/Motors/:*root:";
     if(mars::utils::pathExists(configPath+"/dbplotter2.yml")) {
