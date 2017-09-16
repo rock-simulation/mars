@@ -12,6 +12,8 @@
 
 namespace data_broker_plotter2 {
 
+  using namespace configmaps;
+
   enum { CALLBACK_OTHER=0, CALLBACK_NEW_STREAM=-1 };
 
   DataBrokerPlotter::DataBrokerPlotter(DataBrokerPlotterLib *_mainLib,
@@ -25,7 +27,8 @@ namespace data_broker_plotter2 {
     threadRunning(false), simTime(0) {
 
     setStyleSheet("background-color:#eeeeee;");
-    exportPath = cfg->getOrCreateProperty("Config", "config_path", string(".")).sValue;
+    configPath = cfg->getOrCreateProperty("Config", "config_path", string(".")).sValue;
+    exportPath = configPath;
 
     qcPlot = new QCustomPlot;
 
@@ -62,15 +65,21 @@ namespace data_broker_plotter2 {
     splitter->addWidget(w);
     vLayout->addWidget(splitter);
 
-    xRange = 10000;
-    penSize = 1.0;
-    dataUpdateRate = 40;
-    map["Properties"]["X-Range in ms"] = xRange;
-    map["Properties"]["Data Update Rate"] = dataUpdateRate;
-    map["Properties"]["Pen Size"] = penSize;
+    map["Properties"]["X-Range in ms"] = 10000;
+    map["Properties"]["Data Update Rate"] = 40;
+    map["Properties"]["Pen Size"] = 1.0;
     map["Properties"]["Filter"] = "*/Motors/:*root:";
-    filter.push_back("*/Motors/");
-    filter.push_back("*root");
+    if(mars::utils::pathExists(configPath+"/dbplotter2.yml")) {
+      configmaps::ConfigMap m = configmaps::ConfigMap::fromYamlFile(configPath+"/dbplotter2.yml");
+      if(m.hasKey(name)) {
+        loadMap = m[name];
+        map["Properties"].appendMap(loadMap["Properties"]);
+      }
+    }
+    xRange = map["Properties"]["X-Range in ms"];
+    dataUpdateRate = map["Properties"]["Data Update Rate"];
+    penSize = map["Properties"]["Pen Size"];
+    filter = mars::utils::explodeString(':', map["Properties"]["Filter"]);
     setLayout(vLayout);
     dw->setConfigMap("", map);
     libManager->acquireLibrary("data_broker");
@@ -99,6 +108,13 @@ namespace data_broker_plotter2 {
   DataBrokerPlotter::~DataBrokerPlotter(void) {
     fprintf(stderr, "close: %s\n", name.c_str());
     exit = true;
+    // todo: handle different windows in plot file
+    configmaps::ConfigMap outMap;
+    if(mars::utils::pathExists(configPath+"/dbplotter2.yml")) {
+      outMap = configmaps::ConfigMap::fromYamlFile(configPath+"/dbplotter2.yml");
+    }
+    outMap[name] = map;
+    outMap.toYamlFile(configPath+"/dbplotter2.yml");
     dataLock.lock();
     dataBroker->unregisterSyncReceiver(this, "*", "*");
     dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
@@ -185,14 +201,31 @@ namespace data_broker_plotter2 {
     newPlot->curve = NULL;
     newPlot->dataInfo = info;
 
-    configmaps::ConfigItem *item;
+    ConfigItem *item;
     std::uniform_real_distribution<double> distribution(0.0,1.0);
-
-    newPlot->options["color"]["r"] = distribution(generator);
-    newPlot->options["color"]["g"] = distribution(generator);
-    newPlot->options["color"]["b"] = distribution(generator);
-    newPlot->options["color"]["a"] = 1.0;
-    newPlot->options["show"] = false;
+    bool haveOptions = false;
+    {
+      std::vector<std::string> arrString = mars::utils::explodeString('/', label);
+      ConfigItem itemWrapper(loadMap);
+      item = itemWrapper;
+      size_t i=0;
+      while(i<arrString.size() && item->hasKey(arrString[i])) {
+        item = (*item)[arrString[i]];
+        ++i;
+      }
+      if(i == arrString.size()) {
+        newPlot->options = *item;
+        newPlot->options["show"] = (bool)newPlot->options["show"];
+        haveOptions = true;
+      }
+    }
+    if(!haveOptions) {
+      newPlot->options["color"]["r"] = distribution(generator);
+      newPlot->options["color"]["g"] = distribution(generator);
+      newPlot->options["color"]["b"] = distribution(generator);
+      newPlot->options["color"]["a"] = 1.0;
+      newPlot->options["show"] = false;
+    }
     for(auto it: filter) {
       if(mars::utils::matchPattern(it, label)) {
         std::vector<std::string> arrString = mars::utils::explodeString('/', label);
@@ -205,6 +238,9 @@ namespace data_broker_plotter2 {
       }
     }
     plotMap[label] = newPlot;
+    if((bool)newPlot->options["show"]) {
+      showPlot(newPlot);
+    }
   }
 
   void DataBrokerPlotter::cfgUpdateProperty(mars::cfg_manager::cfgPropertyStruct _property) {
@@ -296,44 +332,14 @@ namespace data_broker_plotter2 {
            value == "1") {
           if(!it->second->curve) {
             plotLock.lock();
-            mars::data_broker::DataInfo &info = it->second->dataInfo;
-            if(registerMap.find(info.dataId) == registerMap.end()) {
-              registerMap[info.dataId] = 1;
-              dataBroker->registerTimedReceiver(this, info.groupName, info.dataName,
-                                                "mars_sim/simTimer", dataUpdateRate);
-            }
-            else {
-              registerMap[info.dataId] = registerMap[info.dataId]+1;
-            }
-            it->second->curve = qcPlot->addGraph();
-            it->second->curve->setAntialiasedFill(false);
-            QColor c(255*(double)it->second->options["color"]["r"],
-                     255*(double)it->second->options["color"]["g"],
-                     255*(double)it->second->options["color"]["b"]);
-            it->second->curve->setPen( QPen(c, penSize) );
-            it->second->curve->setLineStyle( QCPGraph::lsLine );
-            it->second->options["show"] = true;
-            needReplot = true;
+            showPlot(it->second);
             plotLock.unlock();
           }
         }
         else {
           if(it->second->curve) {
-            mars::data_broker::DataInfo &info = it->second->dataInfo;
             plotLock.lock();
-            int count = registerMap[info.dataId]-1;
-            if(count == 0) {
-              registerMap.erase(info.dataId);
-              dataBroker->unregisterTimedReceiver(this, info.groupName, info.dataName,
-                                                  "mars_sim/simTimer");
-            }
-            else {
-              registerMap[info.dataId] = count;
-            }
-            qcPlot->removeGraph(it->second->curve);
-            it->second->curve = NULL;
-            it->second->options["show"] = false;
-            needReplot = true;
+            hidePlot(it->second);
             plotLock.unlock();
           }
         }
@@ -357,6 +363,17 @@ namespace data_broker_plotter2 {
           needReplot = true;
           plotLock.unlock();
         }
+      }
+      // update map
+      std::vector<std::string> arrString = mars::utils::explodeString('/', key);
+      ConfigMap *item = &map;
+      size_t i=0;
+      while(i<arrString.size() && item->hasKey(arrString[i])) {
+        item = (*item)[arrString[i]];
+        ++i;
+      }
+      if(i == arrString.size()) {
+        *item = it->second->options;
       }
     }
     dataLock.unlock();
@@ -465,5 +482,42 @@ namespace data_broker_plotter2 {
     mainLib->destroyPlotWindow(this);
   }
 
+  void DataBrokerPlotter::showPlot(Plot* plot) {
+    mars::data_broker::DataInfo &info = plot->dataInfo;
+    if(registerMap.find(info.dataId) == registerMap.end()) {
+      registerMap[info.dataId] = 1;
+      dataBroker->registerTimedReceiver(this, info.groupName, info.dataName,
+                                        "mars_sim/simTimer", dataUpdateRate);
+    }
+    else {
+      registerMap[info.dataId] = registerMap[info.dataId]+1;
+    }
+    plot->curve = qcPlot->addGraph();
+    plot->curve->setAntialiasedFill(false);
+    QColor c(255*(double)plot->options["color"]["r"],
+             255*(double)plot->options["color"]["g"],
+             255*(double)plot->options["color"]["b"]);
+    plot->curve->setPen( QPen(c, penSize) );
+    plot->curve->setLineStyle( QCPGraph::lsLine );
+    plot->options["show"] = true;
+    needReplot = true;
+  }
+
+  void DataBrokerPlotter::hidePlot(Plot* plot) {
+    mars::data_broker::DataInfo &info = plot->dataInfo;
+    int count = registerMap[info.dataId]-1;
+    if(count == 0) {
+      registerMap.erase(info.dataId);
+      dataBroker->unregisterTimedReceiver(this, info.groupName, info.dataName,
+                                          "mars_sim/simTimer");
+    }
+    else {
+      registerMap[info.dataId] = count;
+    }
+    qcPlot->removeGraph(plot->curve);
+    plot->curve = NULL;
+    plot->options["show"] = false;
+    needReplot = true;
+  }
 
 } // end of namespace: data_broker_plotter2

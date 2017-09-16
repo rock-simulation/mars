@@ -52,6 +52,9 @@ namespace data_broker_plotter2 {
     cfg->loadConfig(tmpString.c_str());
 
     gui->addGenericMenuAction("../Tools/Plotter", 1, this, 0);
+    if(!cfg->getOrCreateProperty("Windows", "Plotter 1/hidden", true).bValue) {
+      menuAction(1, 0);
+    }
 
     startTimer(75);
   }
