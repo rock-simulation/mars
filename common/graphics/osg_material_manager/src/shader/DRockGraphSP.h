@@ -70,7 +70,7 @@ namespace osg_material_manager {
     /**
      * Contains resource path to all source code needed by the main function
      */
-    vector<string> source_files;
+    map<string, string> source_files;
 
     int minVersion;
     set<GLSLUniform> uniforms;
@@ -89,7 +89,7 @@ namespace osg_material_manager {
     /**
      * Parses a functionInfo and adds varyings, uniforms and function source code to the provider
      */
-    void parse_functionInfo(ConfigMap functionInfo);
+    void parse_functionInfo(string functionName, ConfigMap functionInfo);
   };
 }
 

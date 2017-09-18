@@ -73,9 +73,9 @@ namespace osg_material_manager {
 
   string DRockGraphSP::generateDefinitions() {
     stringstream code;
-    vector<string>::iterator vit;
-    for (vit = source_files.begin(); vit != source_files.end(); ++vit) {
-      string path = resPath + (string) *vit;
+    map<string, string>::iterator mit;
+    for (mit = source_files.begin(); mit != source_files.end(); ++mit) {
+      string path = resPath + (string) mit->second;
       ifstream t(path);
       stringstream buffer;
       buffer << t.rdbuf();
@@ -203,7 +203,7 @@ namespace osg_material_manager {
       call.clear();
       if (!filterMap.hasKey(function)) {
         ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + function + ".yaml");
-        parse_functionInfo(functionInfo);
+        parse_functionInfo(function, functionInfo);
         call << "  " << function << "(";
         std::priority_queue<PrioritizedLine> incoming, outgoing;
         bool first = true;
@@ -285,12 +285,11 @@ namespace osg_material_manager {
     main_source = code.str();
   }
 
-  void DRockGraphSP::parse_functionInfo(ConfigMap functionInfo) {
+  void DRockGraphSP::parse_functionInfo(string functionName, ConfigMap functionInfo) {
     ConfigMap::iterator mit;
     ConfigVector::iterator vit;
-    bool is_array;
-    if (functionInfo.hasKey("source")) {
-      source_files.push_back(functionInfo["source"].getString());
+    if (functionInfo.hasKey("source") && source_files.count(functionName) == 0) {
+      source_files[functionName] = functionInfo["source"].getString();
     }
 
     if (functionInfo.hasKey("minVersion")) {
