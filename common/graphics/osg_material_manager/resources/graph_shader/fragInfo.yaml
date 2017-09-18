@@ -6,6 +6,6 @@ params:
     emission: {index: 3, type: vec4}
     texCoord: {index: 4, type: vec2}
 uniforms:
-  vec2:
+  float:
     - {name: texScale}
 source: /graph_shader/fragInfo.frag
