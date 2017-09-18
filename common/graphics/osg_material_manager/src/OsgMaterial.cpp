@@ -562,8 +562,8 @@ namespace osg_material_manager {
       factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
       fragmentShader->setupShaderEnv(SHADER_TYPE_FRAGMENT, map, has_texture, useWorldTexCoords);
       factory.setShaderProvider(fragmentShader, SHADER_TYPE_FRAGMENT);
-      stateSet->addUniform(noiseMapUniform.get());
     }
+    stateSet->addUniform(noiseMapUniform.get());
     if(has_texture) {
       stateSet->addUniform(texScaleUniform.get());
       stateSet->addUniform(sinUniform.get());
