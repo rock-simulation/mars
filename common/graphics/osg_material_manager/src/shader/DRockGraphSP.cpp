@@ -123,17 +123,14 @@ namespace osg_material_manager {
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
       string function = (*it)["model"]["name"].getString();
       string name = (*it)["name"].getString();
-      if (!filterMap.hasKey(function)) {
-        nodeMap[id] = (*it);
-        nodeNameId[(*it)["name"].getString()] = id++;
-      } else {
-        if (nodeConfig.hasKey(name) && nodeConfig[name].hasKey("type")) {
-          string type = nodeConfig[name]["type"].getString();
-          if (type == "uniform") {
-            uniforms.insert((GLSLUniform) {function, name});
-          } else if (type == "varying") {
-            varyings.insert((GLSLAttribute) {function, name});
-          }
+      nodeMap[id] = (*it);
+      nodeNameId[(*it)["name"].getString()] = id++;
+      if (nodeConfig.hasKey(name) && nodeConfig[name].hasKey("type")) {
+        string type = nodeConfig[name]["type"].getString();
+        if (type == "uniform") {
+          uniforms.insert((GLSLUniform) {function, name});
+        } else if (type == "varying") {
+          varyings.insert((GLSLAttribute) {function, name});
         }
       }
     }
@@ -148,8 +145,13 @@ namespace osg_material_manager {
       if(nodeNameId.count(fromNodeName) > 0 && nodeNameId.count(toNodeName) > 0) {
         add_relation(nodeNameId[fromNodeName], nodeNameId[toNodeName]);
       }
+      ConfigMap fromNode = nodeMap[nodeNameId[fromNodeName]];
+      if (filterMap.hasKey(fromNode["model"]["name"].getString())) {
+        fromVar = fromNodeName;
+      } else {
+        fromVar = fromNodeName + "_at_" + fromInterfaceName;
+      }
       // Create Mappings from mainVar names to node input interfaces
-      fromVar = fromNodeName + "_at_" + fromInterfaceName;
       nodeConfig[toNodeName]["toParams"][toInterface] = fromVar;
     }
 
