@@ -27,6 +27,7 @@ extern "C" {
 }
 
 namespace osg_material_manager {
+  using namespace std;
 
   DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options) : IShaderProvider(res_path) {
     this->model = model;
@@ -93,7 +94,7 @@ namespace osg_material_manager {
     std::vector<ConfigMap *>::iterator sNodeIt;
     std::vector<std::string> add; // lines to add after function call generation
     std::vector<GLSLAttribute> vars; //definitions of main variables
-    std::vector<GLSLVariable> defaultInputs;
+    std::vector<GLSLVariable> defaultVars;
     std::vector<std::string> function_calls;
     ConfigItem graph = model["versions"][0]["components"];
     ConfigMap nodeConfig;
@@ -108,13 +109,15 @@ namespace osg_material_manager {
     filterMap["outColor"] = 1;
 
 
-    ConfigVector::iterator it, et;
+    ConfigVector::iterator it;
+    ConfigMap::iterator mit;
 
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
       ConfigMap data = ConfigMap::fromYamlString((*it)["data"].getString());
       nodeConfig[(*it)["name"]] = data["data"];
     }
+
     // create node ids for tsort
     unsigned long id = 1;
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
@@ -135,15 +138,21 @@ namespace osg_material_manager {
       }
     }
 
-    // create relations for tsort
-    for (et = graph["edges"].begin(); et != graph["edges"].end(); ++et) {
-      std::string from = (*et)["from"]["name"];
-      std::string to = (*et)["to"]["name"];
-      if (nodeNameId.find(from) != nodeNameId.end() &&
-          nodeNameId.find(to) != nodeNameId.end()) {
-        add_relation(nodeNameId[from], nodeNameId[to]);
+    for (it = graph["edges"].begin(); it != graph["edges"].end(); ++it) {
+      string fromNodeName = (*it)["from"]["name"];
+      string toNodeName = (*it)["to"]["name"];
+      string fromInterfaceName = (*it)["from"]["interface"];
+      string toInterface = (*it)["to"]["interface"];
+      string fromVar = "";
+      // create relations for tsort
+      if(nodeNameId.count(fromNodeName) > 0 && nodeNameId.count(toNodeName) > 0) {
+        add_relation(nodeNameId[fromNodeName], nodeNameId[toNodeName]);
       }
+      // Create Mappings from mainVar names to node input interfaces
+      fromVar = fromNodeName + "_at_" + fromInterfaceName;
+      nodeConfig[toNodeName]["toParams"][toInterface] = fromVar;
     }
+
     tsort();
     unsigned long *ids = get_sorted_ids();
     while (*ids != 0) {
@@ -156,94 +165,31 @@ namespace osg_material_manager {
       }
     }
 
-    // create edge variables
-    for (et = graph["edges"].begin(); et != graph["edges"].end(); ++et) {
-      ConfigMap data = ConfigMap::fromYamlString((*et)["data"].getString());
-      std::string from = (*et)["from"]["name"];
-      std::string from_I = (*et)["from"]["interface"];
-      std::string to = (*et)["to"]["name"];
-      std::string dataType = data["dataType"];
-      // Necessary to non unique edge names in DRockGui
-      std::string name = (*et)["from"]["name"].getString() + "_at_" + (*et)["from"]["interface"].getString();
-      (*et)["name"] = name;
-      bool print = true;
-      for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
-        if ((*it)["name"].getString() == from) {
-          if (filterMap.hasKey((*it)["model"]["name"].getString())) {
-            (*et)["name"] = (*it)["name"];
-            print = false;
-          } else if (iOuts.hasKey(from + from_I)) {
-            print = false;
-            (*et)["name"] = iOuts[from + from_I]["name"];
-          }
-        }
-        if ((*it)["name"].getString() == to) {
-          if ((*it)["model"]["name"].getString() == "outColor") {
-            std::string t = "  gl_FragColor = " + (*et)["name"].getString() + ";\n";
-            add.push_back(t);
-          } else if (filterMap.hasKey((*it)["model"]["name"].getString())) {
-            std::string t = "  " + to + " = " + (*et)["name"].getString() + ";\n";
-            add.push_back(t);
-            //(*et)["name"] = (*it)["name"].getString();
-          }
-        }
-      }
-      if (print) {
-        vars.push_back((GLSLAttribute) {dataType, name});
-        iOuts[from + from_I]["name"] = name;
-        iOuts[from + from_I]["connected"] = 0;
-      }
-    }
-
-    // create function calls
     for (sNodeIt = sortedNodes.begin(); sNodeIt != sortedNodes.end(); ++sNodeIt) {
       ConfigMap &nodeMap = **sNodeIt;
-      std::string function = nodeMap["model"]["name"];
-      std::stringstream call;
-      call.clear();
-      if (!filterMap.hasKey(function)) {
-        ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + function + ".yaml");
-        parse_functionInfo(function, functionInfo);
-        call << "  " << function << "(";
-        std::priority_queue<PrioritizedLine> incoming, outgoing;
-        bool first = true;
-        for (et = graph["edges"].begin(); et != graph["edges"].end(); ++et) {
-          std::string paramName;
-          std::string varName = (*et)["name"];
-          if ((*et)["to"]["name"].getString() == nodeMap["name"].getString()) {
-            paramName = (*et)["to"]["interface"].getString();
-            incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][paramName]["index"], 0});
-            functionInfo["params"]["in"][paramName]["connected"] = 1;
-          } else if ((*et)["from"]["name"].getString() == nodeMap["name"].getString()) {
-            paramName = (*et)["from"]["interface"].getString();
-            std::string iOuts_key = (*et)["from"]["name"].getString() + paramName;
-            if (iOuts.hasKey(iOuts_key) && (int) iOuts[iOuts_key]["connected"] == 0) {
-              outgoing.push((PrioritizedLine) {varName, (int) functionInfo["params"]["out"][paramName]["index"], 0});
-              functionInfo["params"]["out"][paramName]["connected"] = 1;
-              iOuts[iOuts_key]["connected"] = 1;
-            }
+      string nodeFunction = nodeMap["model"]["name"];
+      string nodeName = nodeMap["name"];
+      priority_queue<PrioritizedLine> incoming, outgoing;
+      bool first = true;
+
+      if (!filterMap.hasKey(nodeFunction)) {
+        ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
+        parse_functionInfo(nodeFunction, functionInfo);
+        stringstream call;
+        call.clear();
+        call << nodeFunction << "(";
+        if (functionInfo["params"].hasKey("out")) {
+          for (mit = functionInfo["params"]["out"].beginMap(); mit != functionInfo["params"]["out"].endMap(); mit++) {
+            string varName = nodeName + "_at_" + mit->first;
+            string varType = (mit->second)["type"];
+            outgoing.push((PrioritizedLine) {varName, (int) functionInfo["params"]["out"][mit->first]["index"], 0});
+            vars.push_back((GLSLAttribute) {varType, varName}); // Add main var
+          }
+          for (mit = functionInfo["params"]["in"].beginMap(); mit != functionInfo["params"]["in"].endMap(); mit++) {
+            string varName = nodeConfig[nodeName]["toParams"][mit->first];
+            incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][mit->first]["index"], 0});
           }
         }
-
-        ConfigMap::iterator m_it = functionInfo["params"]["out"].beginMap();
-        for (; m_it != functionInfo["params"]["out"].endMap(); m_it++) {
-          if (!m_it->second.hasKey("connected")) {
-            std::string varName = "unused_" + m_it->first + "_" + nodeMap["name"].getString();
-            outgoing.push((PrioritizedLine) {varName, (int) m_it->second["index"], 0});
-            vars.push_back((GLSLAttribute) {m_it->second["type"], varName});
-          }
-        }
-
-        m_it = functionInfo["params"]["in"].beginMap();
-        for (; m_it != functionInfo["params"]["in"].endMap(); m_it++) {
-          if (!m_it->second.hasKey("connected")) {
-            std::string varName = "default_" + m_it->first + "_" + nodeMap["name"].getString();
-            std::string value = nodeConfig[nodeMap["name"]]["inputs"][m_it->first];
-            incoming.push((PrioritizedLine) {varName, (int) m_it->second["index"], 0});
-            defaultInputs.push_back((GLSLVariable) {m_it->second["type"], varName, value});
-          }
-        }
-
         while (!incoming.empty()) {
           if (!first) {
             call << ", ";
@@ -260,19 +206,19 @@ namespace osg_material_manager {
           call << outgoing.top().line;
           outgoing.pop();
         }
-        // search for outgoing edges
         call << ");" << endl;
+        function_calls.push_back(call.str());
       }
-      function_calls.push_back(call.str());
     }
+
     // Compose code
     code << "void main() {" << endl;
     for (size_t i = 0; i < vars.size(); ++i) {
       code << "  " << vars[i] << ";" << endl;
     }
     code << endl;
-    for (size_t i = 0; i < defaultInputs.size(); ++i) {
-      code << "  " << defaultInputs[i] << ";" << endl;
+    for (size_t i = 0; i < defaultVars.size(); ++i) {
+      code << "  " << defaultVars[i] << ";" << endl;
     }
     code << endl;
     for (size_t i = 0; i < function_calls.size(); ++i) {
