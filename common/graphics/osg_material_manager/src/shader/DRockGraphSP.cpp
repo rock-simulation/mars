@@ -190,7 +190,14 @@ namespace osg_material_manager {
         }
         if (functionInfo["params"].hasKey("in")) {
           for (mit = functionInfo["params"]["in"].beginMap(); mit != functionInfo["params"]["in"].endMap(); mit++) {
-            string varName = nodeConfig[nodeName]["toParams"][mit->first];
+            string varName = "";
+            if (nodeConfig[nodeName]["toParams"].hasKey(mit->first)) {
+              varName = nodeConfig[nodeName]["toParams"][mit->first].getString();
+            } else if (nodeConfig[nodeName].hasKey("inputs") && nodeConfig[nodeName]["inputs"].hasKey(mit->first)) {
+              varName = "default_" + mit->first + "_for_" + nodeName;
+              string varType = (mit->second)["type"];
+              defaultVars.push_back(GLSLVariable {varType, varName, nodeConfig[nodeName]["inputs"][mit->first]});
+            }
             incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][mit->first]["index"], 0});
           }
         }
