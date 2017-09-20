@@ -187,6 +187,8 @@ namespace osg_material_manager {
             outgoing.push((PrioritizedLine) {varName, (int) functionInfo["params"]["out"][mit->first]["index"], 0});
             vars.push_back((GLSLAttribute) {varType, varName}); // Add main var
           }
+        }
+        if (functionInfo["params"].hasKey("in")) {
           for (mit = functionInfo["params"]["in"].beginMap(); mit != functionInfo["params"]["in"].endMap(); mit++) {
             string varName = nodeConfig[nodeName]["toParams"][mit->first];
             incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][mit->first]["index"], 0});
