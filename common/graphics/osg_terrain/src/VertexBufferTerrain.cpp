@@ -25,6 +25,11 @@
                               //glDeleteBuffers
 #endif
 
+
+// On MS Windows MultiResHeightMapRenderer.h needs to be included before
+// any OpenGL stuff!
+#include "MultiResHeightMapRenderer.h"
+
 #include "VertexBufferTerrain.h"
 
 #ifdef WIN32
@@ -49,7 +54,7 @@ namespace osg_terrain {
     mrhmr = new MultiResHeightMapRenderer(steps, steps, width, height,
                                           scaleZ, 1.0/width, 1.0/height, depth,
                                           "heightmap.png");
-    
+
     width = height = scale = 1.0;
     mrhmr->setDrawWireframe(true);
     mrhmr->setDrawSolid(false);
@@ -126,6 +131,10 @@ namespace osg_terrain {
       mrhmr->setDrawSolid(true);
       mrhmr->setDrawWireframe(false);
     }
+  }
+
+  void VertexBufferTerrain::setCameraPosition(double x, double y) {
+    if(mrhmr) mrhmr->setCameraPosition(x, y);
   }
 
 } // end of namespace osg_terrain
