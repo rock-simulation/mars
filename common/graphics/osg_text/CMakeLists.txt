@@ -10,7 +10,11 @@ link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
 include_directories(src)
 
-add_definitions(-DMARS_PREFERENCES_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+if(WIN32)
+  add_definitions(-DMARS_PREFERENCES_DEFAULT_RESOURCES_PATH=\"'${CMAKE_INSTALL_PREFIX}/share'\")
+else(WIN32)
+  add_definitions(-DMARS_PREFERENCES_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+endif(WIN32)
 
 set(SOURCES 
 	src/Text.cpp
