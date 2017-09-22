@@ -130,7 +130,7 @@ namespace osg_terrain {
   }
 #elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
   osg::BoundingSphere VertexBufferTerrain::computeBound() const {
-    return osg::BoundingSphere(sqrt(width*width+height*height+scale*scale));
+    return osg::BoundingSphere(osg::Vec3(width*0.5, height*0.5, scale*0.5), sqrt(width*width+height*height+scale*scale));
   }
 #else
 #error Unknown OSG Version
