@@ -22,6 +22,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_utils
           osg_material_manager
           opencv
+          glew
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -52,10 +53,17 @@ if(APPLE)
  SET(APPLE_LIBS ${OPENGL_LIBRARY} -L/opt/local/lib opencv_core opencv_highgui opencv_imgproc)
 endif(APPLE)
 
+if(WIN32)
+ find_package(OpenGL)
+ SET(WIN_LIBS ${OPENGL_LIBRARIES})
+endif(WIN32)
+
+
 target_link_libraries(${PROJECT_NAME}
                       ${OPENSCENEGRAPH_LIBRARIES}
                       ${PKGCONFIG_LIBRARIES}
                       ${APPLE_LIBS}
+                      ${WIN_LIBS}
 )
 
 if(WIN32)
