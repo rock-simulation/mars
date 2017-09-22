@@ -94,13 +94,13 @@ namespace data_broker_plotter2 {
 
   private:
     mars::config_map_gui::DataWidget *dw;
-    configmaps::ConfigMap map;
+    configmaps::ConfigMap map, loadMap;
     lib_manager::LibManager* libManager;
     mars::data_broker::DataBrokerInterface *dataBroker;
     DataBrokerPlotterLib *mainLib;
     QCustomPlot *qcPlot;
     QMutex dataLock, plotLock;
-    std::string name, exportPath;
+    std::string name, configPath, exportPath;
     std::vector<PackageData> packageList;
     std::vector<std::string> filter;
     unsigned long xRange;
@@ -118,6 +118,8 @@ namespace data_broker_plotter2 {
 
     void createNewPlot(std::string label, const mars::data_broker::DataInfo &info);
     void shiftDown( QRect &rect, int offset ) const;
+    void showPlot(Plot* plot);
+    void hidePlot(Plot* plot);
 
   };
 

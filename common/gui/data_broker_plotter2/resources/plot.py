@@ -66,7 +66,7 @@ def doPlot():
                         if key[:8] == "mars_sim":
                             arrString = key.split("_")
                             s = "_".join(arrString[2:])
-                        value["label"] = s
+                        value["label"] = s.replace("_", "\_")
                     value["key"] = key
                     configList[i] = value
                     break

@@ -27,14 +27,12 @@
 #ifndef VERTEX_BUFFER_TERRAIN_H
 #define VERTEX_BUFFER_TERRAIN_H
 
-// On MS Windows MultiResHeightMapRenderer.h needs to be included before
-// any OpenGL stuff!
-#include "MultiResHeightMapRenderer.h"
 #include <osg/Drawable>
 #include <cstdio>
 
 namespace osg_terrain {
 
+  class MultiResHeightMapRenderer;
   class VertexBufferTerrain : public osg::Drawable {
 
   public:
@@ -69,9 +67,7 @@ namespace osg_terrain {
 #error Unknown OSG Version
 #endif
     void setSelected(bool val);
-    void setCameraPosition(double x, double y) {
-      if(mrhmr) mrhmr->setCameraPosition(x, y);
-    }
+    void setCameraPosition(double x, double y);
 
   private:
     MultiResHeightMapRenderer *mrhmr;

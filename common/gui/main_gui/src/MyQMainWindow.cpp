@@ -470,6 +470,7 @@ namespace mars {
           base->saveState();
         }
         (*subit)->close();
+        delete *subit;
       }
       if(myCentralWidget) {
         myCentralWidget->close();
