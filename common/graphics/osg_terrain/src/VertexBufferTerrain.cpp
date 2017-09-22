@@ -113,9 +113,17 @@ namespace osg_terrain {
     //mrhmr->collideSphere(xPos, yPos, zPos, radius);
   }
 
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 4))
   osg::BoundingBox VertexBufferTerrain::computeBound() const {
     return osg::BoundingBox(0.0, 0.0, 0.0, width, height, scale);
   }
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
+  osg::BoundingSphere VertexBufferTerrain::computeBound() const {
+    return osg::BoundingSphere(sqrt(width*width+height*height+scale*scale));
+  }
+#else
+#error Unknown OSG Version
+#endif
 
   void VertexBufferTerrain::setSelected(bool val) {
     if(val) {
