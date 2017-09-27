@@ -98,3 +98,9 @@ def appendLines(name, x, y, z):
 def requestCameraSensor(name):
     global iDict
     iDict["CameraSensor"][name] = 1
+
+def pushData(group, name, dataName, value):
+    global iDict
+    if not "ToDataBroker" in iDict:
+        iDict["ToDataBroker"] = []
+    iDict["ToDataBroker"].append({"g":group, "n":name, "d":dataName, "v":value})

@@ -350,6 +350,30 @@ namespace mars {
               }
             }
           }
+          if(map.hasKey("ToDataBroker")) {
+            for(auto it:map["ToDataBroker"]) {
+              data_broker::DataInfo di;
+              data_broker::DataPackage dp;
+              std::string g, n, d;
+              double v = it["v"];
+              g << it["g"];
+              n << it["n"];
+              d << it["d"];
+              di = control->dataBroker->getDataInfo(g, n);
+              if(di.dataId > 0) {
+                dp = control->dataBroker->getDataPackage(di.dataId);
+              }
+              long index = dp.getIndexByName(d);
+              if(index == -1) {
+                dp.add(d, v);
+              }
+              else {
+                dp.set(index, v);
+              }
+              control->dataBroker->pushData(g, n, dp, 0,
+                                            data_broker::DATA_PACKAGE_READ_FLAG);
+            }
+          }
         }
         nextStep = true;
         guiMaps.clear();
