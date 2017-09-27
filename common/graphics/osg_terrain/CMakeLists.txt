@@ -22,7 +22,6 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_utils
           osg_material_manager
           opencv
-          glew
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -55,7 +54,11 @@ endif(APPLE)
 
 if(WIN32)
  find_package(OpenGL)
- SET(WIN_LIBS ${OPENGL_LIBRARIES})
+ pkg_check_modules(GLEW REQUIRED glew)
+ include_directories(${GLEW_INCLUDE_DIRS})
+ link_directories(${GLEW_LIBRARY_DIRS})
+ add_definitions(${GLEW_CFLAGS_OTHER})
+ SET(WIN_LIBS ${OPENGL_LIBRARIES} ${GLEW_LIBRARIES})
 endif(WIN32)
 
 
