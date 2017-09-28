@@ -250,16 +250,16 @@ namespace mars {
         return;
       }
       // todo: check if this windows handling is still correct
-#ifndef WIN32
+      //#ifndef WIN32
 
       view->getEventQueue()->keyPress(qtToOsgKey(e));
-#endif
+      //#endif
     }
 
     void QtOsgMixGraphicsWidget::keyReleaseEvent(QKeyEvent* e) {
-#ifndef WIN32
+      //#ifndef WIN32
       view->getEventQueue()->keyRelease(qtToOsgKey(e));
-#endif
+      //#endif
     }
 
     void QtOsgMixGraphicsWidget::hideEvent(QHideEvent * event) {
