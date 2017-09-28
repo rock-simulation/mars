@@ -51,6 +51,13 @@
 namespace mars {
   namespace graphics {
 
+
+    // Store current active window, which we change if we got an mouse in event
+    // on another graphics window. This is needed because the focus handling isn't
+    // working correctly and the mouse event are all captured by the first window.
+    QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::activeWindow = NULL;
+    QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::eventInWindow = NULL;
+
     using Qt::WindowFlags;
 
     QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::createInstance(
@@ -235,7 +242,16 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::keyPressEvent(QKeyEvent* e) {
+      // switch focus if needed
+      if(activeWindow != eventInWindow) {
+        activeWindow = eventInWindow;
+        activeWindow->focusInEvent(NULL);
+        activeWindow->keyPressEvent(e);
+        return;
+      }
+      // todo: check if this windows handling is still correct
 #ifndef WIN32
+
       view->getEventQueue()->keyPress(qtToOsgKey(e));
 #endif
     }
@@ -272,7 +288,16 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::mousePressEvent(QMouseEvent* e) {
+      // switch focus if needed
+      if(activeWindow != eventInWindow) {
+        activeWindow = eventInWindow;
+        activeWindow->focusInEvent(NULL);
+        activeWindow->mousePressEvent(e);
+        return;
+      }
+
       int button = 0;
+
       switch(e->button()) {
       case(Qt::LeftButton): button = 1; break;
       case(Qt::MidButton): button = 2; break;
@@ -334,8 +359,7 @@ namespace mars {
 
     bool QtOsgMixGraphicsWidget::eventFilter(QObject *obj, QEvent *event) {
       if(event->type() == QEvent::Enter) {
-        gm->setActiveWindow(this);
-        gm->setActiveWindow(widgetID);
+        eventInWindow = this;
         return false;
       }
       if (obj != parent()) {

@@ -42,7 +42,6 @@
 
 #include <QWidget>
 
-
 #if defined(WIN32) && !defined(__CYGWIN__)
   #include <osgViewer/api/Win32/GraphicsWindowWin32>
 #elif defined(__APPLE__)  // Assume using Carbon on Mac.
@@ -123,8 +122,9 @@ namespace mars {
     protected:
       virtual ~QtOsgMixGraphicsWidget() {};
 
-#ifdef __APPLE__
     private:
+      static QtOsgMixGraphicsWidget *activeWindow, *eventInWindow;
+#ifdef __APPLE__
       WindowData *wdata;
       bool haveNSView;
 #endif
