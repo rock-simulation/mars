@@ -35,8 +35,13 @@ GLEW_FUN_EXPORT PFNGLMAPBUFFERPROC glMapBuffer;
 GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer;
 #endif
 
-#include <GL/gl.h>
-#include <GL/glext.h>
+#ifdef __APPLE__
+ #include <OpenGL/gl.h>
+ #include <OpenGL/glext.h>
+#else
+ #include <GL/gl.h>
+ #include <GL/glext.h>
+#endif
 #include <map>
 #include <list>
 #include <vector>
