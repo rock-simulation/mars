@@ -523,10 +523,6 @@ namespace osg_material_manager {
         vertexShader->addShaderFunction(bumpVert);
       }
       if(map["shader"].hasKey("EnvMapVertex")) {
-        envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
-                                             (double)map["envMapSpecular"]["g"],
-                                             (double)map["envMapSpecular"]["b"]));
-        stateSet->addUniform(envMapSpecularUniform.get());
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_vert.yml");
         YamlShader *shader = new YamlShader((string)map2["name"], args, map2, resPath);
         vertexShader->addShaderFunction(shader);
@@ -548,10 +544,6 @@ namespace osg_material_manager {
         fragmentShader->addShaderFunction(bumpFrag);
       }
       if(map["shader"].hasKey("EnvMapFragment")) {
-        envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
-                                          (double)map["envMapScale"]["g"],
-                                          (double)map["envMapScale"]["b"]));
-        stateSet->addUniform(envMapScaleUniform.get());
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_frag.yml");
         YamlShader *frag = new YamlShader((string)map2["name"], args, map2, resPath);
         fragmentShader->addShaderFunction(frag);
@@ -571,6 +563,18 @@ namespace osg_material_manager {
     }
     else {
       stateSet->removeUniform(texScaleUniform.get());
+    }
+    if (map.hasKey("envMapSpecular")) {
+      envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+                                           (double)map["envMapSpecular"]["g"],
+                                           (double)map["envMapSpecular"]["b"]));
+      stateSet->addUniform(envMapSpecularUniform.get());
+    }
+    if (map.hasKey("envMapScale")) {
+      envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+                                        (double)map["envMapScale"]["g"],
+                                        (double)map["envMapScale"]["b"]));
+      stateSet->addUniform(envMapScaleUniform.get());
     }
     if(map.hasKey("shaderSources")) {
       // load shader from text file

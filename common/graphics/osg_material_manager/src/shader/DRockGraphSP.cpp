@@ -153,6 +153,13 @@ namespace osg_material_manager {
       }
       // Create Mappings from mainVar names to node input interfaces
       nodeConfig[toNodeName]["toParams"][toInterface] = fromVar;
+      ConfigMap toNode = nodeMap[nodeNameId[toNodeName]];
+      if (filterMap.hasKey(toNode["model"]["name"]) && nodeConfig[toNodeName].hasKey("type")) {
+        if ( nodeConfig[toNodeName]["type"] == "varying") {
+          // We have to output into a varying
+          add.push_back(toNodeName + " = " + fromVar + ";\n");
+        }
+      }
     }
 
     tsort();
