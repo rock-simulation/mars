@@ -119,7 +119,7 @@ namespace osg_material_manager {
   void OsgMaterial::setMaterial(const ConfigMap &map_) {
     //return;
     map = map_;
-    map.toYamlFile("material.yml");
+    //map.toYamlFile("material.yml");
     if(map.hasKey("loadPath")) {
       loadPath << map["loadPath"];
       if(loadPath[loadPath.size()-1] != '/') {
