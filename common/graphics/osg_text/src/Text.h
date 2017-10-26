@@ -66,12 +66,15 @@ namespace osg_text {
     void setPosition(double x, double y);
     void setFontResolution(int x, int y);
     void getRectangle(double *left, double *right,
-                      double *top, double *bottom) {
-      *left = posX+posXB-pl;
-      *right = posX+posXB+w-pl;
-      *top = posY+pt;
-      *bottom = posY-h+pt;
-    }
+                      double *top, double *bottom);
+    void getPosition(double *x, double *y);
+    std::string getText();
+    double getFontsize();
+    void getPadding(double *pl, double *pt, double *pr, double *pb);
+    TextAlign getAlign();
+    Color getBackgroundColor();
+    Color getBorderColor();
+    double getBorderWidth();
 
   private:
     osg::ref_ptr<osg::PositionAttitudeTransform> transform;
@@ -94,6 +97,7 @@ namespace osg_text {
     osg::ref_ptr<osg::Vec4Array> backgroundColor, borderColor;
     double borderWidth;
     double resolutionCorrectionX, resolutionCorrectionY;
+    std::string text_;
 
     void updateSize();
     void updateBoundingBox();
