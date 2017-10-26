@@ -68,9 +68,17 @@ namespace osg_text {
     virtual void setFixedWidth(double w) = 0;
     virtual void setFixedHeight(double h) = 0;
     virtual void setPosition(double x, double y) = 0;
+    virtual void getPosition(double *x, double *y) = 0;
+    virtual std::string getText() = 0;
     virtual void setFontResolution(int x, int y) = 0;
     virtual void getRectangle(double *left, double *right,
                               double *top, double *bottom) = 0;
+    virtual double getFontsize() = 0;
+    virtual void getPadding(double *pl, double *pt, double *pr, double *pb) = 0;
+    virtual TextAlign getAlign() = 0;
+    virtual Color getBackgroundColor() = 0;
+    virtual Color getBorderColor() = 0;
+    virtual double getBorderWidth() = 0;
   };
 
 } // end of namespace: osg_text

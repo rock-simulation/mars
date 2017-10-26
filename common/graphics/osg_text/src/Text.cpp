@@ -78,6 +78,7 @@ namespace osg_text {
     //labelText->setCharacterSizeMode(osgText::Text::SCREEN_COORDS);
     labelText->setAxisAlignment(osgText::Text::XY_PLANE);
     labelText->setAlignment(osgText::Text::LEFT_TOP);
+    text_ = text;
     labelText->setText(text);
     labelText->setColor(osg::Vec4(textColor.r, textColor.g,
                                   textColor.b, textColor.a));
@@ -101,6 +102,7 @@ namespace osg_text {
   }
 
   void Text::setText(const std::string &s) {
+    text_ = s;
     labelText->setText(s);
     labelGeode->dirtyBound();
     labelGeode->computeBound();
@@ -326,6 +328,60 @@ namespace osg_text {
     resolutionCorrection->setMatrix(osg::Matrix::translate(posXI, 0.0, 0.0f));
     resolutionCorrection->preMult(osg::Matrix::scale(resolutionCorrectionX,
                                                      resolutionCorrectionY, 1.));
+  }
+
+  void Text::getRectangle(double *left, double *right,
+                          double *top, double *bottom) {
+    *left = posX+posXB-pl;
+    *right = *left+w;
+    *top = posY+pt;
+    *bottom = *top-h;
+  }
+
+  void Text::getPosition(double *x, double *y) {
+    *x = posX;
+    *y = posY;
+  }
+
+  std::string Text::getText() {
+    return text_;
+  }
+
+  double Text::getFontsize() {
+    return fontSize;
+  }
+
+  void Text::getPadding(double *pl, double *pt, double *pr, double *pb) {
+    *pl = this->pl;
+    *pt = this->pt;
+    *pr = this->pr;
+    *pb = this->pb;
+  }
+
+  TextAlign Text::getAlign() {
+    return textAlign;
+  }
+
+  Color Text::getBackgroundColor() {
+    Color c;
+    c.r = (*backgroundColor)[0][0];
+    c.g = (*backgroundColor)[0][1];
+    c.b = (*backgroundColor)[0][2];
+    c.a = (*backgroundColor)[0][3];
+    return c;
+  }
+
+  Color Text::getBorderColor() {
+    Color c;
+    c.r = (*borderColor)[0][0];
+    c.g = (*borderColor)[0][1];
+    c.b = (*borderColor)[0][2];
+    c.a = (*borderColor)[0][3];
+    return c;
+  }
+
+  double Text::getBorderWidth() {
+    return borderWidth;
   }
 
 } // end of namespace: osg_text
