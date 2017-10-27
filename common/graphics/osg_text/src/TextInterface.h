@@ -79,6 +79,7 @@ namespace osg_text {
     virtual Color getBackgroundColor() = 0;
     virtual Color getBorderColor() = 0;
     virtual double getBorderWidth() = 0;
+    virtual std::string getFont() = 0;
   };
 
 } // end of namespace: osg_text

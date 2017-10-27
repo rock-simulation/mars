@@ -75,6 +75,7 @@ namespace osg_text {
     Color getBackgroundColor();
     Color getBorderColor();
     double getBorderWidth();
+    std::string getFont();
 
   private:
     osg::ref_ptr<osg::PositionAttitudeTransform> transform;
@@ -98,6 +99,7 @@ namespace osg_text {
     double borderWidth;
     double resolutionCorrectionX, resolutionCorrectionY;
     std::string text_;
+    std::string font;
 
     void updateSize();
     void updateBoundingBox();
