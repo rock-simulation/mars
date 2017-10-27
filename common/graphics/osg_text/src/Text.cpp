@@ -50,7 +50,6 @@ namespace osg_text {
                                      fontSize(fontSize) {
 
     labelGeode = new osg::Geode();
-    std::string font;
     if(fontPath.empty()) {
       font = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
       font += "/mars/graphics/resources/Fonts";
@@ -382,6 +381,10 @@ namespace osg_text {
 
   double Text::getBorderWidth() {
     return borderWidth;
+  }
+
+  std::string Text::getFont() {
+    return font;
   }
 
 } // end of namespace: osg_text
