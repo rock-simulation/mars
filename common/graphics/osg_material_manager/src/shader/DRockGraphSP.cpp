@@ -155,7 +155,7 @@ namespace osg_material_manager {
       nodeConfig[toNodeName]["toParams"][toInterface] = fromVar;
       ConfigMap toNode = nodeMap[nodeNameId[toNodeName]];
       if (filterMap.hasKey(toNode["model"]["name"]) && nodeConfig[toNodeName].hasKey("type")) {
-        if ( nodeConfig[toNodeName]["type"] == "varying") {
+        if ( nodeConfig[toNodeName]["type"].getString() == "varying") {
           // We have to output into a varying
           add.push_back(toNodeName + " = " + fromVar + ";\n");
         }
