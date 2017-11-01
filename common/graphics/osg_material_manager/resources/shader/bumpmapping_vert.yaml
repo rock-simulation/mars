@@ -7,5 +7,5 @@ attributes:
   vec4:
     - {name: vertexTangent}
 source: /shader/normalmap.vert
-name: bump
+name: normalmap_vert
 priority: 2

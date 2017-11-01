@@ -19,5 +19,5 @@ mainVars:
       value: "texture2D( normalMap, texCoord )"
       priority: 0
 source: /shader/normalmap.frag
-name: bump
+name: normalmap_frag
 priority: 6

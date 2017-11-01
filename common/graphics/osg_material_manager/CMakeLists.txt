@@ -41,9 +41,12 @@ set(SOURCES
 	src/OsgMaterial.cpp
 	src/MaterialNode.cpp
 	src/shader/shader-types.cpp
-	src/shader/shader-generator.cpp
 	src/shader/shader-function.cpp
 	src/shader/yaml-shader.cpp
+	src/shader/ShaderFactory.cpp
+	src/shader/DRockGraphSP.cpp
+	src/shader/YamlSP.cpp
+	src/tsort/tsort.c
         )
 
 set(HEADERS
@@ -51,9 +54,13 @@ set(HEADERS
 	src/OsgMaterial.h
 	src/MaterialNode.h
 	src/shader/shader-types.h
-	src/shader/shader-generator.h
 	src/shader/shader-function.h
 	src/shader/yaml-shader.h
+	src/shader/ShaderFactory.h
+	src/shader/DRockGraphSP.h
+	src/shader/IShaderProvider.h
+	src/shader/YamlSP.h
+	src/tsort/tsort.h
 		)
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})

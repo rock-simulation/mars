@@ -1,0 +1,11 @@
+params:
+  in:
+    viewPos: {index: 0, type: vec4}
+    modelPos: {index: 1, type: vec4}
+    normalVarying: {index: 2, type: vec3}
+source: /graph_shader/vertexOut.vert
+varyings:
+  vec3:
+    - {name: normalVarying}
+  vec4:
+    - {name: modelVertex}

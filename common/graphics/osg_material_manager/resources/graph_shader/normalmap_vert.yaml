@@ -1,0 +1,11 @@
+params:
+  in:
+    n: {index: 0, type: vec3}
+source: /shader/normalmap.vert
+minVersion: 120
+varyings:
+  mat3:
+    - {name: ttw}
+attributes:
+  vec4:
+    - {name: vertexTangent}

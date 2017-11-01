@@ -2,7 +2,7 @@ float rnd(float x, float y) {
   return fract(sin(dot(vec2(x,y) ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
-void plight(vec4 v, vec4 scol) {
+void pixellight_vert(vec4 v, vec4 scol) {
   // save the vertex to eye vector in world space
   eyeVec = osg_ViewMatrixInverse[3].xyz-v.xyz;
   for(int i=0; i<numLights; ++i) {

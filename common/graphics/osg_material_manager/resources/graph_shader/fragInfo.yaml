@@ -1,0 +1,11 @@
+params:
+  out:
+    ambient: {index: 0, type: vec4}
+    diffuse: {index: 1, type: vec4}
+    specular: {index: 2, type: vec4}
+    emission: {index: 3, type: vec4}
+    texCoord: {index: 4, type: vec2}
+uniforms:
+  float:
+    - {name: texScale}
+source: /graph_shader/fragInfo.frag

@@ -1,4 +1,4 @@
-void envMap(out vec4 specularCol) {
+void envmap_vert(out vec4 specularCol) {
   vec2 texCoord = gl_MultiTexCoord0.xy*texScale;
   vec4 scale = texture2D(environmentMap, texCoord);
   float rcol = scale.r*envMapSpecular.r;

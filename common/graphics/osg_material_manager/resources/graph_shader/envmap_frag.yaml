@@ -1,9 +1,12 @@
 params:
-  - col
-  - nt
+  out:
+    col: {index: 0, type: vec4}
+    nt: {index: 1, type: vec4}
+source: /shader/envmap.frag
 uniforms:
   float:
     - {name: bumpNorFac}
+    - {name: texScale}
   vec3:
     - {name: envMapScale}
   sampler2D:
@@ -15,9 +18,6 @@ uniforms:
     - {name: normalMapG}
     - {name: normalMapB}
     - {name: environmentMap}
-mainVarDecs:
+varyings:
   vec4:
-    - name: nt
-source: /shader/envmap.frag
-name: envmap_frag
-priority: 2
+    - {name: positionVarying}

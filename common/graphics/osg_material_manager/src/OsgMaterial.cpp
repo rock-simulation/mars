@@ -31,8 +31,9 @@
 #include "MaterialNode.h"
 #include <osgDB/WriteFile>
 
-#include "shader/shader-generator.h"
-#include "shader/shader-function.h"
+#include "shader/ShaderFactory.h"
+#include "shader/DRockGraphSP.h"
+#include "shader/YamlSP.h"
 #include "shader/yaml-shader.h"
 
 #include <osg/TexMat>
@@ -458,108 +459,17 @@ namespace osg_material_manager {
       return;
     }
     hasShaderSources = true;
+    bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
     stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap,
                                           osg::StateAttribute::ON);
     stateSet->removeUniform(envMapSpecularUniform.get());
     stateSet->removeUniform(envMapScaleUniform.get());
     stateSet->removeUniform(terrainScaleZUniform.get());
     stateSet->removeUniform(terrainDimUniform.get());
-    ShaderGenerator shaderGenerator;
-    vector<string> args;
-
-    bool hasTexture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
-
-
-    ShaderFunc *vertexShader = new ShaderFunc;
-    {
-      if(map.hasKey("instancing")) {
-        vertexShader->addUniform( (GLSLUniform)
-                                  { "sampler2D", "NoiseMap" } );
-        vertexShader->enableExtension("GL_ARB_draw_instanced");
-        vertexShader->addUniform( (GLSLUniform)
-                                  { "float", "sin_" } );
-        vertexShader->addUniform( (GLSLUniform)
-                                  { "float", "cos_" } );
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "offset", "vec4(10.0*rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.2), 10.0*rnd(float(gl_InstanceIDARB)*0.2, float(gl_InstanceIDARB)*0.3), rnd(float(gl_InstanceIDARB)*0.1, float(gl_InstanceIDARB)*0.9), rnd(float(gl_InstanceIDARB)*0.7, float(gl_InstanceIDARB)*0.7))" }, -1);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "fPos", "vec4(gl_Vertex.xy + offset.xy, gl_Vertex.z/**(0.5+offset.z)*/, gl_Vertex.w)" }, -1);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec3", "sc", "vec3(normalize(vec2(fPos.x*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.16, float(gl_InstanceIDARB)*0.8), fPos.y*0.1+0.5*rnd(float(gl_InstanceIDARB)*0.8, float(gl_InstanceIDARB)*0.16))), rnd(float(gl_InstanceIDARB)*0.4, float(gl_InstanceIDARB)*0.4))-0.5" }, -1);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vWorldPos", "fPos + vec4(0.1*sc.z*(sin_*gl_Vertex.z*sc.x + cos_*gl_Vertex.z*sc.y), 0.1*sc.z*(sin_*gl_Vertex.z*sc.y + cos_*gl_Vertex.z*sc.x), 0, 0)" }, -1);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vModelPos", "vWorldPos" }, -1);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " }, -1);
-        vertexShader->addExport( (GLSLExport)
-                                 {"gl_TexCoord[2].xy", "gl_TexCoord[2].xy + vec2(-offset.y, offset.x)"});
-        vertexShader->addExport( (GLSLExport)
-                                 {"diffuse[0]", "vec4(0.5)+diffuse[0] * (1+offset.x)"} );
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "specularCol", "gl_FrontMaterial.specular*(0.5+offset.w)" }, -1);
-      }
-      else {
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vModelPos", "gl_Vertex" }, -120);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vViewPos", "gl_ModelViewMatrix * vModelPos " }, -110);
-        vertexShader->addMainVar( (GLSLVariable)
-                                  { "vec4", "vWorldPos", "osg_ViewMatrixInverse * vViewPos " }, -100);
-        vertexShader->addMainVar( (GLSLVariable)
-                            { "vec4", "specularCol", "gl_FrontMaterial.specular" }, -90);
-      }
-      vertexShader->addExport( (GLSLExport)
-                               {"gl_Position", "gl_ModelViewProjectionMatrix * vModelPos"} );
-      vertexShader->addExport( (GLSLExport) {"gl_ClipVertex", "vViewPos"} );
-      if(hasTexture) {
-        vertexShader->addExport( (GLSLExport)
-                                 { "gl_TexCoord[0].xy", "gl_MultiTexCoord0.xy" });
-      }
-      shaderGenerator.addShaderFunction(vertexShader, SHADER_TYPE_VERTEX);
-    }
-
-    ShaderFunc *fragmentShader = new ShaderFunc;
-    {
-      if(hasTexture) {
-        fragmentShader->addUniform( (GLSLUniform)
-                                    { "float", "texScale" } );
-        {
-          if(useWorldTexCoords) {
-            fragmentShader->addMainVar( (GLSLVariable)
-                                        { "vec2", "texCoord", "positionVarying.xy*texScale+vec2(0.5, 0.5)" }, -200);
-          }
-          else {
-            fragmentShader->addMainVar( (GLSLVariable)
-                                        { "vec2", "texCoord", "gl_TexCoord[0].xy*texScale" }, -200);
-          }
-        }
-      }
-      std::map<std::string, TextureInfo>::iterator it = textures.begin();
-      for(; it!=textures.end(); ++it) {
-        fragmentShader->addUniform( (GLSLUniform)
-                                    { "sampler2D", it->second.name } );
-      }
-      {
-        if(map["insetancing"]) {
-          fragmentShader->addMainVar( (GLSLVariable)
-                                      { "vec4", "col", "vec4(1.0, 1.0, 1.0, texture2D(normalMap, texCoord).a)" }, -200);
-        }
-        else {
-          fragmentShader->addMainVar( (GLSLVariable)
-                                      { "vec4", "col", "vec4(1.0)" }, -200);
-        }
-      }
-      fragmentShader->addExport( (GLSLExport) {"gl_FragColor", "col"} );
-      shaderGenerator.addShaderFunction(fragmentShader, SHADER_TYPE_FRAGMENT);
-    }
-
-
+    ShaderFactory factory;
     osg::Program *glslProgram;
-    args.clear();
-    bool clearShaderEntry = false;
+
     if(!map.hasKey("shader")) {
-      clearShaderEntry = true;
       map["shader"]["PixelLightVertex"] = true;
       map["shader"]["PixelLightFragment"] = true;
       if(checkTexture("normalMap")) {
@@ -568,77 +478,104 @@ namespace osg_material_manager {
       }
     }
 
-    if(map.hasKey("shader")) {
+    if (map["shader"].hasKey("provider")) {
+      if ((string)map["shader"]["provider"] == "DRockGraph") {
+        ConfigMap options;
+        options["numLights"] = maxNumLights;
+        string vertexPath = map["shader"]["vertex"];
+        string fragmentPath = map["shader"]["fragment"];
+        if(!loadPath.empty() && vertexPath[0] != '/') {
+          vertexPath = loadPath + vertexPath;
+        }
+        if(!loadPath.empty() && fragmentPath[0] != '/') {
+          fragmentPath = loadPath + fragmentPath;
+        }
+        ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
+        ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
+        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
+        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
+        factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
+        factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
+      }
+    } else {
+      vector<string> args;
+      stringstream s;
+      s << maxNumLights;
+      YamlSP *vertexShader = new YamlSP(resPath);
+      YamlSP *fragmentShader = new YamlSP(resPath);
       if(map["shader"].hasKey("TerrainMapVertex")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/terrainMap_vert.yml");
         YamlShader *terrainMapVert = new YamlShader((string)map2["name"], args, map2, resPath);
-        shaderGenerator.addShaderFunction(terrainMapVert, SHADER_TYPE_VERTEX);
+        vertexShader->addShaderFunction(terrainMapVert);
         stateSet->addUniform(terrainScaleZUniform.get());
         stateSet->addUniform(terrainDimUniform.get());
         terrainScaleZUniform->set((float)(double)map["scaleZ"]);
       }
-      if(map["shader"].hasKey("PixelLightVertex")) {
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
-        stringstream s;
-        s << maxNumLights;
-        map["mappings"]["numLights"] = s.str();
-        YamlShader *plightVert = new YamlShader((string)map["name"], args, map, resPath);
-        shaderGenerator.addShaderFunction(plightVert, SHADER_TYPE_VERTEX);
+      if (map["shader"].hasKey("PixelLightVertex")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_vert.yaml");
+        map2["mappings"]["numLights"] = s.str();
+        YamlShader *plightVert = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(plightVert);
       }
       if(map["shader"].hasKey("NormalMapVertex")) {
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_vert.yaml");
-        YamlShader *bumpVert = new YamlShader((string)map["name"], args, map, resPath);
-        shaderGenerator.addShaderFunction(bumpVert, SHADER_TYPE_VERTEX);
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_vert.yaml");
+        YamlShader *bumpVert = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(bumpVert);
+      }
+      if(map["shader"].hasKey("EnvMapVertex")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_vert.yml");
+        YamlShader *shader = new YamlShader((string)map2["name"], args, map2, resPath);
+        vertexShader->addShaderFunction(shader);
+
+      }
+      if (map["shader"].hasKey("PixelLightFragment")) {
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
+        map2["mappings"]["numLights"] = s.str();
+        YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
+        if(checkTexture("diffuseMap")) {
+          plightFrag->addMainVar( (GLSLVariable) { "vec4", "col", "texture2D(diffuseMap, texCoord)" }, 1);
+          plightFrag->addUniform((GLSLUniform) {"sampler2D", "diffuseMap"});
+        }
+        fragmentShader->addShaderFunction(plightFrag);
       }
       if(map["shader"].hasKey("NormalMapFragment")) {
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");
-        YamlShader *bumpFrag = new YamlShader((string)map["name"], args, map, resPath);
-        shaderGenerator.addShaderFunction(bumpFrag, SHADER_TYPE_FRAGMENT);
-      }
-
-      if(map["shader"].hasKey("EnvMapVertex")) {
-        envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
-                                            (double)map["envMapSpecular"]["g"],
-                                            (double)map["envMapSpecular"]["b"]));
-        stateSet->addUniform(envMapSpecularUniform.get());
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/envMap_vert.yml");
-        YamlShader *shader = new YamlShader((string)map["name"], args, map, resPath);
-        shaderGenerator.addShaderFunction(shader, SHADER_TYPE_VERTEX);
-
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");
+        YamlShader *bumpFrag = new YamlShader((string)map2["name"], args, map2, resPath);
+        fragmentShader->addShaderFunction(bumpFrag);
       }
       if(map["shader"].hasKey("EnvMapFragment")) {
-        envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
-                                          (double)map["envMapScale"]["g"],
-                                          (double)map["envMapScale"]["b"]));
-        stateSet->addUniform(envMapScaleUniform.get());
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/envMap_frag.yml");
-        YamlShader *frag = new YamlShader((string)map["name"], args, map, resPath);
-        shaderGenerator.addShaderFunction(frag, SHADER_TYPE_FRAGMENT);
+        ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/envMap_frag.yml");
+        YamlShader *frag = new YamlShader((string)map2["name"], args, map2, resPath);
+        fragmentShader->addShaderFunction(frag);
 
       }
-      if(map["shader"].hasKey("PixelLightFragment")) {
-        bool haveDiffuseMap = checkTexture("diffuseMap");
-        ConfigMap map = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
-        stringstream s;
-        s << maxNumLights;
-        map["mappings"]["numLights"] = s.str();
-        YamlShader *plightFrag = new YamlShader((string)map["name"], args, map, resPath);
-        /*PixelLightFrag *plightFrag = new PixelLightFrag(args, maxNumLights,
-                                                        resPath,
-                                                        haveDiffuseMap,
-                                                        havePCol);*/
-        // invert the normal if gl_FrontFacing=true to handle back faces
-        // correctly.
-        // TODO: check not needed if backfaces not processed.
-        if(checkTexture("diffuseMap")) {
-          plightFrag->addMainVar( (GLSLVariable)
-                                  { "vec4", "col", "texture2D(diffuseMap, texCoord)" }, 1);
 
-        }
-        shaderGenerator.addShaderFunction(plightFrag, SHADER_TYPE_FRAGMENT);
-      }
+      vertexShader->setupShaderEnv(SHADER_TYPE_VERTEX, map, has_texture, useWorldTexCoords);
+      factory.setShaderProvider(vertexShader, SHADER_TYPE_VERTEX);
+      fragmentShader->setupShaderEnv(SHADER_TYPE_FRAGMENT, map, has_texture, useWorldTexCoords);
+      factory.setShaderProvider(fragmentShader, SHADER_TYPE_FRAGMENT);
     }
-
+    stateSet->addUniform(noiseMapUniform.get());
+    if(has_texture) {
+      stateSet->addUniform(texScaleUniform.get());
+      stateSet->addUniform(sinUniform.get());
+      stateSet->addUniform(cosUniform.get());
+    }
+    else {
+      stateSet->removeUniform(texScaleUniform.get());
+    }
+    if (map.hasKey("envMapSpecular")) {
+      envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+                                           (double)map["envMapSpecular"]["g"],
+                                           (double)map["envMapSpecular"]["b"]));
+      stateSet->addUniform(envMapSpecularUniform.get());
+    }
+    if (map.hasKey("envMapScale")) {
+      envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+                                        (double)map["envMapScale"]["g"],
+                                        (double)map["envMapScale"]["b"]));
+      stateSet->addUniform(envMapScaleUniform.get());
+    }
     if(map.hasKey("shaderSources")) {
       // load shader from text file
       // todo: handle uniforms in a way that we dont need to create the shader
@@ -670,17 +607,16 @@ namespace osg_material_manager {
         glslProgram->addShader(shader);
         shader->setShaderSource( source );
       }
-    }
-    else {
-      glslProgram = shaderGenerator.generate();
+    } else {
+      glslProgram = factory.generateProgram();
       if(map.hasKey("printShader") && (bool)map["printShader"]) {
-        std::string source = shaderGenerator.generateSource(SHADER_TYPE_VERTEX);
+        std::string source = factory.generateShaderSource(SHADER_TYPE_VERTEX);
         std::string filename = "shader_sources/" + name + "_vert.c";
         createDirectory("shader_sources");
         FILE *f = fopen(filename.c_str(), "w");
         fprintf(f, "%s", source.c_str());
         fclose(f);
-        source = shaderGenerator.generateSource(SHADER_TYPE_FRAGMENT);
+        source = factory.generateShaderSource(SHADER_TYPE_FRAGMENT);
         filename = "shader_sources/" + name + "_frag.c";
         f = fopen(filename.c_str(), "w");
         fprintf(f, "%s", source.c_str());
@@ -690,21 +626,9 @@ namespace osg_material_manager {
     if(checkTexture("normalMap") || checkTexture("environmentMap")) {
       glslProgram->addBindAttribLocation( "vertexTangent", TANGENT_UNIT );
       stateSet->addUniform(bumpNorFacUniform.get());
-    }
-    else {
+    } else {
       stateSet->removeUniform(bumpNorFacUniform.get());
     }
-    stateSet->addUniform(noiseMapUniform.get());
-
-    if(hasTexture) {
-      stateSet->addUniform(texScaleUniform.get());
-      stateSet->addUniform(sinUniform.get());
-      stateSet->addUniform(cosUniform.get());
-    }
-    else {
-      stateSet->removeUniform(texScaleUniform.get());
-    }
-
     if(lastProgram.valid()) {
       stateSet->removeAttribute(lastProgram.get());
     }
@@ -722,9 +646,6 @@ namespace osg_material_manager {
     stateSet->addUniform(shadowScaleUniform.get());
 
     lastProgram = glslProgram;
-    if(clearShaderEntry) {
-      map.erase("shader");
-    }
   }
 
   void OsgMaterial::setNoiseImage(osg::Image *i) {
