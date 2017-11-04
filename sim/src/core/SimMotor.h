@@ -226,6 +226,7 @@ namespace mars {
       data_broker::DataPackage dbPackage;
       unsigned long dbPushId;
       long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex;
+      int pushToDataBroker;
     };
 
   } // end of namespace sim

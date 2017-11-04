@@ -144,7 +144,7 @@ namespace mars {
     void MotorData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       MotorData defaultMotor;
-
+      *config = this->config;
       SET_VALUE("name", name);
       SET_VALUE("index", index);
       SET_VALUE("jointIndex", jointIndex);

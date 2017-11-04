@@ -88,6 +88,7 @@ namespace mars {
     bool JointData::fromConfigMap(ConfigMap *config,
                                   std::string filenamePrefix,
                                   LoadCenter *loadCenter) {
+      this->config = *config;
       CPP_UNUSED(filenamePrefix);
       CPP_UNUSED(loadCenter);
       ConfigMap::iterator it;
@@ -164,7 +165,7 @@ namespace mars {
     void JointData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       JointData defaultJoint;
-
+      *config = this->config;
       SET_VALUE("name", name);
 
       {
