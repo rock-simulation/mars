@@ -84,6 +84,18 @@ namespace mars {
       else if(map.hasKey("reducedDataPackage") && (bool)map["reducedDataPackage"] == true) {
         pushToDataBroker = 1;
       }
+      if(pushToDataBroker > 0) {
+        dbPackageMapping.add("id", &sNode.index);
+        dbPackageMapping.add("position/x", &sNode.pos.x());
+        dbPackageMapping.add("position/y", &sNode.pos.y());
+        dbPackageMapping.add("position/z", &sNode.pos.z());
+        dbPackageMapping.add("rotation/x", &sNode.rot.x());
+        dbPackageMapping.add("rotation/y", &sNode.rot.y());
+        dbPackageMapping.add("rotation/z", &sNode.rot.z());
+        dbPackageMapping.add("rotation/w", &sNode.rot.w());
+        dbPackageMapping.add("contact", &ground_contact);
+        dbPackageMapping.add("contactForce", &ground_contact_force);
+      }
       if(pushToDataBroker > 1) {
         dbPackageMapping.add("linearVelocity/x", &l_vel.x());
         dbPackageMapping.add("linearVelocity/y", &l_vel.y());
@@ -105,16 +117,6 @@ namespace mars {
         dbPackageMapping.add("torque/z", &t.z());
       }
       if(pushToDataBroker > 0) {
-        dbPackageMapping.add("id", &sNode.index);
-        dbPackageMapping.add("position/x", &sNode.pos.x());
-        dbPackageMapping.add("position/y", &sNode.pos.y());
-        dbPackageMapping.add("position/z", &sNode.pos.z());
-        dbPackageMapping.add("rotation/x", &sNode.rot.x());
-        dbPackageMapping.add("rotation/y", &sNode.rot.y());
-        dbPackageMapping.add("rotation/z", &sNode.rot.z());
-        dbPackageMapping.add("rotation/w", &sNode.rot.w());
-        dbPackageMapping.add("contact", &ground_contact);
-        dbPackageMapping.add("contactForce", &ground_contact_force);
         addToDataBroker();
       }
     }
