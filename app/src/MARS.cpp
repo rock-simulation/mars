@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2012, 2017, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,17 +20,19 @@
 
 /**
  * \file MARS.cpp
- * \author Malte Roemmermann
+ * \author Malte Langosz
  *
  */
 
 #include "MARS.h"
 
+#ifndef NO_GUI
 #include "GraphicsTimer.h"
+#include <mars/main_gui/MainGUI.h>
+#endif
 
 #include <lib_manager/LibManager.hpp>
 #include <lib_manager/LibInterface.hpp>
-#include <mars/main_gui/MainGUI.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/gui/MarsGuiInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
@@ -38,7 +40,6 @@
 #include <mars/utils/misc.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 
-#include <QDir>
 
 #ifdef WIN32
   #include <Windows.h>
@@ -218,6 +219,7 @@ namespace mars {
         marsGui->setupGui();
       }
 
+#ifndef NO_GUI
       mars::main_gui::MainGUI *mainGui = NULL;
       mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui");
 
@@ -248,6 +250,7 @@ namespace mars {
           }
         }
       }
+#endif
 
       // load the simulation other_libs:
       if(handleLibraryLoading) {
@@ -272,16 +275,20 @@ namespace mars {
         }
       }
 
+#ifndef NO_GUI
       // if we have a main gui, show it
       if(mainGui) mainGui->show();
+#endif
 
       control->sim->runSimulation(startThread);
 
+#ifndef NO_GUI
       if(needQApp) {
         graphicsTimer = new mars::app::GraphicsTimer(marsGraphics,
                                                      control->sim);
         graphicsTimer->run();
       }
+#endif
     }
 
 
@@ -329,10 +336,10 @@ namespace mars {
           break;
         switch (c) {
         case 'C':
-          if( QDir(QString(optarg)).exists() ) {
+          if( mars::utils::pathExists(std::string(optarg)) ) {
             configDir = optarg;
-	    argConfDir = true;
-	  }
+            argConfDir = true;
+          }
           else
             printf("The given configuration Directory does not exists: %s\n",
                    optarg);

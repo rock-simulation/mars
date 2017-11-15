@@ -51,7 +51,11 @@ namespace mars {
   }
 
   namespace app {
+#ifdef NO_GUI
+    class GraphicsTimer {};
+#else
     class GraphicsTimer;
+#endif
 
     void exit_main(int signal);
     void handle_abort(int signal);

@@ -32,7 +32,9 @@
 
 void qtExitHandler(int sig) {
   mars::app::exit_main(sig);
+#ifndef NO_GUI
   if(qApp) qApp->quit();
+#endif
 }
 
 void ignoreSignal(int sig) {

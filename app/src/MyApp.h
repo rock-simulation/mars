@@ -27,7 +27,9 @@
 #ifndef MY_APP_H
 #define MY_APP_H
 
+#ifndef NO_GUI
 #include <QApplication>
+#endif
 
 namespace mars {
 
@@ -38,6 +40,19 @@ namespace mars {
      * in case of a kill-signal.
      */
 
+#ifdef NO_GUI
+    class MyApp {
+    public:
+      MyApp(int &argc, char **argv) {}
+      int exec() {
+        abort();
+        return 0;
+      }
+      void processEvents() {
+        abort();
+      }
+    };
+#else
     class MyApp : public QApplication {
     public:
       MyApp(int &argc, char **argv) : QApplication(argc, argv) {}
@@ -50,6 +65,7 @@ namespace mars {
         }
       }
     };
+#endif
 
   } // end of namespace app
 } // end of namespace mars
