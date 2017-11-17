@@ -29,6 +29,8 @@
 
 #ifndef NO_GUI
 #include <QApplication>
+#else
+#include <stdlib.h>
 #endif
 
 namespace mars {
