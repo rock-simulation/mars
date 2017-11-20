@@ -5,7 +5,7 @@ source: /shader/envmap.vert
 uniforms:
   float:
     - {name: texScale}
-  vec3:
+  vec4:
     - {name: envMapSpecular}
   sampler2D:
     - {name: environmentMap}

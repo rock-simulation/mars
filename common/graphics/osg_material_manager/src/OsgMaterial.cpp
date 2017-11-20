@@ -76,8 +76,8 @@ namespace osg_material_manager {
     invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                    (float)(invShadowTextureSize));
 
-    envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec3f(0.0f, 0.0f, 0.0f));
-    envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec3f(0.0f, 0.0f, 0.0f));
+    envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec4f(0.0f, 0.0f, 0.0f, 0.0f));
+    envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec4f(0.0f, 0.0f, 0.0f, 0.0f));
     terrainScaleZUniform = new osg::Uniform("terrainScaleZ", 0.0f);
     terrainDimUniform = new osg::Uniform("terrainDim", 0);
     noiseMap = new osg::Texture2D();
@@ -94,7 +94,7 @@ namespace osg_material_manager {
     unitMap["envMapR"] = 5;
     unitMap["envMapG"] = 6;
     unitMap["envMapB"] = 8;
-    unitMap["envMapD"] = 9;
+    unitMap["envMapA"] = 9;
     unitMap["normalMapR"] = 10;
     unitMap["normalMapG"] = 11;
     unitMap["normalMapB"] = 12;
@@ -565,15 +565,17 @@ namespace osg_material_manager {
       stateSet->removeUniform(texScaleUniform.get());
     }
     if (map.hasKey("envMapSpecular")) {
-      envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+      envMapSpecularUniform->set(osg::Vec4((double)map["envMapSpecular"]["r"],
                                            (double)map["envMapSpecular"]["g"],
-                                           (double)map["envMapSpecular"]["b"]));
+                                           (double)map["envMapSpecular"]["b"],
+                                           (double)map["envMapSpecular"]["a"]));
       stateSet->addUniform(envMapSpecularUniform.get());
     }
     if (map.hasKey("envMapScale")) {
-      envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+      envMapScaleUniform->set(osg::Vec4((double)map["envMapScale"]["r"],
                                         (double)map["envMapScale"]["g"],
-                                        (double)map["envMapScale"]["b"]));
+                                        (double)map["envMapScale"]["b"],
+                                        (double)map["envMapScale"]["a"]));
       stateSet->addUniform(envMapScaleUniform.get());
     }
     if(map.hasKey("shaderSources")) {
