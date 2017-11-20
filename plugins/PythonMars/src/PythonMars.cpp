@@ -65,15 +65,17 @@ namespace mars {
         std::string confPath = control->cfg->getOrCreateProperty("Config",
                                                                 "config_path",
                                                                 ".").sValue;
-        ConfigMap map = ConfigMap::fromYamlFile(confPath + "/pypath.yml");
-        if(map.hasKey("pypath")) {
-          ConfigVector::iterator it = map["pypath"].begin();
-          for(; it!=map["pypath"].end(); ++it) {
-            std::string path = (*it);
-            if(path[0] != '/') {
-              path = confPath + "/" + path;
+        if(utils::pathExists(confPath + "/pypath.yml")) {
+          ConfigMap map = ConfigMap::fromYamlFile(confPath + "/pypath.yml");
+          if(map.hasKey("pypath")) {
+            ConfigVector::iterator it = map["pypath"].begin();
+            for(; it!=map["pypath"].end(); ++it) {
+              std::string path = (*it);
+              if(path[0] != '/') {
+                path = confPath + "/" + path;
+              }
+              PythonInterpreter::instance().addToPythonpath(path);
             }
-            PythonInterpreter::instance().addToPythonpath(path);
           }
         }
         updateGraphics = false;
