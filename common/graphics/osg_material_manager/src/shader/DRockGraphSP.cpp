@@ -263,6 +263,21 @@ namespace osg_material_manager {
       }
     }
 
+    if (functionInfo.hasKey("extensions")) {
+      ConfigItem list = functionInfo["extensions"];
+      if (list.hasKey("enabled")) {
+        std::cout << "Having enabled extensions" << std::endl;
+        for (vit=list["enabled"].begin();vit!=list["enabled"].end();vit++) {
+          enabledExtensions.insert(vit.base()->getString());
+        }
+      }
+      if (list.hasKey("disabled")) {
+        for (vit=list["disabled"].begin();vit!=list["disabled"].end();vit++) {
+          disabledExtensions.insert(vit.base()->getString());
+        }
+      }
+    }
+
     if (functionInfo.hasKey("uniforms")) {
       ConfigItem list = functionInfo["uniforms"];
       for (mit = list.beginMap(); mit != list.endMap(); ++mit) {
