@@ -690,6 +690,9 @@ namespace osg_material_manager {
     if(checkTexture("normalMap") || checkTexture("displacementMap") || checkTexture("environmentMap")) {
       d->setNeedTangents(true);
     }
+    if (map.get("instancing", false)) {
+      d->setNeedInstancing(true, map.get("numInstances", 1));
+    }
     d->setTransparency((float)map.get("transparency", 0.0));
   }
 
