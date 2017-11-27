@@ -153,6 +153,10 @@ namespace osg_material_manager {
     // set the material
     state->setAttributeAndModes(material.get(), osg::StateAttribute::ON);
 
+    if (map.hasKey("culling") && !map["culling"]) {
+      state->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+    }
+
     if(!getLight) {
       osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
       cull->setMode(osg::CullFace::BACK);
