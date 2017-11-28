@@ -1,8 +1,0 @@
-params:
-  out:
-    position: {index: 0, type: vec4}
-source: /graph_shader/instancing.vert
-minVersion: 120
-extensions:
-  enabled:
-    - GL_ARB_draw_instanced
