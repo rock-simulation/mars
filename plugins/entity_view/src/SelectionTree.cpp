@@ -420,13 +420,14 @@ namespace mars {
             colorPattern.push_back("*/ambient");
             colorPattern.push_back("*/diffuse");
             colorPattern.push_back("*/specular");
-            currentLight = lightMap[currentItem->text(0).toStdString()];
+            std::string lightName = currentItem->text(0).toStdString();
+            currentLight = lightMap[lightName];
             configmaps::ConfigMap map = defaultLight;
             map.append(currentLight);
             dw->setEditPattern(editPattern);
             dw->setFilePattern(filePattern);
             dw->setColorPattern(colorPattern);
-            dw->setConfigMap(currentLight["name"], map);
+            dw->setConfigMap(lightName, map);
             editCategory = 6;
           }
           else if(parent->text(0) == "graphics") {
