@@ -1,0 +1,7 @@
+params:
+  in:
+    x: {index: 0, type: float}
+    y: {index: 1, type: float}
+  out:
+    vector: {index: 2, type: vec2}
+source: /graph_shader/compose_vec2.frag
