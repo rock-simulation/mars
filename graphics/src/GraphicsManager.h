@@ -346,7 +346,7 @@ namespace mars {
       osg::ref_ptr<osg::Group> positionedCoords;
       osg::ref_ptr<osg::PositionAttitudeTransform> transformCoords;
       osg::ref_ptr<osg::Group> transformCoordsGroup;
-      osg::ref_ptr<osg::StateSet> globalStateset;
+      osg::ref_ptr<osg::StateSet> globalStateset, shadowStateset;
 
       osg::ref_ptr<osgParticle::PrecipitationEffect> snow, rain;
 

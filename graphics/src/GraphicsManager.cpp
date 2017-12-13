@@ -306,7 +306,8 @@ namespace mars {
           shadowMap = new ShadowMap;
           shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
           shadowMap->initTexture();
-          shadowMap->applyState(globalStateset.get());
+          shadowStateset = shadowedScene->getOrCreateStateSet();
+          shadowMap->applyState(shadowStateset.get());
           if(marsShadow.bValue) {
             shadowedScene->setShadowTechnique(shadowMap.get());
             //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
@@ -2090,10 +2091,10 @@ namespace mars {
     void GraphicsManager::setUseShader(bool val) {
       if(materialManager) materialManager->setUseShader(val);
       if(val) {
-        shadowMap->addTexture(globalStateset.get());
+        shadowMap->addTexture(shadowStateset.get());
       }
       else {
-        shadowMap->removeTexture(globalStateset.get());
+        shadowMap->removeTexture(shadowStateset.get());
       }
       /*
       map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
