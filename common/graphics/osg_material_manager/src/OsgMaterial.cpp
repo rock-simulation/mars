@@ -35,6 +35,7 @@
 #include "shader/DRockGraphSP.h"
 #include "shader/YamlSP.h"
 #include "shader/yaml-shader.h"
+#include "shader/PhobosGraphSP.h"
 
 #include <osg/TexMat>
 #include <osg/CullFace>
@@ -498,6 +499,28 @@ namespace osg_material_manager {
         ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
         DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
         DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
+        factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
+        factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
+      } else if ((string)map["shader"]["provider"] == "PhobosGraph") {
+        ConfigMap options;
+        options["numLights"] = maxNumLights;
+        options["loadPath"] = loadPath;
+        options["customPath"] = "";
+        if (map["shader"].hasKey("custom")) {
+          options["customPath"] = (string)map["shader"]["custom"];
+        }
+        string vertexPath = map["shader"]["vertex"];
+        string fragmentPath = map["shader"]["fragment"];
+        if(!loadPath.empty() && vertexPath[0] != '/') {
+          vertexPath = loadPath + vertexPath;
+        }
+        if(!loadPath.empty() && fragmentPath[0] != '/') {
+          fragmentPath = loadPath + fragmentPath;
+        }
+        ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
+        ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
+        PhobosGraphSP *vertexProvider = new PhobosGraphSP(resPath, vertexModel, options);
+        PhobosGraphSP *fragmentProvider = new PhobosGraphSP(resPath, fragmentModel, options);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
       }
