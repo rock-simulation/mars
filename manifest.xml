@@ -1,0 +1,40 @@
+<package>
+  <description brief="MARS is a cross-platform simulatior for robotics research developed at the DFKI-RIC and the University of Bremen.">
+    MARS (Machina Arte Robotum Simulans) is a cross-platform simulation and visualisation tool
+    created for robotics research developed at the Robotics Innovation Center of the German
+    Research Center for Artificial Intelligence (DFKI-RIC) and the University of Bremen. It runs
+    on (Ubuntu) Linux, Mac and Windows and consists of a core framework containing all main simulation
+    components, a GUI (based on Qt), 3D visualization (using OSG) and a physics core (based on ODE).
+    MARS is designed in a modular manner and can be used very flexibly, e.g. by running the physics
+    simulation without visualization and GUI. It is possible to extend MARS writing your own plugins
+    and many plugins introducing various functionality such as HUDs or custom ground reaction forces
+    already exist - and it's easy to write your own.
+  </description>
+  <author>malte.langosz@dfki.de,michael.rohn@dfki.de,kai_alexander.von_szadkowski@dfki.de</author>
+  <maintainer>kai_alexander.von_szadkowski@dfki.de</maintainer>
+  <license>LGPL 3</license>
+  <url>https://github.com/rock-simulation/mars</url>
+  <logo>https://github.com/rock-simulation/mars/raw/master/doc/src/images/logo_v2_wob.png</logo>
+ 
+  <keywords>
+    <keyword>Simulation</keyword>
+    <keyword>Visualization</keyword>
+    <keyword>Modeling</keyword>
+  </keywords>
+ 
+  <stage>0</stage>
+  <use>single project</use>
+  <!-- <use>multi project</use> -->
+  <!-- <use>external</use> -->
+  <activity>active</activity>
+  <!-- <activity>pending</activity> -->
+  <!-- <activity>discontinued</activity> -->
+  <classifiers>
+    <classifier>gui</classifier>
+    <classifier>python</classifier>
+    <classifier>c++</classifier>
+    <classifier>windows</classifier>
+    <classifier>ubuntu</classifier>
+    <classifier>macos</classifier>
+  </classifiers>
+</package>
