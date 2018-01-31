@@ -19,25 +19,27 @@
  */
 
 #include <fstream>
+#include <queue>
 #include "PhobosGraphSP.h"
-#include <boost/filesystem.hpp>
 
 namespace osg_material_manager {
   using namespace std;
 
   PhobosGraphSP::PhobosGraphSP(string res_path, ConfigMap graph, ConfigMap options) : IShaderProvider(res_path) {
-    this->model = model;
+    this->model = graph;
     this->options = options;
-    this->minVersion = 100;
+    this->minVersion = 120;
     parseGraph();
   }
 
   void PhobosGraphSP::parseGraph() {
+    cout << "parsing!!!!!!!!!" << endl;
     vector<GLSLAttribute> vars;
     vector<string> function_calls;
     ConfigVector::iterator vit;
     ConfigMap::iterator mit;
-    string customPath = model["loadPath"] + model["customPath"] + "/";
+    ConfigMap functionInfo;
+    string customPath = options["loadPath"].getString() + options["customPath"].getString() + "/";
     string defaultPath = resPath + "/graph_shader/";
     string legacyPath = resPath + "/shader/";
     string actualPath = "";
@@ -52,26 +54,84 @@ namespace osg_material_manager {
         varyings.insert({model["nodes"][nodeName]["varying_type"].getString(),
                          model["nodes"][nodeName]["varying_name"].getString()});
         continue;
+      } else if (nodeType == "varying_vertex") {
+        varyings.insert({model["nodes"][nodeName]["varying_type"].getString(),
+                         model["nodes"][nodeName]["varying_name"].getString()});
+        stringstream call;
+        call.clear();
+        call << model["nodes"][nodeName]["varying_name"].getString() << " = "
+             << model["nodes"][nodeName]["incoming"]["input"].getString() << ";" << endl;
+        function_calls.push_back(call.str());
+        continue;
       }
-      if (boost::filesystem::exists(customPath + nodeType + ".yaml")) {
+      if (file_exists(customPath + nodeType + ".yaml")) {
         actualPath = customPath + nodeType + ".yaml";
-      } else if (boost::filesystem::exists(defaultPath + nodeType + ".yaml")) {
+      } else if (file_exists(defaultPath + nodeType + ".yaml")) {
         actualPath = defaultPath + nodeType + ".yaml";
-      } else if (boost::filesystem::exists(legacyPath + nodeType + ".yaml")) {
+      } else if (file_exists(legacyPath + nodeType + ".yaml")) {
         actualPath = legacyPath + nodeType + ".yaml";
       } else {
         cout << "ERROR: Could not find node definition for " << nodeType << "!" << endl;
         // TODO: How to handle an error like that?
         return;
       }
-      parse_functionInfo(nodeType, ConfigMap::fromYamlFile(actualPath));
+      functionInfo = ConfigMap::fromYamlFile(actualPath);
+      parse_functionInfo(nodeType, functionInfo);
       // CREATE VAR DEFINITIONS
       for (mit = model["nodes"][nodeName]["outgoing"].beginMap();
            mit != model["nodes"][nodeName]["outgoing"].endMap(); ++mit) {
         vars.push_back({(mit->second)["type"], (mit->second)["name"]});
       }
-      // TODO: Create function calls, Create main function code
+      //Create function calls
+      priority_queue<PrioritizedLine> incoming, outgoing;
+      if (functionInfo["params"].hasKey("in")) {
+        for (mit = functionInfo["params"]["in"].beginMap(); mit != functionInfo["params"]["in"].endMap(); ++mit) {
+          incoming.push((PrioritizedLine) {model["nodes"][nodeName]["incoming"][mit->first],
+                                           (int) functionInfo["params"]["in"][mit->first]["index"], 0});
+        }
+      }
+      if (functionInfo["params"].hasKey("out")) {
+        for (mit = functionInfo["params"]["out"].beginMap(); mit != functionInfo["params"]["out"].endMap(); ++mit) {
+          outgoing.push((PrioritizedLine) {model["nodes"][nodeName]["outgoing"][mit->first]["name"].getString(),
+                                           (int) functionInfo["params"]["out"][mit->first]["index"], 0});
+        }
+      }
+      stringstream call;
+      bool first = true;
+      call.clear();
+      call << nodeType << "(";
+      while (!incoming.empty()) {
+        if (!first) {
+          call << ", ";
+        }
+        first = false;
+        call << incoming.top().line;
+        incoming.pop();
+      }
+      while (!outgoing.empty()) {
+        if (!first) {
+          call << ", ";
+        }
+        first = false;
+        call << outgoing.top().line;
+        outgoing.pop();
+      }
+      call << ");" << endl;
+      function_calls.push_back(call.str());
     } // end iteration over sorted node names
+    // Create main function code
+    stringstream code;
+    code.clear();
+    code << "void main() {" << endl;
+    for (size_t i = 0; i < vars.size(); ++i) {
+      code << "  " << vars[i] << ";" << endl;
+    }
+    code << endl;
+    for (size_t i = 0; i < function_calls.size(); ++i) {
+      code << function_calls[i] << endl;
+    }
+    code << "}" << endl;
+    main_source = code.str();
   }
 
   int PhobosGraphSP::getMinVersion() {
@@ -114,8 +174,7 @@ namespace osg_material_manager {
     stringstream code;
     map<string, string>::iterator mit;
     for (mit = source_files.begin(); mit != source_files.end(); ++mit) {
-      string path = resPath + (string) mit->second;
-      ifstream t(path);
+      ifstream t((string) mit->second);
       stringstream buffer;
       buffer << t.rdbuf();
       code << buffer.str() << endl;
@@ -126,8 +185,18 @@ namespace osg_material_manager {
   void PhobosGraphSP::parse_functionInfo(string functionName, ConfigMap functionInfo) {
     ConfigMap::iterator mit;
     ConfigVector::iterator vit;
-    if (functionInfo.hasKey("source") && source_files.count(functionName) == 0) {
-      source_files[functionName] = functionInfo["source"].getString();
+    if (source_files.count(functionName) == 0) {
+      string suffix = "";
+      if (functionInfo.hasKey("source")) {
+        suffix = functionInfo["source"].getString();
+      } else {
+        suffix = functionName + ".c";
+      }
+      if (file_exists(options["loadPath"].getString() + options["customPath"].getString() + "/" + suffix)) {
+        source_files[functionName] = options["loadPath"].getString() + options["customPath"].getString() + "/" + suffix;
+      } else if (file_exists(resPath + "/" + suffix)) {
+        source_files[functionName] = resPath + "/" + suffix;
+      }
     }
 
     if (functionInfo.hasKey("minVersion")) {
@@ -140,7 +209,8 @@ namespace osg_material_manager {
     if (functionInfo.hasKey("extensions")) {
       ConfigItem list = functionInfo["extensions"];
       if (list.hasKey("enabled")) {
-        std::cout << "Having enabled extensions" << std::endl;
+        std::cout << "Having enabled extensions" <<
+                  std::endl;
         for (vit = list["enabled"].begin(); vit != list["enabled"].end(); vit++) {
           enabledExtensions.insert(vit.base()->getString());
         }

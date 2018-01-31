@@ -21,6 +21,7 @@
 #ifndef MARS_DEV_PHOBOSGRAPHSP_H
 #define MARS_DEV_PHOBOSGRAPHSP_H
 
+#include <sys/stat.h>
 #include "IShaderProvider.h"
 #include "configmaps/ConfigData.h"
 
@@ -35,19 +36,19 @@ namespace osg_material_manager {
 
     int getMinVersion();
 
-    const set<GLSLUniform>& getUniforms() const;
+    const set<GLSLUniform> &getUniforms() const;
 
-    const set<GLSLAttribute>& getVaryings() const;
+    const set<GLSLAttribute> &getVaryings() const;
 
-    const set<string>& getEnabledExtensions() const;
+    const set<string> &getEnabledExtensions() const;
 
-    const set<string>& getDisabledExtensions() const;
+    const set<string> &getDisabledExtensions() const;
 
     const vector<pair<string, string> > getDependencies() const;
 
-    const set<GLSLConstant>& getConstants() const;
+    const set<GLSLConstant> &getConstants() const;
 
-    const set<GLSLAttribute>& getAttributes() const;
+    const set<GLSLAttribute> &getAttributes() const;
 
     string generateMainSource();
 
@@ -91,6 +92,11 @@ namespace osg_material_manager {
      * Parses a functionInfo and adds varyings, uniforms and function source code to the provider
      */
     void parse_functionInfo(string functionName, ConfigMap functionInfo);
+
+    inline bool file_exists(const std::string &name) {
+      struct stat buffer;
+      return (stat(name.c_str(), &buffer) == 0);
+    }
   };
 }
 
