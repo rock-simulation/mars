@@ -116,10 +116,25 @@ namespace mars {
         iMutex.lock();
         NodeData reloadNode = *nodeS;
         if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
-          if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
+          if(!control->loadCenter) {
             LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
             iMutex.unlock();
             return INVALID_ID;
+          }
+          if(!control->loadCenter->loadHeightmap) {
+            GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            if(!g) {
+              libManager->loadLibrary("mars_graphics", NULL, false, true);
+              g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            }
+            if(g) {
+              control->loadCenter->loadHeightmap = g->getLoadHeightmapInterface();
+            }
+            else {
+              LOG_ERROR("NodeManager:: loadHeightmap is missing, can not create Node");
+              iMutex.unlock();
+              return INVALID_ID;
+            }
           }
           reloadNode.terrain = new(terrainStruct);
           *(reloadNode.terrain) = *(nodeS->terrain);
