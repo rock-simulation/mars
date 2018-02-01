@@ -908,6 +908,44 @@ namespace mars {
       dGeomDestroy(theGeom);
       return depth;
     }
+    
+    std::vector<sReal> WorldPhysics::getVectorCollisions(const Vector& pos,
+                                                         const Vector& ray,
+                                                         uint16_t maxNumCollisions) const {
+      MutexLocker locker(&iMutex);
+      dGeomID otherGeom;
+//       const uint16_t maxNumContacts = 100; //should not be bigger than 16 bit according to ode documentation
+      dContactGeom contact[maxNumCollisions];
+      double depth = ray.norm();
+      int numContacts = 0;
+      std::vector<sReal> contacts;
+
+      dGeomID theGeom = dCreateRay(space, depth);
+      dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z()); 
+
+      for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
+        otherGeom = dSpaceGetGeom(space, i);
+
+//         if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
+//           continue;
+        numContacts = 0; // just in case
+        numContacts = dCollide(theGeom, otherGeom, maxNumCollisions,
+                              contact, sizeof(dContactGeom));
+        
+        for(int i = 0; i < numContacts; ++i)
+        {
+          if(contact[i].depth < depth)
+          {
+            contacts.emplace_back(contact[i].depth);
+          }
+        }
+      }
+
+      dGeomDestroy(theGeom);
+      return contacts;
+    }
+
+    
 
   } // end of namespace sim
 } // end of namespace mars
