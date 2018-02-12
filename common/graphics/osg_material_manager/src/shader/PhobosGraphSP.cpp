@@ -47,8 +47,10 @@ namespace osg_material_manager {
       string nodeName = vit.base()->getString();
       string nodeType = model["nodes"][nodeName]["type"].getString();
       if (nodeType == "uniform") {
-        uniforms.insert({model["nodes"][nodeName]["uniform_type"].getString(),
-                         model["nodes"][nodeName]["uniform_name"].getString()});
+        if (!(bool)(model["nodes"][nodeName]["uniform_builtin"].getOrCreateAtom())) {
+          uniforms.insert({model["nodes"][nodeName]["uniform_type"].getString(),
+                           model["nodes"][nodeName]["uniform_name"].getString()});
+        }
         continue;
       } else if (nodeType == "varying_fragment") {
         varyings.insert({model["nodes"][nodeName]["varying_type"].getString(),
