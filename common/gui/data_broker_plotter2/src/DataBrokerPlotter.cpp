@@ -46,9 +46,13 @@ namespace data_broker_plotter2 {
     dw = new mars::config_map_gui::DataWidget(cfg, 0, true, false);
     std::vector<std::string> pattern {"*color"};
     dw->setColorPattern(pattern);
+    pattern[0] = "*";
+    dw->setCheckablePattern(pattern);
     dw->setMaximumWidth(500);
     connect(dw, SIGNAL(valueChanged(std::string, std::string)),
             this, SLOT(valueChanged(std::string, std::string)));
+    connect(dw, SIGNAL(checkChanged(std::string, bool)),
+            this, SLOT(checkChanged(std::string, bool)));
 
     QVBoxLayout *vLayout = new QVBoxLayout();
     QSplitter *splitter = new QSplitter();
@@ -128,7 +132,7 @@ namespace data_broker_plotter2 {
   void DataBrokerPlotter::update() {
     plotLock.lock();
     if(updateMap) {
-      dw->updateConfigMap("", map);
+      dw->setConfigMap("", map);
       updateMap = false;
     }
 
@@ -379,6 +383,75 @@ namespace data_broker_plotter2 {
     dataLock.unlock();
   }
 
+  void DataBrokerPlotter::checkChanged(std::string key, bool checked) {
+    std::string path;
+    key = key.substr(3);
+    checkMap(key, path, map, checked);
+    plotLock.lock();
+    dw->updateConfigMap("", map);
+    plotLock.unlock();
+  }
+
+  void DataBrokerPlotter::checkSub(ConfigMap &map, std::string path, bool checked) {
+    std::string path2 = path;
+    if(path2.size() > 1) path2 += "/";
+    ConfigMap::iterator it;
+    for(it=map.begin(); it!=map.end(); ++it) {
+      if(it->first != "color" && it->second.isMap()) {
+        // todo: toggle checkbox four group in config_map_gui
+        std::string gPath = "../";
+        gPath += path2 + it->first;
+        dw->setGroupChecked(gPath, checked);
+        checkSub(it->second, path2+it->first, checked);
+      }
+      if(it->first == "show") {
+        dataLock.lock();
+        it->second = checked;
+        auto it2 = plotMap.find(path);
+        if(it2 != plotMap.end()) {
+          if(checked) {
+            if(!it2->second->curve) {
+              plotLock.lock();
+              showPlot(it2->second);
+              plotLock.unlock();
+            }
+          }
+          else {
+            if(it2->second->curve) {
+              plotLock.lock();
+              hidePlot(it2->second);
+              plotLock.unlock();
+            }
+          }
+        }
+        dataLock.unlock();
+      }
+    }
+  }
+
+  void DataBrokerPlotter::checkMap(std::string key, std::string path, ConfigMap &map, bool checked) {
+    std::string compare;
+    ConfigMap::iterator it;
+    for(it=map.begin(); it!=map.end(); ++it) {
+      compare = path;
+      if(compare.size() > 0) {
+        compare += "/";
+      }
+      compare += it->first;
+      if(key.size() >= compare.size()) {
+        if(compare == key.substr(0, compare.size())) {
+          if(key.size() == compare.size()) {
+            // search for all shows in subtree
+            checkSub(it->second, compare, checked);
+          }
+          if(it->second.isMap()) {
+            checkMap(key, compare, it->second, checked);
+          }
+        }
+      }
+    }
+  }
+
   void DataBrokerPlotter::run() {
     threadRunning = true;
     double x, xmin;
@@ -472,8 +545,11 @@ namespace data_broker_plotter2 {
     infoMap.toYamlFile(exportPath+"config.yml");
     std::string resourcesPath = cfg->getOrCreateProperty("Preferences", "resources_path",
                                                           string(".")).sValue;
-    resourcesPath += "/data_broker_plotter2/plot.py";
-    std::string cmd = "cp " + resourcesPath + " " + exportPath;
+    std::string copyPath = resourcesPath + "/data_broker_plotter2/plot.py";
+    std::string cmd = "cp " + copyPath + " " + exportPath;
+    system(cmd.c_str());
+    copyPath = resourcesPath + "/data_broker_plotter2/gui.py";
+    cmd = "cp " + copyPath + " " + exportPath;
     system(cmd.c_str());
     plotLock.unlock();
   }

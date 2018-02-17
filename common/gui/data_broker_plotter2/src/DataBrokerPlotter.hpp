@@ -86,6 +86,7 @@ namespace data_broker_plotter2 {
 
   public slots:
     void valueChanged(std::string key, std::string value);
+    void checkChanged(std::string key, bool checked);
     void exportPlot();
 
   protected:
@@ -120,6 +121,8 @@ namespace data_broker_plotter2 {
     void shiftDown( QRect &rect, int offset ) const;
     void showPlot(Plot* plot);
     void hidePlot(Plot* plot);
+    void checkMap(std::string key, std::string path, configmaps::ConfigMap &map, bool checked);
+    void checkSub(configmaps::ConfigMap &map, std::string path, bool checked);
 
   };
 

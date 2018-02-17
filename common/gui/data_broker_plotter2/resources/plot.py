@@ -55,12 +55,17 @@ def doPlot():
     i = 0
     for d in os.listdir("."):
         if d[-4:] == ".csv":
-            with open(d, "r") as f:
-                dataList.append(f.readlines())
             label = d[0:-4]
             c = {}
+            found = False
+            show = False
             for key,value in config.iteritems():
                 if value["file"] == label:
+                    found = True
+                    if value["show"]:
+                        show = True
+                        with open(d, "r") as f:
+                            dataList.append(f.readlines())
                     if "label" not in value:
                         s = key
                         if key[:8] == "mars_sim":
@@ -70,7 +75,10 @@ def doPlot():
                     value["key"] = key
                     configList[i] = value
                     break
-            i += 1
+            if show:
+                i += 1
+            if not found:
+                print "found no config for: " + label
 
     arrDataX = []
     arrDataY = []
