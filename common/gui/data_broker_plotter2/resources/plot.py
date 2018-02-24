@@ -8,11 +8,12 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 
-#from matplotlib import rc
+from matplotlib import rc
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 ## for Palatino and other serif fonts use:
 #rc('font',**{'family':'serif','serif':['Palatino']})
 #rc('text', usetex=True)
+#rc('font',**{'family':'serif','serif':['']})
 
 lineStyles = ['-', 'k:', '-.', '--', '-o', '-^', '-v', '-^', '--v', 'k-', 'k--', 'k-.', 'k:', 'k-v', 'k--v', 'k:v', '-']
 
@@ -20,7 +21,8 @@ mpl.rcParams['lines.linewidth'] = 1.5
 mpl.rcParams['axes.linewidth'] = 1
 mpl.rcParams['axes.labelsize'] = mpl.rcParams['axes.titlesize']
 mpl.rcParams['text.usetex'] = True
-mpl.rcParams['text.latex.preamble'] = [r"\usepackage[varg]{txfonts}"]
+#mpl.rcParams['text.latex.preamble'] = [r"\usepackage[varg]{txfonts}"]
+mpl.rcParams['text.latex.preamble'] = [r"\usepackage{amsmath}"]
 black = '#222222'
 white = '#ffffff'
 mpl.rcParams['lines.color'] = black
@@ -45,7 +47,9 @@ def doPlot():
     plt.title("")
     plt.xlabel("simulation time in ms")
     plt.ylabel("depends")
-    #plt.subplots_adjust(left=0.06, right=0.992, top=0.895, bottom=0.099)
+    #plt.xticks([])
+    #ax1.xaxis.set_ticklabels([])
+    plt.subplots_adjust(left=0.06, right=0.992, top=0.895, bottom=0.099)
 
     dataList = []
     config = {}
@@ -83,7 +87,18 @@ def doPlot():
     arrDataX = []
     arrDataY = []
 
+    i = 0
+
     for data in dataList:
+        scale = 1.0
+        offset = 0.0
+        if i in configList:
+            c = configList[i]
+            if "scale" in c:
+                scale = c["scale"]
+            if "offset" in c:
+                offset = c["offset"]
+        i += 1
         x = []
         y = []
         row = 0
@@ -91,13 +106,15 @@ def doPlot():
             arrLine = line.split()
             if len(arrLine) == 2:
                 x.append(float(arrLine[0]))
-                y.append(float(arrLine[1]))
+                y.append(float(arrLine[1])*scale+offset)
         if len(x) > 1:
             arrDataX.append(x)
             arrDataY.append(y)
 
     ll = []
-    for i in range(len(arrDataX)):
+    for m in range(len(arrDataX)):
+        i = len(arrDataX) - 1 - m
+        i = m
         if i in configList:
             c = configList[i]
             r = hex(int(float(c["color"]["r"])*255)).split('x')[1]
@@ -120,6 +137,7 @@ def doPlot():
                         ncol=len(ll), mode="expand", borderaxespad=0.,
                         handletextpad=0.4, markerscale=2.0)
 
+    plt.grid()
     plt.savefig("graph.pdf", facecolor=white, edgecolor=black)
     plt.close('all')
 
