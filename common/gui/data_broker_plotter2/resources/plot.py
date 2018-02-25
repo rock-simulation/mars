@@ -56,6 +56,10 @@ def doPlot():
     with open("config.yml", "r") as f:
         config = yaml.load(f)
     configList = {}
+    if "_settings" in config:
+        if "xlim" in config["_settings"]:
+            plt.xlim(config["_settings"]["xlim"]["min"],
+                     config["_settings"]["xlim"]["max"])
     i = 0
     for d in os.listdir("."):
         if d[-4:] == ".csv":
@@ -117,14 +121,20 @@ def doPlot():
         i = m
         if i in configList:
             c = configList[i]
-            r = hex(int(float(c["color"]["r"])*255)).split('x')[1]
-            g = hex(int(float(c["color"]["g"])*255)).split('x')[1]            
-            b = hex(int(float(c["color"]["b"])*255)).split('x')[1]
-            a = float(c["color"]["a"])
-            if len(r) == 1: r = "0" + str(r)
-            if len(g) == 1: g = "0" + str(g)
-            if len(b) == 1: b = "0" + str(b)
-            cl = "#"+r+g+b        
+            cl = "#000000"
+            a = 1.0
+            if "rgb" in c["color"]:
+                cl = c["color"]["rgb"]
+            else:
+                r = hex(int(float(c["color"]["r"])*255)).split('x')[1]
+                g = hex(int(float(c["color"]["g"])*255)).split('x')[1]
+                b = hex(int(float(c["color"]["b"])*255)).split('x')[1]
+                if len(r) == 1: r = "0" + str(r)
+                if len(g) == 1: g = "0" + str(g)
+                if len(b) == 1: b = "0" + str(b)
+                cl = "#"+r+g+b
+            if "a" in c["color"]:
+                a = float(c["color"]["a"])
             l, = plt.plot(arrDataX[i], arrDataY[i], lineStyles[0], label=c["label"],
                           linewidth=1.5, color=cl, alpha=a)
             ll.append(l)
