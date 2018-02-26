@@ -33,7 +33,6 @@ namespace osg_material_manager {
   }
 
   void PhobosGraphSP::parseGraph() {
-    cout << "parsing!!!!!!!!!" << endl;
     vector<GLSLAttribute> vars;
     vector<string> function_calls;
     ConfigVector::iterator vit;
@@ -47,7 +46,7 @@ namespace osg_material_manager {
       string nodeName = vit.base()->getString();
       string nodeType = model["nodes"][nodeName]["type"].getString();
       if (nodeType == "uniform") {
-        if (!(bool)(model["nodes"][nodeName]["uniform_builtin"].getOrCreateAtom())) {
+        if (model["nodes"][nodeName]["uniform_builtin"].getString() == "false") { // TODO: Should actually get/read a bool right away..
           uniforms.insert({model["nodes"][nodeName]["uniform_type"].getString(),
                            model["nodes"][nodeName]["uniform_name"].getString()});
         }
