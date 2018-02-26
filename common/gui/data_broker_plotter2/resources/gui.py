@@ -8,14 +8,13 @@ import collections
 
 haveQT5 = True
 try:
-    from PyQt5.QtWidgets import *
-    from PyQt5.QtCore import *
-    from PyQt5.QtGui import *
+    from PyQt5.QtCore import SIGNAL
+    from PyQt5.QtGui import QApplication, QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QCheckBox, QPushButton
 except:
     haveQT5 = False
 if not haveQT5:
-    from PyQt4.QtCore import *
-    from PyQt4.QtGui import *
+    from PyQt4.QtCore import SIGNAL
+    from PyQt4.QtGui import QApplication, QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QCheckBox, QPushButton
 #import pybob
 
 packages = []
