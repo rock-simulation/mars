@@ -10,8 +10,7 @@ import numpy as np
 
 haveQT5 = True
 try:
-    from PyQt5.QtCore import SIGNAL
-    from PyQt5.QtGui import QApplication, QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QCheckBox, QPushButton
+    from PyQt5.QtWidgets import QApplication, QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QCheckBox, QPushButton
 except:
     haveQT5 = False
 if not haveQT5:
