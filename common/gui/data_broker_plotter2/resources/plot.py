@@ -60,6 +60,20 @@ def doPlot():
         if "xlim" in config["_settings"]:
             plt.xlim(config["_settings"]["xlim"]["min"],
                      config["_settings"]["xlim"]["max"])
+        if "ylim" in config["_settings"]:
+            plt.ylim(config["_settings"]["ylim"]["min"],
+                     config["_settings"]["ylim"]["max"])
+        if "xlabel" in config["_settings"]:
+            plt.xlabel(config["_settings"]["xlabel"])
+        if "ylabel" in config["_settings"]:
+            plt.ylabel(config["_settings"]["ylabel"])
+        if "adjust" in config["_settings"]:
+            plt.subplots_adjust(left=config["_settings"]["adjust"]["left"],
+                                right=config["_settings"]["adjust"]["right"],
+                                top=config["_settings"]["adjust"]["top"],
+                                bottom=config["_settings"]["adjust"]["bottom"])
+        if "useLatexFont" in config["_settings"] and config["_settings"]["useLatexFont"]:
+            rc('font',**{'family':'serif','serif':['']})
     i = 0
     for d in os.listdir("."):
         if d[-4:] == ".csv":
