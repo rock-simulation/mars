@@ -214,18 +214,18 @@ def update():
 
         if len(scaleList[i].text()) > 0:
             config[keyList[i]]["scale"] = float(scaleList[i].text())
-        else:
-            clearSettings(config, "scale")
+        elif "scale" in config[keyList[i]]:
+            config[keyList[i]].pop("scale", None)
 
         if len(offsetList[i].text()) > 0:
             config[keyList[i]]["offset"] = float(offsetList[i].text())
-        else:
-            clearSettings(config, "offset")
+        elif "offset" in config[keyList[i]]:
+            config[keyList[i]].pop("offset", None)
 
         if len(shiftList[i].text()) > 0:
             config[keyList[i]]["shift"] = float(shiftList[i].text())
-        else:
-            clearSettings(config, "shift")
+        elif "shift" in config[keyList[i]]:
+            config[keyList[i]].pop("shift", None)
 
     if len(xmin.text()) > 0 and len(xmax.text()) > 0:
         handleSettings(config)
