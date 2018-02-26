@@ -110,12 +110,15 @@ def doPlot():
     for data in dataList:
         scale = 1.0
         offset = 0.0
+        shift = 0.0
         if i in configList:
             c = configList[i]
             if "scale" in c:
                 scale = c["scale"]
             if "offset" in c:
                 offset = c["offset"]
+            if "shift" in c:
+                shift = c["shift"]
         i += 1
         x = []
         y = []
@@ -123,7 +126,7 @@ def doPlot():
         for line in data:
             arrLine = line.split()
             if len(arrLine) == 2:
-                x.append(float(arrLine[0]))
+                x.append(float(arrLine[0])+shift)
                 y.append(float(arrLine[1])*scale+offset)
         if len(x) > 1:
             arrDataX.append(x)

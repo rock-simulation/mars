@@ -5,6 +5,8 @@ import sys
 import subprocess
 import yaml
 import collections
+from scipy import stats
+import numpy as np
 
 haveQT5 = True
 try:
@@ -56,6 +58,7 @@ gLayout.addWidget(QLabel("rgb"), 0, 3)
 gLayout.addWidget(QLabel("a"), 0, 4)
 gLayout.addWidget(QLabel("scale"), 0, 5)
 gLayout.addWidget(QLabel("offset"), 0, 6)
+gLayout.addWidget(QLabel("x-shift"), 0, 7)
 
 s1 = ""
 s2 = ""
@@ -101,9 +104,14 @@ if "_settings" in config:
 useLatexFont = QCheckBox()
 useLatexFont.setChecked(b1)
 
+epath = QLineEdit()
+esuffix = QLineEdit()
+
+
 labelList = []
 scaleList = []
 offsetList = []
+shiftList = []
 showList = []
 colorRGBList = []
 colorAList = []
@@ -178,6 +186,13 @@ for key, value in config.iteritems():
     offsetList.append(offset)
     gLayout.addWidget(offset, i, 6)
 
+    s = ""
+    if "shift" in value:
+        s = str(value["shift"])
+    shift = QLineEdit(s)
+    shiftList.append(shift)
+    gLayout.addWidget(shift, i, 7)
+
     i += 1
 
 
@@ -188,8 +203,8 @@ def update():
     for i in xrange(len(keyList)):
         if len(labelList[i].text()) > 0:
             config[keyList[i]]["label"] = str(labelList[i].text())
-        elif "label" in config[keyList[i]]:
-            config[keyList[i]].pop("label", None)
+        else:
+            clearSettings(config, "label")
         config[keyList[i]]["show"] = showList[i]
         config[keyList[i]]["color"]["rgb"] = str(colorRGBList[i].text())
         config[keyList[i]]["color"].pop("r", None)
@@ -197,14 +212,21 @@ def update():
         config[keyList[i]]["color"].pop("b", None)
         config[keyList[i]]["color"]["a"] = float(colorAList[i].text())/255.
         config[keyList[i]]["show"] = showList[i].isChecked()
+
         if len(scaleList[i].text()) > 0:
             config[keyList[i]]["scale"] = float(scaleList[i].text())
-        elif "scale" in config[keyList[i]]:
-            config[keyList[i]].pop("scale", None)
+        else:
+            clearSettings(config, "scale")
+
         if len(offsetList[i].text()) > 0:
             config[keyList[i]]["offset"] = float(offsetList[i].text())
-        elif "offset" in config[keyList[i]]:
-            config[keyList[i]].pop("offset", None)
+        else:
+            clearSettings(config, "offset")
+
+        if len(shiftList[i].text()) > 0:
+            config[keyList[i]]["shift"] = float(shiftList[i].text())
+        else:
+            clearSettings(config, "shift")
 
     if len(xmin.text()) > 0 and len(xmax.text()) > 0:
         handleSettings(config)
@@ -261,6 +283,105 @@ def toggle():
         t.setChecked(show)
     show = not show
 
+def exportFile(key, values, path, suffix, pruneX, pruneX2):
+    oFilename = values["file"]+".csv"
+    nFilename = os.path.join(path, suffix+oFilename)
+    nKey = suffix + key
+    origFile = []
+
+    if len(pruneX) > 0 and len(pruneX2) > 0:
+        minX = float(pruneX)
+        maxX = float(pruneX2)
+        with open(oFilename) as f:
+            origFile = f.readlines()
+        outFile = open(nFilename, "w")
+        for l in origFile:
+            arrLine = l.strip().split()
+            if len(arrLine) == 2:
+                t = float(arrLine[0])
+                if t >= minX and t <= maxX:
+                    outFile.write(l)
+                elif t > maxX:
+                    break
+        outFile.close()
+    else:
+        cmd = "cp " + oFilename + " " + nFilename
+        os.system(cmd)
+    newConfig = {}
+    if os.path.exists(os.path.join(path, "config.yml")):
+        with open(os.path.join(path, "config.yml")) as f:
+            newConfig = yaml.load(f)
+    if nKey in newConfig:
+        print("  overwrite: " + nKey)
+    newConfig[nKey] = values.copy()
+    newConfig[nKey]["file"] = suffix+values["file"]
+    with open(os.path.join(path, "config.yml"), "w") as f:
+        f.write(yaml.dump(newConfig))
+
+def export():
+    global epath, esuffix, xmax, xmin
+    path = str(epath.text())
+    suffix = str(esuffix.text())
+    pruneX = str(xmin.text())
+    pruneX2 = str(xmax.text())
+    if not os.path.exists(path):
+        os.makedirs(path)
+        os.system("cp gui.py " + path)
+        os.system("cp plot.py " + path)
+    for key, values in config.iteritems():
+        if key == "_settings":
+            continue
+        if values["show"]:
+            exportFile(key, values, path, suffix, pruneX, pruneX2)
+
+def statFile(key, values, pruneX, pruneX2):
+    oFilename = values["file"]+".csv"
+    data = []
+    prune = False
+    minX = 0
+    maxX = 0
+
+    if len(pruneX) > 0 and len(pruneX2) > 0:
+        minX = float(pruneX)
+        maxX = float(pruneX2)
+        prune = True
+
+    with open(oFilename) as f:
+        for l in f.readlines():
+            arrLine = l.strip().split()
+            if len(arrLine) == 2:
+                t = float(arrLine[0])
+                if prune:
+                    if t >= minX and t <= maxX:
+                        data.append(float(arrLine[1]))
+                    elif t > maxX:
+                        break
+                else:
+                    data.append(float(arrLine[1]))
+    x = np.array(data)
+    with open("stats.txt", "a") as f:
+        f.write(key + ":\n")
+        f.write("  mean: "+str(x.mean())+"\n")
+        f.write("  std: "+str(x.std())+"\n")
+        f.write("  median: "+str(np.median(x))+"\n")
+        f.write("  min: "+str(x.min())+"\n")
+        f.write("  max: "+str(x.max())+"\n")
+        f.write("  normality: "+str(stats.shapiro(x)[1])+"\n")
+
+def createStats():
+    global epath, esuffix, xmax, xmin
+    path = str(epath.text())
+    suffix = str(esuffix.text())
+    pruneX = str(xmin.text())
+    pruneX2 = str(xmax.text())
+    with open("stats.txt", "a") as f:
+        f.write("----\n")
+    for key, values in config.iteritems():
+        if key == "_settings":
+            continue
+        if values["show"]:
+            statFile(key, values, pruneX, pruneX2)
+
 mainLayout = QVBoxLayout()
 area = QScrollArea()
 area.setWidget(subWindow)
@@ -311,17 +432,34 @@ push = QPushButton("Update Config")
 hlayout.addWidget(push)
 plotb = QPushButton("Plot")
 hlayout.addWidget(plotb)
+statsb = QPushButton("crate stats")
+hlayout.addWidget(statsb)
 window.setLayout(mainLayout)
+mainLayout.addLayout(hlayout)
+
+hlayout = QHBoxLayout()
+hlayout.addWidget(QLabel("export path"))
+hlayout.addWidget(epath)
+
+hlayout.addWidget(QLabel("export suffix"))
+hlayout.addWidget(esuffix)
+
+exportb = QPushButton("export")
+hlayout.addWidget(exportb)
 mainLayout.addLayout(hlayout)
 
 if haveQT5:
     push.clicked.connect(update)
     plotb.clicked.connect(plot)
     toggleb.clicked.connect(toggle)
+    exportb.clicked.connect(export)
+    statsb.clicked.connect(createStats)
 else:
     push.connect(push, SIGNAL("clicked()"), update)
     plotb.connect(plotb, SIGNAL("clicked()"), plot)
     toggleb.connect(toggleb, SIGNAL("clicked()"), toggle)
+    exportb.connect(exportb, SIGNAL("clicked()"), export)
+    statsb.connect(statsb, SIGNAL("clicked()"), createStats)
 
 
 guiConfig = {"x": 50, "y": 50, "width": 800, "height": 500, "scrollPosition": 0}
