@@ -48,7 +48,7 @@ namespace mars {
                              unsigned long id, bool rtt_widget = 0,
                              Qt::WindowFlags f=0, GraphicsManager *gm = 0)
         : QWidget((QWidget*) parent, f),
-        GraphicsWidget(parent, scene, id, rtt_widget, f, gm) {}
+        GraphicsWidget(parent, scene, id, rtt_widget, f, gm), childWidget(NULL) {}
       // Prevent flicker on Windows Qt
       QPaintEngine* paintEngine () const { return 0; }
 
@@ -64,18 +64,10 @@ namespace mars {
 
       virtual void updateView();
 
-      virtual void keyPressEvent(QKeyEvent *e);
-      virtual void keyReleaseEvent(QKeyEvent *e);
       virtual void hideEvent(QHideEvent *event);
       virtual void closeEvent(QCloseEvent *event);
       virtual void showEvent(QShowEvent *event);
-      virtual void mouseMoveEvent(QMouseEvent *e);
       virtual void mousePressEvent(QMouseEvent *e);
-      virtual void mouseReleaseEvent(QMouseEvent *e);
-      virtual void moveEvent(QMoveEvent *event );
-      virtual void wheelEvent(QWheelEvent *event);
-      virtual void resizeEvent(QResizeEvent *event);
-      virtual void paintEvent(QPaintEvent *event);
       virtual bool eventFilter(QObject *obj, QEvent *event);
       virtual void focusInEvent(QFocusEvent *event);
 
@@ -91,6 +83,7 @@ namespace mars {
 
     private:
       static QtOsgMixGraphicsWidget *activeWindow, *eventInWindow;
+      QWidget *childWidget;
       QObject *eventChild;
       double retinaScale;
     }; // end of class QtOsgMixGraphicsWidget

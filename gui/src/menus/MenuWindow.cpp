@@ -294,11 +294,11 @@ namespace mars {
 
     void MenuWindow::menu_addWindow(){
       static int num = 1;
-      QWidget* newWidget = new QWidget();
+      //QWidget* newWidget = new QWidget();
 
-      newWidget->setWindowTitle("marsGraphics");
-      unsigned long id = control->graphics->new3DWindow(newWidget);
-      //QWidget* newWidget = (QWidget*)control->graphics->getQTWidget(id);
+      //newWidget->setWindowTitle("marsGraphics");
+      unsigned long id = control->graphics->new3DWindow(NULL);
+      QWidget* newWidget = (QWidget*)control->graphics->getQTWidget(id);
       char title[55];
       sprintf(title, "graphics %d", num++);
       newWidget->setWindowTitle(title);

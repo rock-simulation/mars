@@ -47,6 +47,7 @@ if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
 
+set (QT_USE_QTOPENGL TRUE)
 setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
