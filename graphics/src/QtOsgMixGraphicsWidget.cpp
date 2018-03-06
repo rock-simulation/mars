@@ -30,12 +30,10 @@
 #include <QApplication>
 #include <QtGui>
 #include <QWidget>
-#include <QKeyEvent>
+#include <QVBoxLayout>
+#include <osgQt/GraphicsWindowQt>
 
 #include "QtOsgMixGraphicsWidget.h"
-#ifdef __APPLE__
-  #include <QMacCocoaViewContainer>
-#endif
 #include "HUD.h"
 #include "GraphicsManager.h"
 
@@ -50,7 +48,6 @@
 
 namespace mars {
   namespace graphics {
-
 
     // Store current active window, which we change if we got an mouse in event
     // on another graphics window. This is needed because the focus handling isn't
@@ -73,24 +70,21 @@ namespace mars {
       this->setMouseTracking(true);
       setAttribute(Qt::WA_PaintOnScreen);
       setAttribute(Qt::WA_OpaquePaintEvent);
+      window()->setAttribute(Qt::WA_DeleteOnClose);
       setFocusPolicy(Qt::ClickFocus);
       window()->installEventFilter(this);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+      retinaScale = 1.0;
+#else
+      retinaScale = devicePixelRatio();
+#endif
+      fprintf(stderr, "retina scale: %g\n", retinaScale);
     }
 
     osg::ref_ptr<osg::GraphicsContext> QtOsgMixGraphicsWidget::createWidgetContext(
                                                                                    void* parent,
                                                                                    osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
       traits->windowDecoration = false;
-
-#if defined(__APPLE__)
-      wdata =  new WindowData(WindowData::CreateOnlyView);
-      traits->inheritedWindowData = wdata;
-      haveNSView = false;
-#elif defined(WIN32) && !defined(__CYGWIN__)
-      traits->inheritedWindowData = new WindowData((HWND)winId());
-#else // all others
-      traits->inheritedWindowData = new WindowData(winId());
-#endif // __APPLE__
 
       osg::DisplaySettings* ds = osg::DisplaySettings::instance();
       if (ds->getStereo()) {
@@ -107,31 +101,39 @@ namespace mars {
         }
       }
 
-      osg::ref_ptr<osg::GraphicsContext> gc =
-        osg::GraphicsContext::createGraphicsContext(traits.get());
+      osgQt::GraphicsWindowQt *gc = new osgQt::GraphicsWindowQt(traits.get());
+      QVBoxLayout *l = new QVBoxLayout(this);
+      l->addWidget(gc->getGLWidget());
+      gc->getGLWidget()->setMouseTracking(false);
+      eventChild = gc->getGLWidget();
+      eventChild->installEventFilter(this);
+      l->setContentsMargins(0, 0, 0, 0);
+
 
       if (parent) {
-        traits->x = ((QWidget*)parent)->x();
-        traits->y = ((QWidget*)parent)->y();
-        traits->width = ((QWidget*)parent)->width();
-        traits->height = ((QWidget*)parent)->height();
+        traits->x = ((QWidget*)parent)->x()*retinaScale;
+        traits->y = ((QWidget*)parent)->y()*retinaScale;
+        traits->width = ((QWidget*)parent)->width()*retinaScale;
+        traits->height = ((QWidget*)parent)->height()*retinaScale;
       }
       else {
-        traits->x = x();
-        traits->y = y();
-        traits->width = width();
-        traits->height = height();
+        traits->x = x()*retinaScale;
+        traits->y = y()*retinaScale;
+        traits->width = width()*retinaScale;
+        traits->height = height()*retinaScale;
       }
-
       return gc;
     }
 
     void QtOsgMixGraphicsWidget::setWGeometry(int top, int left, int width, int height) {
-      window()->setGeometry(left, top, width, height);
+
       widgetX = left;
       widgetY = top;
       widgetWidth = width;
       widgetHeight = height;
+      window()->setGeometry(widgetX/retinaScale, widgetY/retinaScale,
+                            widgetWidth/retinaScale, widgetHeight/retinaScale);
+      applyResize();
     }
 
     void QtOsgMixGraphicsWidget::getWGeometry(int *top, int *left, int *width, int *height) const {
@@ -160,19 +162,6 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::updateView() {
-#if defined(__APPLE__)
-      if(!haveNSView && !isRTTWidget) {
-        NSView* osgWindow = wdata->getCreatedNSView();
-        if(osgWindow) {
-          this->hide();
-          QMacCocoaViewContainer *c = new QMacCocoaViewContainer(0, this);
-          c->setCocoaView(osgWindow);
-          c->setGeometry(0, 0, QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-          this->show();
-          haveNSView = true;
-        }
-      }
-#endif
       GraphicsWidget::updateView();
     }
 
@@ -181,33 +170,17 @@ namespace mars {
       if(graphicsWindow) {
         //fprintf(stderr, "resize: %d %d %d %d\n", window()->geometry().x(),
         //        window()->geometry().y(), geometrySize.width(), geometrySize.height());
-        widgetWidth = geometrySize.width();
-        widgetHeight = geometrySize.height();
-        widgetX = window()->geometry().x();
-        widgetY = window()->geometry().y();
-        applyResize();
-        /*
-        graphicsWindow->resized(window()->geometry().x(),
-                                window()->geometry().y(),
-                                geometrySize.width(),
-                                geometrySize.height());
-        graphicsWindow->getEventQueue()->windowResize(window()->geometry().x(),
-                                                      window()->geometry().y(),
-                                                      geometrySize.width(),
-                                                      geometrySize.height());
-        graphicsCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
-        if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
-        if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
-        postDrawCallback->setSize(geometrySize.width(), geometrySize.height());
-        */
+        graphicsWindow->getEventQueue()->windowResize(
+                                                      window()->geometry().x()*retinaScale, window()->geometry().y()*retinaScale,
+                                                      window()->width()*retinaScale, window()->height()*retinaScale);
       }
     }
 
     void QtOsgMixGraphicsWidget::moveEvent( QMoveEvent * event ) {
       if(graphicsWindow) {
         graphicsWindow->getEventQueue()->windowResize(
-                                                      window()->geometry().x(), window()->geometry().y(),
-                                                      window()->width(), window()->height());
+                                                      window()->geometry().x()*retinaScale, window()->geometry().y()*retinaScale,
+                                                      window()->width()*retinaScale, window()->height()*retinaScale);
       }
     }
 
@@ -270,19 +243,20 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::closeEvent( QCloseEvent * event ) {
+      fprintf(stderr, "receive close event\n");
       event->accept();
-      graphicsWindow->getEventQueue()->closeWindow();
+      //graphicsWindow->getEventQueue()->closeWindow();
       // this should also be done if the QCloseEvent is accepted
       // don't know why there are problems at the moment
-      hide();
+      //hide();
     }
 
     void QtOsgMixGraphicsWidget::mouseMoveEvent(QMouseEvent* e) {
 #ifndef WIN32
 #ifdef __APPLE__
-      view->getEventQueue()->mouseMotion(e->x(), e->y());
+      view->getEventQueue()->mouseMotion(e->x()*retinaScale, -e->y()*retinaScale);
 #else
-      view->getEventQueue()->mouseMotion(e->x(), -e->y());
+      view->getEventQueue()->mouseMotion(e->x()*retinaScale, -e->y()*retinaScale);
 #endif
 #endif
     }
@@ -295,7 +269,6 @@ namespace mars {
         activeWindow->mousePressEvent(e);
         return;
       }
-
       int button = 0;
 
       switch(e->button()) {
@@ -307,9 +280,9 @@ namespace mars {
       }
 #ifndef WIN32
 #ifdef __APPLE__
-      view->getEventQueue()->mouseButtonPress(e->x(), e->y(), button);
+      view->getEventQueue()->mouseButtonPress(e->x()*retinaScale, -e->y()*retinaScale, button);
 #else
-      view->getEventQueue()->mouseButtonPress(e->x(), -e->y(), button);
+      view->getEventQueue()->mouseButtonPress(e->x()*retinaScale, -e->y()*retinaScale, button);
 #endif
 #endif
 
@@ -329,9 +302,9 @@ namespace mars {
 
 #ifndef WIN32
 #ifdef __APPLE__
-      view->getEventQueue()->mouseButtonRelease(e->x(), e->y(), button);
+      view->getEventQueue()->mouseButtonRelease(e->x()*retinaScale, -e->y()*retinaScale, button);
 #else
-      view->getEventQueue()->mouseButtonRelease(e->x(), -e->y(), button);
+      view->getEventQueue()->mouseButtonRelease(e->x()*retinaScale, -e->y()*retinaScale, button);
 #endif
 #endif
       releaseKeyboard();
@@ -362,7 +335,8 @@ namespace mars {
         eventInWindow = this;
         return false;
       }
-      if (obj != parent()) {
+      if (obj != parent() && obj != this && obj != eventChild) {
+
         return false;
       }
       else if (event->type() == QEvent::KeyPress) {
@@ -388,7 +362,7 @@ namespace mars {
           keyPressEvent( ke );
           // event handled, return true because parent does not have to see
           // this event
-          return false;
+          return true;
         }
       }
       else if (event->type() == QEvent::KeyRelease) {
@@ -411,13 +385,25 @@ namespace mars {
           keyReleaseEvent( ke );
           // event handled, return true because parent does not have to see
           // this event
-          return false;
+          return true;
         }
+      }
+      else if (event->type() == QEvent::MouseButtonPress) {
+        mousePressEvent(static_cast<QMouseEvent *>(event));
+        return true;
+      }
+      else if (event->type() == QEvent::MouseButtonRelease) {
+        mouseReleaseEvent(static_cast<QMouseEvent *>(event));
+        return true;
+      }
+      else if (event->type() == QEvent::MouseMove) {
+        mouseMoveEvent(static_cast<QMouseEvent *>(event));
+        return true;
       }
       else if (event->type() == QEvent::Move) {
         QMoveEvent *re = static_cast<QMoveEvent *>(event);
         moveEvent(re);
-        return false;
+        return true;
       } else if (event->type() == QEvent::Resize) {
         QResizeEvent *re = static_cast<QResizeEvent *>(event);
         setGeometry(0, 0, re->size().width(), re->size().height());
@@ -425,14 +411,14 @@ namespace mars {
 
         // event handled, return true because parent does not have to see
         // this event ???
-        return false;
+        return true;
       }
       else if (event->type() == QEvent::Close) {
-        QCloseEvent *ce = static_cast<QCloseEvent *>(event);
-        closeEvent( ce );
+        //QCloseEvent *ce = static_cast<QCloseEvent *>(event);
+        //closeEvent( ce );
+        return false;
       }
-
-      return false;
+      return true;
     }
 
   } // end of namespace graphics

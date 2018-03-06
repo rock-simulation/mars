@@ -37,7 +37,7 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
-find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
+find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
@@ -171,7 +171,7 @@ include_directories("${CMAKE_BINARY_DIR}")
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
 
 if (${USE_QT5})
-qt5_use_modules(${PROJECT_NAME} Widgets)
+qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
 #qt5_use_modules(${PROJECT_NAME} MacExtras)
 endif (${USE_QT5})
 

@@ -230,7 +230,7 @@ namespace mars {
           // init osg
           //initialize graphicsFactory
           if(mainGui) {
-#ifdef __APPLE__
+#ifdef __2APPLE__
             marsGraphics->initializeOSG(NULL);
             QWidget *widget = (QWidget*)marsGraphics->getQTWidget(1);
             mainGui->mainWindow_p()->setCentralWidget(widget);

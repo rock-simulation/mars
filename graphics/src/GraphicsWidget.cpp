@@ -98,6 +98,7 @@ namespace mars {
        * (e.g. from the QWidget) we have to increment the referece counter
        * to prevent osg from calling the destructor one more time.
        */
+      fprintf(stderr, "get to destructor\n");
       this->ref();
       if(gm) gm->removeGraphicsWidget(widgetID);
       delete graphicsCamera;
@@ -1179,7 +1180,7 @@ namespace mars {
         // todo: currently qt handles the resize check other possibilities
         view->setEventQueue(new osgGA::EventQueue);
         gm->setActiveWindow(this);
-        return true;
+        //return true;
         return handleResizeEvent(ea);
       case osgGA::GUIEventAdapter::FRAME :
         return false;
@@ -1188,7 +1189,8 @@ namespace mars {
           graphicsEventHandler[0]->emitQuitEvent(widgetID);
         return true;
       case osgGA::GUIEventAdapter::CLOSE_WINDOW:
-        return false;
+
+        return true;
 
       default:
         return false;
