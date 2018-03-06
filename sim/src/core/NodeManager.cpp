@@ -218,7 +218,14 @@ namespace mars {
       // if we have a relative position, we have to calculate the absolute
       // position here
 
-      if(nodeS->relative_id != 0) {
+      NodeId parentDrawID = 0;
+      NodeId vizLink = 0;
+      if(nodeS->map.hasKey("vizLink")) {
+        vizLink = getID((std::string)nodeS->map["vizLink"]);
+      }
+
+      // todo: the combination of vizLink and absolute position will be a problem
+      if(!vizLink && nodeS->relative_id != 0) {
         setNodeStructPositionFromRelative(nodeS);
         //nodeS->relative_id = 0;
       }
@@ -299,17 +306,29 @@ namespace mars {
           newNode->setVisualRep(visual_rep);
         }
       } else {  //if nonPhysical
-        iMutex.lock();
-        simNodes[nodeS->index] = newNode;
-        if (nodeS->movable)
-          simNodesDyn[nodeS->index] = newNode;
-        iMutex.unlock();
+        if(vizLink) {
+          iMutex.lock();
+          vizNodes[nodeS->index] = newNode;
+          parentDrawID = simNodes[vizLink]->getGraphicsID();
+          iMutex.unlock();
+        }
+        else {
+          iMutex.lock();
+          simNodes[nodeS->index] = newNode;
+          if (nodeS->movable) {
+            simNodesDyn[nodeS->index] = newNode;
+          }
+          iMutex.unlock();
+        }
         control->sim->sceneHasChanged(false);
         if(control->graphics) {
           if(loadGraphics) {
             NodeId id = control->graphics->addDrawObject(*nodeS);
             if(id) {
               newNode->setGraphicsID(id);
+              if(parentDrawID) {
+                control->graphics->makeChild(parentDrawID, id);
+              }
               if(!reload) {
                 simNodesReload.back().graphicsID1 = id;
               }
@@ -633,6 +652,13 @@ namespace mars {
       if (iter != simNodes.end()) {
         tmpNode = iter->second; //iter->second is a pointer to the SimNode associated with the map
         simNodes.erase(iter);
+      }
+
+      iter = vizNodes.find(id);
+      if (iter != vizNodes.end()) {
+        // todo: handle remove child in graphics
+        tmpNode = iter->second; //iter->second is a pointer to the SimNode associated with the map
+        vizNodes.erase(iter);
       }
 
       iter = nodesToUpdate.find(id);
@@ -1279,7 +1305,10 @@ namespace mars {
       NodeMap::iterator iter;
       while (!simNodes.empty())
         removeNode(simNodes.begin()->first, false, clearGraphics);
+      while (!vizNodes.empty())
+        removeNode(vizNodes.begin()->first, false, clearGraphics);
       simNodes.clear();
+      vizNodes.clear();
       simNodesDyn.clear();
       if(clear_all) simNodesReload.clear();
       next_node_id = 1;

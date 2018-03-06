@@ -91,6 +91,7 @@ namespace mars {
       unsigned long nextNodeID;
       unsigned long nextGroupID;
       unsigned long currentNodeID;
+      std::string currentLinkName;
       unsigned long nextJointID;
       unsigned long nextMaterialID;
       unsigned long nextMotorID;
