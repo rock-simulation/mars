@@ -58,6 +58,8 @@ gLayout.addWidget(QLabel("a"), 0, 4)
 gLayout.addWidget(QLabel("scale"), 0, 5)
 gLayout.addWidget(QLabel("offset"), 0, 6)
 gLayout.addWidget(QLabel("x-shift"), 0, 7)
+gLayout.addWidget(QLabel("x-scale"), 0, 8)
+gLayout.addWidget(QLabel("order"), 0, 9)
 
 s1 = ""
 s2 = ""
@@ -100,8 +102,50 @@ b1 = False
 if "_settings" in config:
     if "useLatexFont" in config["_settings"]:
         b1 = config["_settings"]["useLatexFont"]
-useLatexFont = QCheckBox()
+useLatexFont = QCheckBox("useLatexFont")
 useLatexFont.setChecked(b1)
+
+b1 = True
+if "_settings" in config:
+    if "plotLegend" in config["_settings"]:
+        b1 = config["_settings"]["plotLegend"]
+plotLegend = QCheckBox("plotLegend")
+plotLegend.setChecked(b1)
+
+b1 = True
+if "_settings" in config:
+    if "plotXLabels" in config["_settings"]:
+        b1 = config["_settings"]["plotXLabels"]
+plotXLabels = QCheckBox("plotXLabels")
+plotXLabels.setChecked(b1)
+
+b1 = True
+if "_settings" in config:
+    if "plotYLabels" in config["_settings"]:
+        b1 = config["_settings"]["plotYLabels"]
+plotYLabels = QCheckBox("plotYLabels")
+plotYLabels.setChecked(b1)
+
+s1 = ""
+if "_settings" in config:
+    if "fontSize" in config["_settings"]:
+        s1 = config["_settings"]["fontSize"]
+fontSize = QLineEdit(str(s1))
+fontSize.setFixedWidth(80)
+
+s1 = ""
+if "_settings" in config:
+    if "plotHeight" in config["_settings"]:
+        s1 = config["_settings"]["plotHeight"]
+plotHeight = QLineEdit(str(s1))
+plotHeight.setFixedWidth(80)
+
+s1 = ""
+if "_settings" in config:
+    if "plotSize" in config["_settings"]:
+        s1 = config["_settings"]["plotSize"]
+plotSize = QLineEdit(str(s1))
+plotSize.setFixedWidth(80)
 
 epath = QLineEdit()
 esuffix = QLineEdit()
@@ -111,6 +155,8 @@ labelList = []
 scaleList = []
 offsetList = []
 shiftList = []
+xscaleList = []
+orderList = []
 showList = []
 colorRGBList = []
 colorAList = []
@@ -171,10 +217,14 @@ for key, value in config.iteritems():
     colorAList.append(colora)
     gLayout.addWidget(colora, i, 4)
 
+    if maxWidth == 0:
+        maxWidth = 20
+
     s = ""
     if "scale" in value:
         s = str(value["scale"])
     scale = QLineEdit(s)
+    scale.setFixedWidth(5*maxWidth)
     scaleList.append(scale)
     gLayout.addWidget(scale, i, 5)
 
@@ -182,6 +232,7 @@ for key, value in config.iteritems():
     if "offset" in value:
         s = str(value["offset"])
     offset = QLineEdit(s)
+    offset.setFixedWidth(5*maxWidth)
     offsetList.append(offset)
     gLayout.addWidget(offset, i, 6)
 
@@ -189,8 +240,25 @@ for key, value in config.iteritems():
     if "shift" in value:
         s = str(value["shift"])
     shift = QLineEdit(s)
+    shift.setFixedWidth(5*maxWidth)
     shiftList.append(shift)
     gLayout.addWidget(shift, i, 7)
+
+    s = ""
+    if "xscale" in value:
+        s = str(value["xscale"])
+    xscale = QLineEdit(s)
+    xscale.setFixedWidth(5*maxWidth)
+    xscaleList.append(xscale)
+    gLayout.addWidget(xscale, i, 8)
+
+    s = ""
+    if "order" in value:
+        s = str(value["order"])
+    order = QLineEdit(s)
+    order.setFixedWidth(3*maxWidth)
+    orderList.append(order)
+    gLayout.addWidget(order, i, 9)
 
     i += 1
 
@@ -227,6 +295,16 @@ def update():
         elif "shift" in config[keyList[i]]:
             config[keyList[i]].pop("shift", None)
 
+        if len(xscaleList[i].text()) > 0:
+            config[keyList[i]]["xscale"] = float(xscaleList[i].text())
+        elif "xscale" in config[keyList[i]]:
+            config[keyList[i]].pop("xscale", None)
+
+        if len(orderList[i].text()) > 0:
+            config[keyList[i]]["order"] = int(orderList[i].text())
+        elif "order" in config[keyList[i]]:
+            config[keyList[i]].pop("order", None)
+
     if len(xmin.text()) > 0 and len(xmax.text()) > 0:
         handleSettings(config)
         config["_settings"]["xlim"] = {"min": float(xmin.text()),
@@ -258,6 +336,42 @@ def update():
         config["_settings"]["useLatexFont"] = True
     else:
         clearSettings(config, "useLatexFont")
+
+    if not plotLegend.isChecked():
+        handleSettings(config)
+        config["_settings"]["plotLegend"] = False
+    else:
+        clearSettings(config, "plotLegend")
+
+    if not plotXLabels.isChecked():
+        handleSettings(config)
+        config["_settings"]["plotXLabels"] = False
+    else:
+        clearSettings(config, "plotXLabels")
+
+    if not plotYLabels.isChecked():
+        handleSettings(config)
+        config["_settings"]["plotYLabels"] = False
+    else:
+        clearSettings(config, "plotYLabels")
+
+    if len(fontSize.text()) > 0:
+        handleSettings(config)
+        config["_settings"]["fontSize"] = float(fontSize.text())
+    else:
+        clearSettings(config, "fontSize")
+
+    if len(plotSize.text()) > 0:
+        handleSettings(config)
+        config["_settings"]["plotSize"] = float(plotSize.text())
+    else:
+        clearSettings(config, "plotSize")
+
+    if len(plotHeight.text()) > 0:
+        handleSettings(config)
+        config["_settings"]["plotHeight"] = float(plotHeight.text())
+    else:
+        clearSettings(config, "plotHeight")
 
     if len(adjust.text()) > 0:
         handleSettings(config)
@@ -320,6 +434,8 @@ def exportFile(key, values, path, suffix, pruneX, pruneX2):
 def export():
     global epath, esuffix, xmax, xmin
     path = str(epath.text())
+    if len(path) == 0:
+        return
     suffix = str(esuffix.text())
     pruneX = str(xmin.text())
     pruneX2 = str(xmax.text())
@@ -413,6 +529,16 @@ hlayout.addStretch()
 mainLayout.addLayout(hlayout)
 
 hlayout = QHBoxLayout()
+hlayout.addWidget(QLabel("plot height:"))
+hlayout.addWidget(plotHeight)
+hlayout.addWidget(QLabel("font size:"))
+hlayout.addWidget(fontSize)
+hlayout.addWidget(QLabel("plot size:"))
+hlayout.addWidget(plotSize)
+hlayout.addStretch()
+mainLayout.addLayout(hlayout)
+
+hlayout = QHBoxLayout()
 hlayout.addWidget(QLabel("subplots_adjust (left, right, top, bottom)"))
 hlayout.addWidget(adjust)
 hlayout.addStretch()
@@ -420,7 +546,9 @@ mainLayout.addLayout(hlayout)
 
 hlayout = QHBoxLayout()
 hlayout.addWidget(useLatexFont)
-hlayout.addWidget(QLabel("useLatexFont"))
+hlayout.addWidget(plotLegend)
+hlayout.addWidget(plotXLabels)
+hlayout.addWidget(plotYLabels)
 hlayout.addStretch()
 mainLayout.addLayout(hlayout)
 

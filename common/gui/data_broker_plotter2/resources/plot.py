@@ -6,7 +6,7 @@ import os
 import matplotlib.pyplot as plt
 #from matplotlib.patches import Polygon
 import matplotlib as mpl
-
+from matplotlib.ticker import FormatStrFormatter
 
 from matplotlib import rc
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
@@ -37,11 +37,18 @@ mpl.rcParams['font.size'] = '14.0'
 mpl.rcParams['lines.markeredgewidth'] = '0.0'
 mpl.rcParams['lines.markersize'] = '8'
 
-fSize = 1.0
-fHeight = 5
-
 # plot function for mars/data_broker_plotter2 export
 def doPlot():
+    fSize = 1.0
+    fHeight = 5
+    config = {}
+    with open("config.yml", "r") as f:
+        config = yaml.load(f)
+    if "_settings" in config:
+        if "plotHeight" in config["_settings"]:
+            fHeight = config["_settings"]["plotHeight"]
+        if "plotSize" in config["_settings"]:
+            fSize = config["_settings"]["plotSize"]
     plt.clf()
     fig, ax1 = plt.subplots(figsize=(12.5*fSize,fHeight*fSize))
     plt.title("")
@@ -50,11 +57,9 @@ def doPlot():
     #plt.xticks([])
     #ax1.xaxis.set_ticklabels([])
     plt.subplots_adjust(left=0.06, right=0.992, top=0.895, bottom=0.099)
-
+    #ax1.yaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+    plotLegend = True
     dataList = []
-    config = {}
-    with open("config.yml", "r") as f:
-        config = yaml.load(f)
     configList = {}
     if "_settings" in config:
         if "xlim" in config["_settings"]:
@@ -74,6 +79,15 @@ def doPlot():
                                 bottom=config["_settings"]["adjust"]["bottom"])
         if "useLatexFont" in config["_settings"] and config["_settings"]["useLatexFont"]:
             rc('font',**{'family':'serif','serif':['']})
+        if "fontSize" in config["_settings"]:
+            mpl.rcParams['font.size'] = str(config["_settings"]["fontSize"])
+        if "plotLegend" in config["_settings"]:
+            plotLegend = config["_settings"]["plotLegend"]
+        if "plotXLabels" in config["_settings"] and not config["_settings"]["plotXLabels"]:
+            ax1.xaxis.set_ticklabels([])
+        if "plotYLabels" in config["_settings"] and not config["_settings"]["plotYLabels"]:
+            ax1.yaxis.set_ticklabels([])
+
     i = 0
     for d in os.listdir("."):
         if d[-4:] == ".csv":
@@ -102,8 +116,7 @@ def doPlot():
             if not found:
                 print "found no config for: " + label
 
-    arrDataX = []
-    arrDataY = []
+    arrData = []
 
     i = 0
 
@@ -111,6 +124,8 @@ def doPlot():
         scale = 1.0
         offset = 0.0
         shift = 0.0
+        xscale = 1.0
+        order = 0
         if i in configList:
             c = configList[i]
             if "scale" in c:
@@ -119,23 +134,26 @@ def doPlot():
                 offset = c["offset"]
             if "shift" in c:
                 shift = c["shift"]
-        i += 1
+            if "xscale" in c:
+                xscale = c["xscale"]
+            if "order" in c:
+                order = c["order"]
         x = []
         y = []
         row = 0
         for line in data:
             arrLine = line.split()
             if len(arrLine) == 2:
-                x.append(float(arrLine[0])+shift)
+                x.append(float(arrLine[0])*xscale+shift)
                 y.append(float(arrLine[1])*scale+offset)
         if len(x) > 1:
-            arrDataX.append(x)
-            arrDataY.append(y)
+            arrData.append([order, x, y, i])
+        i += 1
 
     ll = []
-    for m in range(len(arrDataX)):
-        i = len(arrDataX) - 1 - m
-        i = m
+    arrData.sort(key=lambda x: x[0])
+    for data in arrData:
+        i = data[3]
         if i in configList:
             c = configList[i]
             cl = "#000000"
@@ -152,17 +170,18 @@ def doPlot():
                 cl = "#"+r+g+b
             if "a" in c["color"]:
                 a = float(c["color"]["a"])
-            l, = plt.plot(arrDataX[i], arrDataY[i], lineStyles[0], label=c["label"],
+            l, = plt.plot(data[1], data[2], lineStyles[0], label=c["label"],
                           linewidth=1.5, color=cl, alpha=a)
             ll.append(l)
         else:
-            l, = plt.plot(arrDataX[i], arrDataY[i], lineStyles[0], label="plot_"+str(i),
+            l, = plt.plot(data[1], data[2], lineStyles[0], label="plot_"+str(i),
                           linewidth=1.5)
             ll.append(l)
 
-    legend = plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-                        ncol=len(ll), mode="expand", borderaxespad=0.,
-                        handletextpad=0.4, markerscale=2.0)
+    if plotLegend:
+        legend = plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+                            ncol=len(ll), mode="expand", borderaxespad=0.,
+                            handletextpad=0.4, markerscale=2.0)
 
     plt.grid()
     plt.savefig("graph.pdf", facecolor=white, edgecolor=black)
