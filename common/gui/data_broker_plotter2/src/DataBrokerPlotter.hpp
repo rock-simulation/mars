@@ -90,6 +90,7 @@ namespace data_broker_plotter2 {
     void exportPlot();
 
   protected:
+    void timerEvent(QTimerEvent *event);
     void closeEvent(QCloseEvent *event);
     void run();
 
@@ -105,6 +106,7 @@ namespace data_broker_plotter2 {
     std::vector<PackageData> packageList;
     std::vector<std::string> filter;
     unsigned long xRange;
+    int updateFilterTicks;
 
     std::map<unsigned long, int> registerMap;
     std::map<std::string, Plot*> plotMap;

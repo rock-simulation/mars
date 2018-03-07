@@ -68,6 +68,7 @@ namespace data_broker_plotter2 {
     w->setLayout(vLayout2);
     splitter->addWidget(w);
     vLayout->addWidget(splitter);
+    updateFilterTicks = 0;
 
     map["Properties"]["X-Range in ms"] = 10000UL;
     map["Properties"]["Data Update Rate"] = 40.0;
@@ -107,6 +108,7 @@ namespace data_broker_plotter2 {
       }
     }
     start();
+    startTimer(200);
   }
 
   DataBrokerPlotter::~DataBrokerPlotter(void) {
@@ -269,23 +271,7 @@ namespace data_broker_plotter2 {
         map = newMap;
         map["Properties"]["Filter"] = value;
         plotLock.unlock();
-        dataLock.lock();
-        filter = mars::utils::explodeString(':', value);
-        if(value[value.size()-1] != ':') filter.pop_back();
-        for(auto it: plotMap) {
-          for(auto it2: filter) {
-            if(mars::utils::matchPattern(it2, it.first)) {
-              std::vector<std::string> arrString = mars::utils::explodeString('/', it.first);
-              configmaps::ConfigItem *item = map[arrString[0]];
-              arrString.erase(arrString.begin());
-              for(auto it3: arrString) item = (*item)[it3];
-              *item = it.second->options;
-              break;
-            }
-          }
-        }
-        updateMap = true;
-        dataLock.unlock();
+        updateFilterTicks = 1;
       }
       else if(key.find("Pen") != std::string::npos) {
         penSize = atof(value.c_str());
@@ -594,6 +580,35 @@ namespace data_broker_plotter2 {
     plot->curve = NULL;
     plot->options["show"] = false;
     needReplot = true;
+  }
+
+  void DataBrokerPlotter::timerEvent(QTimerEvent *event) {
+    if(updateFilterTicks > 10) {
+      updateFilterTicks = 0;
+      plotLock.lock();
+      std::string value = map["Properties"]["Filter"];
+      plotLock.unlock();
+      dataLock.lock();
+      filter = mars::utils::explodeString(':', value);
+      if(value[value.size()-1] != ':') filter.pop_back();
+      for(auto it: plotMap) {
+        for(auto it2: filter) {
+          if(mars::utils::matchPattern(it2, it.first)) {
+            std::vector<std::string> arrString = mars::utils::explodeString('/', it.first);
+            configmaps::ConfigItem *item = map[arrString[0]];
+            arrString.erase(arrString.begin());
+            for(auto it3: arrString) item = (*item)[it3];
+            *item = it.second->options;
+            break;
+          }
+        }
+      }
+      updateMap = true;
+      dataLock.unlock();
+    }
+    else if(updateFilterTicks) {
+      ++updateFilterTicks;
+    }
   }
 
 } // end of namespace: data_broker_plotter2
