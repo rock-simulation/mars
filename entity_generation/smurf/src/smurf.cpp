@@ -267,6 +267,14 @@ namespace mars {
           fprintf(stderr, "addConfig: %s\n", jointname.c_str());
           tmpmap["nodeID"] = nodeIDMap[linkname];
           tmpmap["jointID"] = jointIDMap[jointname];
+          // todo: change DataPackage to compelte for joint
+          std::vector<ConfigMap>::iterator it = jointList.begin();
+          for(; it!=jointList.end(); ++it) {
+            if((NodeId)(*it)["index"] == (NodeId)tmpmap["jointID"]) {
+              (*it)["reducedDataPackage"] = false;
+              break;
+            }
+          }
           fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (unsigned long) tmpmap["nodeID"],
               (unsigned long) tmpmap["jointID"]);
         }
@@ -606,6 +614,9 @@ namespace mars {
       config["movable"] = true;
       config["relativeid"] = currentNodeID;
 
+      // reduce DataBroker load
+      config["noDataPackage"] = true;
+
       // add inertial information
 
       config["density"] = 0.0;
@@ -873,6 +884,8 @@ namespace mars {
 #ifdef DEBUG_SCENE_MAP
         debugMap["joints"] += config;
 #endif
+        // reduce DataBroker load
+        config["reducedDataPackage"] = true;
         jointList.push_back(config);
     }
 
