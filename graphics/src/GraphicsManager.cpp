@@ -585,13 +585,10 @@ namespace mars {
       gw->setName(name);
       gw->setClearColor(graphicOptions.clearColor);
       viewer->addView(gw->getView());
-      if(graphicsWindows.size() == 0) {
-        gw->grabFocus();
-        viewer->setCameraWithFocus(gw->getMainCamera());
-      }
       graphicsWindows.push_back(gw);
 
       if(!rtt) {
+        setActiveWindow(next_window_id-1);
         gw->setGraphicsEventHandler((GraphicsEventInterface*)this);
 
         HUD *myHUD = new HUD(next_window_id);

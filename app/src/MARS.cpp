@@ -230,20 +230,9 @@ namespace mars {
           // init osg
           //initialize graphicsFactory
           if(mainGui) {
-#ifdef __APPLE__
             marsGraphics->initializeOSG(NULL);
             QWidget *widget = (QWidget*)marsGraphics->getQTWidget(1);
             mainGui->mainWindow_p()->setCentralWidget(widget);
-            //widget->show();
-#else
-            marsGraphics->initializeOSG(NULL, false);
-            QWidget *parent = new QWidget();
-            parent->setWindowTitle("main view");
-            unsigned long id = marsGraphics->new3DWindow(parent);
-            parent->resize(QSize(720, 405));
-            parent->setMinimumSize(QSize(50, 50));
-            mainGui->mainWindow_p()->setCentralWidget(parent);
-#endif
           }
           else {
             marsGraphics->initializeOSG(NULL, false);
