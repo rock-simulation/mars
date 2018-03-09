@@ -340,7 +340,7 @@ namespace mars {
     void DrawObject::seperateMaterial() {
       if(!materialNode.valid()) return;
       materialNode->removeChild(posTransform_.get());
-      posTransform_->setStateSet(materialNode->getOrCreateStateSet());
+      posTransform_->setStateSet(materialNode->getMaterial()->getOrCreateStateSet());
     }
 
     void DrawObject::showNormals(bool val) {

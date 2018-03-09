@@ -207,6 +207,7 @@ namespace mars {
       int vel_ptr;
       unsigned long graphics_id, graphics_id2;
       bool update_ray;
+      int pushToDataBroker;
       int visual_rep;
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication

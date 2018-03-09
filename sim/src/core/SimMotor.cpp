@@ -92,26 +92,33 @@ namespace mars {
       initTemperatureEstimation();
       initCurrentEstimation();
 
-      dbPackage.add("id", (long)sMotor.index);
-      dbPackage.add("value", controlValue);
-      dbPackage.add("position", getPosition());
-      dbPackage.add("current", getCurrent());
-      dbPackage.add("torque", getEffort());
+      pushToDataBroker = 2;
+      configmaps::ConfigMap &map = sMotor.config;
+      if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
+        pushToDataBroker = 0;
+      }
+      if(pushToDataBroker > 0) {
+        dbPackage.add("id", (long)sMotor.index);
+        dbPackage.add("value", controlValue);
+        dbPackage.add("position", getPosition());
+        dbPackage.add("current", getCurrent());
+        dbPackage.add("torque", getEffort());
 
-      dbIdIndex = dbPackage.getIndexByName("id");
-      dbControlParameterIndex = dbPackage.getIndexByName("value");
-      dbPositionIndex = dbPackage.getIndexByName("position");
-      dbCurrentIndex = dbPackage.getIndexByName("current");
-      dbEffortIndex = dbPackage.getIndexByName("torque");
+        dbIdIndex = dbPackage.getIndexByName("id");
+        dbControlParameterIndex = dbPackage.getIndexByName("value");
+        dbPositionIndex = dbPackage.getIndexByName("position");
+        dbCurrentIndex = dbPackage.getIndexByName("current");
+        dbEffortIndex = dbPackage.getIndexByName("torque");
 
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      if(control->dataBroker) {
-        dbPushId = control->dataBroker->pushData(groupName, dataName,
-                                                 dbPackage, NULL,
-                                                 data_broker::DATA_PACKAGE_READ_FLAG);
-        control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer", 0);
+        std::string groupName, dataName;
+        getDataBrokerNames(&groupName, &dataName);
+        if(control->dataBroker) {
+          dbPushId = control->dataBroker->pushData(groupName, dataName,
+                                                   dbPackage, NULL,
+                                                   data_broker::DATA_PACKAGE_READ_FLAG);
+          control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer", 0);
+        }
       }
     }
 
@@ -119,8 +126,10 @@ namespace mars {
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
       if(control->dataBroker) {
-        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                     "mars_sim/simTimer");
+        if(pushToDataBroker) {
+          control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                       "mars_sim/simTimer");
+        }
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here

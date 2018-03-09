@@ -267,6 +267,14 @@ namespace mars {
           fprintf(stderr, "addConfig: %s\n", jointname.c_str());
           tmpmap["nodeID"] = nodeIDMap[linkname];
           tmpmap["jointID"] = jointIDMap[jointname];
+          // todo: change DataPackage to compelte for joint
+          std::vector<ConfigMap>::iterator it = jointList.begin();
+          for(; it!=jointList.end(); ++it) {
+            if((NodeId)(*it)["index"] == (NodeId)tmpmap["jointID"]) {
+              (*it)["reducedDataPackage"] = false;
+              break;
+            }
+          }
           fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (unsigned long) tmpmap["nodeID"],
               (unsigned long) tmpmap["jointID"]);
         }
@@ -562,6 +570,7 @@ namespace mars {
       linkIDMap[name] = nextNodeID - 1;
       nodeIDMap[name] = nextNodeID - 1;
       currentNodeID = nextNodeID - 1;
+      currentLinkName = name;
       config["groupid"] = groupID;
       config["movable"] = !fixed;
 
@@ -604,6 +613,9 @@ namespace mars {
       config["groupid"] = groupID;
       config["movable"] = true;
       config["relativeid"] = currentNodeID;
+
+      // reduce DataBroker load
+      config["noDataPackage"] = true;
 
       // add inertial information
 
@@ -777,6 +789,10 @@ namespace mars {
       config["materialName"] = visual->material_name;
 
       addEmptyCollisionToNode(&config);
+      config["vizLink"] = currentLinkName;
+      config["noPhysical"] = true;
+      config["noDataPackage"] = true;
+
       visualNameMap[name] = name;
 
 #ifdef DEBUG_SCENE_MAP
@@ -868,6 +884,8 @@ namespace mars {
 #ifdef DEBUG_SCENE_MAP
         debugMap["joints"] += config;
 #endif
+        // reduce DataBroker load
+        config["reducedDataPackage"] = true;
         jointList.push_back(config);
     }
 
@@ -1006,6 +1024,19 @@ namespace mars {
           if (pathExists(tmpfilename)) {
             fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
             config["filename"] = tmpfilename2;
+          }
+          else {
+            // check if bobj files are in parallel folder
+            int index = tmpfilename.find("obj/");
+            if (index != string::npos) {
+              string front = tmpfilename.substr(0, index);
+              string back = tmpfilename.substr(index+4, tmpfilename.size());
+              string newfilename = front + "bobj/" + back;
+              if (pathExists(newfilename)) {
+                fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", newfilename.c_str());
+                config["filename"] = newfilename;
+              }
+            }
           }
         }
       }

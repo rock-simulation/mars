@@ -166,6 +166,7 @@ namespace mars {
       NodeMap simNodes;
       NodeMap simNodesDyn;
       NodeMap nodesToUpdate;
+      NodeMap vizNodes;
       std::list<interfaces::NodeData> simNodesReload;
       unsigned long maxGroupID;
       lib_manager::LibManager *libManager;

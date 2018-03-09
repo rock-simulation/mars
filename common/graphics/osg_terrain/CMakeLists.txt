@@ -5,6 +5,8 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 
+add_definitions(-std=c++11)
+
 find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})

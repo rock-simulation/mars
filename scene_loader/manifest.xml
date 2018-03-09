@@ -9,5 +9,6 @@
     <depend package="simulation/mars/interfaces" />
     <depend package="tools/configmaps" />
     <depend package="external/minizip" />
+    <rosdep name="qt4" />
     <tags>needs_opt</tags>
 </package>

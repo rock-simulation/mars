@@ -64,6 +64,7 @@ namespace mars {
                        bool skipFilenamePrefix = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 
+      configmaps::ConfigMap config;
       std::string name;         // the joints name
       unsigned long index; // index umber of the joint
       JointType type;            // type of the joint in the physic

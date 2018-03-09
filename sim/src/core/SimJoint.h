@@ -209,6 +209,7 @@ namespace mars {
       interfaces::sReal motor_torque, invert;
       utils::Vector axis1InNode1;
       utils::Vector node1ToAnchor;
+      int pushToDataBroker;
 
       // for dataBroker communication
       void setupDataPackageMapping();
