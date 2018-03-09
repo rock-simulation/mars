@@ -1025,6 +1025,19 @@ namespace mars {
             fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
             config["filename"] = tmpfilename2;
           }
+          else {
+            // check if bobj files are in parallel folder
+            int index = tmpfilename.find("obj/");
+            if (index != string::npos) {
+              string front = tmpfilename.substr(0, index);
+              string back = tmpfilename.substr(index+4, tmpfilename.size());
+              string newfilename = front + "bobj/" + back;
+              if (pathExists(newfilename)) {
+                fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", newfilename.c_str());
+                config["filename"] = newfilename;
+              }
+            }
+          }
         }
       }
       
