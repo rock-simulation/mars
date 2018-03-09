@@ -4,6 +4,7 @@ void envmap_vert(out vec4 specularCol) {
   float rcol = scale.r*envMapSpecular.r;
   float gcol = scale.g*envMapSpecular.g;
   float bcol = scale.b*envMapSpecular.b;
+  float acol = scale.a*envMapSpecular.a;
 
-  specularCol = vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol+gl_FrontMaterial.specular.rgb*bcol, 1);
+  specularCol = vec4(gl_FrontMaterial.specular.rgb*rcol+gl_FrontMaterial.specular.rgb*gcol+gl_FrontMaterial.specular.rgb*bcol+gl_FrontMaterial.specular.rgb*acol, 1);
 }

@@ -45,6 +45,7 @@ set(SOURCES
 	src/shader/yaml-shader.cpp
 	src/shader/ShaderFactory.cpp
 	src/shader/DRockGraphSP.cpp
+	src/shader/PhobosGraphSP.cpp
 	src/shader/YamlSP.cpp
 	src/tsort/tsort.c
         )
@@ -58,6 +59,7 @@ set(HEADERS
 	src/shader/yaml-shader.h
 	src/shader/ShaderFactory.h
 	src/shader/DRockGraphSP.h
+	src/shader/PhobosGraphSP.h
 	src/shader/IShaderProvider.h
 	src/shader/YamlSP.h
 	src/tsort/tsort.h

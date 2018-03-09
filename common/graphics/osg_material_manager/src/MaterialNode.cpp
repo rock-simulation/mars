@@ -45,7 +45,7 @@ namespace osg_material_manager {
   MaterialNode::MaterialNode()
     : isCreated(false), maxNumLights(1), useFog(true), useNoise(true),
       getLight(true), brightness_(1.0), drawLineLaser(false), shadow(true),
-      needTangents(false) {
+      needTangents(false), needInstancing(false), numInstances(1) {
   }
 
   MaterialNode::~MaterialNode() {
@@ -147,6 +147,20 @@ namespace osg_material_manager {
       state->setMode(GL_ALPHA_TEST, osg::StateAttribute::OFF);
       state->setMode(GL_BLEND,osg::StateAttribute::OFF);
       state->setRenderBinDetails(0, "RenderBin");
+    }
+  }
+
+  void MaterialNode::setNeedInstancing(bool v, int numInstances) {
+    needInstancing = v;
+    this->numInstances = numInstances;
+    enableInstancing();
+  }
+
+  void MaterialNode::enableInstancing() {
+    if (needInstancing) {
+      InstancesVisitor visitor;
+      visitor.numInstances = numInstances;
+      this->accept(visitor);
     }
   }
 
@@ -290,6 +304,7 @@ namespace osg_material_manager {
     bool success = osg::Group::addChild(child);
     if(success) {
       generateTangents();
+      enableInstancing();
     }
     return success;
   }
@@ -347,6 +362,33 @@ namespace osg_material_manager {
     else {
       traverse(searchNode);
     }
+  }
+
+  void InstancesVisitor::apply(osg::Node &searchNode){
+    // search for geometries and generate tangents for them
+    osg::Geode* geode=dynamic_cast<osg::Geode*>(&searchNode);
+    if(geode) {
+      for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
+        osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
+        if(geom) {
+          //geom->setInitialBound(osg::BoundingBox(0, 0, 0, 2, 2, 1));
+          enableInstancing(geom);
+        }
+      }
+    }
+
+    traverse(searchNode);
+  }
+
+  void InstancesVisitor::enableInstancing(osg::Geometry *geom) {
+    // first turn on hardware instancing for every primitive set
+    for (unsigned int i = 0; i < geom->getNumPrimitiveSets(); ++i) {
+      geom->getPrimitiveSet(i)->setNumInstances(numInstances);
+      fprintf(stderr, "set num instances: %d\n", numInstances);
+    }
+    // we need to turn off display lists for instancing to work
+    geom->setUseDisplayList(false);
+    geom->setUseVertexBufferObjects(true);
   }
 
 } // end of namespace osg_material_manager

@@ -69,6 +69,7 @@ namespace mars {
               "mars_entity_factory");
       factoryManager->registerFactory("smurf", this);
       factoryManager->registerFactory("urdf", this);
+      factoryManager->registerFactory("particle", this); // At the moment particles are smurfs with instancing
       theManager->releaseLibrary("mars_entity_factory");
     }
 
@@ -187,7 +188,7 @@ namespace mars {
       tmpPath = path;
       std::string filename = (std::string)entityconfig["file"];
       fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
-      if((std::string)entityconfig["type"] == "smurf") {
+      if((std::string)entityconfig["type"] == "smurf" || entityconfig["type"].getString() == "particle") {
         model = smurf_parser::parseFile(&entityconfig, path, filename, true);
 #ifdef DEBUG_SCENE_MAP
         debugMap.append(entityconfig);
@@ -1081,7 +1082,6 @@ namespace mars {
 
     unsigned int SMURF::loadMaterial(ConfigMap config) {
       MaterialData material;
-
       int valid = material.fromConfigMap(&config, tmpPath);
       materialMap[config["name"]] = material;
 

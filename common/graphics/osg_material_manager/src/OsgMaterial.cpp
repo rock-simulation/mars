@@ -35,6 +35,7 @@
 #include "shader/DRockGraphSP.h"
 #include "shader/YamlSP.h"
 #include "shader/yaml-shader.h"
+#include "shader/PhobosGraphSP.h"
 
 #include <osg/TexMat>
 #include <osg/CullFace>
@@ -76,8 +77,8 @@ namespace osg_material_manager {
     invShadowTextureSizeUniform = new osg::Uniform("invShadowTextureSize",
                                                    (float)(invShadowTextureSize));
 
-    envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec3f(0.0f, 0.0f, 0.0f));
-    envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec3f(0.0f, 0.0f, 0.0f));
+    envMapSpecularUniform = new osg::Uniform("envMapSpecular", osg::Vec4f(0.0f, 0.0f, 0.0f, 0.0f));
+    envMapScaleUniform = new osg::Uniform("envMapScale", osg::Vec4f(0.0f, 0.0f, 0.0f, 0.0f));
     terrainScaleZUniform = new osg::Uniform("terrainScaleZ", 0.0f);
     terrainDimUniform = new osg::Uniform("terrainDim", 0);
     noiseMap = new osg::Texture2D();
@@ -94,7 +95,7 @@ namespace osg_material_manager {
     unitMap["envMapR"] = 5;
     unitMap["envMapG"] = 6;
     unitMap["envMapB"] = 8;
-    unitMap["envMapD"] = 9;
+    unitMap["envMapA"] = 9;
     unitMap["normalMapR"] = 10;
     unitMap["normalMapG"] = 11;
     unitMap["normalMapB"] = 12;
@@ -152,6 +153,10 @@ namespace osg_material_manager {
 
     // set the material
     state->setAttributeAndModes(material.get(), osg::StateAttribute::ON);
+
+    if (map.hasKey("culling") && !map["culling"]) {
+      state->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);
+    }
 
     if(!getLight) {
       osg::ref_ptr<osg::CullFace> cull = new osg::CullFace();
@@ -496,6 +501,28 @@ namespace osg_material_manager {
         DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
+      } else if ((string)map["shader"]["provider"] == "PhobosGraph") {
+        ConfigMap options;
+        options["numLights"] = maxNumLights;
+        options["loadPath"] = loadPath;
+        options["customPath"] = "";
+        if (map["shader"].hasKey("custom")) {
+          options["customPath"] = (string)map["shader"]["custom"];
+        }
+        string vertexPath = map["shader"]["vertex"];
+        string fragmentPath = map["shader"]["fragment"];
+        if(!loadPath.empty() && vertexPath[0] != '/') {
+          vertexPath = loadPath + vertexPath;
+        }
+        if(!loadPath.empty() && fragmentPath[0] != '/') {
+          fragmentPath = loadPath + fragmentPath;
+        }
+        ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
+        ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
+        PhobosGraphSP *vertexProvider = new PhobosGraphSP(resPath, vertexModel, options);
+        PhobosGraphSP *fragmentProvider = new PhobosGraphSP(resPath, fragmentModel, options);
+        factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
+        factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
       }
     } else {
       vector<string> args;
@@ -565,15 +592,17 @@ namespace osg_material_manager {
       stateSet->removeUniform(texScaleUniform.get());
     }
     if (map.hasKey("envMapSpecular")) {
-      envMapSpecularUniform->set(osg::Vec3((double)map["envMapSpecular"]["r"],
+      envMapSpecularUniform->set(osg::Vec4((double)map["envMapSpecular"]["r"],
                                            (double)map["envMapSpecular"]["g"],
-                                           (double)map["envMapSpecular"]["b"]));
+                                           (double)map["envMapSpecular"]["b"],
+                                           (double)map["envMapSpecular"]["a"]));
       stateSet->addUniform(envMapSpecularUniform.get());
     }
     if (map.hasKey("envMapScale")) {
-      envMapScaleUniform->set(osg::Vec3((double)map["envMapScale"]["r"],
+      envMapScaleUniform->set(osg::Vec4((double)map["envMapScale"]["r"],
                                         (double)map["envMapScale"]["g"],
-                                        (double)map["envMapScale"]["b"]));
+                                        (double)map["envMapScale"]["b"],
+                                        (double)map["envMapScale"]["a"]));
       stateSet->addUniform(envMapScaleUniform.get());
     }
     if(map.hasKey("shaderSources")) {
@@ -683,6 +712,9 @@ namespace osg_material_manager {
     materialNodeVector.push_back(d);
     if(checkTexture("normalMap") || checkTexture("displacementMap") || checkTexture("environmentMap")) {
       d->setNeedTangents(true);
+    }
+    if (map.get("instancing", false)) {
+      d->setNeedInstancing(true, map.get("numInstances", 1));
     }
     d->setTransparency((float)map.get("transparency", 0.0));
   }

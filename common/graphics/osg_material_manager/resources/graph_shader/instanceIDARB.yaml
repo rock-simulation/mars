@@ -1,0 +1,7 @@
+params:
+  out:
+    id: {index: 0, type: float}
+extensions:
+  enabled:
+    - GL_ARB_draw_instanced
+source: /graph_shader/instanceIDARB.frag
