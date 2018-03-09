@@ -109,12 +109,12 @@ namespace mars {
       std::string tmp = prefix;
 
       if(file->empty()) return;
-      if(file->at(1) == '/') {
+      if(file->at(0) == '/') {
         // we have an absolute path
         return;
       }
 
-      if(tmp.at(tmp.length()-1) != '/') {
+      if(tmp[tmp.length()-1] != '/') {
         tmp.append("/");
       }
 
