@@ -258,7 +258,7 @@ namespace mars {
       physics->initTheWorld();
       // the physics step_size is in seconds
       physics->step_size = calc_ms/1000.;
-      physics->fast_step = false;
+      physics->fast_step = cfgFaststep.bValue;
 
       physics->world_erp = cfgWorldErp.dValue;
       physics->world_cfm = cfgWorldCfm.dValue;
