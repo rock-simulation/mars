@@ -51,10 +51,13 @@ namespace mars {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
       std::string filename;
-      std::string p = ".";
+      std::string p = "./";
 
       if(info_.find("filePrefix") != info_.end()) {
         p = (std::string)info_["filePrefix"];
+        if(p[p.back()] != '/') {
+          p += "/";
+        }
       };
 
       if(info_.find("lod") != info_.end()) {
@@ -65,16 +68,16 @@ namespace mars {
           end = (*it)["end"];
           filename = (std::string)(*it)["filename"];
           if(filename[0] != '/') {
-            filename = p+"/"+filename;
+            filename = p+filename;
           }
           geodes = loadGeodes(filename, "");
           addLODGeodes(geodes, start, end);
         }
       }
       filename = (std::string)info_["filename"];
-      // if(filename[0] != '/') {
-      //   filename = p+"/"+filename;
-      //}
+      if(filename[0] != '/') {
+        filename = p+filename;
+      }
       return loadGeodes(filename, (std::string)info_["origname"]);
     }
 
