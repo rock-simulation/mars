@@ -103,12 +103,14 @@ namespace mars {
         dbPackage.add("position", getPosition());
         dbPackage.add("current", getCurrent());
         dbPackage.add("torque", getEffort());
+        dbPackage.add("maxtorque", sMotor.maxEffort);
 
         dbIdIndex = dbPackage.getIndexByName("id");
         dbControlParameterIndex = dbPackage.getIndexByName("value");
         dbPositionIndex = dbPackage.getIndexByName("position");
         dbCurrentIndex = dbPackage.getIndexByName("current");
         dbEffortIndex = dbPackage.getIndexByName("torque");
+        dbMaxEffortIndex = dbPackage.getIndexByName("maxtorque");
 
         std::string groupName, dataName;
         getDataBrokerNames(&groupName, &dataName);
@@ -791,6 +793,7 @@ namespace mars {
         dbPackage->set(dbPositionIndex, getPosition());
         dbPackage->set(dbCurrentIndex, getCurrent());
         dbPackage->set(dbEffortIndex, getEffort());
+        dbPackage->set(dbMaxEffortIndex, sMotor.maxEffort);
       }
 
       void SimMotor::receiveData(const data_broker::DataInfo& info,
