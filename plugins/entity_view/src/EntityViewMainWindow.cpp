@@ -43,7 +43,7 @@ namespace mars {
         setWindowTitle ("Entity View");
         setAttribute(Qt::WA_DeleteOnClose);
         setStyleSheet("padding:0px;");
-        dw = new config_map_gui::DataWidget(c->cfg, 0, true);
+        dw = new config_map_gui::DataWidget(0, true);
         tree = new SelectionTree(c, dw);
 
         QSplitter *splitter = new QSplitter();
