@@ -1,5 +1,5 @@
 /*
- *  Copyright 20114, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2014, 2017, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -34,10 +34,9 @@ namespace mars {
   namespace config_map_gui {
 
 
-    DataWidget::DataWidget(cfg_manager::CFGManagerInterface *cfg,
-                           QWidget *parent, bool onlyCompactView,
+    DataWidget::DataWidget(QWidget *parent, bool onlyCompactView,
                            bool allowAdd) :
-      main_gui::BaseWidget(parent, cfg, "ConfigMapWidget"),
+      QWidget(parent),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
 
@@ -105,6 +104,10 @@ namespace mars {
       checkablePattern = pattern;
     }
 
+    void DataWidget::setFilterPattern(const std::vector<std::string> &pattern) {
+      filterPattern = pattern;
+    }
+
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
       ignore_change = 1;
@@ -158,21 +161,23 @@ namespace mars {
 
       for(;it!=map.end(); ++it) {
         std::string n = it->first;
-        for(size_t i=0; i<n.size(); ++i) {
-          if(n[i] == '/') {
-            n.insert(n.begin()+i, '/');
-            ++i;
+        if(filterPattern.empty() || checkInPattern(n, filterPattern)) {
+          for(size_t i=0; i<n.size(); ++i) {
+            if(n[i] == '/') {
+              n.insert(n.begin()+i, '/');
+              ++i;
+            }
           }
-        }
 
-        if(it->second.isVector()) {
-          addConfigVector(name+"/"+n, it->second);
-        }
-        else if(it->second.isMap()) {
-          addConfigMap(name+"/"+n, it->second);
-        }
-        else if(it->second.isAtom()) {
-          addConfigAtom(name+"/"+n, it->second);
+          if(it->second.isVector()) {
+            addConfigVector(name+"/"+n, it->second);
+          }
+          else if(it->second.isMap()) {
+            addConfigMap(name+"/"+n, it->second);
+          }
+          else if(it->second.isAtom()) {
+            addConfigAtom(name+"/"+n, it->second);
+          }
         }
       }
       addMap[guiElem] = &map;

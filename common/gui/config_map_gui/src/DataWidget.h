@@ -32,7 +32,6 @@
 #endif
 
 #include <mars/main_gui/PropertyDialog.h>
-#include <mars/main_gui/BaseWidget.h>
 #include <configmaps/ConfigData.h>
 
 #include <vector>
@@ -50,14 +49,13 @@ namespace mars {
 
   namespace config_map_gui {
 
-    class DataWidget : public main_gui::BaseWidget,
+    class DataWidget : public QWidget,
                        public main_gui::PropertyCallback {
     
       Q_OBJECT;
       
     public:
-      DataWidget(mars::cfg_manager::CFGManagerInterface *cfg,
-                 QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
+      DataWidget(QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
       ~DataWidget();
     
       virtual void valueChanged(QtProperty *property, const QVariant &value);
@@ -71,6 +69,7 @@ namespace mars {
       void setCheckablePattern(const std::vector<std::string> &pattern);
       void setDropDownPattern(const std::vector<std::string> &pattern,
                               const std::vector<std::vector<std::string> > &values);
+      void setFilterPattern(const std::vector<std::string> &pattern);
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
@@ -95,7 +94,7 @@ namespace mars {
     private:
       QMutex addMutex;
       configmaps::ConfigMap config;
-      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern, checkablePattern;
+      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern, checkablePattern, filterPattern;
       std::vector<std::vector<std::string> > dropDownValues;
       map<QtVariantProperty*, configmaps::ConfigAtom*> dataMap;
       map<QtVariantProperty*, configmaps::ConfigMap*> addMap, colorMap;
