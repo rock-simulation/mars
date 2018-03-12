@@ -43,7 +43,7 @@ namespace data_broker_plotter2 {
             qcPlot->yAxis2, SLOT(setRange(QCPRange)));
     //qcPlot->setInteraction(QCustomPlot::iSelectPlottables);
 
-    dw = new mars::config_map_gui::DataWidget(cfg, 0, true, false);
+    dw = new mars::config_map_gui::DataWidget(0, true, false);
     std::vector<std::string> pattern {"*color"};
     dw->setColorPattern(pattern);
     pattern[0] = "*";
