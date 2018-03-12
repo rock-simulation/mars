@@ -336,7 +336,19 @@ namespace osg_material_manager {
     tsg->generate( geom, DEFAULT_UV_UNIT );
     osg::Vec4Array *tangents = tsg->getTangentArray();
     if(tangents==NULL || tangents->size()==0) {
-      std::cerr << "Failed to generate tangents for plane!" << std::endl;
+      std::cerr << "Failed to generate tangents for node!" << std::endl;
+      if(tangents == NULL) {
+        tangents = new osg::Vec4Array();
+      }
+      tangents->push_back(osg::Vec4(1.0, 0.0, 0.0, 0.0));
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
+      geom->setVertexAttribData( TANGENT_UNIT, osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_OVERALL ) );
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
+      geom->setVertexAttribArray( TANGENT_UNIT,
+                                  tangents, osg::Array::BIND_OVERALL );
+#else
+#error Unknown OSG Version
+#endif
     }
     else {
 #if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
