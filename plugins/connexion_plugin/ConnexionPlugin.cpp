@@ -62,8 +62,8 @@ namespace mars {
         sensitivity[2] = 2.0;
 
         isInit = false;
-        init();
         newValues = new connexionValues;
+        init();
         useFilter = false;
         filterValue = 0.0;
         syncWithFrames = false;
