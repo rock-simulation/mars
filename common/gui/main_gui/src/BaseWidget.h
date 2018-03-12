@@ -53,6 +53,7 @@ namespace mars {
       void hide();
       bool isHidden();
       void saveState();
+      const std::string& getName() {return widgetName;}
 
     signals:
       void hideSignal(void);
