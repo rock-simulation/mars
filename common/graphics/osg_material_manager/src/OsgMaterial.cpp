@@ -464,7 +464,7 @@ namespace osg_material_manager {
       return;
     }
     hasShaderSources = true;
-    bool has_texture = checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
+    bool has_texture = (textures.size()>0);//checkTexture("environmentMap") || checkTexture("diffuseMap") || checkTexture("normalMap");
     stateSet->setTextureAttributeAndModes(NOISE_MAP_UNIT, noiseMap,
                                           osg::StateAttribute::ON);
     stateSet->removeUniform(envMapSpecularUniform.get());
