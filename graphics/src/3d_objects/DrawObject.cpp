@@ -341,7 +341,7 @@ namespace mars {
       if(!materialNode.valid()) return;
       materialNode->removeChild(posTransform_.get());
       posTransform_->setStateSet(materialNode->getStateSet());
-      posTransform_->getStateSet()->merge(*(materialNode->getMaterial()->getStateSet()));
+      scaleTransform_->setStateSet(materialNode->getMaterial()->getStateSet());
     }
 
     void DrawObject::showNormals(bool val) {
