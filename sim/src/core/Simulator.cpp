@@ -540,13 +540,13 @@ namespace mars {
         long valSleep = calc_ms - timeDiff;
         msleep(valSleep);
       }
-      myTime += timeDiff;
 #endif
       if(count+1 > avg_count_steps) {
         avgTime /= count;
         dbSimDebugPackage[0].d = avgTime;
         avgTime = 0;
       }
+      myTime += timeDiff;
     }
 
 
@@ -709,7 +709,6 @@ namespace mars {
         haveNewPlugin = false;
         pluginLocker.unlock();
       }
-
 
       pluginLocker.lockForRead();
       for (unsigned int i=0; i<guiPlugins.size(); i++) {
