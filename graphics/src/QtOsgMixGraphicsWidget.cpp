@@ -30,12 +30,10 @@
 #include <QApplication>
 #include <QtGui>
 #include <QWidget>
-#include <QKeyEvent>
+#include <QVBoxLayout>
+#include <osgQt/GraphicsWindowQt>
 
 #include "QtOsgMixGraphicsWidget.h"
-#ifdef __APPLE__
-  #include <QMacCocoaViewContainer>
-#endif
 #include "HUD.h"
 #include "GraphicsManager.h"
 
@@ -50,7 +48,6 @@
 
 namespace mars {
   namespace graphics {
-
 
     // Store current active window, which we change if we got an mouse in event
     // on another graphics window. This is needed because the focus handling isn't
@@ -69,28 +66,18 @@ namespace mars {
 
 
     void QtOsgMixGraphicsWidget::initialize() {
-      //this->setGeometry(50, 50, 720, 405);
-      this->setMouseTracking(true);
-      setAttribute(Qt::WA_PaintOnScreen);
-      setAttribute(Qt::WA_OpaquePaintEvent);
-      setFocusPolicy(Qt::ClickFocus);
-      window()->installEventFilter(this);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
+      retinaScale = 1.0;
+#else
+      retinaScale = devicePixelRatio();
+#endif
+      fprintf(stderr, "retina scale: %g\n", retinaScale);
     }
 
     osg::ref_ptr<osg::GraphicsContext> QtOsgMixGraphicsWidget::createWidgetContext(
                                                                                    void* parent,
                                                                                    osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
-      traits->windowDecoration = false;
-
-#if defined(__APPLE__)
-      wdata =  new WindowData(WindowData::CreateOnlyView);
-      traits->inheritedWindowData = wdata;
-      haveNSView = false;
-#elif defined(WIN32) && !defined(__CYGWIN__)
-      traits->inheritedWindowData = new WindowData((HWND)winId());
-#else // all others
-      traits->inheritedWindowData = new WindowData(winId());
-#endif // __APPLE__
+      traits->windowDecoration = true;
 
       osg::DisplaySettings* ds = osg::DisplaySettings::instance();
       if (ds->getStereo()) {
@@ -107,184 +94,99 @@ namespace mars {
         }
       }
 
-      osg::ref_ptr<osg::GraphicsContext> gc =
-        osg::GraphicsContext::createGraphicsContext(traits.get());
+      osgQt::GraphicsWindowQt *gc = new osgQt::GraphicsWindowQt(traits.get(), (QWidget*)parent);
+      childWidget = (QWidget*)gc->getGLWidget();
+      //QVBoxLayout *l = new QVBoxLayout(this);
+      //l->addWidget(gc->getGLWidget());
+      //gc->getGLWidget()->setMouseTracking(false);
+      eventChild = gc->getGLWidget();
+      eventChild->installEventFilter(this);
+      //l->setContentsMargins(0, 0, 0, 0);
 
       if (parent) {
-        traits->x = ((QWidget*)parent)->x();
-        traits->y = ((QWidget*)parent)->y();
-        traits->width = ((QWidget*)parent)->width();
-        traits->height = ((QWidget*)parent)->height();
+        traits->x = ((QWidget*)parent)->x()*retinaScale;
+        traits->y = ((QWidget*)parent)->y()*retinaScale;
+        traits->width = ((QWidget*)parent)->width()*retinaScale;
+        traits->height = ((QWidget*)parent)->height()*retinaScale;
       }
       else {
-        traits->x = x();
-        traits->y = y();
-        traits->width = width();
-        traits->height = height();
+        traits->x = childWidget->x()*retinaScale;
+        traits->y = childWidget->y()*retinaScale;
+        traits->width = childWidget->width()*retinaScale;
+        traits->height = childWidget->height()*retinaScale;
       }
-
+      widgetWidth = traits->width;
+      widgetHeight = traits->height;
+      eventInWindow = this;
+      activeWindow = eventInWindow;
+      activeWindow->focusInEvent(NULL);
       return gc;
     }
 
     void QtOsgMixGraphicsWidget::setWGeometry(int top, int left, int width, int height) {
-      window()->setGeometry(left, top, width, height);
+
       widgetX = left;
       widgetY = top;
       widgetWidth = width;
       widgetHeight = height;
+      if(childWidget) {
+        childWidget->window()->setGeometry(widgetX/retinaScale, widgetY/retinaScale,
+                                 widgetWidth/retinaScale, widgetHeight/retinaScale);
+      }
+      applyResize();
     }
 
     void QtOsgMixGraphicsWidget::getWGeometry(int *top, int *left, int *width, int *height) const {
-      *top  = window()->y();
-      *left = window()->x();
-      *width  = this->width();
-      *height = this->height();
+      *top  = childWidget->window()->y();
+      *left = childWidget->window()->x();
+      *width  = childWidget->width();
+      *height = childWidget->height();
     }
 
     void QtOsgMixGraphicsWidget::setWidgetFullscreen(bool val) {
       if(val) {
-        window()->showFullScreen();
-        window()->setCursor(QCursor(Qt::BlankCursor));
+        childWidget->window()->showFullScreen();
+        childWidget->window()->setCursor(QCursor(Qt::BlankCursor));
       } else {
-        window()->showNormal();
-        window()->setCursor(QCursor(Qt::ArrowCursor));
+        childWidget->window()->showNormal();
+        childWidget->window()->setCursor(QCursor(Qt::ArrowCursor));
       }
     }
 
     void* QtOsgMixGraphicsWidget::getWidget() {
-      return (void*)((QWidget*)this);
+      return (void*)childWidget;
     }
 
     void QtOsgMixGraphicsWidget::showWidget() {
-      show();
+      childWidget->show();
     }
 
     void QtOsgMixGraphicsWidget::updateView() {
-#if defined(__APPLE__)
-      if(!haveNSView && !isRTTWidget) {
-        NSView* osgWindow = wdata->getCreatedNSView();
-        if(osgWindow) {
-          this->hide();
-          QMacCocoaViewContainer *c = new QMacCocoaViewContainer(0, this);
-          c->setCocoaView(osgWindow);
-          c->setGeometry(0, 0, QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-          this->show();
-          haveNSView = true;
-        }
-      }
-#endif
       GraphicsWidget::updateView();
     }
 
-    void QtOsgMixGraphicsWidget::resizeEvent( QResizeEvent * event ) {
-      const QSize & geometrySize = event->size();
-      if(graphicsWindow) {
-        //fprintf(stderr, "resize: %d %d %d %d\n", window()->geometry().x(),
-        //        window()->geometry().y(), geometrySize.width(), geometrySize.height());
-        widgetWidth = geometrySize.width();
-        widgetHeight = geometrySize.height();
-        widgetX = window()->geometry().x();
-        widgetY = window()->geometry().y();
-        applyResize();
-        /*
-        graphicsWindow->resized(window()->geometry().x(),
-                                window()->geometry().y(),
-                                geometrySize.width(),
-                                geometrySize.height());
-        graphicsWindow->getEventQueue()->windowResize(window()->geometry().x(),
-                                                      window()->geometry().y(),
-                                                      geometrySize.width(),
-                                                      geometrySize.height());
-        graphicsCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
-        if(hudCamera) hudCamera->setViewport(0, 0, geometrySize.width(), geometrySize.height());
-        if(myHUD) myHUD->resize(geometrySize.width(), geometrySize.height());
-        postDrawCallback->setSize(geometrySize.width(), geometrySize.height());
-        */
-      }
-    }
-
-    void QtOsgMixGraphicsWidget::moveEvent( QMoveEvent * event ) {
-      if(graphicsWindow) {
-        graphicsWindow->getEventQueue()->windowResize(
-                                                      window()->geometry().x(), window()->geometry().y(),
-                                                      window()->width(), window()->height());
-      }
-    }
-
     void QtOsgMixGraphicsWidget::focusInEvent( QFocusEvent *event) {
+      fprintf(stderr, "focus in event\n");
       gm->setActiveWindow(this);
       gm->setActiveWindow(widgetID);
     }
 
-    static int qtToOsgKey(QKeyEvent* e) {
-      switch(e->key()) {
-      case Qt::Key_Shift:
-        return osgGA::GUIEventAdapter::KEY_Shift_L;
-      case Qt::Key_Alt:
-        return osgGA::GUIEventAdapter::KEY_Alt_L;
-      case Qt::Key_Meta:
-        return osgGA::GUIEventAdapter::KEY_Meta_L;
-      case Qt::Key_Control:
-        return osgGA::GUIEventAdapter::KEY_Control_L;
-      case Qt::Key_Up:
-        return osgGA::GUIEventAdapter::KEY_Up;
-      case Qt::Key_Down:
-        return osgGA::GUIEventAdapter::KEY_Down;
-      case Qt::Key_Left:
-        return osgGA::GUIEventAdapter::KEY_Left;
-      case Qt::Key_Right:
-        return osgGA::GUIEventAdapter::KEY_Right;
-      case Qt::Key_Delete:
-        return osgGA::GUIEventAdapter::KEY_Delete;
-      default:
-        return (osgGA::GUIEventAdapter::KeySymbol)*e->text().toLatin1().data();
-      }
-    }
-
-    void QtOsgMixGraphicsWidget::keyPressEvent(QKeyEvent* e) {
-      // switch focus if needed
-      if(activeWindow != eventInWindow) {
-        activeWindow = eventInWindow;
-        activeWindow->focusInEvent(NULL);
-        activeWindow->keyPressEvent(e);
-        return;
-      }
-      // todo: check if this windows handling is still correct
-      //#ifndef WIN32
-
-      view->getEventQueue()->keyPress(qtToOsgKey(e));
-      //#endif
-    }
-
-    void QtOsgMixGraphicsWidget::keyReleaseEvent(QKeyEvent* e) {
-      //#ifndef WIN32
-      view->getEventQueue()->keyRelease(qtToOsgKey(e));
-      //#endif
-    }
-
     void QtOsgMixGraphicsWidget::hideEvent(QHideEvent * event) {
+      fprintf(stderr, "hide event\n");
       CPP_UNUSED(event);
     }
 
     void QtOsgMixGraphicsWidget::showEvent(QShowEvent * event) {
+      fprintf(stderr, "show event\n");
     }
 
     void QtOsgMixGraphicsWidget::closeEvent( QCloseEvent * event ) {
+      fprintf(stderr, "receive close event\n");
       event->accept();
-      graphicsWindow->getEventQueue()->closeWindow();
+      //graphicsWindow->getEventQueue()->closeWindow();
       // this should also be done if the QCloseEvent is accepted
       // don't know why there are problems at the moment
-      hide();
-    }
-
-    void QtOsgMixGraphicsWidget::mouseMoveEvent(QMouseEvent* e) {
-#ifndef WIN32
-#ifdef __APPLE__
-      view->getEventQueue()->mouseMotion(e->x(), e->y());
-#else
-      view->getEventQueue()->mouseMotion(e->x(), -e->y());
-#endif
-#endif
+      //hide();
     }
 
     void QtOsgMixGraphicsWidget::mousePressEvent(QMouseEvent* e) {
@@ -293,145 +195,33 @@ namespace mars {
         activeWindow = eventInWindow;
         activeWindow->focusInEvent(NULL);
         activeWindow->mousePressEvent(e);
-        return;
       }
-
-      int button = 0;
-
-      switch(e->button()) {
-      case(Qt::LeftButton): button = 1; break;
-      case(Qt::MidButton): button = 2; break;
-      case(Qt::RightButton): button = 3; break;
-      case(Qt::NoButton): button = 0; break;
-      default: button = 0; break;
-      }
-#ifndef WIN32
-#ifdef __APPLE__
-      view->getEventQueue()->mouseButtonPress(e->x(), e->y(), button);
-#else
-      view->getEventQueue()->mouseButtonPress(e->x(), -e->y(), button);
-#endif
-#endif
-
-      grabKeyboard();
-    }
-
-    void QtOsgMixGraphicsWidget::mouseReleaseEvent(QMouseEvent* e) {
-      int button = 0;
-      switch(e->button())
-        {
-        case(Qt::LeftButton): button = 1; break;
-        case(Qt::MidButton): button = 2; break;
-        case(Qt::RightButton): button = 3; break;
-        case(Qt::NoButton): button = 0; break;
-        default: button = 0; break;
-        }
-
-#ifndef WIN32
-#ifdef __APPLE__
-      view->getEventQueue()->mouseButtonRelease(e->x(), e->y(), button);
-#else
-      view->getEventQueue()->mouseButtonRelease(e->x(), -e->y(), button);
-#endif
-#endif
-      releaseKeyboard();
-    }
-
-    void QtOsgMixGraphicsWidget::wheelEvent(QWheelEvent* event)
-    {
-      if(event->delta()>0){
-        view->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_UP);
-      }
-      else{
-        view->getEventQueue()->mouseScroll(osgGA::GUIEventAdapter::SCROLL_DOWN);
-      }
+      return;
     }
 
 
-    void QtOsgMixGraphicsWidget::paintEvent( QPaintEvent * event ) {
-      (void) event;
-      if(graphicsWindow && 0) {
-        graphicsCamera->setViewport(0, 0, width(), height());
-        if(hudCamera) hudCamera->setViewport(0, 0, width(), height());
-        if(myHUD) myHUD->resize(width(), height());
-      }
-    }
 
     bool QtOsgMixGraphicsWidget::eventFilter(QObject *obj, QEvent *event) {
       if(event->type() == QEvent::Enter) {
         eventInWindow = this;
         return false;
       }
-      if (obj != parent()) {
+      if (obj != eventChild) {
         return false;
       }
       else if (event->type() == QEvent::KeyPress) {
-        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-
-        if (ke->key() == Qt::Key_Tab || ke->key() == Qt::Key_Backtab) {
-          /*
-          qDebug() << "QOSGWidget::eventFilter:  TAB Press on "
-                   << qPrintable(objectName());
-          */
-          // Empirically have found that it's not necessary to call
-          // keyPressEvent on tab press ... my guess is that OSG ignores it.
-          keyPressEvent( ke );
-
-          // Return false so that the parent QWidget will process the tab.
-          return false;
-        }
-        else {
-          /*
-          qDebug() << "QOSGWidget::eventFilter:  KeyPress on "
-                   << qPrintable(objectName());
-          */
-          keyPressEvent( ke );
-          // event handled, return true because parent does not have to see
-          // this event
-          return false;
-        }
-      }
-      else if (event->type() == QEvent::KeyRelease) {
-        QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-
-        if (ke->key() == Qt::Key_Tab || ke->key() == Qt::Key_Backtab) {
-          /*
-          qDebug() << "QOSGWidget::eventFilter:  TAB Release on "
-                   << qPrintable(objectName());
-          */
-          keyReleaseEvent( ke );
-          // Return false so that the parent QWidget will process the tab..
-          return false;
-        }
-        else {
-          /*
-          qDebug() << "QOSGWidget::eventFilter:  KeyRelease on "
-                   << qPrintable(objectName());
-          */
-          keyReleaseEvent( ke );
-          // event handled, return true because parent does not have to see
-          // this event
-          return false;
-        }
-      }
-      else if (event->type() == QEvent::Move) {
-        QMoveEvent *re = static_cast<QMoveEvent *>(event);
-        moveEvent(re);
+        keyPressEvent(static_cast<QKeyEvent *>(event));
         return false;
-      } else if (event->type() == QEvent::Resize) {
-        QResizeEvent *re = static_cast<QResizeEvent *>(event);
-        setGeometry(0, 0, re->size().width(), re->size().height());
-        // if(re) resizeEvent(re);
-
-        // event handled, return true because parent does not have to see
-        // this event ???
+      }
+      else if (event->type() == QEvent::MouseButtonPress) {
+        mousePressEvent(static_cast<QMouseEvent *>(event));
         return false;
       }
       else if (event->type() == QEvent::Close) {
-        QCloseEvent *ce = static_cast<QCloseEvent *>(event);
-        closeEvent( ce );
+        //QCloseEvent *ce = static_cast<QCloseEvent *>(event);
+        //closeEvent( ce );
+        return false;
       }
-
       return false;
     }
 

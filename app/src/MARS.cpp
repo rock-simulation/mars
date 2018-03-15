@@ -234,7 +234,7 @@ namespace mars {
             marsGraphics->initializeOSG(NULL);
             QWidget *widget = (QWidget*)marsGraphics->getQTWidget(1);
             mainGui->mainWindow_p()->setCentralWidget(widget);
-            widget->show();
+            //widget->show();
 #else
             marsGraphics->initializeOSG(NULL, false);
             QWidget *parent = new QWidget();
