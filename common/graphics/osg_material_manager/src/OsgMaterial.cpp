@@ -501,6 +501,11 @@ namespace osg_material_manager {
         DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
+        if(textures.find("terrainMap") != textures.end()) {
+          stateSet->addUniform(terrainScaleZUniform.get());
+          stateSet->addUniform(terrainDimUniform.get());
+          terrainScaleZUniform->set((float)(double)map["scaleZ"]);
+        }
       } else if ((string)map["shader"]["provider"] == "PhobosGraph") {
         ConfigMap options;
         options["numLights"] = maxNumLights;

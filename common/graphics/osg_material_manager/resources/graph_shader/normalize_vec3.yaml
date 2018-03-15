@@ -1,0 +1,6 @@
+params:
+  in:
+    vector_a: {index: 0, type: vec3}
+  out:
+    vector: {index: 3, type: vec3}
+source: /graph_shader/normalize_vec3.frag

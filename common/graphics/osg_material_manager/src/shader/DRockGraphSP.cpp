@@ -21,6 +21,7 @@
 #include <queue>
 #include <fstream>
 #include "DRockGraphSP.h"
+#include <mars/utils/misc.h>
 
 extern "C" {
 #include "../tsort/tsort.h"
@@ -29,6 +30,7 @@ extern "C" {
 namespace osg_material_manager {
   using namespace std;
 
+  using namespace mars::utils;
   DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options) : IShaderProvider(res_path) {
     this->model = model;
     this->options = options;
@@ -114,17 +116,19 @@ namespace osg_material_manager {
 
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
+      std::string name = replaceString((std::string)(*it)["name"], ":", "_");
       ConfigMap data = ConfigMap::fromYamlString((*it)["data"].getString());
-      nodeConfig[(*it)["name"]] = data["data"];
+      nodeConfig[name] = data["data"];
     }
 
     // create node ids for tsort
     unsigned long id = 1;
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
-      string function = (*it)["model"]["name"].getString();
-      string name = (*it)["name"].getString();
+      string function = (*it)["model"]["name"];
+      std::string name = replaceString((std::string)(*it)["name"], ":", "_");
+      (*it)["name"] = name;
       nodeMap[id] = (*it);
-      nodeNameId[(*it)["name"].getString()] = id++;
+      nodeNameId[name] = id++;
       if (nodeConfig.hasKey(name) && nodeConfig[name].hasKey("type")) {
         string type = nodeConfig[name]["type"].getString();
         if (type == "uniform") {
@@ -136,8 +140,8 @@ namespace osg_material_manager {
     }
 
     for (it = graph["edges"].begin(); it != graph["edges"].end(); ++it) {
-      string fromNodeName = (*it)["from"]["name"];
-      string toNodeName = (*it)["to"]["name"];
+      string fromNodeName = replaceString((std::string)(*it)["from"]["name"], ":", "_");
+      string toNodeName = replaceString((std::string)(*it)["to"]["name"], ":", "_");
       string fromInterfaceName = (*it)["from"]["interface"];
       string toInterface = (*it)["to"]["interface"];
       string fromVar = "";
