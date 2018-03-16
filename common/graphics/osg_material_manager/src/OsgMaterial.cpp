@@ -64,7 +64,7 @@ namespace osg_material_manager {
       resPath(resPath),
       invShadowTextureSize(1./1024),
       useWorldTexCoords(false),
-      loadPath("") {
+      loadPath(""), isInit(false) {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
     sinUniform = new osg::Uniform("sin_", 0.0f);
@@ -121,6 +121,13 @@ namespace osg_material_manager {
   void OsgMaterial::setMaterial(const ConfigMap &map_) {
     //return;
     map = map_;
+    material = new osg::Material();
+    // reinit if the material is already created
+    if(isInit) initMaterial();
+  }
+
+  void OsgMaterial::initMaterial() {
+    isInit = true;
     //map.toYamlFile("material.yml");
     if(map.hasKey("loadPath")) {
       loadPath << map["loadPath"];
@@ -138,7 +145,6 @@ namespace osg_material_manager {
     getLight = map.get("getLight", true);
 
     // create the osg::Material
-    material = new osg::Material();
     material->setColorMode(osg::Material::OFF);
 
     material->setAmbient(osg::Material::FRONT_AND_BACK, getColor("ambientColor"));
@@ -221,7 +227,7 @@ namespace osg_material_manager {
       }
     }
   }
-
+    
   void OsgMaterial::addTexture(ConfigMap &config, bool nearest) {
     osg::StateSet *state = getOrCreateStateSet();
     std::map<std::string, TextureInfo>::iterator it = textures.find((std::string)config["name"]);
@@ -714,6 +720,8 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::addMaterialNode(MaterialNode *d) {
+    if(!isInit) initMaterial();    
+
     materialNodeVector.push_back(d);
     if(checkTexture("normalMap") || checkTexture("displacementMap") || checkTexture("environmentMap")) {
       d->setNeedTangents(true);
