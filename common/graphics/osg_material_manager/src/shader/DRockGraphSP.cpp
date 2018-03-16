@@ -116,7 +116,7 @@ namespace osg_material_manager {
 
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
-      std::string name = replaceString((std::string)(*it)["name"], ":", "_");
+      std::string name = replaceString((std::string)(*it)["name"], "::", "_");
       ConfigMap data = ConfigMap::fromYamlString((*it)["data"].getString());
       nodeConfig[name] = data["data"];
     }
@@ -125,7 +125,7 @@ namespace osg_material_manager {
     unsigned long id = 1;
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
       string function = (*it)["model"]["name"];
-      std::string name = replaceString((std::string)(*it)["name"], ":", "_");
+      std::string name = replaceString((std::string)(*it)["name"], "::", "_");
       (*it)["name"] = name;
       nodeMap[id] = (*it);
       nodeNameId[name] = id++;
@@ -140,8 +140,8 @@ namespace osg_material_manager {
     }
 
     for (it = graph["edges"].begin(); it != graph["edges"].end(); ++it) {
-      string fromNodeName = replaceString((std::string)(*it)["from"]["name"], ":", "_");
-      string toNodeName = replaceString((std::string)(*it)["to"]["name"], ":", "_");
+      string fromNodeName = replaceString((std::string)(*it)["from"]["name"], "::", "_");
+      string toNodeName = replaceString((std::string)(*it)["to"]["name"], "::", "_");
       string fromInterfaceName = (*it)["from"]["interface"];
       string toInterface = (*it)["to"]["interface"];
       string fromVar = "";
