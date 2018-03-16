@@ -104,9 +104,16 @@ namespace mars {
       // representation.
       // The implementation is quite simple: we just store the vertices
       // (transformed by 'transformMatrix') in a 'std::vector'.
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 5) || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION < 9))
       void operator() (const osg::Vec3& v1, const osg::Vec3& v2,
-                       const osg::Vec3& v3, bool treatVertexDataAsTemporary) {
+                       const osg::Vec3& v3) {
         treatVertexDataAsTemporary = treatVertexDataAsTemporary;
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 5) || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION >= 9))
+      void operator() (const osg::Vec3& v1, const osg::Vec3& v2,
+                       const osg::Vec3& v3) {
+#else
+#error Unknown OSG Version
+#endif
         vertices.push_back (v1 * transformMatrix);
         vertices.push_back (v2 * transformMatrix);
         vertices.push_back (v3 * transformMatrix);
