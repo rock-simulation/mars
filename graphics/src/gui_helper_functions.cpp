@@ -28,6 +28,12 @@
 #include <osg/ComputeBoundsVisitor>
 #include <osgUtil/Optimizer>
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 #ifdef WIN32
  #include <cv.h>
  #include <highgui.h>
@@ -106,8 +112,8 @@ namespace mars {
       // (transformed by 'transformMatrix') in a 'std::vector'.
 #if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 5) || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION < 9))
       void operator() (const osg::Vec3& v1, const osg::Vec3& v2,
-                       const osg::Vec3& v3) {
-        treatVertexDataAsTemporary = treatVertexDataAsTemporary;
+                       const osg::Vec3& v3, bool treatVertexDataAsTemporary) {
+        (void)treatVertexDataAsTemporary;
 #elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 5) || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION >= 9))
       void operator() (const osg::Vec3& v1, const osg::Vec3& v2,
                        const osg::Vec3& v3) {
