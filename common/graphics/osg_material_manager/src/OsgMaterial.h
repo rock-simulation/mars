@@ -81,6 +81,7 @@ namespace osg_material_manager {
 
     // the material struct can also contain a static texture (texture file)
     void setMaterial(const configmaps::ConfigMap &map);
+    void initMaterial();
     // can be used for dynamic textures
     void setTexture(osg::Texture2D *texture);
 
@@ -129,7 +130,7 @@ namespace osg_material_manager {
     // new implementation for generic texture handling
     std::map<std::string, TextureInfo> textures;
 
-    bool hasShaderSources;
+    bool hasShaderSources, isInit;
     bool useShader;
     int maxNumLights;
     bool getLight;
