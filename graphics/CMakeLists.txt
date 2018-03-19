@@ -37,9 +37,21 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
+if(WIN32)
+find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
+pkg_check_modules(OSGQT REQUIRED openscenegraph-osgQt5)
+
+include_directories(${OSGQT_INCLUDE_DIRS})
+link_directories(${OSGQT_LIBRARY_DIRS})
+add_definitions(${OSGQT_CFLAGS_OTHER})  #cflags without -I
+
+else(WIN32)
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
+endif()
+
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
+
 
 set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
 CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
@@ -187,6 +199,7 @@ if(WIN32)
   else(USE_VERTEX_BUFFER)
     SET(WIN_LIBS opengl32)
   endif(USE_VERTEX_BUFFER) 
+  SET(WIN_LIBS ${WIN_LIBS} ${OSGQT_LIBRARIES})
 endif(WIN32)
 
 target_link_libraries(${PROJECT_NAME}         

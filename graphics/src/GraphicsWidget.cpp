@@ -789,8 +789,14 @@ namespace mars {
       }
       view->setSceneData(scene);
 
-      if(!isRTTWidget) graphicsCamera->setKeyswitchManipulator(keyswitchManipulator);
-      graphicsCamera->changeCameraTypeToPerspective();
+      if(!isRTTWidget) {
+        graphicsCamera->setKeyswitchManipulator(keyswitchManipulator);
+        postDrawCallback->setSize(widgetWidth, widgetHeight);
+        graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
+        graphicsCamera->changeCameraTypeToPerspective();
+        if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
+        if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
+      }
     }
 
     void GraphicsWidget::createContext(void* parent,

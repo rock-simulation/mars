@@ -302,10 +302,10 @@ namespace mars {
       char title[55];
       sprintf(title, "graphics %d", num++);
       newWidget->setWindowTitle(title);
-      newWidget->resize(QSize(720, 405));
       newWidget->setMinimumSize(QSize(50, 50));
       mainGui->addDockWidget((void*)newWidget,0);
-      newWidget->show();
+      newWidget->resize(QSize(720, 405));
+      //newWidget->show();
     }
 
     void MenuWindow::menu_dock(bool checked) {

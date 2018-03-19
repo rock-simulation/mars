@@ -66,17 +66,17 @@ namespace mars {
 
 
     void QtOsgMixGraphicsWidget::initialize() {
+    }
+
+    osg::ref_ptr<osg::GraphicsContext> QtOsgMixGraphicsWidget::createWidgetContext(
+                                                                                   void* parent,
+                                                                                   osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
 #if (QT_VERSION < QT_VERSION_CHECK(5, 2, 0))
       retinaScale = 1.0;
 #else
       retinaScale = devicePixelRatio();
 #endif
       fprintf(stderr, "retina scale: %g\n", retinaScale);
-    }
-
-    osg::ref_ptr<osg::GraphicsContext> QtOsgMixGraphicsWidget::createWidgetContext(
-                                                                                   void* parent,
-                                                                                   osg::ref_ptr<osg::GraphicsContext::Traits> traits) {
       traits->windowDecoration = true;
 
       osg::DisplaySettings* ds = osg::DisplaySettings::instance();
@@ -96,12 +96,8 @@ namespace mars {
 
       osgQt::GraphicsWindowQt *gc = new osgQt::GraphicsWindowQt(traits.get(), (QWidget*)parent);
       childWidget = (QWidget*)gc->getGLWidget();
-      //QVBoxLayout *l = new QVBoxLayout(this);
-      //l->addWidget(gc->getGLWidget());
-      //gc->getGLWidget()->setMouseTracking(false);
       eventChild = gc->getGLWidget();
       eventChild->installEventFilter(this);
-      //l->setContentsMargins(0, 0, 0, 0);
 
       if (parent) {
         traits->x = ((QWidget*)parent)->x()*retinaScale;
@@ -117,9 +113,6 @@ namespace mars {
       }
       widgetWidth = traits->width;
       widgetHeight = traits->height;
-      eventInWindow = this;
-      activeWindow = eventInWindow;
-      activeWindow->focusInEvent(NULL);
       return gc;
     }
 
@@ -166,8 +159,6 @@ namespace mars {
     }
 
     void QtOsgMixGraphicsWidget::focusInEvent( QFocusEvent *event) {
-      fprintf(stderr, "focus in event\n");
-      gm->setActiveWindow(this);
       gm->setActiveWindow(widgetID);
     }
 
@@ -204,9 +195,6 @@ namespace mars {
     bool QtOsgMixGraphicsWidget::eventFilter(QObject *obj, QEvent *event) {
       if(event->type() == QEvent::Enter) {
         eventInWindow = this;
-        return false;
-      }
-      if (obj != eventChild) {
         return false;
       }
       else if (event->type() == QEvent::KeyPress) {
