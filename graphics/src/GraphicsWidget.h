@@ -275,7 +275,7 @@ namespace mars {
       utils::Color clearColor;
       // toggle for fullscreen display
       bool isFullscreen;
-
+      int mouseMask;
       // toggle for stereo display
       bool isStereoDisplay;
       // eye separation for stereo display
@@ -301,7 +301,7 @@ namespace mars {
 
       // list of picked objects
       std::vector<osg::Node*> pickedObjects;
-      enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE };
+      enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE, SINGLE };
       PickMode pickmode;
 
       virtual void initialize() {};

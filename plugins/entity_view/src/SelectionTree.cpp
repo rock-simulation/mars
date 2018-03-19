@@ -466,6 +466,7 @@ namespace mars {
               dropDownValues[1].push_back("invert");
               dropDownValues[1].push_back("osg");
               dropDownValues[1].push_back("iso");
+              dropDownValues[1].push_back("trackball");
 
               dw->setEditPattern(editPattern);
               dw->setFilePattern(filePattern);
@@ -486,6 +487,7 @@ namespace mars {
               else if(mouse == MICHA_CAM) map["mouse"] = "invert";
               else if(mouse == OSG_CAM) map["mouse"] = "osg";
               else if(mouse == ISO_CAM) map["mouse"] = "iso";
+              else if(mouse == TRACKBALL) map["mouse"] = "trackball";
 
               Color c = gw->getClearColor();
               c.toConfigItem(map["clearColor"]);

@@ -34,6 +34,7 @@
 #include <osg/CullFace>
 #include <osg/PolygonMode>
 #include <osg/ComputeBoundsVisitor>
+#include <osg/LineWidth>
 
 #include <osgDB/WriteFile>
 #include <osgDB/ReadFile>
@@ -274,7 +275,6 @@ namespace mars {
         osg::PolygonMode *polyModeObj;
 
         osg::StateSet *state = group_->getOrCreateStateSet();
-
         polyModeObj = dynamic_cast<osg::PolygonMode*>
           (state->getAttribute(osg::StateAttribute::POLYGONMODE));
 
@@ -284,17 +284,32 @@ namespace mars {
         }
 
         if(val && showSelected) {
+          if(!selectShader.valid()) {
+            selectShader = new osg::Program;
+            char fragmentSource[]=
+              "void main(void)\n"
+              "{\n"
+              "    gl_FragColor = vec4(0, 0.75, 0, 1);\n"
+              "}\n";
+            selectShader->addShader(new osg::Shader(osg::Shader::FRAGMENT, fragmentSource));
+          }
+          state->setAttributeAndModes(selectShader.get(), osg::StateAttribute::ON);
+          osg::LineWidth *lw = new osg::LineWidth(2);
+          state->setAttributeAndModes(lw, osg::StateAttribute::ON);
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::LINE);
           //state->setAttributeAndModes(material_.get(), osg::StateAttribute::OFF);
 
           state->setAttributeAndModes(selectionMaterial.get(),
                                       osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
           state->setMode(GL_LIGHTING,
-                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
-          state->setMode(GL_FOG, osg::StateAttribute::OFF);
+                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED  | osg::StateAttribute::OVERRIDE);
+          state->setMode(GL_FOG, osg::StateAttribute::OFF  | osg::StateAttribute::OVERRIDE);
 
         }
         else {
+          if(selectShader.valid()) {
+            state->removeAttribute(selectShader.get());
+          }
           polyModeObj->setMode(osg::PolygonMode::FRONT_AND_BACK, osg::PolygonMode::FILL);
 
           state->removeAttribute(selectionMaterial.get());
@@ -303,6 +318,9 @@ namespace mars {
           state->removeMode(GL_FOG);
 
         }
+      }
+      for(auto it:selectionChilds) {
+        it->setSelected(val);
       }
     }
 

@@ -1229,10 +1229,9 @@ namespace mars {
     bool GraphicsWidget::handleReleaseEvent(const osgGA::GUIEventAdapter& ea,
                                             osgGA::GUIActionAdapter& aa) {
       // *** Picking ***
-
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mouseRelease(ea.getX(), ea.getY(),
-                                              ea.getButtonMask());
+                                              mouseMask);
       }
 
 
@@ -1245,8 +1244,10 @@ namespace mars {
       isMouseButtonDown = false;
       isMouseMoving = false;
 
-
-      if(pickmode == DISABLED) return false;
+      if(pickmode == DISABLED && graphicsCamera->getCamera() != TRACKBALL)
+        return false;
+      if(graphicsCamera->getCamera() == TRACKBALL && mouseMask != osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && pickmode == DISABLED)
+        return false;
 
       osgViewer::View* view = dynamic_cast<osgViewer::View*>(&aa);
       if(!view) {
@@ -1258,7 +1259,14 @@ namespace mars {
       if(mouseX==(int)ea.getX() || mouseY==(int)ea.getY()) {
         if(pick(mouseX, mouseY)) {
           if(graphicsEventHandler.size() > 0) {
-            graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)this->pickmode);
+            int _pickMode = pickmode;
+            if(_pickMode == DISABLED) {
+              _pickMode = SINGLE;
+              if(ea.getModKeyMask() == osgGA::GUIEventAdapter::MODKEY_SHIFT) {
+                _pickMode = STANDARD;
+              }
+            }
+            graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)_pickMode);
             return false;
           }
           else if(graphicsEventHandler.size() == 0) {
@@ -1327,6 +1335,9 @@ namespace mars {
       case osgGA::GUIEventAdapter::KEY_Right :
         graphicsCamera->move(false, GraphicsCamera::RIGHT);
         return true;
+      case ',':
+        graphicsCamera->setPivot(gm->getSelectedPos());
+        return true;
       case '1' :
       case '2' :
       case '3' :
@@ -1371,7 +1382,7 @@ namespace mars {
       mouseX = ea.getX();
       mouseY = ea.getY();
       unsigned int modKey = ea.getModKeyMask();
-
+      mouseMask = ea.getButtonMask();
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mousePress(ea.getX(), ea.getY(),
                                             ea.getButtonMask());
@@ -1384,8 +1395,9 @@ namespace mars {
       }
       // we are not in camera move mode and enter pick mode
       else if(modKey & osgGA::GUIEventAdapter::MODKEY_CTRL) {
-        if(this->pickmode == DISABLED)
+        if(this->pickmode == DISABLED) {
           this->pickmode = STANDARD;
+        }
       }
       // we are not in camera move mode and also do not want to activate pick mode
       else {
@@ -1396,12 +1408,13 @@ namespace mars {
     }
 
     bool GraphicsWidget::handleDragEvent(const osgGA::GUIEventAdapter &ea) {
+      mouseMask = ea.getButtonMask();
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
       }
 
       if (isMouseButtonDown && pickmode == DISABLED) {
-        graphicsCamera->mouseDrag(ea.getButtonMask(),
+        graphicsCamera->mouseDrag(ea.getButtonMask(), ea.getModKeyMask(),
                                   (int)ea.getX(), (int)ea.getY());
         isMouseMoving = true;
       }
@@ -1725,8 +1738,9 @@ namespace mars {
 #else
         if(!view->computeIntersections(x, y, intersections))
 #endif
-          return false;
-
+          {
+            return false;
+          }
       // *** for each intersection we found ***
       for(hitr=intersections.begin(); hitr!=intersections.end(); ++hitr) {
         // choose foremost selection in FoV

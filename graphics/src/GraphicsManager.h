@@ -317,6 +317,7 @@ namespace mars {
       virtual void edit(const std::string &key, const std::string &value);
       void edit(unsigned long widgetID, const std::string &key,
                 const std::string &value);
+      osg::Vec3f getSelectedPos();
 
     private:
       mars::interfaces::GraphicData graphicOptions;

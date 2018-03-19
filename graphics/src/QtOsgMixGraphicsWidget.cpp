@@ -197,10 +197,6 @@ namespace mars {
         eventInWindow = this;
         return false;
       }
-      else if (event->type() == QEvent::KeyPress) {
-        keyPressEvent(static_cast<QKeyEvent *>(event));
-        return false;
-      }
       else if (event->type() == QEvent::MouseButtonPress) {
         mousePressEvent(static_cast<QMouseEvent *>(event));
         return false;

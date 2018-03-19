@@ -1789,9 +1789,6 @@ namespace mars {
                 break;
               }
             }
-            // nothing more to add? Fine, let's stop!
-            if(nodeit == selectednodes.end())
-              break;
           }
         }
         break;
@@ -1803,8 +1800,42 @@ namespace mars {
         // Pickmode FORCE_REMOVE
       case 3:
         break;
-      }
+      case 4:
+        {
+          while((drawListIt=selectedObjects_.begin()) != selectedObjects_.end()) {
+            for(jter=graphicsEventClientList.begin();
+                jter!=graphicsEventClientList.end();
+                ++jter) {
+              (*jter)->selectEvent(findCoreObject((*drawListIt)->object()->getID()), false);
+            }
+            (*drawListIt)->object()->setSelected(false);
+            selectedObjects_.erase(drawListIt);
+          }
+          // scan for objects to potentially add
+          for(nodeit=selectednodes.begin(); nodeit!=selectednodes.end(); ++nodeit) {
+            // and try to verify their existance as drawobject
+            for(drawIt=drawObjects_.begin(); drawIt!=drawObjects_.end(); ++drawIt) {
+              /* In case we find the corresponding drawobject, we have to:
+               * add them to the list of selected objects.
+               */
+              if(drawIt->second->object()->containsNode((*nodeit))) {
+                drawIt->second->object()->setSelected(true);
+                selectedObjects_.push_back(drawIt->second.get());
 
+                for(jter=graphicsEventClientList.begin();
+                    jter!=graphicsEventClientList.end();
+                    ++jter)
+                  (*jter)->selectEvent(findCoreObject(drawIt->second->object()->getID()), true);
+
+                // increase nodeit to make sure we do not add this node again.
+                //nodeit++;
+                break;
+              }
+            }
+          }
+          break;
+        }
+      }
       gw->clearSelectionVectors();
 
     }
@@ -2199,7 +2230,7 @@ namespace mars {
       if(!parent || !child) return;
       parentTransform = parent->object()->getPosTransform();
       childTransform = child->object()->getPosTransform();
-
+      parent->object()->addSelectionChild(child->object());
       parentTransform->addChild(childTransform);
       child->object()->seperateMaterial();
       //scene->removeChild(childTransform);
@@ -2315,7 +2346,14 @@ namespace mars {
 
     void GraphicsManager::edit(unsigned long widgetID, const std::string &key,
                                const std::string &value) {
-      GraphicsWindowInterface *win = get3DWindow(widgetID);
+      GraphicsWindowInterface *win;
+      if(widgetID == 0) {
+        if(!activeWindow) return;
+        win = activeWindow;
+      }
+      else {
+        win = get3DWindow(widgetID);
+      }
       GraphicsCameraInterface *cam = win->getCameraInterface();
       if(matchPattern("*/projection", key)) {
         if(value == "perspective") {
@@ -2337,6 +2375,12 @@ namespace mars {
         }
         else if(value == "iso") {
           cam->setCamera(ISO_CAM);
+        }
+        else if(value == "trackball") {
+          cam->setCamera(TRACKBALL);
+        }
+        else if(value == "toggle_trackball") {
+          cam->toggleTrackball();
         }
       }
       else if(matchPattern("*/clearColor", key)) {
@@ -2374,6 +2418,17 @@ namespace mars {
         cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
       }
     }
+
+    osg::Vec3f GraphicsManager::getSelectedPos() {
+      DrawObjectList::iterator drawListIt;
+      for(drawListIt=selectedObjects_.begin(); drawListIt!=selectedObjects_.end();
+          ++drawListIt) {
+        Vector p = (*drawListIt)->object()->getPosition();
+        return osg::Vec3f(p.x(), p.y(), p.z());
+      }
+      return osg::Vec3f(0, 0, 0);
+    }
+
   } // end of namespace graphics
 } // end of namespace mars
 
