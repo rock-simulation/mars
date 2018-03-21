@@ -204,6 +204,7 @@ namespace mars {
       virtual void setHUDViewOffsets(double x1, double y1,
                                      double x2, double y2);
 
+      virtual void setupDistortion(double factor);
       void grabFocus();
       void unsetFocus();
 

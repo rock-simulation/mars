@@ -121,6 +121,7 @@ namespace mars {
       void setRightEye(void) {left = false;}
       void deactivateCam();
       void activateCam();
+      void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
 
     private:
       void calcEyeSep(void);
