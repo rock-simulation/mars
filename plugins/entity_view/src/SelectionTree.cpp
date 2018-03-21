@@ -85,6 +85,9 @@ namespace mars {
 
 
     SelectionTree::~SelectionTree() {
+      if(control->graphics) {
+        control->graphics->removeEventClient(this);
+      }
     }
 
     void SelectionTree::fill(unsigned long id, QTreeWidgetItem *current) {
