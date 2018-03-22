@@ -33,6 +33,8 @@
 #include <set>
 #include <map>
 #include <vector>
+#include <mars/interfaces/MARSDefs.h>
+#include <mars/utils/Vector.h>
 
 namespace mars {
 
@@ -118,6 +120,10 @@ namespace mars {
       const configmaps::ConfigMap getConfig();
 
       void setInitialPose(bool reset=false);
+
+      interfaces::sReal getEntityMass();
+
+      utils::Vector getEntityCOM();
 
       //debug functions
       void printNodes();
