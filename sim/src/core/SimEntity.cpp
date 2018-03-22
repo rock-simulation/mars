@@ -284,5 +284,26 @@ namespace mars {
       }
     }
 
+    sReal SimEntity::getEntityMass() {
+      sReal entity_mass=0.0;
+      //sReal inertia=0.0;//TODO calculate Entity inertia with steiner for each node, needs current position and rotation of each node
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        sReal mass = 0.0;
+        control->nodes->getNodeMass(iter->first, &mass, nullptr);
+        entity_mass += mass;
+      }
+      return entity_mass;
+    }
+
+    utils::Vector SimEntity::getEntityCOM() {
+      std::vector<NodeId> node_ids;
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        node_ids.push_back(iter->first);
+      }
+      return control->nodes->getCenterOfMass(node_ids);
+    }
+
   } // end of namespace sim
 } // end of namespace mars
