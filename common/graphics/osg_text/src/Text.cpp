@@ -63,9 +63,9 @@ namespace osg_text {
                                      textAlign(textAlign),
                                      pl(paddingL), pt(paddingT),
                                      pr(paddingR), pb(paddingB),
-                                     borderWidth(borderWidth),
                                      fixedWidth(-1), fixedHeight(-1),
-                                     fontSize(fontSize) {
+                                     fontSize(fontSize),
+                                     borderWidth(borderWidth){
 
     labelGeode = new osg::Geode();
     if(fontPath.empty()) {
