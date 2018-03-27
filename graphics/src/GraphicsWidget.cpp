@@ -1736,17 +1736,14 @@ namespace mars {
 #ifdef __linux__
       if(!view->computeIntersections(x, -y, intersections))
 #else
-        if(!view->computeIntersections(x, y, intersections))
+      if(!view->computeIntersections(x, y, intersections))
 #endif
-          {
-            return false;
-          }
+      {
+        return false;
+      }
       // *** for each intersection we found ***
+      // choose foremost selection in FoV
       for(hitr=intersections.begin(); hitr!=intersections.end(); ++hitr) {
-        // choose foremost selection in FoV
-        if(!(hitr==intersections.begin()) || !(!hitr->nodePath.empty()))
-          continue;
-
         osg::NodePath nodePath = hitr->nodePath;
         unsigned int i = nodePath.size();
         while (i--) {
@@ -1755,7 +1752,6 @@ namespace mars {
 
           posTransform = transform->asPositionAttitudeTransform();
           if(!posTransform) continue;
-
           pickedObjects.push_back(posTransform);
           return true;
         }
