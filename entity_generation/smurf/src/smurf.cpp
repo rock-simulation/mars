@@ -1028,14 +1028,14 @@ namespace mars {
           }
           else {
             // check if bobj files are in parallel folder
-            int index = tmpfilename.find("obj/");
+            int index = tmpfilename2.find("obj/");
             if (index != string::npos) {
-              string front = tmpfilename.substr(0, index);
-              string back = tmpfilename.substr(index+4, tmpfilename.size());
-              string newfilename = front + "bobj/" + back;
+              string newfilename = replaceString(tmpfilename2, "obj/", "bobj/");
+              string tmpfilename2 = newfilename;
+              handleFilenamePrefix(&newfilename, tmpPath);
               if (pathExists(newfilename)) {
                 fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", newfilename.c_str());
-                config["filename"] = newfilename;
+                config["filename"] = tmpfilename2;
               }
             }
           }
