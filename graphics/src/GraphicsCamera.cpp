@@ -785,8 +785,8 @@ namespace mars {
             double xdir = 1, ydir = 1;
             if(xratio<0) xdir=-1;
             if(yratio<0) ydir=-1;
-            xratio *= xratio;
-            yratio *= yratio;
+            xratio = fabs(xratio);
+            yratio = fabs(yratio);
             td_zr = xdiff * (1-yratio)*(1-xratio);
             td_yr = ydiff * (1-xratio)*(1-yratio);
             td_xr = -ydiff*xdir*xratio + xdiff*ydir*yratio;
