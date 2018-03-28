@@ -422,6 +422,7 @@ namespace mars {
       osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
       osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
       osg::ref_ptr<osg::DrawElementsUInt> osgIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
+      bool useIndices = true;
       while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
         o = 0;
         while(o < r+foo-50 || (r<256 && o < r+foo)) {
@@ -449,9 +450,13 @@ namespace mars {
             normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
           }
           else if(da == 4) {
+            // 1. vertice
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
+            }
+            if(iData[0] != iData[2]) {
+              useIndices = false;
             }
             // add osg vertices etc.
             osgIndices->push_back(iData[0]-1);
@@ -460,9 +465,14 @@ namespace mars {
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
             normals2.push_back(normals[iData[2]-1]);
+
+            // 2. vertice
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
+            }
+            if(iData[0] != iData[2]) {
+              useIndices = false;
             }
             osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
@@ -471,9 +481,14 @@ namespace mars {
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
             normals2.push_back(normals[iData[2]-1]);
+
+            // 3. vertice
             for(i=0; i<3; i++) {
               iData[i] = *(int*)(buffer+o);
               o+=4;
+            }
+            if(iData[0] != iData[2]) {
+              useIndices = false;
             }
             osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
@@ -488,8 +503,7 @@ namespace mars {
         if(r==256) memcpy(buffer, buffer+o, foo);
       }
 
-      bool useIndices = false;
-      if(vertices.size() == normals.size()) {
+      if(useIndices) {
         for(size_t i=0; i<vertices.size(); ++i) {
           osgVertices->push_back(vertices[i]);
           osgNormals->push_back(normals[i]);
@@ -497,7 +511,6 @@ namespace mars {
             osgTexcoords->push_back(texcoords[i]);
           }
         }
-        useIndices = true;
       }
       else {
         for(size_t i=0; i<vertices2.size(); ++i) {
