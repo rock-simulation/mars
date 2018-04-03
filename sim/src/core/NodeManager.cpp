@@ -221,7 +221,14 @@ namespace mars {
       NodeId parentDrawID = 0;
       NodeId vizLink = 0;
       if(nodeS->map.hasKey("vizLink")) {
-        vizLink = getID((std::string)nodeS->map["vizLink"]);
+        vizLink = nodeS->map["vizLink"];
+        if(nodeS->map.hasKey("mapIndex")) {
+          unsigned int mapIndex = nodeS->map["mapIndex"];
+          if(mapIndex && control->loadCenter) {
+            vizLink = control->loadCenter->getMappedID(vizLink, MAP_TYPE_NODE,
+                                                       mapIndex);
+          }
+        }
       }
 
       // todo: the combination of vizLink and absolute position will be a problem

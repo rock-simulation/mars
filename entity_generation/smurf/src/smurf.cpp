@@ -571,7 +571,6 @@ namespace mars {
       linkIDMap[name] = nextNodeID - 1;
       nodeIDMap[name] = nextNodeID - 1;
       currentNodeID = nextNodeID - 1;
-      currentLinkName = name;
       config["groupid"] = groupID;
       config["movable"] = !fixed;
 
@@ -790,7 +789,7 @@ namespace mars {
       config["materialName"] = visual->material_name;
 
       addEmptyCollisionToNode(&config);
-      config["vizLink"] = currentLinkName;
+      config["vizLink"] = currentNodeID;
       config["noPhysical"] = true;
       config["noDataPackage"] = true;
 
