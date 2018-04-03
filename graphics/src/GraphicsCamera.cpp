@@ -787,8 +787,8 @@ namespace mars {
             if(yratio<0) ydir=-1;
             xratio = fabs(xratio);
             yratio = fabs(yratio);
-            td_zr = xdiff * (1-yratio)*(1-xratio);
-            td_yr = ydiff * (1-xratio)*(1-yratio);
+            td_zr = xdiff * (1-yratio);
+            td_yr = ydiff * (1-xratio);
             td_xr = -ydiff*xdir*xratio + xdiff*ydir*yratio;
 
             osg::Matrixd rotate;
