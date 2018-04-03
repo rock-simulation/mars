@@ -394,10 +394,20 @@ namespace mars {
         if (map.hasKey("environment")) {
           configmaps::ConfigMap envmap = map["environment"];
           if (envmap.hasKey("skybox")) {
-            control->cfg->createParam("Scene","skydome_path", cfg_manager::stringParam);
-            control->cfg->createParam("Scene","skydome_enabled", cfg_manager::boolParam);
-            control->cfg->setPropertyValue("Scene", "skydome_path", "value", std::string(envmap["skybox"]["path"]));
-            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value", true);
+            control->cfg->createParam("Scene","skydome_path",
+                                      cfg_manager::stringParam);
+            control->cfg->createParam("Scene","skydome_enabled",
+                                      cfg_manager::boolParam);
+            // check if path is relative to smurfs scene
+            std::string skyboxPath = envmap["skybox"]["path"];
+            skyboxPath = pathJoin(path, skyboxPath);
+            if(!pathExists(skyboxPath)) {
+              skyboxPath << envmap["skybox"]["path"];
+            }
+            control->cfg->setPropertyValue("Scene", "skydome_path", "value",
+                                           skyboxPath);
+            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value",
+                                           true);
           }
           if (envmap.hasKey("terrain")) {
             control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
