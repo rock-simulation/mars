@@ -1733,11 +1733,7 @@ namespace mars {
       osg::PositionAttitudeTransform* posTransform;
       osg::Transform* transform;
 
-#ifdef __linux__
-      if(!view->computeIntersections(x, -y, intersections))
-#else
       if(!view->computeIntersections(x, y, intersections))
-#endif
       {
         return false;
       }
