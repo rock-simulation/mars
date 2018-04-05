@@ -227,8 +227,8 @@ namespace mars {
                 break;
               }
             }
-            SimJoint* anchorjoint = control->joints->getSimJoint(anchorJointId);
-            if (anchorjoint != NULL) {
+            std::shared_ptr<SimJoint> anchorjoint = control->joints->getSimJoint(anchorJointId);
+            if (anchorjoint.get() != NULL) {
               anchorjoint->reattachJoint();
             }
             else fprintf(stderr, "Could not reset anchor of entity %s.\n", name.c_str());

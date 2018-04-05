@@ -29,13 +29,14 @@
 #include "config.h"
 #include "Simulator.h"
 #include "PhysicsMapper.h"
-#include "NodeManager.h"
-#include "JointManager.h"
-#include "MotorManager.h"
 #include "SensorManager.h"
 #include "ControllerManager.h"
 #include "EntityManager.h"
 #include "Controller.h"
+
+#include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/JointManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
 
 #include <mars/utils/misc.h>
 #include <mars/interfaces/SceneParseException.h>
@@ -239,9 +240,20 @@ namespace mars {
         initCfgParams();
       }
 
-      control->nodes = new NodeManager(control, libManager);
-      control->joints = new JointManager(control);
-      control->motors = new MotorManager(control);
+      //control->nodes = new NodeManager(control, libManager);
+      //control->joints = new JointManager(control);
+      //control->motors = new MotorManager(control);
+
+      if (control->nodes == NULL) {
+        fprintf(stderr, "ERROR: No NodeManager is defined!\n");
+      }
+      if (control->joints == NULL) {
+        fprintf(stderr, "ERROR: No JointManager is defined!\n");
+      }
+      if (control->motors == NULL) {
+        fprintf(stderr, "ERROR: No MotorManager is defined!\n");
+      }
+
       control->sensors = new SensorManager(control);
       control->controllers = new ControllerManager(control);
       control->entities = new EntityManager(control);
@@ -273,6 +285,17 @@ namespace mars {
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
 
+      // Add plugins that have been added via Simulator::addPlugin
+      // before to start simulation
+      for (unsigned int i = 0; i < newPlugins.size(); ++i) {
+        LOG_DEBUG("[Simulator::runSimulation] init plugin: %s\n", newPlugins[i].name.c_str());
+        allPlugins.push_back(newPlugins[i]);
+        activePlugins.push_back(newPlugins[i]);
+        newPlugins[i].p_interface->init();
+      }
+      newPlugins.clear();      
+
+      // load scene
       while(arg_v_scene_name.size() > 0) {
         LOG_INFO("Simulator: scene to load: %s",
                  arg_v_scene_name.back().c_str());

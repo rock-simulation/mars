@@ -67,6 +67,7 @@ namespace mars {
       NODE_TYPE_PLANE,
       NODE_TYPE_TERRAIN,
       NODE_TYPE_REFERENCE,
+      NODE_TYPE_MLS,
       NODE_TYPE_EMPTY,
       NUMBER_OF_NODE_TYPES
     };

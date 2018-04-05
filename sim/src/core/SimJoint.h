@@ -113,7 +113,7 @@ namespace mars {
 
       // getters
       const utils::Vector getAnchor(void) const;
-      SimNode* getAttachedNode(unsigned char axis_index=1) const;
+      std::shared_ptr<SimNode> getAttachedNode(unsigned char axis_index=1) const;
       const utils::Vector getAxis(unsigned char axis_index=1) const;
       void getCoreExchange(interfaces::core_objects_exchange *obj) const;
       interfaces::sReal getPosition(unsigned char axis_index=1) const;
@@ -133,13 +133,13 @@ namespace mars {
 
       // setters
       void setAnchor(const utils::Vector &pos);
-      void setAttachedNodes(SimNode *node, SimNode *node2);
+      void setAttachedNodes(std::shared_ptr<SimNode> node, std::shared_ptr<SimNode> node2);
       void setAxis(const utils::Vector &axis, unsigned char axis_index=1);
       void setEffortLimit(interfaces::sReal force, unsigned char axis_index=1);
       void setId(unsigned long i);
       void setJointType(interfaces::JointType type);
       void setOfflinePosition(interfaces::sReal value);
-      void setPhysicalJoint(interfaces::JointInterface *physical_joint);
+      void setPhysicalJoint(std::shared_ptr<interfaces::JointInterface> physical_joint);
       void setSDParams(interfaces::JointData *sJoint);
       void setSJoint(const interfaces::JointData &sJoint);
       void setVelocity(interfaces::sReal velocity, unsigned char axis_index=1);
@@ -159,7 +159,7 @@ namespace mars {
       void unsetJointAsMotor(int axis) __attribute__ ((deprecated("use detachMotor")));
       unsigned long getNodeIndex1(void) const __attribute__ ((deprecated("use getNodeId")));
       unsigned long getNodeIndex2(void) const __attribute__ ((deprecated("use getNodeId")));
-      void setInterface(interfaces::JointInterface *physical_joint) __attribute__ ((deprecated("use setPhysicalJoint")));
+      void setInterface(std::shared_ptr<interfaces::JointInterface> physical_joint) __attribute__ ((deprecated("use setPhysicalJoint")));
       void setForceLimit(interfaces::sReal force) __attribute__ ((deprecated("use setEffortLimit")));
       void setForceLimit2(interfaces::sReal force) __attribute__ ((deprecated("use setEffortLimit")));
       void setVelocity2(interfaces::sReal velocity) __attribute__ ((deprecated("use setVelocity(v, 1)")));
@@ -180,8 +180,8 @@ namespace mars {
       const utils::Vector getTorque2(void) const __attribute__ ((deprecated("use getTorqueVector")));
       interfaces::sReal getActualAngle1() const __attribute__ ((deprecated("use getPosition")));
       interfaces::sReal getActualAngle2() const __attribute__ ((deprecated("use getPosition")));
-      SimNode* getAttachedNode1(void) const __attribute__ ((deprecated("use getAttachedNode")));
-      SimNode* getAttachedNode2(void) const __attribute__ ((deprecated("use getgetAttachedNode")));
+      std::shared_ptr<SimNode> getAttachedNode1(void) const __attribute__ ((deprecated("use getAttachedNode")));
+      std::shared_ptr<SimNode> getAttachedNode2(void) const __attribute__ ((deprecated("use getgetAttachedNode")));
       void setAxis1(const utils::Vector &axis) __attribute__ ((deprecated("use setAxis")));
       void setAxis2(const utils::Vector &axis) __attribute__ ((deprecated("use setAxis")));
       void rotateAxis1(const utils::Quaternion &rotatem) __attribute__ ((deprecated("use rotateAxis")));
@@ -195,8 +195,8 @@ namespace mars {
     private:
       interfaces::ControlCenter *control;
       interfaces::JointData sJoint;
-      interfaces::JointInterface *physical_joint;
-      SimNode *snode1, *snode2;
+      std::shared_ptr<interfaces::JointInterface> physical_joint;
+      std::shared_ptr<SimNode> snode1, snode2;
       interfaces::JointId id;
       interfaces::sReal position1, position2;
       interfaces::sReal velocity1, velocity2;

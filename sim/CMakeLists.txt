@@ -71,9 +71,7 @@ set(SOURCES_H
        src/core/Controller.h
        src/core/ControllerManager.h
        src/core/EntityManager.h
-       src/core/JointManager.h
-       src/core/MotorManager.h
-       src/core/NodeManager.h
+
        src/core/PhysicsMapper.h
        src/core/SensorManager.h
        src/core/SimEntity.h
@@ -120,9 +118,7 @@ set(TARGET_SRC
        src/core/Controller.cpp
        src/core/ControllerManager.cpp
        src/core/EntityManager.cpp
-       src/core/JointManager.cpp
-       src/core/MotorManager.cpp
-       src/core/NodeManager.cpp
+            
        src/core/PhysicsMapper.cpp
        src/core/SensorManager.cpp
        src/core/SimEntity.cpp

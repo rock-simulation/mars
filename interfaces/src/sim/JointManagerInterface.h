@@ -107,7 +107,7 @@ namespace mars {
       /**
        * \brief Returns a pointer to the SimJoint Object.
        */
-      virtual sim::SimJoint* getSimJoint(unsigned long id) = 0;
+      virtual std::shared_ptr<mars::sim::SimJoint> getSimJoint(unsigned long id) = 0;
 
       /**
        * \brief Return a copy of the SimJointVector;
