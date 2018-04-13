@@ -26,6 +26,7 @@
 #include <mars/sim/CameraSensor.h>
 #include <mars/utils/misc.h>
 #include <mars/graphics/2d_objects/HUDTexture.h>
+#include <mars/graphics/GraphicsCamera.h>
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -159,16 +160,42 @@ namespace mars {
 
       void CameraWidget::saveImage() {
         QString fileName = QFileDialog::getSaveFileName(NULL, QObject::tr("select save file name"),
-                                                        ".", QObject::tr("png file (*.png)"),0,
+                                                        ".", QObject::tr("image files (*.*)"),0,
                                                         QFileDialog::DontUseNativeDialog);
         if(!fileName.isNull()) {
+          std::string file = fileName.toStdString();
           graphics::GraphicsWidget *g;
           g = (graphics::GraphicsWidget*)control->graphics->get3DWindow(currentID);
           if(depthImage) {
-            osgDB::writeImageFile(*(g->getRTTDepthImage()), fileName.toStdString());
+            osg::Image *image = g->getRTTDepthImage();
+            GLuint* data = (GLuint *)image->data();
+            int width = image->s();
+            int height = image->t();
+            double fovy, aspectRatio, Zn, Zf;
+            ((graphics::GraphicsCamera*)(g->getCameraInterface()))->getOSGCamera()->getProjectionMatrixAsPerspective( fovy, aspectRatio, Zn, Zf );
+            osg::ref_ptr<osg::Image> outImage = new osg::Image;
+            outImage->allocateImage(width, height, 1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
+            char* data2 = (char *)outImage->data();
+            for(int i=height-1; i>=0; --i) {
+              for(int k=0; k<width; ++k) {
+                GLuint di = data[i*width+k];
+
+                float dv = ((float) di) / std::numeric_limits< GLuint >::max();
+                if(dv >= 1.0) dv = 1.0;
+
+                char value = 255*dv;
+                // this would scale the image to max distance
+                //char value = 255*(Zn*Zf/(Zf-dv*(Zf-Zn)))/Zf;
+                data2[4*i*width+4*k] = value;
+                data2[4*i*width+4*k+1] = value;
+                data2[4*i*width+4*k+2] = value;
+                data2[4*i*width+4*k+3] = 255;
+              }
+            }
+            osgDB::writeImageFile(*(outImage.get()), file);
           }
           else {
-            osgDB::writeImageFile(*(g->getRTTImage()), fileName.toStdString());
+            osgDB::writeImageFile(*(g->getRTTImage()), file);
           }
         }
       }
