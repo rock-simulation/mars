@@ -89,6 +89,8 @@ namespace mars {
 
       osg::Texture2D* getRTTTexture(void);
       osg::Texture2D* getRTTDepthTexture(void);
+      osg::Image* getRTTImage(void);
+      osg::Image* getRTTDepthImage(void);
 
       std::vector<osg::Node*> getPickedObjects();
       void clearSelectionVectors(void);

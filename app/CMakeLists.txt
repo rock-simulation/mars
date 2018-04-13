@@ -149,6 +149,7 @@ add_plugin_if_available("cfg_manager_gui")
 add_plugin_if_available("lib_manager_gui")
 add_plugin_if_available("SkyDomePlugin")
 add_plugin_if_available("PythonMars")
+add_plugin_if_available("CameraGUI")
 add_plugin_if_available("data_broker_plotter2")
 
 if(NOT ROCK)

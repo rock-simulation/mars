@@ -258,6 +258,7 @@ namespace mars {
             libManager->loadLibrary("cfg_manager_gui", NULL, true);
             libManager->loadLibrary("lib_manager_gui", NULL, true);
             libManager->loadLibrary("SkyDomePlugin", NULL, true);
+            libManager->loadLibrary("CameraGUI", NULL, true);
             libManager->loadLibrary("PythonMars", NULL, true);
             libManager->loadLibrary("data_broker_plotter2", NULL, true);
           }
