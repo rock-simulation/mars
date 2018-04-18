@@ -66,7 +66,9 @@ namespace mars {
     }
 
     const std::map<unsigned long, SimEntity*>* EntityManager::subscribeToEntityCreation(interfaces::EntitySubscriberInterface* newsub) {
-      subscribers.push_back(newsub);
+      if (newsub!=nullptr) {
+        subscribers.push_back(newsub);
+      }
       return &entities;
     }
 
