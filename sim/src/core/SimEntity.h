@@ -95,6 +95,11 @@ namespace mars {
       // returns true if the node is part of the robot
       bool belongsToRobot(unsigned long nodeId);
 
+      /**returns the id of the node with the smallest id of all
+       * nodes with name_specifier in their name
+       */
+      unsigned long getRootestId(std::string name_specifier="");
+
       /**returns the id of the node with the given name
        * with the current implementation this is slow
        */
