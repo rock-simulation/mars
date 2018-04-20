@@ -62,7 +62,7 @@ namespace mars {
 
       /**
        *\brief Add a node to the node pool of the simulation.
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results. Currently the verified use of this function is
        * only guaranteed by calling it within the main thread (update callback
@@ -85,8 +85,8 @@ namespace mars {
                              bool reload = false,
                              bool loadGraphics = true) = 0;
 
-  
-  
+
+
       virtual NodeId createPrimitiveNode(const std::string &name, NodeType type,
                                          bool movable=false,
                                          const utils::Vector &pos=utils::Vector::Zero(),
@@ -94,11 +94,11 @@ namespace mars {
                                          double mass=0,
                                          const utils::Quaternion &orientation=utils::Quaternion::Identity(),
                                          bool disablePhysics=false) = 0;
-  
-  
+
+
       /**
        *\brief Add a terrain node to the node pool of the simulation.
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results. Currently the verified use of this function is
        * only guaranteed by calling it within the main thread (update callback
@@ -112,7 +112,7 @@ namespace mars {
 
       /**
        *\brief Add a vector of nodes to the node pool of the simulation.
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results. Currently the verified use of this function is
        * only guaranteed by calling it within the main thread (update callback
@@ -129,7 +129,7 @@ namespace mars {
 
       /**
        *\brief Add a node of type primitive to the node pool of the simulation.
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results. Currently the verified use of this function is
        * only guaranteed by calling it within the main thread (update callback
@@ -143,8 +143,16 @@ namespace mars {
       virtual NodeId addPrimitive(NodeData *snode) = 0;
 
       /**
+       *\brief Returns true, if the node with the given id exists.
+       *
+       * \param id The id of the node to look for.
+       * \return Whether the node exists.
+       */
+      virtual bool exists(NodeId id) const = 0;
+
+      /**
        *\brief Returns the number of nodes that are added to the simulation.
-       * 
+       *
        * It is very important to assure the serializaion between the threads to
        * have the desired results. This function should be thread save.
        *
@@ -165,7 +173,7 @@ namespace mars {
       /**
        *\brief This function supports the possibility to change some properties
        * of a node.
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results. Currently the verified use of this function is
        * only guaranteed by calling it within the main thread (update callback
@@ -273,7 +281,7 @@ namespace mars {
        * included into the calculation of the center of mass.
        * \returns A Vector representing the center of mass for the specified ids
        * is returned.
-       */   
+       */
       virtual const utils::Vector getCenterOfMass(const std::vector<NodeId> &ids) const = 0;
 
       /**
@@ -289,7 +297,7 @@ namespace mars {
        * vector is interpreted by the simulation see NodeData::ext.
        * \returns A Vector with the ratio of the old and the new size for every
        * dimension.
-       */   
+       */
       virtual const utils::Vector setReloadExtent(NodeId id, const utils::Vector &ext) = 0;
 
       /**
@@ -302,7 +310,7 @@ namespace mars {
        *
        * \param id The id of the node to edit.
        * \param pos The new position of the node.
-       */   
+       */
       virtual void setReloadPosition(NodeId id, const utils::Vector &pos) = 0;
 
       /**
@@ -320,7 +328,7 @@ namespace mars {
        * \param friction2 The new contact friction coefficient for the second
        * friction direction.
        * \sa contact_params
-       */   
+       */
       virtual void setReloadFriction(NodeId id, sReal friction1,
                                      sReal friction2) = 0;
 
@@ -573,7 +581,7 @@ namespace mars {
        *
        * \param id The id of the node to edit.
        * \param angle The new orientation given in euler angles.
-       */   
+       */
       virtual void setReloadAngle(NodeId id, const utils::sRotation &angle) = 0;
 
       /**
@@ -587,7 +595,7 @@ namespace mars {
        * \param id The id of the node to edit.
        * \param pos The contact parameter struct. For detailed information see
        * contact_params. \sa contact_params
-       */   
+       */
       virtual void setContactParams(NodeId id, const contact_params &cp) = 0;
 
       /**
@@ -601,7 +609,7 @@ namespace mars {
        * \param id The id of the node to get the contact properties from.
        * \returns A contact parameter struct which stores the contact properties.
        * \sa contact_params
-       */   
+       */
       virtual const contact_params getContactParams(NodeId id) const = 0;
 
       /**
@@ -641,7 +649,7 @@ namespace mars {
        * from \c gui_thread).
        *
        * \param factor The scaling factor for the size of the nodes.
-       */   
+       */
       virtual void scaleReloadNodes(sReal x, sReal y, sReal z) = 0;
 
       /**
@@ -656,7 +664,7 @@ namespace mars {
        * \param mass A pointer to the sReal variable, where the mass will be stored.
        * \param inertia A pointer to a sReal array with a dimension of 9. If the
        * pointer is unequal 0, the inertia information will be stored in this array.
-       */   
+       */
       virtual void getNodeMass(NodeId id, sReal *mass, sReal *inertia=0) const = 0;
 
       /**
@@ -672,7 +680,7 @@ namespace mars {
        * every simulation step. The value should be between 0 and 1, while 0 means
        * no damping and 1 the maximum damping.
        * \f$ angular\_velocity = angular\_velocity * (1-damping)\f$
-       */   
+       */
       virtual void setAngularDamping(NodeId id, sReal damping) = 0;
 
       /**
@@ -685,7 +693,7 @@ namespace mars {
        *
        * \param id The id of the node to add the rotation.
        * \param q The rotation to be added (see Quaternion).
-       */   
+       */
       virtual void addRotation(NodeId id, const utils::Quaternion &q) = 0;
 
       /**
@@ -698,7 +706,7 @@ namespace mars {
        *
        * \param id The id of the node to edit.
        * \param q The new orientation given as quaternion.
-       */   
+       */
       virtual void setReloadQuaternion(NodeId id, const utils::Quaternion &q) = 0;
 
       /**
@@ -712,7 +720,7 @@ namespace mars {
        * from \c gui_thread).
        *
        * \param folder The folder where to exort the models.
-       */   
+       */
       virtual void exportGraphicNodesByID(const std::string &folder) const = 0;
 
       /** \todo write docs */
@@ -745,8 +753,8 @@ namespace mars {
        * specified \a id publishes its data in the DataBroker
        * \return \c true if the names were successfully retrieved. \c false if
        *         no node with the given \a id exists.
-       */ 
-      virtual bool getDataBrokerNames(NodeId id, std::string *groupName, 
+       */
+      virtual bool getDataBrokerNames(NodeId id, std::string *groupName,
                                       std::string *dataName) const = 0;
 
       /** \todo write docs */
@@ -763,7 +771,7 @@ namespace mars {
       virtual void setIsMovable(NodeId id, bool isMovable) = 0;
       virtual void lock() = 0;
       virtual void unlock() = 0;
-      
+
       /** Rotates the specified node according to the provided quaternion.
        * \param id The \c id of the node to be rotated.
        * \param pivot The utils::Vector defining the pivot point around which to rotate.
