@@ -405,6 +405,18 @@ namespace mars {
     }
 
     /**
+     *\brief returns true if the node with the given id exists
+     *
+     */
+    bool NodeManager::exists(NodeId id) const {
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if(iter != simNodes.end()) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
      *\brief returns the number of nodes added to the simulation
      *
      */
