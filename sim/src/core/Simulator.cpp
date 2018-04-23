@@ -730,6 +730,9 @@ namespace mars {
     }
 
     void Simulator::newWorld(bool clear_all) {
+      getTimeMutex.lock();
+      realStartTime = utils::getTime();
+      getTimeMutex.unlock();
       physicsThreadLock();
       // reset simTime
       dbSimTimePackage[0].set(0.);
