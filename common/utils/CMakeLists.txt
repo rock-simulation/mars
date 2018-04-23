@@ -28,6 +28,7 @@ set(SOURCES
     src/Thread.cpp
     src/WaitCondition.cpp
     src/mathUtils.cpp
+    src/Geometry.cpp
     src/misc.cpp
 #    src/Socket.cpp
 )
@@ -42,6 +43,7 @@ set(HEADERS
     src/Vector.h
     src/WaitCondition.h
     src/mathUtils.h
+    src/Geometry.h
     src/misc.h
 #    src/Socket.h
 )
