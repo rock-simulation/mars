@@ -22,12 +22,17 @@
 
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/Vector.h>
+#include <mars/utils/Quaternion.h>
+#include <mars/utils/Geometry.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
+#include "SimEntity.h"
 
 #include <stdint.h>
 #include <cstring>
@@ -156,6 +161,121 @@ namespace mars {
 
         assert(config.width == width);
         assert(config.height == height);
+    }
+
+    /** \brief returns all entities in the view of the camera.
+    * \param enum ViewMode:
+    * CENTER          The center of the bounding box has to be visible to list it
+    * VERTEX_OF_BBOX  At least one vertex of the bounding box has to be visible to list it
+    * EVERYTHING      Everxthing of the entity has to be visible to list it
+    * NOTHING         Nothing of the entity has to be visible to list it
+    *  Defines what has to be visible to the camera to get the object
+    * \return list of the detected objects
+    */
+    /* strategy: iterates through all objects. The viewing frustum is represented as the bounding planes.
+    * checks for the relevant points if they lie on the positive side of the plane normal.
+    */
+    void CameraSensor::getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, ViewMode viewMode) {
+      std::map<unsigned long, SimEntity*> seen_entities = *(control->entities->subscribeToEntityCreation(nullptr)); //get all entities
+      if (viewMode == ViewMode::NOTHING) {
+        buffer = seen_entities;
+        return;
+      }
+      //get Camera Info
+      cameraStruct cs;
+      getCameraInfo(&cs);
+      //camera frame
+      Vector view_x = cs.rot.toRotationMatrix() * Vector(1, 0, 0);
+      Vector view_y = cs.rot.toRotationMatrix() * Vector(0, 1, 0);
+      Vector view_z = cs.rot.toRotationMatrix() * Vector(0, 0, 1);
+      Vector viewcenter = view_z.normalized();
+
+      //get planes of viewing frustum, normals pointing inwards
+      std::vector<double> f; //frustum
+      std::vector<Plane> p;
+      enum {L, R, B, T, N, F};
+      gc->getFrustum(f);
+      Vector frustum_center = cs.pos + viewcenter*((f[N]+f[F])/2);
+      //near and far plane Plane(point on the plane, normal)
+      p[N] = Plane(viewcenter * f[N] + cs.pos, viewcenter);
+      p[N].pointNormalTowards(frustum_center);
+      p[F] = Plane(viewcenter * f[F] + cs.pos, -viewcenter);
+      p[F].pointNormalTowards(frustum_center);
+      //Plane(point of camera, Line(points at the edges of the frustum on this intersection)
+      Vector temp; //Vector to the center point of the intersection
+      //left plane
+      temp = -view_x * f[L] + viewcenter * f[N] + cs.pos;
+      p[L] = Plane(cs.pos, view_y * f[B] + temp, -view_y * f[T] + temp, Plane::Method::THREE_POINTS);
+      p[L].pointNormalTowards(frustum_center);
+      //right plane
+      temp = view_x * f[R] + viewcenter * f[N] + cs.pos;
+      p[R] = Plane(cs.pos, view_y * f[B] + temp, -view_y * f[T] + temp, Plane::Method::THREE_POINTS);
+      p[R].pointNormalTowards(frustum_center);
+      //top plane
+      temp = -view_y * f[T] + viewcenter * f[N] + cs.pos;
+      p[T] = Plane(cs.pos, -view_x * f[L] + temp, view_x * f[R] + temp, Plane::Method::THREE_POINTS);
+      p[T].pointNormalTowards(frustum_center);
+      //bottom plane
+      temp = view_y * f[B] + viewcenter * f[N] + cs.pos;
+      p[B] = Plane(cs.pos, -view_x * f[L] + temp, view_x * f[R] + temp, Plane::Method::THREE_POINTS);
+      p[B].pointNormalTowards(frustum_center);
+
+      //declare the boundingbox for the entity
+      Vector center, extent;
+      Quaternion rotation;
+      std::vector<Vector> vertices;
+      bool is_in_frustum;
+
+      //check for all entities if they are in the view
+      for (std::map<unsigned long, SimEntity*>::iterator iter = seen_entities.begin();
+          iter != seen_entities.end(); ++iter) {
+        switch (viewMode) {
+          case ViewMode::CENTER:
+            iter->second->getBoundingBox(center, rotation, extent);
+            is_in_frustum = true;
+            for (int i = L; i<=F; i++) {
+              if (distance(p[i], center, false) < 0) {
+                is_in_frustum = false;
+                break;
+              }
+            }
+          case ViewMode::VERTEX_OF_BBOX:
+            vertices = iter->second->getBoundingBox();
+            is_in_frustum = false;
+            for (int v = 0; v<8; v++) {
+              bool vertex_in_frustum = true;
+              for (int i = L; i<=F; i++) {
+                if (distance(p[i], vertices[v], false) < 0) {
+                  vertex_in_frustum = false;
+                  break;
+                }
+              }
+              is_in_frustum |= vertex_in_frustum;
+            }
+          case ViewMode::EVERYTHING:
+            vertices = iter->second->getBoundingBox();
+            is_in_frustum = true;
+            for (int v = 0; v<8; v++) {
+              bool vertex_in_frustum = true;
+              for (int i = L; i<=F; i++) {
+                if (distance(p[i], vertices[v], false) < 0) {
+                  vertex_in_frustum = false;
+                  break;
+                }
+              }
+              if (!vertex_in_frustum) {
+                is_in_frustum = false;
+                break;
+              }
+            }
+            if (!is_in_frustum) {
+              seen_entities.erase(iter);
+            }
+          default:
+            assert(false);
+        }
+        buffer = seen_entities;
+      }
     }
 
 
