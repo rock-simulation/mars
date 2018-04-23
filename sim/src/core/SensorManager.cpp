@@ -65,7 +65,7 @@
 
 namespace mars {
   namespace sim {
-  
+
     using namespace std;
     using namespace utils;
     using namespace interfaces;
@@ -125,6 +125,19 @@ namespace mars {
       //   RayGridSensor
     }
 
+    /**
+     *\brief Returns true, if the sensor with the given id exists.
+     *
+     * \param id The id of the sensor to look for.
+     * \return boolean, whether the node exists.
+     */
+    bool SensorManager::exists(unsigned long index) const {
+      map<unsigned long, BaseSensor*>::const_iterator iter = simSensors.find(index);
+      if(iter != simSensors.end()) {
+        return true;
+      }
+      return false;
+    }
 
     /**
      * \brief Gives information about core exchange data for sensors.
@@ -278,12 +291,12 @@ namespace mars {
      * are added back to the simulation again with a \c reload value of \c true.
      */
     void SensorManager::reloadSensors(void) {
-  
+
       vector<SensorReloadHelper>::iterator iter;
       iMutex.lock();
       for(iter=simSensorsReload.begin(); iter!=simSensorsReload.end(); ++iter) {
         iMutex.unlock();
-    
+
         createAndAddSensor(iter->type, iter->config, true);
         iMutex.lock();
       }
@@ -313,7 +326,7 @@ namespace mars {
       iMutex.lock();
       id = next_sensor_id++;
       iMutex.unlock();
-  
+
       if(config->name.empty()){
         std::stringstream str;
         str << "SENSOR-" << id;
@@ -324,11 +337,11 @@ namespace mars {
       iMutex.lock();
       simSensors[id] = sensor;
       iMutex.unlock();
-  
+
       if(!reload) {
         simSensorsReload.push_back(SensorReloadHelper(type_name, config));
       }
-  
+
       return sensor;
     }
 
