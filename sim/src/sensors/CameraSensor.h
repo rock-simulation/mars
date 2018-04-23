@@ -83,6 +83,7 @@ namespace mars {
         hud_width = 320;
         hud_height = -1;
         depthImage = false;
+        logicalImage = false;
         frameOffset = 1;
       }
 
@@ -99,6 +100,7 @@ namespace mars {
       int hud_width;
       int hud_height;
       bool depthImage;
+      bool logicalImage;
       bool enabled;
     };
 
@@ -116,7 +118,7 @@ namespace mars {
 
       void getImage(std::vector<Pixel> &buffer);
       void getDepthImage(std::vector<DistanceMeasurement> &buffer);
-      void getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, ViewMode viewMode);
+      void getEntitiesInView(std::vector<SimEntity*> &buffer, ViewMode viewMode);
 
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
@@ -142,6 +144,7 @@ namespace mars {
       CameraConfigStruct config;
       interfaces::BaseCameraSensor<double> depthCamera;
       interfaces::BaseCameraSensor<char*> imageCamera;
+      interfaces::BaseCameraSensor<SimEntity*> logicalCamera;
       unsigned long cam_window_id;
       interfaces::GraphicsWindowInterface *gw;
       interfaces::GraphicsCameraInterface* gc;

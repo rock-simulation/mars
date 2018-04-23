@@ -203,9 +203,10 @@ namespace mars {
     template <class T>
     class BaseCameraSensor : public BaseArraySensor<T> {
     public:
-      BaseCameraSensor(unsigned long id, std::string name, int cols, int rows, int nChannels, bool depthImage):
+      BaseCameraSensor(unsigned long id, std::string name, int cols, int rows, int nChannels, bool depthImage, bool logicalImage):
         BaseArraySensor<T>(cols,rows,nChannels),
         depthImage(depthImage),
+        logicalImage(logicalImage),
         id(id),
         name(name)
       {
@@ -217,16 +218,21 @@ namespace mars {
         return depthImage;
       }
 
+      bool isLogicalImage(){
+        return logicalImage;
+      }
+
 
     protected:
       bool depthImage;
+      bool logicalImage;
       unsigned long id;
       std::string name;
 
     }; // end of BaseCameraSensor
 
 
-    class BasePolarIntersectionSensor : public BaseNodeSensor, 
+    class BasePolarIntersectionSensor : public BaseNodeSensor,
                                         public BaseArraySensor<double> {
     public:
       BasePolarIntersectionSensor(unsigned long id, std::string name, int cols, int rows, double angleX, double angleY, double maxDistance= std::numeric_limits<double>::infinity()):

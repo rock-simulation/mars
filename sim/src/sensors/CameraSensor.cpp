@@ -56,8 +56,9 @@ namespace mars {
       BaseNodeSensor(config.id,config.name),
       SensorInterface(control),
       config(config),
-      depthCamera(id,name,config.width,config.height,1,true),
-      imageCamera(id,name,config.width,config.height,4,false)
+      depthCamera(id,name,config.width,config.height,1,true, false),
+      imageCamera(id,name,config.width,config.height,4,false, false),
+      logicalCamera(id,name,config.width,config.height,1,false, true),
     {
       renderCam = 2;
       this->attached_node = config.attached_node;
@@ -175,7 +176,7 @@ namespace mars {
     /* strategy: iterates through all objects. The viewing frustum is represented as the bounding planes.
     * checks for the relevant points if they lie on the positive side of the plane normal.
     */
-    void CameraSensor::getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, ViewMode viewMode) {
+    void CameraSensor::getEntitiesInView(std::vector<SimEntity*> &buffer, ViewMode viewMode) {
       std::map<unsigned long, SimEntity*> seen_entities = *(control->entities->subscribeToEntityCreation(nullptr)); //get all entities
       if (viewMode == ViewMode::NOTHING) {
         buffer = seen_entities;
@@ -268,19 +269,19 @@ namespace mars {
                 break;
               }
             }
-            if (!is_in_frustum) {
-              seen_entities.erase(iter);
-            }
           default:
             assert(false);
         }
-        buffer = seen_entities;
+        if (is_in_frustum) {
+          buffer.push_back(iter->second);
+        }
       }
     }
 
 
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
+    // TODO handle depth image and logicalImage
     int CameraSensor::getSensorData(sReal** data) const {
       if(gw) {
         // get image
