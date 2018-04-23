@@ -100,7 +100,7 @@ namespace mars {
        * \param id The id of the sensor to look for.
        * \return Whether the node exists.
        */
-      virtual bool exists(unsigned long index) const = 0;
+      virtual bool exists(unsigned long index) const;
 
       /**
        * \brief Gives information about core exchange data for sensors.

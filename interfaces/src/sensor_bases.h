@@ -212,6 +212,14 @@ namespace mars {
       {
       }
 
+      BaseCameraSensor(unsigned long id, std::string name, int cols, int rows, int nChannels, bool depthImage):
+        BaseArraySensor<T>(cols,rows,nChannels),
+        depthImage(depthImage),
+        id(id),
+        name(name)
+      {
+      }
+
       virtual ~BaseCameraSensor(){}
 
       bool isDepthImage(){

@@ -58,7 +58,7 @@ namespace mars {
       config(config),
       depthCamera(id,name,config.width,config.height,1,true, false),
       imageCamera(id,name,config.width,config.height,4,false, false),
-      logicalCamera(id,name,config.width,config.height,1,false, true),
+      logicalCamera(id,name,config.width,config.height,1,false, true)
     {
       renderCam = 2;
       this->attached_node = config.attached_node;
@@ -177,11 +177,8 @@ namespace mars {
     * checks for the relevant points if they lie on the positive side of the plane normal.
     */
     void CameraSensor::getEntitiesInView(std::vector<SimEntity*> &buffer, ViewMode viewMode) {
+      buffer.clear();
       std::map<unsigned long, SimEntity*> seen_entities = *(control->entities->subscribeToEntityCreation(nullptr)); //get all entities
-      if (viewMode == ViewMode::NOTHING) {
-        buffer = seen_entities;
-        return;
-      }
       //get Camera Info
       cameraStruct cs;
       getCameraInfo(&cs);
@@ -269,8 +266,10 @@ namespace mars {
                 break;
               }
             }
+          case ViewMode::NOTHING:
+            is_in_frustum = true;
           default:
-            assert(false);
+            is_in_frustum = false;
         }
         if (is_in_frustum) {
           buffer.push_back(iter->second);
