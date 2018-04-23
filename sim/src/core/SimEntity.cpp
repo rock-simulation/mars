@@ -135,14 +135,12 @@ namespace mars {
       utils::Vector minVertex(10000,10000,10000);
       NodeData root = control->nodes->getFullNode(getRootestId());
       NodeData node;
-      utils::Vector vertices[4];
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {
         if (!control->nodes->exists(iter->first)) {
           continue;
         }
         node = control->nodes->getFullNode(iter->first);
-        utils::Vector pos_entFrame = node.pos - root.pos;
         utils::Vector vertices[8] = {
           node.ext,
           utils::Vector(-node.ext[0], node.ext[1], node.ext[2]),
@@ -173,6 +171,30 @@ namespace mars {
       //transform center to world frame
       center += root.pos;
       rotation = root.rot;
+    }
+
+    /**returns the vertices of the boundingbox
+    */
+    std::vector<utils::Vector> SimEntity::getBoundingBox() {
+      utils::Vector center;
+      utils::Quaternion rotation;
+      utils::Vector extent;
+      std::vector<utils::Vector> vertices;
+      this->getBoundingBox(center,rotation,extent);
+      vertices[0] = extent;
+      vertices[1] = utils::Vector(-extent[0], extent[1], extent[2]);
+      vertices[2] = utils::Vector(extent[0], -extent[1], extent[2]);
+      vertices[3] = utils::Vector(extent[0], extent[1], -extent[2]);
+      vertices[4] = -extent;
+      vertices[5] = utils::Vector(extent[0], -extent[1], -extent[2]);
+      vertices[6] = utils::Vector(-extent[0], extent[1], -extent[2]);
+      vertices[7] = utils::Vector(-extent[0], -extent[1], extent[2]);
+      for (int i=0; i<8; i++) {
+        vertices[i] /= 2;
+        vertices[i] = rotation.toRotationMatrix() * vertices[i];
+        vertices[i] += center;
+      }
+      return vertices;
     }
 
     long unsigned int SimEntity::getMotor(const std::string& name) {

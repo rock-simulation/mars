@@ -114,6 +114,10 @@ namespace mars {
       */
       void getBoundingBox(utils::Vector &center, utils::Quaternion &rotation, utils::Vector &extent);
 
+      /**returns the vertices of the boundingbox
+      */
+      std::vector<utils::Vector> getBoundingBox();
+
       /**returns the id of the motor with the given name
        * with the current implementation this is slow O(n)
        */
