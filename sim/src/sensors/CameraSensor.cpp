@@ -176,7 +176,7 @@ namespace mars {
     /* strategy: iterates through all objects. The viewing frustum is represented as the bounding planes.
     * checks for the relevant points if they lie on the positive side of the plane normal.
     */
-    void CameraSensor::getEntitiesInView(std::vector<SimEntity*> &buffer, ViewMode viewMode) {
+    void CameraSensor::getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, ViewMode viewMode) {
       buffer.clear();
       std::map<unsigned long, SimEntity*> seen_entities = *(control->entities->subscribeToEntityCreation(nullptr)); //get all entities
       //get Camera Info
@@ -271,10 +271,11 @@ namespace mars {
           default:
             is_in_frustum = false;
         }
-        if (is_in_frustum) {
-          buffer.push_back(iter->second);
+        if (!is_in_frustum) {
+          seen_entities.erase(iter);
         }
       }
+      buffer = seen_entities;
     }
 
 

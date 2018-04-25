@@ -118,7 +118,7 @@ namespace mars {
 
       void getImage(std::vector<Pixel> &buffer);
       void getDepthImage(std::vector<DistanceMeasurement> &buffer);
-      void getEntitiesInView(std::vector<SimEntity*> &buffer, ViewMode viewMode);
+      void getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, ViewMode viewMode);
 
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
