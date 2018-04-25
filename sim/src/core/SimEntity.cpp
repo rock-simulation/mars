@@ -106,14 +106,22 @@ namespace mars {
     }
 
     long unsigned int SimEntity::getRootestId(std::string name_specifier /*="" */) {
-      unsigned int id = 10000;
+      unsigned int id_specified = 10000;
+      unsigned int id_lowest = 10000;
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
         iter != nodeIds.end(); ++iter) {
-          if ((iter->first <= id) && (iter->second.find(name_specifier)!=std::string::npos)) {
-              id = iter->first;
+        if (iter->first <= id_lowest) {
+          id_lowest = iter->first;
+          if (iter->first <= id_specified && iter->second.find(name_specifier)!=std::string::npos) {
+              id_specified = iter->first;
           }
+        }
       }
-      return id;
+      if (id_specified == 10000) {
+        fprintf(stderr, "ERROR: No Node with name_specifier found while SimEntity::getRootestId\n");
+        return id_lowest;
+      }
+      return id_specified;
     }
 
     long unsigned int SimEntity::getNode(const std::string& name) {
