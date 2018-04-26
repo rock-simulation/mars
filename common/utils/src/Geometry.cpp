@@ -24,9 +24,71 @@
 
 namespace mars {
   namespace utils {
+    Line::Line(Vector point, Vector vector_type, Method method/*=Method::POINT_VECTOR*/) : point(point) {
+      switch (method) {
+        case Method::POINT_VECTOR:
+          direction = vector_type.normalized();
+        case Method::POINT_POINT:
+          assert (relation(point,vector_type) != Relation::IDENTICAL_OR_MULTIPLE);
+          direction = (vector_type-point).normalized();
+        default:
+          assert(false);
+      }
+      initialized = true;
+    }
+
+    Line::Line() : point(Vector(0,0,0)), direction(Vector(0,0,0)), initialized(false) {
+    }
+
+    Vector Line::getPointOnLine(double r) {
+      assert(initialized == true);
+      return point + direction * r;
+    }
+
+    Plane::Plane(Vector point, Line line) : point(point) {
+      assert(relation((point-line.point), line.direction) != Relation::IDENTICAL_OR_MULTIPLE);
+      normal = line.direction.cross(point-line.point).normalized();
+      initialized = true;
+    }
+
+    Plane::Plane(Vector point, Vector vector_type1, Vector vector_type2, Method method/*=Method::THREE_POINTS*/) : point(point) {
+      switch (method) {
+        case Method::POINT_TWO_VECTORS:
+          assert(relation(vector_type1,vector_type2) != Relation::IDENTICAL_OR_MULTIPLE);
+          normal = vector_type1.cross(vector_type2).normalized();
+        case Method::THREE_POINTS:
+          assert(relation((vector_type1-point),(vector_type2-point)) != Relation::IDENTICAL_OR_MULTIPLE);
+          assert(relation(vector_type2,vector_type1) != Relation::IDENTICAL_OR_MULTIPLE);
+          normal = (vector_type1-point).cross(vector_type2-point).normalized();
+        default:
+          assert(false);
+      }
+      initialized = true;
+    }
+
+    Plane::Plane(Vector point, Vector normal) :
+      point(point), normal(normal.normalized()), initialized(true)
+    {
+    }
+
+    Plane::Plane(void) : point(Vector(0,0,0)), normal(Vector(0,0,0)), initialized(false) {
+    }
+
+    void Plane::flipNormal() {
+      assert(initialized == true);
+      normal *= -1;
+    }
+
+    void Plane::pointNormalTowards(Vector point) {
+      assert(initialized == true);
+      double dist = distance(*this, point, false);
+      if (dist < 0) {
+        flipNormal();
+      }
+    }
 
     Relation relation(Vector vector1, Vector vector2) {
-      Vector quot;
+      Vector quot = elemWiseDivision(vector1, vector2);
       double s;
       s = vector1.dot(vector2);
       if (quot.x()-quot.y() <= EPSILON && quot.y()-quot.z() <= EPSILON){

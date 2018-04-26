@@ -63,85 +63,36 @@ namespace mars {
     struct Line {
       Vector point;
       Vector direction;
-      bool empty = false;
+      bool initialized;
 
       enum Method{
         POINT_VECTOR,
         POINT_POINT
       };
 
-      Line(Vector point, Vector vector_type, Method method=Method::POINT_VECTOR) {
-        switch (method) {
-          case Method::POINT_VECTOR:
-            this->point = point;
-            this->direction = vector_type.normalized();
-          case Method::POINT_POINT:
-            assert (relation(point,vector_type) != Relation::IDENTICAL_OR_MULTIPLE);
-            this->point = point;
-            this->direction = (vector_type-point).normalized();
-          default:
-            assert(false);
-        }
+      Line(Vector point, Vector vector_type, Method method=Method::POINT_VECTOR);
+      Line(void);
 
-      }
-
-      Line() {
-        point = Vector(0,0,0);
-        direction = Vector(0,0,0);
-        empty = true;
-      }
-
-      Vector getPointOnLine(double r) {
-        return point + direction * r;
-      }
+      Vector getPointOnLine(double r);
     };
 
     struct Plane {
-      Vector normal;
       Vector point;
+      Vector normal;
+      bool initialized;
 
       enum Method {
         THREE_POINTS,
         POINT_TWO_VECTORS
       };
 
-      Plane(Vector point, Line line) {
-        assert(relation((point-line.point), line.direction) != Relation::IDENTICAL_OR_MULTIPLE);
-        this->point = point;
-        this->normal = line.direction.cross(point-line.point).normalized();
-      }
+      Plane(Vector point, Line line);
+      Plane(Vector point, Vector vector_type1, Vector vector_type2, Method method=Method::THREE_POINTS);
+      Plane(Vector point, Vector normal);
+      Plane(void);
 
-      Plane(Vector point, Vector vector_type1, Vector vector_type2, Method method=Method::THREE_POINTS) {
-        switch (method) {
-          case Method::POINT_TWO_VECTORS:
-            assert(relation(vector_type1,vector_type2) != Relation::IDENTICAL_OR_MULTIPLE);
-            this->point = point;
-            this->normal = vector_type1.cross(vector_type2).normalized();
-          case Method::THREE_POINTS:
-            assert(relation((vector_type1-point),(vector_type2-point)) != Relation::IDENTICAL_OR_MULTIPLE);
-            assert(relation(vector_type2,vector_type1) != Relation::IDENTICAL_OR_MULTIPLE);
-            this->point = point;
-            this->normal = (vector_type1-point).cross(vector_type2-point).normalized();
-          default:
-            assert(false);
-        }
-      }
-
-      Plane(Vector point, Vector normal) {
-        this->point = point;
-        this->normal = normal.normalized();
-      }
-
-      void flipNormal() {
-        this->normal *= -1;
-      }
-
-      void pointNormalTowards(Vector point) {
-        double dist = distance(*this, point, false);
-        if (dist < 0) {
-          this->flipNormal();
-        }
-      }
+      void flipNormal();
+      void pointNormalTowards(Vector point);
     };
   } // end of namespace utils
 } // end of namespace mars
