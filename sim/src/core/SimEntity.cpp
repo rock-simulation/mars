@@ -183,26 +183,25 @@ namespace mars {
 
     /**returns the vertices of the boundingbox
     */
-    std::vector<utils::Vector> SimEntity::getBoundingBox() {
+    void SimEntity::getBoundingBox(std::vector<utils::Vector> &vertices) {
+      vertices.clear();
       utils::Vector center;
       utils::Quaternion rotation;
       utils::Vector extent;
-      std::vector<utils::Vector> vertices;
       this->getBoundingBox(center,rotation,extent);
-      vertices[0] = extent;
-      vertices[1] = utils::Vector(-extent[0], extent[1], extent[2]);
-      vertices[2] = utils::Vector(extent[0], -extent[1], extent[2]);
-      vertices[3] = utils::Vector(extent[0], extent[1], -extent[2]);
-      vertices[4] = -extent;
-      vertices[5] = utils::Vector(extent[0], -extent[1], -extent[2]);
-      vertices[6] = utils::Vector(-extent[0], extent[1], -extent[2]);
-      vertices[7] = utils::Vector(-extent[0], -extent[1], extent[2]);
+      vertices.push_back(extent);
+      vertices.push_back(utils::Vector(-extent[0], extent[1], extent[2]));
+      vertices.push_back(utils::Vector(extent[0], -extent[1], extent[2]));
+      vertices.push_back(utils::Vector(extent[0], extent[1], -extent[2]));
+      vertices.push_back(-extent);
+      vertices.push_back(utils::Vector(extent[0], -extent[1], -extent[2]));
+      vertices.push_back(utils::Vector(-extent[0], extent[1], -extent[2]));
+      vertices.push_back(utils::Vector(-extent[0], -extent[1], extent[2]));
       for (int i=0; i<8; i++) {
         vertices[i] /= 2;
         vertices[i] = rotation.toRotationMatrix() * vertices[i];
         vertices[i] += center;
       }
-      return vertices;
     }
 
     long unsigned int SimEntity::getMotor(const std::string& name) {
