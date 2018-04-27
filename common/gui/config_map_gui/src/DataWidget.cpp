@@ -44,6 +44,7 @@ namespace mars {
 
       QVBoxLayout *vLayout = new QVBoxLayout();
       vLayout->addWidget(pDialog);
+      vLayout->setContentsMargins(0,0,0,0);
       if(allowAdd) {
         QHBoxLayout *hLayout = new QHBoxLayout();
         QLabel *label = new QLabel("type:");
