@@ -227,8 +227,8 @@ namespace mars {
       CPP_UNUSED(calc_ms);
       if (physical_joint) {
         // update the position and rotation of the node
-        position1 = (sJoint.angle1_offset + invert*physical_joint->getPosition());
-        position2 = (sJoint.angle2_offset + invert*physical_joint->getPosition2());
+        double ode_position1 = (sJoint.angle1_offset + invert*physical_joint->getPosition());
+        double ode_position2 = (sJoint.angle2_offset + invert*physical_joint->getPosition2());
 
         physical_joint->getAnchor(&anchor);
         physical_joint->getAxis(&axis1);
@@ -246,6 +246,15 @@ namespace mars {
         joint_load *= invert;
         velocity1 = invert*physical_joint->getVelocity();
         velocity2 = invert*physical_joint->getVelocity2();
+        position1 += velocity1*calc_ms*0.001;
+        position2 += velocity2*calc_ms*0.001;
+        double error;
+        if(position1 > 0) error = fmod(position1, M_PI) - fmod(ode_position1+M_PI, M_PI);
+        else error = fmod(position1, M_PI) - fmod(ode_position1-M_PI, M_PI);
+        if(fabs(error) < 0.1) position1 -= error;
+        if(position2 > 0) error = fmod(position2, M_PI) - fmod(ode_position2+M_PI, M_PI);
+        else error = fmod(position2, M_PI) - fmod(ode_position2-M_PI, M_PI);
+        if(fabs(error) < 0.1) position2 -= error;
         motor_torque = invert*physical_joint->getMotorTorque();
       }
     }
