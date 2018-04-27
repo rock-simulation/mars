@@ -28,11 +28,14 @@ namespace mars {
       switch (method) {
         case Method::POINT_VECTOR:
           direction = vector_type.normalized();
+          break;
         case Method::POINT_POINT:
           assert (relation(point,vector_type) != Relation::IDENTICAL_OR_MULTIPLE);
           direction = (vector_type-point).normalized();
+          break;
         default:
           assert(false);
+          break;
       }
       initialized = true;
     }
@@ -56,12 +59,15 @@ namespace mars {
         case Method::POINT_TWO_VECTORS:
           assert(relation(vector_type1,vector_type2) != Relation::IDENTICAL_OR_MULTIPLE);
           normal = vector_type1.cross(vector_type2).normalized();
+          break;
         case Method::THREE_POINTS:
           assert(relation((vector_type1-point),(vector_type2-point)) != Relation::IDENTICAL_OR_MULTIPLE);
           assert(relation(vector_type2,vector_type1) != Relation::IDENTICAL_OR_MULTIPLE);
           normal = (vector_type1-point).cross(vector_type2-point).normalized();
+          break;
         default:
           assert(false);
+          break;
       }
       initialized = true;
     }
@@ -88,10 +94,10 @@ namespace mars {
     }
 
     Relation relation(Vector vector1, Vector vector2) {
-      Vector quot = elemWiseDivision(vector1, vector2);
-      double s;
+      double s, c;
       s = vector1.dot(vector2);
-      if (quot.x()-quot.y() <= EPSILON && quot.y()-quot.z() <= EPSILON){
+      c = (vector1.cross(vector2)).dot(Vector(1,1,1));
+      if (c <= 3*EPSILON){
         return Relation::IDENTICAL_OR_MULTIPLE;
       } else if (s <= EPSILON) {
         return Relation::ORTHOGONAL;
@@ -160,7 +166,8 @@ namespace mars {
     */
     Vector intersect(Plane plane, Line line) {
       if (relation(plane, line) == Relation::INTERSECT) {
-        double r = (-plane.normal.dot(line.point - plane.point))/plane.normal.dot(line.direction);
+        double r = (plane.normal.dot(plane.point) - plane.normal.dot(line.point)) /
+                              (plane.normal.dot(line.direction));
         return line.getPointOnLine(r);
       }
       return Vector(0,0,0);
@@ -184,14 +191,15 @@ namespace mars {
     }
 
     double distance(Plane plane, Vector point, bool absolute/*=true*/) {
-      Line perpendicular(point, plane.normal);
+      Line perpendicular(point, plane.normal,Line::Method::POINT_VECTOR);
       Vector projected = intersect(plane, perpendicular);
       Vector distance = (point - projected);
       assert(relation(distance, plane.normal) == Relation::IDENTICAL_OR_MULTIPLE);
-      if (!absolute) {
-        return elemWiseDivision(distance, plane.normal).x();
+      int sign=1;
+      if (absolute == false && distance.dot(plane.normal) < 0) {
+        sign=-1;
       }
-      return distance.norm();
+      return sign*distance.norm();
     }
 
   } // end of namespace utils
