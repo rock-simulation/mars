@@ -123,9 +123,9 @@ namespace mars {
 
       std::string tmpmotortype;
       tmpmotortype = config->get("type", tmpmotortype);
-      if (tmpmotortype=="1" || tmpmotortype=="PID") {
+      if (tmpmotortype=="1" || tmpmotortype=="PID" || tmpmotortype=="generic_bldc") {
         type = (MotorType)1ul;
-      } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
+      } else if (tmpmotortype=="2" || tmpmotortype=="DC" || tmpmotortype=="generic_dc") {
         type = (MotorType)2ul;
       }
 
