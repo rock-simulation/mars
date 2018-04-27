@@ -475,6 +475,7 @@ namespace mars {
         break;
       case STOPPED:
         simulationStatus = RUNNING;
+        stepping_wc.wakeAll();
         break;
       case STEPPING:
          simulationStatus = RUNNING;
