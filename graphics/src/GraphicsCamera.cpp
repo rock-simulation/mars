@@ -109,8 +109,8 @@ namespace mars {
       isMovingLeft = isMovingRight = isMovingBack = isMovingForward = false;
       isoMinHeight = 2;
       isoMaxHeight = 20;
-
     }
+
     GraphicsCamera::~GraphicsCamera(void) {
       if (l_settings) free(l_settings);
     }
@@ -384,8 +384,8 @@ namespace mars {
     void GraphicsCamera::setFrustumFromRad(double horizontalOpeningAngle,
                                            double verticalOpeningAngle,
                                            double near, double far){
-      assert((horizontalOpeningAngle < M_PI) && (horizontalOpeningAngle > 0));
-      assert((verticalOpeningAngle < M_PI) && (verticalOpeningAngle > 0));
+      //assert((horizontalOpeningAngle < M_PI) && (horizontalOpeningAngle > 0));
+      //assert((verticalOpeningAngle < M_PI) && (verticalOpeningAngle > 0));
       assert((near > 0) && (far > 0) && (far > near));
       double right = tan(horizontalOpeningAngle/2.0) * near;
       double left = -right;

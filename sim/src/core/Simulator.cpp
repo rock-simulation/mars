@@ -739,6 +739,9 @@ namespace mars {
     }
 
     void Simulator::newWorld(bool clear_all) {
+      getTimeMutex.lock();
+      realStartTime = utils::getTime();
+      getTimeMutex.unlock();
       physicsThreadLock();
       // reset simTime
       dbSimTimePackage[0].set(0.);
@@ -1254,6 +1257,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == cfgUseNow.paramId) {
+        cfgUseNow.bValue = _property.bValue;
+        return;
+      }
+
       if(_property.paramId == cfgWorldCfm.paramId) {
         physics->world_cfm = _property.dValue;
         return;
@@ -1379,7 +1387,7 @@ namespace mars {
       unsigned long returnTime;
       getTimeMutex.lock();
       if(cfgUseNow.bValue) {
-        returnTime = realStartTime+dbSimTimePackage[0].d;
+        returnTime = utils::getTime();
       }
       else {
         returnTime = realStartTime+dbSimTimePackage[0].d;

@@ -71,6 +71,7 @@ namespace mars {
       virtual interfaces::NodeId addTerrain(interfaces::terrainStruct *terrainS);
       virtual std::vector<interfaces::NodeId> addNode(std::vector<interfaces::NodeData> v_NodeData);
       virtual interfaces::NodeId addPrimitive(interfaces::NodeData *snode);
+      virtual bool exists(interfaces::NodeId id) const;
       virtual int getNodeCount() const;
       virtual interfaces::NodeId getNextNodeID() const;
       virtual void editNode(interfaces::NodeData *nodeS, int changes);
