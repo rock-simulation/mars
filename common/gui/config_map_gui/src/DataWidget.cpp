@@ -34,12 +34,13 @@ namespace mars {
   namespace config_map_gui {
 
 
-    DataWidget::DataWidget(QWidget *parent, bool onlyCompactView,
+    DataWidget::DataWidget(void* backwardCFG, QWidget *parent, bool onlyCompactView,
                            bool allowAdd) :
       QWidget(parent),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
 
+      (void)backwardCFG; // prevent paramter unsed warning
       startTimer(500);
 
       QVBoxLayout *vLayout = new QVBoxLayout();

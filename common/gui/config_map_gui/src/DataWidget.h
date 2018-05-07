@@ -55,7 +55,7 @@ namespace mars {
       Q_OBJECT;
       
     public:
-      DataWidget(QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
+      DataWidget(void* backwardCFG = 0, QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
       ~DataWidget();
     
       virtual void valueChanged(QtProperty *property, const QVariant &value);

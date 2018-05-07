@@ -16,6 +16,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
         data_broker
         main_gui
         eigen3
+        mars_utils
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
