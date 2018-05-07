@@ -1036,6 +1036,14 @@ namespace mars {
       return rttDepthTexture.get();
     }
 
+    osg::Image* GraphicsWidget::getRTTImage(void) {
+      return rttImage.get();
+    }
+
+    osg::Image* GraphicsWidget::getRTTDepthImage(void) {
+      return rttDepthImage.get();
+    }
+
     void GraphicsWidget::clearSelectionVectors() {
       pickedObjects.clear();
     }
