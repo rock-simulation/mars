@@ -68,8 +68,11 @@ namespace mars {
       void setEditPattern(const std::vector<std::string> &pattern);
       void setColorPattern(const std::vector<std::string> &pattern);
       void setFilePattern(const std::vector<std::string> &pattern);
+      void setCheckablePattern(const std::vector<std::string> &pattern);
       void setDropDownPattern(const std::vector<std::string> &pattern,
                               const std::vector<std::vector<std::string> > &values);
+      void setFilterPattern(const std::vector<std::string> &pattern);
+      void setBlackFilterPattern(const std::vector<std::string> &pattern);
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
@@ -92,7 +95,7 @@ namespace mars {
     private:
       QMutex addMutex;
       configmaps::ConfigMap config;
-      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern;
+      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern, checkablePattern, filterPattern, blackFilterPattern;
       std::vector<std::vector<std::string> > dropDownValues;
       map<QtVariantProperty*, configmaps::ConfigAtom*> dataMap;
       map<QtVariantProperty*, configmaps::ConfigMap*> addMap, colorMap;

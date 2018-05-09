@@ -101,6 +101,18 @@ namespace mars {
       dropDownValues = values;
     }
 
+    void DataWidget::setCheckablePattern(const std::vector<std::string> &pattern) {
+      checkablePattern = pattern;
+    }
+
+    void DataWidget::setFilterPattern(const std::vector<std::string> &pattern) {
+      filterPattern = pattern;
+    }
+
+    void DataWidget::setBlackFilterPattern(const std::vector<std::string> &pattern) {
+      blackFilterPattern = pattern;
+    }
+
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
       ignore_change = 1;
@@ -146,21 +158,26 @@ namespace mars {
 
       for(;it!=map.end(); ++it) {
         std::string n = it->first;
-        for(size_t i=0; i<n.size(); ++i) {
-          if(n[i] == '/') {
-            n.insert(n.begin()+i, '/');
-            ++i;
+        if(!blackFilterPattern.empty() && checkInPattern(n, blackFilterPattern)) {
+          continue;
+        }
+        if(filterPattern.empty() || checkInPattern(n, filterPattern)) {
+          for(size_t i=0; i<n.size(); ++i) {
+            if(n[i] == '/') {
+              n.insert(n.begin()+i, '/');
+              ++i;
+            }
           }
-        }
 
-        if(it->second.isVector()) {
-          addConfigVector(name+"/"+n, it->second);
-        }
-        else if(it->second.isMap()) {
-          addConfigMap(name+"/"+n, it->second);
-        }
-        else if(it->second.isAtom()) {
-          addConfigAtom(name+"/"+n, it->second);
+          if(it->second.isVector()) {
+            addConfigVector(name+"/"+n, it->second);
+          }
+          else if(it->second.isMap()) {
+            addConfigMap(name+"/"+n, it->second);
+          }
+          else if(it->second.isAtom()) {
+            addConfigAtom(name+"/"+n, it->second);
+          }
         }
       }
       addMap[guiElem] = &map;
