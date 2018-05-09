@@ -110,6 +110,10 @@ namespace mars {
       filterPattern = pattern;
     }
 
+    void DataWidget::setBlackFilterPattern(const std::vector<std::string> &pattern) {
+      blackFilterPattern = pattern;
+    }
+
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
       ignore_change = 1;
@@ -163,6 +167,9 @@ namespace mars {
 
       for(;it!=map.end(); ++it) {
         std::string n = it->first;
+        if(!blackFilterPattern.empty() && checkInPattern(n, blackFilterPattern)) {
+          continue;
+        }
         if(filterPattern.empty() || checkInPattern(n, filterPattern)) {
           for(size_t i=0; i<n.size(); ++i) {
             if(n[i] == '/') {
