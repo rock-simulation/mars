@@ -175,6 +175,7 @@ namespace mars {
       if ((osgGroupFromRead = node->asGroup()) == 0)
         fprintf(stderr, "error\n");
 
+      // todo: parse the tree recursive and search for drawables
       //get geometries of node
       int indexcounter = 0;
       for (size_t m = 0; m < osgGroupFromRead->getNumChildren(); m++) {
