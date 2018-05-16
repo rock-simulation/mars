@@ -91,6 +91,7 @@ namespace mars {
       int hud_height;
       bool depthImage;
       bool enabled;
+      configmaps::ConfigMap map;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,

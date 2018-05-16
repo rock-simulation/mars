@@ -28,7 +28,10 @@
 #include "GraphicsCamera.h"
 #include <osgGA/GUIEventAdapter>
 #include <osgUtil/LineSegmentIntersector>
-#include <cstdio>
+#include <cstdio> 
+#include <osg/Geometry>
+#include <osg/Geode>
+#include <osg/Texture2D>
 #include <iostream>
 
 
@@ -109,8 +112,8 @@ namespace mars {
       isMovingLeft = isMovingRight = isMovingBack = isMovingForward = false;
       isoMinHeight = 2;
       isoMaxHeight = 20;
-
     }
+
     GraphicsCamera::~GraphicsCamera(void) {
       if (l_settings) free(l_settings);
     }
@@ -384,8 +387,8 @@ namespace mars {
     void GraphicsCamera::setFrustumFromRad(double horizontalOpeningAngle,
                                            double verticalOpeningAngle,
                                            double near, double far){
-      assert((horizontalOpeningAngle < M_PI) && (horizontalOpeningAngle > 0));
-      assert((verticalOpeningAngle < M_PI) && (verticalOpeningAngle > 0));
+      //assert((horizontalOpeningAngle < M_PI) && (horizontalOpeningAngle > 0));
+      //assert((verticalOpeningAngle < M_PI) && (verticalOpeningAngle > 0));
       assert((near > 0) && (far > 0) && (far > near));
       double right = tan(horizontalOpeningAngle/2.0) * near;
       double left = -right;
@@ -969,6 +972,97 @@ namespace mars {
         d_zp = pivot.z()+diff.z()*l;
         updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
       }
+    }
+
+    void GraphicsCamera::setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor) {
+      // create the quad to visualize.
+      osg::Geometry* polyGeom = new osg::Geometry();
+
+      polyGeom->setSupportsDisplayList(false);
+
+      osg::Vec3 origin(0.0f,0.0f,0.0f);
+      osg::Vec3 xAxis(1.0f,0.0f,0.0f);
+      osg::Vec3 yAxis(0.0f,1.0f,0.0f);
+      float height = 1024.0f;
+      float width = 1280.0f;
+      int noSteps = 50;
+
+      osg::Vec3Array* vertices = new osg::Vec3Array;
+      osg::Vec2Array* texcoords = new osg::Vec2Array;
+      osg::Vec4Array* colors = new osg::Vec4Array;
+
+      osg::Vec3 bottom = origin;
+      osg::Vec3 dx = xAxis*(width/((float)(noSteps-1)));
+      osg::Vec3 dy = yAxis*(height/((float)(noSteps-1)));
+
+      osg::Vec2 bottom_texcoord(0.0f,0.0f);
+      osg::Vec2 dx_texcoord(1.0f/(float)(noSteps-1),0.0f);
+      osg::Vec2 dy_texcoord(0.0f,1.0f/(float)(noSteps-1));
+
+      int i,j;
+      double f1 = factor*osg::PI*0.999;
+      double f2 = 0.5/tan(f1*0.5);
+      for(i=0;i<noSteps;++i) {
+        osg::Vec3 cursor = bottom+dy*(float)i;
+        osg::Vec2 texcoord = bottom_texcoord+dy_texcoord*(float)i;
+        for(j=0;j<noSteps;++j) {
+          vertices->push_back(cursor);
+          // texcoords->push_back(osg::Vec2((sin(texcoord.x()*osg::PI-osg::PI*0.5)+1.0f)*0.5f,
+          //                                (sin(texcoord.y()*osg::PI-osg::PI*0.5)+1.0f)*0.5f));
+          //texcoords->push_back(osg::Vec2(texcoord.x(), texcoord.y()));
+          double x = tan((texcoord.x()-0.5)*f1)*f2+0.5;
+          double y = tan((texcoord.y()-0.5)*f1)*f2+0.5;
+          texcoords->push_back(osg::Vec2f(x,y));
+          colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+
+          cursor += dx;
+          texcoord += dx_texcoord;
+        }
+      }
+
+      // pass the created vertex array to the points geometry object.
+      polyGeom->setVertexArray(vertices);
+      polyGeom->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+      polyGeom->setTexCoordArray(0,texcoords);
+
+
+      for(i=0;i<noSteps-1;++i) {
+        osg::DrawElementsUShort* elements = new osg::DrawElementsUShort(osg::PrimitiveSet::QUAD_STRIP);
+        for(j=0;j<noSteps;++j) {
+          elements->push_back(j+(i+1)*noSteps);
+          elements->push_back(j+(i)*noSteps);
+        }
+        polyGeom->addPrimitiveSet(elements);
+      }
+
+      // new we need to add the texture to the Drawable, we do so by creating a
+      // StateSet to contain the Texture StateAttribute.
+      osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
+      stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
+      stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+      osg::Geode* geode = new osg::Geode();
+      geode->addDrawable(polyGeom);
+
+      // set up the camera to render the textured quad
+      osg::Camera* camera = new osg::Camera;
+
+      // just inherit the main cameras view
+      camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+      camera->setViewMatrix(osg::Matrix::identity());
+      camera->setViewport(0, 0, width, height);
+      camera->setProjectionMatrixAsOrtho2D(0,width,0,height);
+      camera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT);
+      camera->setAllowEventFocus(false);
+      camera->setClearColor(osg::Vec4(1, 0, 0, 0.5));
+      camera->setClearMask(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+      // set the camera to render before the main camera.
+      camera->setRenderOrder(osg::Camera::PRE_RENDER);
+      // add subgraph to render
+      camera->addChild(geode);
+      camera->attach(osg::Camera::COLOR_BUFFER, image);
+      mainScene->addChild(camera);
     }
 
   } // end of namespace graphics

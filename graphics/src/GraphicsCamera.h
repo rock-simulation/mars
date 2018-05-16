@@ -123,6 +123,7 @@ namespace mars {
       void activateCam();
       void setPivot(osg::Vec3f p);
       void toggleTrackball();
+      void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
 
     private:
       void calcEyeSep(void);
