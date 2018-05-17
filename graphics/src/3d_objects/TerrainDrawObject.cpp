@@ -103,8 +103,20 @@ namespace mars {
       posTransform_ = new osg::PositionAttitudeTransform();
       //posTransform_->setPivotPoint(osg::Vec3(pivot_.x(), pivot_.y(), pivot_.z()));
       posTransform_->setPosition(osg::Vec3(0.0, 0.0, 0.0));
-      posTransform_->addChild(scaleTransform_.get());
       posTransform_->setNodeMask(nodeMask_);
+
+      #ifdef USE_OSGFX
+      outlineEffect_ = new osgFX::Outline;
+      outlineEffect_->setWidth(12);
+      outlineEffect_->setColor(osg::Vec4(0,0.75,0,1));
+      outlineEffect_->setEnabled(false);
+      outlineEffect_->addChild(scaleTransform_.get());      
+      posTransform_->addChild(outlineEffect_.get());
+      #else
+      posTransform_->addChild(scaleTransform_.get());
+      #endif
+      posTransform_->setNodeMask(nodeMask_);
+
       osg::ref_ptr<osg_terrain::ShaderTerrain> p = new osg_terrain::ShaderTerrain(map);
 
       group_ = new osg::Group;
