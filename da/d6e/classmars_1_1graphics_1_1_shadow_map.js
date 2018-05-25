@@ -13,7 +13,7 @@ var classmars_1_1graphics_1_1_shadow_map =
     [ "init", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a34fdc95671ef8f09b4c3c6be4f4d3455", null ],
     [ "initTexture", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#aa4c047b8db082350e7e77c6b141a6f19", null ],
     [ "META_Object", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a5565794aa5b9e4d2f3e10d77cb999751", null ],
-    [ "releaseGLObjects", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a624b770f52d26244ef8df237f9140f7b", null ],
+    [ "releaseGLObjects", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a48f3023f4a9bc1718e4fd7461e318a6e", null ],
     [ "removeTexture", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a43a638ef414ca4821af83b6c66d7f394", null ],
     [ "resizeGLObjectBuffers", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#a73e5301658eded961e97cc3cfdf4ec27", null ],
     [ "setCenterObject", "da/d6e/classmars_1_1graphics_1_1_shadow_map.html#aac23b101e540b12c57162d9abe9d9f30", null ],

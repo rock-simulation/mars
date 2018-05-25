@@ -1,5 +1,0 @@
-<map id="mars::graphics::QtOsgMixGraphicsWidget" name="mars::graphics::QtOsgMixGraphicsWidget">
-<area shape="rect" id="node3" href="$d2/d46/classmars_1_1graphics_1_1_graphics_widget.html" title="Widget with OpenGL context and event handling. " alt="" coords="229,57,397,98"/>
-<area shape="rect" id="node5" href="$d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html" title="mars::interfaces::Graphics\lWindowInterface" alt="" coords="5,57,181,98"/>
-<area shape="rect" id="node6" href="$d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html" title="Interface for the osgWidget functionality. " alt="" coords="5,122,181,163"/>
-</map>

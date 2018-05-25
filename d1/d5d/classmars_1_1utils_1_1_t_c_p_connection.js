@@ -5,9 +5,9 @@ var classmars_1_1utils_1_1_t_c_p_connection =
     [ "TCPConnection", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a64dcde0e21e5ca2a8ec96f0d37eac458", null ],
     [ "close", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a02c2a8e82c08d228912252ae06ec3705", null ],
     [ "connectToTCPServer", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a652f8a549690a1bf3f7b5db3ba868baa", null ],
-    [ "getTimeout", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a920bddbc6d1095917386cbe598651a9b", null ],
-    [ "isBlocking", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a192b9a48b7671d2746041ed990cf0f5c", null ],
-    [ "isConnected", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#ab6544e461a7b33616816176fbf5ca5b4", null ],
+    [ "getTimeout", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a64b71ca5470ecc63080a6f12ae07b852", null ],
+    [ "isBlocking", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a86e30262032d09c6b27c3f27855e100e", null ],
+    [ "isConnected", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a419b6963fa053c0221d86dafe55fcefd", null ],
     [ "operator=", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a66bd54d8302e32622c2429c91472f927", null ],
     [ "recv", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a76e5ab9dc23d2aecb9cf6694a53d66ba", null ],
     [ "recvAll", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#ab748fb3d9e3c798180e87662ff362eed", null ],
@@ -26,6 +26,6 @@ var classmars_1_1utils_1_1_t_c_p_connection =
     [ "sendUInt32", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#ae1063050ac124365a1ea1cd7de871fab", null ],
     [ "setBlocking", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a5e402d511d004473939f8cedc511d940", null ],
     [ "setTimeout", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#af62812f8c183312b579df2fe92225f81", null ],
-    [ "TCPServer::acceptConnection", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a505c9bae767509dee1413d438d75fd19", null ],
+    [ "TCPServer::acceptConnection", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#ae2a89d266148c1d2a0c99a773a8bea8f", null ],
     [ "s", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html#a0b7eca54e7603771e50091fdc2545b19", null ]
 ];

@@ -1,7 +1,0 @@
-<map id="mars::sim::NodeContactForceSensor" name="mars::sim::NodeContactForceSensor">
-<area shape="rect" id="node2" href="$d1/d38/classmars_1_1sim_1_1_node_array_sensor.html" title="mars::sim::NodeArraySensor" alt="" coords="249,71,439,97"/>
-<area shape="rect" id="node3" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="20,5,185,46"/>
-<area shape="rect" id="node4" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,71,200,97"/>
-<area shape="rect" id="node5" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="35,122,170,163"/>
-<area shape="rect" id="node6" href="$d1/db0/classmars_1_1data__broker_1_1_producer_interface.html" title="Interface for classes producing data to broadcast via a DataBroker. " alt="" coords="277,122,411,163"/>
-</map>

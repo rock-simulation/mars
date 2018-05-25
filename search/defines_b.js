@@ -1,23 +1,8 @@
 var searchData=
 [
-  ['m_5fpi',['M_PI',['../df/d7d/_quaternion_8h.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'M_PI():&#160;Quaternion.h'],['../d4/d7f/_vector_8h.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'M_PI():&#160;Vector.h'],['../dd/d9e/_m_a_r_s_defs_8h.html#ae71449b1cc6e6250b91f539153a7a0d3',1,'M_PI():&#160;MARSDefs.h']]],
-  ['max',['max',['../dd/df6/pixellight_8cpp.html#ac39d9cef6a5e030ba8d9e11121054268',1,'pixellight.cpp']]],
-  ['max_5fde',['MAX_DE',['../dd/d59/_main_console_8h.html#acdedd639196ef566e595fd666923c202',1,'MainConsole.h']]],
-  ['menu_5fshow_5fcontacts',['MENU_SHOW_CONTACTS',['../d0/de2/_menu_window_8cpp.html#a74f6ecbdbcf608cbf4b5fce929bc6053',1,'MenuWindow.cpp']]],
-  ['menu_5fshow_5fcoords',['MENU_SHOW_COORDS',['../d0/de2/_menu_window_8cpp.html#a61bee3d08adc676a2b77bdf94210bf0a',1,'MenuWindow.cpp']]],
-  ['menu_5fshow_5fgrid',['MENU_SHOW_GRID',['../d0/de2/_menu_window_8cpp.html#a288ed61a4b4fd6e8a444db61036d92db',1,'MenuWindow.cpp']]],
-  ['menu_5fshow_5fphysical',['MENU_SHOW_PHYSICAL',['../d0/de2/_menu_window_8cpp.html#a87d6696937ab94170f6c0e81537941c3',1,'MenuWindow.cpp']]],
-  ['menu_5fshow_5fselection',['MENU_SHOW_SELECTION',['../d0/de2/_menu_window_8cpp.html#a384f2e7c9660ea9b5311d8987b0e7a07',1,'MenuWindow.cpp']]],
-  ['menu_5fshow_5fvisual',['MENU_SHOW_VISUAL',['../d0/de2/_menu_window_8cpp.html#aa40d3fb25093a9553544cc61b3db854d',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5fback',['MENU_VIEW_BACK',['../d0/de2/_menu_window_8cpp.html#a9c45776aa2e5e299f823ef2b7c27a429',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5fbottom',['MENU_VIEW_BOTTOM',['../d0/de2/_menu_window_8cpp.html#adde1c5d0edc76434d137ebbaaf9f204a',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5ffront',['MENU_VIEW_FRONT',['../d0/de2/_menu_window_8cpp.html#a30075c1c0e256ae1bf28730d605ff069',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5fleft',['MENU_VIEW_LEFT',['../d0/de2/_menu_window_8cpp.html#a9295ef214033e13c2b46b42143cbd4b5',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5fright',['MENU_VIEW_RIGHT',['../d0/de2/_menu_window_8cpp.html#a6c74fae0870ac32125e4ffc28280ca14',1,'MenuWindow.cpp']]],
-  ['menu_5fview_5ftop',['MENU_VIEW_TOP',['../d0/de2/_menu_window_8cpp.html#af9d4f84ee6a117eadd61150483a6596b',1,'MenuWindow.cpp']]],
-  ['micha_5fcam',['MICHA_CAM',['../d5/df7/_graphics_camera_interface_8h.html#aeb9fa19eda0761cb9f836e8edaaaebbd',1,'GraphicsCameraInterface.h']]],
-  ['mmb',['MMB',['../d6/dac/_graphics_camera_8cpp.html#a48e7c1e96778d2b311ee4521ae9ad3f9',1,'GraphicsCamera.cpp']]],
-  ['msg_5fnosignal',['MSG_NOSIGNAL',['../d9/dab/_socket_8cpp.html#a9f55d0e90dc8cc6b2287312435cdde48',1,'Socket.cpp']]],
-  ['my_5fzfar',['MY_ZFAR',['../dd/dd1/_graphics_camera_8h.html#a0ffb44d982b3262508a89e5fbee359cc',1,'GraphicsCamera.h']]],
-  ['my_5fznear',['MY_ZNEAR',['../dd/dd1/_graphics_camera_8h.html#a408a83578045853840bf8b8aced6a2ac',1,'GraphicsCamera.h']]]
+  ['new_5fjoint_5fstruct',['NEW_JOINT_STRUCT',['../d9/d49/joint_struct_8h.html#add64d4b47e190f5fe9f7f2c9a6046012',1,'jointStruct.h']]],
+  ['noise_5fmap_5funit',['NOISE_MAP_UNIT',['../d1/dfb/_osg_material_8h.html#a0c040dac9746beb53ba41fa7334fa2f8',1,'OsgMaterial.h']]],
+  ['nominmax',['NOMINMAX',['../d4/d36/common_2graphics_2osg__terrain_2src_2_multi_res_height_map_renderer_8h.html#a9f918755b601cf4bffca775992e6fb90',1,'NOMINMAX():&#160;MultiResHeightMapRenderer.h'],['../da/d0f/graphics_2src_23d__objects_2_multi_res_height_map_renderer_8h.html#a9f918755b601cf4bffca775992e6fb90',1,'NOMINMAX():&#160;MultiResHeightMapRenderer.h']]],
+  ['normal_5fmap_5funit',['NORMAL_MAP_UNIT',['../d1/dfb/_osg_material_8h.html#a6e0889a2b65789b1a8cdc7f0282080c0',1,'OsgMaterial.h']]],
+  ['num_5fpssm_5fsplits',['NUM_PSSM_SPLITS',['../d9/d47/_graphics_manager_8h.html#ac3add44b85f5737c0b9db57015832f39',1,'GraphicsManager.h']]]
 ];

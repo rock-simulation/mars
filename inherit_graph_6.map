@@ -1,7 +1,0 @@
-<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" href="$dc/db0/classmars_1_1cfg__manager_1_1_c_f_g_param.html" title="mars::cfg_manager::\lCFGParam" alt="" coords="6,103,149,145"/>
-<area shape="rect" id="node2" href="$d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html" title="mars::cfg_manager::\lCFGParamBool" alt="" coords="198,5,341,46"/>
-<area shape="rect" id="node3" href="$d8/d7b/classmars_1_1cfg__manager_1_1_c_f_g_param_double.html" title="mars::cfg_manager::\lCFGParamDouble" alt="" coords="198,70,341,111"/>
-<area shape="rect" id="node4" href="$d9/d42/classmars_1_1cfg__manager_1_1_c_f_g_param_int.html" title="mars::cfg_manager::\lCFGParamInt" alt="" coords="198,135,341,177"/>
-<area shape="rect" id="node5" href="$d9/d8a/classmars_1_1cfg__manager_1_1_c_f_g_param_string.html" title="mars::cfg_manager::\lCFGParamString" alt="" coords="198,201,341,242"/>
-</map>

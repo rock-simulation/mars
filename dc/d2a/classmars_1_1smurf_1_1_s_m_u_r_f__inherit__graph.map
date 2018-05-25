@@ -1,5 +1,0 @@
-<map id="mars::smurf::SMURF" name="mars::smurf::SMURF">
-<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="213,27,403,69"/>
-<area shape="rect" id="node4" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,57,165,98"/>
-<area shape="rect" id="node5" href="$d5/dac/classmars_1_1entity__generation_1_1_entity_factory_interface.html" title="The interface for plugins creating dynamic simulation objects. " alt="" coords="229,93,387,134"/>
-</map>

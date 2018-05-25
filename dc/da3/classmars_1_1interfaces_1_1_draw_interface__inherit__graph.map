@@ -1,8 +1,0 @@
-<map id="mars::interfaces::DrawInterface" name="mars::interfaces::DrawInterface">
-<area shape="rect" id="node2" href="$d0/d67/classmars_1_1sim_1_1_haptic_field_sensor.html" title="mars::sim::HapticFieldSensor" alt="" coords="265,5,460,32"/>
-<area shape="rect" id="node3" href="$d8/d7b/classmars_1_1sim_1_1_multi_level_laser_range_finder.html" title="mars::sim::MultiLevelLaser\lRangeFinder" alt="" coords="273,57,452,98"/>
-<area shape="rect" id="node4" href="$d1/d3c/classmars_1_1sim_1_1_ray_grid_sensor.html" title="mars::sim::RayGridSensor" alt="" coords="274,123,451,149"/>
-<area shape="rect" id="node5" href="$d3/dde/classmars_1_1sim_1_1_ray_sensor.html" title="mars::sim::RaySensor" alt="" coords="286,173,439,200"/>
-<area shape="rect" id="node6" href="$d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html" title="mars::sim::RotatingRaySensor" alt="" coords="261,224,464,251"/>
-<area shape="rect" id="node7" href="$de/d02/classmars_1_1sim_1_1_world_physics.html" title="Declaration of the physical class, that implements the physics interface. " alt="" coords="278,275,447,301"/>
-</map>

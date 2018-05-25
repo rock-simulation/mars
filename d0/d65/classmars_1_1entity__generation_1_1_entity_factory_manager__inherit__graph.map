@@ -1,5 +1,0 @@
-<map id="mars::entity_generation::EntityFactoryManager" name="mars::entity_generation::EntityFactoryManager">
-<area shape="rect" id="node2" href="$d6/df6/classmars_1_1interfaces_1_1_mars_plugin_template.html" title="mars::interfaces::MarsPlugin\lTemplate" alt="" coords="31,97,220,138"/>
-<area shape="rect" id="node4" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="120,6,279,47"/>
-<area shape="rect" id="node5" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="245,97,387,138"/>
-</map>

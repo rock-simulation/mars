@@ -1,5 +1,6 @@
 var classosg__terrain_1_1_plane_transform =
 [
-    [ "computeLocalToWorldMatrix", "d7/dd3/classosg__terrain_1_1_plane_transform.html#a91d244db607be86a6f93e8c98d212f75", null ],
-    [ "computeWorldToLocalMatrix", "d7/dd3/classosg__terrain_1_1_plane_transform.html#a5f4a4a7d2323ea7b972306ba181d064a", null ]
+    [ "computeLocalToWorldMatrix", "d7/dd3/classosg__terrain_1_1_plane_transform.html#adb0e711d18ceca2a152e30ff8c3ba5cb", null ],
+    [ "computeWorldToLocalMatrix", "d7/dd3/classosg__terrain_1_1_plane_transform.html#abd6258cf5c105c68c2a055a5b98ac864", null ],
+    [ "zOffset", "d7/dd3/classosg__terrain_1_1_plane_transform.html#ace850d1155d0333006d7495be0d63dba", null ]
 ];

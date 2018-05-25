@@ -1,7 +1,0 @@
-<map id="mars::main_gui::MainGUI" name="mars::main_gui::MainGUI">
-<area shape="rect" id="node3" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="366,5,557,32"/>
-<area shape="rect" id="node9" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="190,41,341,82"/>
-<area shape="rect" id="node5" href="$d3/d55/classmars_1_1main__gui_1_1_my_q_main_window.html" title="The main window of the GUI. " alt="" coords="582,107,805,133"/>
-<area shape="rect" id="node7" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="194,158,337,199"/>
-<area shape="rect" id="node10" href="$db/d61/classmars_1_1main__gui_1_1_my_q_mdi_area.html" title="&quot;MyQMdiArea&quot; is a hack to support a background image in the MainWindow " alt="" coords="596,191,791,217"/>
-</map>

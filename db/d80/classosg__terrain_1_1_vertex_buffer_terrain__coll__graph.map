@@ -1,9 +1,0 @@
-<map id="osg_terrain::VertexBufferTerrain" name="osg_terrain::VertexBufferTerrain">
-<area shape="rect" id="node3" href="$d2/d90/classosg__terrain_1_1_multi_res_height_map_renderer.html" title="osg_terrain::MultiResHeight\lMapRenderer" alt="" coords="299,355,483,397"/>
-<area shape="rect" id="node4" href="$d0/d76/classmars_1_1utils_1_1_thread.html" title="mars::utils::Thread" alt="" coords="121,220,251,247"/>
-<area shape="rect" id="node5" href="$db/de7/structmars_1_1utils_1_1_pthread_thread_wrapper.html" title="mars::utils::PthreadThread\lWrapper" alt="" coords="5,113,181,154"/>
-<area shape="rect" id="node6" href="$d6/d90/classmars_1_1utils_1_1_mutex.html" title="mars::utils::Mutex" alt="" coords="223,120,349,147"/>
-<area shape="rect" id="node7" href="$d6/d9e/structmars_1_1utils_1_1_pthread_mutex_wrapper.html" title="mars::utils::PthreadMutex\lWrapper" alt="" coords="201,6,372,47"/>
-<area shape="rect" id="node8" href="$da/d80/structosg__terrain_1_1_vertex_data.html" title="osg_terrain::VertexData" alt="" coords="396,220,555,247"/>
-<area shape="rect" id="node9" href="$d7/d61/classosg__terrain_1_1_tile.html" title="osg_terrain::Tile" alt="" coords="580,220,695,247"/>
-</map>

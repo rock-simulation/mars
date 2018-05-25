@@ -11,5 +11,6 @@ var _menu_window_8cpp =
     [ "MENU_VIEW_FRONT", "d0/de2/_menu_window_8cpp.html#a30075c1c0e256ae1bf28730d605ff069", null ],
     [ "MENU_VIEW_LEFT", "d0/de2/_menu_window_8cpp.html#a9295ef214033e13c2b46b42143cbd4b5", null ],
     [ "MENU_VIEW_RIGHT", "d0/de2/_menu_window_8cpp.html#a6c74fae0870ac32125e4ffc28280ca14", null ],
-    [ "MENU_VIEW_TOP", "d0/de2/_menu_window_8cpp.html#af9d4f84ee6a117eadd61150483a6596b", null ]
+    [ "MENU_VIEW_TOP", "d0/de2/_menu_window_8cpp.html#af9d4f84ee6a117eadd61150483a6596b", null ],
+    [ "MENU_VIEW_TRACKBALL", "d0/de2/_menu_window_8cpp.html#af81ea16cc0bba3515eec9dd295cc86b8", null ]
 ];

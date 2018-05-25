@@ -4,7 +4,7 @@ var classmars_1_1interfaces_1_1_physics_interface =
     [ "checkCollisions", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a1952e5c4df1694926fd4136a5725aae2", null ],
     [ "existsWorld", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a3c110a4af15fc92bb66543a0e42a59df", null ],
     [ "freeTheWorld", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a237c54f413b6ed30eae06c1c8c282c7f", null ],
-    [ "getCenterOfMass", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a2784e87fa30f99b0c422816ca7e66e38", null ],
+    [ "getCenterOfMass", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a970d7d6a206500fc6eda812e72599b18", null ],
     [ "getVectorCollision", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a0a954516d1896ff89242ac5d5a1a1c26", null ],
     [ "initTheWorld", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#af71191bbf154081f6f5042d2edada089", null ],
     [ "stepTheWorld", "d0/d22/classmars_1_1interfaces_1_1_physics_interface.html#a2a6bb1814368f28023b74525769963a1", null ],

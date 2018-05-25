@@ -1,8 +1,0 @@
-<map id="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/shadow/ShadowMap.h" name="/media/kavonszadkowski/work/marsdocs/mars/graphics/src/shadow/ShadowMap.h">
-<area shape="rect" id="node2" href="$d9/d47/_graphics_manager_8h.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsManager.h" alt="" coords="350,109,551,165"/>
-<area shape="rect" id="node7" href="$d1/d11/_shadow_map_8cpp.html" title="The ShadowMap is a clone of the original osgShadow::ShadowMap but allows to render the shadow texture..." alt="" coords="575,109,776,165"/>
-<area shape="rect" id="node3" href="$d1/de8/_draw_object_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/3d_objects/DrawObject.cpp" alt="" coords="5,213,213,269"/>
-<area shape="rect" id="node4" href="$d7/d19/_graphics_manager_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsManager.cpp" alt="" coords="238,213,439,269"/>
-<area shape="rect" id="node5" href="$d0/d77/_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/GraphicsWidget.cpp" alt="" coords="463,213,664,269"/>
-<area shape="rect" id="node6" href="$d0/dcf/_qt_osg_mix_graphics_widget_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/graphics\l/src/QtOsgMixGraphicsWidget.cpp" alt="" coords="689,213,913,269"/>
-</map>

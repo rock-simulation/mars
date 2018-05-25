@@ -31,6 +31,7 @@ var classmars_1_1interfaces_1_1_graphics_camera_interface =
     [ "setSwitchEye", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#a1c798c0b96c41c61ccd62d5ffa3d0998", null ],
     [ "setViewport", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#a39c704fff8a689ca38f126ede4179d8c", null ],
     [ "toggleStereoMode", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#ab2f7aa635a4b8c5fa7cfc0438e7ec23c", null ],
+    [ "toggleTrackball", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#aff4705dbd6d9184018df63f6d513288b", null ],
     [ "updateViewport", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#a25c3c5e5ea18adce2449c5c0672729fa", null ],
     [ "updateViewportQuat", "db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html#ab317415b18e41a1263b79b1eba7bfc17", null ]
 ];

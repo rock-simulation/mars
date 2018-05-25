@@ -1,4 +1,0 @@
-<map id="mars::interfaces::GraphicsWindowInterface" name="mars::interfaces::GraphicsWindowInterface">
-<area shape="rect" id="node2" href="$d2/d46/classmars_1_1graphics_1_1_graphics_widget.html" title="Widget with OpenGL context and event handling. " alt="" coords="9,97,177,138"/>
-<area shape="rect" id="node3" href="$d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html" title="A GraphicsWidget using QWidget. " alt="" coords="6,187,180,229"/>
-</map>

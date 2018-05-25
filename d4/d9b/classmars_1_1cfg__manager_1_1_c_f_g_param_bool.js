@@ -7,12 +7,12 @@ var classmars_1_1cfg__manager_1_1_c_f_g_param_bool =
     [ "CFGParamBool", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a8fd24c1830b8f656aba387ae32b9426b", null ],
     [ "~CFGParamBool", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#ae21c947e2e5084a779a2cfeb62f2559b", null ],
     [ "createParam", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a371b3691d7218ebda1daef504bb5e554", null ],
-    [ "getNrOfPropertys", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a1ba6f57a40f5a0ab51f79b17a29ddc54", null ],
-    [ "getPropertyIndexByName", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#af347cfee4f5fd8786a0f70c9aa7d962b", null ],
-    [ "getPropertyNameByIndex", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a68a5618f03df12cc13790a548a3e65cb", null ],
-    [ "getPropertyTypeByIndex", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a7f95d3b4c77508d8912d8058a886c541", null ],
+    [ "getNrOfPropertys", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#abde9bc38afa9f6088a619a96ce3f60fe", null ],
+    [ "getPropertyIndexByName", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a50845f0eeb4a5b2efc17ee071b2c8234", null ],
+    [ "getPropertyNameByIndex", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a7780d3b4c3b70f39a90cfef89d0ef219", null ],
+    [ "getPropertyTypeByIndex", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a4abe3151b343feca9f1ccd97e165e2e0", null ],
     [ "setProperty", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a80fd116739dc04a168ba85f7bc17cf8e", null ],
-    [ "setPropertyValue", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a27ce8e76469011f8abbb65addea84aa8", null ],
+    [ "setPropertyValue", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#ab54b1e04e6a6a83c5149facc462e2b53", null ],
     [ "paramPropertyName", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a686c61196d502a2201b1c3766ace9564", null ],
     [ "paramPropertyType", "d4/d9b/classmars_1_1cfg__manager_1_1_c_f_g_param_bool.html#a32348455dbaf06c44d49ce0235d8ab81", null ]
 ];

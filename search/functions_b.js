@@ -1,7 +1,7 @@
 var searchData=
 [
   ['keydownevent',['keyDownEvent',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#a951783bada03aa335dcc29acacec3017',1,'mars::interfaces::GuiEventInterface']]],
-  ['keypressevent',['keyPressEvent',['../d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#aae89ff8102f206d0d21605c310f7e371',1,'mars::graphics::QtOsgMixGraphicsWidget']]],
-  ['keyreleaseevent',['keyReleaseEvent',['../d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html#ace8e3c4511b4092cedf427d12434e142',1,'mars::graphics::QtOsgMixGraphicsWidget']]],
+  ['keypressevent',['keyPressEvent',['../df/dd0/class_joystick_widget.html#a89c94954f6c96d4941af4d7f255c7e40',1,'JoystickWidget']]],
+  ['keyreleaseevent',['keyReleaseEvent',['../df/dd0/class_joystick_widget.html#a60b796473ffda75846217e643b2b7f77',1,'JoystickWidget']]],
   ['keyupevent',['keyUpEvent',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#a032ac2951bcaebaf8881982e37018421',1,'mars::interfaces::GuiEventInterface']]]
 ];

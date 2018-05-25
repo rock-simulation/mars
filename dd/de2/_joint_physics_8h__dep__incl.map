@@ -1,9 +1,0 @@
-<map id="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/JointPhysics.h" name="/media/kavonszadkowski/work/marsdocs/mars/sim/src/physics/JointPhysics.h">
-<area shape="rect" id="node2" href="$df/d11/_physics_mapper_8h.html" title="&quot;PhysicsMapper&quot; connects the implemented interface classes to the interface objects that are handled ..." alt="" coords="420,109,599,165"/>
-<area shape="rect" id="node8" href="$d0/df0/_joint_physics_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/physics/JointPhysics.cpp" alt="" coords="623,109,820,165"/>
-<area shape="rect" id="node3" href="$d9/d28/_joint_manager_8cpp.html" title="&quot;JointManager&quot; is the class that manage all joints and their operations and communication between the..." alt="" coords="5,213,184,269"/>
-<area shape="rect" id="node4" href="$d5/d2a/_motor_manager_8cpp.html" title="&quot;MotorManager&quot; implements MotorManagerInterface. It is manages all motors and all motor operations th..." alt="" coords="209,213,393,269"/>
-<area shape="rect" id="node5" href="$d1/dc7/_node_manager_8cpp.html" title="&quot;NodeManager&quot; is the class that manage all nodes and their operations and communication between the d..." alt="" coords="418,213,600,269"/>
-<area shape="rect" id="node6" href="$de/dc6/_physics_mapper_8cpp.html" title="&quot;PhysicsMapper&quot; connects the implemented interface classes to the interface objects that are handled ..." alt="" coords="625,213,817,269"/>
-<area shape="rect" id="node7" href="$d0/de2/_simulator_8cpp.html" title="/media/kavonszadkowski\l/work/marsdocs/mars/sim\l/src/core/Simulator.cpp" alt="" coords="841,213,1015,269"/>
-</map>

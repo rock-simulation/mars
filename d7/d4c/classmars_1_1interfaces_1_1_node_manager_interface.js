@@ -15,6 +15,7 @@ var classmars_1_1interfaces_1_1_node_manager_interface =
     [ "createPrimitiveNode", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a07d3bdc7e40bc356c6a686b5a0c7decd", null ],
     [ "edit", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a4ea771665a4a6ede8e0a9d9973b4e3e5", null ],
     [ "editNode", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a9e8be91e67e05db6b67160905b269a1f", null ],
+    [ "exists", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a26f2c662eba757d10e8331beb088e6f6", null ],
     [ "exportGraphicNodesByID", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a10e14e137282858b90414e7fe8984edf", null ],
     [ "getAngularAcceleration", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a1c734b42c0e3cfa7e97e5d7a14dc2ba6", null ],
     [ "getAngularVelocity", "d7/d4c/classmars_1_1interfaces_1_1_node_manager_interface.html#a656899691bff7ea5a7ee7b6378794075", null ],

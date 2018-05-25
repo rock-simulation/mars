@@ -26,6 +26,7 @@ var searchData=
   ['shader_5ftype_5fgeometry',['SHADER_TYPE_GEOMETRY',['../dc/d37/namespaceosg__material__manager.html#a9011f122cd12aab80c0ce55da4ca495fa8ce7c1d6b03bde936bedcf2468403ebd',1,'osg_material_manager::SHADER_TYPE_GEOMETRY()'],['../d8/dec/namespacemars_1_1interfaces.html#aa400c40aeffb76655f70c781c06973b7a6911aee5249a767adefdf6c3c1595caf',1,'mars::interfaces::SHADER_TYPE_GEOMETRY()']]],
   ['shader_5ftype_5fvertex',['SHADER_TYPE_VERTEX',['../dc/d37/namespaceosg__material__manager.html#a9011f122cd12aab80c0ce55da4ca495fac5a199b599a57c7486e555bb80930901',1,'osg_material_manager::SHADER_TYPE_VERTEX()'],['../d8/dec/namespacemars_1_1interfaces.html#aa400c40aeffb76655f70c781c06973b7a602fce3212ff57c88939aca4f8b30303',1,'mars::interfaces::SHADER_TYPE_VERTEX()']]],
   ['shiftmodifier',['ShiftModifier',['../dd/d01/classmars_1_1interfaces_1_1_gui_event_interface.html#ae0b1332153f038480ff2f497afbc5e02a49fdc3b32b12b9d5fb8782fb7f7dcb5b',1,'mars::interfaces::GuiEventInterface']]],
+  ['single',['SINGLE',['../d2/d46/classmars_1_1graphics_1_1_graphics_widget.html#aa57639ebd6d6e7961b1a4489df1e9221a303411e77dcff1206ce052a989967b17',1,'mars::graphics::GraphicsWidget']]],
   ['socket_5faccept_5ffailed',['SOCKET_ACCEPT_FAILED',['../d3/da5/namespacemars_1_1utils.html#a48d92c6a451c26577fd8a832364983b7a4f8230fd17e65131f4d5b921ecbf6098',1,'mars::utils']]],
   ['socket_5falready_5fconnected',['SOCKET_ALREADY_CONNECTED',['../d3/da5/namespacemars_1_1utils.html#a48d92c6a451c26577fd8a832364983b7a0ed54dcd68f8cc998589c9302c7df3e5',1,'mars::utils']]],
   ['socket_5fbind_5ffailed',['SOCKET_BIND_FAILED',['../d3/da5/namespacemars_1_1utils.html#a48d92c6a451c26577fd8a832364983b7a3793dd0fe72c3c51f870de034f3a5f6a',1,'mars::utils']]],
@@ -54,7 +55,8 @@ var searchData=
   ['stepsize',['stepsize',['../d8/d7b/classmars_1_1cfg__manager_1_1_c_f_g_param_double.html#adb788dae850ff0c33cd50db422e9600aa804d211a9f291d994db5502cc9f2ad90',1,'mars::cfg_manager::CFGParamDouble::stepsize()'],['../d9/d42/classmars_1_1cfg__manager_1_1_c_f_g_param_int.html#a908bc1b27c9014ef7aa0834d9b926571af6e918ee20e50d179ded1dd0a0b943bf',1,'mars::cfg_manager::CFGParamInt::stepsize()']]],
   ['stopped',['STOPPED',['../d9/d6a/classmars_1_1sim_1_1_simulator.html#a6b97bcddc8f02b5f56c6a12ff10947f3aa7364b1f28090ebfb81f61c731f47329',1,'mars::sim::Simulator']]],
   ['stopping',['STOPPING',['../d9/d6a/classmars_1_1sim_1_1_simulator.html#a6b97bcddc8f02b5f56c6a12ff10947f3ac4d412710d90f1df4b9d68d181da95b5',1,'mars::sim::Simulator']]],
-  ['string_5ftype',['STRING_TYPE',['../d1/d72/namespacemars_1_1data__broker.html#ab6da5aca8163b02185cc59dff72e64e1aff57645f2fd3a62504a2cd0a5e156dca',1,'mars::data_broker']]],
+  ['string',['STRING',['../df/d48/namespacemars.html#a0a99d626e08204f484091702201c2f81a315c4a8e85c44fb92db3ee3247263b9a',1,'mars']]],
+  ['string_5ftype',['STRING_TYPE',['../df/dd3/classconfigmaps_1_1_config_atom.html#a3cba24a48fe907c336c83a522c14661da65a07d82fb66ad6b2ad4c5ee5706f1c0',1,'configmaps::ConfigAtom::STRING_TYPE()'],['../d1/d72/namespacemars_1_1data__broker.html#ab6da5aca8163b02185cc59dff72e64e1aff57645f2fd3a62504a2cd0a5e156dca',1,'mars::data_broker::STRING_TYPE()']]],
   ['stringparam',['stringParam',['../d0/d16/namespacemars_1_1cfg__manager.html#a6fd8141f3ab9722585a95ae696c1fdf7a15380df41292cc3328b3d2ef2b874a54',1,'mars::cfg_manager']]],
   ['stringproperty',['stringProperty',['../d0/d16/namespacemars_1_1cfg__manager.html#a441cbfdd8e71e0d12ad46d305b5e8222a042f50b4210d92953f84fdf9055119f2',1,'mars::cfg_manager']]]
 ];

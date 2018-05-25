@@ -1,6 +1,0 @@
-<map id="mars::log_console::ConsoleGUI" name="mars::log_console::ConsoleGUI">
-<area shape="rect" id="node2" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="441,124,631,151"/>
-<area shape="rect" id="node4" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="194,57,337,98"/>
-<area shape="rect" id="node5" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="194,187,337,229"/>
-<area shape="rect" id="node7" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="190,255,341,297"/>
-</map>

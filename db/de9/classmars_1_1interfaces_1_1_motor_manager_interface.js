@@ -5,6 +5,7 @@ var classmars_1_1interfaces_1_1_motor_manager_interface =
     [ "clearAllMotors", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a4da29eeb7b43d12440cc1095c85af9d1", null ],
     [ "connectMimics", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a01a3461a5243460044f7ef4b3446f651", null ],
     [ "deactivateMotor", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a9935a576ae7ee9f1ce24039afee369e7", null ],
+    [ "edit", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a2242dc8fc32f6dd34ba636cb4248c316", null ],
     [ "editMotor", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a5001f95af4879aea5e8b6a68bf4df1be", null ],
     [ "getActualPosition", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a8e8692295b7bd563fa72c029ed5a9d00", null ],
     [ "getDataBrokerNames", "db/de9/classmars_1_1interfaces_1_1_motor_manager_interface.html#a0dbf13912fa6eac52f8a9485a323bbb4", null ],

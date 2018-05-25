@@ -1,7 +1,7 @@
 var hierarchy =
 [
     [ "mars::interfaces::BaseArraySensor< char * >", "da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html", [
-      [ "mars::interfaces::BaseCameraSensor< char * >", "d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html", null ]
+      [ "mars::interfaces::BaseCameraSensor< char *>", "d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html", null ]
     ] ],
     [ "mars::interfaces::BaseArraySensor< double >", "da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html", [
       [ "mars::interfaces::BaseCameraSensor< double >", "d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html", [
@@ -16,10 +16,24 @@ var hierarchy =
         [ "mars::sim::RotatingRaySensor", "d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html", null ]
       ] ]
     ] ],
+    [ "configmaps::ConfigBase", "dd/d86/classconfigmaps_1_1_config_base.html", [
+      [ "configmaps::ConfigAtom", "df/dd3/classconfigmaps_1_1_config_atom.html", null ],
+      [ "configmaps::ConfigMap", "db/d84/classconfigmaps_1_1_config_map.html", null ],
+      [ "configmaps::ConfigVector", "dd/d01/classconfigmaps_1_1_config_vector.html", null ]
+    ] ],
+    [ "configmaps::ConfigItem", "db/dde/classconfigmaps_1_1_config_item.html", null ],
+    [ "configmaps::FIFOItem< Key, T >", "d7/d10/classconfigmaps_1_1_f_i_f_o_item.html", null ],
+    [ "data_broker_plotter2::PackageData", "d4/d91/classdata__broker__plotter2_1_1_package_data.html", null ],
+    [ "data_broker_plotter2::Plot", "da/d60/classdata__broker__plotter2_1_1_plot.html", null ],
     [ "data_broker_plotter::PackageData", "d8/d0a/classdata__broker__plotter_1_1_package_data.html", null ],
     [ "data_broker_plotter::Plot", "d4/d67/classdata__broker__plotter_1_1_plot.html", null ],
     [ "gui_app::GuiApp", "de/d27/classgui__app_1_1_gui_app.html", null ],
-    [ "LibInterface", null, [
+    [ "item", "d6/dd8/structitem.html", null ],
+    [ "item_cleanup_list", "d3/db3/structitem__cleanup__list.html", null ],
+    [ "JoystickInterface", "d2/d26/class_joystick_interface.html", null ],
+    [ "lib_manager::LibInfo", "df/d09/structlib__manager_1_1_lib_info.html", null ],
+    [ "lib_manager::LibInterface", "df/d2a/classlib__manager_1_1_lib_interface.html", [
+      [ "data_broker_plotter2::DataBrokerPlotterLib", "d1/d22/classdata__broker__plotter2_1_1_data_broker_plotter_lib.html", null ],
       [ "data_broker_plotter::DataBrokerPlotterLib", "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html", null ],
       [ "mars::cfg_manager::CFGManagerInterface", "d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html", [
         [ "mars::cfg_manager::CFGManager", "d5/d6c/classmars_1_1cfg__manager_1_1_c_f_g_manager.html", null ]
@@ -52,10 +66,12 @@ var hierarchy =
       [ "mars::interfaces::MarsPluginTemplateGUI", "da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html", [
         [ "mars::plugin::SkyDomePlugin::SkyDomePlugin", "d5/d94/classmars_1_1plugin_1_1_sky_dome_plugin_1_1_sky_dome_plugin.html", null ],
         [ "mars::plugins::__namespace__::__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html", null ],
+        [ "mars::plugins::CameraGUI::CameraGUI", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html", null ],
         [ "mars::plugins::connectors::Connectors", "d5/dec/classmars_1_1plugins_1_1connectors_1_1_connectors.html", null ],
         [ "mars::plugins::connexion_plugin::ConnexionPlugin", "d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html", null ],
         [ "mars::plugins::EntityView::EntityView", "d8/dbc/classmars_1_1plugins_1_1_entity_view_1_1_entity_view.html", null ],
-        [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ]
+        [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ],
+        [ "mars::plugins::PythonMars::PythonMars", "d3/d0d/classmars_1_1plugins_1_1_python_mars_1_1_python_mars.html", null ]
       ] ],
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ],
       [ "mars::main_gui::GuiInterface", "d7/df2/classmars_1_1main__gui_1_1_gui_interface.html", [
@@ -68,9 +84,14 @@ var hierarchy =
       [ "osg_text::TextFactoryInterface", "db/d44/classosg__text_1_1_text_factory_interface.html", [
         [ "osg_text::TextFactory", "d0/dfc/classosg__text_1_1_text_factory.html", null ]
       ] ],
+      [ "VirtualJoystickPlugin", "d6/d22/class_virtual_joystick_plugin.html", null ],
       [ "VizPlugin", "d5/d61/class_viz_plugin.html", null ]
     ] ],
+    [ "lib_manager::LibManager", "d3/df3/classlib__manager_1_1_lib_manager.html", null ],
+    [ "lib_manager::libStruct", "d2/de4/structlib__manager_1_1lib_struct.html", null ],
+    [ "lib_manager::ModuleInfo", "d9/d91/structlib__manager_1_1_module_info.html", null ],
     [ "mars::app::MARS", "dc/d91/classmars_1_1app_1_1_m_a_r_s.html", null ],
+    [ "mars::Bool", "dd/dbb/structmars_1_1_bool.html", null ],
     [ "mars::cfg_manager::CFGClient", "d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html", [
       [ "mars::cfg_manager_gui::MainCfgGui", "d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html", null ],
       [ "mars::entity_generation::EntityFactoryManager", "d4/d0e/classmars_1_1entity__generation_1_1_entity_factory_manager.html", null ],
@@ -79,9 +100,9 @@ var hierarchy =
       [ "mars::gui::MenuWindow", "d7/d76/classmars_1_1gui_1_1_menu_window.html", null ],
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ],
       [ "mars::main_gui::BaseWidget", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html", [
+        [ "data_broker_plotter2::DataBrokerPlotter", "d5/dd5/classdata__broker__plotter2_1_1_data_broker_plotter.html", null ],
         [ "data_broker_plotter::DataBrokerPlotter", "d0/d20/classdata__broker__plotter_1_1_data_broker_plotter.html", null ],
         [ "mars::cfg_manager_gui::CfgWidget", "df/d3f/classmars_1_1cfg__manager__gui_1_1_cfg_widget.html", null ],
-        [ "mars::config_map_gui::DataWidget", "da/d39/classmars_1_1config__map__gui_1_1_data_widget.html", null ],
         [ "mars::data_broker_gui::DataConnWidget", "d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html", null ],
         [ "mars::data_broker_gui::DataWidget", "de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html", null ],
         [ "mars::gui::BlenderExportGUI", "df/dda/classmars_1_1gui_1_1_blender_export_g_u_i.html", null ],
@@ -90,20 +111,13 @@ var hierarchy =
         [ "mars::gui::ControllerConfigGUI", "da/d1a/classmars_1_1gui_1_1_controller_config_g_u_i.html", null ],
         [ "mars::gui::Dialog_Add_Force", "dc/d1c/classmars_1_1gui_1_1_dialog___add___force.html", null ],
         [ "mars::gui::Dialog_Add_Torque", "dd/dca/classmars_1_1gui_1_1_dialog___add___torque.html", null ],
-        [ "mars::gui::Dialog_Graphics_Options", "d9/d5a/classmars_1_1gui_1_1_dialog___graphics___options.html", null ],
-        [ "mars::gui::Dialog_Import_Mesh", "d6/d46/classmars_1_1gui_1_1_dialog___import___mesh.html", null ],
         [ "mars::gui::Dialog_Motor_Control", "d6/d2d/classmars_1_1gui_1_1_dialog___motor___control.html", null ],
         [ "mars::gui::Dialog_Rescale_Environment", "d9/d62/classmars_1_1gui_1_1_dialog___rescale___environment.html", null ],
         [ "mars::gui::DialogControllers", "d1/da4/classmars_1_1gui_1_1_dialog_controllers.html", null ],
         [ "mars::gui::DialogDistance", "d3/dad/classmars_1_1gui_1_1_dialog_distance.html", null ],
-        [ "mars::gui::DialogJoints", "de/d64/classmars_1_1gui_1_1_dialog_joints.html", null ],
-        [ "mars::gui::DialogJoystick", "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html", null ],
-        [ "mars::gui::DialogLights", "d8/d41/classmars_1_1gui_1_1_dialog_lights.html", null ],
-        [ "mars::gui::DialogMotors", "d1/df9/classmars_1_1gui_1_1_dialog_motors.html", null ],
-        [ "mars::gui::DialogNodes", "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html", null ],
-        [ "mars::gui::DialogSensors", "d4/d45/classmars_1_1gui_1_1_dialog_sensors.html", null ],
         [ "mars::gui::NodeSelectionTree", "d8/d72/classmars_1_1gui_1_1_node_selection_tree.html", null ],
         [ "mars::log_console::ConsoleGUI", "d7/d91/classmars_1_1log__console_1_1_console_g_u_i.html", null ],
+        [ "mars::plugins::CameraGUI::CameraWidget", "d7/d8b/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_widget.html", null ],
         [ "mars::plugins::connexion_plugin::ConnexionWidget", "dd/dc4/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_widget.html", null ],
         [ "mars::plugins::EntityView::EntityViewMainWindow", "dd/d6f/classmars_1_1plugins_1_1_entity_view_1_1_entity_view_main_window.html", null ],
         [ "mars::plugins::lib_manager_gui::LibManagerWidget", "d3/d43/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_widget.html", null ],
@@ -120,6 +134,7 @@ var hierarchy =
       [ "mars::plugins::EntityView::EntityView", "d8/dbc/classmars_1_1plugins_1_1_entity_view_1_1_entity_view.html", null ],
       [ "mars::plugins::obstacle_generator::ObstacleGenerator", "d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html", null ],
       [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ],
+      [ "mars::plugins::PythonMars::PythonMars", "d3/d0d/classmars_1_1plugins_1_1_python_mars_1_1_python_mars.html", null ],
       [ "mars::plugins::Text3D::Text3D", "dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html", null ],
       [ "mars::sim::Simulator", "d9/d6a/classmars_1_1sim_1_1_simulator.html", null ],
       [ "osg_material_manager::OsgMaterialManager", "d4/d2e/classosg__material__manager_1_1_osg_material_manager.html", null ],
@@ -146,17 +161,18 @@ var hierarchy =
       [ "mars::sim::JointAVGTorqueSensor", "d1/dae/classmars_1_1sim_1_1_joint_a_v_g_torque_sensor.html", null ],
       [ "mars::sim::JointLoadSensor", "d0/dc1/classmars_1_1sim_1_1_joint_load_sensor.html", null ],
       [ "mars::sim::NodeContactForceSensor", "d2/d9f/classmars_1_1sim_1_1_node_contact_force_sensor.html", null ],
+      [ "mars::sim::NodeRotationSensor", "d6/ded/classmars_1_1sim_1_1_node_rotation_sensor.html", null ],
       [ "mars::sim::SimJoint", "d2/d27/classmars_1_1sim_1_1_sim_joint.html", null ],
       [ "mars::sim::SimMotor", "d7/dfb/classmars_1_1sim_1_1_sim_motor.html", null ],
       [ "mars::sim::SimNode", "d5/db3/classmars_1_1sim_1_1_sim_node.html", null ]
     ] ],
     [ "mars::data_broker::ReceiverInterface", "d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html", [
+      [ "data_broker_plotter2::DataBrokerPlotter", "d5/dd5/classdata__broker__plotter2_1_1_data_broker_plotter.html", null ],
       [ "data_broker_plotter::DataBrokerPlotter", "d0/d20/classdata__broker__plotter_1_1_data_broker_plotter.html", null ],
       [ "mars::data_broker_gui::DataConnWidget", "d1/daa/classmars_1_1data__broker__gui_1_1_data_conn_widget.html", null ],
       [ "mars::data_broker_gui::DataWidget", "de/df7/classmars_1_1data__broker__gui_1_1_data_widget.html", null ],
+      [ "mars::gui::BlenderExportGUI", "df/dda/classmars_1_1gui_1_1_blender_export_g_u_i.html", null ],
       [ "mars::gui::CameraConfig", "dd/d61/classmars_1_1gui_1_1_camera_config.html", null ],
-      [ "mars::gui::Widget_Joint_State", "d1/d38/classmars_1_1gui_1_1_widget___joint___state.html", null ],
-      [ "mars::gui::Widget_Node_State", "d5/dd4/classmars_1_1gui_1_1_widget___node___state.html", null ],
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ],
       [ "mars::plugin::SkyDomePlugin::SkyDomePlugin", "d5/d94/classmars_1_1plugin_1_1_sky_dome_plugin_1_1_sky_dome_plugin.html", null ],
       [ "mars::plugins::__namespace__::__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html", null ],
@@ -166,6 +182,7 @@ var hierarchy =
       [ "mars::plugins::obstacle_generator::ObstacleGenerator", "d7/d1f/classmars_1_1plugins_1_1obstacle__generator_1_1_obstacle_generator.html", null ],
       [ "mars::plugins::Plot3D::MotorPlot", "dd/d4b/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot.html", null ],
       [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ],
+      [ "mars::plugins::PythonMars::PythonMars", "d3/d0d/classmars_1_1plugins_1_1_python_mars_1_1_python_mars.html", null ],
       [ "mars::plugins::Text3D::Text3D", "dc/dd5/classmars_1_1plugins_1_1_text3_d_1_1_text3_d.html", null ],
       [ "mars::sim::CameraSensor", "d2/d51/classmars_1_1sim_1_1_camera_sensor.html", null ],
       [ "mars::sim::HapticFieldSensor", "d0/d67/classmars_1_1sim_1_1_haptic_field_sensor.html", null ],
@@ -201,11 +218,14 @@ var hierarchy =
     [ "mars::data_broker_gui::DataItemWrapper", "d5/d34/structmars_1_1data__broker__gui_1_1_data_item_wrapper.html", null ],
     [ "mars::data_broker_gui::paramWrapper", "d9/dc4/structmars_1_1data__broker__gui_1_1param_wrapper.html", null ],
     [ "mars::data_broker_gui::PendingConnection", "de/d74/structmars_1_1data__broker__gui_1_1_pending_connection.html", null ],
+    [ "mars::Double", "d4/d7a/structmars_1_1_double.html", null ],
     [ "mars::entity_generation::EntityFactoryInterface", "d5/dac/classmars_1_1entity__generation_1_1_entity_factory_interface.html", [
       [ "mars::smurf::PRIMITIVES", "d0/dd8/classmars_1_1smurf_1_1_p_r_i_m_i_t_i_v_e_s.html", null ],
       [ "mars::smurf::SMURF", "de/da8/classmars_1_1smurf_1_1_s_m_u_r_f.html", null ]
     ] ],
     [ "mars::FootPrint", "d6/d8c/structmars_1_1_foot_print.html", null ],
+    [ "mars::Function", "d5/d27/classmars_1_1_function.html", null ],
+    [ "mars::FunctionState", "db/da8/structmars_1_1_function_state.html", null ],
     [ "mars::graphics::drawMapper", "de/d64/structmars_1_1graphics_1_1draw_mapper.html", null ],
     [ "mars::graphics::DrawObject", "d9/db7/classmars_1_1graphics_1_1_draw_object.html", [
       [ "mars::graphics::CapsuleDrawObject", "de/d1b/classmars_1_1graphics_1_1_capsule_draw_object.html", null ],
@@ -237,11 +257,9 @@ var hierarchy =
     [ "mars::graphics::textureFileStruct", "db/d23/structmars_1_1graphics_1_1texture_file_struct.html", null ],
     [ "mars::gui::CameraConfiguratorGUI::NodeElem", "d4/d6b/structmars_1_1gui_1_1_camera_configurator_g_u_i_1_1_node_elem.html", null ],
     [ "mars::gui::ControllerConfigGUI::ControllerElem", "d6/dde/structmars_1_1gui_1_1_controller_config_g_u_i_1_1_controller_elem.html", null ],
-    [ "mars::gui::Dialog_Graphics_Options::cam_backup_struct", "d9/d90/structmars_1_1gui_1_1_dialog___graphics___options_1_1cam__backup__struct.html", null ],
     [ "mars::gui::Frustum", "d4/d97/structmars_1_1gui_1_1_frustum.html", null ],
-    [ "mars::gui::joint_data", "d3/d6b/structmars_1_1gui_1_1joint__data.html", null ],
     [ "mars::gui::myImage", "dd/d49/structmars_1_1gui_1_1my_image.html", null ],
-    [ "mars::gui::node_data", "da/d29/structmars_1_1gui_1_1node__data.html", null ],
+    [ "mars::Int", "dd/d10/structmars_1_1_int.html", null ],
     [ "mars::interfaces::BaseArraySensor< T >", "da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html", [
       [ "mars::interfaces::BaseCameraSensor< T >", "d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html", null ]
     ] ],
@@ -301,7 +319,6 @@ var hierarchy =
       [ "mars::graphics::GraphicsCamera", "d7/d67/classmars_1_1graphics_1_1_graphics_camera.html", null ]
     ] ],
     [ "mars::interfaces::GraphicsEventClient", "d8/d0b/classmars_1_1interfaces_1_1_graphics_event_client.html", [
-      [ "mars::gui::DialogNodes", "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html", null ],
       [ "mars::gui::NodeSelectionTree", "d8/d72/classmars_1_1gui_1_1_node_selection_tree.html", null ],
       [ "mars::plugins::SelectionTree", "da/ddf/classmars_1_1plugins_1_1_selection_tree.html", null ],
       [ "mars::sim::EntityManager", "d3/d9f/classmars_1_1sim_1_1_entity_manager.html", null ]
@@ -395,6 +412,9 @@ var hierarchy =
     ] ],
     [ "mars::interfaces::snmesh", "d9/dec/structmars_1_1interfaces_1_1snmesh.html", null ],
     [ "mars::interfaces::terrainStruct", "de/dd2/structmars_1_1interfaces_1_1terrain_struct.html", null ],
+    [ "mars::List", "df/da5/structmars_1_1_list.html", null ],
+    [ "mars::ListBuilder", "db/d96/classmars_1_1_list_builder.html", null ],
+    [ "mars::ListBuilderState", "d2/daa/structmars_1_1_list_builder_state.html", null ],
     [ "mars::log_console::con_data", "d4/d80/structmars_1_1log__console_1_1con__data.html", null ],
     [ "mars::log_console::ConsoleInterface", "d0/dda/classmars_1_1log__console_1_1_console_interface.html", [
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ]
@@ -402,6 +422,7 @@ var hierarchy =
     [ "mars::main_gui::dockState", "d5/d31/structmars_1_1main__gui_1_1dock_state.html", null ],
     [ "mars::main_gui::genericMenu", "d0/df5/structmars_1_1main__gui_1_1generic_menu.html", null ],
     [ "mars::main_gui::MenuInterface", "d3/d52/classmars_1_1main__gui_1_1_menu_interface.html", [
+      [ "data_broker_plotter2::DataBrokerPlotterLib", "d1/d22/classdata__broker__plotter2_1_1_data_broker_plotter_lib.html", null ],
       [ "data_broker_plotter::DataBrokerPlotterLib", "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html", null ],
       [ "mars::cfg_manager_gui::MainCfgGui", "d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html", null ],
       [ "mars::data_broker_gui::MainDataGui", "d8/d44/classmars_1_1data__broker__gui_1_1_main_data_gui.html", null ],
@@ -415,12 +436,15 @@ var hierarchy =
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ],
       [ "mars::plugin::SkyDomePlugin::SkyDomePlugin", "d5/d94/classmars_1_1plugin_1_1_sky_dome_plugin_1_1_sky_dome_plugin.html", null ],
       [ "mars::plugins::__namespace__::__classname__", "da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html", null ],
+      [ "mars::plugins::CameraGUI::CameraGUI", "d8/da0/classmars_1_1plugins_1_1_camera_g_u_i_1_1_camera_g_u_i.html", null ],
       [ "mars::plugins::connectors::Connectors", "d5/dec/classmars_1_1plugins_1_1connectors_1_1_connectors.html", null ],
       [ "mars::plugins::connexion_plugin::ConnexionPlugin", "d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html", null ],
       [ "mars::plugins::constraints_plugin::ConstraintsPlugin", "d2/dde/classmars_1_1plugins_1_1constraints__plugin_1_1_constraints_plugin.html", null ],
       [ "mars::plugins::EntityView::EntityView", "d8/dbc/classmars_1_1plugins_1_1_entity_view_1_1_entity_view.html", null ],
       [ "mars::plugins::lib_manager_gui::LibManagerGui", "d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html", null ],
-      [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ]
+      [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ],
+      [ "mars::plugins::PythonMars::PythonMars", "d3/d0d/classmars_1_1plugins_1_1_python_mars_1_1_python_mars.html", null ],
+      [ "VirtualJoystickPlugin", "d6/d22/class_virtual_joystick_plugin.html", null ]
     ] ],
     [ "mars::main_gui::menuStruct", "d1/d68/structmars_1_1main__gui_1_1menu_struct.html", null ],
     [ "mars::main_gui::PropertyCallback", "dd/d38/classmars_1_1main__gui_1_1_property_callback.html", [
@@ -433,29 +457,29 @@ var hierarchy =
       [ "mars::gui::ControllerConfigGUI", "da/d1a/classmars_1_1gui_1_1_controller_config_g_u_i.html", null ],
       [ "mars::gui::Dialog_Add_Force", "dc/d1c/classmars_1_1gui_1_1_dialog___add___force.html", null ],
       [ "mars::gui::Dialog_Add_Torque", "dd/dca/classmars_1_1gui_1_1_dialog___add___torque.html", null ],
-      [ "mars::gui::Dialog_Graphics_Options", "d9/d5a/classmars_1_1gui_1_1_dialog___graphics___options.html", null ],
-      [ "mars::gui::Dialog_Import_Mesh", "d6/d46/classmars_1_1gui_1_1_dialog___import___mesh.html", null ],
-      [ "mars::gui::Dialog_Motor_Control", "d6/d2d/classmars_1_1gui_1_1_dialog___motor___control.html", null ],
       [ "mars::gui::Dialog_Rescale_Environment", "d9/d62/classmars_1_1gui_1_1_dialog___rescale___environment.html", null ],
       [ "mars::gui::DialogControllers", "d1/da4/classmars_1_1gui_1_1_dialog_controllers.html", null ],
       [ "mars::gui::DialogDistance", "d3/dad/classmars_1_1gui_1_1_dialog_distance.html", null ],
-      [ "mars::gui::DialogJoints", "de/d64/classmars_1_1gui_1_1_dialog_joints.html", null ],
-      [ "mars::gui::DialogJoystick", "d5/ddc/classmars_1_1gui_1_1_dialog_joystick.html", null ],
-      [ "mars::gui::DialogLights", "d8/d41/classmars_1_1gui_1_1_dialog_lights.html", null ],
-      [ "mars::gui::DialogMotors", "d1/df9/classmars_1_1gui_1_1_dialog_motors.html", null ],
-      [ "mars::gui::DialogNodes", "dc/d96/classmars_1_1gui_1_1_dialog_nodes.html", null ],
-      [ "mars::gui::DialogSensors", "d4/d45/classmars_1_1gui_1_1_dialog_sensors.html", null ],
-      [ "mars::gui::NodeSelectionTree", "d8/d72/classmars_1_1gui_1_1_node_selection_tree.html", null ],
-      [ "mars::gui::Widget_Joint_State", "d1/d38/classmars_1_1gui_1_1_widget___joint___state.html", null ],
-      [ "mars::gui::Widget_Node_State", "d5/dd4/classmars_1_1gui_1_1_widget___node___state.html", null ]
+      [ "mars::gui::NodeSelectionTree", "d8/d72/classmars_1_1gui_1_1_node_selection_tree.html", null ]
     ] ],
     [ "mars::main_gui::widgetState", "d7/da3/structmars_1_1main__gui_1_1widget_state.html", null ],
+    [ "mars::Method", "dc/d36/classmars_1_1_method.html", null ],
+    [ "mars::MethodState", "d7/de1/structmars_1_1_method_state.html", null ],
+    [ "mars::Module", "da/d83/classmars_1_1_module.html", null ],
+    [ "mars::ModuleState", "d6/d7d/structmars_1_1_module_state.html", null ],
     [ "mars::MultiResHeightMapRenderer", "d3/d33/classmars_1_1_multi_res_height_map_renderer.html", null ],
+    [ "mars::Object", "db/d7d/classmars_1_1_object.html", null ],
+    [ "mars::ObjectState", "d7/d3d/structmars_1_1_object_state.html", null ],
     [ "mars::plugins::connexion_plugin::connexionValues", "d3/d42/structmars_1_1plugins_1_1connexion__plugin_1_1connexion_values.html", null ],
     [ "mars::plugins::Plot3D::GeneralPlot::CurveData", "d3/d17/classmars_1_1plugins_1_1_plot3_d_1_1_general_plot_1_1_curve_data.html", null ],
     [ "mars::plugins::Plot3D::Plot3D::PlotMapData", "d4/ded/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d_1_1_plot_map_data.html", null ],
     [ "mars::plugins::Plot3D::Plot3D::TimeMap", "d3/d35/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d_1_1_time_map.html", null ],
+    [ "mars::plugins::PythonMars::CameraStruct", "d3/d17/structmars_1_1plugins_1_1_python_mars_1_1_camera_struct.html", null ],
+    [ "mars::plugins::PythonMars::LineStruct", "dc/df4/structmars_1_1plugins_1_1_python_mars_1_1_line_struct.html", null ],
+    [ "mars::plugins::PythonMars::PointStruct", "db/d5d/structmars_1_1plugins_1_1_python_mars_1_1_point_struct.html", null ],
     [ "mars::plugins::Text3D::TextData", "d4/dd5/structmars_1_1plugins_1_1_text3_d_1_1_text_data.html", null ],
+    [ "mars::PyObjectDeleter", "d9/d58/structmars_1_1_py_object_deleter.html", null ],
+    [ "mars::PythonInterpreter", "df/d78/classmars_1_1_python_interpreter.html", null ],
     [ "mars::scene_loader::Load", "db/d90/classmars_1_1scene__loader_1_1_load.html", null ],
     [ "mars::scene_loader::material_map", "db/d34/structmars_1_1scene__loader_1_1material__map.html", null ],
     [ "mars::scene_loader::Save", "d6/d30/classmars_1_1scene__loader_1_1_save.html", null ],
@@ -481,7 +505,9 @@ var hierarchy =
     [ "mars::sim::SimEntity", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html", null ],
     [ "mars::sim::Simulator::LoadOptions", "dd/db8/structmars_1_1sim_1_1_simulator_1_1_load_options.html", null ],
     [ "mars::smurf::Zipit", "d1/d43/classmars_1_1smurf_1_1_zipit.html", null ],
+    [ "mars::String", "d8/d0e/structmars_1_1_string.html", null ],
     [ "mars::SubTile", "d2/d46/structmars_1_1_sub_tile.html", null ],
+    [ "mars::Tuple", "d4/d9a/structmars_1_1_tuple.html", null ],
     [ "mars::utils::Color", "d4/d7c/classmars_1_1utils_1_1_color.html", null ],
     [ "mars::utils::Mutex", "d6/d90/classmars_1_1utils_1_1_mutex.html", null ],
     [ "mars::utils::MutexLocker", "df/d9c/classmars_1_1utils_1_1_mutex_locker.html", null ],
@@ -496,6 +522,7 @@ var hierarchy =
     [ "mars::utils::TCPConnection", "d1/d5d/classmars_1_1utils_1_1_t_c_p_connection.html", null ],
     [ "mars::utils::TCPServer", "d3/d9e/classmars_1_1utils_1_1_t_c_p_server.html", null ],
     [ "mars::utils::Thread", "d0/d76/classmars_1_1utils_1_1_thread.html", [
+      [ "data_broker_plotter2::DataBrokerPlotter", "d5/dd5/classdata__broker__plotter2_1_1_data_broker_plotter.html", null ],
       [ "mars::data_broker::DataBroker", "d7/d09/classmars_1_1data__broker_1_1_data_broker.html", null ],
       [ "mars::sim::Controller", "dd/d4f/classmars_1_1sim_1_1_controller.html", null ],
       [ "mars::sim::RotatingRaySensor", "d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html", null ],
@@ -512,6 +539,7 @@ var hierarchy =
       [ "osg_terrain::VertexBufferTerrain", "da/de0/classosg__terrain_1_1_vertex_buffer_terrain.html", null ]
     ] ],
     [ "ComputeBoundingBoxCallback", null, [
+      [ "osg_terrain::ShaderTerrain::BoundCallback", "d3/d0d/classosg__terrain_1_1_shader_terrain_1_1_bound_callback.html", null ],
       [ "osg_terrain::TerrainBoundCallback", "d4/db5/classosg__terrain_1_1_terrain_bound_callback.html", null ]
     ] ],
     [ "Geode", null, [
@@ -532,6 +560,7 @@ var hierarchy =
       [ "osg_plot::CurveP", "df/daf/classosg__plot_1_1_curve_p.html", null ],
       [ "osg_plot::Plot", "d4/da9/classosg__plot_1_1_plot.html", null ],
       [ "osg_points::PointsP", "d6/db5/classosg__points_1_1_points_p.html", null ],
+      [ "osg_terrain::ShaderTerrain", "d3/dd5/classosg__terrain_1_1_shader_terrain.html", null ],
       [ "osg_terrain::Terrain", "d9/dc1/classosg__terrain_1_1_terrain.html", null ],
       [ "osg_text::Text", "d6/d1f/classosg__text_1_1_text.html", null ]
     ] ],
@@ -546,17 +575,20 @@ var hierarchy =
     ] ],
     [ "NodeVisitor", null, [
       [ "mars::graphics::GeodeVisitor", "dd/da8/classmars_1_1graphics_1_1_geode_visitor.html", null ],
+      [ "osg_material_manager::InstancesVisitor", "d7/dd6/classosg__material__manager_1_1_instances_visitor.html", null ],
       [ "osg_material_manager::PositionVisitor", "dc/d4f/classosg__material__manager_1_1_position_visitor.html", null ],
       [ "osg_material_manager::TangentVisitor", "db/d36/classosg__material__manager_1_1_tangent_visitor.html", null ],
       [ "osg_terrain::BoundVisitor", "df/deb/classosg__terrain_1_1_bound_visitor.html", null ],
-      [ "osg_terrain::InstancesVisitor", "dc/d57/classosg__terrain_1_1_instances_visitor.html", null ]
+      [ "osg_terrain::InstancesVisitor", "dc/d57/classosg__terrain_1_1_instances_visitor.html", null ],
+      [ "osg_terrain::ShaderTerrain::BoundVisitor", "dc/dfc/classosg__terrain_1_1_shader_terrain_1_1_bound_visitor.html", null ]
     ] ],
     [ "Referenced", null, [
       [ "mars::graphics::HUDDataType", "d5/df2/classmars_1_1graphics_1_1_h_u_d_data_type.html", null ]
     ] ],
     [ "Transform", null, [
       [ "mars::plugin::SkyDomePlugin::SkyTransform", "de/d47/classmars_1_1plugin_1_1_sky_dome_plugin_1_1_sky_transform.html", null ],
-      [ "osg_terrain::PlaneTransform", "d7/dd3/classosg__terrain_1_1_plane_transform.html", null ]
+      [ "osg_terrain::PlaneTransform", "d7/dd3/classosg__terrain_1_1_plane_transform.html", null ],
+      [ "osg_terrain::PosTransform", "dc/d70/classosg__terrain_1_1_pos_transform.html", null ]
     ] ],
     [ "osg_lines::Color", "dd/d7a/structosg__lines_1_1_color.html", null ],
     [ "osg_lines::Lines", "d0/db3/classosg__lines_1_1_lines.html", [
@@ -566,16 +598,27 @@ var hierarchy =
     [ "osg_lines::Vector", "da/d26/structosg__lines_1_1_vector.html", null ],
     [ "osg_material_manager::GLSLAttribute", "d5/d19/structosg__material__manager_1_1_g_l_s_l_attribute.html", null ],
     [ "osg_material_manager::GLSLExport", "d0/de1/structosg__material__manager_1_1_g_l_s_l_export.html", null ],
-    [ "osg_material_manager::GLSLVariable", "d4/ddd/structosg__material__manager_1_1_g_l_s_l_variable.html", null ],
+    [ "osg_material_manager::GLSLVariable", "d4/ddd/structosg__material__manager_1_1_g_l_s_l_variable.html", [
+      [ "osg_material_manager::MainVar", "d8/d38/structosg__material__manager_1_1_main_var.html", null ]
+    ] ],
+    [ "osg_material_manager::IShaderProvider", "d2/da9/classosg__material__manager_1_1_i_shader_provider.html", [
+      [ "osg_material_manager::DRockGraphSP", "d9/d98/classosg__material__manager_1_1_d_rock_graph_s_p.html", null ],
+      [ "osg_material_manager::PhobosGraphSP", "d4/d25/classosg__material__manager_1_1_phobos_graph_s_p.html", null ],
+      [ "osg_material_manager::YamlSP", "d4/d52/classosg__material__manager_1_1_yaml_s_p.html", null ]
+    ] ],
     [ "osg_material_manager::OsgMaterialManager::imageFileStruct", "d1/d1a/structosg__material__manager_1_1_osg_material_manager_1_1image_file_struct.html", null ],
     [ "osg_material_manager::OsgMaterialManager::textureFileStruct", "dd/d7d/structosg__material__manager_1_1_osg_material_manager_1_1texture_file_struct.html", null ],
-    [ "osg_material_manager::ShaderFunc", "d1/d5e/classosg__material__manager_1_1_shader_func.html", [
-      [ "osg_material_manager::BumpMapFrag", "d9/d62/classosg__material__manager_1_1_bump_map_frag.html", null ],
-      [ "osg_material_manager::BumpMapVert", "da/dae/classosg__material__manager_1_1_bump_map_vert.html", null ],
-      [ "osg_material_manager::PixelLightFrag", "dd/daf/classosg__material__manager_1_1_pixel_light_frag.html", null ],
-      [ "osg_material_manager::PixelLightVert", "d4/ddb/classosg__material__manager_1_1_pixel_light_vert.html", null ]
+    [ "osg_material_manager::PrioritizedValue", "d2/d7c/structosg__material__manager_1_1_prioritized_value.html", [
+      [ "osg_material_manager::FunctionCall", "d6/d92/structosg__material__manager_1_1_function_call.html", null ],
+      [ "osg_material_manager::MainVar", "d8/d38/structosg__material__manager_1_1_main_var.html", null ],
+      [ "osg_material_manager::PrioritizedLine", "d3/dd2/structosg__material__manager_1_1_prioritized_line.html", null ]
     ] ],
-    [ "osg_material_manager::ShaderGenerator", "d5/dcb/classosg__material__manager_1_1_shader_generator.html", null ],
+    [ "osg_material_manager::ShaderFactory", "df/d63/classosg__material__manager_1_1_shader_factory.html", null ],
+    [ "osg_material_manager::ShaderFunc", "d1/d5e/classosg__material__manager_1_1_shader_func.html", [
+      [ "osg_material_manager::EnvMapFrag", "d9/d86/classosg__material__manager_1_1_env_map_frag.html", null ],
+      [ "osg_material_manager::EnvMapVert", "df/d8f/classosg__material__manager_1_1_env_map_vert.html", null ],
+      [ "osg_material_manager::YamlShader", "d8/dce/classosg__material__manager_1_1_yaml_shader.html", null ]
+    ] ],
     [ "osg_material_manager::TextureInfo", "d4/d6f/classosg__material__manager_1_1_texture_info.html", null ],
     [ "osg_plot::Color", "da/dc6/structosg__plot_1_1_color.html", null ],
     [ "osg_plot::Curve", "d1/d47/classosg__plot_1_1_curve.html", [
@@ -623,29 +666,21 @@ var hierarchy =
       [ "mars::main_gui::MyQMdiArea", "db/d61/classmars_1_1main__gui_1_1_my_q_mdi_area.html", null ]
     ] ],
     [ "QObject", null, [
+      [ "data_broker_plotter2::DataBrokerPlotterLib", "d1/d22/classdata__broker__plotter2_1_1_data_broker_plotter_lib.html", null ],
       [ "data_broker_plotter::DataBrokerPlotterLib", "d6/d7d/classdata__broker__plotter_1_1_data_broker_plotter_lib.html", null ],
       [ "mars::app::GraphicsTimer", "d2/dd0/classmars_1_1app_1_1_graphics_timer.html", null ],
       [ "mars::cfg_manager_gui::MainCfgGui", "d5/d94/classmars_1_1cfg__manager__gui_1_1_main_cfg_gui.html", null ],
       [ "mars::data_broker_gui::MainDataGui", "d8/d44/classmars_1_1data__broker__gui_1_1_main_data_gui.html", null ],
       [ "mars::gui::ControllerHandler", "d3/df4/classmars_1_1gui_1_1_controller_handler.html", null ],
-      [ "mars::gui::Dialog_Create_Material", "dd/d96/classmars_1_1gui_1_1_dialog___create___material.html", null ],
-      [ "mars::gui::Dialog_Edit_Material", "df/dd9/classmars_1_1gui_1_1_dialog___edit___material.html", null ],
-      [ "mars::gui::JointHandler", "d7/d8e/classmars_1_1gui_1_1_joint_handler.html", null ],
-      [ "mars::gui::LightHandler", "d2/d46/classmars_1_1gui_1_1_light_handler.html", null ],
       [ "mars::gui::MenuAdd", "d7/d96/classmars_1_1gui_1_1_menu_add.html", null ],
       [ "mars::gui::MenuSimulation", "d7/d7d/classmars_1_1gui_1_1_menu_simulation.html", null ],
       [ "mars::gui::MenuWindow", "d7/d76/classmars_1_1gui_1_1_menu_window.html", null ],
-      [ "mars::gui::MotorHandler", "d7/d16/classmars_1_1gui_1_1_motor_handler.html", null ],
-      [ "mars::gui::NodeHandler", "dd/db4/classmars_1_1gui_1_1_node_handler.html", null ],
-      [ "mars::gui::SensorHandler", "d2/deb/classmars_1_1gui_1_1_sensor_handler.html", null ],
-      [ "mars::gui::Widget_Joint_State", "d1/d38/classmars_1_1gui_1_1_widget___joint___state.html", null ],
-      [ "mars::gui::Widget_Node_Options", "d0/d4e/classmars_1_1gui_1_1_widget___node___options.html", null ],
-      [ "mars::gui::Widget_Node_State", "d5/dd4/classmars_1_1gui_1_1_widget___node___state.html", null ],
       [ "mars::log_console::MainConsole", "da/d36/classmars_1_1log__console_1_1_main_console.html", null ],
       [ "mars::main_gui::MainGUI", "dd/d59/classmars_1_1main__gui_1_1_main_g_u_i.html", null ],
       [ "mars::plugins::lib_manager_gui::LibManagerGui", "d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html", null ],
       [ "mars::plugins::Plot3D::Plot3D", "d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html", null ],
-      [ "mars::viz::GraphicsTimer", "d1/d71/classmars_1_1viz_1_1_graphics_timer.html", null ]
+      [ "mars::viz::GraphicsTimer", "d1/d71/classmars_1_1viz_1_1_graphics_timer.html", null ],
+      [ "VirtualJoystickPlugin", "d6/d22/class_virtual_joystick_plugin.html", null ]
     ] ],
     [ "QPlastiqueStyle", null, [
       [ "mars::gui::MarsStyle", "db/d22/classmars_1_1gui_1_1_mars_style.html", null ]
@@ -664,8 +699,10 @@ var hierarchy =
     ] ],
     [ "QWidget", null, [
       [ "__classname___MainWin", "d1/d20/class____classname_______main_win.html", null ],
+      [ "CrossWidget", "da/dc1/class_cross_widget.html", null ],
+      [ "JoystickWidget", "df/dd0/class_joystick_widget.html", null ],
+      [ "mars::config_map_gui::DataWidget", "da/d39/classmars_1_1config__map__gui_1_1_data_widget.html", null ],
       [ "mars::graphics::QtOsgMixGraphicsWidget", "d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html", null ],
-      [ "mars::gui::JoystickWidget", "dc/df2/classmars_1_1gui_1_1_joystick_widget.html", null ],
       [ "mars::gui::SelectionDialog", "d7/d9d/classmars_1_1gui_1_1_selection_dialog.html", null ],
       [ "mars::main_gui::BaseWidget", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html", null ],
       [ "mars::plugins::Plot3D::MotorPlotConfig", "d2/d83/classmars_1_1plugins_1_1_plot3_d_1_1_motor_plot_config.html", null ]
@@ -674,7 +711,27 @@ var hierarchy =
       [ "mars::graphics::map_data_compare< T >", "d9/dde/classmars_1_1graphics_1_1map__data__compare.html", null ]
     ] ],
     [ "exception", null, [
+      [ "configmaps::ConfigItem::BadIndexException", "df/dc4/classconfigmaps_1_1_config_item_1_1_bad_index_exception.html", null ],
+      [ "configmaps::ConfigItem::NoTypeException", "d3/d47/classconfigmaps_1_1_config_item_1_1_no_type_exception.html", null ],
+      [ "configmaps::ConfigItem::WrongTypeException", "dc/dd7/classconfigmaps_1_1_config_item_1_1_wrong_type_exception.html", null ],
       [ "mars::interfaces::SceneParseException", "db/d32/classmars_1_1interfaces_1_1_scene_parse_exception.html", null ]
+    ] ],
+    [ "map", null, [
+      [ "configmaps::FIFOMap< Key, T >", "d8/dae/classconfigmaps_1_1_f_i_f_o_map.html", null ],
+      [ "configmaps::FIFOMap< std::string, ConfigItem >", "d8/dae/classconfigmaps_1_1_f_i_f_o_map.html", [
+        [ "configmaps::ConfigMap", "db/d84/classconfigmaps_1_1_config_map.html", null ]
+      ] ]
+    ] ],
+    [ "vector", null, [
+      [ "configmaps::ConfigVector", "dd/d01/classconfigmaps_1_1_config_vector.html", null ]
+    ] ],
+    [ "succ_cleanup_list", "d4/df6/structsucc__cleanup__list.html", null ],
+    [ "successor", "d5/d90/structsuccessor.html", null ],
+    [ "Ui_CrossWidgetClass", "d6/d70/class_ui___cross_widget_class.html", [
+      [ "Ui::CrossWidgetClass", "d4/dd5/class_ui_1_1_cross_widget_class.html", null ]
+    ] ],
+    [ "Ui_JoystickWidgetClass", "d0/df5/class_ui___joystick_widget_class.html", [
+      [ "Ui::JoystickWidgetClass", "d0/d7f/class_ui_1_1_joystick_widget_class.html", null ]
     ] ],
     [ "T", null, [
       [ "mars::data_broker::LockableContainer< T >", "d3/d9d/classmars_1_1data__broker_1_1_lockable_container.html", null ]

@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['tangent_5funit',['TANGENT_UNIT',['../d1/dfb/_osg_material_8h.html#a0c7a6b16ee0d33f070ac73bfbcae9840',1,'OsgMaterial.h']]],
-  ['texture_5fimage',['TEXTURE_IMAGE',['../de/d80/_h_u_d_texture_8h.html#a1420d34d5ad448106b77f5eb413d187f',1,'HUDTexture.h']]],
-  ['texture_5frtt',['TEXTURE_RTT',['../de/d80/_h_u_d_texture_8h.html#a4ad3c13b7b7d3ad6663c341103148fc9',1,'HUDTexture.h']]],
-  ['texture_5funknown',['TEXTURE_UNKNOWN',['../de/d80/_h_u_d_texture_8h.html#a834bec00a0e0caeb60869dd1e6b0bd3f',1,'HUDTexture.h']]]
+  ['use_5flspsm_5fshadow',['USE_LSPSM_SHADOW',['../d9/d47/_graphics_manager_8h.html#aaff35ac712c96ce04a17f34c7e5f83a1',1,'GraphicsManager.h']]],
+  ['use_5fpssm_5fshadow',['USE_PSSM_SHADOW',['../d9/d47/_graphics_manager_8h.html#a63d0d7a1dfcc3ec859bc304671643c30',1,'GraphicsManager.h']]]
 ];

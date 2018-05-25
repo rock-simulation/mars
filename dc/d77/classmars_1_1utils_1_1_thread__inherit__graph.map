@@ -1,7 +1,0 @@
-<map id="mars::utils::Thread" name="mars::utils::Thread">
-<area shape="rect" id="node2" href="$d7/d09/classmars_1_1data__broker_1_1_data_broker.html" title="Central class of the DataBroker library. " alt="" coords="218,5,353,46"/>
-<area shape="rect" id="node3" href="$dd/d4f/classmars_1_1sim_1_1_controller.html" title="The class to log all data. " alt="" coords="213,71,357,97"/>
-<area shape="rect" id="node4" href="$d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html" title="mars::sim::RotatingRaySensor" alt="" coords="184,121,387,148"/>
-<area shape="rect" id="node5" href="$d9/d6a/classmars_1_1sim_1_1_simulator.html" title="The Simulator class implements the main functions of the MARS simulation. " alt="" coords="214,172,357,199"/>
-<area shape="rect" id="node6" href="$d2/d90/classosg__terrain_1_1_multi_res_height_map_renderer.html" title="osg_terrain::MultiResHeight\lMapRenderer" alt="" coords="193,223,377,265"/>
-</map>

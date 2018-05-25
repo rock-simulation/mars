@@ -1,7 +1,0 @@
-<map id="/media/kavonszadkowski/work/marsdocs/mars/common/cfg_manager/src/CFGParamString.cpp" name="/media/kavonszadkowski/work/marsdocs/mars/common/cfg_manager/src/CFGParamString.cpp">
-<area shape="rect" id="node2" href="$d1/d9c/_c_f_g_param_string_8h.html" title="CFGParamString is a class derived from CFGParam to store values of the type string. " alt="" coords="143,109,276,136"/>
-<area shape="rect" id="node3" href="$dd/d65/_c_f_g_param_8h.html" title="CFGParam is the root class for param objects. " alt="" coords="160,184,259,211"/>
-<area shape="rect" id="node4" href="$d3/d8b/_c_f_g_defs_8h.html" title="This file stores types and structs for the CFG class. " alt="" coords="38,333,127,360"/>
-<area shape="rect" id="node6" href="$da/d11/_c_f_g_property_8h.html" title="CFGProperty holds the value for one property of a CFGParam. " alt="" coords="154,259,264,285"/>
-<area shape="rect" id="node7" href="$d4/dce/_c_f_g_client_8h.html" title="&#39;CFGClient&#39; is a interface to register to a value " alt="" coords="35,259,129,285"/>
-</map>

@@ -1,4 +1,0 @@
-<map id="mars::sim::MultiLevelLaserRangeFinder::RaySubSensor" name="mars::sim::MultiLevelLaserRangeFinder::RaySubSensor">
-<area shape="rect" id="node2" href="$db/dc3/classmars_1_1interfaces_1_1_graphics_camera_interface.html" title="mars::interfaces::Graphics\lCameraInterface" alt="" coords="5,5,181,46"/>
-<area shape="rect" id="node3" href="$d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html" title="mars::interfaces::Graphics\lWindowInterface" alt="" coords="5,70,181,111"/>
-</map>

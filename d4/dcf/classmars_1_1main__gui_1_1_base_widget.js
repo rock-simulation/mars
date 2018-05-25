@@ -9,6 +9,7 @@ var classmars_1_1main__gui_1_1_base_widget =
     [ "closeEvent", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#a9276a220475fb0b33cd35c482ac9495f", null ],
     [ "closeSignal", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#a559371e68490a47f37cec1f5a1b8d694", null ],
     [ "getHiddenCloseState", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#a0b1370335150dcc8b274d1e40a182b58", null ],
+    [ "getName", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#a0b722e8d078fd8b533e93dc05ac6838a", null ],
     [ "hide", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#acd0954e2dfab1da957ee66d3f0f1ac50", null ],
     [ "hideEvent", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#add0f8c8760d7e8972694091c0f0cbbc8", null ],
     [ "hideSignal", "d4/dcf/classmars_1_1main__gui_1_1_base_widget.html#a87dd8758c27cea2eeb880f2413c7c61e", null ],

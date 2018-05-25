@@ -1,5 +1,0 @@
-<map id="mars::graphics::GraphicsWidget" name="mars::graphics::GraphicsWidget">
-<area shape="rect" id="node5" href="$d1/dc5/classmars_1_1graphics_1_1_qt_osg_mix_graphics_widget.html" title="A GraphicsWidget using QWidget. " alt="" coords="446,57,621,98"/>
-<area shape="rect" id="node3" href="$d9/d3b/classmars_1_1interfaces_1_1_graphics_window_interface.html" title="mars::interfaces::Graphics\lWindowInterface" alt="" coords="5,57,181,98"/>
-<area shape="rect" id="node4" href="$d5/d0e/classmars_1_1interfaces_1_1_graphics_gui_interface.html" title="Interface for the osgWidget functionality. " alt="" coords="5,122,181,163"/>
-</map>

@@ -14,10 +14,13 @@ var misc_8h =
     [ "msleep", "d4/d08/misc_8h.html#a308dd126ab29cd4861c57dafdc7d6cbd", null ],
     [ "numToStr", "d4/d08/misc_8h.html#a7242e579fce9f87b6859208497dd47aa", null ],
     [ "pathExists", "d4/d08/misc_8h.html#ab0e1410e9947eb100d813e8d4928c0f1", null ],
+    [ "pathJoin", "d4/d08/misc_8h.html#ad37503046acf95bd7b78cb923d22e051", null ],
     [ "radToDeg", "d4/d08/misc_8h.html#a2d3f90f7cc58e6cf4a5d548e235fdfeb", null ],
     [ "radToDeg", "d4/d08/misc_8h.html#a4d35fab58abe361f8ddc08e87c445838", null ],
     [ "removeFilenamePrefix", "d4/d08/misc_8h.html#a477fc46caab8add56c02a812bd44ab0b", null ],
     [ "removeFilenameSuffix", "d4/d08/misc_8h.html#a499113c3643dc39d9b263a6b651cfcf5", null ],
     [ "replaceString", "d4/d08/misc_8h.html#a2566912504800760839ca41bb00c14e6", null ],
+    [ "tolower", "d4/d08/misc_8h.html#a84fbd4a2b94b23660175314e97c53746", null ],
+    [ "toupper", "d4/d08/misc_8h.html#ab1cb53741bdbca3ac2c3dde4c0b7e7e9", null ],
     [ "trim", "d4/d08/misc_8h.html#a13f4cdc3db19206f9b0dee62fea79300", null ]
 ];

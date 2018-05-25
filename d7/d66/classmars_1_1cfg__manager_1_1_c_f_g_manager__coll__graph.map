@@ -1,5 +1,0 @@
-<map id="mars::cfg_manager::CFGManager" name="mars::cfg_manager::CFGManager">
-<area shape="rect" id="node2" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="5,113,155,154"/>
-<area shape="rect" id="node4" href="$d6/d90/classmars_1_1utils_1_1_mutex.html" title="mars::utils::Mutex" alt="" coords="179,120,305,147"/>
-<area shape="rect" id="node5" href="$d6/d9e/structmars_1_1utils_1_1_pthread_mutex_wrapper.html" title="mars::utils::PthreadMutex\lWrapper" alt="" coords="157,6,328,47"/>
-</map>

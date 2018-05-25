@@ -1,7 +1,0 @@
-<map id="mars::interfaces::BasePolarIntersectionSensor" name="mars::interfaces::BasePolarIntersectionSensor">
-<area shape="rect" id="node5" href="$d3/dde/classmars_1_1sim_1_1_ray_sensor.html" title="mars::sim::RaySensor" alt="" coords="29,261,181,288"/>
-<area shape="rect" id="node6" href="$d1/d86/classmars_1_1sim_1_1_rotating_ray_sensor.html" title="mars::sim::RotatingRaySensor" alt="" coords="207,261,409,288"/>
-<area shape="rect" id="node2" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="10,81,195,122"/>
-<area shape="rect" id="node3" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,5,200,32"/>
-<area shape="rect" id="node4" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="219,81,404,122"/>
-</map>

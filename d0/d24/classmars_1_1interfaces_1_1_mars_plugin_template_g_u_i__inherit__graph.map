@@ -1,9 +1,0 @@
-<map id="mars::interfaces::MarsPluginTemplateGUI" name="mars::interfaces::MarsPluginTemplateGUI">
-<area shape="rect" id="node4" href="$d5/d94/classmars_1_1plugin_1_1_sky_dome_plugin_1_1_sky_dome_plugin.html" title="mars::plugin::SkyDomePlugin\l::SkyDomePlugin" alt="" coords="451,5,645,46"/>
-<area shape="rect" id="node5" href="$da/da1/classmars_1_1plugins_1_1____namespace_____1_1____classname____.html" title="mars::plugins::__namespace\l__::__classname__" alt="" coords="453,70,643,111"/>
-<area shape="rect" id="node6" href="$d5/dec/classmars_1_1plugins_1_1connectors_1_1_connectors.html" title="mars::plugins::connectors\l::Connectors" alt="" coords="462,135,634,177"/>
-<area shape="rect" id="node7" href="$d4/db9/classmars_1_1plugins_1_1connexion__plugin_1_1_connexion_plugin.html" title="mars::plugins::connexion\l_plugin::ConnexionPlugin" alt="" coords="463,201,633,242"/>
-<area shape="rect" id="node8" href="$d8/dbc/classmars_1_1plugins_1_1_entity_view_1_1_entity_view.html" title="mars::plugins::EntityView\l::EntityView" alt="" coords="463,266,633,307"/>
-<area shape="rect" id="node9" href="$d5/d33/classmars_1_1plugins_1_1_plot3_d_1_1_plot3_d.html" title="mars::plugins::Plot3D\l::Plot3D" alt="" coords="474,331,622,373"/>
-<area shape="rect" id="node3" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,198,165,239"/>
-</map>

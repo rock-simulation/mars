@@ -3,7 +3,7 @@ var classmars_1_1interfaces_1_1_base_node_sensor =
     [ "BaseNodeSensor", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#a404b254acfaff97bc8bed585849e1d64", null ],
     [ "~BaseNodeSensor", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#a5b12aedb3fc9ff46499dd3099b58f752", null ],
     [ "getAttachedNode", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#ad6cb742af3f96c07d85a6de928a6a5de", null ],
-    [ "getOrientation", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#a522d7f1ea92378118abb6810c760e7b6", null ],
+    [ "getOrientation", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#a62e60820ac3bbaf98ce0f11ee6457c64", null ],
     [ "acceleration", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#aee810f32f64edc515aa092b8ff2ce029", null ],
     [ "attached_node", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#a220d64adeadd44b01e498dc0c2fbc9fc", null ],
     [ "calcAcceletaion", "da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html#ae2862e166cb66f916449435ac75a56ae", null ],

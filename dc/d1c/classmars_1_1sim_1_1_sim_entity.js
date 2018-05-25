@@ -14,6 +14,8 @@ var classmars_1_1sim_1_1_sim_entity =
     [ "deSelect", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#ae4e114f64e3f376ae5215030a0b0ebcd", null ],
     [ "getConfig", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a15fff06901f452490500652a5f808b43", null ],
     [ "getControllerList", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a148461e445e275df3274a0a361b96050", null ],
+    [ "getEntityCOM", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a764da8776523cb3929447b0736458028", null ],
+    [ "getEntityMass", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a68512da5febc0705ae2ba6836bffd6c9", null ],
     [ "getJoint", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a653e2f690ce5d68ca5ceab3b11d01a45", null ],
     [ "getJoint", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a7014dfeeb9a310194b0fcb0eccc42ff8", null ],
     [ "getMotor", "dc/d1c/classmars_1_1sim_1_1_sim_entity.html#a56bdef53964a07996e5cc4a458f5e3a0", null ],

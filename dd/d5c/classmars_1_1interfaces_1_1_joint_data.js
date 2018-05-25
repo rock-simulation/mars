@@ -11,6 +11,7 @@ var classmars_1_1interfaces_1_1_joint_data =
     [ "angle2_offset", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#a29a13f81f2ac787dc5dd86d48aadbb32", null ],
     [ "axis1", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#adf0c92f8e5f38df9e857afd0e622fe1c", null ],
     [ "axis2", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#a798f56271fe5e8922f0b005730d714d5", null ],
+    [ "config", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#a3d453e88a7727b57a033f8a35b049fdb", null ],
     [ "damping_const_constraint_axis1", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#af48f282abdbe3fc3895ef93a999d8839", null ],
     [ "damping_const_constraint_axis2", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#a0325750fcf1fa73ddc656bc79f58e35c", null ],
     [ "damping_constant", "dd/d5c/classmars_1_1interfaces_1_1_joint_data.html#a8d270f17443656967b06d87950be5892", null ],

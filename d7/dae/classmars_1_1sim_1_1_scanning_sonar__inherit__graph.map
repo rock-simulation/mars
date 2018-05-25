@@ -1,9 +1,0 @@
-<map id="mars::sim::ScanningSonar" name="mars::sim::ScanningSonar">
-<area shape="rect" id="node2" href="$d2/d04/classmars_1_1interfaces_1_1_base_camera_sensor.html" title="mars::interfaces::BaseCamera\lSensor\&lt; double \&gt;" alt="" coords="248,5,448,46"/>
-<area shape="rect" id="node3" href="$da/da3/classmars_1_1interfaces_1_1_base_array_sensor.html" title="mars::interfaces::BaseArray\lSensor\&lt; double \&gt;" alt="" coords="10,5,195,46"/>
-<area shape="rect" id="node4" href="$da/d0c/classmars_1_1interfaces_1_1_base_node_sensor.html" title="mars::interfaces::BaseNode\lSensor" alt="" coords="255,70,441,111"/>
-<area shape="rect" id="node5" href="$da/d73/classmars_1_1interfaces_1_1_base_sensor.html" title="mars::interfaces::BaseSensor" alt="" coords="5,77,200,104"/>
-<area shape="rect" id="node6" href="$d3/d21/classmars_1_1interfaces_1_1_sensor_interface.html" title="mars::interfaces::Sensor\lInterface" alt="" coords="265,135,431,177"/>
-<area shape="rect" id="node7" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="281,201,415,242"/>
-<area shape="rect" id="node8" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="260,266,436,307"/>
-</map>

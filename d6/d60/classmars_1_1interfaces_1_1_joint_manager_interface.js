@@ -4,6 +4,7 @@ var classmars_1_1interfaces_1_1_joint_manager_interface =
     [ "addJoint", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#a0be13491e58fd42e32df5a1d49188e3f", null ],
     [ "changeStepSize", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#ac72e8d75edc03015305d676ec6fa5ed1", null ],
     [ "clearAllJoints", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#a821ae1804501c63db7222891567a3b0b", null ],
+    [ "edit", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#a294cfe0cb9b6df5eebbe5aa3c4ee0d2e", null ],
     [ "editJoint", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#aa356921da0594f7c8d5967b9d20b02c8", null ],
     [ "getDataBrokerNames", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#a8d41642b233fcc416d1e79531a22e6e3", null ],
     [ "getFullJoint", "d6/d60/classmars_1_1interfaces_1_1_joint_manager_interface.html#a66f7589d79b9e2d5b0f0eaab89428774", null ],

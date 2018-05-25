@@ -1,9 +1,0 @@
-<map id="mars::plugins::lib_manager_gui::LibManagerGui" name="mars::plugins::lib_manager_gui::LibManagerGui">
-<area shape="rect" id="node5" href="$d4/da6/classmars_1_1cfg__manager_1_1_c_f_g_manager_interface.html" title="mars::cfg_manager::\lCFGManagerInterface" alt="" coords="190,161,341,202"/>
-<area shape="rect" id="node6" href="$d7/df2/classmars_1_1main__gui_1_1_gui_interface.html" title="The abstract GuiInterface class provides the menu and docking functionality of the GUI..." alt="" coords="366,68,557,95"/>
-<area shape="rect" id="node4" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="853,107,1056,133"/>
-<area shape="rect" id="node8" href="$d4/dcf/classmars_1_1main__gui_1_1_base_widget.html" title="mars::main_gui::BaseWidget" alt="" coords="582,367,773,393"/>
-<area shape="rect" id="node7" href="$d3/d43/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_widget.html" title="mars::plugins::lib\l_manager_gui::LibManagerWidget" alt="" coords="845,321,1064,362"/>
-<area shape="rect" id="node10" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="194,425,337,466"/>
-<area shape="rect" id="node11" href="$dc/dc3/structmars_1_1cfg__manager_1_1cfg_property_struct.html" title="mars::cfg_manager::\lcfgPropertyStruct" alt="" coords="194,307,337,349"/>
-</map>

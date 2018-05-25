@@ -1,8 +1,0 @@
-<map id="mars::plugins::Plot3D::Plot3D" name="mars::plugins::Plot3D::Plot3D">
-<area shape="rect" id="node3" href="$da/df1/classmars_1_1interfaces_1_1_mars_plugin_template_g_u_i.html" title="mars::interfaces::MarsPlugin\lTemplateGUI" alt="" coords="220,57,409,98"/>
-<area shape="rect" id="node5" href="$d1/d70/classmars_1_1interfaces_1_1_plugin_interface.html" title="The interface to load plugin dynamically into the simulation. " alt="" coords="5,86,165,127"/>
-<area shape="rect" id="node6" href="$d0/d0e/classmars_1_1data__broker_1_1_receiver_interface.html" title="Interface for classes that want to receive data from the DataBroker. " alt="" coords="247,122,382,163"/>
-<area shape="rect" id="node7" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="213,188,416,215"/>
-<area shape="rect" id="node8" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="243,239,386,281"/>
-<area shape="rect" id="node9" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="227,305,403,346"/>
-</map>

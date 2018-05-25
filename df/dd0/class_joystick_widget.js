@@ -1,0 +1,28 @@
+var class_joystick_widget =
+[
+    [ "JoystickWidget", "df/dd0/class_joystick_widget.html#a58321c94224a97d7b93f093b95a14a8e", null ],
+    [ "~JoystickWidget", "df/dd0/class_joystick_widget.html#a31e2e05c1186524726686fe523f349ee", null ],
+    [ "calcSpeed", "df/dd0/class_joystick_widget.html#ab03ada0f39f4b7d96288115024206cf4", null ],
+    [ "closeEvent", "df/dd0/class_joystick_widget.html#a2494d26dd0af84ac0300542a6dfec15f", null ],
+    [ "closeSignal", "df/dd0/class_joystick_widget.html#a1b0f40771859314d53c44f837bc05acf", null ],
+    [ "hideEvent", "df/dd0/class_joystick_widget.html#ae7452c51c8993293698b2b0b26ea9b48", null ],
+    [ "hideSignal", "df/dd0/class_joystick_widget.html#a6846302ff6a92e1d4fbffd4568749758", null ],
+    [ "keyPressEvent", "df/dd0/class_joystick_widget.html#a89c94954f6c96d4941af4d7f255c7e40", null ],
+    [ "keyReleaseEvent", "df/dd0/class_joystick_widget.html#a60b796473ffda75846217e643b2b7f77", null ],
+    [ "newSpeed", "df/dd0/class_joystick_widget.html#ab43c33e5445c7c4d9f55648423e03c17", null ],
+    [ "setLeftSpeed", "df/dd0/class_joystick_widget.html#a86db021bcf9ce3328b6521364b37f3d4", null ],
+    [ "setMaxSpeed", "df/dd0/class_joystick_widget.html#a68a0707084ce972647d713467c0f29a1", null ],
+    [ "setRightSpeed", "df/dd0/class_joystick_widget.html#aa5923d6db741e20afeb29fdf3054f9c4", null ],
+    [ "setSpeed", "df/dd0/class_joystick_widget.html#ac11c85101d9b528304331cbc2cf5f8d9", null ],
+    [ "updateCrossValue", "df/dd0/class_joystick_widget.html#a0fc12fa1bef4b6d135ee6857edf38819", null ],
+    [ "updateWidget", "df/dd0/class_joystick_widget.html#a8682485829df78c4af2ef351308ee8de", null ],
+    [ "actualSpeedLeft", "df/dd0/class_joystick_widget.html#a0707ed4d1ba2f3c630a948ca56a51055", null ],
+    [ "actualSpeedRight", "df/dd0/class_joystick_widget.html#a75b73b6d34023fef98e1173507f77928", null ],
+    [ "crossValueX", "df/dd0/class_joystick_widget.html#a459c25068f4539ee3b2b9a4f738542bc", null ],
+    [ "crossValueY", "df/dd0/class_joystick_widget.html#af83e7d776b3ad0bbf1285f5dcf192072", null ],
+    [ "maxSpeed", "df/dd0/class_joystick_widget.html#aadb6543390aabc02bca570ce31798ab2", null ],
+    [ "newSpeedLeft", "df/dd0/class_joystick_widget.html#a06194a8e417ae8c1fa58b10b865322f8", null ],
+    [ "newSpeedRight", "df/dd0/class_joystick_widget.html#abdfb9b633f43b5ec243ca79881b7492e", null ],
+    [ "ui", "df/dd0/class_joystick_widget.html#aebeac6563e73ab45f77a3b49fbad4ace", null ],
+    [ "zeroZoneSlider", "df/dd0/class_joystick_widget.html#ab3302e5fc3e4da60873109bac1b7009f", null ]
+];

@@ -1,8 +1,0 @@
-<map id="mars::graphics::nodemanager" name="mars::graphics::nodemanager">
-<area shape="rect" id="node2" href="$d8/d4f/structmars_1_1interfaces_1_1_node_data.html" title="NodeData is a struct to exchange node information between the GUI and the simulation. " alt="" coords="955,159,1138,185"/>
-<area shape="rect" id="node3" href="$dc/d1d/structmars_1_1interfaces_1_1contact__params.html" title="mars::interfaces::contact\l_params" alt="" coords="678,69,845,110"/>
-<area shape="rect" id="node4" href="$d9/d1d/classmars_1_1interfaces_1_1_material_data.html" title="MaterialData is a struct to exchange material information of nodes. " alt="" coords="259,273,458,300"/>
-<area shape="rect" id="node7" href="$de/dd2/structmars_1_1interfaces_1_1terrain_struct.html" title="terrainStruct is a struct to exchange height maps between the GUI and the simulation ..." alt="" coords="681,187,841,229"/>
-<area shape="rect" id="node6" href="$d4/d7c/classmars_1_1utils_1_1_color.html" title="mars::utils::Color" alt="" coords="5,444,128,471"/>
-<area shape="rect" id="node8" href="$d9/dec/structmars_1_1interfaces_1_1snmesh.html" title="mars::interfaces::snmesh" alt="" coords="483,433,653,460"/>
-</map>

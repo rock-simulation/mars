@@ -1,4 +1,0 @@
-<map id="mars::gui::MarsGui" name="mars::gui::MarsGui">
-<area shape="rect" id="node2" href="$d5/d1a/classmars_1_1interfaces_1_1_mars_gui_interface.html" title="Sets up the main gui of the simulation and handles various generic gui options. " alt="" coords="5,81,179,122"/>
-<area shape="rect" id="node4" href="$d4/d1a/classmars_1_1cfg__manager_1_1_c_f_g_client.html" title="mars::cfg_manager::\lCFGClient" alt="" coords="203,81,345,122"/>
-</map>

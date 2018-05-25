@@ -1,4 +1,0 @@
-<map id="mars::gui::CaptureWindow" name="mars::gui::CaptureWindow">
-<area shape="rect" id="node3" href="$d3/d52/classmars_1_1main__gui_1_1_menu_interface.html" title="Provides the menuAction function. " alt="" coords="95,13,297,40"/>
-<area shape="rect" id="node4" href="$d8/d6e/classmars_1_1interfaces_1_1_graphics_update_interface.html" title="The Interface to load controller dynamically into the simulation. " alt="" coords="321,6,497,47"/>
-</map>

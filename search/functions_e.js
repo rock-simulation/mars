@@ -1,10 +1,14 @@
 var searchData=
 [
+  ['name',['name',['../dd/dd0/classmars_1_1graphics_1_1_o_s_g_node_struct.html#ab1e114a8694f5fd6aed79ac4cafccf36',1,'mars::graphics::OSGNodeStruct']]],
   ['nearcallback',['nearCallback',['../de/d02/classmars_1_1sim_1_1_world_physics.html#a22a4fbbd3a16d81ed46599bc8e4d32b2',1,'mars::sim::WorldPhysics']]],
   ['new3dwindow',['new3DWindow',['../dd/d00/classmars_1_1graphics_1_1_graphics_manager.html#acfaaa6b56a9c33478e9a9c4dfef3692c',1,'mars::graphics::GraphicsManager::new3DWindow()'],['../d1/d93/classmars_1_1interfaces_1_1_graphics_manager_interface.html#a78ee126aedc928a26f51bad497482667',1,'mars::interfaces::GraphicsManagerInterface::new3DWindow()']]],
+  ['new_5fitem',['new_item',['../db/d24/tsort_8c.html#abf313ebd05ffa0422b4ba493187bb9ff',1,'tsort.c']]],
   ['newjointphysics',['newJointPhysics',['../d3/d9f/classmars_1_1sim_1_1_physics_mapper.html#a04066a21c20e045eb40af49e937b8277',1,'mars::sim::PhysicsMapper']]],
-  ['newlibloaded',['newLibLoaded',['../d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html#a460546958034000c465e45aeb2a10993',1,'mars::plugins::lib_manager_gui::LibManagerGui::newLibLoaded()'],['../d9/d6a/classmars_1_1sim_1_1_simulator.html#a4f0ff2283a78e8dc4b685717119c7ef9',1,'mars::sim::Simulator::newLibLoaded()']]],
+  ['newlibloaded',['newLibLoaded',['../d4/d04/classmars_1_1plugins_1_1lib__manager__gui_1_1_lib_manager_gui.html#a460546958034000c465e45aeb2a10993',1,'mars::plugins::lib_manager_gui::LibManagerGui::newLibLoaded()'],['../d9/d6a/classmars_1_1sim_1_1_simulator.html#a4f0ff2283a78e8dc4b685717119c7ef9',1,'mars::sim::Simulator::newLibLoaded()'],['../df/d2a/classlib__manager_1_1_lib_interface.html#a964f7898cd832073f9c3c78a887f0695',1,'lib_manager::LibInterface::newLibLoaded()']]],
   ['newnodephysics',['newNodePhysics',['../d3/d9f/classmars_1_1sim_1_1_physics_mapper.html#ab9f006c8d93fdc1b6b718ec405c16183',1,'mars::sim::PhysicsMapper']]],
+  ['newspeed',['newSpeed',['../df/dd0/class_joystick_widget.html#ab43c33e5445c7c4d9f55648423e03c17',1,'JoystickWidget::newSpeed()'],['../d6/d22/class_virtual_joystick_plugin.html#aa8280d848f69a2922ddd6ead91162f51',1,'VirtualJoystickPlugin::newSpeed()']]],
+  ['newvalue',['newValue',['../da/dc1/class_cross_widget.html#ab4e3ba36bfe0bb04525ac08212110e7f',1,'CrossWidget']]],
   ['newworld',['newWorld',['../dc/de5/classmars_1_1interfaces_1_1_simulator_interface.html#a895ca65c864d56a5fad1346999cbe46e',1,'mars::interfaces::SimulatorInterface::newWorld()'],['../d9/d6a/classmars_1_1sim_1_1_simulator.html#a61f0e0bb4dd827fa267e15720b2231a5',1,'mars::sim::Simulator::newWorld()']]],
   ['newworldphysics',['newWorldPhysics',['../d3/d9f/classmars_1_1sim_1_1_physics_mapper.html#a65302834dd7fdb42fb1b622c69b78370',1,'mars::sim::PhysicsMapper']]],
   ['nodeangularvelocitysensor',['NodeAngularVelocitySensor',['../d4/dc8/classmars_1_1sim_1_1_node_angular_velocity_sensor.html#a9b3ee266bc57a8ca920118ac845139e0',1,'mars::sim::NodeAngularVelocitySensor']]],
@@ -14,7 +18,6 @@ var searchData=
   ['nodecontactforcesensor',['NodeContactForceSensor',['../d2/d9f/classmars_1_1sim_1_1_node_contact_force_sensor.html#a94437f1d8e6051af14d3062cacbe38a4',1,'mars::sim::NodeContactForceSensor']]],
   ['nodecontactsensor',['NodeContactSensor',['../d4/d37/classmars_1_1sim_1_1_node_contact_sensor.html#aa556ad44fd4702b36b239d8283deddae',1,'mars::sim::NodeContactSensor']]],
   ['nodedata',['NodeData',['../d8/d4f/structmars_1_1interfaces_1_1_node_data.html#a0e0d544fbccb6265fb9ce1841ef5572a',1,'mars::interfaces::NodeData']]],
-  ['nodehandler',['NodeHandler',['../dd/db4/classmars_1_1gui_1_1_node_handler.html#afea2a9d0031795a7259e5495c5725409',1,'mars::gui::NodeHandler']]],
   ['nodemanager',['NodeManager',['../d5/d54/classmars_1_1sim_1_1_node_manager.html#a08fe838f058aa0aff2279f6585e65253',1,'mars::sim::NodeManager']]],
   ['nodephysics',['NodePhysics',['../d7/d2b/classmars_1_1sim_1_1_node_physics.html#a34571c9b0348c399a911927a08fc54e7',1,'mars::sim::NodePhysics']]],
   ['nodepositionsensor',['NodePositionSensor',['../d9/dc2/classmars_1_1sim_1_1_node_position_sensor.html#a492808c03bdeea781219de5a0d5128cf',1,'mars::sim::NodePositionSensor']]],

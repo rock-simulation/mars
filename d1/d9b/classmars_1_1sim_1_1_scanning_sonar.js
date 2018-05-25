@@ -3,7 +3,7 @@ var classmars_1_1sim_1_1_scanning_sonar =
     [ "ScanningSonar", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#ab751ce0a0443277c46b5575f63dba70a", null ],
     [ "~ScanningSonar", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#adb0aa94868c3b5f1114f9116a861e496", null ],
     [ "createConfig", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#a8949903955ed98beebd42c6821cd70b7", null ],
-    [ "getSensorData", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#a790f599c23d888af8158add22a8055be", null ],
+    [ "getSensorData", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#ad97e21d0ef36bf249972ee13c88d7454", null ],
     [ "instanciate", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#aef1fdc729a3493f7ac15422a394d5bf2", null ],
     [ "parseConfig", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#a783e404a4ca3e0dcd713f917bfd0c36e", null ],
     [ "preGraphicsUpdate", "d1/d9b/classmars_1_1sim_1_1_scanning_sonar.html#a603a123ede687c51846693c2647ecf84", null ],
