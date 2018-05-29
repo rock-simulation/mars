@@ -141,6 +141,7 @@ namespace mars {
        * \return Id of the node if it exists, otherwise 0
        */
       virtual interfaces::NodeId getID(const std::string& node_name) const;
+      virtual std::vector<interfaces::NodeId> getNodeIDs(const std::string& str_in_name) const;
       virtual double getCollisionDepth(interfaces::NodeId id) const;
       virtual bool getDataBrokerNames(interfaces::NodeId id, std::string *groupName,
                                       std::string *dataName) const;

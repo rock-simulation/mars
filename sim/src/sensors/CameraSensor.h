@@ -102,6 +102,7 @@ namespace mars {
       bool depthImage;
       bool logicalImage;
       bool enabled;
+      configmaps::ConfigMap map;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,

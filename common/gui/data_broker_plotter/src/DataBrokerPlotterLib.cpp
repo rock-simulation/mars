@@ -6,6 +6,7 @@
 
 #include "DataBrokerPlotter.h"
 #include "DataBrokerPlotterLib.h"
+#include <mars/utils/misc.h>
 #include <cstdio>
 #include <iostream>
 
@@ -49,8 +50,9 @@ namespace data_broker_plotter {
     std::string tmpString = configPath;
     tmpString.append("/");
     tmpString.append("DataBrokerPlotter.yaml");
-    cfg->loadConfig(tmpString.c_str());
-
+    if(mars::utils::pathExists(tmpString)) {
+      cfg->loadConfig(tmpString.c_str());
+    }
     gui->addGenericMenuAction("../DataBroker/DataBrokerPlotter", 1, this, 0);
 
     startTimer(20);

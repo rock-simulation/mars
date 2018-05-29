@@ -34,12 +34,13 @@ namespace mars {
   namespace config_map_gui {
 
 
-    DataWidget::DataWidget(QWidget *parent, bool onlyCompactView,
+    DataWidget::DataWidget(void* backwardCFG, QWidget *parent, bool onlyCompactView,
                            bool allowAdd) :
       QWidget(parent),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
 
+      (void)backwardCFG; // prevent paramter unsed warning
       startTimer(500);
 
       QVBoxLayout *vLayout = new QVBoxLayout();
@@ -109,6 +110,10 @@ namespace mars {
       filterPattern = pattern;
     }
 
+    void DataWidget::setBlackFilterPattern(const std::vector<std::string> &pattern) {
+      blackFilterPattern = pattern;
+    }
+
     void DataWidget::setConfigMap(const std::string &name,
                                   const ConfigMap &map) {
       ignore_change = 1;
@@ -162,6 +167,9 @@ namespace mars {
 
       for(;it!=map.end(); ++it) {
         std::string n = it->first;
+        if(!blackFilterPattern.empty() && checkInPattern(n, blackFilterPattern)) {
+          continue;
+        }
         if(filterPattern.empty() || checkInPattern(n, filterPattern)) {
           for(size_t i=0; i<n.size(); ++i) {
             if(n[i] == '/') {
@@ -372,7 +380,16 @@ namespace mars {
           std::vector<std::string> arrPath = utils::explodeString('/', name);
           ConfigItem *item = config[arrPath[1]];
           for(size_t i=2; i<arrPath.size(); ++i) {
-            item = ((*item)[arrPath[i]]);
+            if(item->isMap()) {
+              item = ((*item)[arrPath[i]]);
+            }
+            else if (item->isVector()) {
+              item = ((*item)[atoi(arrPath[i].c_str())]);
+            }
+            else {
+              fprintf(stderr, "ERROR: update configmap widget structure error!");
+              return;
+            }
           }
           *item = map;
           addConfigMap(name, *item);
@@ -451,7 +468,16 @@ namespace mars {
         std::vector<std::string> arrPath = utils::explodeString('/', name);
         ConfigItem *item = config[arrPath[1]];
         for(size_t i=2; i<arrPath.size(); ++i) {
-          item = ((*item)[arrPath[i]]);
+          if(item->isMap()) {
+            item = ((*item)[arrPath[i]]);
+          }
+          else if (item->isVector()) {
+            item = ((*item)[atoi(arrPath[i].c_str())]);
+          }
+          else {
+            fprintf(stderr, "ERROR: update configmap widget structure error!");
+            return;
+          }
         }
         *item = v;
         addConfigAtom(name, *item);

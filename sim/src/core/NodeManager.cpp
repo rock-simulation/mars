@@ -1568,6 +1568,19 @@ namespace mars {
       return INVALID_ID;
     }
 
+    std::vector<interfaces::NodeId> NodeManager::getNodeIDs(const std::string& str_in_name) const {
+      iMutex.lock();
+      NodeMap::const_iterator iter;
+      std::vector<interfaces::NodeId> out;
+      for(iter = simNodes.begin(); iter != simNodes.end(); iter++) {
+        if (iter->second->getName().find(str_in_name) != std::string::npos)  {
+          out.push_back(iter->first);
+        }
+      }
+      iMutex.unlock();
+      return out;
+    }
+
     void NodeManager::pushToUpdate(SimNode* node) {
       MutexLocker locker(&iMutex);
       NodeMap::iterator iter = nodesToUpdate.find(node->getID());

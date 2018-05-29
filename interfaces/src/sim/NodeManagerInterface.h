@@ -745,6 +745,12 @@ namespace mars {
        * \return Id of the node if it exists, otherwise 0
        */
       virtual NodeId getID(const std::string& node_name) const = 0;
+      /**
+       * Retrieve the ids of the node which contain str_in_name in there name.
+       * \param str_in_name String in the name of the nodes to get the ids for
+       * \return Vector filled with the ids of the node if it exists, otherwise emtpy vector
+       */
+      virtual std::vector<interfaces::NodeId> getNodeIDs(const std::string& str_in_name) const;
       /** \todo write docs */
       virtual double getCollisionDepth(NodeId id) const = 0;
 

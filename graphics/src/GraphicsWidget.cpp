@@ -937,6 +937,25 @@ namespace mars {
       graphicsCamera = new GraphicsCamera(osgCamera, widgetWidth, widgetHeight);
     }
 
+    void GraphicsWidget::setupDistortion(double factor) {
+      osg::Image *image = new osg::Image();
+      image->allocateImage(widgetWidth, widgetHeight,
+                           1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
+      view->getCamera()->attach(osg::Camera::COLOR_BUFFER, image);
+      osg::Texture2D * texture = new osg::Texture2D;
+      texture->setResizeNonPowerOfTwoHint(false);
+      texture->setDataVariance(osg::Object::DYNAMIC);
+      texture->setTextureSize(widgetWidth, widgetHeight);
+      texture->setInternalFormat(GL_RGBA);
+      texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+      texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+      texture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+      texture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+
+      texture->setImage(image);
+      graphicsCamera->setupDistortion(texture, rttImage.get(), scene, factor);
+    }
+
     unsigned long GraphicsWidget::getID(void) {
       return widgetID;
     }
@@ -1034,6 +1053,14 @@ namespace mars {
 
     osg::Texture2D* GraphicsWidget::getRTTDepthTexture(void) {
       return rttDepthTexture.get();
+    }
+
+    osg::Image* GraphicsWidget::getRTTImage(void) {
+      return rttImage.get();
+    }
+
+    osg::Image* GraphicsWidget::getRTTDepthImage(void) {
+      return rttDepthImage.get();
     }
 
     void GraphicsWidget::clearSelectionVectors() {
