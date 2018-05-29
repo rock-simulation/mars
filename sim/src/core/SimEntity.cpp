@@ -31,6 +31,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <math.h>
+#include <float.h>
 #include <iterator> // ostream_iterator
 
 namespace mars {
@@ -119,6 +120,10 @@ namespace mars {
       }
       if (id_specified == 10000) {
         fprintf(stderr, "ERROR: No Node with name_specifier found while SimEntity::getRootestId\n");
+        if (id_lowest == 10000) {
+          fprintf(stderr, "ERROR: No Node found while SimEntity::getRootestId\n");
+          return INVALID_ID;
+        }
         return id_lowest;
       }
       return id_specified;
@@ -139,8 +144,8 @@ namespace mars {
     }
 
     void SimEntity::getBoundingBox(utils::Vector &center, utils::Quaternion &rotation, utils::Vector &extent) {
-      utils::Vector maxVertex(-10000,-10000,-10000);
-      utils::Vector minVertex(10000,10000,10000);
+      utils::Vector maxVertex(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+      utils::Vector minVertex(DBL_MAX, DBL_MAX, DBL_MAX);
       NodeData root = control->nodes->getFullNode(getRootestId());
       NodeData node;
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
@@ -198,7 +203,7 @@ namespace mars {
       vertices.push_back(utils::Vector(-extent.x(), -extent.y(), extent.z()));
       for (int i=0; i<8; i++) {
         vertices[i] *= 0.5;
-        vertices[i] = rotation.toRotationMatrix() * vertices[i];
+        vertices[i] = rotation * vertices[i];
         vertices[i] += center;
       }
     }
