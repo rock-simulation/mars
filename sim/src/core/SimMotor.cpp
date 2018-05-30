@@ -98,6 +98,7 @@ namespace mars {
         pushToDataBroker = 0;
       }
       if(pushToDataBroker > 0) {
+        cmdPackage.add("value", 0.0);
         dbPackage.add("id", (long)sMotor.index);
         dbPackage.add("value", controlValue);
         dbPackage.add("position", getPosition());
@@ -120,6 +121,10 @@ namespace mars {
                                                    data_broker::DATA_PACKAGE_READ_FLAG);
           control->dataBroker->registerTimedProducer(this, groupName, dataName,
                                                      "mars_sim/simTimer", 0);
+          dbCmdId = control->dataBroker->pushData(groupName, "cmd/"+dataName,
+                                                  cmdPackage, NULL,
+                                                  data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
+          control->dataBroker->registerSyncReceiver(this, groupName, "cmd/"+dataName, 0);
         }
       }
     }
