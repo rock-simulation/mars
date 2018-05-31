@@ -268,6 +268,10 @@ namespace mars {
       }
     }
 
+    bool SimEntity::hasAnchorJoint() {
+      return (anchorJointId != 0);
+    }
+
     void SimEntity::setInitialPose(bool reset/*=false*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
@@ -370,6 +374,7 @@ namespace mars {
           if (anchorJointId != 0) {
             control->joints->removeJoint(anchorJointId);
             jointIds.erase(anchorJointId);
+            anchorJointId = 0;
           }
         }
         // set Joints

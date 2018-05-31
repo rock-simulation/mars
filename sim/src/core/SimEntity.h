@@ -134,6 +134,8 @@ namespace mars {
 
       const configmaps::ConfigMap getConfig();
 
+      bool hasAnchorJoint();
+
       void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=nullptr);
 
       interfaces::sReal getEntityMass();
@@ -149,7 +151,7 @@ namespace mars {
       std::string name;
       interfaces::ControlCenter *control;
       configmaps::ConfigMap config;
-      unsigned long anchorJointId;
+      unsigned long anchorJointId = 0;
 
       // stores the ids of the nodes belonging to the robot
       std::map<unsigned long, std::string> nodeIds;
