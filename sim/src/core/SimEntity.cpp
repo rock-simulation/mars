@@ -209,8 +209,8 @@ namespace mars {
         utils::Vector tmpV;
         configmaps::ConfigMap cfg = config;
         if (pPoseCfg != nullptr) {
-          cfg["rotation"] = pPoseCfg->get("rotation", config["rotation"]);
-          cfg["position"] = pPoseCfg->get("position", config["position"]);
+          if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
+          if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
           cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
           cfg["parent"] = pPoseCfg->get("parent", (std::string) "");
           cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
