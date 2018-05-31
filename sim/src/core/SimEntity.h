@@ -124,7 +124,7 @@ namespace mars {
 
       const configmaps::ConfigMap getConfig();
 
-      void setInitialPose(bool reset=false);
+      void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=nullptr);
 
       interfaces::sReal getEntityMass();
 

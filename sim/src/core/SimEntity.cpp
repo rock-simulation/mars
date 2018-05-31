@@ -201,37 +201,44 @@ namespace mars {
       }
     }
 
-    void SimEntity::setInitialPose(bool reset) {
-
+    void SimEntity::setInitialPose(bool reset/*=false*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
         NodeData rootNode = control->nodes->getFullNode(id);
         utils::Quaternion tmpQ(1, 0, 0, 0);
         utils::Vector tmpV;
-        if(config.find("position") != config.end()) {
-          rootNode.pos.x() = config["position"][0];
-          rootNode.pos.y() = config["position"][1];
-          rootNode.pos.z() = config["position"][2];
+        configmaps::ConfigMap cfg = config;
+        if (pPoseCfg != nullptr) {
+          cfg["rotation"] = pPoseCfg->get("rotation", config["rotation"]);
+          cfg["position"] = pPoseCfg->get("position", config["position"]);
+          cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
+          cfg["parent"] = pPoseCfg->get("parent", (std::string) "");
+          cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
+        }
+        if(cfg.find("position") != cfg.end()) {
+          rootNode.pos.x() = cfg["position"][0];
+          rootNode.pos.y() = cfg["position"][1];
+          rootNode.pos.z() = cfg["position"][2];
           control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         }
-        if(config.find("rotation") != config.end()) {
+        if(cfg.find("rotation") != cfg.end()) {
           // check if euler angles or quaternion is provided; rotate around z
           // if only one angle is provided
-          switch (config["rotation"].size()) {
+          switch (cfg["rotation"].size()) {
           case 1: tmpV[0] = 0;
             tmpV[1] = 0;
-            tmpV[2] = config["rotation"][0];
+            tmpV[2] = cfg["rotation"][0];
             tmpQ = utils::eulerToQuaternion(tmpV);
             break;
-          case 3: tmpV[0] = config["rotation"][0];
-            tmpV[1] = config["rotation"][1];
-            tmpV[2] = config["rotation"][2];
+          case 3: tmpV[0] = cfg["rotation"][0];
+            tmpV[1] = cfg["rotation"][1];
+            tmpV[2] = cfg["rotation"][2];
             tmpQ = utils::eulerToQuaternion(tmpV);
             break;
-          case 4: tmpQ.x() = (sReal)config["rotation"][1];
-            tmpQ.y() = (sReal)config["rotation"][2];
-            tmpQ.z() = (sReal)config["rotation"][3];
-            tmpQ.w() = (sReal)config["rotation"][0];
+          case 4: tmpQ.x() = (sReal)cfg["rotation"][1];
+            tmpQ.y() = (sReal)cfg["rotation"][2];
+            tmpQ.z() = (sReal)cfg["rotation"][3];
+            tmpQ.w() = (sReal)cfg["rotation"][0];
             break;
           }
           rootNode.rot = tmpQ;
@@ -239,11 +246,11 @@ namespace mars {
         }
         // check if there is an anchor / parent (anchor is deprecated...)
         std::string parentname = "";
-        if (config.hasKey("parent")) {
-          parentname << config["parent"];
+        if (cfg.hasKey("parent")) {
+          parentname << cfg["parent"];
         }
-        if (config.hasKey("anchor") && (std::string)config["anchor"] != "none") { // backwards compatibility
-          parentname << config["anchor"];
+        if (cfg.hasKey("anchor") && (std::string)cfg["anchor"] != "none") { // backwards compatibility
+          parentname << cfg["anchor"];
         }
         if(!parentname.empty()) {
           if (reset) {
