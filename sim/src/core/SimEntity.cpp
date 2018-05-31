@@ -30,6 +30,8 @@
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
+#include <math.h>
+#include <float.h>
 #include <iterator> // ostream_iterator
 
 namespace mars {
@@ -138,6 +140,71 @@ namespace mars {
     std::string SimEntity::getNode(long unsigned int id) {
       //TODO problem if node does not exist
       return nodeIds.find(id)->second;
+    }
+
+    void SimEntity::getBoundingBox(utils::Vector &center, utils::Quaternion &rotation, utils::Vector &extent) {
+      utils::Vector maxVertex(-DBL_MAX, -DBL_MAX, -DBL_MAX);
+      utils::Vector minVertex(DBL_MAX, DBL_MAX, DBL_MAX);
+      NodeData root = control->nodes->getFullNode(getRootestId());
+      NodeData node;
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        if (!control->nodes->exists(iter->first)) {
+          continue;
+        }
+        node = control->nodes->getFullNode(iter->first);
+        utils::Vector vertices[8] = {
+          node.ext,
+          utils::Vector(-node.ext[0], node.ext[1], node.ext[2]),
+          utils::Vector(node.ext[0], -node.ext[1], node.ext[2]),
+          utils::Vector(node.ext[0], node.ext[1], -node.ext[2]),
+          -node.ext,
+          utils::Vector(node.ext[0], -node.ext[1], -node.ext[2]),
+          utils::Vector(-node.ext[0], node.ext[1], -node.ext[2]),
+          utils::Vector(-node.ext[0], -node.ext[1], node.ext[2])
+        };
+        for(int v=0;v<8;v++) {
+          vertices[v] /= 2;
+          vertices[v] = node.rot.toRotationMatrix() * vertices[v];
+          vertices[v] += node.pos;
+          //till here the bounding box is world frame
+          //now we transform to entity frame
+          vertices[v] -= root.pos;
+          vertices[v] = root.rot.toRotationMatrix().transpose() * vertices[v];
+          //now we calculate the extent
+          for(int i=0;i<3;i++) {
+            maxVertex[i] = fmax(vertices[v][i],maxVertex[i]);
+            minVertex[i] = fmin(vertices[v][i],minVertex[i]);
+          }
+        }
+      }
+      extent = maxVertex - minVertex;
+      center = (maxVertex + minVertex) / 2;
+      //transform center to world frame
+      center += root.pos;
+      rotation = root.rot;
+    }
+
+    /**returns the vertices of the boundingbox
+    */
+    void SimEntity::getBoundingBox(std::vector<utils::Vector> &vertices, utils::Vector& center) {
+      vertices.clear();
+      utils::Quaternion rotation;
+      utils::Vector extent;
+      this->getBoundingBox(center,rotation,extent);
+      vertices.push_back(extent);
+      vertices.push_back(utils::Vector(-extent.x(), extent.y(), extent.z()));
+      vertices.push_back(utils::Vector(extent.x(), -extent.y(), extent.z()));
+      vertices.push_back(utils::Vector(extent.x(), extent.y(), -extent.z()));
+      vertices.push_back(-extent);
+      vertices.push_back(utils::Vector(extent.x(), -extent.y(), -extent.z()));
+      vertices.push_back(utils::Vector(-extent.x(), extent.y(), -extent.z()));
+      vertices.push_back(utils::Vector(-extent.x(), -extent.y(), extent.z()));
+      for (int i=0; i<8; i++) {
+        vertices[i] *= 0.5;
+        vertices[i] = rotation * vertices[i];
+        vertices[i] += center;
+      }
     }
 
     long unsigned int SimEntity::getMotor(const std::string& name) {

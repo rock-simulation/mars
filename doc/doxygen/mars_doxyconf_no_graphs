@@ -745,8 +745,8 @@ WARN_LOGFILE           =
 # Note: If this tag is empty the current directory is searched.
 
 INPUT                  = ../../../mars \
-                         ../../../../lib_manager \
-                         ../../../../configmaps
+                         ../../../lib_manager \
+                         ../../../../tools/configmaps
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -806,7 +806,13 @@ EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = */qt* \
                          */q* \
                          */doxygen/* \
-                         *README*
+                         *README* \
+                         *utils.md \
+                         *data_broker.md \
+                         *cfg_manager.md \
+                         *lib_manager.md \
+                         *configmaps.md \
+                         */Texatures/sources.md
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
 # (namespaces, classes, functions, etc.) that should be excluded from the
@@ -1047,7 +1053,7 @@ HTML_FILE_EXTENSION    = .html
 # of the possible markers and block names see the documentation.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_HEADER            = 
+HTML_HEADER            = ../header.html
 
 # The HTML_FOOTER tag can be used to specify a user-defined HTML footer for each
 # generated HTML page. If the tag is left blank doxygen will generate a standard

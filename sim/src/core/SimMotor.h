@@ -223,8 +223,8 @@ namespace mars {
       interfaces::sReal calcHeatProduction(interfaces::sReal time_ms) const;
 
       // for dataBroker communication
-      data_broker::DataPackage dbPackage;
-      unsigned long dbPushId;
+      data_broker::DataPackage dbPackage, cmdPackage;
+      unsigned long dbPushId, dbCmdId;
       long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex, dbMaxEffortIndex;
       int pushToDataBroker;
     };

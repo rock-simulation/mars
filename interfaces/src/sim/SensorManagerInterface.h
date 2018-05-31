@@ -21,8 +21,8 @@
 /**
  * \file SensorManagerInterface.h
  * \author  Vladimir Komsiyski
- * \brief "SensorManagerInterface" declares the interfaces for all sensor 
- * operations that are used for the communication between the simulation 
+ * \brief "SensorManagerInterface" declares the interfaces for all sensor
+ * operations that are used for the communication between the simulation
  * modules.
  *
  * \version 1.3
@@ -49,7 +49,7 @@ namespace mars {
     struct cameraStruct;
 
     /**
-     * \brief "SensorManagerInterface" declares the interfaces for all sensor 
+     * \brief "SensorManagerInterface" declares the interfaces for all sensor
      * operations that are used for the communication between the simulation modules.
      *
      * The class defines only pure virtual functions that are implemented within
@@ -57,8 +57,8 @@ namespace mars {
      * the ControlCenter class.
      *
      * It is very important to assure the serialization between the threads to
-     * have the desired results. Currently the verified use of the functions 
-     * is only guaranteed by calling it within the main thread (update 
+     * have the desired results. Currently the verified use of the functions
+     * is only guaranteed by calling it within the main thread (update
      * callback from \c gui_thread).
      */
     class SensorManagerInterface {
@@ -68,7 +68,7 @@ namespace mars {
        * \brief Destructor.
        */
       virtual ~SensorManagerInterface() {}
-  
+
       /**
        * \brief Add a sensor to the simulation.
        *
@@ -81,7 +81,15 @@ namespace mars {
        * \return The unique id of the newly added sensor.
        */
       //  virtual unsigned long addSensor(BaseSensor *sensorS, bool reload = false) = 0;
-  
+
+      /**
+       *\brief Returns true, if the sensor with the given id exists.
+       *
+       * \param id The id of the sensor to look for.
+       * \return Whether the node exists.
+       */
+      virtual bool exists(unsigned long index) const = 0;
+
       /**
        * \brief Gives information about core exchange data for sensors.
        *
@@ -100,7 +108,7 @@ namespace mars {
        */
       //virtual void getListCameraSensors(std::vector<core_objects_exchange> *cameraList) const = 0;
       //Depricated could be done by the user
-  
+
       /**
        * \brief Gives all information of a certain sensor.
        *
@@ -109,15 +117,15 @@ namespace mars {
        * \return A pointer to the sensorStruct of the sensor with the given id.
        */
       virtual const BaseSensor* getFullSensor(unsigned long index) const = 0;
-      virtual unsigned long getSensorID(std::string name) const = 0; 
-  
+      virtual unsigned long getSensorID(std::string name) const = 0;
+
       /**
        * \brief Removes a sensor from the simulation.
        *
        * \param index The unique id of the sensor to remove form the simulation.
        */
       virtual void removeSensor(unsigned long index) = 0;
-  
+
       /**
        * \brief This function returns the SimSensor object for a given index.
        *
@@ -126,7 +134,7 @@ namespace mars {
        * \returns Returns a pointer to the corresponding sensor object.
        */
       virtual BaseSensor* getSimSensor(unsigned long index) const = 0;
-  
+
       /**
        * \brief This function returns the GridSensor object for a given index.
        *
@@ -141,28 +149,28 @@ namespace mars {
        *
        * \param cs The cameraStruct of the sensor.
        *
-       * \param index The index of the sensor to get the \c cameraStruct 
+       * \param index The index of the sensor to get the \c cameraStruct
        * \returns Returns 1 if the sensor is found, 0 otherwise.
        */
       ///virtual int getCameraSensor(cameraStruct *cs, int index) const = 0;
-  
+
       /**
        * \brief This function provides the sensor data for a given index.
        *
        * \param data The sensor data of the sensor.
        *
-       * \param index The index of the sensor to get the data 
+       * \param index The index of the sensor to get the data
        */
       virtual int getSensorData(unsigned long id, sReal **data) const = 0;
-  
+
       /**
        *\brief Returns the number of sensors that are currently present in the simulation.
-       * 
+       *
        *\return The number of all sensors.
        */
       virtual int getSensorCount() const = 0;
-  
-      /** 
+
+      /**
        * \brief Destroys all sensors in the simulation.
        *
        * \details The \c clear_all flag indicates if the reload sensors should
@@ -172,12 +180,12 @@ namespace mars {
        * be destroyed as well. If set to \c false they are left intact.
        */
       virtual void clearAllSensors(bool clear_all = false) = 0;
-  
+
       /**
        * \brief This function reloads all sensors from a temporary sensor pool.
        *
        * \details All sensors that have been added with \c reload value as \c true
-       * are added back to the simulation again with a \c reload value of \c true. 
+       * are added back to the simulation again with a \c reload value of \c true.
        */
       virtual void reloadSensors(void) = 0;
 
@@ -185,7 +193,7 @@ namespace mars {
        * Adds an sensor to the known sensors list
        */
       //virtual void addSensorType(const std::string &name,  BaseSensor* (*func)(ControlCenter*,const unsigned long int,const std::string,QDomElement*))=0;
-  
+
       //virtual BaseSensor* createAndAddSensor(const std::string &type_name, std::string name="",QDomElement* config=0, bool reload=true)=0;
 
       //virtual void addSensorType(const std::string &name, BaseSensor* (*func)(ControlCenter*,const unsigned long int, const std::string, mars::ConfigMap*)) = 0;

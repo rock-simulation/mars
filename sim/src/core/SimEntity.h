@@ -35,6 +35,7 @@
 #include <vector>
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
+#include <mars/utils/Quaternion.h>
 
 namespace mars {
 
@@ -107,6 +108,15 @@ namespace mars {
 
       // returns the name of the node with the given id
       std::string getNode(unsigned long id);
+
+      /**writes the center and the extent of the bounding box
+      * to center and extent
+      */
+      void getBoundingBox(utils::Vector &center, utils::Quaternion &rotation, utils::Vector &extent);
+
+      /**returns the 8 vertices of the boundingbox
+      */
+      void getBoundingBox(std::vector<utils::Vector> &vertices, utils::Vector& center);
 
       /**returns the id of the motor with the given name
        * with the current implementation this is slow O(n)

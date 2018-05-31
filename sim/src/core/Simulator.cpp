@@ -713,10 +713,11 @@ namespace mars {
 
       pluginLocker.lockForRead();
       for (unsigned int i=0; i<guiPlugins.size(); i++) {
+        guiPlugins[i].p_interface->update(0);
+        // todo: fix time debuging for gui plugins
         /*
         time = utils::getTime();
 
-        guiPlugins[i].p_interface->update(0);
 
         if(show_time) {
           time = getTimeDiff(time);

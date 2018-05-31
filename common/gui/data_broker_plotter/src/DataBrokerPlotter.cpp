@@ -39,8 +39,9 @@ namespace data_broker_plotter {
     QVBoxLayout *vLayout = new QVBoxLayout();
     vLayout->addWidget(qcPlot);
     setLayout(vLayout);
+    dataLock.lock(),
     createNewPlot();
-
+    dataLock.unlock();
   }
 
   DataBrokerPlotter::~DataBrokerPlotter(void) {

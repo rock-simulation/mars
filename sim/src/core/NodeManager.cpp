@@ -405,6 +405,18 @@ namespace mars {
     }
 
     /**
+     *\brief returns true if the node with the given id exists
+     *
+     */
+    bool NodeManager::exists(NodeId id) const {
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if(iter != simNodes.end()) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
      *\brief returns the number of nodes added to the simulation
      *
      */
@@ -1554,6 +1566,19 @@ namespace mars {
       }
       iMutex.unlock();
       return INVALID_ID;
+    }
+
+    std::vector<interfaces::NodeId> NodeManager::getNodeIDs(const std::string& str_in_name) const {
+      iMutex.lock();
+      NodeMap::const_iterator iter;
+      std::vector<interfaces::NodeId> out;
+      for(iter = simNodes.begin(); iter != simNodes.end(); iter++) {
+        if (iter->second->getName().find(str_in_name) != std::string::npos)  {
+          out.push_back(iter->first);
+        }
+      }
+      iMutex.unlock();
+      return out;
     }
 
     void NodeManager::pushToUpdate(SimNode* node) {
