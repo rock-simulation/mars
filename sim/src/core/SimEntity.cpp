@@ -256,7 +256,7 @@ namespace mars {
           if (reset) {
             fprintf(stderr, "Resetting initial entity pose.\n");
             std::map<unsigned long, std::string>::iterator it;
-            JointId anchorJointId = 0;
+            anchorJointId = 0;
             for (it=jointIds.begin(); it!=jointIds.end(); ++it) {
               if (it->second == "anchor_"+name) {
                 anchorJointId = it->first;
@@ -295,8 +295,14 @@ namespace mars {
             anchorjoint.nodeIndex2 = parentid;
             anchorjoint.type = JOINT_TYPE_FIXED;
             anchorjoint.name = "anchor_"+name;
-            JointId anchorJointId = control->joints->addJoint(&anchorjoint);
+            anchorJointId = control->joints->addJoint(&anchorjoint);
             addJoint(anchorJointId, anchorjoint.name);
+          }
+        } else {
+          //if there was a joint before, remove it
+          if (anchorJointId != 0) {
+            control->joints->removeJoint(anchorJointId);
+            jointIds.erase(anchorJointId);
           }
         }
         // set Joints

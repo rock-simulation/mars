@@ -139,6 +139,7 @@ namespace mars {
       std::string name;
       interfaces::ControlCenter *control;
       configmaps::ConfigMap config;
+      unsigned long anchorJointId;
 
       // stores the ids of the nodes belonging to the robot
       std::map<unsigned long, std::string> nodeIds;
