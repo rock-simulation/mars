@@ -2142,12 +2142,12 @@ namespace mars {
 
     void GraphicsManager::initDefaultLight() {
       defaultLight.lStruct.pos = Vector(2.0, 2.0, 10.0);
-      defaultLight.lStruct.ambient = mars::utils::Color(0.2, 0.2, 0.2, 1.0);
+      defaultLight.lStruct.ambient = mars::utils::Color(0.5, 0.5, 0.5, 1.0);
       defaultLight.lStruct.diffuse = mars::utils::Color(1., 1., 1., 1.0);
       defaultLight.lStruct.specular = mars::utils::Color(1.0, 1.0, 1.0, 1.0);
-      defaultLight.lStruct.constantAttenuation = 0.6;
+      defaultLight.lStruct.constantAttenuation = 1.0;
       defaultLight.lStruct.linearAttenuation = 0.0;
-      defaultLight.lStruct.quadraticAttenuation = 0.0;
+      defaultLight.lStruct.quadraticAttenuation = 0.00002;
       defaultLight.lStruct.directional = true;
       defaultLight.lStruct.type = mars::interfaces::OMNILIGHT;
       defaultLight.lStruct.index = 0;
