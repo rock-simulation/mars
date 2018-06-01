@@ -109,7 +109,10 @@ namespace mars {
                              sensor_data.anchor.z()*sensor_data.anchor.z());
 
       sensor_data.length = sensor_data.anchor.norm();
-
+      sensor_data.force = Vector(0, 0, 0);
+      sensor_data.torque = Vector(0, 0, 0);
+      sensor_data.body_q.x() = sensor_data.body_q.y() = sensor_data.body_q.z() = 0.0;
+      sensor_data.body_q.w() = 1.0;
     }
 
     Joint6DOFSensor::~Joint6DOFSensor(void) {
