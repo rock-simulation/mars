@@ -122,8 +122,8 @@ namespace mars {
       material["shininess"] = 100.;
 
       interfaces::LightData light;
-      light.pos.x() = light.pos.x() = 0.00;
-      light.pos.z() = 3.00;
+      light.pos.x() = light.pos.y() = 2.00;
+      light.pos.z() = 10.00;
       light.lookAt.x() = light.lookAt.x() = 0.00;
       light.lookAt.z() = -1.00;
       light.name = "light";
@@ -131,8 +131,8 @@ namespace mars {
       light.quadraticAttenuation = 0.00002;
       light.type = 1;
       light.angle = 180;
-      light.directional = false;
-      light.ambient = utils::Color(50/255.,50/255.,50/255.,1);
+      light.directional = true;
+      light.ambient = utils::Color(.5,.5,.5,1);
       light.diffuse = utils::Color(1,1,1,1);
       light.specular = utils::Color(1,1,1,1);
       light.toConfigMap(&defaultLight);
