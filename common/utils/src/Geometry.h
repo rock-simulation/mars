@@ -54,16 +54,27 @@ namespace mars {
     Relation relation(Line line, Vector point);
     Relation relation(Vector vector1, Vector vector2);
 
+    Vector intersect(Line line1, Line line2);
     Vector intersect(Plane plane, Line line);
     Line intersect(Plane plane1, Plane plane2);
 
     Vector elemWiseDivision(Vector vector1, Vector vector2);
     double distance(Plane plane, Vector point, bool absolute=true);
+    double distance(Line line1, Line line2);
 
     struct Line {
       Vector point;
       Vector direction;
+      double r_min=-INFINITY;
+      double r_max=INFINITY;
+
       bool initialized;
+      bool isInitialized() {
+        if (initialized) {
+          initialized = (point != Vector(NAN, NAN, NAN));
+        }
+        return initialized;
+      }
 
       enum Method{
         POINT_VECTOR,
@@ -74,12 +85,19 @@ namespace mars {
       Line(void);
 
       Vector getPointOnLine(double r);
+      double getFactorForPoint(Vector point);
     };
 
     struct Plane {
       Vector point;
       Vector normal;
       bool initialized;
+      bool isInitialized() {
+        if (initialized) {
+          initialized = (point != Vector(NAN, NAN, NAN));
+        }
+        return initialized;
+      }
 
       enum Method {
         THREE_POINTS,

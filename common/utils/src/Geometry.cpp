@@ -21,6 +21,7 @@
 #include <Eigen/Core>
 #include "Vector.h"
 #include "Geometry.h"
+#include <cmath>
 
 namespace mars {
   namespace utils {
@@ -34,18 +35,25 @@ namespace mars {
           direction = (vector_type-point).normalized();
           break;
         default:
-          assert(false);
+          assert(method == Method::POINT_VECTOR || method == Method::POINT_POINT);
           break;
       }
       initialized = true;
     }
 
-    Line::Line() : point(Vector(0,0,0)), direction(Vector(0,0,0)), initialized(false) {
+    Line::Line() : point(Vector(NAN, NAN, NAN)), direction(Vector(0,0,0)), initialized(false) {
     }
 
     Vector Line::getPointOnLine(double r) {
-      assert(initialized == true);
+      assert(isInitialized() == true);
       return point + direction * r;
+    }
+
+    double Line::getFactorForPoint(Vector point) {
+      assert(isInitialized() == true);
+      Vector factor = elemWiseDivision(point, direction);
+      assert(factor.x() == factor.y() and factor.y() == factor.z());
+      return factor.x();
     }
 
     Plane::Plane(Vector point, Line line) : point(point) {
@@ -66,7 +74,7 @@ namespace mars {
           normal = (vector_type1-point).cross(vector_type2-point).normalized();
           break;
         default:
-          assert(false);
+          assert(method == Method::POINT_TWO_VECTORS || method == Method::THREE_POINTS);
           break;
       }
       initialized = true;
@@ -77,16 +85,16 @@ namespace mars {
     {
     }
 
-    Plane::Plane(void) : point(Vector(0,0,0)), normal(Vector(0,0,0)), initialized(false) {
+    Plane::Plane(void) : point(Vector(NAN, NAN, NAN)), normal(Vector(0,0,0)), initialized(false) {
     }
 
     void Plane::flipNormal() {
-      assert(initialized == true);
+      assert(isInitialized() == true);
       normal *= -1;
     }
 
     void Plane::pointNormalTowards(Vector point) {
-      assert(initialized == true);
+      assert(isInitialized() == true);
       double dist = distance(*this, point, false);
       if (dist < 0) {
         flipNormal();
@@ -119,7 +127,6 @@ namespace mars {
         return Relation::PARALLEL;
       }
       return Relation::INTERSECT;
-
     }
 
     Relation relation(Plane plane, Line line) {
@@ -152,17 +159,37 @@ namespace mars {
       return Relation::SKEW;
     }
 
+    /**
+    * \brief returns the relation of a line and a point. r_min and r_max give the value range of the line factor, thus the length of the line
+    * \return Relation
+    */
     Relation relation(Line line, Vector point) {
       Vector vec = point - line.point;
       if (relation(line.direction, vec) == Relation::IDENTICAL_OR_MULTIPLE) {
+        double r = line.getFactorForPoint(point);
+        if (r<line.r_min) return Relation::SKEW;
+        if (r>line.r_max) return Relation::SKEW;
         return Relation::CONTAINING;
       }
       return Relation::SKEW;
     }
 
     /**
+    * \brief calculates the intersection point of two lines if they intersect
+    * \return intersection point, otherwise NAN-vector
+    */
+    Vector intersect(Line line1, Line line2) {
+      if (relation(line1, line2) == Relation::INTERSECT) {
+        Vector vert = line1.direction.cross(line2.direction);
+        Plane pln(line1.point, line1.direction, vert, Plane::Method::POINT_TWO_VECTORS);
+        return intersect(pln, line2);
+      }
+      return Vector(NAN,NAN,NAN);
+    }
+
+    /**
     * \brief calculates the intersection point of plane and line if they intersect
-    * \return intersection point, otherwise 0-vector
+    * \return intersection point, otherwise NAN-vector
     */
     Vector intersect(Plane plane, Line line) {
       if (relation(plane, line) == Relation::INTERSECT) {
@@ -170,7 +197,7 @@ namespace mars {
                               (plane.normal.dot(line.direction));
         return line.getPointOnLine(r);
       }
-      return Vector(0,0,0);
+      return Vector(NAN,NAN,NAN);
     }
 
     /**
@@ -190,6 +217,11 @@ namespace mars {
       return Line();
     }
 
+    /**
+    * \brief calculates the distance between plane and point. if absolute is set false it returns the distance positive,
+    *  if it's on the side of the plane to which the plane's normals points
+    * \return intersection line, otherwise 0-vector line
+    */
     double distance(Plane plane, Vector point, bool absolute/*=true*/) {
       Line perpendicular(point, plane.normal,Line::Method::POINT_VECTOR);
       Vector projected = intersect(plane, perpendicular);
@@ -200,6 +232,49 @@ namespace mars {
         sign=-1;
       }
       return sign*distance.norm();
+    }
+
+    /**
+    * \brief calculates the distance between plane and point. r limits define the range of the line.
+    * \return intersection line, otherwise 0-vector line
+    */
+    double distance(Line line1, Line line2) {
+      Relation rel = relation(line1, line2);
+      if (rel == Relation::IDENTICAL_OR_MULTIPLE) {
+        return 0.0;
+      } else if (rel == Relation::PARALLEL) {
+        return (line1.point - line2.point).norm();
+      } else if (rel == Relation::INTERSECT || rel == Relation::SKEW) {
+        double r1, r2;
+        Vector intersection;
+        if (rel == Relation::INTERSECT) {
+          intersection = intersect(line1, line2);
+          r1 = line1.getFactorForPoint(intersection);
+          r2 = line2.getFactorForPoint(intersection);
+        } else {
+          //make plane parallel to line2 containing line1
+          Plane pln(line1.point, line1.direction, line2.direction, Plane::Method::POINT_TWO_VECTORS);
+          double dist = distance(pln, line2.point, false);// we can't simply take this distance as we have to check the value range
+          line1.point += dist * pln.normal;
+          assert(relation(line1, line2) == Relation::INTERSECT);
+          intersection = intersect(line1, line2); //point where the lines are the closest
+          r1 = line1.getFactorForPoint(intersection - dist * pln.normal);
+          r2 = line2.getFactorForPoint(intersection);
+        }
+        r1 = fmin(line1.r_max, fmax(r1, line1.r_min));
+        r2 = fmin(line2.r_max, fmax(r2, line2.r_min));
+        Relation rel1 = relation(line1, intersection);
+        Relation rel2 = relation(line2, intersection);
+        if (rel1 == Relation::CONTAINING && rel2 == Relation::CONTAINING) {
+          // intersection point in range
+          return 0.0;
+        }
+        //distance between the points closest to the intersection
+        return (line1.getPointOnLine(r1) - line2.getPointOnLine(r2)).norm();
+      } else {
+        assert(false);
+      }
+
     }
 
   } // end of namespace utils
