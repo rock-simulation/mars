@@ -128,6 +128,10 @@ namespace mars {
       return id_specified;
     }
 
+    std::map<unsigned long, std::string> SimEntity::getAllNodes() {
+      return nodeIds;
+    }
+
     long unsigned int SimEntity::getNode(const std::string& name) {
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {

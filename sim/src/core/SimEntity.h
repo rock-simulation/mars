@@ -101,6 +101,10 @@ namespace mars {
        */
       unsigned long getRootestId(std::string name_specifier="");
 
+      /**returns the ids of all nodes
+       */
+      std::map<unsigned long, std::string> getAllNodes();
+
       /**returns the id of the node with the given name
        * with the current implementation this is slow
        */
