@@ -209,6 +209,7 @@ namespace mars {
       bool update_ray;
       int pushToDataBroker;
       int visual_rep;
+      interfaces::NodeId frictionDirNode;
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication
       data_broker::DataPackageMapping dbPackageMapping;
