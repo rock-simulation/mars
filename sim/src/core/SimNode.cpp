@@ -26,6 +26,7 @@
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
@@ -60,6 +61,7 @@ namespace mars {
     SimNode::SimNode(ControlCenter *c, const NodeData &sNode_)
       : control(c), sNode(sNode_) {
 
+      frictionDirNode = 0;
       my_interface = 0;
       l_vel = Vector(0.0, 0.0, 0.0);
       a_vel = Vector(0.0, 0.0, 0.0);
@@ -75,6 +77,11 @@ namespace mars {
       graphics_id2 = 0;
       update_ray = false;
       visual_rep = 1;
+
+      configmaps::ConfigMap &map = sNode.map;
+      if(map.hasKey("frictionDirNode")) {
+        frictionDirNode = control->nodes->getID((std::string)map["frictionDirNode"]);
+      }
 
       dbPackageMapping.add("id", &sNode.index);
       dbPackageMapping.add("position/x", &sNode.pos.x());
@@ -576,6 +583,17 @@ namespace mars {
             }*/
           //i_velocity_sum += i_velocity[vel_ptr];
           my_interface->setAngularVelocity(damping);
+        }
+        // handle friction direction by mirror node orientation
+        if(frictionDirNode && my_interface) {
+          Quaternion q = control->nodes->getRotation(frictionDirNode);
+          Vector v(1.0, 0.0, 0.0);
+          v = q*v;
+          if(!sNode.c_params.friction_direction1) {
+            sNode.c_params.friction_direction1 = new Vector();
+          }
+          *(sNode.c_params.friction_direction1) = v;
+          my_interface->setContactParams(sNode.c_params);
         }
         //vel_ptr = (vel_ptr+1)%BACK_VEL;
         if(update_ray || true) {

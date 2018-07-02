@@ -208,6 +208,7 @@ namespace mars {
       unsigned long graphics_id, graphics_id2;
       bool update_ray;
       int visual_rep;
+      interfaces::NodeId frictionDirNode;
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication
       data_broker::DataPackageMapping dbPackageMapping;
