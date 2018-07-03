@@ -62,6 +62,7 @@ namespace mars {
       : control(c), sNode(sNode_) {
 
       frictionDirNode = 0;
+      fDirNode = Vector(1, 0, 0);
       my_interface = 0;
       l_vel = Vector(0.0, 0.0, 0.0);
       a_vel = Vector(0.0, 0.0, 0.0);
@@ -81,6 +82,17 @@ namespace mars {
       configmaps::ConfigMap &map = sNode.map;
       if(map.hasKey("frictionDirNode")) {
         frictionDirNode = control->nodes->getID((std::string)map["frictionDirNode"]);
+        if(frictionDirNode) {
+          std::string groupName, dataName;
+          control->nodes->getDataBrokerNames(frictionDirNode, &groupName, &dataName);
+          control->dataBroker->registerSyncReceiver(this, groupName, dataName, 0);
+
+          if(map.hasKey("fDirInitial")) {
+            fDirNode.x() = map["fDirInitial"]["x"];
+            fDirNode.y() = map["fDirInitial"]["y"];
+            fDirNode.z() = map["fDirInitial"]["z"];
+          }
+        }
       }
 
       dbPackageMapping.add("id", &sNode.index);
@@ -124,6 +136,9 @@ namespace mars {
     SimNode::~SimNode(void) {
       MutexLocker locker(&iMutex);
       removeFromDataBroker();
+      if(control->dataBroker) {
+        control->dataBroker->unregisterSyncReceiver(this, "*", "*");
+      }
       if (my_interface) {
         delete my_interface;
         my_interface = 0;
@@ -586,9 +601,7 @@ namespace mars {
         }
         // handle friction direction by mirror node orientation
         if(frictionDirNode && my_interface) {
-          Quaternion q = control->nodes->getRotation(frictionDirNode);
-          Vector v(1.0, 0.0, 0.0);
-          v = q*v;
+          Vector v = fRotation*fDirNode;
           if(!sNode.c_params.friction_direction1) {
             sNode.c_params.friction_direction1 = new Vector();
           }
@@ -878,5 +891,20 @@ namespace mars {
                                                      "mars_sim/simTimer");
       }
     }
+
+    void SimNode::receiveData(const data_broker::DataInfo& info,
+                              const data_broker::DataPackage& package,
+                              int id) {
+      sReal value;
+      package.get(4, &value);
+      fRotation.x() = value;
+      package.get(5, &value);
+      fRotation.y() = value;
+      package.get(6, &value);
+      fRotation.z() = value;
+      package.get(7, &value);
+      fRotation.w() = value;
+    }
+
   } // end of namespace sim
 } // end of namespace mars
