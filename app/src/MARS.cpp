@@ -174,33 +174,60 @@ namespace mars {
       initialized = true;
     }
 
+    void MARS::loadCoreLibs() {
+      FILE *plugin_config;
+      coreConfigFile = configDir+"/core_libs.txt";
+      plugin_config = fopen(coreConfigFile.c_str() , "r");
+      if(plugin_config) {
+        fclose(plugin_config);
+        libManager->loadConfigFile(coreConfigFile);
+      } else {
+        fprintf(stderr, "Loading default core libraries...\n");
+        libManager->loadLibrary("data_broker");
+        libManager->loadLibrary("mars_sim");
+        libManager->loadLibrary("mars_scene_loader");
+        libManager->loadLibrary("mars_entity_factory");
+        libManager->loadLibrary("mars_smurf");
+        libManager->loadLibrary("mars_smurf_loader");
+        if(!noGUI) {
+          libManager->loadLibrary("main_gui");
+          libManager->loadLibrary("mars_graphics");
+          libManager->loadLibrary("mars_gui");
+          libManager->loadLibrary("entity_view");
+        }
+      }
+    }
+
+    void MARS::loadAdditionalLibs() {
+      std::string otherConfigFile = configDir+"/other_libs.txt";
+      FILE *plugin_config = fopen(otherConfigFile.c_str() , "r");
+      if(plugin_config) {
+        fclose(plugin_config);
+        libManager->loadConfigFile(otherConfigFile);
+      } else {
+        fprintf(stderr, "Loading default additional libraries...\n");
+        // loading errors will be silent for the following optional libraries
+        if(!noGUI) {
+          libManager->loadLibrary("log_console", NULL, true);
+          libManager->loadLibrary("connexion_plugin", NULL, true);
+          libManager->loadLibrary("data_broker_gui", NULL, true);
+          libManager->loadLibrary("cfg_manager_gui", NULL, true);
+          libManager->loadLibrary("lib_manager_gui", NULL, true);
+          libManager->loadLibrary("SkyDomePlugin", NULL, true);
+          libManager->loadLibrary("CameraGUI", NULL, true);
+          libManager->loadLibrary("PythonMars", NULL, true);
+          libManager->loadLibrary("data_broker_plotter2", NULL, true);
+        }
+      }
+    }
+
     void MARS::start(int argc, char **argv, bool startThread,
                      bool handleLibraryLoading) {
 
       if(!initialized) init();
 
-      FILE *plugin_config;
       if(handleLibraryLoading) {
-        coreConfigFile = configDir+"/core_libs.txt";
-        plugin_config = fopen(coreConfigFile.c_str() , "r");
-        if(plugin_config) {
-          fclose(plugin_config);
-          libManager->loadConfigFile(coreConfigFile);
-        } else {
-          fprintf(stderr, "Loading default core libraries...\n");
-          libManager->loadLibrary("data_broker");
-          libManager->loadLibrary("mars_sim");
-          libManager->loadLibrary("mars_scene_loader");
-          libManager->loadLibrary("mars_entity_factory");
-          libManager->loadLibrary("mars_smurf");
-          libManager->loadLibrary("mars_smurf_loader");
-          if(!noGUI) {
-            libManager->loadLibrary("main_gui");
-            libManager->loadLibrary("mars_graphics");
-            libManager->loadLibrary("mars_gui");
-            libManager->loadLibrary("entity_view");
-          }
-        }
+        loadCoreLibs();
       }
 
       // then get the simulation
@@ -243,26 +270,7 @@ namespace mars {
 
       // load the simulation other_libs:
       if(handleLibraryLoading) {
-        std::string otherConfigFile = configDir+"/other_libs.txt";
-        plugin_config = fopen(otherConfigFile.c_str() , "r");
-        if(plugin_config) {
-          fclose(plugin_config);
-          libManager->loadConfigFile(otherConfigFile);
-        } else {
-          fprintf(stderr, "Loading default additional libraries...\n");
-          // loading errors will be silent for the following optional libraries
-          if(!noGUI) {
-            libManager->loadLibrary("log_console", NULL, true);
-            libManager->loadLibrary("connexion_plugin", NULL, true);
-            libManager->loadLibrary("data_broker_gui", NULL, true);
-            libManager->loadLibrary("cfg_manager_gui", NULL, true);
-            libManager->loadLibrary("lib_manager_gui", NULL, true);
-            libManager->loadLibrary("SkyDomePlugin", NULL, true);
-            libManager->loadLibrary("CameraGUI", NULL, true);
-            libManager->loadLibrary("PythonMars", NULL, true);
-            libManager->loadLibrary("data_broker_plotter2", NULL, true);
-          }
-        }
+        loadAdditionalLibs();
       }
 
 #ifndef NO_GUI
