@@ -26,6 +26,7 @@
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
@@ -60,6 +61,8 @@ namespace mars {
     SimNode::SimNode(ControlCenter *c, const NodeData &sNode_)
       : control(c), sNode(sNode_) {
 
+      frictionDirNode = 0;
+      fDirNode = Vector(1, 0, 0);
       my_interface = 0;
       l_vel = Vector(0.0, 0.0, 0.0);
       a_vel = Vector(0.0, 0.0, 0.0);
@@ -78,6 +81,20 @@ namespace mars {
 
       pushToDataBroker = 2;
       configmaps::ConfigMap &map = sNode.map;
+      if(map.hasKey("frictionDirNode")) {
+        frictionDirNode = control->nodes->getID((std::string)map["frictionDirNode"]);
+        if(frictionDirNode) {
+          std::string groupName, dataName;
+          control->nodes->getDataBrokerNames(frictionDirNode, &groupName, &dataName);
+          control->dataBroker->registerSyncReceiver(this, groupName, dataName, 0);
+
+          if(map.hasKey("fDirInitial")) {
+            fDirNode.x() = map["fDirInitial"]["x"];
+            fDirNode.y() = map["fDirInitial"]["y"];
+            fDirNode.z() = map["fDirInitial"]["z"];
+          }
+        }
+      }
       if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
         pushToDataBroker = 0;
       }
@@ -130,6 +147,9 @@ namespace mars {
     SimNode::~SimNode(void) {
       MutexLocker locker(&iMutex);
       removeFromDataBroker();
+      if(control->dataBroker) {
+        control->dataBroker->unregisterSyncReceiver(this, "*", "*");
+      }
       if (my_interface) {
         delete my_interface;
         my_interface = 0;
@@ -590,6 +610,15 @@ namespace mars {
           //i_velocity_sum += i_velocity[vel_ptr];
           my_interface->setAngularVelocity(damping);
         }
+        // handle friction direction by mirror node orientation
+        if(frictionDirNode && my_interface) {
+          Vector v = fRotation*fDirNode;
+          if(!sNode.c_params.friction_direction1) {
+            sNode.c_params.friction_direction1 = new Vector();
+          }
+          *(sNode.c_params.friction_direction1) = v;
+          my_interface->setContactParams(sNode.c_params);
+        }
         //vel_ptr = (vel_ptr+1)%BACK_VEL;
         if(update_ray || true) {
           my_interface->handleSensorData(physics_thread);
@@ -873,5 +902,20 @@ namespace mars {
                                                      "mars_sim/simTimer");
       }
     }
+
+    void SimNode::receiveData(const data_broker::DataInfo& info,
+                              const data_broker::DataPackage& package,
+                              int id) {
+      sReal value;
+      package.get(4, &value);
+      fRotation.x() = value;
+      package.get(5, &value);
+      fRotation.y() = value;
+      package.get(6, &value);
+      fRotation.z() = value;
+      package.get(7, &value);
+      fRotation.w() = value;
+    }
+
   } // end of namespace sim
 } // end of namespace mars

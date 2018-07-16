@@ -28,6 +28,7 @@
 #include <mars/utils/Mutex.h>
 #include <mars/utils/Vector.h>
 #include <mars/data_broker/ProducerInterface.h>
+#include <mars/data_broker/ReceiverInterface.h>
 #include <mars/data_broker/DataPackageMapping.h>
 #include <mars/interfaces/sensor_bases.h>
 #include <mars/interfaces/nodeState.h>
@@ -81,7 +82,8 @@ namespace mars {
      *  - "groundContactForce" (double)
      */
 
-    class SimNode : public data_broker::ProducerInterface {
+    class SimNode : public data_broker::ProducerInterface,
+                    public data_broker::ReceiverInterface {
 
     public:
       SimNode(interfaces::ControlCenter *c, const interfaces::NodeData &sNode);
@@ -177,7 +179,12 @@ namespace mars {
       void addRotation(const utils::Quaternion &q);
       void checkNodeState(void);
       void updateRay(void);
-      virtual void produceData(const data_broker::DataInfo &info, data_broker::DataPackage *package, int callbackParam);
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
+                               int callbackParam);
+      virtual void receiveData(const data_broker::DataInfo &info,
+                               const data_broker::DataPackage &package,
+                               int callbackParam);
       void updatePR(const utils::Vector &pos,
                     const utils::Quaternion &rot,
                     const utils::Vector &visOffsetPos,
@@ -209,6 +216,9 @@ namespace mars {
       bool update_ray;
       int pushToDataBroker;
       int visual_rep;
+      interfaces::NodeId frictionDirNode;
+      utils::Vector fDirNode;
+      utils::Quaternion fRotation;
       mutable utils::Mutex iMutex;
       // stuff for dataBroker communication
       data_broker::DataPackageMapping dbPackageMapping;
