@@ -380,16 +380,7 @@ namespace mars {
           std::vector<std::string> arrPath = utils::explodeString('/', name);
           ConfigItem *item = config[arrPath[1]];
           for(size_t i=2; i<arrPath.size(); ++i) {
-            if(item->isMap()) {
-              item = ((*item)[arrPath[i]]);
-            }
-            else if (item->isVector()) {
-              item = ((*item)[atoi(arrPath[i].c_str())]);
-            }
-            else {
-              fprintf(stderr, "ERROR: update configmap widget structure error!");
-              return;
-            }
+            item = ((*item)[arrPath[i]]);
           }
           *item = map;
           addConfigMap(name, *item);
@@ -468,16 +459,7 @@ namespace mars {
         std::vector<std::string> arrPath = utils::explodeString('/', name);
         ConfigItem *item = config[arrPath[1]];
         for(size_t i=2; i<arrPath.size(); ++i) {
-          if(item->isMap()) {
-            item = ((*item)[arrPath[i]]);
-          }
-          else if (item->isVector()) {
-            item = ((*item)[atoi(arrPath[i].c_str())]);
-          }
-          else {
-            fprintf(stderr, "ERROR: update configmap widget structure error!");
-            return;
-          }
+          item = ((*item)[arrPath[i]]);
         }
         *item = v;
         addConfigAtom(name, *item);
