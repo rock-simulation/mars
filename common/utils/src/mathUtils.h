@@ -107,6 +107,14 @@ namespace mars {
 
     Vector getProjection(const Vector &v1, const Vector &v2);
 
+    /** \brief Projects a vector to a plane defined by the direction vectors pln1 and pln2.
+    * \param vec: Vector to project
+    * \param pln1: a vector that lies in the plane
+    * \param pln2: another linear independent vector that lies in the plane
+    * \return The projected vector
+    */
+    Vector projectVectorToPlane(Vector vec, Vector pln1, Vector pln2);
+
     Vector vectorFromSpherical(double r, double theta, double phi);
 
     bool vectorFromConfigItem(ConfigItem *item, Vector *v);
