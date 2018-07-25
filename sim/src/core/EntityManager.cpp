@@ -155,6 +155,18 @@ namespace mars {
       return 0;
     }
 
+
+    std::vector<SimEntity*> EntityManager::getEntities(const std::string &name) {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (iter->second->getName().find(name) != std::string::npos) {
+          out.push_back(iter->second);
+        }
+      }
+      return out;
+    }
+
     SimEntity* EntityManager::getEntity(long unsigned int id) {
       //TODO replace with find
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();

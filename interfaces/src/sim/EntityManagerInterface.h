@@ -33,7 +33,7 @@
 #include <vector>
 
 namespace mars {
-  
+
   namespace sim {
     class SimEntity;
   }
@@ -55,39 +55,43 @@ namespace mars {
 
       /**adds an existing entity to its entity map, returning the assigned id*/
       virtual unsigned long addEntity(sim::SimEntity* entity) = 0;
-    
-      /**adds a node to the entity and maps the nodeId to its name*/    
+
+      /**adds a node to the entity and maps the nodeId to its name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId, const std::string &nodeName) = 0;
-    
+
       /**adds a motor to the entity and maps the motorId to its name*/
       virtual void addMotor(const std::string &entityName, unsigned long motorId, const std::string &motorName) = 0;
-    
+
       /**adds a controller id to the controller list*/
       virtual void addController(const std::string &entityName, unsigned long controllerId) = 0;
-    
+
       /**adds a joint to the entity and maps the jointId to its name*/
       virtual void addJoint(const std::string &entityName, unsigned long jointId, const std::string &jointName) = 0;
-    
+
       //from graphics event client
       virtual void selectEvent(unsigned long id, bool mode) = 0;
-    
+
       /**returns the entity with the given name
        */
       virtual sim::SimEntity* getEntity(const std::string &name) = 0;
-    
+
+      /**returns the entities that contain the given name string
+       */
+      virtual std::vector<sim::SimEntity*> getEntities(const std::string &name) = 0;
+
       /**returns the entity with the given id*/
       virtual sim::SimEntity* getEntity(unsigned long id) = 0;
-     
+
       /**returns the node of the given entity; returns 0 if the entity or the node don't exist*/
       virtual unsigned long getEntityNode(const std::string &entityName, const std::string &nodeName) = 0;
-     
+
       virtual unsigned long getEntityMotor(const std::string &entityName, const std::string &motorName) = 0;
-     
+
       virtual std::vector<unsigned long> getEntityControllerList(const std::string &entityName) = 0;
 
       /**returns the node of the given entity; returns 0 if the entity or the node don't exist*/
       virtual unsigned long getEntityJoint(const std::string &entityName, const std::string &jointName) = 0;
-     
+
       //Debug functions
       virtual void printEntityNodes(const std::string &entityName) = 0;
       virtual void printEntityMotors(const std::string &entityName) = 0;

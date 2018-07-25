@@ -105,6 +105,10 @@ namespace mars {
        */
       std::map<unsigned long, std::string> getAllNodes();
 
+      /**returns the ids of all node that contain the given name string
+       */
+      std::vector<unsigned long> getNodes(const std::string& name);
+
       /**returns the id of the node with the given name
        * with the current implementation this is slow
        */

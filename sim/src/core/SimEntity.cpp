@@ -132,7 +132,17 @@ namespace mars {
       return nodeIds;
     }
 
-    long unsigned int SimEntity::getNode(const std::string& name) {
+    std::vector<unsigned long> SimEntity::getNodes(const std::string& name) {
+      std::vector<unsigned long> out;
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        if (iter->second.find(name) != std::string::npos)
+          out.push_back(iter->first);
+      }
+      return out;
+    }
+
+    unsigned long SimEntity::getNode(const std::string& name) {
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {
         if (iter->second == name)
@@ -141,7 +151,7 @@ namespace mars {
       return 0;
     }
 
-    std::string SimEntity::getNode(long unsigned int id) {
+    std::string SimEntity::getNode(unsigned long id) {
       //TODO problem if node does not exist
       return nodeIds.find(id)->second;
     }
