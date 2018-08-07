@@ -24,7 +24,7 @@
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
-#include <mars/utils/Geometry.h>
+#include <mars/utils/Geometry.hpp>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>

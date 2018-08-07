@@ -113,7 +113,7 @@ namespace mars {
         // special case 0 and 180 degrees where the axis is ambiguous
         // Note that acos returns a value in [0, M_PI] so angle is in that range
         if ((angle <= EPSILON) || (M_PI - angle <= EPSILON)) {
-          // find an axis that isn't zero and switch it with another one 
+          // find an axis that isn't zero and switch it with another one
           // make sure to keep the length intact
           Vector dummy;
           if (v1(0) > EPSILON) {
@@ -131,7 +131,7 @@ namespace mars {
 
 
     Quaternion eulerToQuaternion(const Vector &euler_v) {
-#if 1 
+#if 1
       double _heading  = degToRad(euler_v[2]);
       double _attitude = degToRad(euler_v[1]);
       double _bank     = degToRad(euler_v[0]);
@@ -161,7 +161,7 @@ namespace mars {
     }
 
     sRotation quaternionTosRotation(const Quaternion &value) {
-#if 1 
+#if 1
       sRotation euler;
       double sqw = value.w()*value.w();
       double sqx = value.x()*value.x();
@@ -187,7 +187,7 @@ namespace mars {
       rot.beta = radToDeg(yaw_roll_pitch.y());
       rot.gamma = radToDeg(yaw_roll_pitch.z());
 
-      return rot; 
+      return rot;
 #endif
     }
 
@@ -196,7 +196,7 @@ namespace mars {
       if (fabs(t) > 1) {
         throw std::runtime_error("Argument t to Vector::slerp must be in range [-1, 1].");
       }
-    
+
       double length1 = from.norm();
       double length2 = to.norm();
       double tmp = from.dot(to) / (length1 * length2);
@@ -214,7 +214,7 @@ namespace mars {
 
       Vector ret;
       /* special case angle==0 and angle==360 */
-      if ((fabs(angle) <= EPSILON) || 
+      if ((fabs(angle) <= EPSILON) ||
           (fabs(fabs(angle) - 2 * M_PI) <= EPSILON)) {
         /* approximate with lerp, because slerp diverges with 1/sin(angle) */
         ret = lerp(from, to, t);
@@ -256,6 +256,11 @@ namespace mars {
       Vector ret(v2);
       ret *= a/b;
       return ret;
+    }
+
+    Vector projectVectorToPlane(Vector vec, Vector pln1, Vector pln2) {
+      return ((vec.dot(pln1))/(pln1.dot(pln1)))*pln1 +
+             ((vec.dot(pln2))/(pln2.dot(pln2)))*pln2;
     }
 
     Vector vectorFromSpherical(double r, double theta, double phi) {
