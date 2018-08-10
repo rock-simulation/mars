@@ -24,6 +24,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/EntitySubscriberInterface.h>
 #include <mars/utils/MutexLocker.h>
+#include <mars/utils/misc.h>
 
 #include <iostream>
 #include <string>
@@ -160,7 +161,7 @@ namespace mars {
       std::vector<SimEntity*> out;
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
-        if (iter->second->getName().find(name) != std::string::npos) {
+        if (matchPattern(name, iter->second->getName())) {
           out.push_back(iter->second);
         }
       }

@@ -23,6 +23,7 @@
 #include <configmaps/ConfigData.h>
 #include <iostream>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/misc.h>
 #include <mars/interfaces/NodeData.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -113,7 +114,7 @@ namespace mars {
         iter != nodeIds.end(); ++iter) {
         if (iter->first <= id_lowest || (id_lowest == INVALID_ID && iter->first != INVALID_ID)) {
           id_lowest = iter->first;
-          if ((iter->first <= id_specified || (id_specified == INVALID_ID && iter->first != INVALID_ID)) && iter->second.find(name_specifier) != std::string::npos) {
+          if ((iter->first <= id_specified || (id_specified == INVALID_ID && iter->first != INVALID_ID)) && utils::matchPattern(name_specifier, iter->second)) {
               id_specified = iter->first;
           }
         }
@@ -136,8 +137,9 @@ namespace mars {
       std::vector<unsigned long> out;
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {
-        if (iter->second.find(name) != std::string::npos)
+        if (utils::matchPattern(name, iter->second)) {
           out.push_back(iter->first);
+        }
       }
       return out;
     }

@@ -204,14 +204,11 @@ namespace mars {
     }
 
     void JointManager::removeJointByIDs(unsigned long id1, unsigned long id2) {
-      iMutex.lock();
       unsigned long id = getIDByNodeIDs(id1, id2);
       if (id != 0) {
-          iMutex.unlock();
           removeJoint(id);
           return;
       }
-      iMutex.unlock();
     }
 
     SimJoint* JointManager::getSimJoint(unsigned long id){
