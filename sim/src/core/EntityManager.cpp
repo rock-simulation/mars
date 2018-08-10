@@ -24,6 +24,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/EntitySubscriberInterface.h>
 #include <mars/utils/MutexLocker.h>
+#include <mars/utils/misc.h>
 
 #include <iostream>
 #include <string>
@@ -153,6 +154,18 @@ namespace mars {
         }
       }
       return 0;
+    }
+
+
+    std::vector<SimEntity*> EntityManager::getEntities(const std::string &name) {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (matchPattern(name, iter->second->getName())) {
+          out.push_back(iter->second);
+        }
+      }
+      return out;
     }
 
     SimEntity* EntityManager::getEntity(long unsigned int id) {

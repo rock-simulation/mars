@@ -101,6 +101,14 @@ namespace mars {
        */
       unsigned long getRootestId(std::string name_specifier="");
 
+      /**returns the ids of all nodes
+       */
+      std::map<unsigned long, std::string> getAllNodes();
+
+      /**returns the ids of all node that contain the given name string
+       */
+      std::vector<unsigned long> getNodes(const std::string& name);
+
       /**returns the id of the node with the given name
        * with the current implementation this is slow
        */
@@ -134,7 +142,9 @@ namespace mars {
 
       const configmaps::ConfigMap getConfig();
 
-      void setInitialPose(bool reset=false);
+      bool hasAnchorJoint();
+
+      void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=nullptr);
 
       interfaces::sReal getEntityMass();
 
@@ -149,6 +159,7 @@ namespace mars {
       std::string name;
       interfaces::ControlCenter *control;
       configmaps::ConfigMap config;
+      unsigned long anchorJointId = 0;
 
       // stores the ids of the nodes belonging to the robot
       std::map<unsigned long, std::string> nodeIds;

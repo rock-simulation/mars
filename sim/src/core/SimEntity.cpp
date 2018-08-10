@@ -23,6 +23,7 @@
 #include <configmaps/ConfigData.h>
 #include <iostream>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/misc.h>
 #include <mars/interfaces/NodeData.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -113,7 +114,7 @@ namespace mars {
         iter != nodeIds.end(); ++iter) {
         if (iter->first <= id_lowest || (id_lowest == INVALID_ID && iter->first != INVALID_ID)) {
           id_lowest = iter->first;
-          if ((iter->first <= id_specified || (id_specified == INVALID_ID && iter->first != INVALID_ID)) && iter->second.find(name_specifier) != std::string::npos) {
+          if ((iter->first <= id_specified || (id_specified == INVALID_ID && iter->first != INVALID_ID)) && utils::matchPattern(name_specifier, iter->second)) {
               id_specified = iter->first;
           }
         }
@@ -128,7 +129,22 @@ namespace mars {
       return id_specified;
     }
 
-    long unsigned int SimEntity::getNode(const std::string& name) {
+    std::map<unsigned long, std::string> SimEntity::getAllNodes() {
+      return nodeIds;
+    }
+
+    std::vector<unsigned long> SimEntity::getNodes(const std::string& name) {
+      std::vector<unsigned long> out;
+      for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
+          iter != nodeIds.end(); ++iter) {
+        if (utils::matchPattern(name, iter->second)) {
+          out.push_back(iter->first);
+        }
+      }
+      return out;
+    }
+
+    unsigned long SimEntity::getNode(const std::string& name) {
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {
         if (iter->second == name)
@@ -137,7 +153,7 @@ namespace mars {
       return 0;
     }
 
-    std::string SimEntity::getNode(long unsigned int id) {
+    std::string SimEntity::getNode(unsigned long id) {
       //TODO problem if node does not exist
       return nodeIds.find(id)->second;
     }
@@ -268,37 +284,48 @@ namespace mars {
       }
     }
 
-    void SimEntity::setInitialPose(bool reset) {
+    bool SimEntity::hasAnchorJoint() {
+      return (anchorJointId != 0);
+    }
 
+    void SimEntity::setInitialPose(bool reset/*=false*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
         NodeData rootNode = control->nodes->getFullNode(id);
         utils::Quaternion tmpQ(1, 0, 0, 0);
         utils::Vector tmpV;
-        if(config.find("position") != config.end()) {
-          rootNode.pos.x() = config["position"][0];
-          rootNode.pos.y() = config["position"][1];
-          rootNode.pos.z() = config["position"][2];
+        configmaps::ConfigMap cfg = config;
+        if (pPoseCfg != nullptr) {
+          if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
+          if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
+          cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
+          cfg["parent"] = pPoseCfg->get("parent", (std::string) "");
+          cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
+        }
+        if(cfg.find("position") != cfg.end()) {
+          rootNode.pos.x() = cfg["position"][0];
+          rootNode.pos.y() = cfg["position"][1];
+          rootNode.pos.z() = cfg["position"][2];
           control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         }
-        if(config.find("rotation") != config.end()) {
+        if(cfg.find("rotation") != cfg.end()) {
           // check if euler angles or quaternion is provided; rotate around z
           // if only one angle is provided
-          switch (config["rotation"].size()) {
+          switch (cfg["rotation"].size()) {
           case 1: tmpV[0] = 0;
             tmpV[1] = 0;
-            tmpV[2] = config["rotation"][0];
+            tmpV[2] = cfg["rotation"][0];
             tmpQ = utils::eulerToQuaternion(tmpV);
             break;
-          case 3: tmpV[0] = config["rotation"][0];
-            tmpV[1] = config["rotation"][1];
-            tmpV[2] = config["rotation"][2];
+          case 3: tmpV[0] = cfg["rotation"][0];
+            tmpV[1] = cfg["rotation"][1];
+            tmpV[2] = cfg["rotation"][2];
             tmpQ = utils::eulerToQuaternion(tmpV);
             break;
-          case 4: tmpQ.x() = (sReal)config["rotation"][1];
-            tmpQ.y() = (sReal)config["rotation"][2];
-            tmpQ.z() = (sReal)config["rotation"][3];
-            tmpQ.w() = (sReal)config["rotation"][0];
+          case 4: tmpQ.x() = (sReal)cfg["rotation"][1];
+            tmpQ.y() = (sReal)cfg["rotation"][2];
+            tmpQ.z() = (sReal)cfg["rotation"][3];
+            tmpQ.w() = (sReal)cfg["rotation"][0];
             break;
           }
           rootNode.rot = tmpQ;
@@ -306,17 +333,17 @@ namespace mars {
         }
         // check if there is an anchor / parent (anchor is deprecated...)
         std::string parentname = "";
-        if (config.hasKey("parent")) {
-          parentname << config["parent"];
+        if (cfg.hasKey("parent")) {
+          parentname << cfg["parent"];
         }
-        if (config.hasKey("anchor") && (std::string)config["anchor"] != "none") { // backwards compatibility
-          parentname << config["anchor"];
+        if (cfg.hasKey("anchor") && (std::string)cfg["anchor"] != "none") { // backwards compatibility
+          parentname << cfg["anchor"];
         }
         if(!parentname.empty()) {
           if (reset) {
             fprintf(stderr, "Resetting initial entity pose.\n");
             std::map<unsigned long, std::string>::iterator it;
-            JointId anchorJointId = 0;
+            anchorJointId = 0;
             for (it=jointIds.begin(); it!=jointIds.end(); ++it) {
               if (it->second == "anchor_"+name) {
                 anchorJointId = it->first;
@@ -355,8 +382,15 @@ namespace mars {
             anchorjoint.nodeIndex2 = parentid;
             anchorjoint.type = JOINT_TYPE_FIXED;
             anchorjoint.name = "anchor_"+name;
-            JointId anchorJointId = control->joints->addJoint(&anchorjoint);
+            anchorJointId = control->joints->addJoint(&anchorjoint);
             addJoint(anchorJointId, anchorjoint.name);
+          }
+        } else {
+          //if there was a joint before, remove it
+          if (anchorJointId != 0) {
+            control->joints->removeJoint(anchorJointId);
+            jointIds.erase(anchorJointId);
+            anchorJointId = 0;
           }
         }
         // set Joints

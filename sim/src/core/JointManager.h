@@ -71,12 +71,13 @@ namespace mars {
       virtual void setReloadAnchor(unsigned long id, const utils::Vector &anchor);
       virtual void setSDParams(unsigned long id, interfaces::JointData *sJoint);
 
-      virtual void setVelocity(unsigned long id, interfaces::sReal velocity) ;
-      virtual void setVelocity2(unsigned long id, interfaces::sReal velocity) ;
+      virtual void setVelocity(unsigned long id, interfaces::sReal velocity);
+      virtual void setVelocity2(unsigned long id, interfaces::sReal velocity);
       virtual void setForceLimit(unsigned long id, interfaces::sReal max_force,
                                  bool first_axis = 1);
 
       virtual unsigned long getID(const std::string &joint_name) const;
+      virtual unsigned long getIDByNodeIDs(unsigned long id1, unsigned long id2);
       virtual bool getDataBrokerNames(unsigned long id, std::string *groupName,
                                       std::string *dataName) const;
       virtual void setOfflineValue(unsigned long id, interfaces::sReal value);
