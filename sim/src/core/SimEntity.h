@@ -28,6 +28,7 @@
 #ifndef SIMENTITY_H
 #define SIMENTITY_H
 
+
 #include <configmaps/ConfigData.h>
 #include <string>
 #include <set>
@@ -144,7 +145,7 @@ namespace mars {
 
       bool hasAnchorJoint();
 
-      void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=nullptr);
+      void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=NULL);
 
       interfaces::sReal getEntityMass();
 
