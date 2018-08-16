@@ -1281,7 +1281,7 @@ namespace mars {
       cfgFaststep = control->cfg->getOrCreateProperty("Simulator", "faststep",
                                                       false, this);
       cfgRealtime = control->cfg->getOrCreateProperty("Simulator", "realtime calc",
-                                                      false, this);
+                                                      true, this);
       my_real_time = cfgRealtime.bValue;
 
       cfgDebugTime = control->cfg->getOrCreateProperty("Simulator", "debug time",
@@ -1306,10 +1306,10 @@ namespace mars {
                                                 -9.81, this);
 
       cfgWorldErp = control->cfg->getOrCreateProperty("Simulator", "world erp",
-                                                      0.1, this);
+                                                      0.2, this);
 
       cfgWorldCfm = control->cfg->getOrCreateProperty("Simulator", "world cfm",
-                                                      1e-10, this);
+                                                      1e-5, this);
 
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
