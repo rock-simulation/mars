@@ -39,6 +39,7 @@
 #include "NodePositionSensor.h"
 #include "NodeRotationSensor.h"
 #include "NodeContactSensor.h"
+#include "NodeIMUSensor.h"
 #include "NodeContactForceSensor.h"
 #include "NodeCOMSensor.h"
 #include "JointPositionSensor.h"
@@ -91,6 +92,7 @@ namespace mars {
       addSensorType("JointAVGTorque",&JointAVGTorqueSensor::instanciate);
       addSensorType("Joint6DOF",&Joint6DOFSensor::instanciate);
       addSensorType("NodeContact",&NodeContactSensor::instanciate);
+      addSensorType("NodeIMU", &NodeIMUSensor::instanciate);
       addSensorType("NodePosition",&NodePositionSensor::instanciate);
       addSensorType("NodeRotation",&NodeRotationSensor::instanciate);
       addSensorType("NodeContactForce",&NodeContactForceSensor::instanciate);
@@ -112,6 +114,7 @@ namespace mars {
       addMarsParser("JointAVGTorque",&JointArraySensor::parseConfig);
       addMarsParser("Joint6DOF",&Joint6DOFSensor::parseConfig);
       addMarsParser("NodeContact",&NodeContactSensor::parseConfig);
+      addMarsParser("NodeIMU", &NodeIMUSensor::parseConfig);
       addMarsParser("NodePosition",&NodeArraySensor::parseConfig);
       addMarsParser("NodeRotation",&NodeArraySensor::parseConfig);
       addMarsParser("NodeContactForce",&NodeArraySensor::parseConfig);

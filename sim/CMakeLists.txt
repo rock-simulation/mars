@@ -82,11 +82,11 @@ set(SOURCES_H
        src/core/SimNode.h
        src/core/Simulator.h
        src/sensors/RotatingRaySensor.h
-       
+
        src/physics/JointPhysics.h
        src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
-       
+
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h
        src/sensors/Joint6DOFSensor.h
@@ -104,6 +104,7 @@ set(SOURCES_H
        src/sensors/NodeCOMSensor.h
        src/sensors/NodeContactForceSensor.h
        src/sensors/NodeContactSensor.h
+       src/sensors/NodeIMUSensor.h
        src/sensors/NodePositionSensor.h
        src/sensors/NodeRotationSensor.h
        src/sensors/NodeVelocitySensor.h
@@ -112,7 +113,7 @@ set(SOURCES_H
        src/sensors/MultiLevelLaserRangeFinder.h
 
        src/sensors/ScanningSonar.h
-       
+
        src/interfaces/sensors/GridSensorInterface.h
     )
 
@@ -153,6 +154,7 @@ set(TARGET_SRC
        src/sensors/NodeCOMSensor.cpp
        src/sensors/NodeContactForceSensor.cpp
        src/sensors/NodeContactSensor.cpp
+       src/sensors/NodeIMUSensor.cpp
        src/sensors/NodePositionSensor.cpp
        src/sensors/NodeRotationSensor.cpp
        src/sensors/NodeVelocitySensor.cpp
