@@ -37,8 +37,10 @@ namespace mars{
       std::vector<utils::Vector> values_ang;
       std::vector<utils::Vector> values_lin;
       utils::Vector g;
-      std::vector<utils::sRotation> quaternion;
-      long dataIndices[12];
+      std::vector<utils::Quaternion> quaternion;
+      std::vector<utils::Vector> a_body;
+      std::vector<utils::Vector> w_body;
+      long dataIndices[10];
       int pushToDataBroker;
       // Data broker
       //data_broker::DataPackageMapping packageMapping;

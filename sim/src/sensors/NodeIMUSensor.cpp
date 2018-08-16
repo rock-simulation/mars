@@ -31,6 +31,9 @@ namespace mars{
       for(i = 0; i<countIDs;i++){
          values_ang.push_back(Vector(0.0, 0.0, 0.0));
          values_lin.push_back(Vector(0.0, 0.0, 0.0));
+         a_body.push_back(Vector(0.0, 0.0, 0.0));
+         w_body.push_back(Vector(0.0, 0.0, 0.0));
+         quaternion.push_back(Quaternion(1,0,0,0));
       }
 
       for(i=0; i<6; ++i) dataIndices[i] = -1;
@@ -77,7 +80,6 @@ namespace mars{
       p = data;
       for(iter_ang = values_ang.begin(); iter_ang!= values_ang.end(); iter_ang++){
         sprintf(p, "%10.4f %10.4f %10.4f", iter_ang->x(), iter_ang->y(), iter_ang->z());
-        std::cout << "Measure \n";
         num_char += 33;
         p += num_char;
       }
@@ -114,9 +116,11 @@ namespace mars{
 
     void NodeIMUSensor::receiveData(const data_broker::DataInfo &info, const data_broker::DataPackage &package, int callbackParam){
       // Get the gravity
-      g = control->sim->getGravity();
+      g= control->sim->getGravity();
+
 
       if(dataIndices[0] == -1){
+
         dataIndices[0] = package.getIndexByName("angularVelocity/x");
         dataIndices[1] = package.getIndexByName("angularVelocity/y");
         dataIndices[2] = package.getIndexByName("angularVelocity/z");
@@ -125,16 +129,16 @@ namespace mars{
         dataIndices[4] = package.getIndexByName("linearAcceleration/y");
         dataIndices[5] = package.getIndexByName("linearAcceleration/z");
 
-        dataIndices[9] = package.getIndexByName("rotation/x");
-        dataIndices[10] = package.getIndexByName("rotation/y");
-        dataIndices[11] = package.getIndexByName("rotation/z");
-        dataIndices[12] = package.getIndexByName("rotation/w");
+        dataIndices[6] = package.getIndexByName("rotation/x");
+        dataIndices[7] = package.getIndexByName("rotation/y");
+        dataIndices[8] = package.getIndexByName("rotation/z");
+        dataIndices[9] = package.getIndexByName("rotation/w");
 
 
       }
 
       //TODO Extend dataIndices for quaternion
-      
+
       // a_IMU = Frame^R_World * (g - a_Body)
       // Read orientation via package.get
       // control->sim->getGravity for grav
@@ -144,21 +148,33 @@ namespace mars{
 
 
 
-      package.get(dataIndices[0], &values_ang[callbackParam].x());
-      package.get(dataIndices[1], &values_ang[callbackParam].y());
-      package.get(dataIndices[2], &values_ang[callbackParam].z());
-      package.get(dataIndices[3], &values_lin[callbackParam].x());
-      package.get(dataIndices[4], &values_lin[callbackParam].y());
-      package.get(dataIndices[5], &values_lin[callbackParam].z());
+      package.get(dataIndices[0], &w_body[callbackParam].x());
+      package.get(dataIndices[1], &w_body[callbackParam].y());
+      package.get(dataIndices[2], &w_body[callbackParam].z());
+
+      package.get(dataIndices[3], &a_body[callbackParam].x());
+      package.get(dataIndices[4], &a_body[callbackParam].y());
+      package.get(dataIndices[5], &a_body[callbackParam].z());
+
+      package.get(dataIndices[6], &quaternion[callbackParam].x());
+      package.get(dataIndices[7], &quaternion[callbackParam].y());
+      package.get(dataIndices[8], &quaternion[callbackParam].z());
+      package.get(dataIndices[9], &quaternion[callbackParam].w());
+
+
+      values_lin[callbackParam] = quaternion[callbackParam]*(g-a_body[callbackParam]);
+      values_ang[callbackParam] = quaternion[callbackParam]*w_body[callbackParam];
     }
 
     void NodeIMUSensor::produceData(const data_broker::DataInfo &info,
                                          data_broker::DataPackage *package,
                                          int callbackParam) {
       if(values_ang.size() == 0 or values_lin.size() == 0) return;
+
       package->set(0, values_lin[callbackParam].x());
       package->set(1, values_lin[callbackParam].y());
       package->set(2, values_lin[callbackParam].z());
+
       package->set(3, values_ang[callbackParam].x());
       package->set(4, values_ang[callbackParam].y());
       package->set(5, values_ang[callbackParam].z());
