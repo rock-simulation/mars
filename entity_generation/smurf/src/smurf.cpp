@@ -1042,8 +1042,10 @@ namespace mars {
       }
       
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
-      if (!valid)
+      if (!valid) {
+	LOG_ERROR("failed generating node from config\n");
         return 0;
+      }
 
       if ((std::string) config["materialName"] != std::string("")) {
         std::map<std::string, MaterialData>::iterator it;

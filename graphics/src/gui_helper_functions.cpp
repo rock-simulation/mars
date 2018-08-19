@@ -77,9 +77,10 @@ namespace mars {
 
     void GeodeVisitor::apply(osg::Node &searchNode){
       //go through node and return geode
-      osg::Geode* dynamicTry=dynamic_cast<osg::Geode*>(&searchNode);
+      osg::Geode* dynamicTry=searchNode.asGeode();
       if(dynamicTry) {
         resultNode=dynamicTry;
+	return;
       }
       else resultNode = 0;
       traverse(searchNode);
@@ -168,20 +169,24 @@ namespace mars {
       vector<osg::Vec3> OSGvertices;
       snmesh mesh;
       //visitor for getting drawables inside node
-      GeodeVisitor* visitor=new GeodeVisitor("PLACEHOLDER");
+      GeodeVisitor visitor("PLACEHOLDER");
       osg::Geode* geode;
       osg::Node* tmpNode;
       osg::ref_ptr<osg::Group> osgGroupFromRead = NULL;
-      if ((osgGroupFromRead = node->asGroup()) == 0)
+      if ((osgGroupFromRead = node->asGroup()) == 0) {
         fprintf(stderr, "error\n");
-
+      }
       // todo: parse the tree recursive and search for drawables
       //get geometries of node
       int indexcounter = 0;
       for (size_t m = 0; m < osgGroupFromRead->getNumChildren(); m++) {
         tmpNode = osgGroupFromRead->getChild(m);
-        tmpNode->accept(*visitor);
-        geode = visitor->getNode();
+
+        tmpNode->accept(visitor);
+        if(!(geode = visitor.getNode())) {
+          fprintf(stderr, "ERROR: getting node for mesh\n");
+          continue;
+        }
         for (size_t j = 0; j<geode->getNumDrawables(); j++) {
           //initialize functors for getting the drawables
           osg::TriangleFunctor<GetVerticesFunctor> triangleFunctor_;
@@ -225,7 +230,6 @@ namespace mars {
       //  mesh.normals = normals;
       mesh.indices = indexarray;
       mesh.indexcount = indexcounter;
-      delete visitor;
       return mesh;
     }
 
@@ -281,7 +285,14 @@ namespace mars {
           throw std::runtime_error("cannot read node from file");
       }
 
-      if((myGroupFromRead = completeNode->asGroup()) != 0){
+      if((myGeodeFromRead = completeNode->asGeode()) != 0) {
+        //if the node was read from a .stl-file it read as geode not as group
+        myCreatedGroup = new osg::Group();
+        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
+        completeNode->setStateSet(stateset.get());
+        myCreatedGroup->addChild(completeNode.get());
+      }
+      else if((myGroupFromRead = completeNode->asGroup()) != 0){
         //go through the read node group and combine the parts of the actually
         //handled node
         myCreatedGroup = new osg::Group();
@@ -302,14 +313,6 @@ namespace mars {
             }
           }
         }
-      }
-      // or if it is a osg::Geode (.stl file)
-      else if((myGeodeFromRead = completeNode->asGeode()) != 0) {
-        //if the node was read from a .stl-file it read as geode not as group
-        myCreatedGroup = new osg::Group();
-        osg::ref_ptr<osg::StateSet> stateset = myCreatedGroup->getOrCreateStateSet();
-        completeNode->setStateSet(stateset.get());
-        myCreatedGroup->addChild(completeNode.get());
       }
 
       osg::ComputeBoundsVisitor cbbv;
@@ -402,8 +405,10 @@ namespace mars {
       newNodeFile.fileName = filename;
 
       FILE* input = fopen(filename.c_str(), "rb");
-      if(!input) return 0;
-
+      if(!input) {
+	fprintf(stderr, "ERROR: reading file: %s\n", filename.c_str());
+	return 0;
+      }
       char buffer[312];
 
       int da, i, r, o, foo=0;
@@ -427,25 +432,29 @@ namespace mars {
       while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
         o = 0;
         while(o < r+foo-50 || (r<256 && o < r+foo)) {
-          da = *(int*)(buffer+o);
+	  memcpy(&da, buffer+o, sizeof(int));
+          //da = *(int*)(buffer+o);
           o += 4;
           if(da == 1) {
             for(i=0; i<3; i++) {
-              fData[i] = *(float*)(buffer+o);
+	      memcpy(fData+i, buffer+o, sizeof(float));
+              //fData[i] = *(float*)(buffer+o);
               o+=4;
             }
             vertices.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
           }
           else if(da == 2) {
             for(i=0; i<2; i++) {
-              fData[i] = *(float*)(buffer+o);
+	      memcpy(fData+i, buffer+o, sizeof(float));
+              //fData[i] = *(float*)(buffer+o);
               o+=4;
             }
             texcoords.push_back(osg::Vec2(fData[0], fData[1]));
           }
           else if(da == 3) {
             for(i=0; i<3; i++) {
-              fData[i] = *(float*)(buffer+o);
+	      memcpy(fData+i, buffer+o, sizeof(float));
+              //fData[i] = *(float*)(buffer+o);
               o+=4;
             }
             normals.push_back(osg::Vec3(fData[0], fData[1], fData[2]));
@@ -453,7 +462,8 @@ namespace mars {
           else if(da == 4) {
             // 1. vertice
             for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
+	      memcpy(iData+i, buffer+o, sizeof(int));
+              //iData[i] = *(int*)(buffer+o);
               o+=4;
             }
             if(iData[0] != iData[2]) {
@@ -469,7 +479,8 @@ namespace mars {
 
             // 2. vertice
             for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
+	      memcpy(iData+i, buffer+o, sizeof(int));
+              //iData[i] = *(int*)(buffer+o);
               o+=4;
             }
             if(iData[0] != iData[2]) {
@@ -485,7 +496,8 @@ namespace mars {
 
             // 3. vertice
             for(i=0; i<3; i++) {
-              iData[i] = *(int*)(buffer+o);
+	      memcpy(iData+i, buffer+o, sizeof(int));
+              //iData[i] = *(int*)(buffer+o);
               o+=4;
             }
             if(iData[0] != iData[2]) {
