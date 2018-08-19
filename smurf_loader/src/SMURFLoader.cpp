@@ -327,6 +327,22 @@ namespace mars {
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
             path, (std::string)(*it)["name"]);
       }
+      else if(((std::string)(*it)["type"] == "smurfs")) {
+        // backup internal state:
+        std::string tmpPath_b = tmpPath;
+        tmpPath = "";
+        double global_width_b = global_width;
+        double global_length_b = global_length;
+        std::vector<configmaps::ConfigMap> entitylist_b;
+        entitylist_b.swap(entitylist);
+        control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+            path, (std::string)(*it)["name"]);
+        // restore internal state:
+        tmpPath = tmpPath_b;
+        global_width = global_width_b;
+        global_length = global_length_b;
+        entitylist.swap(entitylist_b);
+      }
       else {
         entitylist.push_back(*it);
       }
