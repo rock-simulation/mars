@@ -66,9 +66,9 @@ namespace mars {
       std::string tmpPath;
       double global_width;
       double global_length;
-      std::map<std::string, std::string> params;
-      std::vector<configmaps::ConfigMap> entityList;
-      configmaps::ConfigMap courseconfig;
+      //std::map<std::string, std::string> params;
+      //std::vector<configmaps::ConfigMap> entityList;
+      //configmaps::ConfigMap courseconfig;
 
       interfaces::ControlCenter *control;
       entity_generation::EntityFactoryManager* factoryManager;
