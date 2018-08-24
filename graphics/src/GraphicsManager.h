@@ -44,7 +44,6 @@
 #include <osgShadow/ShadowedScene>
 #include <osgShadow/LightSpacePerspectiveShadowMap>
 #include <osgShadow/ParallelSplitShadowMap>
-#include <osgShadow/ShadowVolume>
 //#include <osgShadow/SoftShadowMap>
 //#include <osgShadow/ShadowMap>
 
