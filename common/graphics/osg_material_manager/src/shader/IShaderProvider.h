@@ -39,6 +39,7 @@ namespace osg_material_manager {
     IShaderProvider(string res_path) {
       resPath = res_path;
     }
+    virtual ~IShaderProvider() {}
 
     /**
      * Returns the minimal glsl version needed for the generated shader
