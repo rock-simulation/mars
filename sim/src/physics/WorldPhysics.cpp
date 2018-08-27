@@ -861,8 +861,10 @@ namespace mars {
         if(b1 && b2 && dAreConnectedExcluding(b1,b2,dJointTypeContact))
           continue;
 
-        numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+        numc = dCollide(theGeom, otherGeom, 1,
                         &(contact[0].geom), sizeof(dContact));
+        // numc = dCollide(theGeom, otherGeom, 1 | CONTACTS_UNIMPORTANT,
+        //                 &(contact[0].geom), sizeof(dContact));
         if(numc) {
           if(contact[0].geom.depth > depth)
             depth = contact[0].geom.depth;
