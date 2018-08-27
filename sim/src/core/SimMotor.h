@@ -175,9 +175,9 @@ namespace mars {
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
       interfaces::sReal time;
-      interfaces::sReal velocity, position1, position2, effort;
+      interfaces::sReal lastVelocity, velocity, position1, position2, effort;
       interfaces::sReal tmpmaxeffort, tmpmaxspeed;
-      interfaces::sReal current, temperature;
+      interfaces::sReal current, temperature, filterValue;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
       std::map<std::string, SimMotor*> mimics;

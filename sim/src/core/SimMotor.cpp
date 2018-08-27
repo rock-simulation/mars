@@ -57,7 +57,7 @@ namespace mars {
       position1 = 0;
       position2 = 0;
       position = &position1;
-      velocity=0;
+      lastVelocity = velocity=0;
       joint_velocity = 0;
       time = 10;
       current = 0;
@@ -352,6 +352,9 @@ namespace mars {
       velocity += iPart;
       // D part of the motor
       velocity += ((error - last_error)/time) * sMotor.d;
+      // apply filter
+      velocity = lastVelocity*(filterValue) + velocity*(1-filterValue);
+      lastVelocity = velocity;
       last_error = error;
     }
 
@@ -681,6 +684,10 @@ namespace mars {
     void SimMotor::setSMotor(const MotorData &sMotor) {
       // todo: handle name change correctly
       this->sMotor = sMotor;
+      filterValue = 0.0;
+      if(this->sMotor.config.hasKey("filterValue")) {
+        filterValue = this->sMotor.config["filterValue"];
+      }
       if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
           myJoint->attachMotor(axis);
           myJoint->setEffortLimit(sMotor.maxEffort, axis);
