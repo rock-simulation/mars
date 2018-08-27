@@ -1,5 +1,11 @@
 #! /usr/bin/env python
 
+import sys
+
+oldPython = False
+if sys.version_info[0] < 3:
+    oldPython = True
+
 import os
 import sys
 import subprocess
@@ -17,6 +23,15 @@ if not haveQT5:
     from PyQt4.QtCore import SIGNAL
     from PyQt4.QtGui import QApplication, QWidget, QScrollArea, QVBoxLayout, QHBoxLayout, QGridLayout, QLabel, QLineEdit, QCheckBox, QPushButton
 #import pybob
+
+def getItems(d):
+    if oldPython:
+        return d.iteritems()
+    return d.items()
+
+def mrange(d):
+    if oldPython: return xrange(d)
+    else: return range(d)
 
 packages = []
 pattern = ""
@@ -163,7 +178,7 @@ colorAList = []
 keyList = []
 show = True
 i = 1
-for key, value in config.iteritems():
+for key, value in getItems(config):
     if key == "_settings":
         continue
     keyList.append(key)
@@ -267,7 +282,7 @@ def update():
     global labelList, showList, colorRList, colorGList, colorBList, colorAList
     global keyList, config, xmin, xmax, ymax, ymin, xlabel, ylabel, useLatexFont
     global adjust
-    for i in xrange(len(keyList)):
+    for i in mrange(len(keyList)):
         if len(labelList[i].text()) > 0:
             config[keyList[i]]["label"] = str(labelList[i].text())
         else:
@@ -443,7 +458,7 @@ def export():
         os.makedirs(path)
         os.system("cp gui.py " + path)
         os.system("cp plot.py " + path)
-    for key, values in config.iteritems():
+    for key, values in getItems(config):
         if key == "_settings":
             continue
         if values["show"]:
@@ -491,7 +506,7 @@ def createStats():
     pruneX2 = str(xmax.text())
     with open("stats.txt", "a") as f:
         f.write("----\n")
-    for key, values in config.iteritems():
+    for key, values in getItems(config):
         if key == "_settings":
             continue
         if values["show"]:

@@ -3,6 +3,19 @@
 import yaml
 import os
 
+
+
+import sys
+
+oldPython = False
+if sys.version_info[0] < 3:
+    oldPython = True
+
+def getItems(d):
+    if oldPython:
+        return d.iteritems()
+    return d.items()
+
 import matplotlib.pyplot as plt
 #from matplotlib.patches import Polygon
 import matplotlib as mpl
@@ -95,7 +108,7 @@ def doPlot():
             c = {}
             found = False
             show = False
-            for key,value in config.iteritems():
+            for key,value in getItems(config):
                 if value["file"] == label:
                     found = True
                     if value["show"]:
