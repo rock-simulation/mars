@@ -70,7 +70,8 @@ namespace mars {
       std::string groupName, dataName;
       this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
 
-      assert(control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName));
+      bool found = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
+      assert(found);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
       }
 
