@@ -1231,7 +1231,7 @@ namespace mars {
     }
 
     void GraphicsWidget::applyResize() {
-      postDrawCallback->setSize(widgetWidth, widgetHeight);
+      if(!isRTTWidget) postDrawCallback->setSize(widgetWidth, widgetHeight);
       graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       graphicsCamera->changeCameraTypeToPerspective();
       if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
