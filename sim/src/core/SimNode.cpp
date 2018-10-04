@@ -61,6 +61,8 @@ namespace mars {
     SimNode::SimNode(ControlCenter *c, const NodeData &sNode_)
       : control(c), sNode(sNode_) {
 
+      fRotation.x() = fRotation.y() = fRotation.z() = 0.0;
+      fRotation.w() = 1.0;
       frictionDirNode = 0;
       fDirNode = Vector(1, 0, 0);
       my_interface = 0;
