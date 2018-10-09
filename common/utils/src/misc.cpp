@@ -115,7 +115,12 @@ namespace mars {
         // we have an absolute path
         return path2;
       }
-
+#ifdef WIN32
+      if(path2[1] == ':') {
+        // we have an absolute path
+        return path2;
+      }
+#endif
       std::string tmp = path1;
       if(tmp.back() != '/') {
         tmp += "/";
