@@ -199,12 +199,7 @@ namespace mars {
     }
 
     void MARS::loadAdditionalLibs() {
-      std::string otherConfigFile = configDir+"/other_libs.txt";
-      FILE *plugin_config = fopen(otherConfigFile.c_str() , "r");
-      if(plugin_config) {
-        fclose(plugin_config);
-        libManager->loadConfigFile(otherConfigFile);
-      } else {
+      {
         fprintf(stderr, "Loading default additional libraries...\n");
         // loading errors will be silent for the following optional libraries
         if(!noGUI) {
@@ -270,7 +265,14 @@ namespace mars {
 
       // load the simulation other_libs:
       if(handleLibraryLoading) {
-        loadAdditionalLibs();
+        std::string otherConfigFile = configDir+"/other_libs.txt";
+        FILE *plugin_config = fopen(otherConfigFile.c_str() , "r");
+        if(plugin_config) {
+          fclose(plugin_config);
+          libManager->loadConfigFile(otherConfigFile);
+        } else {
+          loadAdditionalLibs();
+        }
       }
 
 #ifndef NO_GUI
