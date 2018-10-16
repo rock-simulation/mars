@@ -807,6 +807,26 @@ namespace mars {
         {0, 0, 0, 0}
       };
 
+      // pipe arguments into cfg_manager
+      if(control->cfg) {
+        std::vector<std::string> arguments;
+        for(int i=0; i<argc; ++i) {
+          arguments.push_back(argv[i]);
+        }
+        char label[55];
+        for(size_t i=0; i<arguments.size(); ++i) {
+          size_t f = arguments[i].find("=");
+          if(f != std::string::npos) {
+            control->cfg->getOrCreateProperty("Config", arguments[i].substr(0, f),
+                                     arguments[i].substr(f+1));
+          }
+          else {
+            sprintf(label, "arg%zu", i);
+            control->cfg->getOrCreateProperty("Config", label, arguments[i]);
+          }
+        }
+      }
+
       while (1) {
         c = getopt_long(argc, argv, "hrgoGs:C:p:", long_options, &option_index);
         if (c == -1)
