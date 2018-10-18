@@ -119,14 +119,16 @@ namespace mars {
           }
         }
       }
-      if (id_specified == INVALID_ID) {
-        fprintf(stderr, "ERROR: No Node with name_specifier found while SimEntity::getRootestId\n");
-        if (id_lowest == INVALID_ID) {
-          fprintf(stderr, "ERROR: No Node found while SimEntity::getRootestId\n");
+      if (id_specified != INVALID_ID) {
+        return id_specified;
+      } else if (id_specified == INVALID_ID && id_lowest != INVALID_ID) {
+        if (name_specifier != "") {
+          fprintf(stderr, "Warning: No Node with name_specifier '%s' found while SimEntity::getRootestId() returning %d\n", name_specifier.c_str(), id_lowest);
         }
         return id_lowest;
       }
-      return id_specified;
+      fprintf(stderr, "ERROR: No Node found while SimEntity::getRootestId()\n");
+      return INVALID_ID;
     }
 
     std::map<unsigned long, std::string> SimEntity::getAllNodes() {
