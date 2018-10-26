@@ -104,3 +104,28 @@ def pushData(group, name, dataName, value):
     if not "ToDataBroker" in iDict:
         iDict["ToDataBroker"] = []
     iDict["ToDataBroker"].append({"g":group, "n":name, "d":dataName, "v":value})
+
+def edit(type_, name, key, value):
+    global iDict
+    if not "edit" in iDict:
+        iDict["edit"] = {}
+    if not type_ in iDict["edit"]:
+        iDict["edit"][type_] = {}
+    if not name in iDict["edit"][type_]:
+        iDict["edit"][type_][name] = []
+    iDict["edit"][type_][name].append({"k": key, "v": value})
+
+def editNode(name, key, value):
+    edit("nodes", name, key, value)
+
+def editJoint(name, key, value):
+    edit("joints", name, key, value)
+
+def editMotor(name, key, value):
+    edit("motors", name, key, value)
+
+def editGraphics(key, value):
+    edit("graphics", "-1", key, value)
+
+def editGraphicsWindow(winid, key, value):
+    edit("graphics", str(winid), key, value)
