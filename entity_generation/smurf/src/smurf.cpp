@@ -186,6 +186,7 @@ namespace mars {
       entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
       tmpPath = path;
+      entityconfig["abs_path"] = pathJoin(getCurrentWorkingDir(), path);
       std::string filename = (std::string)entityconfig["file"];
       fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
       if((std::string)entityconfig["type"] == "smurf" || entityconfig["type"].getString() == "particle") {
