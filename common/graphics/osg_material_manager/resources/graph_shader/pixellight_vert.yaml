@@ -1,6 +1,7 @@
 params:
   in:
     worldPos: {index: 0, type: vec4}
+    viewPos: {index: 0, type: vec4}
     specularColor: {index: 1, type: vec4}
 source: /shader/plight.vert
 minVersion: 120

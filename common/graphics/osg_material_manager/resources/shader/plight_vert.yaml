@@ -1,5 +1,6 @@
 params:
   - vWorldPos
+  - vViewPos
   - specularCol
 varyings:
   vec3:
