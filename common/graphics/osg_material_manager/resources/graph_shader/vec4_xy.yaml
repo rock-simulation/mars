@@ -1,0 +1,7 @@
+params:
+  in:
+    v_in: {index: 0, type: vec4}
+  out:
+    v_out: {index: 1, type: vec2}
+
+source: /graph_shader/vec4_xy.frag
