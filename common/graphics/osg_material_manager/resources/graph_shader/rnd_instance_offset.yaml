@@ -1,0 +1,4 @@
+params:
+  out:
+    offset: {index: 0, type: vec2}
+source: /graph_shader/rnd_instance_offset.frag
