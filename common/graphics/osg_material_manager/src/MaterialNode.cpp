@@ -45,7 +45,7 @@ namespace osg_material_manager {
   MaterialNode::MaterialNode()
     : isCreated(false), maxNumLights(1), useFog(true), useNoise(true),
       getLight(true), brightness_(1.0), drawLineLaser(false), shadow(true),
-      needTangents(false), needInstancing(false), numInstances(1), iWidth(1), iHeight(1), iLength(1) {
+      needTangents(false), needInstancing(false), numInstances(1), iWidth(1), iHeight(1), iLength(1), renderBin(0) {
   }
 
   MaterialNode::~MaterialNode() {
@@ -131,7 +131,7 @@ namespace osg_material_manager {
       state->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON);
       state->setMode(GL_BLEND,osg::StateAttribute::ON);
       //state->setRenderBinDetails(1, "TransparentBin");
-      state->setRenderBinDetails(1, "DepthSortedBin");
+      state->setRenderBinDetails(renderBin+1, "DepthSortedBin");
       /*
       depth = new osg::Depth;
       depth->setWriteMask( false );
@@ -146,7 +146,7 @@ namespace osg_material_manager {
       state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
       state->setMode(GL_ALPHA_TEST, osg::StateAttribute::OFF);
       state->setMode(GL_BLEND,osg::StateAttribute::OFF);
-      state->setRenderBinDetails(0, "RenderBin");
+      state->setRenderBinDetails(renderBin, "RenderBin");
     }
   }
 

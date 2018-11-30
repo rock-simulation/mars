@@ -115,6 +115,7 @@ namespace osg_material_manager {
     void setNeedInstancing(bool v, int numInstances, double w=1.0, double h=1.0, double l=1.0);
     void generateTangents();
     void setNeedTangents(bool v);
+    void setRenderBin(int r) {renderBin = r;}
 
   protected:
     bool isCreated;
@@ -151,6 +152,7 @@ namespace osg_material_manager {
     bool needInstancing;
     int numInstances;
     double iWidth, iHeight, iLength;
+    int renderBin;
     mars::utils::Vector lineLasePos, lineLaserNormal;
   }; // end of class MaterialNode
 

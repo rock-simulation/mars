@@ -284,6 +284,7 @@ namespace osg_material_manager {
       if(config.hasKey("unit")) {
         info.unit = config["unit"];
       }
+      fprintf(stderr, "set unit: %d\n", info.unit);
       info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
       state->setTextureAttributeAndModes(info.unit, info.texture,
                                          osg::StateAttribute::ON);
@@ -741,6 +742,9 @@ namespace osg_material_manager {
       d->setNeedInstancing(true, map.get("numInstances", 1), w, h, l);
     }
     d->setTransparency((float)map.get("transparency", 0.0));
+    if(map.hasKey("renderBin")) {
+      d->setRenderBin(map["renderBin"]);
+    }
   }
 
   void OsgMaterial::setMaxNumLights(int n) {
