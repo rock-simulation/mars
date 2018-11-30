@@ -727,7 +727,18 @@ namespace osg_material_manager {
       d->setNeedTangents(true);
     }
     if (map.get("instancing", false)) {
-      d->setNeedInstancing(true, map.get("numInstances", 1));
+      double w, h, l;
+      w = h = l = 1.0;
+      if(map.hasKey("instancesWidth")) {
+        w = map["instancesWidth"];
+      }
+      if(map.hasKey("instancesHeight")) {
+        h = map["instancesHeight"];
+      }
+      if(map.hasKey("instancesLength")) {
+        l = map["instancesLength"];
+      }
+      d->setNeedInstancing(true, map.get("numInstances", 1), w, h, l);
     }
     d->setTransparency((float)map.get("transparency", 0.0));
   }

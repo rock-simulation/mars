@@ -67,6 +67,7 @@ namespace osg_material_manager {
     InstancesVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {}
     virtual void apply(osg::Node &searchNode);
     int numInstances;
+    double width, length, height;
   private:
     void enableInstancing(osg::Geometry *geom);
   };
@@ -111,7 +112,7 @@ namespace osg_material_manager {
     void seperateMaterial();
     void setTransparency(float t);
     void enableInstancing();
-    void setNeedInstancing(bool v, int numInstances);
+    void setNeedInstancing(bool v, int numInstances, double w=1.0, double h=1.0, double l=1.0);
     void generateTangents();
     void setNeedTangents(bool v);
 
@@ -149,6 +150,7 @@ namespace osg_material_manager {
     bool needTangents;
     bool needInstancing;
     int numInstances;
+    double iWidth, iHeight, iLength;
     mars::utils::Vector lineLasePos, lineLaserNormal;
   }; // end of class MaterialNode
 

@@ -45,7 +45,7 @@ namespace osg_material_manager {
   MaterialNode::MaterialNode()
     : isCreated(false), maxNumLights(1), useFog(true), useNoise(true),
       getLight(true), brightness_(1.0), drawLineLaser(false), shadow(true),
-      needTangents(false), needInstancing(false), numInstances(1) {
+      needTangents(false), needInstancing(false), numInstances(1), iWidth(1), iHeight(1), iLength(1) {
   }
 
   MaterialNode::~MaterialNode() {
@@ -150,8 +150,11 @@ namespace osg_material_manager {
     }
   }
 
-  void MaterialNode::setNeedInstancing(bool v, int numInstances) {
+  void MaterialNode::setNeedInstancing(bool v, int numInstances, double w, double h, double l) {
     needInstancing = v;
+    iWidth = w;
+    iHeight = h;
+    iLength = l;
     this->numInstances = numInstances;
     enableInstancing();
   }
@@ -160,6 +163,9 @@ namespace osg_material_manager {
     if (needInstancing) {
       InstancesVisitor visitor;
       visitor.numInstances = numInstances;
+      visitor.width = iWidth;
+      visitor.height = iHeight;
+      visitor.length = iLength;
       this->accept(visitor);
     }
   }
@@ -383,7 +389,7 @@ namespace osg_material_manager {
       for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
         osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
         if(geom) {
-          //geom->setInitialBound(osg::BoundingBox(0, 0, 0, 2, 2, 1));
+          geom->setInitialBound(osg::BoundingBox(0, 0, 0, width, length, height));
           enableInstancing(geom);
         }
       }
