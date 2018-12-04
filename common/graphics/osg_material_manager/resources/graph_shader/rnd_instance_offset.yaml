@@ -1,4 +1,6 @@
+extensions:
+  enabled: [GL_ARB_draw_instanced]
 params:
   out:
-    offset: {index: 0, type: vec2}
+    offset: {index: 0, type: vec4}
 source: /graph_shader/rnd_instance_offset.frag

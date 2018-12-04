@@ -131,6 +131,9 @@ namespace osg_material_manager {
       nodeNameId[name] = id++;
       if (nodeConfig.hasKey(name) && nodeConfig[name].hasKey("type")) {
         string type = nodeConfig[name]["type"].getString();
+        if(nodeConfig[name].hasKey("loadName")) {
+          function << nodeConfig[name]["loadName"];
+        }
         if (type == "uniform") {
           uniforms.insert((GLSLUniform) {function, name});
         } else if (type == "varying") {
@@ -150,7 +153,12 @@ namespace osg_material_manager {
         add_relation(nodeNameId[fromNodeName], nodeNameId[toNodeName]);
       }
       ConfigMap fromNode = nodeMap[nodeNameId[fromNodeName]];
-      if (filterMap.hasKey(fromNode["model"]["name"].getString())) {
+      string name = fromNode["model"]["name"];
+      string function = name;
+      if(nodeConfig[fromNodeName].hasKey("loadName")) {
+        function << nodeConfig[name]["loadName"];
+      }
+      if (filterMap.hasKey(function)) {
         fromVar = fromNodeName;
       } else {
         fromVar = fromNodeName + "_at_" + fromInterfaceName;
@@ -184,7 +192,11 @@ namespace osg_material_manager {
       string nodeName = nodeMap["name"];
       priority_queue<PrioritizedLine> incoming, outgoing;
       bool first = true;
-
+      if (nodeConfig.hasKey(nodeName)) {
+        if(nodeConfig[nodeName].hasKey("loadName")) {
+          nodeFunction << nodeConfig[nodeName]["loadName"];
+        }
+      }
       if (!filterMap.hasKey(nodeFunction)) {
         ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
         parse_functionInfo(nodeFunction, functionInfo);

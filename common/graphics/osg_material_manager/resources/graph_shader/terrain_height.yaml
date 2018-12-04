@@ -11,4 +11,4 @@ uniforms:
     - {name: terrainDim}
   sampler2D:
     - {name: terrainMap}
-source: /graph_shader/terrain_map.vert
+source: /graph_shader/terrain_height.vert

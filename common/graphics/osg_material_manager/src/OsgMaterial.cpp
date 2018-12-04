@@ -67,8 +67,8 @@ namespace osg_material_manager {
       loadPath(""), isInit(false) {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
-    sinUniform = new osg::Uniform("sin_", 0.0f);
-    cosUniform = new osg::Uniform("cos_", 1.0f);
+    sinUniform = new osg::Uniform("sinUniform", 0.0f);
+    cosUniform = new osg::Uniform("cosUniform", 1.0f);
     shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
     bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
     shadowSamplesUniform = new osg::Uniform("shadowSamples", 1);
@@ -741,10 +741,12 @@ namespace osg_material_manager {
       }
       d->setNeedInstancing(true, map.get("numInstances", 1), w, h, l);
     }
-    d->setTransparency((float)map.get("transparency", 0.0));
+    // renderbin have to be set before setting transparency
+    // since it is applied in that function
     if(map.hasKey("renderBin")) {
       d->setRenderBin(map["renderBin"]);
     }
+    d->setTransparency((float)map.get("transparency", 0.0));
   }
 
   void OsgMaterial::setMaxNumLights(int n) {
