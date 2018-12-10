@@ -6,5 +6,6 @@ includedir=${prefix}/include
 Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 Version: @PROJECT_VERSION@
+Requires: lib_manager cfg_manager mars_interfaces
 Libs: -L${libdir} -l@PROJECT_NAME@
 Cflags: -I${includedir}
