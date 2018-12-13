@@ -327,6 +327,19 @@ namespace mars {
           }
         }
       }
+      for (it = config["link"].begin(); it != config["link"].end(); ++it) {
+        handleURIs(*it);
+        std::vector<ConfigMap>::iterator nIt = nodeList.begin();
+        for (; nIt != nodeList.end(); ++nIt) {
+          if ((std::string) (*nIt)["name"] == (std::string) (*it)["name"]) {
+            ConfigMap::iterator cIt = it->beginMap();
+            for (; cIt != it->endMap(); ++cIt) {
+              (*nIt)[cIt->first] = cIt->second;
+            }
+            break;
+          }
+        }
+      }
       for (it = config["nodes"].begin(); it != config["nodes"].end(); ++it) {
         handleURIs(*it);
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
@@ -1008,7 +1021,7 @@ namespace mars {
       NodeData node;
       config["mapIndex"] = mapIndex;
       string suffix, tmpfilename;
-      
+
       // check if we can use .bobj
       tmpfilename = trim(config.get("filename", tmpfilename));
       // if we have an actual file name
@@ -1040,7 +1053,7 @@ namespace mars {
           }
         }
       }
-      
+
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
       if (!valid)
         return 0;
