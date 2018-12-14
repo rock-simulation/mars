@@ -83,8 +83,8 @@ def handleLines(name, args):
         iDict["Lines"][name] = []
     iDict["Lines"][name].append(args)
 
-def configureLines(name, size, r, g, b):
-    handleLines(name, {"config": [float(size), float(r), float(g), float(b)]})
+def configureLines(name, size, r, g, b, bezier=0, interpolationPoints=20):
+    handleLines(name, {"config": [float(size), float(r), float(g), float(b), int(bezier), int(interpolationPoints)]})
 
 def clearLines(name):
     handleLines(name, "clear")

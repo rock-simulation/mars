@@ -405,6 +405,8 @@ namespace mars {
                                        (double)cmd["config"][2],
                                        (double)cmd["config"][3], 1.0);
                     lines[name].l->setColor(c);
+                    lines[name].l->setBezierMode((int)cmd["config"][4]);
+                    lines[name].l->setBezierInterpolationPoints((int)cmd["config"][5]);
                   }
                 }
               }
