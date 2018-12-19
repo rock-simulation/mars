@@ -89,6 +89,8 @@ namespace mars {
 
       osg::Texture2D* getRTTTexture(void);
       osg::Texture2D* getRTTDepthTexture(void);
+      osg::Image* getRTTImage(void);
+      osg::Image* getRTTDepthImage(void);
 
       std::vector<osg::Node*> getPickedObjects();
       void clearSelectionVectors(void);
@@ -204,6 +206,7 @@ namespace mars {
       virtual void setHUDViewOffsets(double x1, double y1,
                                      double x2, double y2);
 
+      virtual void setupDistortion(double factor);
       void grabFocus();
       void unsetFocus();
 
@@ -275,7 +278,7 @@ namespace mars {
       utils::Color clearColor;
       // toggle for fullscreen display
       bool isFullscreen;
-
+      int mouseMask;
       // toggle for stereo display
       bool isStereoDisplay;
       // eye separation for stereo display
@@ -301,7 +304,7 @@ namespace mars {
 
       // list of picked objects
       std::vector<osg::Node*> pickedObjects;
-      enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE };
+      enum PickMode { DISABLED, STANDARD, FORCE_ADD, FORCE_REMOVE, SINGLE };
       PickMode pickmode;
 
       virtual void initialize() {};

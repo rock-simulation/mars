@@ -61,6 +61,8 @@ namespace mars {
     SimNode::SimNode(ControlCenter *c, const NodeData &sNode_)
       : control(c), sNode(sNode_) {
 
+      fRotation.x() = fRotation.y() = fRotation.z() = 0.0;
+      fRotation.w() = 1.0;
       frictionDirNode = 0;
       fDirNode = Vector(1, 0, 0);
       my_interface = 0;
@@ -79,6 +81,7 @@ namespace mars {
       update_ray = false;
       visual_rep = 1;
 
+      pushToDataBroker = 2;
       configmaps::ConfigMap &map = sNode.map;
       if(map.hasKey("frictionDirNode")) {
         frictionDirNode = control->nodes->getID((std::string)map["frictionDirNode"]);
@@ -94,37 +97,47 @@ namespace mars {
           }
         }
       }
-
-      dbPackageMapping.add("id", &sNode.index);
-      dbPackageMapping.add("position/x", &sNode.pos.x());
-      dbPackageMapping.add("position/y", &sNode.pos.y());
-      dbPackageMapping.add("position/z", &sNode.pos.z());
-      dbPackageMapping.add("rotation/x", &sNode.rot.x());
-      dbPackageMapping.add("rotation/y", &sNode.rot.y());
-      dbPackageMapping.add("rotation/z", &sNode.rot.z());
-      dbPackageMapping.add("rotation/w", &sNode.rot.w());
-      dbPackageMapping.add("linearVelocity/x", &l_vel.x());
-      dbPackageMapping.add("linearVelocity/y", &l_vel.y());
-      dbPackageMapping.add("linearVelocity/z", &l_vel.z());
-      dbPackageMapping.add("angularVelocity/x", &a_vel.x());
-      dbPackageMapping.add("angularVelocity/y", &a_vel.y());
-      dbPackageMapping.add("angularVelocity/z", &a_vel.z());
-      dbPackageMapping.add("linearAcceleration/x", &l_acc.x());
-      dbPackageMapping.add("linearAcceleration/y", &l_acc.y());
-      dbPackageMapping.add("linearAcceleration/z", &l_acc.z());
-      dbPackageMapping.add("angularAcceleration/x", &a_acc.x());
-      dbPackageMapping.add("angularAcceleration/y", &a_acc.y());
-      dbPackageMapping.add("angularAcceleration/z", &a_acc.z());
-      dbPackageMapping.add("force/x", &f.x());
-      dbPackageMapping.add("force/y", &f.y());
-      dbPackageMapping.add("force/z", &f.z());
-      dbPackageMapping.add("torque/x", &t.x());
-      dbPackageMapping.add("torque/y", &t.y());
-      dbPackageMapping.add("torque/z", &t.z());
-      dbPackageMapping.add("contact", &ground_contact);
-      dbPackageMapping.add("contactForce", &ground_contact_force);
-
-      addToDataBroker();
+      if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
+        pushToDataBroker = 0;
+      }
+      else if(map.hasKey("reducedDataPackage") && (bool)map["reducedDataPackage"] == true) {
+        pushToDataBroker = 1;
+      }
+      if(pushToDataBroker > 0) {
+        dbPackageMapping.add("id", &sNode.index);
+        dbPackageMapping.add("position/x", &sNode.pos.x());
+        dbPackageMapping.add("position/y", &sNode.pos.y());
+        dbPackageMapping.add("position/z", &sNode.pos.z());
+        dbPackageMapping.add("rotation/x", &sNode.rot.x());
+        dbPackageMapping.add("rotation/y", &sNode.rot.y());
+        dbPackageMapping.add("rotation/z", &sNode.rot.z());
+        dbPackageMapping.add("rotation/w", &sNode.rot.w());
+        dbPackageMapping.add("contact", &ground_contact);
+        dbPackageMapping.add("contactForce", &ground_contact_force);
+      }
+      if(pushToDataBroker > 1) {
+        dbPackageMapping.add("linearVelocity/x", &l_vel.x());
+        dbPackageMapping.add("linearVelocity/y", &l_vel.y());
+        dbPackageMapping.add("linearVelocity/z", &l_vel.z());
+        dbPackageMapping.add("angularVelocity/x", &a_vel.x());
+        dbPackageMapping.add("angularVelocity/y", &a_vel.y());
+        dbPackageMapping.add("angularVelocity/z", &a_vel.z());
+        dbPackageMapping.add("linearAcceleration/x", &l_acc.x());
+        dbPackageMapping.add("linearAcceleration/y", &l_acc.y());
+        dbPackageMapping.add("linearAcceleration/z", &l_acc.z());
+        dbPackageMapping.add("angularAcceleration/x", &a_acc.x());
+        dbPackageMapping.add("angularAcceleration/y", &a_acc.y());
+        dbPackageMapping.add("angularAcceleration/z", &a_acc.z());
+        dbPackageMapping.add("force/x", &f.x());
+        dbPackageMapping.add("force/y", &f.y());
+        dbPackageMapping.add("force/z", &f.z());
+        dbPackageMapping.add("torque/x", &t.x());
+        dbPackageMapping.add("torque/y", &t.y());
+        dbPackageMapping.add("torque/z", &t.z());
+      }
+      if(pushToDataBroker > 0) {
+        addToDataBroker();
+      }
     }
 
     /**

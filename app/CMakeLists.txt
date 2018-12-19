@@ -26,7 +26,6 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
         lib_manager
-        main_gui
         mars_interfaces
 	configmaps
 )
@@ -35,29 +34,40 @@ link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I
 
 
-setup_qt()
-
-set(SOURCES
+pkg_check_modules(MAINGUI main_gui)
+if(MAINGUI_FOUND)
+  set(main_gui_required main_gui)
+  include_directories(${MAINGUI_INCLUDE_DIRS})
+  link_directories(${MAINGUI_LIBRARY_DIRS})
+  add_definitions(${MAINGUI_CLFAGS_OTHER})
+  setup_qt()
+  set(SOURCES
     src/GraphicsTimer.cpp
     src/MARS.cpp
-)
+  )
+  set(QT_MOC_HEADER
+      src/GraphicsTimer.h
+      #src/MARS.h
+  )
+  if (${USE_QT5})
+  qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+  else (${USE_QT5})
+  qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
+  endif (${USE_QT5})
+else(MAINGUI_FOUND)
+  add_definitions("-DNO_GUI")
+  set(SOURCES
+    src/MARS.cpp
+  )
+endif(MAINGUI_FOUND)
 
-set(QT_MOC_HEADER
-    src/GraphicsTimer.h
-    #src/MARS.h
-)
-
-if (${USE_QT5})
-qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
-else (${USE_QT5})
-qt4_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )
-endif (${USE_QT5})
 
 set(TARGET_SRC
     ${QT_MOC_HEADER_SRC}
     ${SOURCES}
 )
 
+if(MAINGUI_FOUND)
 IF( MINGW )
   # resource compilation for MinGW
   ADD_CUSTOM_COMMAND( OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/mars_icon.o
@@ -67,14 +77,17 @@ IF( MINGW )
 #ELSE( MINGW )
 #  SET(TARGET_SRC ${TARGET_SRC} resources/mars_icon.ico)
 ENDIF( MINGW )
+endif(MAINGUI_FOUND)
 
 add_executable(${PROJECT_NAME} src/main.cpp ${TARGET_SRC})
 add_library(mars SHARED ${TARGET_SRC})
 
+if(MAINGUI_FOUND)
 if (${USE_QT5})
 qt5_use_modules(${PROJECT_NAME} Widgets)
 qt5_use_modules(mars Widgets)
 endif (${USE_QT5})
+endif(MAINGUI_FOUND)
 
 IF (WIN32)
   set(WIN_LIBS
@@ -87,6 +100,7 @@ target_link_libraries(mars
             ${QT_LIBRARIES}
             ${WIN_LIBS}
             ${PKGCONFIG_LIBRARIES}
+            ${MAINGUI_LIBRARIES}
 )
 
 target_link_libraries(${PROJECT_NAME} mars)
@@ -135,6 +149,7 @@ add_plugin_if_available("cfg_manager_gui")
 add_plugin_if_available("lib_manager_gui")
 add_plugin_if_available("SkyDomePlugin")
 add_plugin_if_available("PythonMars")
+add_plugin_if_available("CameraGUI")
 add_plugin_if_available("data_broker_plotter2")
 
 if(NOT ROCK)
@@ -157,6 +172,9 @@ install(DIRECTORY configuration/python DESTINATION configuration/mars_default/)
 
 configure_file(mars_app.pc.in ${CMAKE_BINARY_DIR}/mars_app.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/mars_app.pc DESTINATION lib/pkgconfig/)
+
+if(MAINGUI_FOUND)
 install(FILES ${CMAKE_SOURCE_DIR}/src/GraphicsTimer.h DESTINATION include/mars/app/)
+endif(MAINGUI_FOUND)
 install(FILES ${CMAKE_SOURCE_DIR}/src/MARS.h DESTINATION include/mars/app/)
 install(FILES ${CMAKE_SOURCE_DIR}/src/MyApp.h DESTINATION include/mars/app/)

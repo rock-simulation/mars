@@ -1,0 +1,8 @@
+params:
+  in:
+    matrix: {index: 0, type: mat4}
+    vector: {index: 1, type: vec4}
+    skalar: {index: 2, type: float}
+  out:
+    vector: {index: 3, type: vec4}
+source: /graph_shader/vec4_mat4_math.frag

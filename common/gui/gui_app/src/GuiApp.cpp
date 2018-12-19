@@ -28,6 +28,7 @@
 
 #include <lib_manager/LibManager.hpp>
 #include <mars/main_gui/MainGUI.h>
+#include <mars/utils/misc.h>
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -116,6 +117,13 @@ namespace gui_app {
       fclose(f);
       cfg->loadConfig(p.c_str());
     }
+    // if we have a resourcesPath combine it with the configPath
+    if(cfg->getParamId("Preferences", "resources_path")) {
+      std::string rPath = cfg->getOrCreateProperty("Preferences", "resources_path", ".").sValue;
+      rPath = mars::utils::pathJoin(configDir, rPath);
+      cfg->setProperty("Preferences", "resources_path", rPath);
+    }
+
     mainGui = libManager->getLibraryAs<mars::main_gui::MainGUI>("main_gui",
                                                                 true);
 

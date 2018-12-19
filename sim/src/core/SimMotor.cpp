@@ -57,7 +57,7 @@ namespace mars {
       position1 = 0;
       position2 = 0;
       position = &position1;
-      velocity=0;
+      lastVelocity = velocity=0;
       joint_velocity = 0;
       time = 10;
       current = 0;
@@ -92,26 +92,40 @@ namespace mars {
       initTemperatureEstimation();
       initCurrentEstimation();
 
-      dbPackage.add("id", (long)sMotor.index);
-      dbPackage.add("value", controlValue);
-      dbPackage.add("position", getPosition());
-      dbPackage.add("current", getCurrent());
-      dbPackage.add("torque", getEffort());
+      pushToDataBroker = 2;
+      configmaps::ConfigMap &map = sMotor.config;
+      if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
+        pushToDataBroker = 0;
+      }
+      if(pushToDataBroker > 0) {
+        cmdPackage.add("value", 0.0);
+        dbPackage.add("id", (long)sMotor.index);
+        dbPackage.add("value", controlValue);
+        dbPackage.add("position", getPosition());
+        dbPackage.add("current", getCurrent());
+        dbPackage.add("torque", getEffort());
+        dbPackage.add("maxtorque", sMotor.maxEffort);
 
-      dbIdIndex = dbPackage.getIndexByName("id");
-      dbControlParameterIndex = dbPackage.getIndexByName("value");
-      dbPositionIndex = dbPackage.getIndexByName("position");
-      dbCurrentIndex = dbPackage.getIndexByName("current");
-      dbEffortIndex = dbPackage.getIndexByName("torque");
+        dbIdIndex = dbPackage.getIndexByName("id");
+        dbControlParameterIndex = dbPackage.getIndexByName("value");
+        dbPositionIndex = dbPackage.getIndexByName("position");
+        dbCurrentIndex = dbPackage.getIndexByName("current");
+        dbEffortIndex = dbPackage.getIndexByName("torque");
+        dbMaxEffortIndex = dbPackage.getIndexByName("maxtorque");
 
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      if(control->dataBroker) {
-        dbPushId = control->dataBroker->pushData(groupName, dataName,
-                                                 dbPackage, NULL,
-                                                 data_broker::DATA_PACKAGE_READ_FLAG);
-        control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer", 0);
+        std::string groupName, dataName;
+        getDataBrokerNames(&groupName, &dataName);
+        if(control->dataBroker) {
+          dbPushId = control->dataBroker->pushData(groupName, dataName,
+                                                   dbPackage, NULL,
+                                                   data_broker::DATA_PACKAGE_READ_FLAG);
+          control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer", 0);
+          dbCmdId = control->dataBroker->pushData(groupName, "cmd/"+dataName,
+                                                  cmdPackage, NULL,
+                                                  data_broker::DATA_PACKAGE_READ_WRITE_FLAG);
+          control->dataBroker->registerSyncReceiver(this, groupName, "cmd/"+dataName, 0);
+        }
       }
     }
 
@@ -119,8 +133,10 @@ namespace mars {
       std::string groupName, dataName;
       getDataBrokerNames(&groupName, &dataName);
       if(control->dataBroker) {
-        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                     "mars_sim/simTimer");
+        if(pushToDataBroker) {
+          control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                       "mars_sim/simTimer");
+        }
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       // if we have to delete something we can do it here
@@ -336,6 +352,9 @@ namespace mars {
       velocity += iPart;
       // D part of the motor
       velocity += ((error - last_error)/time) * sMotor.d;
+      // apply filter
+      velocity = lastVelocity*(filterValue) + velocity*(1-filterValue);
+      lastVelocity = velocity;
       last_error = error;
     }
 
@@ -665,6 +684,10 @@ namespace mars {
     void SimMotor::setSMotor(const MotorData &sMotor) {
       // todo: handle name change correctly
       this->sMotor = sMotor;
+      filterValue = 0.0;
+      if(this->sMotor.config.hasKey("filterValue")) {
+        filterValue = this->sMotor.config["filterValue"];
+      }
       if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
           myJoint->attachMotor(axis);
           myJoint->setEffortLimit(sMotor.maxEffort, axis);
@@ -782,6 +805,7 @@ namespace mars {
         dbPackage->set(dbPositionIndex, getPosition());
         dbPackage->set(dbCurrentIndex, getCurrent());
         dbPackage->set(dbEffortIndex, getEffort());
+        dbPackage->set(dbMaxEffortIndex, sMotor.maxEffort);
       }
 
       void SimMotor::receiveData(const data_broker::DataInfo& info,

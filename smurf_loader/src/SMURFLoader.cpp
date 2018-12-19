@@ -327,6 +327,22 @@ namespace mars {
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
             path, (std::string)(*it)["name"]);
       }
+      else if(((std::string)(*it)["type"] == "smurfs")) {
+        // backup internal state:
+        std::string tmpPath_b = tmpPath;
+        tmpPath = "";
+        double global_width_b = global_width;
+        double global_length_b = global_length;
+        std::vector<configmaps::ConfigMap> entitylist_b;
+        entitylist_b.swap(entitylist);
+        control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+            path, (std::string)(*it)["name"]);
+        // restore internal state:
+        tmpPath = tmpPath_b;
+        global_width = global_width_b;
+        global_length = global_length_b;
+        entitylist.swap(entitylist_b);
+      }
       else {
         entitylist.push_back(*it);
       }
@@ -394,10 +410,20 @@ namespace mars {
         if (map.hasKey("environment")) {
           configmaps::ConfigMap envmap = map["environment"];
           if (envmap.hasKey("skybox")) {
-            control->cfg->createParam("Scene","skydome_path", cfg_manager::stringParam);
-            control->cfg->createParam("Scene","skydome_enabled", cfg_manager::boolParam);
-            control->cfg->setPropertyValue("Scene", "skydome_path", "value", std::string(envmap["skybox"]["path"]));
-            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value", true);
+            control->cfg->createParam("Scene","skydome_path",
+                                      cfg_manager::stringParam);
+            control->cfg->createParam("Scene","skydome_enabled",
+                                      cfg_manager::boolParam);
+            // check if path is relative to smurfs scene
+            std::string skyboxPath = envmap["skybox"]["path"];
+            skyboxPath = pathJoin(path, skyboxPath);
+            if(!pathExists(skyboxPath)) {
+              skyboxPath << envmap["skybox"]["path"];
+            }
+            control->cfg->setPropertyValue("Scene", "skydome_path", "value",
+                                           skyboxPath);
+            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value",
+                                           true);
           }
           if (envmap.hasKey("terrain")) {
             control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);

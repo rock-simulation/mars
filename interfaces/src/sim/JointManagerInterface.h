@@ -55,7 +55,7 @@ namespace mars {
 
       /**
        * \brief Add a joint to the joint pool of the simulation
-       * 
+       *
        * It is very important to assure the serialization between the threads to
        * have the desired results.
        *
@@ -75,7 +75,7 @@ namespace mars {
       virtual void editJoint(JointData *jointS) = 0;
 
       /**
-       * \brief Fills a list of core_object_exchange objects with joint 
+       * \brief Fills a list of core_object_exchange objects with joint
        *        informations.
        */
       virtual void getListJoints(std::vector<core_objects_exchange> *jointList) = 0;
@@ -115,7 +115,7 @@ namespace mars {
       virtual std::vector<sim::SimJoint*> getSimJoints(void) = 0;
 
       /**
-       * \brief Reattaches the joints that are connected to the node 
+       * \brief Reattaches the joints that are connected to the node
        *        with id \a node_id.
        */
       virtual void reattacheJoints(unsigned long node_id) = 0;
@@ -157,14 +157,14 @@ namespace mars {
       virtual void setSDParams(unsigned long id, JointData *sJoint) = 0;
 
       /**
-       * \brief sets the velocity of the first axis of the joint 
+       * \brief sets the velocity of the first axis of the joint
        * \param id the id of the joint whos velocity should be set
        * \param the new velocity
        */
       virtual void setVelocity(unsigned long id, sReal velocity) = 0;
 
       /**
-       * \brief sets the velocity of the second axis of the joint 
+       * \brief sets the velocity of the second axis of the joint
        * \param id the id of the joint whos velocity should be set
        * \param the new velocity
        * If the joint has no second axis the behaviour is undefined.
@@ -184,11 +184,18 @@ namespace mars {
       virtual unsigned long getID(const std::string &joint_name) const = 0;
 
       /**
+       * Retrieve the id of a joint by the ids of the connected nodes
+       * \param id1, id2 Ids of the connected nodes
+       * \return Id of the joint if it exists, otherwise 0
+       */
+      virtual unsigned long getIDByNodeIDs(unsigned long id1, unsigned long id2) = 0;
+
+      /**
        * Retrieves the \a groupName and \a dataName under which the joint with the
        * specified \a id publishes its data in the DataBroker
        * \return \c true if the names were successfully retrieved. \c false if
        *         no joint with the given \a id exists.
-       */ 
+       */
       virtual bool getDataBrokerNames(unsigned long id, std::string *groupName,
                                       std::string *dataName) const = 0;
 

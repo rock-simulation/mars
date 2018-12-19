@@ -35,6 +35,7 @@
 #define OSG_CAM 2
 #define MICHA_CAM 3
 #define ISO_CAM 4
+#define TRACKBALL 5
 
 namespace mars {
   namespace interfaces {
@@ -103,6 +104,7 @@ namespace mars {
       virtual void context_setCamPredefBottom() = 0;
       virtual void deactivateCam() = 0;
       virtual void activateCam() = 0;
+      virtual void toggleTrackball() = 0;
 
     }; // end of class GraphicsCameraInterface
 

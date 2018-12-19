@@ -32,6 +32,7 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/utils/misc.h>
@@ -212,6 +213,63 @@ namespace mars {
             map.erase(iit);
           }
 
+          if(map.hasKey("edit")) {
+            if(map["edit"].hasKey("nodes")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodes"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    control->nodes->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("joints")) {
+              for(auto it: (ConfigMap&)(map["edit"]["joints"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->joints->getID(name);
+                  if(id) {
+                    control->joints->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("motors")) {
+              for(auto it: (ConfigMap&)(map["edit"]["motors"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->motors->getID(name);
+                  if(id) {
+                    control->motors->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("graphics") && control->graphics) {
+              for(auto it: (ConfigMap&)(map["edit"]["graphics"])) {
+                int id = atoi(it.first.c_str());
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  if(id < 0) {
+                    control->graphics->edit(key, value);
+                  }
+                  else {
+                    control->graphics->edit(id, key, value);
+                  }
+                }
+              }
+            }
+          }
+
           if(map.hasKey("request") && map["request"].isVector()) {
             requestMap = map["request"];
             ConfigMap::iterator it = map.find("request");
@@ -347,6 +405,8 @@ namespace mars {
                                        (double)cmd["config"][2],
                                        (double)cmd["config"][3], 1.0);
                     lines[name].l->setColor(c);
+                    lines[name].l->setBezierMode((int)cmd["config"][4]);
+                    lines[name].l->setBezierInterpolationPoints((int)cmd["config"][5]);
                   }
                 }
               }

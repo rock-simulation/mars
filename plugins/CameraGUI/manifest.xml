@@ -1,0 +1,11 @@
+<package>
+    <description brief="CameraGUI">
+      A plugin to visualize and save camera data from MARS.
+   </description>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/interfaces" />
+    <depend package="simulation/mars/graphics" />
+    <depend package="simulation/mars/sim" />
+    <tags>needs_opt</tags>
+</package>

@@ -175,9 +175,9 @@ namespace mars {
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
       interfaces::sReal time;
-      interfaces::sReal velocity, position1, position2, effort;
+      interfaces::sReal lastVelocity, velocity, position1, position2, effort;
       interfaces::sReal tmpmaxeffort, tmpmaxspeed;
-      interfaces::sReal current, temperature;
+      interfaces::sReal current, temperature, filterValue;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
       bool active;
       std::map<std::string, SimMotor*> mimics;
@@ -223,9 +223,10 @@ namespace mars {
       interfaces::sReal calcHeatProduction(interfaces::sReal time_ms) const;
 
       // for dataBroker communication
-      data_broker::DataPackage dbPackage;
-      unsigned long dbPushId;
-      long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex;
+      data_broker::DataPackage dbPackage, cmdPackage;
+      unsigned long dbPushId, dbCmdId;
+      long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex, dbMaxEffortIndex;
+      int pushToDataBroker;
     };
 
   } // end of namespace sim

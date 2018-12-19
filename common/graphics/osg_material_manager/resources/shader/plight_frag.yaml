@@ -78,4 +78,4 @@ snippets:
     priority: -1
 source: /shader/plight.frag
 priority: 11
-name: plight
+name: pixellight_frag

@@ -43,26 +43,38 @@ namespace mars {
       physical_joint = 0;
       setSJoint(sJoint_);
 
-      setupDataPackageMapping();
-      data_broker::DataPackage dbPackage;
-      dbPackageMapping.writePackage(&dbPackage);
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      if(control->dataBroker) {
-        control->dataBroker->pushData(groupName, dataName,
-                                      dbPackage, NULL,
-                                      data_broker::DATA_PACKAGE_READ_FLAG);
-        control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer", 0);
+      pushToDataBroker = 2;
+      configmaps::ConfigMap &map = sJoint.config;
+      if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
+        pushToDataBroker = 0;
+      }
+      else if(map.hasKey("reducedDataPackage") && (bool)map["reducedDataPackage"] == true) {
+        pushToDataBroker = 1;
+      }
+      if(pushToDataBroker > 0) {
+        setupDataPackageMapping();
+        data_broker::DataPackage dbPackage;
+        dbPackageMapping.writePackage(&dbPackage);
+        std::string groupName, dataName;
+        getDataBrokerNames(&groupName, &dataName);
+        if(control->dataBroker) {
+          control->dataBroker->pushData(groupName, dataName,
+                                        dbPackage, NULL,
+                                        data_broker::DATA_PACKAGE_READ_FLAG);
+          control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer", 0);
+        }
       }
     }
 
     SimJoint::~SimJoint() {
-      std::string groupName, dataName;
-      getDataBrokerNames(&groupName, &dataName);
-      if(control->dataBroker) {
-        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                     "mars_sim/simTimer");
+      if(pushToDataBroker > 0) {
+        std::string groupName, dataName;
+        getDataBrokerNames(&groupName, &dataName);
+        if(control->dataBroker) {
+          control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                       "mars_sim/simTimer");
+        }
       }
       if(physical_joint) delete physical_joint;
     }
@@ -215,8 +227,8 @@ namespace mars {
       CPP_UNUSED(calc_ms);
       if (physical_joint) {
         // update the position and rotation of the node
-        position1 = (sJoint.angle1_offset + invert*physical_joint->getPosition());
-        position2 = (sJoint.angle2_offset + invert*physical_joint->getPosition2());
+        double ode_position1 = (sJoint.angle1_offset + invert*physical_joint->getPosition());
+        double ode_position2 = (sJoint.angle2_offset + invert*physical_joint->getPosition2());
 
         physical_joint->getAnchor(&anchor);
         physical_joint->getAxis(&axis1);
@@ -234,6 +246,21 @@ namespace mars {
         joint_load *= invert;
         velocity1 = invert*physical_joint->getVelocity();
         velocity2 = invert*physical_joint->getVelocity2();
+        if(sJoint.type == JOINT_TYPE_SLIDER) {
+          position1 = ode_position1;
+          position2 = ode_position2;
+        }
+        else {
+          position1 += velocity1*calc_ms*0.001;
+          position2 += velocity2*calc_ms*0.001;
+          double error;
+          if(position1 > 0) error = fmod(position1, M_PI) - fmod(ode_position1+M_PI, M_PI);
+          else error = fmod(position1, M_PI) - fmod(ode_position1-M_PI, M_PI);
+          if(fabs(error) < 0.1) position1 -= error;
+          if(position2 > 0) error = fmod(position2, M_PI) - fmod(ode_position2+M_PI, M_PI);
+          else error = fmod(position2, M_PI) - fmod(ode_position2-M_PI, M_PI);
+          if(fabs(error) < 0.1) position2 -= error;
+        }
         motor_torque = invert*physical_joint->getMotorTorque();
       }
     }
@@ -570,50 +597,56 @@ namespace mars {
     }
 
     void SimJoint::setupDataPackageMapping() {
-      dbPackageMapping.clear();
-      dbPackageMapping.add("id", &id);
+      if(pushToDataBroker > 0) {
+        dbPackageMapping.clear();
+        dbPackageMapping.add("id", &id);
+        dbPackageMapping.add("axis1/angle", &position1);
+        dbPackageMapping.add("axis1/speed", &velocity1);
+        dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
+        dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
+        dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
+        dbPackageMapping.add("jointLoad/x", &joint_load.x());
+        dbPackageMapping.add("jointLoad/y", &joint_load.y());
+        dbPackageMapping.add("jointLoad/z", &joint_load.z());
+        dbPackageMapping.add("motorTorque", &motor_torque);
+      }
+      if(pushToDataBroker > 1) {
+        dbPackageMapping.add("axis1/x", &axis1.x());
+        dbPackageMapping.add("axis1/y", &axis1.y());
+        dbPackageMapping.add("axis1/z", &axis1.z());
+        dbPackageMapping.add("axis1/velocity", &velocity1);
+        dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
+        dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
+        dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
+        dbPackageMapping.add("force1/x", &f1.x());
+        dbPackageMapping.add("force1/y", &f1.y());
+        dbPackageMapping.add("force1/z", &f1.z());
+        dbPackageMapping.add("torque1/x", &t1.x());
+        dbPackageMapping.add("torque1/y", &t1.y());
+        dbPackageMapping.add("torque1/z", &t1.z());
 
-      dbPackageMapping.add("axis1/x", &axis1.x());
-      dbPackageMapping.add("axis1/y", &axis1.y());
-      dbPackageMapping.add("axis1/z", &axis1.z());
-      dbPackageMapping.add("axis1/angle", &position1);
-      dbPackageMapping.add("axis1/speed", &velocity1);
-      dbPackageMapping.add("axis1/velocity", &velocity1);
-      dbPackageMapping.add("axis1/torque/x", &axis1_torque.x());
-      dbPackageMapping.add("axis1/torque/y", &axis1_torque.y());
-      dbPackageMapping.add("axis1/torque/z", &axis1_torque.z());
+        dbPackageMapping.add("axis2/x", &axis2.x());
+        dbPackageMapping.add("axis2/y", &axis2.y());
+        dbPackageMapping.add("axis2/z", &axis2.z());
+        dbPackageMapping.add("axis2/angle", &position2);
+        dbPackageMapping.add("axis2/speed", &velocity2);
+        dbPackageMapping.add("axis2/velocity", &velocity2);
+        dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
+        dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
+        dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
 
-      dbPackageMapping.add("axis2/x", &axis2.x());
-      dbPackageMapping.add("axis2/y", &axis2.y());
-      dbPackageMapping.add("axis2/z", &axis2.z());
-      dbPackageMapping.add("axis2/angle", &position2);
-      dbPackageMapping.add("axis2/speed", &velocity2);
-      dbPackageMapping.add("axis2/velocity", &velocity2);
-      dbPackageMapping.add("axis2/torque/x", &axis2_torque.x());
-      dbPackageMapping.add("axis2/torque/y", &axis2_torque.y());
-      dbPackageMapping.add("axis2/torque/z", &axis2_torque.z());
 
-      dbPackageMapping.add("force1/x", &f1.x());
-      dbPackageMapping.add("force1/y", &f1.y());
-      dbPackageMapping.add("force1/z", &f1.z());
-      dbPackageMapping.add("torque1/x", &t1.x());
-      dbPackageMapping.add("torque1/y", &t1.y());
-      dbPackageMapping.add("torque1/z", &t1.z());
+        dbPackageMapping.add("force2/x", &f2.x());
+        dbPackageMapping.add("force2/y", &f2.y());
+        dbPackageMapping.add("force2/z", &f2.z());
+        dbPackageMapping.add("torque2/x", &t2.x());
+        dbPackageMapping.add("torque2/y", &t2.y());
+        dbPackageMapping.add("torque2/z", &t2.z());
 
-      dbPackageMapping.add("force2/x", &f2.x());
-      dbPackageMapping.add("force2/y", &f2.y());
-      dbPackageMapping.add("force2/z", &f2.z());
-      dbPackageMapping.add("torque2/x", &t2.x());
-      dbPackageMapping.add("torque2/y", &t2.y());
-      dbPackageMapping.add("torque2/z", &t2.z());
-
-      dbPackageMapping.add("anchor/x", &anchor.x());
-      dbPackageMapping.add("anchor/y", &anchor.y());
-      dbPackageMapping.add("anchor/z", &anchor.z());
-      dbPackageMapping.add("jointLoad/x", &joint_load.x());
-      dbPackageMapping.add("jointLoad/y", &joint_load.y());
-      dbPackageMapping.add("jointLoad/z", &joint_load.z());
-      dbPackageMapping.add("motorTorque", &motor_torque);
+        dbPackageMapping.add("anchor/x", &anchor.x());
+        dbPackageMapping.add("anchor/y", &anchor.y());
+        dbPackageMapping.add("anchor/z", &anchor.z());
+      }
     }
 
 

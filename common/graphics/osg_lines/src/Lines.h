@@ -57,6 +57,8 @@ namespace osg_lines {
     virtual void setColor(Color c) = 0;
     virtual void setLineWidth(double w) = 0;
     virtual void* getOSGNode() = 0;
+    virtual void setBezierMode(bool bezier = true) = 0;
+    virtual void setBezierInterpolationPoints(int numPoints = 20) = 0;
   };
 
 } // end of namespace: osg_lines

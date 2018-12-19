@@ -28,42 +28,14 @@
 #ifndef QTOSGMIXADAPTER_H
 #define QTOSGMIXADAPTER_H
 
-#ifdef __APPLE__
-#ifdef __OBJC__
-#else
-#ifdef Q_FORWARD_DECLARE_OBJC_CLASS
-#undef Q_FORWARD_DECLARE_OBJC_CLASS
-#endif
-#define Q_FORWARD_DECLARE_OBJC_CLASS(classname) class classname;
-#endif
-#endif // __APPLE__
-
 #include "GraphicsWidget.h"
 
 #include <QWidget>
-
-#if defined(WIN32) && !defined(__CYGWIN__)
-  #include <osgViewer/api/Win32/GraphicsWindowWin32>
-#elif defined(__APPLE__)  // Assume using Carbon on Mac.
-  #include <osgViewer/api/Cocoa/GraphicsWindowCocoa>
-#else // all other unix
-  #include <osgViewer/api/X11/GraphicsWindowX11>
-#endif
 
 namespace mars {
   namespace graphics {
 
     class GraphicsManager;
-
-#if defined(WIN32) && !defined(__CYGWIN__)
-  typedef HWND WindowHandle;
-  typedef osgViewer::GraphicsWindowWin32::WindowData WindowData;
-#elif defined(__APPLE__)
-    typedef osgViewer::GraphicsWindowCocoa::WindowData WindowData;
-#else // all other unix
-  typedef Window WindowHandle;
-  typedef osgViewer::GraphicsWindowX11::WindowData WindowData;
-#endif
 
     /**
      * A GraphicsWidget using QWidget
@@ -76,12 +48,7 @@ namespace mars {
                              unsigned long id, bool rtt_widget = 0,
                              Qt::WindowFlags f=0, GraphicsManager *gm = 0)
         : QWidget((QWidget*) parent, f),
-        GraphicsWidget(parent, scene, id, rtt_widget, f, gm) {
-#ifdef __APPLE__
-          haveNSView = false;
-#endif
-        }
-
+        GraphicsWidget(parent, scene, id, rtt_widget, f, gm), childWidget(NULL) {}
       // Prevent flicker on Windows Qt
       QPaintEngine* paintEngine () const { return 0; }
 
@@ -97,18 +64,10 @@ namespace mars {
 
       virtual void updateView();
 
-      virtual void keyPressEvent(QKeyEvent *e);
-      virtual void keyReleaseEvent(QKeyEvent *e);
       virtual void hideEvent(QHideEvent *event);
       virtual void closeEvent(QCloseEvent *event);
       virtual void showEvent(QShowEvent *event);
-      virtual void mouseMoveEvent(QMouseEvent *e);
       virtual void mousePressEvent(QMouseEvent *e);
-      virtual void mouseReleaseEvent(QMouseEvent *e);
-      virtual void moveEvent(QMoveEvent *event );
-      virtual void wheelEvent(QWheelEvent *event);
-      virtual void resizeEvent(QResizeEvent *event);
-      virtual void paintEvent(QPaintEvent *event);
       virtual bool eventFilter(QObject *obj, QEvent *event);
       virtual void focusInEvent(QFocusEvent *event);
 
@@ -120,14 +79,13 @@ namespace mars {
                                                     GraphicsManager *gm = 0);
 
     protected:
-      virtual ~QtOsgMixGraphicsWidget() {};
+      virtual ~QtOsgMixGraphicsWidget() {fprintf(stderr, "destructor\n");};
 
     private:
       static QtOsgMixGraphicsWidget *activeWindow, *eventInWindow;
-#ifdef __APPLE__
-      WindowData *wdata;
-      bool haveNSView;
-#endif
+      QWidget *childWidget;
+      QObject *eventChild;
+      double retinaScale;
     }; // end of class QtOsgMixGraphicsWidget
 
   } // end of namespace graphics

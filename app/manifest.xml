@@ -11,7 +11,7 @@
     <depend package="simulation/mars/gui"  optional="1" />
     <depend package="simulation/mars/sim" />
     <depend package="simulation/lib_manager" />
-    <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/common/gui/main_gui" optional="1" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/plugins/connexion_plugin" optional="1" />
     <depend package="simulation/mars/common/gui/data_broker_gui" optional="1" />
@@ -20,10 +20,11 @@
     <depend package="simulation/mars/common/gui/log_console" optional="1" />
     <depend package="simulation/mars/common/gui/data_broker_plotter2" optional="1" />
     <depend package="simulation/mars/plugins/SkyDomePlugin" optional="1" />
+    <depend package="simulation/mars/plugins/CameraGUI" optional="1" />
     <depend package="simulation/mars/plugins/PythonMars" optional="1" />
     <depend package="simulation/mars/plugins/entity_view" optional="1" />
     <depend package="simulation/mars/entity_generation/smurf" optional="1" />
     <depend package="simulation/mars/smurf_loader" optional="1" />
-    <rosdep name="qt4" />
+    <rosdep name="qt4" optional="1" />
     <tags>needs_opt</tags>
 </package>

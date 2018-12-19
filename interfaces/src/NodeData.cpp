@@ -286,7 +286,7 @@ namespace mars {
       NodeData defaultNode;
       std::string filename_ = filename;
       std::string srcname_;
-
+      *config = map;
       if(terrain) srcname_ = terrain->srcname;
 
       if(skipFilenamePrefix) {

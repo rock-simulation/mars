@@ -1,5 +1,5 @@
 /*
- *  Copyright 20114, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2014, 2017, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -34,17 +34,18 @@ namespace mars {
   namespace config_map_gui {
 
 
-    DataWidget::DataWidget(cfg_manager::CFGManagerInterface *cfg,
-                           QWidget *parent, bool onlyCompactView,
+    DataWidget::DataWidget(void* backwardCFG, QWidget *parent, bool onlyCompactView,
                            bool allowAdd) :
-      main_gui::BaseWidget(parent, cfg, "ConfigMapWidget"),
+      QWidget(parent),
       pDialog(new main_gui::PropertyDialog(parent)),
       ignore_change(0) {
 
+      (void)backwardCFG; // prevent paramter unsed warning
       startTimer(500);
 
       QVBoxLayout *vLayout = new QVBoxLayout();
       vLayout->addWidget(pDialog);
+      vLayout->setContentsMargins(0,0,0,0);
       if(allowAdd) {
         QHBoxLayout *hLayout = new QHBoxLayout();
         QLabel *label = new QLabel("type:");
@@ -152,9 +153,17 @@ namespace mars {
         pDialog->expandTree(guiElem);
         return;
       }
-      guiElem = pDialog->addGenericProperty(name,
-                                            QtVariantPropertyManager::groupTypeId(),
-                                            0);
+      if(checkInPattern(name, checkablePattern)) {
+        guiElem = pDialog->addGenericProperty(name,
+                                              QVariant::Bool,
+                                              0);
+        checkMap[guiElem] = name;
+      }
+      else {
+        guiElem = pDialog->addGenericProperty(name,
+                                              QtVariantPropertyManager::groupTypeId(),
+                                              0);
+      }
 
       for(;it!=map.end(); ++it) {
         std::string n = it->first;
@@ -187,9 +196,17 @@ namespace mars {
     void DataWidget::addConfigVector(const std::string &name,
                                      ConfigVector &v) {
       QtVariantProperty *guiElem;
-      guiElem = pDialog->addGenericProperty(name,
-                                            QtVariantPropertyManager::groupTypeId(),
-                                            0);
+      if(checkInPattern(name, checkablePattern)) {
+        guiElem = pDialog->addGenericProperty(name,
+                                              QVariant::Bool,
+                                              0);
+        checkMap[guiElem] = name;
+      }
+      else {
+        guiElem = pDialog->addGenericProperty(name,
+                                              QtVariantPropertyManager::groupTypeId(),
+                                              0);
+      }
       addVector[guiElem] = &v;
       for(unsigned long i=0; i<(unsigned long)v.size(); ++i) {
         char iText[64];
@@ -363,7 +380,16 @@ namespace mars {
           std::vector<std::string> arrPath = utils::explodeString('/', name);
           ConfigItem *item = config[arrPath[1]];
           for(size_t i=2; i<arrPath.size(); ++i) {
-            item = ((*item)[arrPath[i]]);
+            if(item->isMap()) {
+              item = ((*item)[arrPath[i]]);
+            }
+            else if (item->isVector()) {
+              item = ((*item)[atoi(arrPath[i].c_str())]);
+            }
+            else {
+              fprintf(stderr, "ERROR: update configmap widget structure error!");
+              return;
+            }
           }
           *item = map;
           addConfigMap(name, *item);
@@ -442,7 +468,16 @@ namespace mars {
         std::vector<std::string> arrPath = utils::explodeString('/', name);
         ConfigItem *item = config[arrPath[1]];
         for(size_t i=2; i<arrPath.size(); ++i) {
-          item = ((*item)[arrPath[i]]);
+          if(item->isMap()) {
+            item = ((*item)[arrPath[i]]);
+          }
+          else if (item->isVector()) {
+            item = ((*item)[atoi(arrPath[i].c_str())]);
+          }
+          else {
+            fprintf(stderr, "ERROR: update configmap widget structure error!");
+            return;
+          }
         }
         *item = v;
         addConfigAtom(name, *item);
@@ -466,6 +501,7 @@ namespace mars {
       nameMap.clear();
       propMap.clear();
       addMap.clear();
+      checkMap.clear();
       addProperty = 0;
     }
 
@@ -545,6 +581,13 @@ namespace mars {
             emit valueChanged(nameMap[(QtVariantProperty*)property],
                               it->second->toString());
           }
+          else {
+            map<QtVariantProperty*, std::string>::iterator it;
+            it = checkMap.find((QtVariantProperty*)property);
+            if(it != checkMap.end()) {
+              emit checkChanged(it->second, value.toBool());
+            }
+          }
         }
       }
       /*
@@ -593,9 +636,9 @@ namespace mars {
           m = &config;
         }
         if(m) {
-	  if(m->hasKey(key)) {
-	    m->erase(key);
-	  }
+    if(m->hasKey(key)) {
+      m->erase(key);
+    }
           if(typeBox->currentIndex() == 0) { // map
             (*m)[key] = ConfigMap();
           }
@@ -638,6 +681,18 @@ namespace mars {
 
     void DataWidget::accept() {}
     void DataWidget::reject() {}
+
+    void DataWidget::setGroupChecked(const std::string &name, bool value) {
+      ignore_change = 1;
+      map<QtVariantProperty*, std::string>::iterator it = checkMap.begin();
+      for(; it!=checkMap.end(); ++it) {
+        if(it->second == name) {
+          it->first->setValue(QVariant(value));
+          break;
+        }
+      }
+      ignore_change = 0;
+    }
 
   } // end of namespace config_map_widget
 

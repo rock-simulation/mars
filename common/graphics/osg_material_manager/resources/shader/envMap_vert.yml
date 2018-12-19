@@ -8,5 +8,5 @@ uniforms:
   sampler2D:
     - {name: environmentMap}
 source: /shader/envmap.vert
-name: envMap
+name: envmap_vert
 priority: 1

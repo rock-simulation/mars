@@ -204,19 +204,11 @@ namespace mars {
     }
 
     void JointManager::removeJointByIDs(unsigned long id1, unsigned long id2) {
-      map<unsigned long, SimJoint*>::iterator iter;
-      iMutex.lock();
-
-      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
-        if((iter->second->getNodeId() == id1 &&
-            iter->second->getNodeId(2) == id2) ||
-           (iter->second->getNodeId() == id2 &&
-            iter->second->getNodeId(2) == id1)) {
-          iMutex.unlock();
-          removeJoint(iter->first);
+      unsigned long id = getIDByNodeIDs(id1, id2);
+      if (id != 0) {
+          removeJoint(id);
           return;
-        }
-      iMutex.unlock();
+      }
     }
 
     SimJoint* JointManager::getSimJoint(unsigned long id){
@@ -384,6 +376,20 @@ namespace mars {
         if (joint.name == joint_name)
           return joint.index;
       }
+      return 0;
+    }
+
+    unsigned long JointManager::getIDByNodeIDs(unsigned long id1, unsigned long id2) {
+      map<unsigned long, SimJoint*>::iterator iter;
+      MutexLocker locker(&iMutex);
+
+      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
+        if((iter->second->getNodeId() == id1 &&
+            iter->second->getNodeId(2) == id2) ||
+           (iter->second->getNodeId() == id2 &&
+            iter->second->getNodeId(2) == id1)) {
+          return iter->first;
+        }
       return 0;
     }
 

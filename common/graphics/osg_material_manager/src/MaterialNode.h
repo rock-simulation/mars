@@ -62,6 +62,16 @@ namespace osg_material_manager {
     mars::utils::Vector pos;
   };
 
+  class InstancesVisitor: public osg::NodeVisitor{
+  public:
+    InstancesVisitor() : osg::NodeVisitor(TRAVERSE_ALL_CHILDREN) {}
+    virtual void apply(osg::Node &searchNode);
+    int numInstances;
+    double width, length, height;
+  private:
+    void enableInstancing(osg::Geometry *geom);
+  };
+
   class MaterialNode : public osg::Group {
   public:
     MaterialNode();
@@ -101,8 +111,11 @@ namespace osg_material_manager {
     void setMaxNumLights(int n) {maxNumLights = n;}
     void seperateMaterial();
     void setTransparency(float t);
+    void enableInstancing();
+    void setNeedInstancing(bool v, int numInstances, double w=1.0, double h=1.0, double l=1.0);
     void generateTangents();
     void setNeedTangents(bool v);
+    void setRenderBin(int r) {renderBin = r;}
 
   protected:
     bool isCreated;
@@ -136,6 +149,10 @@ namespace osg_material_manager {
     bool shadow;
     int maxNumLights;
     bool needTangents;
+    bool needInstancing;
+    int numInstances;
+    double iWidth, iHeight, iLength;
+    int renderBin;
     mars::utils::Vector lineLasePos, lineLaserNormal;
   }; // end of class MaterialNode
 
