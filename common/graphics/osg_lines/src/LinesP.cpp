@@ -164,6 +164,7 @@ namespace osg_lines {
       }
     }
     else {
+      points->clear();
       for(int i=0; i<origPoints->size(); ++i) {
         points->push_back((*origPoints.get())[i]);
       }

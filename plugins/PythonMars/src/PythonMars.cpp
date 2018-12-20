@@ -168,45 +168,47 @@ namespace mars {
               std::string group = it->first;
               if(!it->second.isMap()) continue;
               ConfigMap::iterator it2 = it->second.beginMap();
-              if(!it2->second.isAtom()) continue;
-              ConfigAtom &atom = it2->second;
-              std::string name = it2->first;
-              std::string value = atom.toString().c_str();
-              cfg_manager::cfgParamInfo info;
-              info = control->cfg->getParamInfo(group, name);
-              switch(info.type) {
-              case cfg_manager::boolParam:
-                control->cfg->setProperty(group, name,
-                                          (bool)atoi(value.c_str()));
-                break;
-              case cfg_manager::doubleParam:
-                control->cfg->setProperty(group, name, atof(value.c_str()));
-                break;
-              case cfg_manager::intParam:
-                control->cfg->setProperty(group, name, atoi(value.c_str()));
-                break;
-              case cfg_manager::stringParam:
-                control->cfg->setProperty(group, name, value);
-                break;
-              case cfg_manager::noParam:
-                switch(atom.getType()) {
-                case ConfigAtom::BOOL_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (bool)atom);
+              for(; it2 != it->second.endMap(); ++it2) {
+                if(!it2->second.isAtom()) continue;
+                ConfigAtom &atom = it2->second;
+                std::string name = it2->first;
+                std::string value = atom.toString().c_str();
+                cfg_manager::cfgParamInfo info;
+                info = control->cfg->getParamInfo(group, name);
+                switch(info.type) {
+                case cfg_manager::boolParam:
+                  control->cfg->setProperty(group, name,
+                                            (bool)atoi(value.c_str()));
                   break;
-                case ConfigAtom::INT_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (int)atom);
+                case cfg_manager::doubleParam:
+                  control->cfg->setProperty(group, name, atof(value.c_str()));
                   break;
-                case ConfigAtom::DOUBLE_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (double)atom);
+                case cfg_manager::intParam:
+                  control->cfg->setProperty(group, name, atoi(value.c_str()));
+                  break;
+                case cfg_manager::stringParam:
+                  control->cfg->setProperty(group, name, value);
+                  break;
+                case cfg_manager::noParam:
+                  switch(atom.getType()) {
+                  case ConfigAtom::BOOL_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (bool)atom);
+                    break;
+                  case ConfigAtom::INT_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (int)atom);
+                    break;
+                  case ConfigAtom::DOUBLE_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (double)atom);
+                    break;
+                  default:
+                    control->cfg->getOrCreateProperty(group, name,
+                                                      atom.toString());
+                    break;
+                  }
                   break;
                 default:
-                  control->cfg->getOrCreateProperty(group, name,
-                                                    atom.toString());
                   break;
                 }
-                break;
-              default:
-                break;
               }
             }
             ConfigMap::iterator iit = map.find("config");
@@ -486,6 +488,14 @@ namespace mars {
               sendMap["Nodes"][name]["rot"]["y"] = rot.y();
               sendMap["Nodes"][name]["rot"]["z"] = rot.z();
               sendMap["Nodes"][name]["rot"]["w"] = rot.w();
+            }
+
+            if(type == "Motor") {
+              unsigned long id = control->motors->getID(name);
+              sReal pos = control->motors->getActualPosition(id);
+              sReal  torque = control->motors->getTorque(id);
+              sendMap["Motors"][name]["position"] = pos;
+              sendMap["Motors"][name]["torque"] = torque;
             }
 
             if(type == "Sensor") {
