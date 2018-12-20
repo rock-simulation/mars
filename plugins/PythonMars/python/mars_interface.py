@@ -52,6 +52,10 @@ def requestSensor(name):
     global iDict
     iDict["request"].append({"type": "Sensor", "name": name})
 
+def requestMotor(name):
+    global iDict
+    iDict["request"].append({"type": "Motor", "name": name})
+
 def requestConfig(group, name):
     global iDict
     iDict["request"].append({"type": "Config", "group": group, "name": name})
@@ -66,7 +70,10 @@ def logError(s):
 
 def setConfig(group, name, value):
     global iDict
-    iDict["config"][group] = {name: value}
+    if "config" in iDict and group in iDict["config"]:
+        iDict["config"][group][name] = value
+    else:
+        iDict["config"][group] = {name: value}
 
 def createPointCloud(name, size):
     global iDict
