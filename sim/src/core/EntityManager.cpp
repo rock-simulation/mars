@@ -59,6 +59,21 @@ namespace mars {
       return id;
     }
 
+    void EntityManager::removeEntity(const std::string &name) {
+      SimEntity* entity = getEntity(name);
+      //remove from entity map
+      for (auto it = entities.begin(); it != entities.end(); ++it) {
+        if (it->second == entity) {
+          entities.erase(it);
+          break;
+        }
+      }
+      //delete entity
+      entity->removeEntity();
+      /*TODO we have to free the memory here, but we don't know if this entity
+      is allocated on the heap or the stack*/
+    }
+
     void EntityManager::notifySubscribers(SimEntity* entity) {
       for (std::vector<interfaces::EntitySubscriberInterface*>::iterator it = subscribers.begin();
            it != subscribers.end(); ++it) {
@@ -153,6 +168,7 @@ namespace mars {
           return iter->second;
         }
       }
+      fprintf(stderr, "ERROR: Entity with name %s not found!\n", name.c_str());
       return 0;
     }
 

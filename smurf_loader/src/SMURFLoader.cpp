@@ -319,6 +319,7 @@ namespace mars {
       }
       if(combined_path[combined_path.size()-1] != '/') combined_path.append("/");
       (*it)["path"] = combined_path;
+      (*it)["load_path"] = path;
       utils::removeFilenamePrefix(&uri);
       (*it)["file"] = uri;
       std::string fulluri = combined_path+uri;
@@ -466,7 +467,7 @@ namespace mars {
           map["path"] = path;
           map["file"] = _filename;
           map["type"] = "smurf";
-          map["name"] = "";
+          map["name"] = robotname;
           entitylist.push_back(map);
       } else if(file_extension == ".urdf") {
           map["file"] = _filename;

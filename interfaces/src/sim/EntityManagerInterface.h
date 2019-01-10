@@ -56,6 +56,9 @@ namespace mars {
       /**adds an existing entity to its entity map, returning the assigned id*/
       virtual unsigned long addEntity(sim::SimEntity* entity) = 0;
 
+      /**deletes an existing entity and removes it's entity map entry*/
+      virtual void removeEntity(const std::string &name) = 0;
+
       /**adds a node to the entity and maps the nodeId to its name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId, const std::string &nodeName) = 0;
 
