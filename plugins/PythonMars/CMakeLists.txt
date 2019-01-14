@@ -27,6 +27,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
           osg_points
           osg_lines
           osg_material_manager
+          mars_sim
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

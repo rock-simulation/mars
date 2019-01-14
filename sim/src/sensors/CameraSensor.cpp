@@ -145,7 +145,7 @@ namespace mars {
         std::cerr << "could not get camera info." << std::endl;
     }
 
-    void CameraSensor::getImage(std::vector< Pixel >& buffer)
+    void CameraSensor::getImage(std::vector< Pixel >& buffer) const
     {
         assert(buffer.size() == (config.width * config.height));
         int width;
@@ -156,7 +156,7 @@ namespace mars {
         assert(config.height == height);
     }
 
-    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer)
+    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer) const
     {
         assert(buffer.size() == (config.width * config.height));
         int width;
@@ -327,6 +327,7 @@ namespace mars {
     void CameraSensor::preGraphicsUpdate(void) {
       mutex.lock();
       if(gc) {
+        // todo: use pos_offset here too
         Vector p = control->graphics->getDrawObjectPosition(draw_id);
         Quaternion qcorrect = Quaternion(0.5, 0.5, -0.5, -0.5);
         Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * qcorrect;

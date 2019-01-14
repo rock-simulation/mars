@@ -117,8 +117,8 @@ namespace mars {
 
       virtual int getSensorData(interfaces::sReal** data) const;
 
-      void getImage(std::vector<Pixel> &buffer);
-      void getDepthImage(std::vector<DistanceMeasurement> &buffer);
+      void getImage(std::vector<Pixel> &buffer) const;
+      void getDepthImage(std::vector<DistanceMeasurement> &buffer) const;
       void getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, unsigned int visVert_threshold);
 
       virtual void receiveData(const data_broker::DataInfo &info,

@@ -387,6 +387,16 @@ struct ListBuilderState
             args.push_back(makePyObjectPtr(obj));
             break;
         }
+        case ONEFCARRAY:
+        {
+            float* array = va_arg(cppArgs, float*);
+            int size = va_arg(cppArgs, int);
+            npy_intp dims[1] = {(npy_intp) size};
+            PyObject *obj = PyArray_SimpleNewFromData(1, dims, NPY_FLOAT,
+                                                      (void*)(array));
+            args.push_back(makePyObjectPtr(obj));
+            break;
+        }
         default:
             throw std::runtime_error("Unknown function argument type");
         }

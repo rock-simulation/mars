@@ -71,6 +71,12 @@ namespace mars {
         int size;
       };
 
+      struct DepthCameraStruct {
+        unsigned long id;
+        float *data, *pydata;
+        int size;
+      };
+
       // inherit from MarsPluginTemplateGUI for extending the gui
       class PythonMars: public mars::interfaces::MarsPluginTemplateGUI,
         public mars::data_broker::ReceiverInterface,
@@ -120,6 +126,7 @@ namespace mars {
         std::map<std::string, PointStruct> points;
         std::map<std::string, LineStruct> lines;
         std::map<std::string, CameraStruct> cameras;
+        std::map<std::string, DepthCameraStruct> depthCameras;
         osg_material_manager::OsgMaterialManager *materialManager;
         osg_points::PointsFactory *pf;
         osg_lines::LinesFactory *lf;

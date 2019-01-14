@@ -104,7 +104,17 @@ def appendLines(name, x, y, z):
 
 def requestCameraSensor(name):
     global iDict
-    iDict["CameraSensor"][name] = 1
+    if name in iDict["CameraSensor"]:
+        iDict["CameraSensor"][name] |= 1
+    else:
+        iDict["CameraSensor"][name] = 1
+
+def requestDepthCameraSensor(name):
+    global iDict
+    if name in iDict["CameraSensor"]:
+        iDict["CameraSensor"][name] |= 2
+    else:
+        iDict["CameraSensor"][name] = 2
 
 def pushData(group, name, dataName, value):
     global iDict

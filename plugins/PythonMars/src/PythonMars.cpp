@@ -35,6 +35,7 @@
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
+#include <mars/sim/CameraSensor.h>
 #include <mars/utils/misc.h>
 #ifdef __unix__
 #include <dlfcn.h>
@@ -332,25 +333,62 @@ namespace mars {
             ConfigMap::iterator it = map["CameraSensor"].beginMap();
             for(; it!=map["CameraSensor"].endMap(); ++it) {
               std::string name = it->first;
-              if(cameras.find(name) == cameras.end()) {
-                unsigned long id = control->sensors->getSensorID(name);
-                sReal *data;
-                int num = control->sensors->getSensorData(id, &data);
-                if(num) {
-                  CameraStruct cam = {id, data, NULL, num};
-                  cam.pydata = (sReal*)malloc(num*sizeof(sReal));
-                  cameras[name] = cam;
-                  plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+              int type = it->second;
+              if(type & 1) {
+                if(cameras.find(name) == cameras.end()) {
+                  unsigned long id = control->sensors->getSensorID(name);
+                  sReal *data;
+                  int num = control->sensors->getSensorData(id, &data);
+                  if(num) {
+                    CameraStruct cam = {id, data, NULL, num};
+                    cam.pydata = (sReal*)malloc(num*sizeof(sReal));
+                    cameras[name] = cam;
+                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+                  }
+                }
+                else {
+                  CameraStruct &cam = cameras[name];
+                  sReal *data;
+                  int num = control->sensors->getSensorData(cam.id, &data);
+                  if(num == cam.size) {
+                    memcpy(cam.data, data, num*sizeof(sReal));
+                  }
+                  if(num) free(data);
                 }
               }
-              else {
-                CameraStruct &cam = cameras[name];
-                sReal *data;
-                int num = control->sensors->getSensorData(cam.id, &data);
-                if(num == cam.size) {
-                  memcpy(cam.data, data, num*sizeof(sReal));
+              if(type & 2) {
+                std::string camName = name;
+                name += "_depth";
+                if(depthCameras.find(name) == depthCameras.end()) {
+                  unsigned long id = control->sensors->getSensorID(camName);
+                  float *data;
+                  const interfaces::BaseSensor *bs = control->sensors->getFullSensor(id);
+                  const sim::CameraSensor *c = dynamic_cast<const sim::CameraSensor*>(bs);
+                  if(c) {
+                    sim::CameraConfigStruct config = c->getConfig();
+                    std::vector<sim::DistanceMeasurement> buffer;
+                    int num = config.width*config.height;
+                    buffer.resize(num);
+                    c->getDepthImage(buffer);
+                    data = (float*)malloc(sizeof(float)*num);
+                    memcpy(data, buffer.data(), sizeof(float)*num);
+                    DepthCameraStruct cam = {id, data, NULL, num};
+                    cam.pydata = (float*)malloc(num*sizeof(float));
+                    depthCameras[name] = cam;
+                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(&name, cam.pydata, num);
+                  }
                 }
-                if(num) free(data);
+                else {
+                  DepthCameraStruct &cam = depthCameras[name];
+                  const interfaces::BaseSensor *bs = control->sensors->getFullSensor(cam.id);
+                  const sim::CameraSensor *c = dynamic_cast<const sim::CameraSensor*>(bs);
+                  if(c) {
+                    std::vector<sim::DistanceMeasurement> buffer;
+                    buffer.resize(cam.size);
+                    c->getDepthImage(buffer);
+                    memcpy(cam.data, buffer.data(), cam.size*sizeof(float));
+                  }
+                }
               }
             }
             mutexCamera.unlock();
@@ -551,11 +589,16 @@ namespace mars {
           try {
             iMap = ConfigItem();
             mutexCamera.lock();
-            { // udpate point clouds
+            { // udpate cameras
               std::map<std::string, CameraStruct>::iterator it = cameras.begin();
               for(; it!=cameras.end(); ++it) {
                 memcpy(it->second.pydata, it->second.data,
                        it->second.size*sizeof(sReal));
+              }
+              std::map<std::string, DepthCameraStruct>::iterator it2 = depthCameras.begin();
+              for(; it2!=depthCameras.end(); ++it2) {
+                memcpy(it2->second.pydata, it2->second.data,
+                       it2->second.size*sizeof(float));
               }
             }
             mutexCamera.unlock();
