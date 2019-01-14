@@ -33,12 +33,15 @@
 #warning "NodeCOMSensor.h"
 #endif
 
+#include <mars/data_broker/ProducerInterface.h>
+#include <mars/data_broker/DataPackageMapping.h>
 #include "NodeArraySensor.h"
 
 namespace mars {
   namespace sim {
 
-    class NodeCOMSensor : public NodeArraySensor{
+    class NodeCOMSensor : public NodeArraySensor,
+                          public data_broker::ProducerInterface {
 
     public:
       NodeCOMSensor(interfaces::ControlCenter* control, IDListConfig config);
@@ -47,6 +50,15 @@ namespace mars {
       virtual int getSensorData(interfaces::sReal** data) const;
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                            interfaces::BaseConfig *config);
+      void produceData(const data_broker::DataInfo &info,
+                                          data_broker::DataPackage *dbPackage,
+                                          int callbackParam);
+      void setupDataPackageMapping();
+
+      protected:
+        data_broker::DataPackageMapping dbPackageMapping;
+        unsigned long int dbPushId;
+        utils::Vector com;
     };
 
   } // end of namespace sim

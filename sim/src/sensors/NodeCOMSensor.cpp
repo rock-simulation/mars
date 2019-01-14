@@ -49,6 +49,10 @@ namespace mars {
     NodeCOMSensor::NodeCOMSensor(ControlCenter* control, IDListConfig config):
       NodeArraySensor(control, config, false, false) {
       typeName = "NodeCOM";
+
+      setupDataPackageMapping();
+      control->dataBroker->registerTimedProducer(this, "mars_sim", "Sensors",
+                                                 "mars_sim/simTimer", 0);
     }
 
     // this function should be overwritten by the special sensor to
@@ -66,6 +70,24 @@ namespace mars {
       (*data)[1] = center.y();
       (*data)[2] = center.z();
       return 3;
+    }
+
+    /* this procedure is alled every time_step and sends the data to the DataBroker */
+    void NodeCOMSensor::produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *dbPackage,
+                               int callbackParam) {
+
+      com = control->nodes->getCenterOfMass(config.ids);
+      dbPackageMapping.writePackage(dbPackage);
+    }
+
+    /* this procedure defines how the data is send to the DataBroker */
+    void NodeCOMSensor::setupDataPackageMapping() {
+      dbPackageMapping.clear();
+
+      dbPackageMapping.add(config.name+"/com/x", &com.x());
+      dbPackageMapping.add(config.name+"/com/y", &com.y());
+      dbPackageMapping.add(config.name+"/com/z", &com.z());
     }
 
   } // end of namespace sim
