@@ -199,9 +199,20 @@ namespace mars {
 
         entity = new sim::SimEntity(control, entityconfig);
         bool fixed = false;
-        if (entityconfig.find("parent") != entityconfig.end())
-          if ((std::string)entityconfig["parent"] == "world")
-            fixed = true;
+        // if (entityconfig.hasKey("anchor")) {
+        //   if (
+        //     (std::string)entityconfig["anchor"] == "world" ||
+        //     (
+        //       (std::string)entityconfig["anchor"] == "parent" &&
+        //       (
+        //         (entityconfig.hasKey("parent") && (std::string)entityconfig["parent"] == "world") ||
+        //         !entityconfig.hasKey("parent")
+        //       )
+        //     )
+        //   ) {
+        //     fixed = true;
+        //   }
+        }
         createModel(fixed);
 
         ConfigMap::iterator it;
