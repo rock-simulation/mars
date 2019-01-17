@@ -212,7 +212,7 @@ namespace mars {
         //   ) {
         //     fixed = true;
         //   }
-        }
+        //}
         createModel(fixed);
 
         ConfigMap::iterator it;
