@@ -56,6 +56,7 @@ namespace mars {
         control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
         control->loadCenter->loadScene[".smurf"] = this; // smurf model
         control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
+        control->loadCenter->loadScene[".smurfa"] = this; // smurf assembly
         control->loadCenter->loadScene[".svg"] = this; // smurfed vector graphic
         control->loadCenter->loadScene[".urdf"] = this; // urdf model
         LOG_INFO("smurf_loader: added SMURF loader to loadCenter");
@@ -72,6 +73,7 @@ namespace mars {
         control->loadCenter->loadScene.erase(".zsmurfs");
         control->loadCenter->loadScene.erase(".smurf");
         control->loadCenter->loadScene.erase(".smurfs");
+        control->loadCenter->loadScene.erase(".smurfa");
         control->loadCenter->loadScene.erase(".svg");
         control->loadCenter->loadScene.erase(".urdf");
         libManager->releaseLibrary("mars_sim");
@@ -292,7 +294,7 @@ namespace mars {
         }
 
     /**
-       * Loads a URDF, SMURF or SMURFS (SMURF scene) file.
+       * Loads a URDF, SMURF, SMURFS (SMURF scene) or SMURFA (SMURF assembly) file.
        * @param filename The name of the file to be loaded as a full path.
        * @param tmpPath The path to the temporary directory to which files should be unzipped
        *        if the file format requires it.
@@ -328,7 +330,7 @@ namespace mars {
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
             path, (std::string)(*it)["name"]);
       }
-      else if(((std::string)(*it)["type"] == "smurfs")) {
+      else if(((std::string)(*it)["type"] == "smurfs") || ((std::string)(*it)["type"] == "smurfa")) {
         // backup internal state:
         std::string tmpPath_b = tmpPath;
         tmpPath = "";
@@ -336,8 +338,44 @@ namespace mars {
         double global_length_b = global_length;
         std::vector<configmaps::ConfigMap> entitylist_b;
         entitylist_b.swap(entitylist);
-        control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+        // smurfa: pass the rotation and position offsets to the assembly
+        if (((std::string)(*it)["type"] == "smurfa")) {
+          ConfigStruct cfg_struct;
+          if (it->hasKey("parent")) cfg_struct.parent = (std::string)(*it)["parent"];
+          if (it->hasKey("anchor")) cfg_struct.anchor = (std::string)(*it)["anchor"];
+          if ((it->hasKey("position"))) {
+            cfg_struct.pos.x() = (*it)["position"][0];
+            cfg_struct.pos.y() = (*it)["position"][1];
+            cfg_struct.pos.z() = (*it)["position"][2];
+          }
+          if ((it->hasKey("rotation"))) {
+            Vector tmpV;
+            switch ((*it)["rotation"].size()) {
+            case 1:
+              tmpV[0] = 0;
+              tmpV[1] = 0;
+              tmpV[2] = (*it)["rotation"][0];
+              cfg_struct.rot = utils::eulerToQuaternion(tmpV);
+              break;
+            case 3:
+              tmpV[0] = (*it)["rotation"][0];
+              tmpV[1] = (*it)["rotation"][1];
+              tmpV[2] = (*it)["rotation"][2];
+              cfg_struct.rot = utils::eulerToQuaternion(tmpV);
+              break;
+            case 4:
+              cfg_struct.rot.x() = (sReal)(*it)["rotation"][1];
+              cfg_struct.rot.y() = (sReal)(*it)["rotation"][2];
+              cfg_struct.rot.z() = (sReal)(*it)["rotation"][3];
+              cfg_struct.rot.w() = (sReal)(*it)["rotation"][0];
+              break;
+            }
+          }
+          this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct);
+        } else {
+          control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
             path, (std::string)(*it)["name"]);
+        }
         // restore internal state:
         tmpPath = tmpPath_b;
         global_width = global_width_b;
@@ -351,6 +389,12 @@ namespace mars {
     //TODO: remove parameter "robotname"
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
+      return loadFile(filename, tmpPath, robotname, nullptr);
+    }
+
+    bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
+                              std::string robotname,
+                              void* args/* = nullptr*/) {
       LOG_INFO("urdf_loader: prepare loading");
       entitylist.clear();
 
@@ -459,6 +503,60 @@ namespace mars {
             }
             control->sim->addLight(light);
           }
+        }
+      } else if(file_extension == ".smurfa") {
+        configmaps::ConfigVector::iterator it;
+        map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
+        //map.toYamlFile("smurfs_debugmap.yml");
+        for (it = map["smurfa"].begin(); it != map["smurfa"].end(); ++it) { // backwards compatibility
+          fprintf(stderr, "Yaml %s\n", it->toYamlString().c_str());
+          if (it->hasKey("root") && (bool)(*it)["root"]) {
+            if (args != nullptr) {
+              Vector pos(0,0,0);
+              Quaternion rot(1,0,0,0);
+              ConfigStruct* cfg_struct = (ConfigStruct*) args;
+              (*it)["anchor"] = cfg_struct->anchor;
+              (*it)["parent"] = cfg_struct->parent;
+              if ((it->hasKey("position"))) {
+                pos.x() = (*it)["position"][0];
+                pos.y() = (*it)["position"][1];
+                pos.z() = (*it)["position"][2];
+              }
+              if ((it->hasKey("rotation"))) {
+                Vector tmpV;
+                switch ((*it)["rotation"].size()) {
+                case 1:
+                  tmpV[0] = 0;
+                  tmpV[1] = 0;
+                  tmpV[2] = (*it)["rotation"][0];
+                  rot = utils::eulerToQuaternion(tmpV);
+                  break;
+                case 3:
+                  tmpV[0] = (*it)["rotation"][0];
+                  tmpV[1] = (*it)["rotation"][1];
+                  tmpV[2] = (*it)["rotation"][2];
+                  rot = utils::eulerToQuaternion(tmpV);
+                  break;
+                case 4:
+                  rot.x() = (sReal)(*it)["rotation"][1];
+                  rot.y() = (sReal)(*it)["rotation"][2];
+                  rot.z() = (sReal)(*it)["rotation"][3];
+                  rot.w() = (sReal)(*it)["rotation"][0];
+                  break;
+                }
+              }
+              pos = cfg_struct->rot * pos + cfg_struct->pos;
+              rot = cfg_struct->rot * rot;
+              (*it)["position"][0] = pos.x();
+              (*it)["position"][1] = pos.y();
+              (*it)["position"][2] = pos.z();
+              (*it)["rotation"][1] = rot.x();
+              (*it)["rotation"][2] = rot.y();
+              (*it)["rotation"][3] = rot.z();
+              (*it)["rotation"][0] = rot.w();
+            }
+          }
+          loadEntity(it, path);
         }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list

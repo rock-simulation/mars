@@ -41,6 +41,15 @@
 namespace mars {
   namespace smurf {
 
+    struct ConfigStruct {
+      utils::Vector pos;
+      utils::Quaternion rot;
+      std::string anchor;
+      std::string parent;
+
+      ConfigStruct() : pos(0,0,0), rot(1,0,0,0), anchor("none"), parent("world") {}
+    };
+
     class SMURFLoader : public interfaces::LoadSceneInterface {
 
     public:
@@ -54,6 +63,8 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
+      virtual bool loadFile(std::string filename, std::string tmpPath,
+                            std::string robotname, void* args);
       virtual int saveFile(std::string filename, std::string tmpPath);
       virtual void loadEntity(configmaps::ConfigVector::iterator it, std::string path);
 
