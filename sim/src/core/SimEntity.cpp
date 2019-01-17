@@ -67,11 +67,20 @@ namespace mars {
     }
 
     void SimEntity::removeEntity() {
-//        for (std::vector<NodeId>::iterator it = oldNodeIDs.begin();
-//                it != oldNodeIDs.end(); ++it) {
-//            control->nodes->removeNode(*it);
-//        }
-//        oldNodeIDs.clear();
+      for (auto it = nodeIds.begin(); it != nodeIds.end(); ++it) {
+         control->nodes->removeNode(it->first);
+      }
+      nodeIds.clear();
+
+      for (auto it = jointIds.begin(); it != jointIds.end(); ++it) {
+         control->joints->removeJoint(it->first);
+      }
+      jointIds.clear();
+
+      for (auto it = motorIds.begin(); it != motorIds.end(); ++it) {
+         control->motors->removeMotor(it->first);
+      }
+      motorIds.clear();
     }
 
     void SimEntity::addNode(unsigned long nodeId, const std::string& name) {
@@ -293,6 +302,10 @@ namespace mars {
     void SimEntity::setInitialPose(bool reset/*=false*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
+        if (!control->nodes->exists(id)) {
+          fprintf(stderr, "ERROR: Did not find node id %d in setInitialPose()\n", id);
+          return;
+        }
         NodeData rootNode = control->nodes->getFullNode(id);
         utils::Quaternion tmpQ(1, 0, 0, 0);
         utils::Vector tmpV;
