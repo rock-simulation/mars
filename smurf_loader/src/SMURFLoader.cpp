@@ -54,6 +54,7 @@ namespace mars {
         control = marsSim->getControlCenter();
         control->loadCenter->loadScene[".zsmurf"] = this; // zipped smurf model
         control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
+        control->loadCenter->loadScene[".zsmurfa"] = this; // zipped smurf assembly
         control->loadCenter->loadScene[".smurf"] = this; // smurf model
         control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
         control->loadCenter->loadScene[".smurfa"] = this; // smurf assembly
@@ -71,6 +72,7 @@ namespace mars {
       if(control) {
         control->loadCenter->loadScene.erase(".zsmurf");
         control->loadCenter->loadScene.erase(".zsmurfs");
+        control->loadCenter->loadScene.erase(".zsmurfa");
         control->loadCenter->loadScene.erase(".smurf");
         control->loadCenter->loadScene.erase(".smurfs");
         control->loadCenter->loadScene.erase(".smurfa");
@@ -406,7 +408,7 @@ namespace mars {
       utils::removeFilenamePrefix(&_filename);
 
       // need to unzip into a temporary directory
-      if (file_extension == ".zsmurf" or file_extension == ".zsmurfs") {
+      if (file_extension == ".zsmurf" || file_extension == ".zsmurfs" || file_extension == ".zsmurfa") {
         if (unzip(tmpPath, filename) == 0) {
           path = tmpPath;
           return 0;
