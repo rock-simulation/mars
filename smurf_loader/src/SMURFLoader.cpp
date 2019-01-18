@@ -511,7 +511,6 @@ namespace mars {
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
         //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfa"].begin(); it != map["smurfa"].end(); ++it) { // backwards compatibility
-          fprintf(stderr, "Yaml %s\n", it->toYamlString().c_str());
           if (it->hasKey("root") && (bool)(*it)["root"]) {
             if (args != nullptr) {
               Vector pos(0,0,0);
@@ -549,13 +548,44 @@ namespace mars {
               }
               pos = cfg_struct->rot * pos + cfg_struct->pos;
               rot = cfg_struct->rot * rot;
-              (*it)["position"][0] = pos.x();
-              (*it)["position"][1] = pos.y();
-              (*it)["position"][2] = pos.z();
-              (*it)["rotation"][1] = rot.x();
-              (*it)["rotation"][2] = rot.y();
-              (*it)["rotation"][3] = rot.z();
-              (*it)["rotation"][0] = rot.w();
+              rot.normalize();
+              // Review: can't this be solved easier? (see configmaps)
+              if (it->hasKey("position")) {
+                (*it)["position"][0] = pos.x();
+                (*it)["position"][1] = pos.y();
+                (*it)["position"][2] = pos.z();
+              } else {
+                (*it)["position"].push_back(pos.x());
+                (*it)["position"].push_back(pos.y());
+                (*it)["position"].push_back(pos.z());
+              }
+              if (it->hasKey("rotation")) {
+                switch ((*it)["rotation"].size()) {
+                case 1:
+                  (*it)["rotation"][0] = rot.w();
+                  (*it)["rotation"].push_back(rot.x());
+                  (*it)["rotation"].push_back(rot.y());
+                  (*it)["rotation"].push_back(rot.z());
+                  break;
+                case 3:
+                  (*it)["rotation"][0] = rot.w();
+                  (*it)["rotation"][1] = rot.x();
+                  (*it)["rotation"][2] = rot.y();
+                  (*it)["rotation"].push_back(rot.z());
+                  break;
+                case 4:
+                  (*it)["rotation"][0] = rot.w();
+                  (*it)["rotation"][1] = rot.x();
+                  (*it)["rotation"][2] = rot.y();
+                  (*it)["rotation"][3] = rot.z();
+                  break;
+                }
+              } else {
+                (*it)["rotation"].push_back(rot.w());
+                (*it)["rotation"].push_back(rot.x());
+                (*it)["rotation"].push_back(rot.y());
+                (*it)["rotation"].push_back(rot.z());
+              }
             }
           }
           loadEntity(it, path);
