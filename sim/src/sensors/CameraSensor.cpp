@@ -68,7 +68,7 @@ namespace mars {
 
       control->nodes->addNodeSensor(this);
       std::string groupName, dataName;
-      this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
+      //this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
 
       bool found = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
       assert(found);
@@ -330,7 +330,8 @@ namespace mars {
         // todo: use pos_offset here too
         Vector p = control->graphics->getDrawObjectPosition(draw_id);
         Quaternion qcorrect = Quaternion(0.5, 0.5, -0.5, -0.5);
-        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * qcorrect;
+        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * config.ori_offset * qcorrect;
+        p += (control->graphics->getDrawObjectQuaternion(draw_id) * config.pos_offset);
         gc->updateViewportQuat(p.x(), p.y(), p.z(),
                                q.x(), q.y(),
                                q.z(), q.w());
