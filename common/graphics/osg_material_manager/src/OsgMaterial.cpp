@@ -41,11 +41,9 @@
 #include <osg/CullFace>
 
 #ifdef WIN32
- #include <cv.h>
- #include <highgui.h>
+ #include <opencv2/opencv.hpp>
 #else
- #include <opencv/cv.h>
- #include <opencv/highgui.h>
+ #include <opencv2/opencv.hpp>
 #endif
 
 #include <cmath>
@@ -756,37 +754,46 @@ namespace osg_material_manager {
   }
 
   osg::Texture2D* OsgMaterial::loadTerrainTexture(std::string filename) {
-    IplImage* img=cvLoadImage(filename.c_str(), -1);
+    cv::Mat img=cv::imread(filename, cv::IMREAD_ANYDEPTH);
     osg::Texture2D *texture = NULL;
-    if(img) {
+    if(img.data) {
       texture = new osg::Texture2D;
       texture->setDataVariance(osg::Object::DYNAMIC);
       texture->setWrap(osg::Texture::WRAP_S, osg::Texture::CLAMP);
       texture->setWrap(osg::Texture::WRAP_T, osg::Texture::CLAMP);
       texture->setWrap(osg::Texture::WRAP_R, osg::Texture::CLAMP);
       osg::Image* image = new osg::Image();
-      image->allocateImage(img->width, img->height,
+      image->allocateImage(img.cols, img.rows,
                            1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
-      assert(img->width = img->height);
-      terrainDimUniform->set((int)img->width);
-      CvScalar s;
+      assert(img.cols == img.rows);
+      if(img.cols != img.rows or img.channels() != 1) {
+        fprintf(stderr, "ERROR: bad heightmap loaded: w=%d h=%d c=%d\n",
+                img.cols, img.rows, img.channels());
+        return texture;
+      }
+
+      terrainDimUniform->set((int)img.cols);
+      cv::Scalar s;
+      int depth = img.depth();
       int v;
-      double imageMaxValue = pow(2., img->depth);
+      double imageMaxValue = pow(2., depth);
       double s256 = 1./256;
-      for(int x=0; x<img->width; ++x) {
-        for(int y=0; y<img->width; ++y) {
-          s=cvGet2D(img,y,x);
-          if(img->depth == 16) {
-            v = floor(s.val[0]*s256);
+      for(int x=0; x<img.cols; ++x) {
+        for(int y=0; y<img.rows; ++y) {
+          //s=cvGet2D(img,y,x);
+          if(depth == CV_16U) {
+            s = img.at<ushort>(y,x);
+            v = floor(s[0]*s256);
             if(v < 0) v = 0;
             if(v>255) v = 255;
             image->data(y, x)[0] = (char)v;
-            v = (int)s.val[0] % 256;
+            v = (int)s[0] % 256;
             if(v < 0) v = 0;
             if(v>255) v = 255;
             image->data(y, x)[1] = (char)v;
           }
           else {
+            s = img.at<uchar>(y,x);
             image->data(y, x)[0] = (char)s.val[0];
             image->data(y, x)[1] = 0;
           }
@@ -797,7 +804,7 @@ namespace osg_material_manager {
       //osgDB::writeImageFile(*image, "da.png");
 
       texture->setImage(image);
-      cvReleaseImage(&img);
+      img.release();//cvReleaseImage(&img);
     }
     return texture;
   }
