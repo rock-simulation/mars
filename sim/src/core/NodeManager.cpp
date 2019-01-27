@@ -265,11 +265,13 @@ namespace mars {
         NodeId id;
         if(control->graphics) {
           if(loadGraphics) {
-            id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
-            if(id) {
-              newNode->setGraphicsID(id);
-              if(!reload) {
-                simNodesReload.back().graphicsID1 = id;
+            if(!nodeS->map.hasKey("noVisual") or (bool)nodeS->map["noVisual"] == false) {
+              id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
+              if(id) {
+                newNode->setGraphicsID(id);
+                if(!reload) {
+                  simNodesReload.back().graphicsID1 = id;
+                }
               }
             }
           }
