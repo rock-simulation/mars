@@ -7,7 +7,7 @@ Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator
 Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@PROJECT_NAME@
-Requires.private: mars_utils lib_manager mars_interfaces minizip entity_generation
+Requires.private: mars_utils lib_manager mars_interfaces minizip mars_entity_factory
 
 Cflags: -I${includedir}  @ADD_INCLUDES@
 

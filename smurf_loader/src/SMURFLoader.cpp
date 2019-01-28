@@ -305,7 +305,7 @@ namespace mars {
        * @return 1 if the file was successfully loaded, 0 otherwise
        */
 
-    void SMURFLoader::loadEntity(configmaps::ConfigVector::iterator it, std::string path) {
+    void SMURFLoader::loadEntity(configmaps::ConfigMap* it, std::string path) {
       std::string uri = (std::string)(*it)["file"];
       if (uri == "") {
         uri = (std::string)(*it)["URI"]; // backwards compatibility
@@ -388,6 +388,7 @@ namespace mars {
         entitylist.push_back(*it);
       }
     }
+
     //TODO: remove parameter "robotname"
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
@@ -425,10 +426,12 @@ namespace mars {
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
         //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
-          loadEntity(it, path);
+          configmaps::ConfigMap &m = *it;
+          loadEntity(&m, path);
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
-          loadEntity(it, path);
+          configmaps::ConfigMap &m = *it;
+          loadEntity(&m, path);
         }
         // parse physics
         if (map.hasKey("physics")) {
@@ -590,7 +593,8 @@ namespace mars {
           }
           // add assembly entry to the entity's map so we can find it later
           (*it)["assembly"] = robotname;
-          loadEntity(it, path);
+          configmaps::ConfigMap &m = *it;
+          loadEntity(&m, path);
         }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
