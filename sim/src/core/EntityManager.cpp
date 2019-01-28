@@ -74,6 +74,22 @@ namespace mars {
       is allocated on the heap or the stack*/
     }
 
+    void EntityManager::removeAssembly(const std::string &assembly_name) {
+      std::vector<SimEntity*> parts = getEntitiesOfAssembly(assembly_name);
+      for (auto p: parts) {
+        //remove from entity map
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+          if (it->second == p) {
+            entities.erase(it);
+            break;
+          }
+        }
+        //delete entity
+        p->removeEntity();
+        // REVIEW Do we have to delete the anchor joints here?
+      }
+    }
+
     void EntityManager::notifySubscribers(SimEntity* entity) {
       for (std::vector<interfaces::EntitySubscriberInterface*>::iterator it = subscribers.begin();
            it != subscribers.end(); ++it) {
@@ -178,6 +194,17 @@ namespace mars {
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
         if (matchPattern(name, iter->second->getName())) {
+          out.push_back(iter->second);
+        }
+      }
+      return out;
+    }
+
+    std::vector<SimEntity*> EntityManager::getEntitiesOfAssembly(const std::string &assembly_name) {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
           out.push_back(iter->second);
         }
       }

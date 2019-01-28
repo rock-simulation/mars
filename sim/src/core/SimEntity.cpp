@@ -129,6 +129,13 @@ namespace mars {
       }
     }
 
+    std::string SimEntity::getAssembly() {
+      if (config.hasKey("assembly")) {
+        return (std::string) config["assembly"];
+      }
+      return "";
+    }
+
     long unsigned int SimEntity::getRootestId(std::string name_specifier /*="" */) {
       unsigned int id_specified = INVALID_ID;
       unsigned int id_lowest = INVALID_ID;

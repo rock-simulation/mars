@@ -199,6 +199,7 @@ namespace mars {
 
         entity = new sim::SimEntity(control, entityconfig);
         bool fixed = false;
+        //// incompatible with smurfa
         // if (entityconfig.hasKey("anchor")) {
         //   if (
         //     (std::string)entityconfig["anchor"] == "world" ||

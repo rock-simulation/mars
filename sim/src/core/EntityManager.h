@@ -61,6 +61,8 @@ namespace mars {
 
       virtual void removeEntity(const std::string &name);
 
+      virtual void removeAssembly(const std::string &assembly_name);
+
       /**adds a node and maps the nodeId to the name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId,
           const std::string &nodeName);
@@ -86,6 +88,9 @@ namespace mars {
       /**returns the entities that contain the given name string
        */
       virtual std::vector<SimEntity*> getEntities(const std::string &name);
+
+      virtual std::vector<SimEntity*> getEntitiesOfAssembly(
+        const std::string &assembly_name);
 
       /**returns the entity with the given id
        */

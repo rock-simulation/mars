@@ -89,6 +89,11 @@ namespace mars {
         return name;
       }
 
+      /* @brief returns the assembly name of the assembly to which the robot
+      *  belongs. Returns "" if the robot is not part of an entity
+      */
+      std::string getAssembly();
+
       // returns true if the robot is selected
       bool isSelected() {
         return selected;

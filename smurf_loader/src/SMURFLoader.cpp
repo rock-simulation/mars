@@ -588,6 +588,8 @@ namespace mars {
               }
             }
           }
+          // add assembly entry to the entity's map so we can find it later
+          (*it)["assembly"] = robotname;
           loadEntity(it, path);
         }
       } else if(file_extension == ".smurf") {
