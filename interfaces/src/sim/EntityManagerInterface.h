@@ -57,7 +57,7 @@ namespace mars {
       virtual unsigned long addEntity(sim::SimEntity* entity) = 0;
 
       /**deletes an existing entity and removes it's entity map entry*/
-      virtual void removeEntity(const std::string &name) = 0;
+      virtual void removeEntity(const std::string &name, bool completeAssembly=false) = 0;
 
       /**deletes all entities that belong to the given assembly and removes
       *   their entity map entry
@@ -89,6 +89,16 @@ namespace mars {
 
       /**returns the entity with the given id*/
       virtual sim::SimEntity* getEntity(unsigned long id) = 0;
+
+      /**returns the entities that belong to the assembly with the given name
+       */
+      virtual std::vector<sim::SimEntity*> getEntitiesOfAssembly(
+        const std::string &assembly_name) = 0;
+
+      /**returns the root entity of the given assembly
+       */
+      virtual sim::SimEntity* getRootOfAssembly(
+        const std::string &assembly_name) = 0;
 
       /**returns the node of the given entity; returns 0 if the entity or the node don't exist*/
       virtual unsigned long getEntityNode(const std::string &entityName, const std::string &nodeName) = 0;

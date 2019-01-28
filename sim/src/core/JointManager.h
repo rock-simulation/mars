@@ -77,6 +77,7 @@ namespace mars {
                                  bool first_axis = 1);
 
       virtual unsigned long getID(const std::string &joint_name) const;
+      virtual std::vector<unsigned long> getIDsByNodeID(unsigned long node_id);
       virtual unsigned long getIDByNodeIDs(unsigned long id1, unsigned long id2);
       virtual bool getDataBrokerNames(unsigned long id, std::string *groupName,
                                       std::string *dataName) const;

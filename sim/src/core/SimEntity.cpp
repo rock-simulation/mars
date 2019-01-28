@@ -70,7 +70,9 @@ namespace mars {
 
     void SimEntity::removeEntity() {
       for (auto it = nodeIds.begin(); it != nodeIds.end(); ++it) {
-         control->nodes->removeNode(it->first);
+        std::vector<unsigned long> joints = control->joints->getIDsByNodeID(it->first);
+        for (auto j: joints) control->joints->removeJoint(j);
+        control->nodes->removeNode(it->first);
       }
       nodeIds.clear();
 

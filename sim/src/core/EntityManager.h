@@ -59,7 +59,7 @@ namespace mars {
 
       virtual unsigned long addEntity(SimEntity* entity);
 
-      virtual void removeEntity(const std::string &name);
+      virtual void removeEntity(const std::string &name, bool completeAssembly=false);
 
       virtual void removeAssembly(const std::string &assembly_name);
 
@@ -89,7 +89,14 @@ namespace mars {
        */
       virtual std::vector<SimEntity*> getEntities(const std::string &name);
 
+      /**returns the entities that belong to the assembly with the given name
+       */
       virtual std::vector<SimEntity*> getEntitiesOfAssembly(
+        const std::string &assembly_name);
+
+      /**returns the root entity of the given assembly
+       */
+      virtual SimEntity* getRootOfAssembly(
         const std::string &assembly_name);
 
       /**returns the entity with the given id

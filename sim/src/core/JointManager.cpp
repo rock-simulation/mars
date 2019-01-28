@@ -379,6 +379,20 @@ namespace mars {
       return 0;
     }
 
+    std::vector<unsigned long> JointManager::getIDsByNodeID(unsigned long node_id) {
+      map<unsigned long, SimJoint*>::iterator iter;
+      MutexLocker locker(&iMutex);
+      std::vector<unsigned long> out;
+      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
+        if((iter->second->getNodeId() == node_id ||
+            iter->second->getNodeId(2) == node_id) ||
+           (iter->second->getNodeId() == node_id ||
+            iter->second->getNodeId(2) == node_id)) {
+          out.push_back(iter->first);
+        }
+      return out;
+    }
+
     unsigned long JointManager::getIDByNodeIDs(unsigned long id1, unsigned long id2) {
       map<unsigned long, SimJoint*>::iterator iter;
       MutexLocker locker(&iMutex);

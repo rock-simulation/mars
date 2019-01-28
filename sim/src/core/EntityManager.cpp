@@ -59,19 +59,23 @@ namespace mars {
       return id;
     }
 
-    void EntityManager::removeEntity(const std::string &name) {
+    void EntityManager::removeEntity(const std::string &name, bool completeAssembly) {
       SimEntity* entity = getEntity(name);
-      //remove from entity map
-      for (auto it = entities.begin(); it != entities.end(); ++it) {
-        if (it->second == entity) {
-          entities.erase(it);
-          break;
+      if (completeAssembly && entity->getAssembly() != "") {
+        removeAssembly(entity->getAssembly());
+      } else {
+        //remove from entity map
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+          if (it->second == entity) {
+            entities.erase(it);
+            break;
+          }
         }
+        //delete entity
+        entity->removeEntity();
+        /*TODO we have to free the memory here, but we don't know if this entity
+        is allocated on the heap or the stack*/
       }
-      //delete entity
-      entity->removeEntity();
-      /*TODO we have to free the memory here, but we don't know if this entity
-      is allocated on the heap or the stack*/
     }
 
     void EntityManager::removeAssembly(const std::string &assembly_name) {
@@ -80,6 +84,7 @@ namespace mars {
         //remove from entity map
         for (auto it = entities.begin(); it != entities.end(); ++it) {
           if (it->second == p) {
+            fprintf(stderr, "Deleting entity %s\n", p->getName().c_str());
             entities.erase(it);
             break;
           }
@@ -177,6 +182,17 @@ namespace mars {
       //TODO <jonas.peter@dfki.de> handle deselection
     }
 
+    SimEntity* EntityManager::getEntity(long unsigned int id) {
+      //TODO replace with find
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (iter->first == id) {
+          return iter->second;
+        }
+      }
+      return 0;
+    }
+
     SimEntity* EntityManager::getEntity(const std::string& name) {
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
@@ -184,10 +200,18 @@ namespace mars {
           return iter->second;
         }
       }
-      fprintf(stderr, "ERROR: Entity with name %s not found!\n", name.c_str());
+      SimEntity* e = getRootOfAssembly(name);
+      if (e) {
+        fprintf(stderr, "WARNING: Entity with the given name not found,"
+          " but found an assembly and returning it's root entity.\n");
+        return e;
+      }
+      fprintf(
+        stderr, "ERROR: Neither entity nor assembly with name %s found!\n",
+        name.c_str()
+      );
       return 0;
     }
-
 
     std::vector<SimEntity*> EntityManager::getEntities(const std::string &name) {
       std::vector<SimEntity*> out;
@@ -200,7 +224,9 @@ namespace mars {
       return out;
     }
 
-    std::vector<SimEntity*> EntityManager::getEntitiesOfAssembly(const std::string &assembly_name) {
+    std::vector<SimEntity*> EntityManager::getEntitiesOfAssembly(
+      const std::string &assembly_name)
+    {
       std::vector<SimEntity*> out;
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
@@ -211,12 +237,15 @@ namespace mars {
       return out;
     }
 
-    SimEntity* EntityManager::getEntity(long unsigned int id) {
-      //TODO replace with find
+    SimEntity* EntityManager::getRootOfAssembly(
+      const std::string &assembly_name)
+    {
+      std::vector<SimEntity*> out;
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
-        if (iter->first == id) {
-          return iter->second;
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
+          configmaps::ConfigMap map = iter->second->getConfig();
+          if (map.hasKey("root") && (bool) map["root"]) return iter->second;
         }
       }
       return 0;
