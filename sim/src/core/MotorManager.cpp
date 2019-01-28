@@ -233,6 +233,8 @@ namespace mars {
       iMutex.unlock();
 
       control->sim->sceneHasChanged(false);
+
+      next_motor_id = simMotors.end()->first+1;
     }
 
 

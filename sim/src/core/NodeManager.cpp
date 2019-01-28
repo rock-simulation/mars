@@ -703,6 +703,8 @@ namespace mars {
         delete tmpNode;
       }
       control->sim->sceneHasChanged(false);
+
+      next_node_id = simNodes.end()->first+1;
     }
 
     /**

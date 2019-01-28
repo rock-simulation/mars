@@ -213,6 +213,8 @@ namespace mars {
       iMutex.unlock();
 
       control->sim->sceneHasChanged(false);
+
+      next_sensor_id = simSensors.end()->first+1;
     }
 
 

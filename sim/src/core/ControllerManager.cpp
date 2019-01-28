@@ -129,6 +129,8 @@ namespace mars {
       }
       iMutex.unlock();
       control->sim->sceneHasChanged(false);
+
+      next_controller_id = simController.end()->first+1;
     }
 
 

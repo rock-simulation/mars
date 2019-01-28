@@ -201,6 +201,8 @@ namespace mars {
       if (tmpJoint)
         delete tmpJoint;
       control->sim->sceneHasChanged(false);
+
+      next_joint_id = simJoints.end()->first+1;
     }
 
     void JointManager::removeJointByIDs(unsigned long id1, unsigned long id2) {
