@@ -229,6 +229,7 @@ namespace mars {
         if (tmpMotor)
           delete tmpMotor;
       }
+      mimicmotors.erase(index);
       iMutex.unlock();
 
       control->sim->sceneHasChanged(false);
