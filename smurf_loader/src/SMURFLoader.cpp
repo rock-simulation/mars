@@ -340,44 +340,23 @@ namespace mars {
         double global_length_b = global_length;
         std::vector<configmaps::ConfigMap> entitylist_b;
         entitylist_b.swap(entitylist);
-        // smurfa: pass the rotation and position offsets to the assembly
-        if (((std::string)(*it)["type"] == "smurfa")) {
-          ConfigStruct cfg_struct;
-          if (it->hasKey("parent")) cfg_struct.parent = (std::string)(*it)["parent"];
-          if (it->hasKey("anchor")) cfg_struct.anchor = (std::string)(*it)["anchor"];
-          if ((it->hasKey("position"))) {
-            cfg_struct.pos.x() = (*it)["position"][0];
-            cfg_struct.pos.y() = (*it)["position"][1];
-            cfg_struct.pos.z() = (*it)["position"][2];
-          }
-          if ((it->hasKey("rotation"))) {
-            Vector tmpV;
-            switch ((*it)["rotation"].size()) {
-            case 1:
-              tmpV[0] = 0;
-              tmpV[1] = 0;
-              tmpV[2] = (*it)["rotation"][0];
-              cfg_struct.rot = utils::eulerToQuaternion(tmpV);
-              break;
-            case 3:
-              tmpV[0] = (*it)["rotation"][0];
-              tmpV[1] = (*it)["rotation"][1];
-              tmpV[2] = (*it)["rotation"][2];
-              cfg_struct.rot = utils::eulerToQuaternion(tmpV);
-              break;
-            case 4:
-              cfg_struct.rot.x() = (sReal)(*it)["rotation"][1];
-              cfg_struct.rot.y() = (sReal)(*it)["rotation"][2];
-              cfg_struct.rot.z() = (sReal)(*it)["rotation"][3];
-              cfg_struct.rot.w() = (sReal)(*it)["rotation"][0];
-              break;
-            }
-          }
-          this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct);
-        } else {
-          control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
-            path, (std::string)(*it)["name"]);
-        }
+        // pass the rotation and position offsets to the assembly
+        ConfigStruct cfg_struct;
+        if (it->hasKey("parent")) cfg_struct.parent = (std::string)(*it)["parent"];
+        if (it->hasKey("anchor")) cfg_struct.anchor = (std::string)(*it)["anchor"];
+        getPoseFromConfigMap(*it, &(cfg_struct.pos), &(cfg_struct.rot));
+        /* We use directly the load procedure as we know which one to use
+         * instead going the detour via the loadCenter. This enables us to use
+         * an overload of this method without changing all the interfaces.
+         * In the future it might be a good idea to implement passing of the
+         * cfgstruct to other loaders , too, to apply the transformation there
+         * as well.
+        */
+        this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct);
+        /* formerly:
+        control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
+          path, (std::string)(*it)["name"]);
+        */
         // restore internal state:
         tmpPath = tmpPath_b;
         global_width = global_width_b;
@@ -421,180 +400,124 @@ namespace mars {
       std::string uri;
       std::string uri_extension;
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
-      if(file_extension == ".smurfs") {
+      if(file_extension == ".smurfs" || file_extension == ".smurfa") {
         configmaps::ConfigVector::iterator it;
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
+        ConfigStruct cfg_struct;
+        if (args != nullptr) cfg_struct = *((ConfigStruct*) args);
         //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
           configmaps::ConfigMap &m = *it;
+          if (!m.hasKey("parent") ||
+              (m.hasKey("parent") && (std::string)m["parent"] == "world")) {
+            m["anchor"] = cfg_struct.anchor;
+            m["parent"] = cfg_struct.parent;
+            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
+          }
           loadEntity(&m, path);
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
           configmaps::ConfigMap &m = *it;
+          if (!m.hasKey("parent") ||
+              (m.hasKey("parent") && (std::string)m["parent"] == "world")) {
+            m["anchor"] = cfg_struct.anchor;
+            m["parent"] = cfg_struct.parent;
+            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
+          }
           loadEntity(&m, path);
         }
-        // parse physics
-        if (map.hasKey("physics")) {
-          configmaps::ConfigMap physicsmap = map["physics"];
-          if (physicsmap.hasKey("gravity")) {
-            utils::Vector gravvec;
-            //configmaps::ConfigMap gravmap = physicsmap["gravity"];
-            //gravvec.x() = gravmap["x"];
-            gravvec.x() = physicsmap["gravity"]["x"];
-            gravvec.y() = physicsmap["gravity"]["y"];
-            gravvec.z() = physicsmap["gravity"]["z"];
-            control->sim->setGravity(gravvec);
-            }
-          if (physicsmap.hasKey("ode")) {
-            if (physicsmap["ode"].hasKey("cfm")) {
-              control->cfg->setPropertyValue("Simulator", "world cfm", "value", (sReal)(physicsmap["ode"]["cfm"]));
-            }
-            if (physicsmap["ode"].hasKey("erp")) {
-              control->cfg->setPropertyValue("Simulator", "world erp", "value", (sReal)(physicsmap["ode"]["erp"]));
-            }
-            if (physicsmap["ode"].hasKey("stepsize")) {
-              control->cfg->setPropertyValue("Simulator", "calc_ms", "value", (sReal)(physicsmap["ode"]["stepsize"]));
-            }
-          }
-        }
-        if (map.hasKey("environment")) {
-          configmaps::ConfigMap envmap = map["environment"];
-          if (envmap.hasKey("skybox")) {
-            control->cfg->createParam("Scene","skydome_path",
-                                      cfg_manager::stringParam);
-            control->cfg->createParam("Scene","skydome_enabled",
-                                      cfg_manager::boolParam);
-            // check if path is relative to smurfs scene
-            std::string skyboxPath = envmap["skybox"]["path"];
-            skyboxPath = pathJoin(path, skyboxPath);
-            if(!pathExists(skyboxPath)) {
-              skyboxPath << envmap["skybox"]["path"];
-            }
-            control->cfg->setPropertyValue("Scene", "skydome_path", "value",
-                                           skyboxPath);
-            control->cfg->setPropertyValue("Scene", "skydome_enabled", "value",
-                                           true);
-          }
-          if (envmap.hasKey("terrain")) {
-            control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
-            control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
-          }
-          interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
-          if (envmap.hasKey("background")) {
-            Color bgcol;
-            bgcol.fromConfigItem(envmap["background"]);
-            goptions.clearColor = bgcol;
-          }
-          if (envmap.hasKey("fog")) {
-              goptions.fogEnabled = true;
-              goptions.fogDensity = envmap["fog"]["density"];
-              goptions.fogStart = envmap["fog"]["start"];
-              goptions.fogEnd = envmap["fog"]["end"];
-              Color fogcol;
-              fogcol.fromConfigItem(envmap["fog"]["color"]);
-              goptions.fogColor = fogcol;
-          } else {
-              goptions.fogEnabled = false;
-          }
-          control->graphics->setGraphicOptions(goptions);
-        }
-        if (map.hasKey("lights")) {
-          for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
-            LightData light;
-            int valid = light.fromConfigMap(*it, "", control->loadCenter);
-            if(!valid) {
-              fprintf(stderr, "Load: error while loading light\n");
-              return 0;
-            }
-            control->sim->addLight(light);
-          }
-        }
-      } else if(file_extension == ".smurfa") {
-        configmaps::ConfigVector::iterator it;
-        map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
-        //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfa"].begin(); it != map["smurfa"].end(); ++it) { // backwards compatibility
-          if (it->hasKey("root") && (bool)(*it)["root"]) {
-            if (args != nullptr) {
-              Vector pos(0,0,0);
-              Quaternion rot(1,0,0,0);
-              ConfigStruct* cfg_struct = (ConfigStruct*) args;
-              (*it)["anchor"] = cfg_struct->anchor;
-              (*it)["parent"] = cfg_struct->parent;
-              if ((it->hasKey("position"))) {
-                pos.x() = (*it)["position"][0];
-                pos.y() = (*it)["position"][1];
-                pos.z() = (*it)["position"][2];
-              }
-              if ((it->hasKey("rotation"))) {
-                Vector tmpV;
-                switch ((*it)["rotation"].size()) {
-                case 1:
-                  tmpV[0] = 0;
-                  tmpV[1] = 0;
-                  tmpV[2] = (*it)["rotation"][0];
-                  rot = utils::eulerToQuaternion(tmpV);
-                  break;
-                case 3:
-                  tmpV[0] = (*it)["rotation"][0];
-                  tmpV[1] = (*it)["rotation"][1];
-                  tmpV[2] = (*it)["rotation"][2];
-                  rot = utils::eulerToQuaternion(tmpV);
-                  break;
-                case 4:
-                  rot.x() = (sReal)(*it)["rotation"][1];
-                  rot.y() = (sReal)(*it)["rotation"][2];
-                  rot.z() = (sReal)(*it)["rotation"][3];
-                  rot.w() = (sReal)(*it)["rotation"][0];
-                  break;
-                }
-              }
-              pos = cfg_struct->rot * pos + cfg_struct->pos;
-              rot = cfg_struct->rot * rot;
-              rot.normalize();
-              // Review: can't this be solved easier? (see configmaps)
-              if (it->hasKey("position")) {
-                (*it)["position"][0] = pos.x();
-                (*it)["position"][1] = pos.y();
-                (*it)["position"][2] = pos.z();
-              } else {
-                (*it)["position"].push_back(pos.x());
-                (*it)["position"].push_back(pos.y());
-                (*it)["position"].push_back(pos.z());
-              }
-              if (it->hasKey("rotation")) {
-                switch ((*it)["rotation"].size()) {
-                case 1:
-                  (*it)["rotation"][0] = rot.w();
-                  (*it)["rotation"].push_back(rot.x());
-                  (*it)["rotation"].push_back(rot.y());
-                  (*it)["rotation"].push_back(rot.z());
-                  break;
-                case 3:
-                  (*it)["rotation"][0] = rot.w();
-                  (*it)["rotation"][1] = rot.x();
-                  (*it)["rotation"][2] = rot.y();
-                  (*it)["rotation"].push_back(rot.z());
-                  break;
-                case 4:
-                  (*it)["rotation"][0] = rot.w();
-                  (*it)["rotation"][1] = rot.x();
-                  (*it)["rotation"][2] = rot.y();
-                  (*it)["rotation"][3] = rot.z();
-                  break;
-                }
-              } else {
-                (*it)["rotation"].push_back(rot.w());
-                (*it)["rotation"].push_back(rot.x());
-                (*it)["rotation"].push_back(rot.y());
-                (*it)["rotation"].push_back(rot.z());
-              }
+          configmaps::ConfigMap &m = *it;
+          if (!m.hasKey("parent") ||
+              (m.hasKey("parent") && (std::string)m["parent"] == "world"))
+          {
+            if (m.hasKey("root") && (bool)m["root"]){
+              m["anchor"] = cfg_struct.anchor;
+              m["parent"] = cfg_struct.parent;
             }
+            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
           }
           // add assembly entry to the entity's map so we can find it later
-          (*it)["assembly"] = robotname;
-          configmaps::ConfigMap &m = *it;
+          m["assembly"] = robotname;
           loadEntity(&m, path);
+        }
+        if (file_extension != ".smurfa") {
+          // parse physics
+          if (map.hasKey("physics")) {
+            configmaps::ConfigMap physicsmap = map["physics"];
+            if (physicsmap.hasKey("gravity")) {
+              utils::Vector gravvec;
+              //configmaps::ConfigMap gravmap = physicsmap["gravity"];
+              //gravvec.x() = gravmap["x"];
+              gravvec.x() = physicsmap["gravity"]["x"];
+              gravvec.y() = physicsmap["gravity"]["y"];
+              gravvec.z() = physicsmap["gravity"]["z"];
+              control->sim->setGravity(gravvec);
+              }
+            if (physicsmap.hasKey("ode")) {
+              if (physicsmap["ode"].hasKey("cfm")) {
+                control->cfg->setPropertyValue("Simulator", "world cfm", "value", (sReal)(physicsmap["ode"]["cfm"]));
+              }
+              if (physicsmap["ode"].hasKey("erp")) {
+                control->cfg->setPropertyValue("Simulator", "world erp", "value", (sReal)(physicsmap["ode"]["erp"]));
+              }
+              if (physicsmap["ode"].hasKey("stepsize")) {
+                control->cfg->setPropertyValue("Simulator", "calc_ms", "value", (sReal)(physicsmap["ode"]["stepsize"]));
+              }
+            }
+          }
+          if (map.hasKey("environment")) {
+            configmaps::ConfigMap envmap = map["environment"];
+            if (envmap.hasKey("skybox")) {
+              control->cfg->createParam("Scene","skydome_path",
+                                        cfg_manager::stringParam);
+              control->cfg->createParam("Scene","skydome_enabled",
+                                        cfg_manager::boolParam);
+              // check if path is relative to smurfs scene
+              std::string skyboxPath = envmap["skybox"]["path"];
+              skyboxPath = pathJoin(path, skyboxPath);
+              if(!pathExists(skyboxPath)) {
+                skyboxPath << envmap["skybox"]["path"];
+              }
+              control->cfg->setPropertyValue("Scene", "skydome_path", "value",
+                                             skyboxPath);
+              control->cfg->setPropertyValue("Scene", "skydome_enabled", "value",
+                                             true);
+            }
+            if (envmap.hasKey("terrain")) {
+              control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
+              control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
+            }
+            interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
+            if (envmap.hasKey("background")) {
+              Color bgcol;
+              bgcol.fromConfigItem(envmap["background"]);
+              goptions.clearColor = bgcol;
+            }
+            if (envmap.hasKey("fog")) {
+                goptions.fogEnabled = true;
+                goptions.fogDensity = envmap["fog"]["density"];
+                goptions.fogStart = envmap["fog"]["start"];
+                goptions.fogEnd = envmap["fog"]["end"];
+                Color fogcol;
+                fogcol.fromConfigItem(envmap["fog"]["color"]);
+                goptions.fogColor = fogcol;
+            } else {
+                goptions.fogEnabled = false;
+            }
+            control->graphics->setGraphicOptions(goptions);
+          }
+          if (map.hasKey("lights")) {
+            for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
+              LightData light;
+              int valid = light.fromConfigMap(*it, "", control->loadCenter);
+              if(!valid) {
+                fprintf(stderr, "Load: error while loading light\n");
+                return 0;
+              }
+              control->sim->addLight(light);
+            }
+          }
         }
       } else if(file_extension == ".smurf") {
         // if we have only one smurf, only one with rudimentary data is added to the smurf list
@@ -656,6 +579,113 @@ namespace mars {
         return 0;
 
       return 1;
+    }
+
+    void SMURFLoader::transformConfigMapPose(Vector pos_offset,
+      Quaternion rot_offset, configmaps::ConfigMap* map)
+    {
+      Vector pos(0,0,0);
+      Quaternion rot(1,0,0,0);
+      if ((map->hasKey("position"))) {
+        pos.x() = (*map)["position"][0];
+        pos.y() = (*map)["position"][1];
+        pos.z() = (*map)["position"][2];
+      }
+      if ((map->hasKey("rotation"))) {
+        Vector tmpV;
+        switch ((*map)["rotation"].size()) {
+        case 1:
+          tmpV[0] = 0;
+          tmpV[1] = 0;
+          tmpV[2] = (*map)["rotation"][0];
+          rot = utils::eulerToQuaternion(tmpV);
+          break;
+        case 3:
+          tmpV[0] = (*map)["rotation"][0];
+          tmpV[1] = (*map)["rotation"][1];
+          tmpV[2] = (*map)["rotation"][2];
+          rot = utils::eulerToQuaternion(tmpV);
+          break;
+        case 4:
+          rot.x() = (sReal)(*map)["rotation"][1];
+          rot.y() = (sReal)(*map)["rotation"][2];
+          rot.z() = (sReal)(*map)["rotation"][3];
+          rot.w() = (sReal)(*map)["rotation"][0];
+          break;
+        }
+      }
+      pos = rot_offset * pos + pos_offset;
+      rot = rot_offset * rot;
+      rot.normalize();
+      if (map->hasKey("position")) {
+        (*map)["position"][0] = pos.x();
+        (*map)["position"][1] = pos.y();
+        (*map)["position"][2] = pos.z();
+      } else {
+        (*map)["position"].push_back(pos.x());
+        (*map)["position"].push_back(pos.y());
+        (*map)["position"].push_back(pos.z());
+      }
+      if (map->hasKey("rotation")) {
+        switch ((*map)["rotation"].size()) {
+        case 1:
+          (*map)["rotation"][0] = rot.w();
+          (*map)["rotation"].push_back(rot.x());
+          (*map)["rotation"].push_back(rot.y());
+          (*map)["rotation"].push_back(rot.z());
+          break;
+        case 3:
+          (*map)["rotation"][0] = rot.w();
+          (*map)["rotation"][1] = rot.x();
+          (*map)["rotation"][2] = rot.y();
+          (*map)["rotation"].push_back(rot.z());
+          break;
+        case 4:
+          (*map)["rotation"][0] = rot.w();
+          (*map)["rotation"][1] = rot.x();
+          (*map)["rotation"][2] = rot.y();
+          (*map)["rotation"][3] = rot.z();
+          break;
+        }
+      } else {
+        (*map)["rotation"].push_back(rot.w());
+        (*map)["rotation"].push_back(rot.x());
+        (*map)["rotation"].push_back(rot.y());
+        (*map)["rotation"].push_back(rot.z());
+      }
+    }
+
+    void SMURFLoader::getPoseFromConfigMap(configmaps::ConfigMap &map,
+      utils::Vector* pos, utils::Quaternion* rot)
+    {
+      if ((map.hasKey("position"))) {
+        pos->x() = map["position"][0];
+        pos->y() = map["position"][1];
+        pos->z() = map["position"][2];
+      }
+      if ((map.hasKey("rotation"))) {
+        Vector tmpV;
+        switch (map["rotation"].size()) {
+        case 1:
+          tmpV[0] = 0;
+          tmpV[1] = 0;
+          tmpV[2] = map["rotation"][0];
+          *rot = utils::eulerToQuaternion(tmpV);
+          break;
+        case 3:
+          tmpV[0] = map["rotation"][0];
+          tmpV[1] = map["rotation"][1];
+          tmpV[2] = map["rotation"][2];
+          *rot = utils::eulerToQuaternion(tmpV);
+          break;
+        case 4:
+          rot->x() = (sReal)map["rotation"][1];
+          rot->y() = (sReal)map["rotation"][2];
+          rot->z() = (sReal)map["rotation"][3];
+          rot->w() = (sReal)map["rotation"][0];
+          break;
+        }
+      }
     }
 
   } // end of namespace smurf

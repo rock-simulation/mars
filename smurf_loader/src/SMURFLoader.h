@@ -88,6 +88,10 @@ namespace mars {
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
+      void transformConfigMapPose(utils::Vector pos_offset,
+        utils::Quaternion rot_offset, configmaps::ConfigMap* map);
+      void getPoseFromConfigMap(configmaps::ConfigMap &map,
+        utils::Vector* pos, utils::Quaternion* rot);
     };
 
   } // end of namespace smurf
