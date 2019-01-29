@@ -345,6 +345,7 @@ namespace mars {
         if (it->hasKey("parent")) cfg_struct.parent = (std::string)(*it)["parent"];
         if (it->hasKey("anchor")) cfg_struct.anchor = (std::string)(*it)["anchor"];
         getPoseFromConfigMap(*it, &(cfg_struct.pos), &(cfg_struct.rot));
+        fprintf(stderr, "anchor %s\n", it->toYamlString().c_str());
         /* We use directly the load procedure as we know which one to use
          * instead going the detour via the loadCenter. This enables us to use
          * an overload of this method without changing all the interfaces.
@@ -403,40 +404,20 @@ namespace mars {
       if(file_extension == ".smurfs" || file_extension == ".smurfa") {
         configmaps::ConfigVector::iterator it;
         map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
-        ConfigStruct cfg_struct;
-        if (args != nullptr) cfg_struct = *((ConfigStruct*) args);
         //map.toYamlFile("smurfs_debugmap.yml");
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
           configmaps::ConfigMap &m = *it;
-          if (!m.hasKey("parent") ||
-              (m.hasKey("parent") && (std::string)m["parent"] == "world")) {
-            m["anchor"] = cfg_struct.anchor;
-            m["parent"] = cfg_struct.parent;
-            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
-          }
+          applyConfigStruct((ConfigStruct*)args, m);
           loadEntity(&m, path);
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
           configmaps::ConfigMap &m = *it;
-          if (!m.hasKey("parent") ||
-              (m.hasKey("parent") && (std::string)m["parent"] == "world")) {
-            m["anchor"] = cfg_struct.anchor;
-            m["parent"] = cfg_struct.parent;
-            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
-          }
+          applyConfigStruct((ConfigStruct*)args, m);
           loadEntity(&m, path);
         }
         for (it = map["smurfa"].begin(); it != map["smurfa"].end(); ++it) { // backwards compatibility
           configmaps::ConfigMap &m = *it;
-          if (!m.hasKey("parent") ||
-              (m.hasKey("parent") && (std::string)m["parent"] == "world"))
-          {
-            if (m.hasKey("root") && (bool)m["root"]){
-              m["anchor"] = cfg_struct.anchor;
-              m["parent"] = cfg_struct.parent;
-            }
-            transformConfigMapPose(cfg_struct.pos, cfg_struct.rot, &m);
-          }
+          applyConfigStruct((ConfigStruct*)args, m, true);
           // add assembly entry to the entity's map so we can find it later
           m["assembly"] = robotname;
           loadEntity(&m, path);
@@ -580,6 +561,22 @@ namespace mars {
 
       return 1;
     }
+
+    void SMURFLoader::applyConfigStruct(ConfigStruct *cfg_struct,
+      configmaps::ConfigMap& m, bool is_smurfa/*=false*/)
+    {
+      if (cfg_struct != nullptr) {
+        if (!m.hasKey("parent") ||
+             (m.hasKey("parent") && (std::string)m["parent"] == "world")) {
+          if (!is_smurfa || (m.hasKey("root") && (bool)m["root"] && is_smurfa)) {
+            m["anchor"] = cfg_struct->anchor;
+            m["parent"] = cfg_struct->parent;
+          }
+          transformConfigMapPose(cfg_struct->pos, cfg_struct->rot, &m);
+        }
+      }
+    }
+
 
     void SMURFLoader::transformConfigMapPose(Vector pos_offset,
       Quaternion rot_offset, configmaps::ConfigMap* map)

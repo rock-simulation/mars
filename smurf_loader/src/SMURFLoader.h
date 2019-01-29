@@ -93,6 +93,8 @@ namespace mars {
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
+      void applyConfigStruct(ConfigStruct* cfg_struct, configmaps::ConfigMap& m,
+        bool is_smurfa=false);
       void transformConfigMapPose(utils::Vector pos_offset,
         utils::Quaternion rot_offset, configmaps::ConfigMap* map);
       void getPoseFromConfigMap(configmaps::ConfigMap &map,
