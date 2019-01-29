@@ -63,11 +63,16 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
+      /* Overloading this enables us to use this method without changing
+       * all the interfaces.
+       * In the future it might be a good idea to implement passing of the
+       * cfgstruct to other loaders, too, to apply the transformation there
+       * as well.
+      */
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname, void* args);
       virtual int saveFile(std::string filename, std::string tmpPath);
       virtual void loadEntity(configmaps::ConfigMap* it, std::string path);
-      //virtual void loadEntity(configmaps::ConfigMap* it, std::string path, void* args);
 
       // SMURF-Loader specific functions
       void checkEncodings();

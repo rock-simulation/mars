@@ -355,7 +355,7 @@ namespace mars {
         this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct);
         /* formerly:
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
-          path, (std::string)(*it)["name"]);
+            path, (std::string)(*it)["name"]);
         */
         // restore internal state:
         tmpPath = tmpPath_b;
@@ -441,8 +441,8 @@ namespace mars {
           m["assembly"] = robotname;
           loadEntity(&m, path);
         }
+        // parse physics
         if (file_extension != ".smurfa") {
-          // parse physics
           if (map.hasKey("physics")) {
             configmaps::ConfigMap physicsmap = map["physics"];
             if (physicsmap.hasKey("gravity")) {

@@ -329,6 +329,10 @@ namespace mars {
 
       int id = -1;
       iMutex.lock();
+      /* Currently it is safe that the last element in the map is that with the
+      *  highest index. This is a must have for reducing the next id counter in
+      *  the remove procedure.
+      */
       id = next_sensor_id++;
       iMutex.unlock();
 

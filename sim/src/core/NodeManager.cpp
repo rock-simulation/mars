@@ -109,6 +109,10 @@ namespace mars {
                                 bool loadGraphics) {
       iMutex.lock();
       nodeS->index = next_node_id;
+      /* Currently it is safe that the last element in the map is that with the
+      *  highest index. This is a must have for reducing the next id counter in
+      *  the remove procedure.
+      */
       next_node_id++;
       iMutex.unlock();
 

@@ -134,6 +134,10 @@ namespace mars {
 
       /**returns the id to be assigned to the next entity*/
       unsigned long getNextId() {
+        /* Currently it is safe that the last element in the map is that with the
+        *  highest index. This is a must have for reducing the next id counter in
+        *  the remove procedure.
+        */
         return next_entity_id++;
       }
 
