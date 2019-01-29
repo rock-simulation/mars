@@ -76,7 +76,6 @@ namespace mars {
         /*TODO we have to free the memory here, but we don't know if this entity
         is allocated on the heap or the stack*/
       }
-      next_entity_id = entities.end()->first+1;
     }
 
     void EntityManager::removeAssembly(const std::string &assembly_name) {
@@ -94,7 +93,6 @@ namespace mars {
         p->removeEntity();
         // REVIEW Do we have to delete the anchor joints here?
       }
-      next_entity_id = entities.end()->first+1;
     }
 
     void EntityManager::notifySubscribers(SimEntity* entity) {

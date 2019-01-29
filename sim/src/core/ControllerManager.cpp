@@ -129,8 +129,6 @@ namespace mars {
       }
       iMutex.unlock();
       control->sim->sceneHasChanged(false);
-
-      next_controller_id = simController.end()->first+1;
     }
 
 
@@ -328,10 +326,6 @@ namespace mars {
       std::vector<NodeData*> nodes;
       std::vector<unsigned long>::const_iterator nter;
       Controller *newController;
-      /* Currently it is safe that the last element in the map is that with the
-      *  highest index. This is a must have for reducing the next id counter in
-      *  the remove procedure.
-      */
       unsigned long id = next_controller_id++;
 
       for (nter = controller.motors.begin(); nter != controller.motors.end();

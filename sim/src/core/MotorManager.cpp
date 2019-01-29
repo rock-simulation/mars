@@ -78,10 +78,6 @@ namespace mars {
     {
       iMutex.lock();
       motorS->index = next_motor_id;
-      /* Currently it is safe that the last element in the map is that with the
-      *  highest index. This is a must have for reducing the next id counter in
-      *  the remove procedure.
-      */
       next_motor_id++;
       iMutex.unlock();
 
@@ -237,8 +233,6 @@ namespace mars {
       iMutex.unlock();
 
       control->sim->sceneHasChanged(false);
-
-      next_motor_id = simMotors.end()->first+1;
     }
 
 

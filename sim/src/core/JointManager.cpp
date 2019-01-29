@@ -114,10 +114,6 @@ namespace mars {
         iMutex.lock();
         // set the next free id
         jointS->index = next_joint_id;
-        /* Currently it is safe that the last element in the map is that with the
-        *  highest index. This is a must have for reducing the next id counter in
-        *  the remove procedure.
-        */
         next_joint_id++;
         SimJoint* newJoint = new SimJoint(control, *jointS);
         newJoint->setAttachedNodes(node1, node2);
@@ -205,8 +201,6 @@ namespace mars {
       if (tmpJoint)
         delete tmpJoint;
       control->sim->sceneHasChanged(false);
-
-      next_joint_id = simJoints.end()->first+1;
     }
 
     void JointManager::removeJointByIDs(unsigned long id1, unsigned long id2) {
