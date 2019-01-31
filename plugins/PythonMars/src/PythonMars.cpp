@@ -680,10 +680,20 @@ namespace mars {
           gpMutex.lock();
           pythonException = false;
           try {
-            if(plugin)
+            if(plugin) {
               plugin->reload();
-            else
+              for(auto it: cameras) {
+                free(it.second.pydata);
+              }
+              cameras.clear();
+              for(auto it: depthCameras) {
+                free(it.second.pydata);
+              }
+              depthCameras.clear();
+            }
+            else {
               plugin = PythonInterpreter::instance().import("mars_plugin");
+            }
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
