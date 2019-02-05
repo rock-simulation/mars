@@ -305,7 +305,7 @@ namespace mars {
        * @return 1 if the file was successfully loaded, 0 otherwise
        */
 
-    void SMURFLoader::loadEntity(configmaps::ConfigMap* it, std::string path) {
+    void SMURFLoader::loadEntity(configmaps::ConfigMap* it, std::string path, bool do_not_create) {
       std::string uri = (std::string)(*it)["file"];
       if (uri == "") {
         uri = (std::string)(*it)["URI"]; // backwards compatibility
@@ -339,13 +339,12 @@ namespace mars {
         double global_width_b = global_width;
         double global_length_b = global_length;
         std::vector<configmaps::ConfigMap> entitylist_b;
-        entitylist_b.swap(entitylist);
+        //entitylist_b.swap(entitylist);
         // pass the rotation and position offsets to the assembly
         ConfigStruct cfg_struct;
         if (it->hasKey("parent")) cfg_struct.parent = (std::string)(*it)["parent"];
         if (it->hasKey("anchor")) cfg_struct.anchor = (std::string)(*it)["anchor"];
         getPoseFromConfigMap(*it, &(cfg_struct.pos), &(cfg_struct.rot));
-        fprintf(stderr, "anchor %s\n", it->toYamlString().c_str());
         /* We use directly the load procedure as we know which one to use
          * instead going the detour via the loadCenter. This enables us to use
          * an overload of this method without changing all the interfaces.
@@ -353,7 +352,7 @@ namespace mars {
          * cfgstruct to other loaders , too, to apply the transformation there
          * as well.
         */
-        this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct);
+        this->loadFile(fulluri, path, (std::string)(*it)["name"], &cfg_struct, do_not_create);
         /* formerly:
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
             path, (std::string)(*it)["name"]);
@@ -362,7 +361,7 @@ namespace mars {
         tmpPath = tmpPath_b;
         global_width = global_width_b;
         global_length = global_length_b;
-        entitylist.swap(entitylist_b);
+        //entitylist.swap(entitylist_b);
       }
       else {
         entitylist.push_back(*it);
@@ -372,14 +371,14 @@ namespace mars {
     //TODO: remove parameter "robotname"
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname) {
-      return loadFile(filename, tmpPath, robotname, nullptr);
+      return loadFile(filename, tmpPath, robotname, nullptr, false);
     }
 
     bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
                               std::string robotname,
-                              void* args/* = nullptr*/) {
+                              void* args, bool do_not_create/*=false*/) {
       LOG_INFO("urdf_loader: prepare loading");
-      entitylist.clear();
+      if (!do_not_create) entitylist.clear();
 
       // split up filename in path + _filename and retrieve file extension
       std::string file_extension = utils::getFilenameSuffix(filename);
@@ -408,19 +407,19 @@ namespace mars {
         for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
           configmaps::ConfigMap &m = *it;
           applyConfigStruct((ConfigStruct*)args, m);
-          loadEntity(&m, path);
+          loadEntity(&m, path, true);
         }
         for (it = map["entities"].begin(); it != map["entities"].end(); ++it) { // new tag
           configmaps::ConfigMap &m = *it;
           applyConfigStruct((ConfigStruct*)args, m);
-          loadEntity(&m, path);
+          loadEntity(&m, path, true);
         }
         for (it = map["smurfa"].begin(); it != map["smurfa"].end(); ++it) { // backwards compatibility
           configmaps::ConfigMap &m = *it;
           applyConfigStruct((ConfigStruct*)args, m, true);
           // add assembly entry to the entity's map so we can find it later
           m["assembly"] = robotname;
-          loadEntity(&m, path);
+          loadEntity(&m, path, true);
         }
         // parse physics
         if (file_extension != ".smurfa") {
@@ -531,13 +530,16 @@ namespace mars {
         }
       }
 
-      //load assembled smurfs
-      fprintf(stderr, "Creating simulation entities...\n");
-      for (std::vector<configmaps::ConfigMap>::iterator sit = entitylist.begin();
-          sit != entitylist.end(); ++sit) {
-        configmaps::ConfigMap tmpmap;
-        tmpmap = *sit;
-        factoryManager->createEntity(tmpmap);
+      if (!do_not_create) {
+        // TODO make sure to load in correct order
+        //load assembled smurfs
+        fprintf(stderr, "Creating simulation entities...\n");
+        for (std::vector<configmaps::ConfigMap>::iterator sit = entitylist.begin();
+            sit != entitylist.end(); ++sit) {
+          configmaps::ConfigMap tmpmap;
+          tmpmap = *sit;
+          factoryManager->createEntity(tmpmap);
+        }
       }
 
       return 1; //TODO: check number of successfully loaded entities before returning 1
