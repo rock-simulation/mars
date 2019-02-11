@@ -27,6 +27,7 @@
 #include "SMURFLoader.h"
 #include "zipit.h"
 
+#include <algorithm>
 #include <lib_manager/LibManager.hpp>
 #include <lib_manager/LibInterface.hpp>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -531,15 +532,67 @@ namespace mars {
       }
 
       if (!do_not_create) {
-        // TODO make sure to load in correct order
+        std::vector<std::string> loaded;
+        std::vector<configmaps::ConfigMap> loadLater;
+        unsigned int entitiesToLoad = entitylist.size();
+        unsigned int iterations = 0;
         //load assembled smurfs
-        fprintf(stderr, "Creating simulation entities...\n");
-        for (std::vector<configmaps::ConfigMap>::iterator sit = entitylist.begin();
+        fprintf(stderr, "Creating %d simulation entities...\n", entitiesToLoad);
+        while (entitylist.size() != 0) {
+          for (std::vector<configmaps::ConfigMap>::iterator sit = entitylist.begin();
             sit != entitylist.end(); ++sit) {
-          configmaps::ConfigMap tmpmap;
-          tmpmap = *sit;
-          factoryManager->createEntity(tmpmap);
+            configmaps::ConfigMap tmpmap;
+            tmpmap = *sit;
+            std::string dep1 = ""; std::string dep2 = ""; unsigned int pos;
+            if (tmpmap.hasKey("parent")) {
+              dep1 = ((std::string)tmpmap["parent"]);
+              pos = dep1.find("::");
+              if (pos != std::string::npos) {
+                dep1 = dep1.substr(0, pos);
+              } else {
+                dep1 = "";
+              }
+            }
+            if (tmpmap.hasKey("anchor")) {
+              dep2 = ((std::string)tmpmap["anchor"]);
+              if (dep2 == "parent") {
+                dep2 = dep1;
+              } else {
+                pos = dep2.find("::");
+                if (pos != std::string::npos) {
+                  dep2 = dep2.substr(0, pos);
+                  if (dep1.empty() ) {
+                    dep1 = dep2;
+                  }
+                } else {
+                  dep2 = dep1;
+                }
+              }
+            }
+            if((dep1.empty() && dep2.empty()) ||
+                (
+                  dep1 == dep2 &&
+                  std::find(loaded.begin(), loaded.end(), dep2) != loaded.end()
+                ) ||
+                (
+                  std::find(loaded.begin(), loaded.end(), dep1) != loaded.end() &&
+                  std::find(loaded.begin(), loaded.end(), dep2) != loaded.end()
+                ) ||
+                iterations > entitiesToLoad //load everything if something is wrong
+              )
+            {
+              factoryManager->createEntity(tmpmap);
+              loaded.push_back((std::string)tmpmap["name"]);
+            } else {
+              loadLater.push_back(tmpmap);
+            }
+          }
+          entitylist = loadLater;
+          loadLater.clear();
+          iterations++;
         }
+        if (iterations-1 > entitiesToLoad)
+          fprintf(stderr, "WARNING: Loading all remaining entities as max iter is reached!\n");
       }
 
       return 1; //TODO: check number of successfully loaded entities before returning 1
