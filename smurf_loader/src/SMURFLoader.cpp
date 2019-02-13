@@ -543,11 +543,11 @@ namespace mars {
             sit != entitylist.end(); ++sit) {
             configmaps::ConfigMap tmpmap;
             tmpmap = *sit;
-            std::string dep1 = ""; std::string dep2 = ""; unsigned int pos;
+            std::string dep1 = ""; std::string dep2 = ""; int pos;
             if (tmpmap.hasKey("parent")) {
               dep1 = ((std::string)tmpmap["parent"]);
               pos = dep1.find("::");
-              if (pos != std::string::npos) {
+              if (pos != (int) std::string::npos) {
                 dep1 = dep1.substr(0, pos);
               } else {
                 dep1 = "";
@@ -555,18 +555,13 @@ namespace mars {
             }
             if (tmpmap.hasKey("anchor")) {
               dep2 = ((std::string)tmpmap["anchor"]);
+              pos = dep2.find("::");
               if (dep2 == "parent") {
                 dep2 = dep1;
+              } else if (pos != (int) std::string::npos) {
+                dep2 = dep2.substr(0, pos);
               } else {
-                pos = dep2.find("::");
-                if (pos != std::string::npos) {
-                  dep2 = dep2.substr(0, pos);
-                  if (dep1.empty() ) {
-                    dep1 = dep2;
-                  }
-                } else {
-                  dep2 = dep1;
-                }
+                dep2 = "";
               }
             }
             if((dep1.empty() && dep2.empty()) ||
