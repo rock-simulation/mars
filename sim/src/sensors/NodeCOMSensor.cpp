@@ -49,22 +49,40 @@ namespace mars {
     NodeCOMSensor::NodeCOMSensor(ControlCenter* control, IDListConfig config):
       NodeArraySensor(control, config, false, false) {
       typeName = "NodeCOM";
+      linkId = INVALID_ID;
+      if (config.config.hasKey("link")){
+        linkId = control->nodes->getID((std::string) config.config["link"]);
+      }
 
       setupDataPackageMapping();
       control->dataBroker->registerTimedProducer(this, "mars_sim", "Sensors",
                                                  "mars_sim/simTimer", 0);
     }
 
+    NodeCOMSensor::~NodeCOMSensor(){
+      control->dataBroker->unregisterTimedProducer(this, "mars_sim", "Sensors",
+                                                   "mars_sim/simTimer");
+    }
+
     // this function should be overwritten by the special sensor to
     int NodeCOMSensor::getAsciiData(char* data) const {
       Vector center = control->nodes->getCenterOfMass(config.ids);
+      if (linkId != INVALID_ID) {
+        center = center - control->nodes->getPosition(linkId);
+        center = control->nodes->getRotation(linkId).inverse() * center;
+      }
+
       sprintf(data, " %6.2f %6.2f %6.2f", center.x(), center.y(), center.z());
       return 21;
     }
 
     int NodeCOMSensor::getSensorData(sReal** data) const {
       Vector center = control->nodes->getCenterOfMass(config.ids);
-  
+      if (linkId != INVALID_ID) {
+        center = center -control->nodes->getPosition(linkId);
+        center = control->nodes->getRotation(linkId).inverse() * center;
+      }
+
       *data = (sReal*)calloc(3, sizeof(sReal));
       (*data)[0] = center.x();
       (*data)[1] = center.y();
@@ -78,6 +96,10 @@ namespace mars {
                                int callbackParam) {
 
       com = control->nodes->getCenterOfMass(config.ids);
+      if (linkId != INVALID_ID) {
+        com = com - control->nodes->getPosition(linkId);
+        com = control->nodes->getRotation(linkId).inverse() * com;
+      }
       dbPackageMapping.writePackage(dbPackage);
     }
 
