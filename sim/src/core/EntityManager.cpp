@@ -331,9 +331,11 @@ namespace mars {
     }
 
     void EntityManager::resetPose() {
-      std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
-      for (; iter != entities.end(); ++iter) {
-        iter->second->setInitialPose(true);
+      for (auto iter: entities) {
+        iter.second->removeAnchor();
+      }
+      for (auto iter: entities) {
+        iter.second->setInitialPose(true);
       }
     }
 

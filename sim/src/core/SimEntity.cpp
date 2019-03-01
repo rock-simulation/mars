@@ -317,6 +317,10 @@ namespace mars {
       }
     }
 
+    void SimEntity::removeAnchor() {
+      if (hasAnchorJoint()) control->joints->removeJoint(anchorJointId);
+    }
+
     bool SimEntity::hasAnchorJoint() {
       return (anchorJointId != 0);
     }
@@ -438,7 +442,8 @@ namespace mars {
           anchorjoint.anchorPos = ANCHOR_NODE1;
           anchorjoint.type = JOINT_TYPE_FIXED;
           anchorjoint.name = "anchor_"+name;
-          anchorJointId = control->joints->addJoint(&anchorjoint, true);
+          if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
+          anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
           addJoint(anchorJointId, anchorjoint.name);
         } else {
           //if there was a joint before, remove it

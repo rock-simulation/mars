@@ -148,6 +148,8 @@ namespace mars {
 
       const configmaps::ConfigMap getConfig();
 
+      void removeAnchor();
+
       bool hasAnchorJoint();
 
       void setInitialPose(bool reset=false/*compatibility*/, configmaps::ConfigMap* pPoseCfg=NULL);
