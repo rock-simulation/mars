@@ -55,6 +55,7 @@ if (APPLE)
   set(PYTHON_LIBRARY "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python")
   set(PYTHON_INCLUDE_DIR "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7" "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include")
 endif (APPLE)
+#add_definitions(-DPYTHON3)
 set(Python_ADDITIONAL_VERSIONS "2.7")
 find_package(PythonLibs REQUIRED)
 

@@ -5,7 +5,40 @@
 
 #include "PythonInterpreter.hpp"
 #include <Python.h>
+#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
+
+#ifdef PYTHON3
+#define PyInt_FromLong PyLong_FromLong
+#define PyInt_AsLong PyLong_AsLong
+#define PyInt_Check PyLong_Check
+#define PyString_FromString PyUnicode_FromString
+#define PyString_Check PyUnicode_Check
+
+std::string getString(PyObject *object)
+{
+  std::string result;
+  if(PyUnicode_Check(object)) {
+    PyObject* temp_bytes = PyUnicode_AsEncodedString(object, "UTF-8", "strict"); // Owned reference
+    if (temp_bytes != NULL) {
+        result = PyBytes_AS_STRING(temp_bytes); // Borrowed pointer
+        Py_DECREF(temp_bytes);
+    } else {
+      throw std::runtime_error("Decoding string failed");
+    }
+  }
+  else if(PyBytes_Check(object)) {
+    result = PyBytes_AS_STRING(object); // Borrowed pointer
+  }
+  else {
+    throw std::runtime_error("Unknown string format");
+  }
+  return result;
+}
+
+#define PyString_AsString getString
+
+#endif
 
 #include <stdexcept>
 #include <list>
@@ -408,11 +441,20 @@ struct ListBuilderState
 //////////////////////// Public interface //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+#ifdef PYTHON3
+int initNumpy() {
+  import_array();
+#else
+void initNumpy() {
+  import_array();
+#endif
+}
+
 PythonInterpreter::PythonInterpreter()
 {
     if(!Py_IsInitialized())
         Py_Initialize();
-    import_array();
+    initNumpy();
 }
 
 PythonInterpreter::~PythonInterpreter()
@@ -504,14 +546,14 @@ Function& Function::pass(CppType type)
     return *this;
 }
 
-Function& Function::call(...)
+Function& Function::call(void *first...)
 {
     const size_t argc = state->args.size();
 
     std::vector<PyObjectPtr> args;
     args.reserve(argc);
     std::va_list vaList;
-    va_start(vaList, this);
+    va_start(vaList, first);
     toPyObjects(vaList, state->args, args);
     va_end(vaList);
 
@@ -564,14 +606,14 @@ Method& Method::pass(CppType type)
     return *this;
 }
 
-Method& Method::call(...)
+Method& Method::call(void *first, ...)
 {
     const size_t argc = state->args.size();
 
     std::vector<PyObjectPtr> args;
     args.reserve(argc);
     std::va_list vaList;
-    va_start(vaList, this);
+    va_start(vaList, first);
     toPyObjects(vaList, state->args, args);
     va_end(vaList);
 
@@ -670,14 +712,14 @@ ListBuilder& ListBuilder::pass(CppType type)
     return *this;
 }
 
-shared_ptr<Object> ListBuilder::build(...)
+shared_ptr<Object> ListBuilder::build(void *first, ...)
 {
     const size_t argc = state->types.size();
 
     std::vector<PyObjectPtr> args;
     args.reserve(argc);
     std::va_list vaList;
-    va_start(vaList, this);
+    va_start(vaList, first);
     toPyObjects(vaList, state->types, args);
     va_end(vaList);
 

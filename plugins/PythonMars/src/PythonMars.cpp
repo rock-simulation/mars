@@ -55,7 +55,11 @@ namespace mars {
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
 #ifdef __unix__
         // needed to be able to import numpy
+#ifdef PYTHON3
+        dlopen("libpython3.6.so.1", RTLD_LAZY | RTLD_GLOBAL);
+#else
         dlopen("libpython2.7.so.1", RTLD_LAZY | RTLD_GLOBAL);
+#endif
 #endif
       }
 
@@ -95,7 +99,7 @@ namespace mars {
         try {
           plugin = PythonInterpreter::instance().import("mars_plugin");
           ConfigItem map;
-          toConfigMap(plugin->function("init").call().returnObject(), map);
+          toConfigMap(plugin->function("init").call(0).returnObject(), map);
           interpreteMap(map);
           interpreteGuiMaps();
         }
@@ -323,7 +327,7 @@ namespace mars {
               }
               points[name] = point;
               point.p->setData(pV);
-              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.pydata, point.size*3);
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(0, &name, point.pydata, point.size*3);
               control->graphics->addOSGNode(point.p->getOSGNode());
             }
             mutex.unlock();
@@ -343,7 +347,7 @@ namespace mars {
                     CameraStruct cam = {id, data, NULL, num};
                     cam.pydata = (sReal*)malloc(num*sizeof(sReal));
                     cameras[name] = cam;
-                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(0, &name, cam.pydata, num);
                   }
                 }
                 else {
@@ -375,7 +379,7 @@ namespace mars {
                     DepthCameraStruct cam = {id, data, NULL, num};
                     cam.pydata = (float*)malloc(num*sizeof(float));
                     depthCameras[name] = cam;
-                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(&name, cam.pydata, num);
+                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(0, &name, cam.pydata, num);
                   }
                 }
                 else {
@@ -603,7 +607,7 @@ namespace mars {
             }
             mutexCamera.unlock();
             mutex.lock();
-            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), iMap);
+            toConfigMap(plugin->function("update").pass(MAP).call(0, &sendMap).returnObject(), iMap);
             nextStep = true;
             mutex.unlock();
             mutexPoints.lock();
@@ -704,7 +708,7 @@ namespace mars {
           }
           try {
             ConfigItem map;
-            toConfigMap(plugin->function("init").call().returnObject(), map);
+            toConfigMap(plugin->function("init").call(0).returnObject(), map);
             interpreteMap(map);
             interpreteGuiMaps();
           }
