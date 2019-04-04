@@ -29,6 +29,10 @@
  #include <opencv2/highgui/highgui.hpp>
 #endif
 
+#ifndef CV_FOURCC_MACRO
+#define CV_FOURCC cv::VideoWriter::fourcc
+#endif
+
 namespace mars {
   namespace gui {
 
@@ -95,7 +99,7 @@ namespace mars {
             height = newImage.height;
             writer.open(qPrintable(file),
                         //-1, framerate,
-                        cv::VideoWriter::fourcc('X', 'V', 'I', 'D'), framerate,
+                        CV_FOURCC('X', 'V', 'I', 'D'), framerate,
                         //cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), framerate,
                         cv::Size(width, height), 1);
             cvImage = cv::Mat(cv::Size(width, height), CV_8UC3);
