@@ -442,6 +442,18 @@ namespace mars {
           anchorjoint.anchorPos = ANCHOR_NODE1;
           anchorjoint.type = JOINT_TYPE_FIXED;
           anchorjoint.name = "anchor_"+name;
+          if (cfg.hasKey("data_package")) {
+            switch ((int) cfg["data_package"]) {
+              case 0:
+                anchorjoint.config["noDataPackage"] = true;
+                break;
+              case 1:
+                anchorjoint.config["reducedDataPackage"] = true;
+                break;
+              default:
+                break;
+            }
+          }
           if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
           anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
           addJoint(anchorJointId, anchorjoint.name);
