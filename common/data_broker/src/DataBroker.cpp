@@ -234,7 +234,7 @@ namespace mars {
             elementsLock.lockForRead();
             elementIt = elementsByName.find(std::make_pair(pendingIt->groupName,
                                                            pendingIt->dataName));
-            if(elementIt == elementsByName.end()) {
+            if(elementIt != elementsByName.end()) {
               DataElement *element = elementIt->second;
               TimedReceiver timedReceiver = {pendingIt->receiver, element,
                                              pendingIt->updatePeriod,
@@ -510,7 +510,8 @@ namespace mars {
       pendingRegistrationLock.lock();
       for(pendingIt = pendingTimedRegistrations.begin();
           pendingIt != pendingTimedRegistrations.end(); /* do nothing */) {
-        if((pendingIt->timerName == timerName) &&
+        if((pendingIt->receiver == receiver) &&
+           (pendingIt->timerName == timerName) &&
            matchPattern(groupName, pendingIt->groupName) &&
            matchPattern(dataName, pendingIt->dataName)) {
           pendingIt = pendingTimedRegistrations.erase(pendingIt);
