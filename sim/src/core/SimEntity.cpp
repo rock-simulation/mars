@@ -325,7 +325,7 @@ namespace mars {
       return (anchorJointId != 0);
     }
 
-    void SimEntity::setInitialPose(bool reset/*compatibility*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
+    void SimEntity::setInitialPose(bool reset, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
         if (!control->nodes->exists(id)) {
@@ -400,8 +400,14 @@ namespace mars {
           rootNode.rot = tmpQ;
         }
         rootNode.pos = parentrot * rootNode.pos + parentpos;
-        control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         rootNode.rot = parentrot * rootNode.rot;
+
+        if (reset && hasAnchorJoint()) {
+          control->joints->removeJoint(anchorJointId);
+          jointIds.erase(anchorJointId);
+        }
+
+        control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
 
         //anchor defines the node to which the fixed joint is created
@@ -459,12 +465,8 @@ namespace mars {
           addJoint(anchorJointId, anchorjoint.name);
         } else {
           //if there was a joint before, remove it
-          if (hasAnchorJoint()) {
-            fprintf(stderr, "Removing anchor joint\n");
-            control->joints->removeJoint(anchorJointId);
-            jointIds.erase(anchorJointId);
-            anchorJointId = 0;
-          }
+          fprintf(stderr, "Removing anchor joint\n");
+          anchorJointId = 0;
         }
         // set Joints
         configmaps::ConfigVector::iterator it;

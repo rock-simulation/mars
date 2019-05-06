@@ -152,7 +152,7 @@ namespace mars {
 
       bool hasAnchorJoint();
 
-      void setInitialPose(bool reset=false/*compatibility*/, configmaps::ConfigMap* pPoseCfg=NULL);
+      void setInitialPose(bool reset=false, configmaps::ConfigMap* pPoseCfg=NULL);
 
       interfaces::sReal getEntityMass();
 
