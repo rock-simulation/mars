@@ -41,6 +41,9 @@ def setRunning(value):
         iDict["startSim"] = False
         iDict["stopSim"] = True
 
+def quitSim():
+    iDict["quitSim"] = True
+
 def setUpdateTime(value):
     iDict["updateTime"] = float(value)
 

@@ -36,10 +36,12 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/sim/CameraSensor.h>
+#include <mars/app/MARS.h>
 #include <mars/utils/misc.h>
 #ifdef __unix__
 #include <dlfcn.h>
 #endif
+
 namespace mars {
 
   using namespace osg_material_manager;
@@ -86,16 +88,20 @@ namespace mars {
         }
         updateGraphics = false;
         nextStep = false;
-        pf = new osg_points::PointsFactory();
-        lf = new osg_lines::LinesFactory();
-        materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        if(control->graphics) {
+          pf = new osg_points::PointsFactory();
+          lf = new osg_lines::LinesFactory();
+          materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        }
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "../../share").sValue;
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;
-        gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        if(gui) {
+          gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        }
         try {
           plugin = PythonInterpreter::instance().import("mars_plugin");
           ConfigItem map;
@@ -122,6 +128,11 @@ namespace mars {
             control->sim->StopSimulation();
             ConfigMap::iterator it = map.find("stopSim");
             map.erase(it);
+          }
+          if(map.hasKey("quitSim") && (bool)map["quitSim"]) {
+            ConfigMap::iterator it = map.find("quitSim");
+            map.erase(it);
+            mars::app::exit_main(0);
           }
           if(map.hasKey("updateTime")) {
             updateTime = map["updateTime"];
@@ -292,6 +303,7 @@ namespace mars {
       }
 
       void PythonMars::interpreteGuiMaps() {
+        if(!control->graphics) return;
         guiMapMutex.lock();
         std::vector<ConfigMap>::iterator it = guiMaps.begin();
         for(; it!=guiMaps.end(); ++it) {
