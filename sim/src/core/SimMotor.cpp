@@ -356,6 +356,10 @@ namespace mars {
       velocity = lastVelocity*(filterValue) + velocity*(1-filterValue);
       lastVelocity = velocity;
       last_error = error;
+
+      if(sMotor.config.hasKey("spring")) {
+        myJoint->setEffortLimit(sMotor.maxEffort*error*(double)sMotor.config["spring"], sMotor.axis);
+      }
     }
 
     void SimMotor::update(sReal time_ms) {
