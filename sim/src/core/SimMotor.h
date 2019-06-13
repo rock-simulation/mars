@@ -82,8 +82,9 @@ namespace mars {
       void refreshPosition();
       void refreshPositions();
       void runPositionController(interfaces::sReal time_ms);
-      void runVeloctiyController(interfaces::sReal time_ms);
+      void runVelocityController(interfaces::sReal time_ms);
       void runEffortController(interfaces::sReal time_ms);
+      void runEffortPipe(interfaces::sReal time);
       void addMimic(SimMotor* mimic);
       void removeMimic(std::string mimicname);
       void clearMimics();

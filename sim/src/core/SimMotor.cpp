@@ -177,8 +177,16 @@ namespace mars {
           maxEffortApproximation =&utils::pipe;
           maxeffort_x = &sMotor.maxEffort;
           break;
+        case FUNCTION_POLYNOM2:
+          maxEffortApproximation =&utils::polynom2;
+          maxeffort_x = position;
+          break;
         case FUNCTION_POLYNOM3:
           maxEffortApproximation =&utils::polynom3;
+          maxeffort_x = position;
+          break;
+        case FUNCTION_POLYNOM4:
+          maxEffortApproximation =&utils::polynom4;
           maxeffort_x = position;
           break;
         case FUNCTION_POLYNOM5:
@@ -200,8 +208,16 @@ namespace mars {
           maxSpeedApproximation = &utils::pipe;
           maxspeed_x = &sMotor.maxSpeed;
           break;
+        case FUNCTION_POLYNOM2:
+          maxSpeedApproximation = &utils::polynom2;
+          maxspeed_x = position;
+          break;
         case FUNCTION_POLYNOM3:
           maxSpeedApproximation = &utils::polynom3;
+          maxspeed_x = position;
+          break;
+        case FUNCTION_POLYNOM4:
+          maxSpeedApproximation = &utils::polynom4;
           maxspeed_x = position;
           break;
         case FUNCTION_POLYNOM5:
@@ -225,6 +241,9 @@ namespace mars {
         case FUNCTION_POLYNOM2D2:
           currentApproximation = &utils::polynom2D2;
           break;
+        case FUNCTION_POLYNOM2D1:
+          currentApproximation = &utils::polynom2D1;
+          break;
       }
       current_coefficients = coefficients;
     }
@@ -246,7 +265,7 @@ namespace mars {
           controlValue = sMotor.value;
           controlLimit = &(sMotor.maxAcceleration); // this is a stand-in for acceleration
           setJointControlParameter = &SimJoint::setVelocity;
-          runController = &SimMotor::runVeloctiyController;
+          runController = &SimMotor::runVelocityController;
           break;
         case MOTOR_TYPE_PID_FORCE: // deprecated
         case MOTOR_TYPE_EFFORT:
@@ -255,6 +274,19 @@ namespace mars {
           controlLimit = &(sMotor.maxEffort);
           setJointControlParameter = &SimJoint::setEffort;
           runController = &SimMotor::runEffortController;
+          break;
+        case MOTOR_TYPE_DIRECT_EFFORT:
+          controlValue = sMotor.value;
+          controlLimit = &(sMotor.maxEffort);
+          if(sMotor.config.hasKey("maxEffortControl") and
+             (bool)sMotor.config["maxEffortControl"] == true) {
+            controlParameter = &velocity;
+            setJointControlParameter = &SimJoint::setVelocity;
+          } else {
+            controlParameter = &effort;
+            setJointControlParameter = &SimJoint::setEffort;
+          }
+          runController = &SimMotor::runEffortPipe;
           break;
         case MOTOR_TYPE_UNDEFINED:
           // TODO: output error
@@ -296,7 +328,25 @@ namespace mars {
       effort = std::max(-sMotor.maxEffort, std::min(effort, sMotor.maxEffort));
     }
 
-    void SimMotor::runVeloctiyController(sReal time) {
+    void SimMotor::runEffortPipe(sReal time) {
+      // limit to range of motion
+      controlValue = std::max(-sMotor.maxEffort,
+                              std::min(controlValue, sMotor.maxEffort));
+
+      if(sMotor.config.hasKey("maxEffortControl") and
+         (bool)sMotor.config["maxEffortControl"] == true) {
+        if(controlValue >= 0) {
+          velocity = 10000;
+        } else {
+          velocity = -10000;
+        }
+        myJoint->setEffortLimit(fabs(controlValue), axis);
+      } else {
+        effort = controlValue;
+      }
+    }
+
+    void SimMotor::runVelocityController(sReal time) {
       *controlParameter = controlValue;
     }
 
@@ -535,11 +585,12 @@ namespace mars {
         case MOTOR_TYPE_VELOCITY:
         case MOTOR_TYPE_DC:
         case MOTOR_TYPE_UNDEFINED:
+        case MOTOR_TYPE_DIRECT_EFFORT:
           break;
       }
     }
 
-    void SimMotor::setDesiredMotorVelocity(sReal veloctiy) { // deprecated
+    void SimMotor::setDesiredMotorVelocity(sReal velocity) { // deprecated
       switch(sMotor.type) {
         case MOTOR_TYPE_DC:
         case MOTOR_TYPE_VELOCITY:
@@ -550,6 +601,7 @@ namespace mars {
         case MOTOR_TYPE_PID_FORCE:
         case MOTOR_TYPE_EFFORT:
         case MOTOR_TYPE_UNDEFINED:
+        case MOTOR_TYPE_DIRECT_EFFORT:
           break;
       }
     }
@@ -565,6 +617,7 @@ namespace mars {
         case MOTOR_TYPE_DC:
         case MOTOR_TYPE_VELOCITY:
         case MOTOR_TYPE_UNDEFINED:
+        case MOTOR_TYPE_DIRECT_EFFORT:
           break;
         }
       return 0.0; // return 0 if it doesn't apply
@@ -641,6 +694,7 @@ namespace mars {
         case MOTOR_TYPE_PID_FORCE:
         case MOTOR_TYPE_EFFORT:
         case MOTOR_TYPE_UNDEFINED:
+        case MOTOR_TYPE_DIRECT_EFFORT:
           break;
       }
     }
@@ -708,9 +762,12 @@ namespace mars {
 
     void SimMotor::setControlValue(interfaces::sReal value) {
       controlValue = value;
-      if(!control->sim->isSimRunning()) {
-        myJoint->setOfflinePosition(value);
-        refreshPositions();
+      if(sMotor.type == MOTOR_TYPE_POSITION ||
+         sMotor.type == MOTOR_TYPE_PID) {
+        if(!control->sim->isSimRunning()) {
+          myJoint->setOfflinePosition(value);
+          refreshPositions();
+        }
       }
     }
 
@@ -751,6 +808,7 @@ namespace mars {
       case MOTOR_TYPE_DC: // deprecated
       case MOTOR_TYPE_VELOCITY:
       case MOTOR_TYPE_UNDEFINED:
+      case MOTOR_TYPE_DIRECT_EFFORT:
         // information not relevant for these types
         break;
       }
@@ -831,6 +889,7 @@ namespace mars {
         case MOTOR_TYPE_PID_FORCE:
         case MOTOR_TYPE_EFFORT:
         case MOTOR_TYPE_UNDEFINED:
+        case MOTOR_TYPE_DIRECT_EFFORT:
           break;
         }
       };
