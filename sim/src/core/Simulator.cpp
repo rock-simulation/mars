@@ -742,6 +742,7 @@ namespace mars {
     void Simulator::newWorld(bool clear_all) {
       physicsThreadLock();
       // reset simTime
+      realStartTime = utils::getTime();
       dbSimTimePackage[0].set(0.);
       control->controllers->clearAllControllers();
       control->sensors->clearAllSensors(clear_all);
