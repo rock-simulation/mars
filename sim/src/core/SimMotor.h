@@ -227,6 +227,7 @@ namespace mars {
       data_broker::DataPackage dbPackage, cmdPackage;
       unsigned long dbPushId, dbCmdId;
       long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex, dbMaxEffortIndex;
+      bool effortMotor;
       int pushToDataBroker;
     };
 

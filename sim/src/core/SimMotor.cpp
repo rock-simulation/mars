@@ -53,6 +53,7 @@ namespace mars {
       sMotor.maxAcceleration = sMotor_.maxAcceleration;
       sMotor.maxValue = sMotor_.maxValue;
       sMotor.minValue = sMotor_.minValue;
+      sMotor.config = sMotor_.config;
       axis = 0;
       position1 = 0;
       position2 = 0;
@@ -76,6 +77,7 @@ namespace mars {
       current_coefficients = NULL;
       maxspeed_x = &sMotor.maxSpeed;
       maxeffort_x = &sMotor.maxEffort;
+      effortMotor = 0;
 
       myPlayJoint = 0;
       active = true;
@@ -279,7 +281,7 @@ namespace mars {
           controlValue = sMotor.value;
           controlLimit = &(sMotor.maxEffort);
           if(sMotor.config.hasKey("maxEffortControl") and
-             (bool)sMotor.config["maxEffortControl"] == true) {
+             (bool)(sMotor.config["maxEffortControl"]) == true) {
             controlParameter = &velocity;
             setJointControlParameter = &SimJoint::setVelocity;
           } else {
@@ -340,7 +342,7 @@ namespace mars {
         } else {
           velocity = -10000;
         }
-        myJoint->setEffortLimit(fabs(controlValue), axis);
+        myJoint->setEffortLimit(fabs(controlValue), sMotor.axis);
       } else {
         effort = controlValue;
       }
@@ -431,11 +433,16 @@ namespace mars {
 
         // cap speed
         tmpmaxspeed = getMomentaryMaxSpeed();
-        velocity = std::max(-tmpmaxspeed, std::min(velocity, tmpmaxspeed));
+        if(!sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
+          velocity = std::max(-tmpmaxspeed, std::min(velocity, tmpmaxspeed));
+        }
+
         // cap effort
-        tmpmaxeffort = getMomentaryMaxEffort();
-        effort = std::max(-tmpmaxeffort, std::min(effort, tmpmaxeffort));
-        myJoint->setEffortLimit(tmpmaxeffort, axis);
+        if(!effortMotor && !sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
+          tmpmaxeffort = getMomentaryMaxEffort();
+          effort = std::max(-tmpmaxeffort, std::min(effort, tmpmaxeffort));
+          myJoint->setEffortLimit(tmpmaxeffort, sMotor.axis);
+        }
 
         for(std::map<std::string, SimMotor*>::iterator it = mimics.begin();
           it != mimics.end(); ++it) {
@@ -450,7 +457,8 @@ namespace mars {
 
         // pass speed (position/speed control) or torque to the attached
         // joint's setSpeed1/2 or setTorque1/2 methods
-        (myJoint->*setJointControlParameter)(*controlParameter, axis);
+
+        (myJoint->*setJointControlParameter)(*controlParameter, sMotor.axis);
         //for mimic in myJoint->mimics:
         //  mimic->*setJointControlParameter)(mimic_multiplier*controlParameter, axis);
       }
@@ -458,8 +466,8 @@ namespace mars {
 
     void SimMotor::estimateCurrent() {
       // calculate current
-      effort = myJoint->getMotorTorque();
-      joint_velocity = myJoint->getVelocity();
+      sReal effort = myJoint->getMotorTorque();
+      sReal joint_velocity = myJoint->getVelocity();
       current = (*currentApproximation)(&effort, &joint_velocity, current_coefficients);
     }
 
@@ -625,7 +633,7 @@ namespace mars {
 
     void SimMotor::setMaxEffort(sReal force) {
       sMotor.maxEffort = force;
-      myJoint->setEffortLimit(sMotor.maxEffort, axis);
+      myJoint->setEffortLimit(sMotor.maxEffort, sMotor.axis);
     }
 
     void SimMotor::setMotorMaxForce(sReal force) { // deprecated
@@ -746,9 +754,25 @@ namespace mars {
       if(this->sMotor.config.hasKey("filterValue")) {
         filterValue = this->sMotor.config["filterValue"];
       }
-      if(myJoint && (sMotor.type != MOTOR_TYPE_PID_FORCE)) {
-          myJoint->attachMotor(axis);
-          myJoint->setEffortLimit(sMotor.maxEffort, axis);
+      effortMotor = false;
+      if(sMotor.type == MOTOR_TYPE_PID_FORCE ||
+         sMotor.type == MOTOR_TYPE_EFFORT) {
+        effortMotor = true;
+      }
+      else if(sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
+        effortMotor = true;
+        ConfigMap map = sMotor.config;
+        if(map.hasKey("maxEffortControl") and
+           (bool)map["maxEffortControl"]) {
+          effortMotor = false;
+        }
+      }
+      if(myJoint) {
+        if(!effortMotor) {
+          myJoint->attachMotor(sMotor.axis);
+          myJoint->setEffortLimit(sMotor.maxEffort, sMotor.axis);
+        }
+
       }
     }
 
