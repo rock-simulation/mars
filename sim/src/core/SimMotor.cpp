@@ -433,12 +433,12 @@ namespace mars {
 
         // cap speed
         tmpmaxspeed = getMomentaryMaxSpeed();
-        if(!sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
+        //if(!sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
           velocity = std::max(-tmpmaxspeed, std::min(velocity, tmpmaxspeed));
-        }
+          //}
 
         // cap effort
-        if(!effortMotor && !sMotor.type == MOTOR_TYPE_DIRECT_EFFORT) {
+        if(!effortMotor && sMotor.type != MOTOR_TYPE_DIRECT_EFFORT) {
           tmpmaxeffort = getMomentaryMaxEffort();
           effort = std::max(-tmpmaxeffort, std::min(effort, tmpmaxeffort));
           myJoint->setEffortLimit(tmpmaxeffort, sMotor.axis);
