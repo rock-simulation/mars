@@ -742,6 +742,7 @@ namespace mars {
     void Simulator::newWorld(bool clear_all) {
       physicsThreadLock();
       // reset simTime
+      realStartTime = utils::getTime();
       dbSimTimePackage[0].set(0.);
       control->controllers->clearAllControllers();
       control->sensors->clearAllSensors(clear_all);
@@ -1400,7 +1401,7 @@ namespace mars {
       unsigned long returnTime;
       getTimeMutex.lock();
       if(cfgUseNow.bValue) {
-        returnTime = realStartTime+dbSimTimePackage[0].d;
+        returnTime = utils::getTime();
       }
       else {
         returnTime = realStartTime+dbSimTimePackage[0].d;
