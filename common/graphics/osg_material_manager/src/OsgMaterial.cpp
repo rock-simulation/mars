@@ -332,6 +332,14 @@ namespace osg_material_manager {
     return false;
   }
 
+  osg::ref_ptr<osg::Texture2D> OsgMaterial::getTexture(const std::string &name) {
+    std::map<std::string, TextureInfo>::iterator it = textures.find(name);
+    if(it != textures.end()) {
+      return it->second.texture;
+    }
+    return NULL;
+  }
+
   void OsgMaterial::setColor(string color, string key, string value) {
     double v = atof(value.c_str());
     if(key[key.size()-1] == 'a') map[color]["a"] = v;
@@ -807,6 +815,14 @@ namespace osg_material_manager {
       img.release();//cvReleaseImage(&img);
     }
     return texture;
+  }
+
+  int OsgMaterial::getNumInstances() {
+    return map.get("numInstances", 1);
+  }
+
+  double OsgMaterial::getInstancesWidth() {
+    return map.get("instancesWidth", 200.0);
   }
 
 } // end of namespace osg_material_manager

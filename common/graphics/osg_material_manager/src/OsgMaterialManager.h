@@ -73,6 +73,7 @@ namespace osg_material_manager {
                      const configmaps::ConfigMap &map);
     void editMaterial(const std::string &name, const std::string &key,
                       const std::string &value);
+    osg::ref_ptr<OsgMaterial> getOsgMaterial(const std::string &name);
     osg::ref_ptr<MaterialNode> getNewMaterialGroup(const std::string &name);
     void removeMaterialGroup(osg::ref_ptr<osg::Group> group);
     void setShadowSamples(int v);
