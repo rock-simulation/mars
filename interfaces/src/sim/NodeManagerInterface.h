@@ -730,6 +730,20 @@ namespace mars {
       virtual void getContactPoints(std::vector<NodeId> *ids,
                                     std::vector<utils::Vector> *contact_points) const = 0;
 
+      /**
+       * \brief Fills a list with ids of nodes that are in contact with the node in question.
+       *
+       * It is very important to assure the serialization between the threads to
+       * have the desired results. Currently the verified use of this function is
+       * only guaranteed by calling it within the main thread (update callback
+       * from \c gui_thread).
+       *
+       * \param id The id of the node to get the nodes that are in contact with.
+       * \returns A pointer to a list where the contact ids are stored. The given list is cleared in the function.
+       */
+      virtual void getContactIDs(const interfaces::NodeId &id,
+                                 std::list<interfaces::NodeId> *ids) const = 0;
+
       /** \todo write docs */
       virtual void updateRay(NodeId id) = 0;
       /** \todo write docs */
