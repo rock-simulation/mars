@@ -56,6 +56,16 @@
 
 #include "HUDLabel.h"
 
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 4))
+#define COMPUTE_BOUND computeBound
+#define GET_BOUND getBound
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
+#define COMPUTE_BOUND computeBoundingBox
+#define GET_BOUND getBoundingBox
+#else
+#error Unknown OSG Version
+#endif
+
 namespace mars {
   namespace graphics {
 
@@ -137,7 +147,7 @@ namespace mars {
         //scaleTransform->addChild(node.get());
     
         osg::BoundingBox bb;
-        bb.expandBy(node->getDrawable(0)->getBound());
+        bb.expandBy(node->getDrawable(0)->GET_BOUND());
         float d = bb.zMin()-2.0;
         float w = bb.xMax() - bb.xMin() + pl + pr;
         float h = bb.yMax() - bb.yMin() + pt + pb;
@@ -254,7 +264,7 @@ namespace mars {
       stateset->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
 
       osg::BoundingBox bb;
-      bb.expandBy(geode->getDrawable(0)->getBound());
+      bb.expandBy(geode->getDrawable(0)->GET_BOUND());
       //float d = bb.zMin()-2.0;
       //float w = bb.xMax() - bb.xMin() + pl + pr;
       //float h = bb.yMax() - bb.yMin() + pt + pb;
