@@ -62,7 +62,7 @@ namespace mars {
       joint_velocity = 0;
       time = 10;
       current = 0;
-      effort = 0;
+      sensedEffort = effort = 0;
       tmpmaxeffort = 0;
       tmpmaxspeed = 0;
       myJoint = 0;
@@ -428,6 +428,9 @@ namespace mars {
         refreshPosition();
         *position += play_position;
 
+        // sense effort value from motor
+        sensedEffort = myJoint->getMotorTorque();
+
         // call control function for current motor type
         (this->*runController)(time_ms);
 
@@ -466,9 +469,8 @@ namespace mars {
 
     void SimMotor::estimateCurrent() {
       // calculate current
-      sReal effort = myJoint->getMotorTorque();
       sReal joint_velocity = myJoint->getVelocity();
-      current = (*currentApproximation)(&effort, &joint_velocity, current_coefficients);
+      current = (*currentApproximation)(&sensedEffort, &joint_velocity, current_coefficients);
     }
 
     void SimMotor::estimateTemperature(sReal time_ms) {
@@ -858,7 +860,7 @@ namespace mars {
     }
 
     sReal SimMotor::getEffort() const {
-      return effort;
+      return sensedEffort;
     }
 
     sReal SimMotor::getTorque(void) const { // deprecated
