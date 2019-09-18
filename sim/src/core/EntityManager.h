@@ -99,6 +99,13 @@ namespace mars {
       virtual SimEntity* getRootOfAssembly(
         const std::string &assembly_name);
 
+      /**returns the main entity of the given assembly if there is one, otherwise
+       returns the root entity.
+       @see getRootOfAssembly()
+       */
+      virtual SimEntity* getMainEntityOfAssembly(
+        const std::string &assembly_name);
+
       /**returns the entity with the given id
        */
       virtual SimEntity* getEntity(unsigned long id);

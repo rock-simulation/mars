@@ -251,6 +251,20 @@ namespace mars {
       return 0;
     }
 
+    SimEntity* EntityManager::getMainEntityOfAssembly(
+      const std::string &assembly_name)
+    {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
+          configmaps::ConfigMap map = iter->second->getConfig();
+          if (map.hasKey("main_entity") && (bool) map["main_entity"]) return iter->second;
+        }
+      }
+      return getRootOfAssembly(assembly_name);
+    }
+
     long unsigned int EntityManager::getEntityNode(const std::string& entityName,
         const std::string& nodeName) {
       MutexLocker locker(&iMutex);
