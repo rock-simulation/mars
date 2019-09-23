@@ -1,0 +1,6 @@
+params:
+  in:
+    vector_a: {index: 0, type: vec2}
+  out:
+    f: {index: 1, type: float}
+source: /graph_shader/crop_vec2.frag

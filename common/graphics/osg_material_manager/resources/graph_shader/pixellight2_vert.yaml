@@ -1,0 +1,35 @@
+params:
+  in:
+    worldPos: {index: 0, type: vec4}
+    viewPos: {index: 0, type: vec4}
+    specularColor: {index: 1, type: vec4}
+source: /graph_shader/plight_vert.vert
+minVersion: 120
+varyings:
+  vec3:
+    - {name: eyeVec}
+    - {name: normalVarying}
+  vec3[]:
+    - {name: lightVec, arraySize: numLights}
+    - {name: spotDir, arraySize: numLights}
+  vec4:
+    - {name: positionVarying}
+    - {name: modelVertex}
+  vec4[]:
+    - {name: diffuse, arraySize: numLights}
+    - {name: specular, arraySize: numLights}
+uniforms:
+  vec3[]:
+    - {name: lightPos, arraySize: numLights}
+    - {name: lightSpotDir, arraySize: numLights}
+  vec4[]:
+    - {name: lightDiffuse, arraySize: numLights}
+    - {name: lightSpecular, arraySize: numLights}
+  int:
+    - {name: numLights}
+  int[]:
+    - {name: lightIsDirectional, arraySize: numLights}
+    - {name: lightIsSet, arraySize: numLights}
+  mat4:
+    - {name: osg_ViewMatrixInverse}
+    - {name: osg_ViewMatrix}
