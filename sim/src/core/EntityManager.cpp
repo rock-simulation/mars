@@ -194,22 +194,18 @@ namespace mars {
     }
 
     SimEntity* EntityManager::getEntity(const std::string& name) {
+      return getEntity(name, true);
+    }
+
+    SimEntity* EntityManager::getEntity(const std::string& name, bool verbose) {
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
         if (iter->second->getName() == name) {
           return iter->second;
         }
       }
-      SimEntity* e = getRootOfAssembly(name);
-      if (e) {
-        fprintf(stderr, "WARNING: Entity with the given name not found,"
-          " but found an assembly and returning it's root entity.\n");
-        return e;
-      }
-      fprintf(
-        stderr, "ERROR: Neither entity nor assembly with name %s found!\n",
-        name.c_str()
-      );
+      if (verbose)
+        fprintf(stderr, "ERROR: Entity with name %s not found!\n", name.c_str());
       return 0;
     }
 

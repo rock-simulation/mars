@@ -84,6 +84,7 @@ namespace mars {
       /**returns the entity with the given name
        */
       virtual SimEntity* getEntity(const std::string &name);
+      virtual SimEntity* getEntity(const std::string &name, bool verbose);
 
       /**returns the entities that contain the given name string
        */

@@ -463,7 +463,7 @@ namespace mars {
           if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
           anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
           addJoint(anchorJointId, anchorjoint.name);
-        } else {
+        } else if (anchorJointId != 0){
           //if there was a joint before, remove it
           fprintf(stderr, "Removing anchor joint\n");
           anchorJointId = 0;
