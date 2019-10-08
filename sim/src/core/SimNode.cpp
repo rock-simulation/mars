@@ -218,9 +218,11 @@ namespace mars {
                                       bool move_group) {
       MutexLocker locker(&iMutex);
       bool update = false;
+      Vector diff;
 
       if(sNode.pos != newPosition) {
         update = true;
+        diff = newPosition-sNode.pos;
         sNode.pos = newPosition;
       }
 
@@ -234,7 +236,7 @@ namespace mars {
           if(!my_interface->createNode(&sNode)) {
             LOG_ERROR("SimNode: unhandled error in setPosition");
           }
-          // ToDo: return offset of positions
+          return diff;
         }
       }
       return Vector(0.0, 0.0, 0.0);
@@ -271,7 +273,7 @@ namespace mars {
     const Quaternion SimNode::setRotation(const Quaternion &rotation,
                                           bool move_all) {
       MutexLocker locker(&iMutex);
-
+      Quaternion diff = rotation*sNode.rot.inverse();
       sNode.rot = rotation;
 
       if (my_interface) {
@@ -285,7 +287,7 @@ namespace mars {
           }
         }
       }
-      return sNode.rot;
+      return diff;
     }
     /**
      * \return \c rotation of the node
