@@ -1000,6 +1000,9 @@ namespace mars {
         for(nter = nodes->begin(); nter != nodes->end(); nter++) {
           if(nter->second->getGroupID() == (*jter)) {
             id2 = nter->first;
+            if(!nter->second->isMovable()) {
+              applyFunc(nter->second, params);
+            }
             nodes->erase(nter);
             recursiveHelper(id, params, joints, gids, nodes, applyFunc);
             recursiveHelper(id2, params, joints, gids, nodes, applyFunc);
