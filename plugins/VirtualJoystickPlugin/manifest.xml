@@ -1,0 +1,11 @@
+<package>
+    <description brief="VirtualJoystickPlugin">
+     </description>
+    <maintainer>Malte/malte.langosz@dfki.de</maintainer>
+    <author>Malte/malte.langosz@dfki.de</author>
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/common/cfg_manager" />
+    <tags>needs_opt</tags>
+</package>
