@@ -59,6 +59,7 @@ endif (APPLE)
 #add_definitions(-DPYTHON3)
 set(Python_ADDITIONAL_VERSIONS "2.7")
 find_package(PythonLibs REQUIRED)
+find_package(Numpy REQUIRED)
 
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
