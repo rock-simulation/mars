@@ -212,6 +212,7 @@ namespace mars {
           libManager->loadLibrary("CameraGUI", NULL, true);
           libManager->loadLibrary("PythonMars", NULL, true);
           libManager->loadLibrary("data_broker_plotter2", NULL, true);
+          libManager->loadLibrary("connectors", NULL, true);
         }
       }
     }

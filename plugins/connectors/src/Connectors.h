@@ -87,14 +87,25 @@ namespace mars {
         void registerEntity(sim::SimEntity* entity);
 
       private:
+        // By default, the plugins's autoconnect and breakable properties are false.
+        bool autoconnect = false;
+        bool breakable = false;
+
         cfg_manager::cfgPropertyStruct cfgautoconnect, cfgbreakable;
         std::map<std::string, configmaps::ConfigMap> maleconnectors;
         std::map<std::string, configmaps::ConfigMap> femaleconnectors;
         std::map<std::string, configmaps::ConfigMap> connectortypes;
         std::map<std::string, std::string> connections;
         bool mated(std::string malename, std::string femalename);
-        void checkForPossibleConnections();
 
+        /**
+         * Checks every male-female connector mating combination and mates all
+         * the pairs that meet the mating requirements.
+         *
+         * @param isforced Connection check is triggered from the Control GUI.
+         */
+        void checkForPossibleConnections(bool isforced);
+        //void checkForPossibleConnections();
 
       }; // end of class definition Connectors
 

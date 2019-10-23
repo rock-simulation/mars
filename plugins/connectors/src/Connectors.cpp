@@ -49,13 +49,16 @@ namespace mars {
       }
 
       void Connectors::init() {
+
         const std::map<unsigned long, sim::SimEntity*>* entities = control->entities->subscribeToEntityCreation(this);
         for (std::map<unsigned long, sim::SimEntity*>::const_iterator it = entities->begin(); it != entities->end(); ++it) {
+          // Regsiter the entity.
           registerEntity(it->second);
         }
+
         if(control->cfg) {
-          cfgautoconnect = control->cfg->getOrCreateProperty("Connectors", "autoconnect", false, this);
-          cfgbreakable = control->cfg->getOrCreateProperty("Connectors", "breakable", false, this);
+          cfgautoconnect = control->cfg->getOrCreateProperty("Connectors", "autoconnect", autoconnect, this);
+          cfgbreakable = control->cfg->getOrCreateProperty("Connectors", "breakable", breakable, this);
         }
         else {
           cfgautoconnect.bValue = false;
@@ -66,6 +69,9 @@ namespace mars {
         gui->addGenericMenuAction("../Control/Disconnect all connectors", 2, this);
         //maleconnectors.clear();
         //femaleconnectors.clear();
+
+        LOG_INFO("Connectors Plugin: init was successful.");
+
       }
 
       void Connectors::connect(std::string male, std::string female) {
@@ -125,6 +131,17 @@ namespace mars {
       void Connectors::registerEntity(sim::SimEntity* entity) {
         configmaps::ConfigMap entitymap = entity->getConfig();
         if (entitymap.hasKey("connectors")) {
+
+          if(entitymap["connectors"].hasKey("autoconnect")){
+            // Set configured value for autoconnect.
+            autoconnect = (((std::string)entitymap["connectors"]["autoconnect"]).compare("true") == 0);
+          }
+
+          // Set configured value for breakable.
+          if(entitymap["connectors"].hasKey("breakable")){
+            breakable = (((std::string)entitymap["connectors"]["breakable"]).compare("true") == 0);
+          }
+
           configmaps::ConfigMap tmpmap;
           // gather types
           configmaps::ConfigVector typevec = entitymap["connectors"]["types"];
@@ -171,29 +188,54 @@ namespace mars {
 
       }
 
-      void Connectors::checkForPossibleConnections() {
-        std::string malename, femalename, maletype, femaletype;
+      void Connectors::checkForPossibleConnections(bool isforced) {
+        // Connector properties.
+        std::string malename, femalename, maletype, femaletype, maleautoconnect, femaleautoconnect;
+
+        // Merge type to check against.
+        std::string automatic ("automatic");
+
+        // Nested for loop to check for every male-female connector mating combination.
         for (std::map<std::string, configmaps::ConfigMap>::iterator mit= maleconnectors.begin();
           mit!=maleconnectors.end(); ++mit) {
+
+          // Get male connector properties.
           malename = (std::string)mit->second["name"];
           maletype = (std::string)mit->second["type"];
+          maleautoconnect = (std::string)mit->second["mating"];
+
           for (std::map<std::string, configmaps::ConfigMap>::iterator fit= femaleconnectors.begin();
             fit!=femaleconnectors.end(); ++fit) {
+
+            // Get female connector properties.
             femalename = (std::string)fit->second["name"];
             femaletype = (std::string)fit->second["type"];
-            if (maletype.compare(femaletype) == 0 && mated(malename, femalename)
-          && ((std::string)mit->second["partner"]).empty() && ((std::string)fit->second["partner"]).empty()) {
-              connect(malename, femalename);
+            femaleautoconnect = (std::string)fit->second["mating"];
+
+            // There are 2 cases that will trigger checking for connections:
+            //  1. When it is forced from the Control GUI: Control > Connect available connectors
+            //  2. During plugin update(): IF autoconnect is globally set to true OR IF male and female's mating properties are both set to automatic.
+            if(isforced || (cfgautoconnect.bValue || (maleautoconnect.compare(automatic) == 0 && femaleautoconnect.compare(automatic) == 0))){
+
+              // Check if connectors meet the mating requirements:
+              //  1. They are of the  same type.
+              //  2. They are close enough to each other (distance and angle) as per the set thresholds in the model's YML config file.
+              //  3. They are not already connected to each other.
+              if (maletype.compare(femaletype) == 0 && mated(malename, femalename)
+                && ((std::string)mit->second["partner"]).empty() && ((std::string)fit->second["partner"]).empty()) {
+
+                  // All mating requirements have been met. Mate the connectors.
+                  connect(malename, femalename);
               }
             }
+          }
         }
       }
 
-
       void Connectors::update(sReal time_ms) {
-        if (cfgautoconnect.bValue) {
-          checkForPossibleConnections();
-        }
+
+        checkForPossibleConnections(false);
+
         // the following is experimental and not working yet
         if (cfgbreakable.bValue) {
           for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
@@ -222,7 +264,7 @@ namespace mars {
 
       void Connectors::menuAction(int action, bool checked) {
         if(action == 1) {
-          checkForPossibleConnections();
+          checkForPossibleConnections(true);
         } else if (action == 2) {
           for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
             disconnect(it->first);
