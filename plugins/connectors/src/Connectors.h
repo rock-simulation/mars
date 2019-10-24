@@ -42,6 +42,10 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <configmaps/ConfigData.h>
 
+// Threads.
+#include <mars/utils/Thread.h>
+#include <atomic>
+
 #include <string>
 
 namespace mars {
@@ -53,7 +57,8 @@ namespace mars {
         public mars::data_broker::ReceiverInterface,
         public mars::main_gui::MenuInterface,
         public mars::cfg_manager::CFGClient,
-        public mars::interfaces::EntitySubscriberInterface {
+        public mars::interfaces::EntitySubscriberInterface,
+        public mars::utils::Thread {
 
       public:
         Connectors(lib_manager::LibManager *theManager);
@@ -86,6 +91,12 @@ namespace mars {
         // Connectors methods
         void registerEntity(sim::SimEntity* entity);
 
+        /**
+         * This tread will diconnect connections when they are triggered by the user from the Control GUI.
+         * At the same time, it prevents the plugin' update() method from invoking checkForPossibleConnections().
+         */
+        void run(void);
+
       private:
         // By default, the plugins's autoconnect and breakable properties are false.
         bool autoconnect = false;
@@ -105,7 +116,6 @@ namespace mars {
          * @param isforced Connection check is triggered from the Control GUI.
          */
         void checkForPossibleConnections(bool isforced);
-        //void checkForPossibleConnections();
 
       }; // end of class definition Connectors
 

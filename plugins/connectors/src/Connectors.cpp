@@ -44,8 +44,12 @@ namespace mars {
       using namespace mars::utils;
       using namespace mars::interfaces;
 
-      Connectors::Connectors(lib_manager::LibManager *theManager)
-        : MarsPluginTemplateGUI(theManager, "Connectors") {
+      // To manage thread shared resources.
+      std::atomic<bool> isDisconnectionTriggered(false);
+
+      Connectors::Connectors(lib_manager::LibManager *theManager) :
+        MarsPluginTemplateGUI(theManager, "Connectors"),
+        mars::utils::Thread() {
       }
 
       void Connectors::init() {
@@ -70,8 +74,43 @@ namespace mars {
         //maleconnectors.clear();
         //femaleconnectors.clear();
 
+        // Start thread loop.
+        // This tread will diconnect connections when they are triggered by the user from the Control GUI.
+        // At the same time, it prevents the plugin' update() method from invoking checkForPossibleConnections().
+        start();
+
         LOG_INFO("Connectors Plugin: init was successful.");
 
+      }
+
+      void Connectors::run() {
+        // This thread is an infinite loop that checks if connections need to be disconnected and proceesds in
+        // disconnecting them if they do.
+        // This logic essentially prevents the update() method from invoking checkForPossibleConnections().'
+        while(true){
+
+          // Has disconnection been triggered by the user via the Control GUI?
+          if(isDisconnectionTriggered.load()){
+
+            // If so, then disconnect all connections.
+            for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
+               disconnect(it->first);
+            }
+
+            // Sleep for a bit to allow time for disconnects to physically detach by falling far enough so that a
+            // reconnection is not just retriggered automatically if autoconnect is set to true.
+            msleep(100);
+
+            // Set atomic boolean to indicate that we are done with the disconnection.
+            // The plugin's update() call can continue invoking checkForPossibleConnections().
+            isDisconnectionTriggered = false;
+
+          }else{
+
+            // Sleep for a bit before checking again if a disconnection was triggered by the user.
+            msleep(100);
+          }
+        }
       }
 
       void Connectors::connect(std::string male, std::string female) {
@@ -92,6 +131,10 @@ namespace mars {
         }
       }
 
+      // This ia a shared resources.
+      // When invokating, make sure to wrap with !isDisconnectionTriggered.load().
+      // The method itself is not wrapped because more often than not it is contained in a for loop
+      // so it is best to wrap the for loop rather than every invokation of this method within the for loop.
       void Connectors::disconnect(std::string connector) {
         configmaps::ConfigMap* conmap = NULL;
         unsigned long jointid = 0;
@@ -128,6 +171,7 @@ namespace mars {
           (it->second)["partner"] = "";
         }
       }
+
       void Connectors::registerEntity(sim::SimEntity* entity) {
         configmaps::ConfigMap entitymap = entity->getConfig();
         if (entitymap.hasKey("connectors")) {
@@ -156,8 +200,7 @@ namespace mars {
             tmpmap["nodeid"] = control->nodes->getID((*it)["link"]);
             if (((std::string)((*it)["gender"])).compare("male") == 0) { // male
               maleconnectors[(std::string)(tmpmap["name"])] =  tmpmap;
-              fprintf(stderr, "Adding male connector: %s\n", ((std::string)(tmpmap["name"])).c_str(),
-            (unsigned long)(tmpmap["nodeid"]));
+              fprintf(stderr, "Adding male connector: %s\n", ((std::string)(tmpmap["name"])).c_str(), (unsigned long)(tmpmap["nodeid"]));
             } else { // female
               femaleconnectors[(std::string)(tmpmap["name"])] = tmpmap;
               fprintf(stderr, "Adding female connector: %s\n", ((std::string)(tmpmap["name"])).c_str());
@@ -234,15 +277,19 @@ namespace mars {
 
       void Connectors::update(sReal time_ms) {
 
-        checkForPossibleConnections(false);
+        if(!isDisconnectionTriggered.load()){
+            checkForPossibleConnections(false);
+        }
 
         // the following is experimental and not working yet
         if (cfgbreakable.bValue) {
-          for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
-            utils::Vector forcevec = control->joints->getSimJoint(maleconnectors[it->first]["jointid"])->getJointLoad();
-            //fprintf(stderr, "JointLoad: %g\n", forcevec.norm());
-            if (forcevec.norm() > (double)(connectortypes[maleconnectors[it->first]["type"]]["maxforce"])) {
-              disconnect(it->first);
+          if(!isDisconnectionTriggered.load()){
+            for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
+              utils::Vector forcevec = control->joints->getSimJoint(maleconnectors[it->first]["jointid"])->getJointLoad();
+              //fprintf(stderr, "JointLoad: %g\n", forcevec.norm());
+              if (forcevec.norm() > (double)(connectortypes[maleconnectors[it->first]["type"]]["maxforce"])) {
+                disconnect(it->first);
+              }
             }
           }
         }
@@ -265,10 +312,11 @@ namespace mars {
       void Connectors::menuAction(int action, bool checked) {
         if(action == 1) {
           checkForPossibleConnections(true);
+
         } else if (action == 2) {
-          for (std::map<std::string, std::string>::iterator it = connections.begin(); it!=connections.end(); ++it) {
-            disconnect(it->first);
-          }
+          // Use atomic boolean to flag the thread that it should disconnect connections.
+          // Setting this atomic boolean to true will also prevent the plugin's update method from invoking checkForPossibleConnections().
+          isDisconnectionTriggered = true;
         }
       }
 

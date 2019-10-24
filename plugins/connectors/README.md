@@ -57,10 +57,6 @@ There are 2 cases that will trigger checking for connections:
   | 7 | T | - | - | T |
   | 8 | T | automatic | automatic | T |
 
-## Known issues
-Known issues with the sample YAML showcased in this README,
- - Female mating is always set as 'automatic' no matter the actual value set in the YAML. This results in a failure of truth table case 1.
- - Manual disconnect does not work for truth table cases 1, 4, 5, 6, 7, and 8.
-     - Issues with cases 1 and 5 are due to the previously mentioned female mating issue.
-     - Cases 6 and 7 will work after setting autoconnect to false. This issue already existed in the previous version of this plugin.
-     - Cases 4 and 8 never work due to the update() method always checking for connections.
+## Known issue
+Female mating is always set as 'automatic' no matter the actual value set in the YAML. This results in a failure of truth table case 1.
+This can be replicated with the sample YAML featured in this README.
