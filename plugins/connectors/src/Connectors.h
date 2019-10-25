@@ -98,10 +98,6 @@ namespace mars {
         void run(void);
 
       private:
-        // By default, the plugins's autoconnect and breakable properties are false.
-        bool autoconnect = false;
-        bool breakable = false;
-
         cfg_manager::cfgPropertyStruct cfgautoconnect, cfgbreakable;
         std::map<std::string, configmaps::ConfigMap> maleconnectors;
         std::map<std::string, configmaps::ConfigMap> femaleconnectors;

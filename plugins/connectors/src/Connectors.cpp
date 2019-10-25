@@ -61,13 +61,14 @@ namespace mars {
         }
 
         if(control->cfg) {
-          cfgautoconnect = control->cfg->getOrCreateProperty("Connectors", "autoconnect", autoconnect, this);
-          cfgbreakable = control->cfg->getOrCreateProperty("Connectors", "breakable", breakable, this);
+          cfgautoconnect = control->cfg->getOrCreateProperty("Connectors", "autoconnect", false, this);
+          cfgbreakable = control->cfg->getOrCreateProperty("Connectors", "breakable", false, this);
         }
         else {
           cfgautoconnect.bValue = false;
           cfgbreakable.bValue = false;
         }
+
         gui->addGenericMenuAction("../Control/", 0, NULL, 0, "", 0, -1); // separator
         gui->addGenericMenuAction("../Control/Connect available connectors", 1, this);
         gui->addGenericMenuAction("../Control/Disconnect all connectors", 2, this);
@@ -99,7 +100,7 @@ namespace mars {
 
             // Sleep for a bit to allow time for disconnects to physically detach by falling far enough so that a
             // reconnection is not just retriggered automatically if autoconnect is set to true.
-            msleep(100);
+            msleep(300);
 
             // Set atomic boolean to indicate that we are done with the disconnection.
             // The plugin's update() call can continue invoking checkForPossibleConnections().
@@ -173,26 +174,20 @@ namespace mars {
       }
 
       void Connectors::registerEntity(sim::SimEntity* entity) {
+
         configmaps::ConfigMap entitymap = entity->getConfig();
         if (entitymap.hasKey("connectors")) {
 
-          if(entitymap["connectors"].hasKey("autoconnect")){
-            // Set configured value for autoconnect.
-            autoconnect = (((std::string)entitymap["connectors"]["autoconnect"]).compare("true") == 0);
-          }
-
-          // Set configured value for breakable.
-          if(entitymap["connectors"].hasKey("breakable")){
-            breakable = (((std::string)entitymap["connectors"]["breakable"]).compare("true") == 0);
-          }
-
           configmaps::ConfigMap tmpmap;
+
           // gather types
           configmaps::ConfigVector typevec = entitymap["connectors"]["types"];
+
           for (configmaps::ConfigVector::iterator it = typevec.begin(); it!= typevec.end(); ++it) {
             tmpmap = (*it);
             connectortypes[(*it)["name"]] = tmpmap; // the one last read in determines the type
           }
+
           // gather connectors
           configmaps::ConfigVector convec = entitymap["connectors"]["connectors"];
           for (configmaps::ConfigVector::iterator it = convec.begin(); it!= convec.end(); ++it) {
