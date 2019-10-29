@@ -228,7 +228,7 @@ namespace mars {
 
       void Connectors::checkForPossibleConnections(bool isforced) {
         // Connector properties.
-        std::string malename, femalename, maletype, femaletype, maleautoconnect, femaleautoconnect;
+        std::string malename, femalename, maletype, femaletype, malemating, femalemating;
 
         // Merge type to check against.
         std::string automatic ("automatic");
@@ -240,7 +240,7 @@ namespace mars {
           // Get male connector properties.
           malename = (std::string)mit->second["name"];
           maletype = (std::string)mit->second["type"];
-          maleautoconnect = (std::string)mit->second["mating"];
+          malemating = (std::string)mit->second["mating"];
 
           for (std::map<std::string, configmaps::ConfigMap>::iterator fit= femaleconnectors.begin();
             fit!=femaleconnectors.end(); ++fit) {
@@ -248,12 +248,12 @@ namespace mars {
             // Get female connector properties.
             femalename = (std::string)fit->second["name"];
             femaletype = (std::string)fit->second["type"];
-            femaleautoconnect = (std::string)fit->second["mating"];
+            femalemating = (std::string)fit->second["mating"];
 
             // There are 2 cases that will trigger checking for connections:
             //  1. When it is forced from the Control GUI: Control > Connect available connectors
             //  2. During plugin update(): IF autoconnect is globally set to true OR IF male and female's mating properties are both set to automatic.
-            if(isforced || (cfgautoconnect.bValue || (maleautoconnect.compare(automatic) == 0 && femaleautoconnect.compare(automatic) == 0))){
+            if(isforced || (cfgautoconnect.bValue || (malemating.compare(automatic) == 0 && femalemating.compare(automatic) == 0))){
 
               // Check if connectors meet the mating requirements:
               //  1. They are of the  same type.
