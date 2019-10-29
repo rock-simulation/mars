@@ -210,7 +210,7 @@ namespace mars {
       Connectors::~Connectors() {
       }
 
-      bool Connectors::mated(std::string malename, std::string femalename) {
+      bool Connectors::closeEnough(std::string malename, std::string femalename) {
         unsigned long maleid = maleconnectors[malename]["nodeid"];
         unsigned long femaleid = femaleconnectors[femalename]["nodeid"];
         utils::Vector malerot = control->nodes->getRotation(maleid)*Vector(1.0, 0.0, 0.0);
@@ -259,7 +259,7 @@ namespace mars {
               //  1. They are of the  same type.
               //  2. They are close enough to each other (distance and angle) as per the set thresholds in the model's YML config file.
               //  3. They are not already connected to each other.
-              if (maletype.compare(femaletype) == 0 && mated(malename, femalename)
+              if (maletype.compare(femaletype) == 0 && closeEnough(malename, femalename)
                 && ((std::string)mit->second["partner"]).empty() && ((std::string)fit->second["partner"]).empty()) {
 
                   // All mating requirements have been met. Mate the connectors.

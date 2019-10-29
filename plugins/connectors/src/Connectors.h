@@ -103,7 +103,7 @@ namespace mars {
         std::map<std::string, configmaps::ConfigMap> femaleconnectors;
         std::map<std::string, configmaps::ConfigMap> connectortypes;
         std::map<std::string, std::string> connections;
-        bool mated(std::string malename, std::string femalename);
+        bool closeEnough(std::string malename, std::string femalename);
 
         /**
          * Checks every male-female connector mating combination and mates all
