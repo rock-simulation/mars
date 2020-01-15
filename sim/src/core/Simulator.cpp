@@ -1401,7 +1401,7 @@ namespace mars {
       unsigned long returnTime;
       getTimeMutex.lock();
       if(cfgUseNow.bValue) {
-        returnTime = realStartTime+dbSimTimePackage[0].d;
+        returnTime = utils::getTime();
       }
       else {
         returnTime = realStartTime+dbSimTimePackage[0].d;

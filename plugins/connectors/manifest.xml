@@ -8,7 +8,7 @@
     <depend package="simulation/mars/common/data_broker" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/sim" />
-    <depend package="simulation/mars/utils" />
+    <depend package="simulation/mars/common/utils" />
     <depend package="tools/configmaps" />
     <tags>needs_opt</tags>
 </package>
