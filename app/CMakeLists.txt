@@ -79,7 +79,7 @@ IF( MINGW )
 ENDIF( MINGW )
 endif(MAINGUI_FOUND)
 
-add_executable(${PROJECT_NAME} src/main.cpp ${TARGET_SRC})
+add_executable(${PROJECT_NAME} src/main.cpp)
 add_library(mars SHARED ${TARGET_SRC})
 
 if(MAINGUI_FOUND)

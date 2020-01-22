@@ -37,15 +37,15 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
-if(WIN32)
+pkg_check_modules(OSGQT openscenegraph-osgQt5)
+if(OSGQT_FOUND)
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
-pkg_check_modules(OSGQT REQUIRED openscenegraph-osgQt5)
 
 include_directories(${OSGQT_INCLUDE_DIRS})
 link_directories(${OSGQT_LIBRARY_DIRS})
 add_definitions(${OSGQT_CFLAGS_OTHER})  #cflags without -I
 
-else(WIN32)
+else()
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
 endif()
 
@@ -202,12 +202,17 @@ if(WIN32)
   SET(WIN_LIBS ${WIN_LIBS} ${OSGQT_LIBRARIES})
 endif(WIN32)
 
+if(OSGQT_FOUND)
+  SET(EXTRA_LIBS ${OSGQT_LIBRARIES})
+endif()
+
 target_link_libraries(${PROJECT_NAME}         
             ${QT_LIBRARIES}
             ${OPENSCENEGRAPH_LIBRARIES}
             ${PKGCONFIG_LIBRARIES}
             ${APPLE_LIBS}
             ${WIN_LIBS}
+            ${EXTRA_LIBS}
             pthread
 )
 

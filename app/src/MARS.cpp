@@ -73,6 +73,9 @@ namespace mars {
         //MARS::control->sim->exitMars();
         //Convention: print the signal type
       }
+#ifndef NO_GUI
+      if(qApp) qApp->quit();
+#endif
     }
 
     void handle_abort(int signal) {

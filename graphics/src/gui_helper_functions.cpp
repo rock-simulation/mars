@@ -35,11 +35,9 @@
 #endif
 
 #ifdef WIN32
- #include <cv.h>
- #include <highgui.h>
+ #include <opencv2/opencv.hpp>
 #else
- #include <opencv/cv.h>
- #include <opencv/highgui.h>
+ #include <opencv2/opencv.hpp>
 #endif
 
 #include <mars/utils/mathUtils.h>
@@ -569,28 +567,38 @@ namespace mars {
     void GuiHelper::readPixelData(mars::interfaces::terrainStruct *terrain) {
 
 #if !defined (WIN32) && !defined (__linux__)
-      IplImage* img=0;
+      cv::Mat img;
 
-      img=cvLoadImage(terrain->srcname.data(), -1);
-      if(img) {
-        terrain->width = img->width;
-        terrain->height = img->height;
-        fprintf(stderr, "w h = %d %d\n", img->width, img->height);
+      img=cv::imread(terrain->srcname, cv::IMREAD_ANYDEPTH);
+      if(img.data) {
+        terrain->width = img.cols;
+        terrain->height = img.rows;
+        fprintf(stderr, "w h = %d %d\n", img.cols, img.rows);
         terrain->pixelData = (double*)calloc((terrain->width*
                                               terrain->height),
                                              sizeof(double));
 
-
-       CvScalar s;
+        if(img.channels() != 1) {
+          fprintf(stderr, "Error: loading heightmap data. Only single channel grayscale images can be loaded!\n");
+          return;
+        }
+        cv::Scalar s;
         int count = 0;
-        double imageMaxValue = pow(2., img->depth);
+        int depth = img.depth();
+        double imageMaxValue = pow(2., 8);
+        if(depth==CV_16U) {
+          imageMaxValue = pow(2., 16);
+        }
         //for(int y=0; y<terrain->height; y++) {
         //for(int x=terrain->width-1; x>=0; x--) {
         for(int y=terrain->height-1; y>=0; y--) {
           for(int x=0; x<terrain->width; x++) {
-
-            s=cvGet2D(img,y,x);
-            terrain->pixelData[count++] = ((double)s.val[0])/(imageMaxValue-1);
+             if(depth == CV_16U) {
+               s = img.at<ushort>(y,x);
+             } else {
+               s = img.at<uchar>(y,x);
+             }
+            terrain->pixelData[count++] = ((double)s[0])/(imageMaxValue-1);
             // if(y==0 || y == terrain->height-1 ||
             //    x==0 || x == terrain->width-1)
             //   terrain->pixelData[count-1] -= 0.002;
@@ -599,7 +607,8 @@ namespace mars {
 
           }
         }
-        cvReleaseImage(&img);
+        img.release();
+        //cvReleaseImage(&img);
       }
 
 #else

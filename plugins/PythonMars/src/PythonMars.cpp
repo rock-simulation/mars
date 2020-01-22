@@ -36,10 +36,12 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/sim/CameraSensor.h>
+#include <mars/app/MARS.h>
 #include <mars/utils/misc.h>
 #ifdef __unix__
 #include <dlfcn.h>
 #endif
+
 namespace mars {
 
   using namespace osg_material_manager;
@@ -55,7 +57,11 @@ namespace mars {
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
 #ifdef __unix__
         // needed to be able to import numpy
+#ifdef PYTHON3
+        dlopen("libpython3.6.so.1", RTLD_LAZY | RTLD_GLOBAL);
+#else
         dlopen("libpython2.7.so.1", RTLD_LAZY | RTLD_GLOBAL);
+#endif
 #endif
       }
 
@@ -82,20 +88,24 @@ namespace mars {
         }
         updateGraphics = false;
         nextStep = false;
-        pf = new osg_points::PointsFactory();
-        lf = new osg_lines::LinesFactory();
-        materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        if(control->graphics) {
+          pf = new osg_points::PointsFactory();
+          lf = new osg_lines::LinesFactory();
+          materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        }
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "../../share").sValue;
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;
-        gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        if(gui) {
+          gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        }
         try {
           plugin = PythonInterpreter::instance().import("mars_plugin");
           ConfigItem map;
-          toConfigMap(plugin->function("init").call().returnObject(), map);
+          toConfigMap(plugin->function("init").call(0).returnObject(), map);
           interpreteMap(map);
           interpreteGuiMaps();
         }
@@ -118,6 +128,11 @@ namespace mars {
             control->sim->StopSimulation();
             ConfigMap::iterator it = map.find("stopSim");
             map.erase(it);
+          }
+          if(map.hasKey("quitSim") && (bool)map["quitSim"]) {
+            ConfigMap::iterator it = map.find("quitSim");
+            map.erase(it);
+            mars::app::exit_main(0);
           }
           if(map.hasKey("updateTime")) {
             updateTime = map["updateTime"];
@@ -288,6 +303,7 @@ namespace mars {
       }
 
       void PythonMars::interpreteGuiMaps() {
+        if(!control->graphics) return;
         guiMapMutex.lock();
         std::vector<ConfigMap>::iterator it = guiMaps.begin();
         for(; it!=guiMaps.end(); ++it) {
@@ -323,7 +339,7 @@ namespace mars {
               }
               points[name] = point;
               point.p->setData(pV);
-              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.pydata, point.size*3);
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(0, &name, point.pydata, point.size*3);
               control->graphics->addOSGNode(point.p->getOSGNode());
             }
             mutex.unlock();
@@ -343,7 +359,7 @@ namespace mars {
                     CameraStruct cam = {id, data, NULL, num};
                     cam.pydata = (sReal*)malloc(num*sizeof(sReal));
                     cameras[name] = cam;
-                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(0, &name, cam.pydata, num);
                   }
                 }
                 else {
@@ -375,7 +391,7 @@ namespace mars {
                     DepthCameraStruct cam = {id, data, NULL, num};
                     cam.pydata = (float*)malloc(num*sizeof(float));
                     depthCameras[name] = cam;
-                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(&name, cam.pydata, num);
+                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(0, &name, cam.pydata, num);
                   }
                 }
                 else {
@@ -603,7 +619,7 @@ namespace mars {
             }
             mutexCamera.unlock();
             mutex.lock();
-            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), iMap);
+            toConfigMap(plugin->function("update").pass(MAP).call(0, &sendMap).returnObject(), iMap);
             nextStep = true;
             mutex.unlock();
             mutexPoints.lock();
@@ -680,10 +696,20 @@ namespace mars {
           gpMutex.lock();
           pythonException = false;
           try {
-            if(plugin)
+            if(plugin) {
               plugin->reload();
-            else
+              for(auto it: cameras) {
+                free(it.second.pydata);
+              }
+              cameras.clear();
+              for(auto it: depthCameras) {
+                free(it.second.pydata);
+              }
+              depthCameras.clear();
+            }
+            else {
               plugin = PythonInterpreter::instance().import("mars_plugin");
+            }
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
@@ -694,7 +720,7 @@ namespace mars {
           }
           try {
             ConfigItem map;
-            toConfigMap(plugin->function("init").call().returnObject(), map);
+            toConfigMap(plugin->function("init").call(0).returnObject(), map);
             interpreteMap(map);
             interpreteGuiMaps();
           }

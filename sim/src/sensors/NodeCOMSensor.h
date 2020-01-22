@@ -45,8 +45,8 @@ namespace mars {
 
     public:
       NodeCOMSensor(interfaces::ControlCenter* control, IDListConfig config);
-      ~NodeCOMSensor(void) {}
-      virtual int getAsciiData(char* data) const;
+      ~NodeCOMSensor(void);
+      virtual int getAsciiData(char *data) const;
       virtual int getSensorData(interfaces::sReal** data) const;
       static interfaces::BaseSensor* instanciate(interfaces::ControlCenter *control,
                                            interfaces::BaseConfig *config);
@@ -59,6 +59,7 @@ namespace mars {
         data_broker::DataPackageMapping dbPackageMapping;
         unsigned long int dbPushId;
         utils::Vector com;
+        unsigned long linkId;
     };
 
   } // end of namespace sim

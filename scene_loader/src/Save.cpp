@@ -281,6 +281,7 @@ namespace mars {
       bool close = false;
       char text[255];
 
+
       if(handleSensor && depth == 0) {
         it = cfg.find("name");
         std::string name = it->second.toString();
@@ -309,7 +310,7 @@ namespace mars {
       for(it=cfg.begin(); it!=cfg.end(); ++it) {
         if(handleSensor && (depth < 3 && (it->first == "name" || it->first == "type"))) continue;
         for(it2=it->second.begin(); it2!=it->second.end(); ++it2) {
-          if(it2->size() == 0) {
+          if(it2->isAtom()) {
             sprintf(text+depth*2, "<%s>%s</%s>", it->first.c_str(),
                     it2->toString().c_str(), it->first.c_str());
             *out << text << "\n";
@@ -319,7 +320,7 @@ namespace mars {
             sprintf(text+depth*2, "<%s>", it->first.c_str());
             *out << text << "\n";
             //LOG_DEBUG("%s", text);
-            writeConfigMap((configmaps::ConfigMap&)(*it2), out, tag, handleSensor, depth+1);
+            writeConfigMap((configmaps::ConfigMap&)*it2, out, tag, handleSensor, depth+1);
             sprintf(text+depth*2, "</%s>", it->first.c_str());
             *out << text << "\n";
             //LOG_DEBUG("%s", text);
@@ -353,8 +354,8 @@ namespace mars {
                                 std::vector<std::string> *v_filenames,
                                 unsigned long id) {
       configmaps::ConfigMap config;
-      config["id"] = id;
       materialData->toConfigMap(&config, true);
+      config["id"] = id;
       materialData->getFilesToSave(v_filenames);
       writeConfigMap(config, out, std::string("material"));
       return 1;
@@ -380,7 +381,7 @@ namespace mars {
 
         mat_id = 0;
         for(iter = materials.begin(); iter != materials.end(); iter++) {
-          if((*iter).material == nodeData->material) {
+          if((*iter).material.name == nodeData->material.name) {
             mat_id = (*iter).material_id; break;}
         }
         if(!mat_id) {

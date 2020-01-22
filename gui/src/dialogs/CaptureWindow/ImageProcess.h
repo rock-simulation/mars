@@ -25,14 +25,6 @@
 #include <QMutex>
 #include <vector>
 
-#ifdef WIN32
- #include <cv.h>
- #include <highgui.h>
-#else
- #include <opencv/cv.h>
- #include <opencv/highgui.h>
-#endif
-
 namespace mars {
   namespace gui {
 
@@ -64,7 +56,6 @@ namespace mars {
       int file_count;
       int width, height;
       int framerate;
-      CvVideoWriter *writer;
     };
 
   } // end of namespace gui

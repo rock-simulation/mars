@@ -6,8 +6,7 @@ float tarrain_height_d(float x, float step) {
 }
 
 void terrain_height(vec2 v, out float h) {
-  vec2 tex = vec2(-v.y+tarrain_height_d(-osg_ViewMatrixInverse[3].y, 6.),
-                  v.x+tarrain_height_d(osg_ViewMatrixInverse[3].x, 6.))*texScale+vec2(0.5);
+  vec2 tex = vec2(-v.y, v.x)*texScale+vec2(0.5);
   //clamp(tex, 0, 1);
   // todo: use texture resolution in x and y
   int res = terrainDim;

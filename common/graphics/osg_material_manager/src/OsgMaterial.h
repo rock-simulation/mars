@@ -105,6 +105,9 @@ namespace osg_material_manager {
     void disableTexture(std::string name);
     void enableTexture(std::string name);
     bool checkTexture(std::string name);
+    osg::ref_ptr<osg::Texture2D> getTexture(const std::string &name);
+    int getNumInstances();
+    double getInstancesWidth();
 
   protected:
     std::vector<osg::ref_ptr<MaterialNode> > materialNodeVector;

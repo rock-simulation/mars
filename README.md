@@ -15,6 +15,11 @@ If you have questions about MARS not suited for GitHub issues or would like to r
 
 We don't yet provide binaries for MARS, thus installing it requires downloading the source and building it locally. You can do this using PyBob, a Python tool that will check out all necessary repositories and build MARS for you. You can find PyBob and the installation instructions [here](https://github.com/rock-simulation/pybob).
 
+**NOTE:** A binary version to test MARS can be found at the Bagel project: https://github.com/dfki-ric/bagel_wiki/wiki
+
+Also the tutorial in that project, as first hands on, might be interessting if you want to try out MARS:
+https://github.com/dfki-ric/bagel_wiki/wiki/bagel_robot
+
 ## Documentation
 
 You can find MARS' user documentation on its [GitHub Wiki](https://github.com/rock-simulation/mars/wiki) and code documentation on its [GitHub Page](http://rock-simulation.github.io/mars).

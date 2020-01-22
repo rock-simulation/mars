@@ -389,7 +389,7 @@ namespace osg_material_manager {
       for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
         osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
         if(geom) {
-          geom->setInitialBound(osg::BoundingBox(0, 0, 0, width, length, height));
+          geom->setInitialBound(osg::BoundingBox(-width, -length, -height, width, length, height));
           enableInstancing(geom);
         }
       }

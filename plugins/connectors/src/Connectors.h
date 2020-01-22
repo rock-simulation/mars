@@ -42,6 +42,10 @@
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <configmaps/ConfigData.h>
 
+// Threads.
+#include <mars/utils/Thread.h>
+#include <atomic>
+
 #include <string>
 
 namespace mars {
@@ -53,7 +57,8 @@ namespace mars {
         public mars::data_broker::ReceiverInterface,
         public mars::main_gui::MenuInterface,
         public mars::cfg_manager::CFGClient,
-        public mars::interfaces::EntitySubscriberInterface {
+        public mars::interfaces::EntitySubscriberInterface,
+        public mars::utils::Thread {
 
       public:
         Connectors(lib_manager::LibManager *theManager);
@@ -86,15 +91,27 @@ namespace mars {
         // Connectors methods
         void registerEntity(sim::SimEntity* entity);
 
+        /**
+         * This tread will diconnect connections when they are triggered by the user from the Control GUI.
+         * At the same time, it prevents the plugin' update() method from invoking checkForPossibleConnections().
+         */
+        void run(void);
+
       private:
         cfg_manager::cfgPropertyStruct cfgautoconnect, cfgbreakable;
         std::map<std::string, configmaps::ConfigMap> maleconnectors;
         std::map<std::string, configmaps::ConfigMap> femaleconnectors;
         std::map<std::string, configmaps::ConfigMap> connectortypes;
         std::map<std::string, std::string> connections;
-        bool mated(std::string malename, std::string femalename);
-        void checkForPossibleConnections();
+        bool closeEnough(std::string malename, std::string femalename);
 
+        /**
+         * Checks every male-female connector mating combination and mates all
+         * the pairs that meet the mating requirements.
+         *
+         * @param isforced Connection check is triggered from the Control GUI.
+         */
+        void checkForPossibleConnections(bool isforced);
 
       }; // end of class definition Connectors
 

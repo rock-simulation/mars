@@ -37,6 +37,7 @@
 #include "OsgMaterialManager.h"
 #include "MaterialNode.h"
 #include <osgDB/ReadFile>
+#include <osgDB/WriteFile>
 
 namespace osg_material_manager {
 
@@ -103,7 +104,6 @@ namespace osg_material_manager {
     newTextureFile.texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
     newTextureFile.texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
     newTextureFile.texture->setWrap(osg::Texture::WRAP_R, osg::Texture::REPEAT);
-
     osg::Image* textureImage = loadImage(filename);
     newTextureFile.texture->setImage(textureImage);
     textureFiles.push_back(newTextureFile);
@@ -337,6 +337,13 @@ namespace osg_material_manager {
       list.push_back(it->second->getMaterialData());
     }
     return list;
+  }
+
+  osg::ref_ptr<OsgMaterial> OsgMaterialManager::getOsgMaterial(const std::string &name) {
+    if(materialMap.find(name) != materialMap.end()) {
+      return materialMap[name];
+    }
+    else return NULL;
   }
 
   void OsgMaterialManager::setExperimentalLineLaser(mars::utils::Vector pos,

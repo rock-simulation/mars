@@ -82,8 +82,9 @@ namespace mars {
       void refreshPosition();
       void refreshPositions();
       void runPositionController(interfaces::sReal time_ms);
-      void runVeloctiyController(interfaces::sReal time_ms);
+      void runVelocityController(interfaces::sReal time_ms);
       void runEffortController(interfaces::sReal time_ms);
+      void runEffortPipe(interfaces::sReal time);
       void addMimic(SimMotor* mimic);
       void removeMimic(std::string mimicname);
       void clearMimics();
@@ -176,6 +177,7 @@ namespace mars {
       interfaces::MotorData sMotor;
       interfaces::sReal time;
       interfaces::sReal lastVelocity, velocity, position1, position2, effort;
+      interfaces::sReal sensedEffort;
       interfaces::sReal tmpmaxeffort, tmpmaxspeed;
       interfaces::sReal current, temperature, filterValue;
       interfaces::sReal *position; // we use this pointer to access whatever axis-position is used
@@ -226,6 +228,7 @@ namespace mars {
       data_broker::DataPackage dbPackage, cmdPackage;
       unsigned long dbPushId, dbCmdId;
       long dbIdIndex, dbControlParameterIndex, dbPositionIndex, dbCurrentIndex, dbEffortIndex, dbMaxEffortIndex;
+      bool effortMotor;
       int pushToDataBroker;
     };
 
