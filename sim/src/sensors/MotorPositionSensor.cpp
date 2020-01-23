@@ -59,18 +59,22 @@ namespace mars {
           iter != sSensor->indices.end(); ++iter, ++i) {
         tmp.id = *iter;
         values.push_back(tmp);
-        control->motors->getDataBrokerNames(*iter, &groupName, &dataName);
-        control->dataBroker->registerTimedReceiver(this, groupName, dataName,
-                                                   "mars_sim/simTimer",
-                                                   sSensor->rate, i);
+				if (control->dataBroker) {
+	        control->motors->getDataBrokerNames(*iter, &groupName, &dataName);
+	        control->dataBroker->registerTimedReceiver(this, groupName, dataName,
+	                                                   "mars_sim/simTimer",
+	                                                   sSensor->rate, i);
+        }
       }
       positionIndex = -1;
 #endif
     }
 
     MotorPositionSensor::~MotorPositionSensor(void) {
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
+			if (control->dataBroker) {
+				control->dataBroker->unregisterTimedReceiver(this, "*", "*",
                                                    "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

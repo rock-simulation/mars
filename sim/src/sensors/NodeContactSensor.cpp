@@ -83,11 +83,13 @@ namespace mars {
       updateRate = config.updateRate;
 
       for(it=config.ids.begin(); it!=config.ids.end(); ++it) {
-        control->nodes->getDataBrokerNames(*it, &groupName, &dataName);
-        control->dataBroker->registerTimedReceiver(this, groupName, dataName,
-                                                   "mars_sim/simTimer",
-                                                   updateRate,
-                                                   countIDs++);
+        if (control->dataBroker) {
+          control->nodes->getDataBrokerNames(*it, &groupName, &dataName);
+          control->dataBroker->registerTimedReceiver(this, groupName, dataName,
+                                                     "mars_sim/simTimer",
+                                                     updateRate,
+                                                     countIDs++);
+        }
         values.push_back(false);
       }
       data_broker::DataPackage dbPackage;
@@ -95,23 +97,27 @@ namespace mars {
       dbPackage.add("contact", 0.0);
       groupName = "mars_sim";
       dataName = "Sensors/"+name;
-      control->dataBroker->pushData(groupName, dataName,
-                                    dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer",
-                                                 updateRate);
+      if (control->dataBroker) {
+        control->dataBroker->pushData(groupName, dataName,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer",
+                                                   updateRate);
+      }
       typeName = "NodeContact";
     }
 
     NodeContactSensor::~NodeContactSensor(void) {
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*",
-                                                   "mars_sim/simTimer");
-      std::string groupName = "mars_sim";
-      std::string dataName = "Sensors/"+name;
-      control->dataBroker->unregisterTimedProducer(this, groupName,
-                                                   dataName,
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
+        std::string groupName = "mars_sim";
+        std::string dataName = "Sensors/"+name;
+        control->dataBroker->unregisterTimedProducer(this, groupName,
+                                                     dataName,
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

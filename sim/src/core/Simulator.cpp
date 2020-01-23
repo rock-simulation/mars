@@ -736,7 +736,8 @@ namespace mars {
       }
       pluginLocker.unlock();
 
-      control->dataBroker->trigger("mars_sim/finishedDrawTrigger");
+      if (control->dataBroker)
+        control->dataBroker->trigger("mars_sim/finishedDrawTrigger");
     }
 
     void Simulator::newWorld(bool clear_all) {

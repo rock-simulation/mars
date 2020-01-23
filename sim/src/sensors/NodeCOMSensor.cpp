@@ -53,15 +53,18 @@ namespace mars {
       if (config.config.hasKey("link")){
         linkId = control->nodes->getID((std::string) config.config["link"]);
       }
-
-      setupDataPackageMapping();
-      control->dataBroker->registerTimedProducer(this, "mars_sim", "Sensors",
-                                                 "mars_sim/simTimer", 0);
+      if (control->dataBroker) {
+        setupDataPackageMapping();
+        control->dataBroker->registerTimedProducer(this, "mars_sim", "Sensors",
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     NodeCOMSensor::~NodeCOMSensor(){
-      control->dataBroker->unregisterTimedProducer(this, "mars_sim", "Sensors",
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, "mars_sim", "Sensors",
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

@@ -49,21 +49,25 @@ namespace mars {
 
       torqueIndices[0] = -1;
       typeName = "JointAVGTorque";
-      dbPackage.add("id", (long)config.id);
-      dbPackage.add("torque", 0.0);
-      char text[55];
-      sprintf(text, "Sensors/AVGTorque_%05lu", config.id);
-      control->dataBroker->pushData("mars_sim", text,
-                                    dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
+      if (control->dataBroker) {
+        dbPackage.add("id", (long)config.id);
+        dbPackage.add("torque", 0.0);
+        char text[55];
+        sprintf(text, "Sensors/AVGTorque_%05lu", config.id);
+        control->dataBroker->pushData("mars_sim", text,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
 
-      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
-                                                 "mars_sim/simTimer", 0);
+        control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     JointAVGTorqueSensor::~JointAVGTorqueSensor(void) {
-      control->dataBroker->unregisterTimedProducer(this, "*", "*",
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

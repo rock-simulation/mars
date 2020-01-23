@@ -70,36 +70,38 @@ namespace mars {
   
       std::string groupName, dataName;
 
-      control->nodes->getDataBrokerNames(sensor_data.body_id,
-                                         &groupName, &dataName);
-      control->dataBroker->registerTimedReceiver(this, groupName, 
-                                                 dataName,
-                                                 "mars_sim/simTimer", 
-                                                 config.updateRate,
-                                                 CALLBACK_NODE);
-      control->joints->getDataBrokerNames(sensor_data.joint_id,
-                                          &groupName, &dataName);
-      control->dataBroker->registerTimedReceiver(this, groupName, 
-                                                 dataName,
-                                                 "mars_sim/simTimer",
-                                                 config.updateRate,
-                                                 CALLBACK_JOINT);
-      dbPackage.add("id", (long)config.id);
-      dbPackage.add("fx", 0.0);
-      dbPackage.add("fy", 0.0);
-      dbPackage.add("fz", 0.0);
-      dbPackage.add("tx", 0.0);
-      dbPackage.add("ty", 0.0);
-      dbPackage.add("tz", 0.0);
+      if (control->dataBroker) {
+        control->nodes->getDataBrokerNames(sensor_data.body_id,
+                                           &groupName, &dataName);
 
-      char text[55];
-      sprintf(text, "Sensors/FT_%05lu", config.id);
-      dbPushId = control->dataBroker->pushData("mars_sim", text,
-                                               dbPackage, NULL,
-                                               data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
-                                                 "mars_sim/simTimer", 0);
+        control->dataBroker->registerTimedReceiver(this, groupName,
+                                                   dataName,
+                                                   "mars_sim/simTimer",
+                                                   config.updateRate,
+                                                   CALLBACK_NODE);
+        control->joints->getDataBrokerNames(sensor_data.joint_id,
+                                            &groupName, &dataName);
+        control->dataBroker->registerTimedReceiver(this, groupName,
+                                                   dataName,
+                                                   "mars_sim/simTimer",
+                                                   config.updateRate,
+                                                   CALLBACK_JOINT);
+        dbPackage.add("id", (long)config.id);
+        dbPackage.add("fx", 0.0);
+        dbPackage.add("fy", 0.0);
+        dbPackage.add("fz", 0.0);
+        dbPackage.add("tx", 0.0);
+        dbPackage.add("ty", 0.0);
+        dbPackage.add("tz", 0.0);
 
+        char text[55];
+        sprintf(text, "Sensors/FT_%05lu", config.id);
+        dbPushId = control->dataBroker->pushData("mars_sim", text,
+                                                 dbPackage, NULL,
+                                                 data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                   "mars_sim/simTimer", 0);
+      }
       NodeData theNode = control->nodes->getFullNode(sensor_data.body_id);
       JointData theJoint = control->joints->getFullJoint(sensor_data.joint_id);
       sensor_data.anchor = theJoint.anchor;
@@ -116,10 +118,12 @@ namespace mars {
     }
 
     Joint6DOFSensor::~Joint6DOFSensor(void) {
-      control->dataBroker->unregisterTimedProducer(this, "*", "*",
-                                                   "mars_sim/simTimer");
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                     "mars_sim/simTimer");
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

@@ -56,21 +56,25 @@ namespace mars {
       data_broker::DataPackage dbPackage;
 
       dbPackage.add("contactForce", 0.0);
-      std::string groupName = "mars_sim";
-      std::string dataName = "sensors/"+name;
-      control->dataBroker->pushData(groupName, dataName,
-                                    dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer",
-                                                 updateRate);
+      if (control->dataBroker) {
+        std::string groupName = "mars_sim";
+        std::string dataName = "sensors/"+name;
+        control->dataBroker->pushData(groupName, dataName,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer",
+                                                   updateRate);
+      }
     }
 
     NodeContactForceSensor::~NodeContactForceSensor() {
-      std::string groupName = "mars_sim";
-      std::string dataName = "sensors/"+name;
-      control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        std::string groupName = "mars_sim";
+        std::string dataName = "sensors/"+name;
+        control->dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

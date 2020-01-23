@@ -130,8 +130,9 @@ namespace mars {
     RaySensor::~RaySensor(void) {
       if(control->graphics)
         control->graphics->removeDrawItems((DrawInterface*)this);
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker)
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
     }
 
     std::vector<double> RaySensor::getSensorData() const {
