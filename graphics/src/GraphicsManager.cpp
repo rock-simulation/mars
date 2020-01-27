@@ -2238,6 +2238,21 @@ namespace mars {
       //shadowedScene->removeChild(childTransform);
     }
 
+    void GraphicsManager::attacheCamToNode(unsigned long winId, unsigned long drawId) {
+      GraphicsWidget* gw=getGraphicsWindow(winId);
+      OSGNodeStruct *parent = findDrawObject(drawId);
+      GraphicsCamera* gc = dynamic_cast<GraphicsCamera*>(gw->getCameraInterface());
+
+      if(parent) {
+        osg::PositionAttitudeTransform *parentTransform;
+        parentTransform = parent->object()->getPosTransform();
+        gc->setTrakingTransform(parentTransform);
+      }
+      else {
+        gc->setTrakingTransform(NULL);
+      }
+    }
+
     void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) {
       if(materialManager) {
         materialManager->setExperimentalLineLaser(pos, normal, color,
@@ -2396,17 +2411,32 @@ namespace mars {
       else if(matchPattern("*/position", key)) {
         double d = atof(value.c_str());
         double v[7];
-        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        if(cam->isTracking()) {
+          cam->getOffsetQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
+        else {
+          cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
         if(key[key.size()-1] == 'x') v[0] = d;
         else if(key[key.size()-1] == 'y') v[1] = d;
         else if(key[key.size()-1] == 'z') v[2] = d;
-        cam->updateViewportQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        if(cam->isTracking()) {
+          cam->setOffsetQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        }
+        else {
+          cam->updateViewportQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        }
       }
       else if(matchPattern("*/euler", key)) {
         double d = atof(value.c_str());
         double v[7];
         Quaternion q;
-        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        if(cam->isTracking()) {
+          cam->getOffsetQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
+        else {
+          cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
         q.x() = v[3];
         q.y() = v[4];
         q.z() = v[5];
@@ -2416,7 +2446,12 @@ namespace mars {
         else if(key.find("beta") != string::npos) r.beta = d;
         else if(key.find("gamma") != string::npos) r.gamma = d;
         q = eulerToQuaternion(r);
-        cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        if(cam->isTracking()) {
+          cam->setOffsetQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        }
+        else {
+          cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        }
       }
     }
 

@@ -285,6 +285,7 @@ namespace mars {
       virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
 
       virtual void makeChild(unsigned long parentId, unsigned long childId);
+      virtual void attacheCamToNode(unsigned long winID, unsigned long drawID);
 
       /**
        * Sets the line laser

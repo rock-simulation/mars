@@ -28,10 +28,11 @@
 #include "GraphicsCamera.h"
 #include <osgGA/GUIEventAdapter>
 #include <osgUtil/LineSegmentIntersector>
-#include <cstdio> 
+#include <cstdio>
 #include <osg/Geometry>
 #include <osg/Geode>
 #include <osg/Texture2D>
+#include <osg/PositionAttitudeTransform>
 #include <iostream>
 
 
@@ -197,6 +198,16 @@ namespace mars {
       //   setFrameStamp(frameStamp.get());
 
       // eventually update camera position
+
+      if(tracking.valid()) {
+        osg::Vec3d p = tracking->getPosition();
+        osg::Quat q = tracking->getAttitude();
+
+        p += q*offsetPos;
+        q *= offsetRot;
+        updateViewportQuat(p.x(), p.y(), p.z(), q.x(), q.y(), q.z(), q.w());
+      }
+
       if (l_settings && l_settings->id) {
         osg::Vec3d v1, v2, v3;
         Vector node_pos;// = control->nodes->getPosition(l_settings->id);
@@ -1063,6 +1074,49 @@ namespace mars {
       camera->addChild(geode);
       camera->attach(osg::Camera::COLOR_BUFFER, image);
       mainScene->addChild(camera);
+    }
+
+    void GraphicsCamera::setTrakingTransform(osg::ref_ptr<osg::PositionAttitudeTransform> t) {
+      tracking = t;
+      if(tracking.valid()) {
+        double x[7];
+        getViewportQuat(x, x+1, x+2, x+3, x+4, x+5, x+6);
+        offsetPos.x() = x[0];
+        offsetPos.y() = x[1];
+        offsetPos.z() = x[2];
+        offsetRot.x() = x[3];
+        offsetRot.y() = x[4];
+        offsetRot.z() = x[5];
+        offsetRot.w() = x[6];
+      }
+    }
+
+    bool GraphicsCamera::isTracking() {
+      return tracking.valid();
+    }
+
+    void GraphicsCamera::getOffsetQuat(double *tx, double *ty, double *tz,
+                                       double *rx, double *ry, double *rz,
+                                       double *rw) {
+      *tx = offsetPos.x();
+      *ty = offsetPos.y();
+      *tz = offsetPos.z();
+      *rx = offsetRot.x();
+      *ry = offsetRot.y();
+      *rz = offsetRot.z();
+      *rw = offsetRot.w();
+    }
+
+    void GraphicsCamera::setOffsetQuat(double tx, double ty, double tz,
+                                       double rx, double ry, double rz,
+                                       double rw) {
+      offsetPos.x() = tx;
+      offsetPos.y() = ty;
+      offsetPos.z() = tz;
+      offsetRot.x() = rx;
+      offsetRot.y() = ry;
+      offsetRot.z() = rz;
+      offsetRot.w() = rw;
     }
 
   } // end of namespace graphics

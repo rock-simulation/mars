@@ -509,6 +509,7 @@ namespace mars {
               map["pose"]["euler"]["alpha"] = r.alpha;
               map["pose"]["euler"]["beta"] = r.beta;
               map["pose"]["euler"]["gamma"] = r.gamma;
+              map["pose"]["node"] = "";
               dw->setConfigMap(arrString[1], map);
               editCategory = 9;
             }
@@ -759,7 +760,12 @@ namespace mars {
         control->graphics->edit(name, value);
       }
       else if(editCategory == 9) {
-        control->graphics->edit(currentWindowID, name, value);
+        if(name == "/pose/node") {
+          control->nodes->edit(0, name, value);
+        }
+        else {
+          control->graphics->edit(currentWindowID, name, value);
+        }
       }
     }
 

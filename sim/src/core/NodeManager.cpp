@@ -1734,9 +1734,24 @@ namespace mars {
                            const std::string &value) {
       iMutex.lock();
       NodeMap::iterator iter;
+
       // todo: cfdir1 is a vector
       iter = simNodes.find(id);
-      if(iter == simNodes.end()) return;
+      if(iter == simNodes.end()) {
+        // hack to attache camera to node:
+        iMutex.unlock();
+        if(control->graphics) {
+          if(matchPattern("*/node", key)) {
+            id = getID(value);
+            unsigned long drawId = 0;
+            if(id) {
+              drawId = getDrawID(id);
+            }
+            control->graphics->attacheCamToNode(1, drawId);
+          }
+        }
+        return;
+      }
       NodeData nd = iter->second->getSNode();
       //// fprintf(stderr, "change: %s %s\n", key.c_str(), value.c_str());
       if(matchPattern("*/position", key)) {
