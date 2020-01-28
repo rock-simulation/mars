@@ -46,6 +46,8 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
+#define EPSILON 1e-10
+
 namespace mars {
   namespace sim {
 
@@ -568,6 +570,27 @@ namespace mars {
 
       if(contact[0].surface.mu != contact[0].surface.mu2)
         contact[0].surface.mode |= dContactMu2;
+
+      if(geom_data1->c_params.rolling_friction > EPSILON ||
+         geom_data2->c_params.rolling_friction > EPSILON) {
+        contact[0].surface.mode |= dContactRolling;
+        contact[0].surface.rho = geom_data1->c_params.rolling_friction + geom_data2->c_params.rolling_friction;
+        fprintf(stderr, "set rolling friction to: %g\n", contact[0].surface.rho);
+        if(geom_data1->c_params.rolling_friction2 > EPSILON ||
+           geom_data2->c_params.rolling_friction2 > EPSILON) {
+          contact[0].surface.rho2 = geom_data1->c_params.rolling_friction2 + geom_data2->c_params.rolling_friction2;
+        }
+        else {
+          contact[0].surface.rho2 = geom_data1->c_params.rolling_friction + geom_data2->c_params.rolling_friction;
+        }
+        if(geom_data1->c_params.spinning_friction > EPSILON ||
+           geom_data2->c_params.spinning_friction > EPSILON) {
+          contact[0].surface.rhoN = geom_data1->c_params.spinning_friction + geom_data2->c_params.spinning_friction;
+        }
+        else {
+          contact[0].surface.rhoN = 0.0;
+        }
+      }
 
       // check if we have to calculate friction direction1
       if(geom_data1->c_params.friction_direction1 ||

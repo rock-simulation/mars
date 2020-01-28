@@ -1843,6 +1843,9 @@ namespace mars {
             c.friction_direction1 = 0;
           }
         }
+        else if(matchPattern("*/rolling_friction2", key)) c.rolling_friction2 = atof(value.c_str());
+        else if(matchPattern("*/rolling_friction", key)) c.rolling_friction = atof(value.c_str());
+        else if(matchPattern("*/spinning_friction", key)) c.spinning_friction = atof(value.c_str());
         iter->second->setContactParams(c);
         iMutex.unlock();
       }

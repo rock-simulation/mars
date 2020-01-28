@@ -41,6 +41,9 @@ namespace mars {
         approx_pyramid = 1;
         coll_bitmask = 65535;
         depth_correction = 0.0;
+        rolling_friction = 0.0;
+        rolling_friction2 = 0.0;
+        spinning_friction = 0.0;
       }
 
       contact_params(){
@@ -57,6 +60,7 @@ namespace mars {
       bool approx_pyramid;
       int coll_bitmask;
       sReal depth_correction;
+      sReal rolling_friction, rolling_friction2, spinning_friction;
     }; // end of struct contact_params
 
   } // end of namespace interfaces

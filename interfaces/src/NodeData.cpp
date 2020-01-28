@@ -238,6 +238,9 @@ namespace mars {
         GET_VALUE("cbounce_vel", c_params.bounce_vel, Double);
         GET_VALUE("capprox", c_params.approx_pyramid, Bool);
         GET_VALUE("coll_bitmask", c_params.coll_bitmask, Int);
+        GET_VALUE("rolling_friction", c_params.rolling_friction, Double);
+        GET_VALUE("rolling_friction2", c_params.rolling_friction2, Double);
+        GET_VALUE("spinning_friction", c_params.spinning_friction, Double);
 
         if((it = config->find("cfdir1")) != config->end()) {
           if(!c_params.friction_direction1) {
@@ -345,6 +348,9 @@ namespace mars {
       SET_VALUE("cbounce_vel", c_params.bounce_vel, writeDefaults);
       SET_VALUE("capprox", c_params.approx_pyramid, writeDefaults);
       SET_VALUE("coll_bitmask", c_params.coll_bitmask, writeDefaults);
+      SET_VALUE("rolling_friction", c_params.rolling_friction, writeDefaults);
+      SET_VALUE("rolling_friction2", c_params.rolling_friction2, writeDefaults);
+      SET_VALUE("spinning_friction", c_params.spinning_friction, writeDefaults);
       if(c_params.friction_direction1) {
         vectorToConfigItem((*config)["cfdir1"],
                            c_params.friction_direction1);
