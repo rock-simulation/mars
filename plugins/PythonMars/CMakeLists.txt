@@ -48,18 +48,43 @@ set(HEADERS
 	src/PythonInterpreter.hpp
 )
 
+if("$ENV{PYTHON}" STREQUAL "")
+    set(PYTHON "python")
+    message(STATUS "Using default python.")
+else()
+    set(PYTHON $ENV{PYTHON})
+endif()
+
+execute_process(
+    COMMAND ${PYTHON} -c "import sys;print(sys.version_info.major)"
+    OUTPUT_VARIABLE PYTHON_VERSION_MAJOR
+)
+execute_process(
+    COMMAND ${PYTHON} -c "import sys;print(sys.version_info.minor)"
+    OUTPUT_VARIABLE PYTHON_VERSION_MINOR
+)
+string(STRIP ${PYTHON_VERSION_MAJOR} PYTHON_VERSION_MAJOR)
+string(STRIP ${PYTHON_VERSION_MINOR} PYTHON_VERSION_MINOR)
+message(STATUS "Python: ${PYTHON}")
+message(STATUS "Python version: ${PYTHON_VERSION_MAJOR}")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_definitions(-DPYTHON_SUPPORT)
 add_definitions(-DUSE_MEMORYVIEWS)
-if (APPLE)
-  # here we assume to search for the Python libraries provided by macports
-  set(PYTHON_LIBRARY "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/Python")
-  set(PYTHON_INCLUDE_DIR "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7" "/opt/local/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/numpy/core/include")
-endif (APPLE)
-#add_definitions(-DPYTHON3)
-set(Python_ADDITIONAL_VERSIONS "2.7")
-find_package(PythonLibs REQUIRED)
+set(PYTHON_EXECUTABLE ${PYTHON})
 find_package(Numpy REQUIRED)
+if (APPLE)
+  find_package(PythonLibs ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR} REQUIRED)
+else (APPLE)
+  pkg_check_modules(PYTHON ${PYTHON})
+endif (APPLE)
+message(STATUS "Python include directories: ${PYTHON_INCLUDE_DIRS}")
+include_directories(${PYTHON_INCLUDE_DIRS})
+message(STATUS "Numpy include directories: ${NUMPY_INCLUDE_DIRS}")
+include_directories(${NUMPY_INCLUDE_DIRS})
+link_directories(${PYTHON_LIBRARY_DIRS})
+
+add_definitions(-DPYTHON_VERSION=${PYTHON_VERSION_MAJOR})
 
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -70,10 +95,6 @@ CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
-
-include_directories(${PYTHON_INCLUDE_DIRS})
-include_directories(${NUMPY_INCLUDE_DIRS})
-link_directories(${PYTHON_LIBRARY_DIRS})
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 

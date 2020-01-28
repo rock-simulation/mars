@@ -8,7 +8,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
-#ifdef PYTHON3
+#if PYTHON_VERSION == 3
 #define PyInt_FromLong PyLong_FromLong
 #define PyInt_AsLong PyLong_AsLong
 #define PyInt_Check PyLong_Check
@@ -441,7 +441,7 @@ struct ListBuilderState
 //////////////////////// Public interface //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef PYTHON3
+#if PYTHON_VERSION == 3
 int initNumpy() {
   import_array();
 #else
