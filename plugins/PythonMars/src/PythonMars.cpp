@@ -55,14 +55,10 @@ namespace mars {
 
       PythonMars::PythonMars(lib_manager::LibManager *theManager)
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
-// #ifdef __unix__
-//         // needed to be able to import numpy
-// #ifdef PYTHON_VERSION == 3
-//         dlopen("libpython3.6.so.1", RTLD_LAZY | RTLD_GLOBAL);
-// #else
-//         dlopen("libpython2.7.so.1", RTLD_LAZY | RTLD_GLOBAL);
-// #endif
-// #endif
+#ifdef __unix__
+        // needed to be able to import numpy
+        dlopen(PYTHON_LIB, RTLD_LAZY | RTLD_GLOBAL);
+#endif
       }
 
       PythonMars::~PythonMars() {

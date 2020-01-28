@@ -83,8 +83,9 @@ include_directories(${PYTHON_INCLUDE_DIRS})
 message(STATUS "Numpy include directories: ${NUMPY_INCLUDE_DIRS}")
 include_directories(${NUMPY_INCLUDE_DIRS})
 link_directories(${PYTHON_LIBRARY_DIRS})
-
+message(STATUS "Python lib: ${PYTHON_LIBRARIES}")
 add_definitions(-DPYTHON_VERSION=${PYTHON_VERSION_MAJOR})
+add_definitions(-DPYTHON_LIB="lib${PYTHON_LIBRARIES}.so")
 
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
