@@ -9,6 +9,6 @@
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/interfaces" />
     <depend package="tools/configmaps" />
-    <depend package="simulation/ode" />
+    <depend package="simulation/ode-16" />
     <tags>needs_opt</tags>
 </package>
