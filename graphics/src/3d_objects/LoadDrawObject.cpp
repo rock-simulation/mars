@@ -51,10 +51,13 @@ namespace mars {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
       std::string filename;
-      std::string p = ".";
+      std::string p = "./";
 
       if(info_.find("filePrefix") != info_.end()) {
         p = (std::string)info_["filePrefix"];
+        if(p[p.back()] != '/') {
+          p += "/";
+        }
       };
 
       if(info_.find("lod") != info_.end()) {
@@ -65,7 +68,7 @@ namespace mars {
           end = (*it)["end"];
           filename = (std::string)(*it)["filename"];
           if(filename[0] != '/') {
-            filename = p+"/"+filename;
+            filename = p+filename;
           }
           geodes = loadGeodes(filename, "");
           addLODGeodes(geodes, start, end);
@@ -73,7 +76,7 @@ namespace mars {
       }
       filename = (std::string)info_["filename"];
       if(filename[0] != '/') {
-        filename = p+"/"+filename;
+        filename = p+filename;
       }
       return loadGeodes(filename, (std::string)info_["origname"]);
     }
@@ -85,7 +88,7 @@ namespace mars {
       if(filename.substr(filename.size()-5, 5) == ".bobj") {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readBobjFromFile(filename);
         if(!loadedNode.valid()) {
-          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
+          std::cerr << "LoadDrawObject: no bobj node loaded " << filename << std::endl;
           return geodes; // TODO: error message
         }
         found = true;

@@ -95,7 +95,7 @@ namespace mars {
       int joint_type;
       dReal cfm, cfm1, cfm2, erp1, erp2;
       dReal lo1, lo2, hi1, hi2;
-      dReal damping, spring;
+      dReal damping, spring, jointCFM;
       utils::Vector axis1_torque, axis2_torque, joint_load;
       dReal motor_torque;
 

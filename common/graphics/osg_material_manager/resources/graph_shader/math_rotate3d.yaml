@@ -1,0 +1,9 @@
+params:
+  in:
+    v: {index: 0, type: vec4}
+    alpha: {index: 1, type: float}
+    beta: {index: 2, type: float}
+    gamma: {index: 3, type: float}
+  out:
+    o: {index: 4, type: vec4}
+source: /graph_shader/math_rotate3d.frag

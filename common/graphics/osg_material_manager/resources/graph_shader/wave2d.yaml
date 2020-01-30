@@ -1,0 +1,12 @@
+params:
+  in:
+    sin: {index: 0, type: float}
+    cos: {index: 1, type: float}
+    s: {index: 2, type: vec4}
+  out:
+    v: {index: 0, type: vec4}
+uniforms:
+  float:
+    - {name: sinUniform}
+    - {name: cosUniform}
+source: /graph_shader/wave2d.frag

@@ -48,6 +48,7 @@ namespace mars {
     JointPhysics::JointPhysics(PhysicsInterface *world){
       theWorld = (WorldPhysics*)world;
       jointId = ball_motor = 0;
+      jointCFM = 0.0;
       cfm = cfm1 = cfm2 = erp1 = erp2 = 0;
       lo1 = lo2 = hi1 = hi2 = 0;
       damping = 0;
@@ -123,6 +124,9 @@ namespace mars {
         dBodyID b1 = 0, b2 = 0;
 
         calculateCfmErp(jointS);
+        if(jointS->config.hasKey("jointCFM")) {
+          jointCFM = jointS->config["jointCFM"];
+        }
 
         joint_type = jointS->type;
         if(n1) b1 = n1->getBody();
@@ -341,6 +345,9 @@ namespace mars {
         dJointSetHingeParam(jointId, dParamLoStop, lo1);
         dJointSetHingeParam(jointId, dParamHiStop, hi1);    
       }
+      if(jointCFM > 0) {
+        dJointSetHingeParam(jointId, dParamCFM, jointCFM);
+      }
       // good value for the SpaceClimber robot
       //dJointSetHingeParam(jointId, dParamCFM, 0.03);
       //dJointSetHingeParam(jointId, dParamCFM, 0.018);
@@ -385,6 +392,9 @@ namespace mars {
         dJointSetHinge2Param(jointId, dParamStopERP2, erp2);
         dJointSetHinge2Param(jointId, dParamCFM, cfm);
       }
+      if(jointCFM > 0) {
+        dJointSetHinge2Param(jointId, dParamCFM, jointCFM);
+      }
     }
 
     void JointPhysics::createSlider(JointData *jointS, dBodyID body1,
@@ -407,6 +417,9 @@ namespace mars {
       else if(lo1 != 0) {
         dJointSetSliderParam(jointId, dParamLoStop, lo1);
         dJointSetSliderParam(jointId, dParamHiStop, hi1);
+      }
+      if(jointCFM > 0) {
+        dJointSetSliderParam(jointId, dParamCFM, jointCFM);
       }
       //dJointSetSliderParam(jointId, dParamCFM, cfm);
     }
@@ -498,6 +511,9 @@ namespace mars {
         dJointSetUniversalParam(jointId, dParamLoStop2, lo2);
       if(hi2 > 0.0001 || hi2 < -0.0001)
         dJointSetUniversalParam(jointId, dParamHiStop2, hi2);
+      if(jointCFM > 0) {
+        dJointSetUniversalParam(jointId, dParamCFM, jointCFM);
+      }
     }
 
     /// set the anchor i.e. the position where the joint is created of the joint 

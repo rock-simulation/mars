@@ -24,17 +24,15 @@
 // prohibit MSVC to create the "min" and "max" macros
 #define NOMINMAX
 
-#ifdef WIN32
-#include <windows.h>
+#ifdef _WIN32
 #include <GL/glew.h>
-GLEW_FUN_EXPORT PFNGLGENBUFFERSPROC glGenBuffers;
-GLEW_FUN_EXPORT PFNGLBINDBUFFERPROC glBindBuffer;
-GLEW_FUN_EXPORT PFNGLDELETEBUFFERSPROC glDeleteBuffers;
-GLEW_FUN_EXPORT PFNGLBUFFERDATAPROC glBufferData;
-GLEW_FUN_EXPORT PFNGLMAPBUFFERPROC glMapBuffer;
-GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer;
-#endif
-
+/* GLEW_FUN_EXPORT PFNGLGENBUFFERSPROC glGenBuffers; */
+/* GLEW_FUN_EXPORT PFNGLBINDBUFFERPROC glBindBuffer; */
+/* GLEW_FUN_EXPORT PFNGLDELETEBUFFERSPROC glDeleteBuffers; */
+/* GLEW_FUN_EXPORT PFNGLBUFFERDATAPROC glBufferData; */
+/* GLEW_FUN_EXPORT PFNGLMAPBUFFERPROC glMapBuffer; */
+/* GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer; */
+#else
 #ifdef __APPLE__
  #include <OpenGL/gl.h>
  #include <OpenGL/glext.h>
@@ -42,10 +40,11 @@ GLEW_FUN_EXPORT PFNGLUNMAPBUFFERPROC glUnmapBuffer;
  #include <GL/gl.h>
  #include <GL/glext.h>
 #endif
+#endif
 #include <map>
 #include <list>
 #include <vector>
-#ifdef WIN32
+#ifdef _WIN32
  #include <cv.h>
  #include <highgui.h>
 #else

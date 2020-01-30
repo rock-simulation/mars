@@ -22,14 +22,14 @@
  * \file EntityManager.h
  * \author Jonas Peter, Kai von Szadkowski
  * \brief "EntityManager" is the class that manages information about simulation entities
- * 
+ *
  * The class can be used to access information about nodes and the position of the robot
  * to use pass robot name as parameter to the SimulatorInterface::loadScene function
  *
  * TODO delete robots after use
  * TODO handle node deletion (see NodeManager)
  * TODO allow to add nodes to robots via their ids instead of names;
- * TODO possible optimization store the index(iterator) of the last accessed robot as 
+ * TODO possible optimization store the index(iterator) of the last accessed robot as
  *      it is likely to be accessed again while nodes and motors are added
  */
 
@@ -59,6 +59,8 @@ namespace mars {
 
       virtual unsigned long addEntity(SimEntity* entity);
 
+      virtual void removeEntity(const std::string &name);
+
       /**adds a node and maps the nodeId to the name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId,
           const std::string &nodeName);
@@ -74,12 +76,16 @@ namespace mars {
       virtual void addJoint(const std::string &entityName, unsigned long jointId,
           const std::string &jointName);
 
-      /**returns the entity with the given name
-       */
       // callback for entity creation
       virtual const std::map<unsigned long, SimEntity*>* subscribeToEntityCreation(interfaces::EntitySubscriberInterface* newsub);
 
+      /**returns the entity with the given name
+       */
       virtual SimEntity* getEntity(const std::string &name);
+
+      /**returns the entities that contain the given name string
+       */
+      virtual std::vector<SimEntity*> getEntities(const std::string &name);
 
       /**returns the entity with the given id
        */

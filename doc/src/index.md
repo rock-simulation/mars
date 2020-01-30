@@ -12,7 +12,7 @@ We don't regularly provide binaries for MARS, thus installing it requires downlo
 
 ## Documentation
 
-You can find MARS' documentation on its [GitHub Page](http://rock-simulation.github.io/mars).
+You can find MARS' documentation on its [GitHub Wiki](https://github.com/rock-simulation/mars/wiki).
 
 ## License
 

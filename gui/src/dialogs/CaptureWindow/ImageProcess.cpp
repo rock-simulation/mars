@@ -21,6 +21,18 @@
 #include "ImageProcess.h"
 #include <cstdio>
 
+#ifdef WIN32
+ #include <opencv2/opencv.hpp>
+ #include <opencv2/highgui/highgui.hpp>
+#else
+ #include <opencv2/opencv.hpp>
+ #include <opencv2/highgui/highgui.hpp>
+#endif
+
+#ifndef CV_FOURCC_MACRO
+#define CV_FOURCC cv::VideoWriter::fourcc
+#endif
+
 namespace mars {
   namespace gui {
 
@@ -30,7 +42,6 @@ namespace mars {
       start();
       state = 1;
       width = height = 0;
-      writer = 0;
       this->framerate = framerate;
       fprintf(stderr, "created ImagePorcess\n");
     }
@@ -63,8 +74,8 @@ namespace mars {
       uchar *data = 0;
       uchar *dest, *src;
       QString num;
-      IplImage *cvImage = 0;
-
+      cv::Mat cvImage;
+      cv::VideoWriter writer;
       imageCount = 0;
       file_count = 0;
 
@@ -82,24 +93,24 @@ namespace mars {
           newImage = imageList[0];
           imageList.erase(imageList.begin());
           listMutex.unlock();
-      
+
           if(width == 0) {
             width = newImage.width;
             height = newImage.height;
-            writer = cvCreateVideoWriter(qPrintable(file),
-                                         //-1, framerate,
-                                         CV_FOURCC('X', 'V', 'I', 'D'), framerate,
-                                         //CV_FOURCC('M', 'J', 'P', 'G'), framerate,
-                                         cvSize(width, height), 1); 
-            cvImage = cvCreateImageHeader(cvSize(width, height), IPL_DEPTH_8U, 3);
+            writer.open(qPrintable(file),
+                        //-1, framerate,
+                        CV_FOURCC('X', 'V', 'I', 'D'), framerate,
+                        //cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), framerate,
+                        cv::Size(width, height), 1);
+            cvImage = cv::Mat(cv::Size(width, height), CV_8UC3);
             data = (uchar*)malloc(width*height*3);
-            cvImage->imageData = (char*)data;
+            cvImage.data = data;
           }
           // convert to standard rgb image
           for (int i=0; i<newImage.height; ++i) {
             for(int k=0; k<newImage.width; ++k) {
-              dest = data + ((newImage.height-1)*(newImage.width)*3-
-                             i*newImage.width*3 + k*3);
+              dest = cvImage.data + ((newImage.height-1)*(newImage.width)*3-
+                                     i*newImage.width*3 + k*3);
 
               src  = (uchar*)newImage.data + (i*newImage.width*4) + k*4;
 
@@ -108,9 +119,13 @@ namespace mars {
           }
 
           // save new Image
-          if(writer) {
-            cvWriteFrame(writer, cvImage);
+          if(writer.isOpened()) {
+            fprintf(stderr, ".");
+            writer.write(cvImage);
             ++imageCount;
+          }
+          else {
+            fprintf(stderr, "ERROR: writer not opened!\n");
           }
 
           // free memory
@@ -121,11 +136,13 @@ namespace mars {
           msleep(4);
         }
       }
-  
-      // clean up
-      if(writer) cvReleaseVideoWriter(&writer);  
-      if(cvImage) cvReleaseImageHeader(&cvImage);
-      if(data) free(data);
+
+      if(writer.isOpened()) writer.release();
+      //if(cvImage.data) cvImage.release();
+      if(data) {
+        free(data);
+        data = NULL;
+      }
     }
 
   } // end of namespace gui

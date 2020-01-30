@@ -1,0 +1,6 @@
+params:
+  in:
+    n: {index: 0, type: vec3}
+  out:
+    n: {index: 0, type: vec3}
+source: /graph_shader/backfaceNormal.frag

@@ -1,0 +1,6 @@
+params:
+  in:
+    vector_a: {index: 0, type: vec3}
+  out:
+    out1: {index: 1, type: float}
+source: /graph_shader/length_vec3.frag

@@ -32,12 +32,16 @@
 #include <mars/interfaces/sim/MotorManagerInterface.h>
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
+#include <mars/sim/CameraSensor.h>
+#include <mars/app/MARS.h>
 #include <mars/utils/misc.h>
 #ifdef __unix__
 #include <dlfcn.h>
 #endif
+
 namespace mars {
 
   using namespace osg_material_manager;
@@ -53,7 +57,7 @@ namespace mars {
         : MarsPluginTemplateGUI(theManager, "PythonMars")      {
 #ifdef __unix__
         // needed to be able to import numpy
-        dlopen("libpython2.7.so.1", RTLD_LAZY | RTLD_GLOBAL);
+        dlopen(PYTHON_LIB, RTLD_LAZY | RTLD_GLOBAL);
 #endif
       }
 
@@ -80,20 +84,24 @@ namespace mars {
         }
         updateGraphics = false;
         nextStep = false;
-        pf = new osg_points::PointsFactory();
-        lf = new osg_lines::LinesFactory();
-        materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        if(control->graphics) {
+          pf = new osg_points::PointsFactory();
+          lf = new osg_lines::LinesFactory();
+          materialManager = libManager->getLibraryAs<OsgMaterialManager>("osg_material_manager", true);
+        }
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "../../share").sValue;
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;
-        gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        if(gui) {
+          gui->addGenericMenuAction("../PythonMars/Reload", 1, this);
+        }
         try {
           plugin = PythonInterpreter::instance().import("mars_plugin");
           ConfigItem map;
-          toConfigMap(plugin->function("init").call().returnObject(), map);
+          toConfigMap(plugin->function("init").call(0).returnObject(), map);
           interpreteMap(map);
           interpreteGuiMaps();
         }
@@ -116,6 +124,11 @@ namespace mars {
             control->sim->StopSimulation();
             ConfigMap::iterator it = map.find("stopSim");
             map.erase(it);
+          }
+          if(map.hasKey("quitSim") && (bool)map["quitSim"]) {
+            ConfigMap::iterator it = map.find("quitSim");
+            map.erase(it);
+            mars::app::exit_main(0);
           }
           if(map.hasKey("updateTime")) {
             updateTime = map["updateTime"];
@@ -167,49 +180,108 @@ namespace mars {
               std::string group = it->first;
               if(!it->second.isMap()) continue;
               ConfigMap::iterator it2 = it->second.beginMap();
-              if(!it2->second.isAtom()) continue;
-              ConfigAtom &atom = it2->second;
-              std::string name = it2->first;
-              std::string value = atom.toString().c_str();
-              cfg_manager::cfgParamInfo info;
-              info = control->cfg->getParamInfo(group, name);
-              switch(info.type) {
-              case cfg_manager::boolParam:
-                control->cfg->setProperty(group, name,
-                                          (bool)atoi(value.c_str()));
-                break;
-              case cfg_manager::doubleParam:
-                control->cfg->setProperty(group, name, atof(value.c_str()));
-                break;
-              case cfg_manager::intParam:
-                control->cfg->setProperty(group, name, atoi(value.c_str()));
-                break;
-              case cfg_manager::stringParam:
-                control->cfg->setProperty(group, name, value);
-                break;
-              case cfg_manager::noParam:
-                switch(atom.getType()) {
-                case ConfigAtom::BOOL_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (bool)atom);
+              for(; it2 != it->second.endMap(); ++it2) {
+                if(!it2->second.isAtom()) continue;
+                ConfigAtom &atom = it2->second;
+                std::string name = it2->first;
+                std::string value = atom.toString().c_str();
+                cfg_manager::cfgParamInfo info;
+                info = control->cfg->getParamInfo(group, name);
+                switch(info.type) {
+                case cfg_manager::boolParam:
+                  control->cfg->setProperty(group, name,
+                                            (bool)atoi(value.c_str()));
                   break;
-                case ConfigAtom::INT_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (int)atom);
+                case cfg_manager::doubleParam:
+                  control->cfg->setProperty(group, name, atof(value.c_str()));
                   break;
-                case ConfigAtom::DOUBLE_TYPE:
-                  control->cfg->getOrCreateProperty(group, name, (double)atom);
+                case cfg_manager::intParam:
+                  control->cfg->setProperty(group, name, atoi(value.c_str()));
+                  break;
+                case cfg_manager::stringParam:
+                  control->cfg->setProperty(group, name, value);
+                  break;
+                case cfg_manager::noParam:
+                  switch(atom.getType()) {
+                  case ConfigAtom::BOOL_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (bool)atom);
+                    break;
+                  case ConfigAtom::INT_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (int)atom);
+                    break;
+                  case ConfigAtom::DOUBLE_TYPE:
+                    control->cfg->getOrCreateProperty(group, name, (double)atom);
+                    break;
+                  default:
+                    control->cfg->getOrCreateProperty(group, name,
+                                                      atom.toString());
+                    break;
+                  }
                   break;
                 default:
-                  control->cfg->getOrCreateProperty(group, name,
-                                                    atom.toString());
                   break;
                 }
-                break;
-              default:
-                break;
               }
             }
             ConfigMap::iterator iit = map.find("config");
             map.erase(iit);
+          }
+
+          if(map.hasKey("edit")) {
+            if(map["edit"].hasKey("nodes")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodes"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    control->nodes->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("joints")) {
+              for(auto it: (ConfigMap&)(map["edit"]["joints"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->joints->getID(name);
+                  if(id) {
+                    control->joints->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("motors")) {
+              for(auto it: (ConfigMap&)(map["edit"]["motors"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  unsigned long id = control->motors->getID(name);
+                  if(id) {
+                    control->motors->edit(id, key, value);
+                  }
+                }
+              }
+            }
+            if(map["edit"].hasKey("graphics") && control->graphics) {
+              for(auto it: (ConfigMap&)(map["edit"]["graphics"])) {
+                int id = atoi(it.first.c_str());
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  if(id < 0) {
+                    control->graphics->edit(key, value);
+                  }
+                  else {
+                    control->graphics->edit(id, key, value);
+                  }
+                }
+              }
+            }
           }
 
           if(map.hasKey("request") && map["request"].isVector()) {
@@ -227,6 +299,7 @@ namespace mars {
       }
 
       void PythonMars::interpreteGuiMaps() {
+        if(!control->graphics) return;
         guiMapMutex.lock();
         std::vector<ConfigMap>::iterator it = guiMaps.begin();
         for(; it!=guiMaps.end(); ++it) {
@@ -262,7 +335,7 @@ namespace mars {
               }
               points[name] = point;
               point.p->setData(pV);
-              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(&name, point.pydata, point.size*3);
+              plugin->function("addPointCloudData").pass(STRING).pass(ONEDCARRAY).call(0, &name, point.pydata, point.size*3);
               control->graphics->addOSGNode(point.p->getOSGNode());
             }
             mutex.unlock();
@@ -272,25 +345,62 @@ namespace mars {
             ConfigMap::iterator it = map["CameraSensor"].beginMap();
             for(; it!=map["CameraSensor"].endMap(); ++it) {
               std::string name = it->first;
-              if(cameras.find(name) == cameras.end()) {
-                unsigned long id = control->sensors->getSensorID(name);
-                sReal *data;
-                int num = control->sensors->getSensorData(id, &data);
-                if(num) {
-                  CameraStruct cam = {id, data, NULL, num};
-                  cam.pydata = (sReal*)malloc(num*sizeof(sReal));
-                  cameras[name] = cam;
-                  plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(&name, cam.pydata, num);
+              int type = it->second;
+              if(type & 1) {
+                if(cameras.find(name) == cameras.end()) {
+                  unsigned long id = control->sensors->getSensorID(name);
+                  sReal *data;
+                  int num = control->sensors->getSensorData(id, &data);
+                  if(num) {
+                    CameraStruct cam = {id, data, NULL, num};
+                    cam.pydata = (sReal*)malloc(num*sizeof(sReal));
+                    cameras[name] = cam;
+                    plugin->function("addCameraData").pass(STRING).pass(ONEDCARRAY).call(0, &name, cam.pydata, num);
+                  }
+                }
+                else {
+                  CameraStruct &cam = cameras[name];
+                  sReal *data;
+                  int num = control->sensors->getSensorData(cam.id, &data);
+                  if(num == cam.size) {
+                    memcpy(cam.data, data, num*sizeof(sReal));
+                  }
+                  if(num) free(data);
                 }
               }
-              else {
-                CameraStruct &cam = cameras[name];
-                sReal *data;
-                int num = control->sensors->getSensorData(cam.id, &data);
-                if(num == cam.size) {
-                  memcpy(cam.data, data, num*sizeof(sReal));
+              if(type & 2) {
+                std::string camName = name;
+                name += "_depth";
+                if(depthCameras.find(name) == depthCameras.end()) {
+                  unsigned long id = control->sensors->getSensorID(camName);
+                  float *data;
+                  const interfaces::BaseSensor *bs = control->sensors->getFullSensor(id);
+                  const sim::CameraSensor *c = dynamic_cast<const sim::CameraSensor*>(bs);
+                  if(c) {
+                    sim::CameraConfigStruct config = c->getConfig();
+                    std::vector<sim::DistanceMeasurement> buffer;
+                    int num = config.width*config.height;
+                    buffer.resize(num);
+                    c->getDepthImage(buffer);
+                    data = (float*)malloc(sizeof(float)*num);
+                    memcpy(data, buffer.data(), sizeof(float)*num);
+                    DepthCameraStruct cam = {id, data, NULL, num};
+                    cam.pydata = (float*)malloc(num*sizeof(float));
+                    depthCameras[name] = cam;
+                    plugin->function("addCameraData").pass(STRING).pass(ONEFCARRAY).call(0, &name, cam.pydata, num);
+                  }
                 }
-                if(num) free(data);
+                else {
+                  DepthCameraStruct &cam = depthCameras[name];
+                  const interfaces::BaseSensor *bs = control->sensors->getFullSensor(cam.id);
+                  const sim::CameraSensor *c = dynamic_cast<const sim::CameraSensor*>(bs);
+                  if(c) {
+                    std::vector<sim::DistanceMeasurement> buffer;
+                    buffer.resize(cam.size);
+                    c->getDepthImage(buffer);
+                    memcpy(cam.data, buffer.data(), cam.size*sizeof(float));
+                  }
+                }
               }
             }
             mutexCamera.unlock();
@@ -347,6 +457,8 @@ namespace mars {
                                        (double)cmd["config"][2],
                                        (double)cmd["config"][3], 1.0);
                     lines[name].l->setColor(c);
+                    lines[name].l->setBezierMode((int)cmd["config"][4]);
+                    lines[name].l->setBezierInterpolationPoints((int)cmd["config"][5]);
                   }
                 }
               }
@@ -428,6 +540,14 @@ namespace mars {
               sendMap["Nodes"][name]["rot"]["w"] = rot.w();
             }
 
+            if(type == "Motor") {
+              unsigned long id = control->motors->getID(name);
+              sReal pos = control->motors->getActualPosition(id);
+              sReal  torque = control->motors->getTorque(id);
+              sendMap["Motors"][name]["position"] = pos;
+              sendMap["Motors"][name]["torque"] = torque;
+            }
+
             if(type == "Sensor") {
               unsigned long id = control->sensors->getSensorID(name);
               sReal *data;
@@ -481,16 +601,21 @@ namespace mars {
           try {
             iMap = ConfigItem();
             mutexCamera.lock();
-            { // udpate point clouds
+            { // udpate cameras
               std::map<std::string, CameraStruct>::iterator it = cameras.begin();
               for(; it!=cameras.end(); ++it) {
                 memcpy(it->second.pydata, it->second.data,
                        it->second.size*sizeof(sReal));
               }
+              std::map<std::string, DepthCameraStruct>::iterator it2 = depthCameras.begin();
+              for(; it2!=depthCameras.end(); ++it2) {
+                memcpy(it2->second.pydata, it2->second.data,
+                       it2->second.size*sizeof(float));
+              }
             }
             mutexCamera.unlock();
             mutex.lock();
-            toConfigMap(plugin->function("update").pass(MAP).call(&sendMap).returnObject(), iMap);
+            toConfigMap(plugin->function("update").pass(MAP).call(0, &sendMap).returnObject(), iMap);
             nextStep = true;
             mutex.unlock();
             mutexPoints.lock();
@@ -567,10 +692,20 @@ namespace mars {
           gpMutex.lock();
           pythonException = false;
           try {
-            if(plugin)
+            if(plugin) {
               plugin->reload();
-            else
+              for(auto it: cameras) {
+                free(it.second.pydata);
+              }
+              cameras.clear();
+              for(auto it: depthCameras) {
+                free(it.second.pydata);
+              }
+              depthCameras.clear();
+            }
+            else {
               plugin = PythonInterpreter::instance().import("mars_plugin");
+            }
           }
           catch(const std::exception &e) {
             LOG_FATAL("Error: %s", e.what());
@@ -581,7 +716,7 @@ namespace mars {
           }
           try {
             ConfigItem map;
-            toConfigMap(plugin->function("init").call().returnObject(), map);
+            toConfigMap(plugin->function("init").call(0).returnObject(), map);
             interpreteMap(map);
             interpreteGuiMaps();
           }

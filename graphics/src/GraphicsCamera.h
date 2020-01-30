@@ -91,7 +91,7 @@ namespace mars {
       void setViewport(int x, int y, int width, int height);
       void eventStartPos(int x, int y);
       void setKeyswitchManipulator(osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator);
-      void mouseDrag(int button, int x, int y);
+      void mouseDrag(int button, unsigned int modkey, int x, int y);
   
       //keyboard control functions
       /**sets the camera motion state */
@@ -121,6 +121,17 @@ namespace mars {
       void setRightEye(void) {left = false;}
       void deactivateCam();
       void activateCam();
+      void setPivot(osg::Vec3f p);
+      void toggleTrackball();
+      void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
+      void setTrakingTransform(osg::ref_ptr<osg::PositionAttitudeTransform> t);
+      virtual bool isTracking();
+      virtual void getOffsetQuat(double *tx, double *ty, double *tz,
+                                 double *rx, double *ry, double *rz,
+                                 double *rw);
+      virtual void setOffsetQuat(double tx, double ty, double tz,
+                                 double rx, double ry, double rz,
+                                 double rw);
 
     private:
       void calcEyeSep(void);
@@ -129,12 +140,15 @@ namespace mars {
 
       osg::ref_ptr<osg::Camera> mainCamera;
       osg::ref_ptr<osg::Camera> hudCamera;
+      osg::ref_ptr<osg::PositionAttitudeTransform> tracking;
       osg::Matrixd myCameraMatrix;
       osg::Matrixd cameraRotation;
       osg::Matrixd cameraTrans;
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator;
+      osg::Vec3f pivot, offsetPos;
+      osg::Quat offsetRot;
       int camera;
-      int camType;
+      int camType, previousType;
       double actOrtH;
       int width, height;
       //ODE camera control global variables

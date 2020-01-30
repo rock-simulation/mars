@@ -1,5 +1,6 @@
 params:
   - vWorldPos
+  - vViewPos
   - specularCol
 varyings:
   vec3:
@@ -43,5 +44,5 @@ exports:
   - name: modelVertex
     value: vModelPos
 source: /shader/plight.vert
-name: plight
+name: pixellight_vert
 priority: 3

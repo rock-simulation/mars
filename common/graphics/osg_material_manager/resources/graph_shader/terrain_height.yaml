@@ -1,0 +1,14 @@
+params:
+  in:
+    xy: {index: 0, type: vec2}
+  out:
+    height: {index: 0, type: float}
+uniforms:
+  float:
+    - {name: texScale}
+    - {name: terrainScaleZ}
+  int:
+    - {name: terrainDim}
+  sampler2D:
+    - {name: terrainMap}
+source: /graph_shader/terrain_height.vert

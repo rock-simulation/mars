@@ -21,11 +21,6 @@ include(FindPkgConfig)
 find_package(lib_manager)
 define_module_info()
 
-find_package(Boost REQUIRED system thread)
-include_directories(${Boost_INCLUDE_DIR})
-link_directories(${Boost_LIBRARY_DIRS})
-
-
 #Get linker and compiler flags from pkg-config
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager

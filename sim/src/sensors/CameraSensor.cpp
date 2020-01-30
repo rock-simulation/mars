@@ -22,12 +22,17 @@
 
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/utils/mathUtils.h>
+#include <mars/utils/Vector.h>
+#include <mars/utils/Quaternion.h>
+#include <mars/utils/Geometry.hpp>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
+#include "SimEntity.h"
 
 #include <stdint.h>
 #include <cstring>
@@ -51,8 +56,9 @@ namespace mars {
       BaseNodeSensor(config.id,config.name),
       SensorInterface(control),
       config(config),
-      depthCamera(id,name,config.width,config.height,1,true),
-      imageCamera(id,name,config.width,config.height,4,false)
+      depthCamera(id,name,config.width,config.height,1,true, false),
+      imageCamera(id,name,config.width,config.height,4,false, false),
+      logicalCamera(id,name,config.width,config.height,1,false, true)
     {
       renderCam = 2;
       this->attached_node = config.attached_node;
@@ -62,13 +68,12 @@ namespace mars {
 
       control->nodes->addNodeSensor(this);
       std::string groupName, dataName;
-      this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
+      //this->config.ori_offset = this->config.ori_offset * eulerToQuaternion(Vector(90,0,-90)); //All elements should be X Forwart looging to meet rock-convention, so i add this offset for all setting
 
-      bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
-      assert(erg);
+      bool found = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
+      assert(found);
       if(control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer", config.updateRate)) {
       }
-
 
       cam_id=0;
       if(control->graphics) {
@@ -104,6 +109,10 @@ namespace mars {
           gc = gw->getCameraInterface();
           control->graphics->addGraphicsUpdateInterface(this);
           gc->setFrustumFromRad(config.opening_width/180.0*M_PI, config.opening_height/180.0*M_PI, 0.5, 100);
+          ConfigMap map = config.map;
+          if(map.hasKey("distortion_factor")) {
+            gw->setupDistortion(map["distortion_factor"]);
+          }
         }
       }
 
@@ -136,7 +145,7 @@ namespace mars {
         std::cerr << "could not get camera info." << std::endl;
     }
 
-    void CameraSensor::getImage(std::vector< Pixel >& buffer)
+    void CameraSensor::getImage(std::vector< Pixel >& buffer) const
     {
         assert(buffer.size() == (config.width * config.height));
         int width;
@@ -147,7 +156,7 @@ namespace mars {
         assert(config.height == height);
     }
 
-    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer)
+    void CameraSensor::getDepthImage(std::vector< mars::sim::DistanceMeasurement >& buffer) const
     {
         assert(buffer.size() == (config.width * config.height));
         int width;
@@ -158,9 +167,91 @@ namespace mars {
         assert(config.height == height);
     }
 
+    /** \brief returns all entities in the view of the camera.
+    * \param enum ViewMode:
+    * CENTER          The center of the bounding box has to be visible to list it
+    * VERTEX_OF_BBOX  At least one vertex of the bounding box has to be visible to list it
+    * EVERYTHING      Everxthing of the entity has to be visible to list it
+    * NOTHING         Nothing of the entity has to be visible to list it
+    *  Defines what has to be visible to the camera to get the object
+    * \return list of the detected objects
+    */
+    /* strategy: iterates through all objects. The viewing frustum is represented as the bounding planes.
+    * checks for the relevant points if they lie on the positive side of the plane normal.
+    */
+    void CameraSensor::getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, unsigned int visVert_threshold) {
+      buffer.clear();
+      const std::map<unsigned long, SimEntity*>* all_entities = control->entities->subscribeToEntityCreation(nullptr); //get all entities
+      //get Camera Info
+      cameraStruct cs;
+      getCameraInfo(&cs);
+      //rotate camera frame to world frame
+      Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id);
+      Vector view_x = (q * Vector(0, 0, -1)).normalized();
+      Vector view_y = (q * Vector(0, -1, 0)).normalized();
+      Vector view_z = (q * Vector(1, 0, 0)).normalized();
+      Vector viewcenter = view_z.normalized();
+      //get planes of viewing frustum, normals pointing inwards
+      std::vector<double> f; //frustum
+      Plane p[6];
+      enum {L, R, B, T, N, F};
+      gc->getFrustum(f);
+      Vector frustum_center = cs.pos + viewcenter * ((f[N]+f[F])/2);
+      //near and far plane Plane(point on the plane, normal)
+      p[N] = Plane(viewcenter * f[N] + cs.pos, viewcenter);//normal points away from camera, therefore inward
+      p[F] = Plane(viewcenter * f[F] + cs.pos, -viewcenter);//normal points to from camera, therefore inward
+      //Plane(point of camera, Line(points at the edges of the frustum on this intersection)
+      Vector temp; //Vector to the center point of the intersection
+      //left plane
+      temp = view_x * f[L] + viewcenter * f[N] + cs.pos;
+      p[L] = Plane(cs.pos, view_y * f[B] + temp, view_y * f[T] + temp, Plane::Method::THREE_POINTS);
+      p[L].pointNormalTowards(frustum_center);
+      //right plane
+      temp = view_x * f[R] + viewcenter * f[N] + cs.pos;
+      p[R] = Plane(cs.pos, view_y * f[B] + temp, view_y * f[T] + temp, Plane::Method::THREE_POINTS);
+      p[R].pointNormalTowards(frustum_center);
+      //top plane
+      temp = view_y * -f[T] + viewcenter * f[N] + cs.pos;
+      p[T] = Plane(cs.pos, view_x * f[L] + temp, view_x * f[R] + temp, Plane::Method::THREE_POINTS);
+      p[T].pointNormalTowards(frustum_center);
+      //bottom plane
+      temp = view_y * -f[B] + viewcenter * f[N] + cs.pos;
+      p[B] = Plane(cs.pos, view_x * f[L] + temp, view_x * f[R] + temp, Plane::Method::THREE_POINTS);
+      p[B].pointNormalTowards(frustum_center);
+
+      //declare the boundingbox for the entity
+      Vector center, extent;
+      Quaternion rotation;
+      std::vector<utils::Vector> vertices;
+      //check for all entities if they are in the view
+      for (std::map<unsigned long, SimEntity*>::const_iterator iter = all_entities->begin();
+          iter != all_entities->end(); ++iter) {
+        iter->second->getBoundingBox(vertices, center);
+        vertices.push_back(center);
+        unsigned int visible_vertices = 0;
+        for (unsigned int v = 0; v<vertices.size() && visible_vertices < visVert_threshold; v++) {
+          bool vertex_in_frustum = true;
+          //check for each plane of the frustum if the vertex lies on the inner side
+          for (int i = L; i<=F; i++) {
+            if (distance(p[i], vertices[v], false) < 0) {
+              vertex_in_frustum = false;
+              break;
+            }
+          }
+          if (vertex_in_frustum == true) {
+            visible_vertices++;
+          }
+        }
+        if (visible_vertices >= visVert_threshold) {
+          buffer.emplace(iter->first,iter->second);
+        }
+      }
+    }
+
 
     // this function is a hack currently, it uses sReal* as byte buffer
     // NOTE: never use the cameraSensor in a controller list!!!!
+    // TODO handle depth image and logicalImage
     int CameraSensor::getSensorData(sReal** data) const {
       if(gw) {
         // get image
@@ -236,9 +327,11 @@ namespace mars {
     void CameraSensor::preGraphicsUpdate(void) {
       mutex.lock();
       if(gc) {
+        // todo: use pos_offset here too
         Vector p = control->graphics->getDrawObjectPosition(draw_id);
         Quaternion qcorrect = Quaternion(0.5, 0.5, -0.5, -0.5);
-        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * qcorrect;
+        Quaternion q = control->graphics->getDrawObjectQuaternion(draw_id) * config.ori_offset * qcorrect;
+        p += (control->graphics->getDrawObjectQuaternion(draw_id) * config.pos_offset);
         gc->updateViewportQuat(p.x(), p.y(), p.z(),
                                q.x(), q.y(),
                                q.z(), q.w());
@@ -292,7 +385,7 @@ namespace mars {
       //(*config) = (*config_);
 
       CameraConfigStruct *cfg = new CameraConfigStruct();
-
+      cfg->map = *config;
       unsigned int mapIndex = (*config)["mapIndex"];
       unsigned long attachedNodeID = (*config)["attached_node"];
       if(mapIndex) {

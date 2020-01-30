@@ -85,6 +85,9 @@ namespace mars {
 
 
     SelectionTree::~SelectionTree() {
+      if(control->graphics) {
+        control->graphics->removeEventClient(this);
+      }
     }
 
     void SelectionTree::fill(unsigned long id, QTreeWidgetItem *current) {
@@ -467,6 +470,7 @@ namespace mars {
               dropDownValues[1].push_back("invert");
               dropDownValues[1].push_back("osg");
               dropDownValues[1].push_back("iso");
+              dropDownValues[1].push_back("trackball");
 
               dw->setEditPattern(editPattern);
               dw->setFilePattern(filePattern);
@@ -487,6 +491,7 @@ namespace mars {
               else if(mouse == MICHA_CAM) map["mouse"] = "invert";
               else if(mouse == OSG_CAM) map["mouse"] = "osg";
               else if(mouse == ISO_CAM) map["mouse"] = "iso";
+              else if(mouse == TRACKBALL) map["mouse"] = "trackball";
 
               Color c = gw->getClearColor();
               c.toConfigItem(map["clearColor"]);
@@ -504,6 +509,7 @@ namespace mars {
               map["pose"]["euler"]["alpha"] = r.alpha;
               map["pose"]["euler"]["beta"] = r.beta;
               map["pose"]["euler"]["gamma"] = r.gamma;
+              map["pose"]["node"] = "";
               dw->setConfigMap(arrString[1], map);
               editCategory = 9;
             }
@@ -754,7 +760,12 @@ namespace mars {
         control->graphics->edit(name, value);
       }
       else if(editCategory == 9) {
-        control->graphics->edit(currentWindowID, name, value);
+        if(name == "/pose/node") {
+          control->nodes->edit(0, name, value);
+        }
+        else {
+          control->graphics->edit(currentWindowID, name, value);
+        }
       }
     }
 

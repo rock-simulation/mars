@@ -1,0 +1,8 @@
+params:
+  in:
+    vector: {index: 0, type: vec3}
+  out:
+    x: {index: 1, type: float}
+    y: {index: 2, type: float}
+    z: {index: 3, type: float}
+source: /graph_shader/decompose_vec3.frag

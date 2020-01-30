@@ -51,7 +51,7 @@ namespace mars {
       hBoxLayout->setContentsMargins(1, 1, 1, 1);
       vBoxLayout->setContentsMargins(1, 1, 1, 1);
       tabWidget = NULL;
-      viewMode = ButtonViewMode;
+      viewMode = TreeViewMode;
 
       viewButton = new QPushButton("Change View");
       viewButton->setFixedSize(95, 20);
@@ -92,8 +92,9 @@ namespace mars {
       setLayout(vBoxLayout);
       adjustSize();
 
-      variantEditorButton->setVisible(true);
-      variantEditorTree->setVisible(false);
+      viewButton->setVisible(false);
+      variantEditorButton->setVisible(false);
+      variantEditorTree->setVisible(true);
     }
 
 

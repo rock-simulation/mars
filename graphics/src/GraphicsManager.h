@@ -44,7 +44,6 @@
 #include <osgShadow/ShadowedScene>
 #include <osgShadow/LightSpacePerspectiveShadowMap>
 #include <osgShadow/ParallelSplitShadowMap>
-#include <osgShadow/ShadowVolume>
 //#include <osgShadow/SoftShadowMap>
 //#include <osgShadow/ShadowMap>
 
@@ -286,6 +285,7 @@ namespace mars {
       virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
 
       virtual void makeChild(unsigned long parentId, unsigned long childId);
+      virtual void attacheCamToNode(unsigned long winID, unsigned long drawID);
 
       /**
        * Sets the line laser
@@ -317,6 +317,7 @@ namespace mars {
       virtual void edit(const std::string &key, const std::string &value);
       void edit(unsigned long widgetID, const std::string &key,
                 const std::string &value);
+      osg::Vec3f getSelectedPos();
 
     private:
       mars::interfaces::GraphicData graphicOptions;

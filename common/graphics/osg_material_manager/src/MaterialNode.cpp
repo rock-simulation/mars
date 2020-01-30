@@ -45,7 +45,7 @@ namespace osg_material_manager {
   MaterialNode::MaterialNode()
     : isCreated(false), maxNumLights(1), useFog(true), useNoise(true),
       getLight(true), brightness_(1.0), drawLineLaser(false), shadow(true),
-      needTangents(false) {
+      needTangents(false), needInstancing(false), numInstances(1), iWidth(1), iHeight(1), iLength(1), renderBin(0) {
   }
 
   MaterialNode::~MaterialNode() {
@@ -131,7 +131,7 @@ namespace osg_material_manager {
       state->setMode(GL_ALPHA_TEST, osg::StateAttribute::ON);
       state->setMode(GL_BLEND,osg::StateAttribute::ON);
       //state->setRenderBinDetails(1, "TransparentBin");
-      state->setRenderBinDetails(1, "DepthSortedBin");
+      state->setRenderBinDetails(renderBin+1, "DepthSortedBin");
       /*
       depth = new osg::Depth;
       depth->setWriteMask( false );
@@ -146,7 +146,27 @@ namespace osg_material_manager {
       state->setRenderingHint(osg::StateSet::DEFAULT_BIN);
       state->setMode(GL_ALPHA_TEST, osg::StateAttribute::OFF);
       state->setMode(GL_BLEND,osg::StateAttribute::OFF);
-      state->setRenderBinDetails(0, "RenderBin");
+      state->setRenderBinDetails(renderBin, "RenderBin");
+    }
+  }
+
+  void MaterialNode::setNeedInstancing(bool v, int numInstances, double w, double h, double l) {
+    needInstancing = v;
+    iWidth = w;
+    iHeight = h;
+    iLength = l;
+    this->numInstances = numInstances;
+    enableInstancing();
+  }
+
+  void MaterialNode::enableInstancing() {
+    if (needInstancing) {
+      InstancesVisitor visitor;
+      visitor.numInstances = numInstances;
+      visitor.width = iWidth;
+      visitor.height = iHeight;
+      visitor.length = iLength;
+      this->accept(visitor);
     }
   }
 
@@ -290,6 +310,7 @@ namespace osg_material_manager {
     bool success = osg::Group::addChild(child);
     if(success) {
       generateTangents();
+      enableInstancing();
     }
     return success;
   }
@@ -321,7 +342,19 @@ namespace osg_material_manager {
     tsg->generate( geom, DEFAULT_UV_UNIT );
     osg::Vec4Array *tangents = tsg->getTangentArray();
     if(tangents==NULL || tangents->size()==0) {
-      std::cerr << "Failed to generate tangents for plane!" << std::endl;
+      std::cerr << "Failed to generate tangents for node!" << std::endl;
+      if(tangents == NULL) {
+        tangents = new osg::Vec4Array();
+      }
+      tangents->push_back(osg::Vec4(1.0, 0.0, 0.0, 0.0));
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
+      geom->setVertexAttribData( TANGENT_UNIT, osg::Geometry::ArrayData( tangents, osg::Geometry::BIND_OVERALL ) );
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 2))
+      geom->setVertexAttribArray( TANGENT_UNIT,
+                                  tangents, osg::Array::BIND_OVERALL );
+#else
+#error Unknown OSG Version
+#endif
     }
     else {
 #if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 2))
@@ -347,6 +380,33 @@ namespace osg_material_manager {
     else {
       traverse(searchNode);
     }
+  }
+
+  void InstancesVisitor::apply(osg::Node &searchNode){
+    // search for geometries and generate tangents for them
+    osg::Geode* geode=dynamic_cast<osg::Geode*>(&searchNode);
+    if(geode) {
+      for(unsigned int i=0; i<geode->getNumDrawables(); ++i) {
+        osg::Geometry* geom=dynamic_cast<osg::Geometry*>(geode->getDrawable(i));
+        if(geom) {
+          geom->setInitialBound(osg::BoundingBox(-width, -length, -height, width, length, height));
+          enableInstancing(geom);
+        }
+      }
+    }
+
+    traverse(searchNode);
+  }
+
+  void InstancesVisitor::enableInstancing(osg::Geometry *geom) {
+    // first turn on hardware instancing for every primitive set
+    for (unsigned int i = 0; i < geom->getNumPrimitiveSets(); ++i) {
+      geom->getPrimitiveSet(i)->setNumInstances(numInstances);
+      fprintf(stderr, "set num instances: %d\n", numInstances);
+    }
+    // we need to turn off display lists for instancing to work
+    geom->setUseDisplayList(false);
+    geom->setUseVertexBufferObjects(true);
   }
 
 } // end of namespace osg_material_manager

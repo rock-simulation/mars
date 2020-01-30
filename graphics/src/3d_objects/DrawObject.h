@@ -49,6 +49,7 @@
 #include <osg/MatrixTransform>
 #include <osg/Geode>
 #include <osg/LOD>
+#include <osg/Program>
 
 #include <mars/osg_material_manager/OsgMaterial.h>
 #include <mars/osg_material_manager/MaterialNode.h>
@@ -150,6 +151,7 @@ namespace mars {
                         float start, float end);
 
       void seperateMaterial();
+      void addSelectionChild(DrawObject* c) {selectionChilds.push_back(c);}
 
     protected:
       unsigned long id_;
@@ -164,10 +166,10 @@ namespace mars {
       osg::ref_ptr<osg::LOD> lod;
       osg::ref_ptr<osg::PositionAttitudeTransform> posTransform_;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform_;
-
+      std::vector<DrawObject*> selectionChilds;
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;
-
+      osg::ref_ptr<osg::Program> selectShader;
       int maxNumLights;
       bool sharedStateGroup;
       bool isHidden;

@@ -65,6 +65,7 @@ namespace mars {
       void getFilesToSave(std::vector<std::string> *fileList);
       void print();      
 
+      configmaps::ConfigMap config;
       std::string name;         // the joints name
       std::string frameID;      
       unsigned long index; // index umber of the joint

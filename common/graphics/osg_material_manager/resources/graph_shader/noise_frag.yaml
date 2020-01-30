@@ -1,0 +1,17 @@
+params:
+  in:
+    base: {index: 0, type: vec4}
+    scale: {index: 1, type: float}
+    intensity: {index: 2, type: float}
+  out:
+    outcol: {index: 3, type: vec4}
+source: /graph_shader/noise_frag.frag
+minVersion: 120
+varyings:
+  vec4:
+    - {name: modelVertex}
+uniforms:
+  int:
+    - {name: useNoise}
+  sampler2D:
+    - {name: NoiseMap}

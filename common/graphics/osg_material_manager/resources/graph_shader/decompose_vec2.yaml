@@ -1,0 +1,7 @@
+params:
+  in:
+    vector: {index: 0, type: vec2}
+  out:
+    x: {index: 1, type: float}
+    y: {index: 2, type: float}
+source: /graph_shader/decompose_vec2.frag

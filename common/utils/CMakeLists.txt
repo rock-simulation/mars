@@ -19,7 +19,7 @@ include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CFLAGS_OTHER})  #flags excluding the ones with -I
 
-set(SOURCES 
+set(SOURCES
     src/Color.cpp
     src/Mutex.cpp
     src/MutexLocker.cpp
@@ -28,6 +28,7 @@ set(SOURCES
     src/Thread.cpp
     src/WaitCondition.cpp
     src/mathUtils.cpp
+    src/Geometry.cpp
     src/misc.cpp
 #    src/Socket.cpp
 )
@@ -42,6 +43,7 @@ set(HEADERS
     src/Vector.h
     src/WaitCondition.h
     src/mathUtils.h
+    src/Geometry.hpp
     src/misc.h
 #    src/Socket.h
 )
@@ -50,7 +52,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(
         ${PROJECT_NAME}
-        ${PKGCONFIG_LIBRARIES} 
+        ${PKGCONFIG_LIBRARIES}
         -lpthread
 )
 
@@ -74,7 +76,7 @@ install(TARGETS ${PROJECT_NAME} ${_INSTALL_DESTINATIONS})
 # Install headers into mars include directory
 install(FILES ${HEADERS} DESTINATION include/mars/utils)
 
-# Prepare and install necessary files to support finding of the library 
+# Prepare and install necessary files to support finding of the library
 # using pkg-config
 configure_file(${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)

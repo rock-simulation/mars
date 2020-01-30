@@ -71,6 +71,7 @@ namespace mars {
       virtual interfaces::NodeId addTerrain(interfaces::terrainStruct *terrainS);
       virtual std::vector<interfaces::NodeId> addNode(std::vector<interfaces::NodeData> v_NodeData);
       virtual interfaces::NodeId addPrimitive(interfaces::NodeData *snode);
+      virtual bool exists(interfaces::NodeId id) const;
       virtual int getNodeCount() const;
       virtual interfaces::NodeId getNextNodeID() const;
       virtual void editNode(interfaces::NodeData *nodeS, int changes);
@@ -140,6 +141,7 @@ namespace mars {
        * \return Id of the node if it exists, otherwise 0
        */
       virtual interfaces::NodeId getID(const std::string& node_name) const;
+      virtual std::vector<interfaces::NodeId> getNodeIDs(const std::string& str_in_name) const;
       virtual double getCollisionDepth(interfaces::NodeId id) const;
       virtual bool getDataBrokerNames(interfaces::NodeId id, std::string *groupName,
                                       std::string *dataName) const;
@@ -166,6 +168,7 @@ namespace mars {
       NodeMap simNodes;
       NodeMap simNodesDyn;
       NodeMap nodesToUpdate;
+      NodeMap vizNodes;
       std::list<interfaces::NodeData> simNodesReload;
       unsigned long maxGroupID;
       lib_manager::LibManager *libManager;

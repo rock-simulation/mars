@@ -26,6 +26,7 @@
 #include <mars/interfaces/terrainStruct.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
@@ -60,6 +61,10 @@ namespace mars {
     SimNode::SimNode(ControlCenter *c, const NodeData &sNode_)
       : control(c), sNode(sNode_) {
 
+      fRotation.x() = fRotation.y() = fRotation.z() = 0.0;
+      fRotation.w() = 1.0;
+      frictionDirNode = 0;
+      fDirNode = Vector(1, 0, 0);
       my_interface = 0;
       l_vel = Vector(0.0, 0.0, 0.0);
       a_vel = Vector(0.0, 0.0, 0.0);
@@ -76,36 +81,63 @@ namespace mars {
       update_ray = false;
       visual_rep = 1;
 
-      dbPackageMapping.add("id", &sNode.index);
-      dbPackageMapping.add("position/x", &sNode.pos.x());
-      dbPackageMapping.add("position/y", &sNode.pos.y());
-      dbPackageMapping.add("position/z", &sNode.pos.z());
-      dbPackageMapping.add("rotation/x", &sNode.rot.x());
-      dbPackageMapping.add("rotation/y", &sNode.rot.y());
-      dbPackageMapping.add("rotation/z", &sNode.rot.z());
-      dbPackageMapping.add("rotation/w", &sNode.rot.w());
-      dbPackageMapping.add("linearVelocity/x", &l_vel.x());
-      dbPackageMapping.add("linearVelocity/y", &l_vel.y());
-      dbPackageMapping.add("linearVelocity/z", &l_vel.z());
-      dbPackageMapping.add("angularVelocity/x", &a_vel.x());
-      dbPackageMapping.add("angularVelocity/y", &a_vel.y());
-      dbPackageMapping.add("angularVelocity/z", &a_vel.z());
-      dbPackageMapping.add("linearAcceleration/x", &l_acc.x());
-      dbPackageMapping.add("linearAcceleration/y", &l_acc.y());
-      dbPackageMapping.add("linearAcceleration/z", &l_acc.z());
-      dbPackageMapping.add("angularAcceleration/x", &a_acc.x());
-      dbPackageMapping.add("angularAcceleration/y", &a_acc.y());
-      dbPackageMapping.add("angularAcceleration/z", &a_acc.z());
-      dbPackageMapping.add("force/x", &f.x());
-      dbPackageMapping.add("force/y", &f.y());
-      dbPackageMapping.add("force/z", &f.z());
-      dbPackageMapping.add("torque/x", &t.x());
-      dbPackageMapping.add("torque/y", &t.y());
-      dbPackageMapping.add("torque/z", &t.z());
-      dbPackageMapping.add("contact", &ground_contact);
-      dbPackageMapping.add("contactForce", &ground_contact_force);
+      pushToDataBroker = 2;
+      configmaps::ConfigMap &map = sNode.map;
+      if(map.hasKey("frictionDirNode")) {
+        frictionDirNode = control->nodes->getID((std::string)map["frictionDirNode"]);
+        if(frictionDirNode) {
+          std::string groupName, dataName;
+          control->nodes->getDataBrokerNames(frictionDirNode, &groupName, &dataName);
+          control->dataBroker->registerSyncReceiver(this, groupName, dataName, 0);
 
-      addToDataBroker();
+          if(map.hasKey("fDirInitial")) {
+            fDirNode.x() = map["fDirInitial"]["x"];
+            fDirNode.y() = map["fDirInitial"]["y"];
+            fDirNode.z() = map["fDirInitial"]["z"];
+          }
+        }
+      }
+      if(map.hasKey("noDataPackage") && (bool)map["noDataPackage"] == true) {
+        pushToDataBroker = 0;
+      }
+      else if(map.hasKey("reducedDataPackage") && (bool)map["reducedDataPackage"] == true) {
+        pushToDataBroker = 1;
+      }
+      if(pushToDataBroker > 0) {
+        dbPackageMapping.add("id", &sNode.index);
+        dbPackageMapping.add("position/x", &sNode.pos.x());
+        dbPackageMapping.add("position/y", &sNode.pos.y());
+        dbPackageMapping.add("position/z", &sNode.pos.z());
+        dbPackageMapping.add("rotation/x", &sNode.rot.x());
+        dbPackageMapping.add("rotation/y", &sNode.rot.y());
+        dbPackageMapping.add("rotation/z", &sNode.rot.z());
+        dbPackageMapping.add("rotation/w", &sNode.rot.w());
+        dbPackageMapping.add("contact", &ground_contact);
+        dbPackageMapping.add("contactForce", &ground_contact_force);
+      }
+      if(pushToDataBroker > 1) {
+        dbPackageMapping.add("linearVelocity/x", &l_vel.x());
+        dbPackageMapping.add("linearVelocity/y", &l_vel.y());
+        dbPackageMapping.add("linearVelocity/z", &l_vel.z());
+        dbPackageMapping.add("angularVelocity/x", &a_vel.x());
+        dbPackageMapping.add("angularVelocity/y", &a_vel.y());
+        dbPackageMapping.add("angularVelocity/z", &a_vel.z());
+        dbPackageMapping.add("linearAcceleration/x", &l_acc.x());
+        dbPackageMapping.add("linearAcceleration/y", &l_acc.y());
+        dbPackageMapping.add("linearAcceleration/z", &l_acc.z());
+        dbPackageMapping.add("angularAcceleration/x", &a_acc.x());
+        dbPackageMapping.add("angularAcceleration/y", &a_acc.y());
+        dbPackageMapping.add("angularAcceleration/z", &a_acc.z());
+        dbPackageMapping.add("force/x", &f.x());
+        dbPackageMapping.add("force/y", &f.y());
+        dbPackageMapping.add("force/z", &f.z());
+        dbPackageMapping.add("torque/x", &t.x());
+        dbPackageMapping.add("torque/y", &t.y());
+        dbPackageMapping.add("torque/z", &t.z());
+      }
+      if(pushToDataBroker > 0) {
+        addToDataBroker();
+      }
     }
 
     /**
@@ -117,6 +149,9 @@ namespace mars {
     SimNode::~SimNode(void) {
       MutexLocker locker(&iMutex);
       removeFromDataBroker();
+      if(control->dataBroker) {
+        control->dataBroker->unregisterSyncReceiver(this, "*", "*");
+      }
       if (my_interface) {
         delete my_interface;
         my_interface = 0;
@@ -183,9 +218,11 @@ namespace mars {
                                       bool move_group) {
       MutexLocker locker(&iMutex);
       bool update = false;
+      Vector diff;
 
       if(sNode.pos != newPosition) {
         update = true;
+        diff = newPosition-sNode.pos;
         sNode.pos = newPosition;
       }
 
@@ -199,7 +236,7 @@ namespace mars {
           if(!my_interface->createNode(&sNode)) {
             LOG_ERROR("SimNode: unhandled error in setPosition");
           }
-          // ToDo: return offset of positions
+          return diff;
         }
       }
       return Vector(0.0, 0.0, 0.0);
@@ -236,7 +273,7 @@ namespace mars {
     const Quaternion SimNode::setRotation(const Quaternion &rotation,
                                           bool move_all) {
       MutexLocker locker(&iMutex);
-
+      Quaternion diff = rotation*sNode.rot.inverse();
       sNode.rot = rotation;
 
       if (my_interface) {
@@ -250,7 +287,7 @@ namespace mars {
           }
         }
       }
-      return sNode.rot;
+      return diff;
     }
     /**
      * \return \c rotation of the node
@@ -577,6 +614,15 @@ namespace mars {
           //i_velocity_sum += i_velocity[vel_ptr];
           my_interface->setAngularVelocity(damping);
         }
+        // handle friction direction by mirror node orientation
+        if(frictionDirNode && my_interface) {
+          Vector v = fRotation*fDirNode;
+          if(!sNode.c_params.friction_direction1) {
+            sNode.c_params.friction_direction1 = new Vector();
+          }
+          *(sNode.c_params.friction_direction1) = v;
+          my_interface->setContactParams(sNode.c_params);
+        }
         //vel_ptr = (vel_ptr+1)%BACK_VEL;
         if(update_ray || true) {
           my_interface->handleSensorData(physics_thread);
@@ -860,5 +906,20 @@ namespace mars {
                                                      "mars_sim/simTimer");
       }
     }
+
+    void SimNode::receiveData(const data_broker::DataInfo& info,
+                              const data_broker::DataPackage& package,
+                              int id) {
+      sReal value;
+      package.get(4, &value);
+      fRotation.x() = value;
+      package.get(5, &value);
+      fRotation.y() = value;
+      package.get(6, &value);
+      fRotation.z() = value;
+      package.get(7, &value);
+      fRotation.w() = value;
+    }
+
   } // end of namespace sim
 } // end of namespace mars

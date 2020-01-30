@@ -54,15 +54,21 @@ namespace osg_lines {
     void setLineWidth(double w);
     void dirty(void);
     void* getOSGNode();
+    void setBezierMode(bool bezier);
+    void setBezierInterpolationPoints(int numPoints);
 
   private:
-    osg::ref_ptr<osg::Vec3Array> points;
+    bool strip, bezierMode;
+    int bezierInterpolationPoints;
+    osg::ref_ptr<osg::Vec3Array> points, origPoints;
     osg::ref_ptr<osg::Geometry> linesGeom;
     osg::ref_ptr<osg::MatrixTransform> linesTransform;
     osg::ref_ptr<osg::DrawArrays> drawArray;
     osg::ref_ptr<osg::LineWidth> linew;
     osg::ref_ptr<osg::Vec4Array> colors;
     osg::ref_ptr<osg::Geode> node;
+
+    osg::Vec3 getBezierPoint(float t);
   };
 
 } // end of namespace: osg_lines

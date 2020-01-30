@@ -58,8 +58,9 @@ namespace mars {
         configmaps::ConfigVector _ids = (*config)["id"];
         unsigned int mapIndex = (*config)["mapIndex"];
         updateRate = (*config)["rate"];
-
-        for(it=_ids.begin(); it!=_ids.end(); ++it) {
+        this->config = *config;
+        for (it = _ids.begin(); it != _ids.end(); ++it)
+        {
           if((_id = *it)){
             if(mapIndex) {
               _id = control->loadCenter->getMappedID(_id, mapType, mapIndex);
@@ -70,6 +71,7 @@ namespace mars {
       }
 
       std::vector<unsigned long> ids;
+      configmaps::ConfigMap config;
     };
 
   } // end of namespace sim
