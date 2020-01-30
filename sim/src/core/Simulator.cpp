@@ -294,7 +294,7 @@ namespace mars {
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
 
-      // Add plugins that have been added via Simulator::addPlugin
+      /*// Add plugins that have been added via Simulator::addPlugin
       // before to start simulation
       for (unsigned int i = 0; i < newPlugins.size(); ++i) {
         LOG_DEBUG("[Simulator::runSimulation] init plugin: %s\n", newPlugins[i].name.c_str());
@@ -302,7 +302,9 @@ namespace mars {
         activePlugins.push_back(newPlugins[i]);
         newPlugins[i].p_interface->init();
       }
-      newPlugins.clear();      
+      newPlugins.clear();*/
+
+      std::cout << "ActivePlugins: " << activePlugins.size() << std::endl;
 
       // load scene
       while(arg_v_scene_name.size() > 0) {
