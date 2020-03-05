@@ -5,5 +5,6 @@
     <depend package="tools/configmaps" />
     <depend package="simulation/mars/common/utils" />
     <depend package="simulation/mars/common/graphics/osg_material_manager" />
+    <depend package="opencv" />
     <tags>needs_opt</tags>
 </package>
