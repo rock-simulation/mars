@@ -106,24 +106,28 @@ namespace mars {
     }
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix) {
-      std::string tmp = prefix;
+      *file = pathJoin(prefix, *file);
+    }
 
-      if(file->empty()) return;
-      if(file->at(1) == '/') {
+    std::string pathJoin(const std::string &path1, const std::string &path2) {
+      if(path1.empty()) return path2;
+      if(path2.front() == '/') {
         // we have an absolute path
-        return;
+        return path2;
+      }
+#ifdef WIN32
+      if(path2[1] == ':') {
+        // we have an absolute path
+        return path2;
+      }
+#endif
+      std::string tmp = path1;
+      if(tmp.back() != '/') {
+        tmp += "/";
       }
 
-      if(tmp.at(tmp.length()-1) != '/') {
-        tmp.append("/");
-      }
-
-      //if((pos = file->rfind('/')) != std::string::npos) {
-      //  *file= file->substr(pos+1);
-      //}
-
-      tmp.append(*file);
-      *file = tmp;
+      tmp += path2;
+      return tmp;
     }
 
     void removeFilenamePrefix(std::string *file) {

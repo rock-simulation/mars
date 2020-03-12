@@ -34,11 +34,15 @@ namespace osg_lines {
   
   LinesP::LinesP() {
 
+    strip = true;
+    bezierMode = false;
+    bezierInterpolationPoints = 20;
     linesTransform = new osg::MatrixTransform;
 
     node = new osg::Geode;
     linesGeom = new osg::Geometry;
 
+    origPoints = new osg::Vec3Array();
     points = new osg::Vec3Array();
     points->setDataVariance(osg::Object::DYNAMIC);
     linesGeom->setDataVariance(osg::Object::DYNAMIC);
@@ -81,6 +85,7 @@ namespace osg_lines {
   }
 
   void LinesP::appendData(Vector v) {
+    origPoints->push_back(osg::Vec3(v.x, v.y, v.z));
     points->push_back(osg::Vec3(v.x, v.y, v.z));
     drawArray->setCount(points->size());
     dirty();
@@ -88,8 +93,10 @@ namespace osg_lines {
 
   void LinesP::setData(std::list<Vector> p) {
     std::list<Vector>::iterator it=p.begin();
+    origPoints->clear();
     points->clear();
     for(;it!=p.end(); ++it) {
+      origPoints->push_back(osg::Vec3(it->x, it->y, it->z));
       points->push_back(osg::Vec3(it->x, it->y, it->z));
     }
     drawArray->setCount(points->size());
@@ -97,6 +104,7 @@ namespace osg_lines {
   }
 
   void LinesP::drawStrip(bool strip) {
+    this->strip = strip;
     linesGeom->removePrimitiveSet(0);
     if(strip) {
       drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,
@@ -125,13 +133,64 @@ namespace osg_lines {
     dirty();
   }
 
+  osg::Vec3 LinesP::getBezierPoint(float t) {
+    osg::ref_ptr<osg::Vec3Array> tmp = osg::clone(origPoints.get());
+    int i = tmp->size() -1;
+    while (i > 0) {
+      for (int k = 0; k < i; k++)
+        (*tmp.get())[k] = (*tmp.get())[k] + ( (*tmp.get())[k+1] - (*tmp.get())[k] )*t;
+      i--;
+    }
+    return (*tmp.get())[0];
+  }
+
   void LinesP::dirty(void) {
     linesGeom->dirtyDisplayList();
     linesGeom->dirtyBound();   
+    if(bezierMode) {
+      // generate spline
+      points->clear();
+      for(int i=0; i<bezierInterpolationPoints; ++i) {
+        points->push_back(getBezierPoint(i/(double)bezierInterpolationPoints));
+      }
+      drawArray->setCount(points->size());
+      if(!strip) {
+        linesGeom->removePrimitiveSet(0);
+        drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINE_STRIP,
+                                        0, points->size());
+        drawArray->setFirst(0);
+        drawArray->setCount(points->size());
+        linesGeom->addPrimitiveSet(drawArray.get());
+      }
+    }
+    else {
+      points->clear();
+      for(int i=0; i<origPoints->size(); ++i) {
+        points->push_back((*origPoints.get())[i]);
+      }
+      if(!strip) {
+        linesGeom->removePrimitiveSet(0);
+        drawArray->setCount(points->size());
+        drawArray = new osg::DrawArrays(osg::PrimitiveSet::LINES,
+                                        0, points->size());
+        drawArray->setFirst(0);
+        drawArray->setCount(points->size());
+        linesGeom->addPrimitiveSet(drawArray.get());
+      }
+    }
+    //points->dirty();
   }
 
   void* LinesP::getOSGNode() {
     return (void*)(osg::Node*)node.get();
+  }
+
+  void LinesP::setBezierMode(bool bezier = true) {
+    bezierMode = bezier;
+  }
+
+  void LinesP::setBezierInterpolationPoints(int numPoints) {
+    bezierInterpolationPoints = numPoints;
   }
 
 } // end of namespace: osg_lines

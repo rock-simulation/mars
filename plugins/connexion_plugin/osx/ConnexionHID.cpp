@@ -113,8 +113,8 @@ namespace mars {
           CFStringRef string = (CFStringRef)IOHIDDeviceGetProperty(myIOHIDDeviceRef,
                                                                    CFSTR(kIOHIDProductKey));
           if(string) {
-            verify(CFStringGetCString(string, product, sizeof(product),
-                                      kCFStringEncodingUTF8));
+            CFStringGetCString(string, product, sizeof(product),
+                               kCFStringEncodingUTF8);
           }
           long result = 0;
           (void) IOHIDDevice_GetLongProperty(myIOHIDDeviceRef,

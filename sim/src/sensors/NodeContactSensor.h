@@ -35,6 +35,7 @@
 #include <configmaps/ConfigData.h>
 #include <mars/interfaces/sim/SensorInterface.h>
 #include <mars/data_broker/ReceiverInterface.h>
+#include <mars/data_broker/ProducerInterface.h>
 
 #include "IDListConfig.h"
 
@@ -43,7 +44,8 @@ namespace mars {
 
     class NodeContactSensor : public interfaces::SensorInterface,
                               public interfaces::BaseNodeSensor,
-                              public data_broker::ReceiverInterface {
+                              public data_broker::ReceiverInterface,
+                              public data_broker::ProducerInterface {
 
     public:
       NodeContactSensor(interfaces::ControlCenter *control, IDListConfig config);
@@ -52,6 +54,9 @@ namespace mars {
       virtual int getSensorData(interfaces::sReal** data) const;
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
+                               int callbackParam);
+      virtual void produceData(const data_broker::DataInfo &info,
+                               data_broker::DataPackage *package,
                                int callbackParam);
 
       virtual configmaps::ConfigMap createConfig() const;

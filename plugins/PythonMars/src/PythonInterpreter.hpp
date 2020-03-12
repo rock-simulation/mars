@@ -68,7 +68,7 @@ public:
   
 enum CppType
 {
-  INT, DOUBLE, BOOL, STRING, ONEDARRAY, ONEDCARRAY, OBJECT, MAP
+    INT, DOUBLE, BOOL, STRING, ONEDARRAY, ONEDCARRAY, ONEFCARRAY, OBJECT, MAP
 };
 
 class Object
@@ -92,7 +92,7 @@ public:
 
     Function(ModuleState& module, const std::string& name);
     Function& pass(CppType type);
-    Function& call(...);
+    Function& call(void *first, ...);
     shared_ptr<Object> returnObject();
 };
 
@@ -103,7 +103,7 @@ public:
 
     Method(ObjectState& object, const std::string& name);
     Method& pass(CppType type);
-    Method& call(...);
+    Method& call(void *first, ...);
     shared_ptr<Object> returnObject();
 };
 
@@ -126,7 +126,7 @@ public:
     shared_ptr<ListBuilderState> state;
 
     ListBuilder& pass(CppType type);
-    shared_ptr<Object> build(...);
+    shared_ptr<Object> build(void *first, ...);
 };
 
 } // End of namespace mars

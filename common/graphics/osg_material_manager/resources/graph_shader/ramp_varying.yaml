@@ -1,0 +1,12 @@
+params:
+  in:
+    in1: {index: 0, type: float}
+    point1: {index: 1, type: float}
+    point2: {index: 2, type: float}
+    point3: {index: 3, type: float}
+    color_1: {index: 4, type: vec4}
+    color_2: {index: 5, type: vec4}
+    color_3: {index: 6, type: vec4}
+  out:
+    out1: {index: 7, type: vec4}
+source: /graph_shader/ramp_varying.frag

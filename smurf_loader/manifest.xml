@@ -18,6 +18,7 @@
     <depend package="control/urdfdom_headers" />
 
     <rosdep name="boost" />
+    <rosdep name="qt4" />
 
     <tags>needs_opt</tags>
 </package>

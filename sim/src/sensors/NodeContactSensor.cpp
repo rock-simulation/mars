@@ -90,11 +90,27 @@ namespace mars {
                                                    countIDs++);
         values.push_back(false);
       }
+      data_broker::DataPackage dbPackage;
+
+      dbPackage.add("contact", 0.0);
+      groupName = "mars_sim";
+      dataName = "Sensors/"+name;
+      control->dataBroker->pushData(groupName, dataName,
+                                    dbPackage, NULL,
+                                    data_broker::DATA_PACKAGE_READ_FLAG);
+      control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                 "mars_sim/simTimer",
+                                                 updateRate);
       typeName = "NodeContact";
     }
 
     NodeContactSensor::~NodeContactSensor(void) {
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
+      control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                   "mars_sim/simTimer");
+      std::string groupName = "mars_sim";
+      std::string dataName = "Sensors/"+name;
+      control->dataBroker->unregisterTimedProducer(this, groupName,
+                                                   dataName,
                                                    "mars_sim/simTimer");
     }
 
@@ -102,7 +118,7 @@ namespace mars {
     int NodeContactSensor::getAsciiData(char* data) const {
       bool contact = 0;
       std::vector<bool>::const_iterator iter;
-  
+
       for(iter = values.begin(); iter != values.end(); iter++) {
         contact |= *iter;
       }
@@ -113,7 +129,7 @@ namespace mars {
     int NodeContactSensor::getSensorData(sReal** data) const {
       bool contact = 0;
       std::vector<bool>::const_iterator iter;
-  
+
       *data = (sReal*)malloc(sizeof(sReal));
       for(iter = values.begin(); iter != values.end(); iter++) {
         contact |= *iter;
@@ -132,6 +148,19 @@ namespace mars {
       bool value;
       package.get(groundContactIndex, &value);
       values[callbackParam] = value;
+    }
+
+    void NodeContactSensor::produceData(const data_broker::DataInfo &info,
+                                        data_broker::DataPackage *package,
+                                        int callbackParam) {
+      if(values.size() == 0) return;
+      bool contact = 0;
+      std::vector<bool>::const_iterator iter;
+
+      for(iter = values.begin(); iter != values.end(); iter++) {
+        contact |= *iter;
+      }
+      package->set(0, (double)contact);
     }
 
   } // end of namespace sim

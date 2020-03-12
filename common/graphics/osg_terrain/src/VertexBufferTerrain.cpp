@@ -102,7 +102,13 @@ namespace osg_terrain {
 #endif
     osg::State& state = *renderInfo.getState();
     state.disableAllVertexArrays();
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 5) || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION < 9))
     osg::ArrayDispatchers& arrayDispatchers = state.getArrayDispatchers();
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 5) || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION >= 9))
+    osg::AttributeDispatchers& arrayDispatchers = state.getAttributeDispatchers();
+#else
+#error Unknown OSG Version
+#endif
 
     arrayDispatchers.reset();
     //arrayDispatchers.dispatch(osg::Geometry::BIND_OVERALL,0);

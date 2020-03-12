@@ -1,0 +1,31 @@
+params:
+  in:
+    base: {index: 0, type: vec4}
+    normal: {index: 1, type: vec3}
+  out:
+    outcol: {index: 0, type: vec4}
+source: /graph_shader/specular_frag.frag
+minVersion: 120
+varyings:
+  vec3:
+    - {name: eyeVec}
+  vec3[]:
+    - {name: lightVec, arraySize: numLights}
+    - {name: spotDir, arraySize: numLights}
+  vec4[]:
+    - {name: specular, arraySize: numLights}
+uniforms:
+  int:
+    - {name: numLights}
+  int[]:
+    - {name: lightIsSpot, arraySize: numLights}
+    - {name: lightIsSet, arraySize: numLights}
+    - {name: lightIsDirectional, arraySize: numLights}
+  float:
+    - {name: brightness}
+  float[]:
+    - {name: lightCosCutoff, arraySize: numLights}
+    - {name: lightSpotExponent, arraySize: numLights}
+    - {name: lightConstantAtt, arraySize: numLights}
+    - {name: lightLinearAtt, arraySize: numLights}
+    - {name: lightQuadraticAtt, arraySize: numLights}

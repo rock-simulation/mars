@@ -19,5 +19,5 @@ mainVarDecs:
   vec4:
     - name: nt
 source: /shader/envmap.frag
-name: envMap
+name: envmap_frag
 priority: 2

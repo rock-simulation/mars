@@ -69,6 +69,7 @@ namespace mars {
               "mars_entity_factory");
       factoryManager->registerFactory("smurf", this);
       factoryManager->registerFactory("urdf", this);
+      factoryManager->registerFactory("particle", this); // At the moment particles are smurfs with instancing
       theManager->releaseLibrary("mars_entity_factory");
     }
 
@@ -185,9 +186,10 @@ namespace mars {
       entityconfig = config;
       std::string path = (std::string)entityconfig["path"];
       tmpPath = path;
+      entityconfig["abs_path"] = pathJoin(getCurrentWorkingDir(), path);
       std::string filename = (std::string)entityconfig["file"];
       fprintf(stderr, "SMURF::createEntity: Creating entity of type %s\n", ((std::string)entityconfig["type"]).c_str());
-      if((std::string)entityconfig["type"] == "smurf") {
+      if((std::string)entityconfig["type"] == "smurf" || entityconfig["type"].getString() == "particle") {
         model = smurf_parser::parseFile(&entityconfig, path, filename, true);
 #ifdef DEBUG_SCENE_MAP
         debugMap.append(entityconfig);
@@ -267,6 +269,14 @@ namespace mars {
           fprintf(stderr, "addConfig: %s\n", jointname.c_str());
           tmpmap["nodeID"] = nodeIDMap[linkname];
           tmpmap["jointID"] = jointIDMap[jointname];
+          // todo: change DataPackage to compelte for joint
+          std::vector<ConfigMap>::iterator it = jointList.begin();
+          for(; it!=jointList.end(); ++it) {
+            if((NodeId)(*it)["index"] == (NodeId)tmpmap["jointID"]) {
+              (*it)["reducedDataPackage"] = false;
+              break;
+            }
+          }
           fprintf(stderr, "creating Joint6DOF..., %lu, %lu\n", (unsigned long) tmpmap["nodeID"],
               (unsigned long) tmpmap["jointID"]);
         }
@@ -314,6 +324,19 @@ namespace mars {
         for (; mIt != materialList.end(); ++mIt) {
           if ((std::string) (*mIt)["name"] == (std::string) (*it)["name"]) {
             mIt->append(*it);
+            break;
+          }
+        }
+      }
+      for (it = config["link"].begin(); it != config["link"].end(); ++it) {
+        handleURIs(*it);
+        std::vector<ConfigMap>::iterator nIt = nodeList.begin();
+        for (; nIt != nodeList.end(); ++nIt) {
+          if ((std::string) (*nIt)["name"] == (std::string) (*it)["name"]) {
+            ConfigMap::iterator cIt = it->beginMap();
+            for (; cIt != it->endMap(); ++cIt) {
+              (*nIt)[cIt->first] = cIt->second;
+            }
             break;
           }
         }
@@ -605,6 +628,9 @@ namespace mars {
       config["movable"] = true;
       config["relativeid"] = currentNodeID;
 
+      // reduce DataBroker load
+      config["noDataPackage"] = true;
+
       // add inertial information
 
       config["density"] = 0.0;
@@ -777,6 +803,10 @@ namespace mars {
       config["materialName"] = visual->material_name;
 
       addEmptyCollisionToNode(&config);
+      config["vizLink"] = currentNodeID;
+      config["noPhysical"] = true;
+      config["noDataPackage"] = true;
+
       visualNameMap[name] = name;
 
 #ifdef DEBUG_SCENE_MAP
@@ -868,6 +898,8 @@ namespace mars {
 #ifdef DEBUG_SCENE_MAP
         debugMap["joints"] += config;
 #endif
+        // reduce DataBroker load
+        config["reducedDataPackage"] = true;
         jointList.push_back(config);
     }
 
@@ -990,7 +1022,7 @@ namespace mars {
       NodeData node;
       config["mapIndex"] = mapIndex;
       string suffix, tmpfilename;
-      
+
       // check if we can use .bobj
       tmpfilename = trim(config.get("filename", tmpfilename));
       // if we have an actual file name
@@ -1007,12 +1039,27 @@ namespace mars {
             fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
             config["filename"] = tmpfilename2;
           }
+          else {
+            // check if bobj files are in parallel folder
+            int index = tmpfilename2.find("obj/");
+            if (index != string::npos) {
+              string newfilename = replaceString(tmpfilename2, "obj/", "bobj/");
+              string tmpfilename2 = newfilename;
+              handleFilenamePrefix(&newfilename, tmpPath);
+              if (pathExists(newfilename)) {
+                fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", newfilename.c_str());
+                config["filename"] = tmpfilename2;
+              }
+            }
+          }
         }
       }
-      
+
       int valid = node.fromConfigMap(&config, tmpPath, control->loadCenter);
-      if (!valid)
+      if (!valid) {
+	LOG_ERROR("failed generating node from config\n");
         return 0;
+      }
 
       if ((std::string) config["materialName"] != std::string("")) {
         std::map<std::string, MaterialData>::iterator it;
@@ -1050,7 +1097,6 @@ namespace mars {
 
     unsigned int SMURF::loadMaterial(ConfigMap config) {
       MaterialData material;
-
       int valid = material.fromConfigMap(&config, tmpPath);
       materialMap[config["name"]] = material;
 

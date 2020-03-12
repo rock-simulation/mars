@@ -1,0 +1,6 @@
+params:
+  in:
+    r : {index: 0, type: float}
+  out:
+    v_rnd: {index: 0, type: vec4}
+source: /graph_shader/rnd_from_input.frag

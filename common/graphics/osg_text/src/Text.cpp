@@ -33,6 +33,24 @@
 #include <osg/PositionAttitudeTransform>
 #include <cstdio>
 
+
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 4))
+#define COMPUTE_BOUND computeBound
+#define GET_BOUND getBound
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
+#define COMPUTE_BOUND computeBoundingBox
+#define GET_BOUND getBoundingBox
+#else
+#error Unknown OSG Version
+#endif
+
+
 namespace osg_text {
 
   Text::Text(std::string text, double fontSize, Color textColor,
@@ -45,9 +63,9 @@ namespace osg_text {
                                      textAlign(textAlign),
                                      pl(paddingL), pt(paddingT),
                                      pr(paddingR), pb(paddingB),
-                                     borderWidth(borderWidth),
                                      fixedWidth(-1), fixedHeight(-1),
-                                     fontSize(fontSize) {
+                                     fontSize(fontSize),
+                                     borderWidth(borderWidth){
 
     labelGeode = new osg::Geode();
     if(fontPath.empty()) {
@@ -165,10 +183,13 @@ namespace osg_text {
 
   void Text::updateBoundingBox() {
     osg::BoundingBox bb;
-    bb.expandBy(labelText->getBound());
+    labelText->dirtyBound();
+    bb = labelText->COMPUTE_BOUND();
+    //bb.expandBy(labelText->getBound());
     //d = bb.zMin()-2.0;
     width = resolutionCorrectionX*(bb.xMax() - bb.xMin()) + pl + pr;
     height = resolutionCorrectionY*(bb.yMax() - bb.yMin()) + pt + pb;
+    //fprintf(stderr, "w: %g, h: %g\n", width, height);
   }
 
   void Text::updatePosition() {
@@ -317,8 +338,7 @@ namespace osg_text {
   void Text::setFontResolution(int x, int y) {
     labelText->setFontResolution(round(x), round(y));
     //labelText->setCharacterSize(fontSize);
-    osg::BoundingBox bb;
-    bb.expandBy(labelText->getBound());
+    osg::BoundingBox bb = labelText->GET_BOUND();
     //d = bb.zMin()-2.0;
     double w = bb.xMax() - bb.xMin();
     double h = bb.yMax() - bb.yMin();

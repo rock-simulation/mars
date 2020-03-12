@@ -1,0 +1,10 @@
+params:
+  in:
+    in1: {index: 0, type: float}
+    start: {index: 1, type: float}
+    end: {index: 2, type: float}
+    scale: {index: 3, type: float}
+    offset: {index: 4, type: float}
+  out:
+    out1: {index: 0, type: float}
+source: /graph_shader/ramp.frag

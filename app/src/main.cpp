@@ -32,7 +32,6 @@
 
 void qtExitHandler(int sig) {
   mars::app::exit_main(sig);
-  if(qApp) qApp->quit();
 }
 
 void ignoreSignal(int sig) {
@@ -86,7 +85,6 @@ int main(int argc, char *argv[]) {
   int state;
   if(simulation->needQApp) state = app->exec();
   else state = simulation->runWoQApp();
-
   delete simulation;
   fprintf(stderr, "\n################################\n");
   fprintf(stderr, "## everything closed fine ^-^ ##\n");

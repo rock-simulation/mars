@@ -28,12 +28,14 @@
 #include <mars/data_broker/ReceiverInterface.h>
 
 #include <mars/interfaces/sim/SensorInterface.h>
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
 #include <mars/utils/Mutex.h>
 #include <mars/interfaces/graphics/GraphicsWindowInterface.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
 #include <mars/interfaces/graphics/GraphicsCameraInterface.h>
+#include "SimEntity.h"
 
 #include <inttypes.h>
 typedef uint8_t  u_int8_t;
@@ -48,17 +50,24 @@ namespace mars {
 
   namespace sim {
 
-      class Pixel
-      {
-        public:
-          u_int8_t r;
-          u_int8_t g;
-          u_int8_t b;
-          u_int8_t a;
-      } __attribute__ ((packed)) ;
+    enum ViewMode{
+      CENTER,
+      VERTEX_OF_BBOX,
+      EVERYTHING,
+      NOTHING
+    };
 
-      typedef float DistanceMeasurement;
-      
+    class Pixel
+    {
+      public:
+        u_int8_t r;
+        u_int8_t g;
+        u_int8_t b;
+        u_int8_t a;
+    } __attribute__ ((packed)) ;
+
+    typedef float DistanceMeasurement;
+
     struct CameraConfigStruct: public interfaces::BaseConfig{
       CameraConfigStruct(){
         name = "Unknown Camera";
@@ -74,6 +83,7 @@ namespace mars {
         hud_width = 320;
         hud_height = -1;
         depthImage = false;
+        logicalImage = false;
         frameOffset = 1;
       }
 
@@ -90,7 +100,9 @@ namespace mars {
       int hud_width;
       int hud_height;
       bool depthImage;
+      bool logicalImage;
       bool enabled;
+      configmaps::ConfigMap map;
     };
 
     class CameraSensor : public interfaces::BaseNodeSensor,
@@ -105,9 +117,10 @@ namespace mars {
 
       virtual int getSensorData(interfaces::sReal** data) const;
 
-      void getImage(std::vector<Pixel> &buffer);
-      void getDepthImage(std::vector<DistanceMeasurement> &buffer);
-      
+      void getImage(std::vector<Pixel> &buffer) const;
+      void getDepthImage(std::vector<DistanceMeasurement> &buffer) const;
+      void getEntitiesInView(std::map<unsigned long, SimEntity*> &buffer, unsigned int visVert_threshold);
+
       virtual void receiveData(const data_broker::DataInfo &info,
                                const data_broker::DataPackage &package,
                                int callbackParam);
@@ -118,7 +131,7 @@ namespace mars {
       static interfaces::BaseConfig* parseConfig(interfaces::ControlCenter *control,
                                      configmaps::ConfigMap *config);
       virtual configmaps::ConfigMap createConfig() const;
-      
+
       const CameraConfigStruct &getConfig() const
       {
         return config;
@@ -132,6 +145,7 @@ namespace mars {
       CameraConfigStruct config;
       interfaces::BaseCameraSensor<double> depthCamera;
       interfaces::BaseCameraSensor<char*> imageCamera;
+      interfaces::BaseCameraSensor<SimEntity*> logicalCamera;
       unsigned long cam_window_id;
       interfaces::GraphicsWindowInterface *gw;
       interfaces::GraphicsCameraInterface* gc;

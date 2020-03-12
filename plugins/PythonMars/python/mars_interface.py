@@ -41,6 +41,9 @@ def setRunning(value):
         iDict["startSim"] = False
         iDict["stopSim"] = True
 
+def quitSim():
+    iDict["quitSim"] = True
+
 def setUpdateTime(value):
     iDict["updateTime"] = float(value)
 
@@ -51,6 +54,10 @@ def requestNode(name):
 def requestSensor(name):
     global iDict
     iDict["request"].append({"type": "Sensor", "name": name})
+
+def requestMotor(name):
+    global iDict
+    iDict["request"].append({"type": "Motor", "name": name})
 
 def requestConfig(group, name):
     global iDict
@@ -66,7 +73,10 @@ def logError(s):
 
 def setConfig(group, name, value):
     global iDict
-    iDict["config"][group] = {name: value}
+    if "config" in iDict and group in iDict["config"]:
+        iDict["config"][group][name] = value
+    else:
+        iDict["config"][group] = {name: value}
 
 def createPointCloud(name, size):
     global iDict
@@ -83,8 +93,8 @@ def handleLines(name, args):
         iDict["Lines"][name] = []
     iDict["Lines"][name].append(args)
 
-def configureLines(name, size, r, g, b):
-    handleLines(name, {"config": [float(size), float(r), float(g), float(b)]})
+def configureLines(name, size, r, g, b, bezier=0, interpolationPoints=20):
+    handleLines(name, {"config": [float(size), float(r), float(g), float(b), int(bezier), int(interpolationPoints)]})
 
 def clearLines(name):
     handleLines(name, "clear")
@@ -97,10 +107,45 @@ def appendLines(name, x, y, z):
 
 def requestCameraSensor(name):
     global iDict
-    iDict["CameraSensor"][name] = 1
+    if name in iDict["CameraSensor"]:
+        iDict["CameraSensor"][name] |= 1
+    else:
+        iDict["CameraSensor"][name] = 1
+
+def requestDepthCameraSensor(name):
+    global iDict
+    if name in iDict["CameraSensor"]:
+        iDict["CameraSensor"][name] |= 2
+    else:
+        iDict["CameraSensor"][name] = 2
 
 def pushData(group, name, dataName, value):
     global iDict
     if not "ToDataBroker" in iDict:
         iDict["ToDataBroker"] = []
     iDict["ToDataBroker"].append({"g":group, "n":name, "d":dataName, "v":value})
+
+def edit(type_, name, key, value):
+    global iDict
+    if not "edit" in iDict:
+        iDict["edit"] = {}
+    if not type_ in iDict["edit"]:
+        iDict["edit"][type_] = {}
+    if not name in iDict["edit"][type_]:
+        iDict["edit"][type_][name] = []
+    iDict["edit"][type_][name].append({"k": key, "v": value})
+
+def editNode(name, key, value):
+    edit("nodes", name, key, value)
+
+def editJoint(name, key, value):
+    edit("joints", name, key, value)
+
+def editMotor(name, key, value):
+    edit("motors", name, key, value)
+
+def editGraphics(key, value):
+    edit("graphics", "-1", key, value)
+
+def editGraphicsWindow(winid, key, value):
+    edit("graphics", str(winid), key, value)

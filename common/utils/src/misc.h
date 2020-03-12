@@ -143,6 +143,7 @@ namespace mars {
     std::string trim(const std::string& str);
 
     void handleFilenamePrefix(std::string *file, const std::string &prefix);
+    std::string pathJoin(const std::string &path1, const std::string &path2);
 
     /**
      * given a filepath "bla/da/fnord/foobar.baz" this will remove everything

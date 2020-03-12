@@ -130,6 +130,7 @@ namespace mars {
 
     MyQMainWindow::~MyQMainWindow() {
       if(!cfg) return;
+      saveDockGeometry();
       int windowTop = geometry().y();
       int windowLeft = geometry().x();
       int windowWidth = geometry().width();
@@ -513,6 +514,7 @@ namespace mars {
       for(unsigned int j = 0; j < stDockWidgets.size(); j++) {
         for(unsigned int i = 0; !flag && i < dockStates.size(); i++) {
           if(stDockWidgets[j]->widget()->windowTitle() == dockStates[i].title) {
+            //fprintf(stderr, "found dock state: %s\n", stDockWidgets[j]->widget()->windowTitle().toStdString().c_str());
             dockStates[i].floating = stDockWidgets[j]->isFloating();
             if(!dockStates[i].floating) {
               dockStates[i].area = dockWidgetArea(stDockWidgets[j]);
@@ -527,6 +529,7 @@ namespace mars {
                                  dockWidgetArea(stDockWidgets[j]),
                                  stDockWidgets[j]->isFloating(),
                                  stDockWidgets[j]->geometry()};
+          //fprintf(stderr, "add dock state: %s\n", stDockWidgets[j]->widget()->windowTitle().toStdString().c_str());
           dockStates.push_back(justAdded);
         }
         flag = 0;
@@ -558,23 +561,37 @@ namespace mars {
 
 
     void MyQMainWindow::restoreDockGeometry() {
+      bool saveDock = true;
       for(unsigned int j = 0; j < stDockWidgets.size(); j++) {
+        bool found = false;
         for(unsigned int i = 0; i < dockStates.size(); i++) {
           if(stDockWidgets[j]->widget()->windowTitle() == dockStates[i].title) {
+            found = true;
             addDockWidget(dockStates[i].area, stDockWidgets[j]);
             stDockWidgets[j]->setFloating(dockStates[i].floating);
             stDockWidgets[j]->setGeometry(dockStates[i].rect);
           }
         }
+        if(!found) {
+          saveDock = true;
+        }
       }
       for(unsigned int j = 0; j < dyDockWidgets.size(); j++) {
+        bool found = false;
         for(unsigned int i = 0; i < dockStates.size(); i++) {
           if(dyDockWidgets[j]->widget()->windowTitle() == dockStates[i].title) {
+            found = true;
             addDockWidget(dockStates[i].area, dyDockWidgets[j]);
             dyDockWidgets[j]->setFloating(dockStates[i].floating);
             dyDockWidgets[j]->setGeometry(dockStates[i].rect);
           }
         }
+        if(!found) {
+          saveDock = true;
+        }
+      }
+      if(saveDock) {
+        saveDockGeometry();
       }
     }
 

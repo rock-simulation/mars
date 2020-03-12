@@ -1,0 +1,9 @@
+params:
+  in:
+    vector_a: {index: 0, type: vec4}
+    vector_b: {index: 1, type: vec4}
+    fac_a: {index: 2, type: float}
+    fac_b: {index: 3, type: float}
+  out:
+    vector: {index: 4, type: vec4}
+source: /graph_shader/mix_vec4_weighted.frag

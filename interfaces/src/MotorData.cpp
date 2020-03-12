@@ -125,10 +125,13 @@ namespace mars {
 
       std::string tmpmotortype;
       tmpmotortype = config->get("type", tmpmotortype);
-      if (tmpmotortype=="1" || tmpmotortype=="PID") {
-        type = (MotorType)1ul;
-      } else if (tmpmotortype=="2" || tmpmotortype=="DC") {
-        type = (MotorType)2ul;
+      if (tmpmotortype=="1" || tmpmotortype=="PID" || tmpmotortype=="generic_bldc") {
+        type = MOTOR_TYPE_POSITION;
+      } else if (tmpmotortype=="2" || tmpmotortype=="DC" || tmpmotortype=="generic_dc") {
+        type = MOTOR_TYPE_VELOCITY;
+      } else if (tmpmotortype=="7" || tmpmotortype=="direct_torque" ||
+                 tmpmotortype=="direct_effort") {
+        type = MOTOR_TYPE_DIRECT_EFFORT;
       }
 
       GET_VALUE("p", p, Double);
@@ -150,7 +153,7 @@ namespace mars {
     void MotorData::toConfigMap(ConfigMap *config, bool skipFilenamePrefix) {
       CPP_UNUSED(skipFilenamePrefix);
       MotorData defaultMotor;
-
+      *config = this->config;
       SET_VALUE("name", name);
       SET_VALUE("index", index);
       SET_VALUE("jointIndex", jointIndex);
@@ -162,8 +165,14 @@ namespace mars {
       if(type==2) {
         (*config)["type"] = "DC";
       }
-      else {
+      else if (type == 1) {
         (*config)["type"] = "PID";
+      }
+      else if (type == 7) {
+        (*config)["type"] = "direct_torque";
+      }
+      else {
+        (*config)["type"] = type;
       }
 
       SET_VALUE("p", p);

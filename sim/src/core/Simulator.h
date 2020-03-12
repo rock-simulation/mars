@@ -230,7 +230,6 @@ namespace mars {
       short running;
       char was_running;
       bool kill_sim;
-      bool show_time; ///< Bool to enable output of the calculation time.
       interfaces::ControlCenter *control; ///< Pointer to instance of ControlCenter (created in Simulator::Simulator(lib_manager::LibManager *theManager))
       std::vector<LoadOptions> filesToLoad;
       bool sim_fault;
@@ -239,7 +238,6 @@ namespace mars {
       interfaces::sReal sync_time;
       bool my_real_time;
       bool fast_step;      
-
 
       // graphics
       bool allow_draw;
@@ -259,7 +257,7 @@ namespace mars {
       utils::Mutex getTimeMutex;
       int physics_mutex_count;
       double avg_log_time, avg_step_time;
-      int count;
+      int count, avg_count_steps;
       interfaces::sReal calc_time;
       
       // physics
@@ -269,7 +267,7 @@ namespace mars {
       int std_port; ///< Controller port (default value: 1600)
       utils::Vector gravity;
       unsigned long dbPhysicsUpdateId;
-      unsigned long dbSimTimeId;
+      unsigned long dbSimTimeId, dbSimDebugId;
       unsigned long realStartTime;
 
       // plugins
@@ -297,10 +295,12 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgSyncTime;
       cfg_manager::cfgPropertyStruct configPath;
       cfg_manager::cfgPropertyStruct cfgUseNow;
+      cfg_manager::cfgPropertyStruct cfgAvgCountSteps;
       
       // data
       data_broker::DataPackage dbPhysicsUpdatePackage;
       data_broker::DataPackage dbSimTimePackage;
+      data_broker::DataPackage dbSimDebugPackage;
 
       // IceServer comServer;
 

@@ -116,10 +116,25 @@ namespace mars {
         iMutex.lock();
         NodeData reloadNode = *nodeS;
         if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
-          if(!control->loadCenter || !control->loadCenter->loadHeightmap) {
+          if(!control->loadCenter) {
             LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
             iMutex.unlock();
             return INVALID_ID;
+          }
+          if(!control->loadCenter->loadHeightmap) {
+            GraphicsManagerInterface *g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            if(!g) {
+              libManager->loadLibrary("mars_graphics", NULL, false, true);
+              g = libManager->getLibraryAs<GraphicsManagerInterface>("mars_graphics");
+            }
+            if(g) {
+              control->loadCenter->loadHeightmap = g->getLoadHeightmapInterface();
+            }
+            else {
+              LOG_ERROR("NodeManager:: loadHeightmap is missing, can not create Node");
+              iMutex.unlock();
+              return INVALID_ID;
+            }
           }
           reloadNode.terrain = new(terrainStruct);
           *(reloadNode.terrain) = *(nodeS->terrain);
@@ -203,7 +218,21 @@ namespace mars {
       // if we have a relative position, we have to calculate the absolute
       // position here
 
-      if(nodeS->relative_id != 0) {
+      NodeId parentDrawID = 0;
+      NodeId vizLink = 0;
+      if(nodeS->map.hasKey("vizLink")) {
+        vizLink = nodeS->map["vizLink"];
+        if(nodeS->map.hasKey("mapIndex")) {
+          unsigned int mapIndex = nodeS->map["mapIndex"];
+          if(mapIndex && control->loadCenter) {
+            vizLink = control->loadCenter->getMappedID(vizLink, MAP_TYPE_NODE,
+                                                       mapIndex);
+          }
+        }
+      }
+
+      // todo: the combination of vizLink and absolute position will be a problem
+      if(!vizLink && nodeS->relative_id != 0) {
         setNodeStructPositionFromRelative(nodeS);
         //nodeS->relative_id = 0;
       }
@@ -236,11 +265,13 @@ namespace mars {
         NodeId id;
         if(control->graphics) {
           if(loadGraphics) {
-            id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
-            if(id) {
-              newNode->setGraphicsID(id);
-              if(!reload) {
-                simNodesReload.back().graphicsID1 = id;
+            if(!nodeS->map.hasKey("noVisual") or (bool)nodeS->map["noVisual"] == false) {
+              id = control->graphics->addDrawObject(*nodeS, visual_rep & 1);
+              if(id) {
+                newNode->setGraphicsID(id);
+                if(!reload) {
+                  simNodesReload.back().graphicsID1 = id;
+                }
               }
             }
           }
@@ -284,17 +315,29 @@ namespace mars {
           newNode->setVisualRep(visual_rep);
         }
       } else {  //if nonPhysical
-        iMutex.lock();
-        simNodes[nodeS->index] = newNode;
-        if (nodeS->movable)
-          simNodesDyn[nodeS->index] = newNode;
-        iMutex.unlock();
+        if(vizLink) {
+          iMutex.lock();
+          vizNodes[nodeS->index] = newNode;
+          parentDrawID = simNodes[vizLink]->getGraphicsID();
+          iMutex.unlock();
+        }
+        else {
+          iMutex.lock();
+          simNodes[nodeS->index] = newNode;
+          if (nodeS->movable) {
+            simNodesDyn[nodeS->index] = newNode;
+          }
+          iMutex.unlock();
+        }
         control->sim->sceneHasChanged(false);
         if(control->graphics) {
           if(loadGraphics) {
             NodeId id = control->graphics->addDrawObject(*nodeS);
             if(id) {
               newNode->setGraphicsID(id);
+              if(parentDrawID) {
+                control->graphics->makeChild(parentDrawID, id);
+              }
               if(!reload) {
                 simNodesReload.back().graphicsID1 = id;
               }
@@ -361,6 +404,18 @@ namespace mars {
     NodeId NodeManager::addPrimitive(NodeData *snode) {
       control->sim->sceneHasChanged(false);
       return addNode(snode);
+    }
+
+    /**
+     *\brief returns true if the node with the given id exists
+     *
+     */
+    bool NodeManager::exists(NodeId id) const {
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if(iter != simNodes.end()) {
+        return true;
+      }
+      return false;
     }
 
     /**
@@ -618,6 +673,13 @@ namespace mars {
       if (iter != simNodes.end()) {
         tmpNode = iter->second; //iter->second is a pointer to the SimNode associated with the map
         simNodes.erase(iter);
+      }
+
+      iter = vizNodes.find(id);
+      if (iter != vizNodes.end()) {
+        // todo: handle remove child in graphics
+        tmpNode = iter->second; //iter->second is a pointer to the SimNode associated with the map
+        vizNodes.erase(iter);
       }
 
       iter = nodesToUpdate.find(id);
@@ -940,6 +1002,9 @@ namespace mars {
         for(nter = nodes->begin(); nter != nodes->end(); nter++) {
           if(nter->second->getGroupID() == (*jter)) {
             id2 = nter->first;
+            if(!nter->second->isMovable()) {
+              applyFunc(nter->second, params);
+            }
             nodes->erase(nter);
             recursiveHelper(id, params, joints, gids, nodes, applyFunc);
             recursiveHelper(id2, params, joints, gids, nodes, applyFunc);
@@ -1264,7 +1329,10 @@ namespace mars {
       NodeMap::iterator iter;
       while (!simNodes.empty())
         removeNode(simNodes.begin()->first, false, clearGraphics);
+      while (!vizNodes.empty())
+        removeNode(vizNodes.begin()->first, false, clearGraphics);
       simNodes.clear();
+      vizNodes.clear();
       simNodesDyn.clear();
       if(clear_all) simNodesReload.clear();
       next_node_id = 1;
@@ -1505,6 +1573,19 @@ namespace mars {
       return INVALID_ID;
     }
 
+    std::vector<interfaces::NodeId> NodeManager::getNodeIDs(const std::string& str_in_name) const {
+      iMutex.lock();
+      NodeMap::const_iterator iter;
+      std::vector<interfaces::NodeId> out;
+      for(iter = simNodes.begin(); iter != simNodes.end(); iter++) {
+        if (iter->second->getName().find(str_in_name) != std::string::npos)  {
+          out.push_back(iter->first);
+        }
+      }
+      iMutex.unlock();
+      return out;
+    }
+
     void NodeManager::pushToUpdate(SimNode* node) {
       MutexLocker locker(&iMutex);
       NodeMap::iterator iter = nodesToUpdate.find(node->getID());
@@ -1653,9 +1734,24 @@ namespace mars {
                            const std::string &value) {
       iMutex.lock();
       NodeMap::iterator iter;
+
       // todo: cfdir1 is a vector
       iter = simNodes.find(id);
-      if(iter == simNodes.end()) return;
+      if(iter == simNodes.end()) {
+        // hack to attache camera to node:
+        iMutex.unlock();
+        if(control->graphics) {
+          if(matchPattern("*/node", key)) {
+            id = getID(value);
+            unsigned long drawId = 0;
+            if(id) {
+              drawId = getDrawID(id);
+            }
+            control->graphics->attacheCamToNode(1, drawId);
+          }
+        }
+        return;
+      }
       NodeData nd = iter->second->getSNode();
       //// fprintf(stderr, "change: %s %s\n", key.c_str(), value.c_str());
       if(matchPattern("*/position", key)) {

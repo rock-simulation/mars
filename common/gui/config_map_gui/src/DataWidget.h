@@ -32,7 +32,6 @@
 #endif
 
 #include <mars/main_gui/PropertyDialog.h>
-#include <mars/main_gui/BaseWidget.h>
 #include <configmaps/ConfigData.h>
 
 #include <vector>
@@ -50,14 +49,13 @@ namespace mars {
 
   namespace config_map_gui {
 
-    class DataWidget : public main_gui::BaseWidget,
+    class DataWidget : public QWidget,
                        public main_gui::PropertyCallback {
     
       Q_OBJECT;
       
     public:
-      DataWidget(mars::cfg_manager::CFGManagerInterface *cfg,
-                 QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
+      DataWidget(void* backwardCFG = 0, QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
       ~DataWidget();
     
       virtual void valueChanged(QtProperty *property, const QVariant &value);
@@ -68,8 +66,11 @@ namespace mars {
       void setEditPattern(const std::vector<std::string> &pattern);
       void setColorPattern(const std::vector<std::string> &pattern);
       void setFilePattern(const std::vector<std::string> &pattern);
+      void setCheckablePattern(const std::vector<std::string> &pattern);
       void setDropDownPattern(const std::vector<std::string> &pattern,
                               const std::vector<std::vector<std::string> > &values);
+      void setFilterPattern(const std::vector<std::string> &pattern);
+      void setBlackFilterPattern(const std::vector<std::string> &pattern);
       void addConfigMap(const std::string &name, configmaps::ConfigMap &map);
       void addConfigAtom(const std::string &name, configmaps::ConfigAtom &v);
       void addConfigVector(const std::string &name, configmaps::ConfigVector &v);
@@ -83,20 +84,23 @@ namespace mars {
                                configmaps::ConfigVector &map);
       const configmaps::ConfigMap& getConfigMap();
       void clearGUI();
+      void setGroupChecked(const std::string &name, bool value);
 
     signals:
       void mapChanged();
       void valueChanged(std::string, std::string);
+      void checkChanged(std::string, bool);
       void colorChanged(std::string, float r, float g, float b, float a);
 
     private:
       QMutex addMutex;
       configmaps::ConfigMap config;
-      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern;
+      std::vector<std::string> editPattern, colorPattern, filePattern, dropDownPattern, checkablePattern, filterPattern, blackFilterPattern;
       std::vector<std::vector<std::string> > dropDownValues;
       map<QtVariantProperty*, configmaps::ConfigAtom*> dataMap;
       map<QtVariantProperty*, configmaps::ConfigMap*> addMap, colorMap;
       map<QtVariantProperty*, configmaps::ConfigVector*> addVector;
+      map<QtVariantProperty*, std::string> checkMap;
       map<std::string, QtVariantProperty*> propMap;
       map<QtVariantProperty*, std::string> nameMap;
       std::string addKeyStr, cname;

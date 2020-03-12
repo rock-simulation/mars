@@ -83,14 +83,14 @@ namespace osg_terrain {
   }
 
   void MultiResHeightMapRenderer::initialize() {
-#ifdef WIN32
     // get the pointer to the GL functions
-    glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress("glGenBuffers");
-    glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress("glBindBuffer");
-    glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress("glDeleteBuffers");
-    glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress("glBufferData");
-    glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress("glMapBuffer");
-    glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress("glUnmapBuffer");
+#ifdef _WIN32
+    // glGenBuffers = (PFNGLGENBUFFERSPROC) wglGetProcAddress("glGenBuffers");
+    // glBindBuffer = (PFNGLBINDBUFFERPROC) wglGetProcAddress("glBindBuffer");
+    // glDeleteBuffers = (PFNGLDELETEBUFFERSPROC) wglGetProcAddress("glDeleteBuffers");
+    // glBufferData = (PFNGLBUFFERDATAPROC) wglGetProcAddress("glBufferData");
+    // glMapBuffer = (PFNGLMAPBUFFERPROC) wglGetProcAddress("glMapBuffer");
+    // glUnmapBuffer = (PFNGLUNMAPBUFFERPROC) wglGetProcAddress("glUnmapBuffer");
 #endif
 
     // Generate 2 VBOs

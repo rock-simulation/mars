@@ -98,6 +98,7 @@ namespace mars {
        * (e.g. from the QWidget) we have to increment the referece counter
        * to prevent osg from calling the destructor one more time.
        */
+      fprintf(stderr, "get to destructor\n");
       this->ref();
       if(gm) gm->removeGraphicsWidget(widgetID);
       delete graphicsCamera;
@@ -781,15 +782,21 @@ namespace mars {
         initialize();
         view->addEventHandler(this);
         view->addEventHandler(keyswitchManipulator.get());
-        // osg doen't handle the focus correctly
+        // osg doesn't handle the focus correctly
         if(widgetID == 1) {
           view->addEventHandler(new osgViewer::StatsHandler);
         }
       }
       view->setSceneData(scene);
 
-      if(!isRTTWidget) graphicsCamera->setKeyswitchManipulator(keyswitchManipulator);
-      graphicsCamera->changeCameraTypeToPerspective();
+      if(!isRTTWidget) {
+        graphicsCamera->setKeyswitchManipulator(keyswitchManipulator);
+        postDrawCallback->setSize(widgetWidth, widgetHeight);
+        graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
+        graphicsCamera->changeCameraTypeToPerspective();
+        if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
+        if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
+      }
     }
 
     void GraphicsWidget::createContext(void* parent,
@@ -930,6 +937,25 @@ namespace mars {
       graphicsCamera = new GraphicsCamera(osgCamera, widgetWidth, widgetHeight);
     }
 
+    void GraphicsWidget::setupDistortion(double factor) {
+      osg::Image *image = new osg::Image();
+      image->allocateImage(widgetWidth, widgetHeight,
+                           1, GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV);
+      view->getCamera()->attach(osg::Camera::COLOR_BUFFER, image);
+      osg::Texture2D * texture = new osg::Texture2D;
+      texture->setResizeNonPowerOfTwoHint(false);
+      texture->setDataVariance(osg::Object::DYNAMIC);
+      texture->setTextureSize(widgetWidth, widgetHeight);
+      texture->setInternalFormat(GL_RGBA);
+      texture->setWrap(osg::Texture::WRAP_S, osg::Texture::REPEAT);
+      texture->setWrap(osg::Texture::WRAP_T, osg::Texture::REPEAT);
+      texture->setFilter(osg::Texture2D::MIN_FILTER,osg::Texture2D::LINEAR);
+      texture->setFilter(osg::Texture2D::MAG_FILTER,osg::Texture2D::LINEAR);
+
+      texture->setImage(image);
+      graphicsCamera->setupDistortion(texture, rttImage.get(), scene, factor);
+    }
+
     unsigned long GraphicsWidget::getID(void) {
       return widgetID;
     }
@@ -1027,6 +1053,14 @@ namespace mars {
 
     osg::Texture2D* GraphicsWidget::getRTTDepthTexture(void) {
       return rttDepthTexture.get();
+    }
+
+    osg::Image* GraphicsWidget::getRTTImage(void) {
+      return rttImage.get();
+    }
+
+    osg::Image* GraphicsWidget::getRTTDepthImage(void) {
+      return rttDepthImage.get();
     }
 
     void GraphicsWidget::clearSelectionVectors() {
@@ -1179,7 +1213,7 @@ namespace mars {
         // todo: currently qt handles the resize check other possibilities
         view->setEventQueue(new osgGA::EventQueue);
         gm->setActiveWindow(this);
-        return true;
+        //return true;
         return handleResizeEvent(ea);
       case osgGA::GUIEventAdapter::FRAME :
         return false;
@@ -1188,7 +1222,8 @@ namespace mars {
           graphicsEventHandler[0]->emitQuitEvent(widgetID);
         return true;
       case osgGA::GUIEventAdapter::CLOSE_WINDOW:
-        return false;
+
+        return true;
 
       default:
         return false;
@@ -1196,7 +1231,7 @@ namespace mars {
     }
 
     void GraphicsWidget::applyResize() {
-      postDrawCallback->setSize(widgetWidth, widgetHeight);
+      if(!isRTTWidget) postDrawCallback->setSize(widgetWidth, widgetHeight);
       graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       graphicsCamera->changeCameraTypeToPerspective();
       if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
@@ -1221,10 +1256,9 @@ namespace mars {
     bool GraphicsWidget::handleReleaseEvent(const osgGA::GUIEventAdapter& ea,
                                             osgGA::GUIActionAdapter& aa) {
       // *** Picking ***
-
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mouseRelease(ea.getX(), ea.getY(),
-                                              ea.getButtonMask());
+                                              mouseMask);
       }
 
 
@@ -1237,8 +1271,10 @@ namespace mars {
       isMouseButtonDown = false;
       isMouseMoving = false;
 
-
-      if(pickmode == DISABLED) return false;
+      if(pickmode == DISABLED && graphicsCamera->getCamera() != TRACKBALL)
+        return false;
+      if(graphicsCamera->getCamera() == TRACKBALL && mouseMask != osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && pickmode == DISABLED)
+        return false;
 
       osgViewer::View* view = dynamic_cast<osgViewer::View*>(&aa);
       if(!view) {
@@ -1250,7 +1286,14 @@ namespace mars {
       if(mouseX==(int)ea.getX() || mouseY==(int)ea.getY()) {
         if(pick(mouseX, mouseY)) {
           if(graphicsEventHandler.size() > 0) {
-            graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)this->pickmode);
+            int _pickMode = pickmode;
+            if(_pickMode == DISABLED) {
+              _pickMode = SINGLE;
+              if(ea.getModKeyMask() == osgGA::GUIEventAdapter::MODKEY_SHIFT) {
+                _pickMode = STANDARD;
+              }
+            }
+            graphicsEventHandler[0]->emitNodeSelectionChange(widgetID, (int)_pickMode);
             return false;
           }
           else if(graphicsEventHandler.size() == 0) {
@@ -1319,6 +1362,9 @@ namespace mars {
       case osgGA::GUIEventAdapter::KEY_Right :
         graphicsCamera->move(false, GraphicsCamera::RIGHT);
         return true;
+      case ',':
+        graphicsCamera->setPivot(gm->getSelectedPos());
+        return true;
       case '1' :
       case '2' :
       case '3' :
@@ -1363,7 +1409,7 @@ namespace mars {
       mouseX = ea.getX();
       mouseY = ea.getY();
       unsigned int modKey = ea.getModKeyMask();
-
+      mouseMask = ea.getButtonMask();
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mousePress(ea.getX(), ea.getY(),
                                             ea.getButtonMask());
@@ -1376,8 +1422,9 @@ namespace mars {
       }
       // we are not in camera move mode and enter pick mode
       else if(modKey & osgGA::GUIEventAdapter::MODKEY_CTRL) {
-        if(this->pickmode == DISABLED)
+        if(this->pickmode == DISABLED) {
           this->pickmode = STANDARD;
+        }
       }
       // we are not in camera move mode and also do not want to activate pick mode
       else {
@@ -1388,12 +1435,13 @@ namespace mars {
     }
 
     bool GraphicsWidget::handleDragEvent(const osgGA::GUIEventAdapter &ea) {
+      mouseMask = ea.getButtonMask();
       for(unsigned int i=0; i<graphicsEventHandler.size(); ++i) {
         graphicsEventHandler[i]->mouseMove(ea.getX(), ea.getY());
       }
 
       if (isMouseButtonDown && pickmode == DISABLED) {
-        graphicsCamera->mouseDrag(ea.getButtonMask(),
+        graphicsCamera->mouseDrag(ea.getButtonMask(), ea.getModKeyMask(),
                                   (int)ea.getX(), (int)ea.getY());
         isMouseMoving = true;
       }
@@ -1712,19 +1760,13 @@ namespace mars {
       osg::PositionAttitudeTransform* posTransform;
       osg::Transform* transform;
 
-#ifdef __linux__
-      if(!view->computeIntersections(x, -y, intersections))
-#else
-        if(!view->computeIntersections(x, y, intersections))
-#endif
-          return false;
-
+      if(!view->computeIntersections(x, y, intersections))
+      {
+        return false;
+      }
       // *** for each intersection we found ***
+      // choose foremost selection in FoV
       for(hitr=intersections.begin(); hitr!=intersections.end(); ++hitr) {
-        // choose foremost selection in FoV
-        if(!(hitr==intersections.begin()) || !(!hitr->nodePath.empty()))
-          continue;
-
         osg::NodePath nodePath = hitr->nodePath;
         unsigned int i = nodePath.size();
         while (i--) {
@@ -1733,7 +1775,6 @@ namespace mars {
 
           posTransform = transform->asPositionAttitudeTransform();
           if(!posTransform) continue;
-
           pickedObjects.push_back(posTransform);
           return true;
         }
@@ -1748,6 +1789,5 @@ namespace mars {
         myHUD->setViewOffsets(x1, x2, y1, y2);
       }
     }
-
   } // end of namespace graphics
 } // end of namespace mars

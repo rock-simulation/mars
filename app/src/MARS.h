@@ -51,7 +51,11 @@ namespace mars {
   }
 
   namespace app {
+#ifdef NO_GUI
+    class GraphicsTimer {};
+#else
     class GraphicsTimer;
+#endif
 
     void exit_main(int signal);
     void handle_abort(int signal);
@@ -66,6 +70,8 @@ namespace mars {
       void init();
       void start(int argc, char **argv, bool startThread = true,
                  bool handleLibraryLoading = true);
+      void loadCoreLibs();
+      void loadAdditionalLibs();
       int runWoQApp();
       inline lib_manager::LibManager* getLibManager() {return libManager;}
 

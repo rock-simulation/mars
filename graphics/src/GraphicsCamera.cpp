@@ -28,7 +28,11 @@
 #include "GraphicsCamera.h"
 #include <osgGA/GUIEventAdapter>
 #include <osgUtil/LineSegmentIntersector>
-#include <cstdio> 
+#include <cstdio>
+#include <osg/Geometry>
+#include <osg/Geode>
+#include <osg/Texture2D>
+#include <osg/PositionAttitudeTransform>
 #include <iostream>
 
 
@@ -49,8 +53,10 @@ namespace mars {
       mainCamera = _camera;
       hudCamera = 0;
       keyswitchManipulator = 0;
-      nodeMask = mainCamera->getNodeMask(); 
+      nodeMask = mainCamera->getNodeMask();
       camera = ODE_CAM;
+      previousType = camera;
+      pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
       switch_eyes = true;
 
@@ -103,7 +109,7 @@ namespace mars {
 
       cameraTrans.makeTranslate( double(d_xp),double(d_yp),double(d_zp) );
       myCameraMatrix = cameraRotation * cameraTrans;
-  
+
       isMovingLeft = isMovingRight = isMovingBack = isMovingForward = false;
       isoMinHeight = 2;
       isoMaxHeight = 20;
@@ -135,6 +141,16 @@ namespace mars {
       camType = 2;
     }
 
+    void GraphicsCamera::toggleTrackball() {
+      if(camera == TRACKBALL) {
+        setCamera(previousType);
+      }
+      else {
+        previousType = camera;
+        setCamera(TRACKBALL);
+      }
+    }
+
     void GraphicsCamera::setCamera(int type) {
       camera = type;
       if(camera == OSG_CAM) {
@@ -145,13 +161,16 @@ namespace mars {
         }
       }
       if(camera == ISO_CAM){
-        //move camera up and make it look down 
+        //move camera up and make it look down
         //get current position and translate along y axis to desired position
         d_zp = 10;
         osg::Matrixd rotMat;
-        rotMat.makeRotate(osg::DegreesToRadians(30.f), osg::Vec3(1, 0, 0));  
+        rotMat.makeRotate(osg::DegreesToRadians(30.f), osg::Vec3(1, 0, 0));
         osg::Quat q = rotMat.getRotate();
-        updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());   
+        updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+      }
+      if(camera == TRACKBALL) {
+        pivot = osg::Vec3f(d_xp, d_yp, d_zp) + cameraRotation.getRotate()*osg::Vec3f(0, 0, -5);
       }
     }
 
@@ -179,6 +198,16 @@ namespace mars {
       //   setFrameStamp(frameStamp.get());
 
       // eventually update camera position
+
+      if(tracking.valid()) {
+        osg::Vec3d p = tracking->getPosition();
+        osg::Quat q = tracking->getAttitude();
+
+        p += q*offsetPos;
+        q *= offsetRot;
+        updateViewportQuat(p.x(), p.y(), p.z(), q.x(), q.y(), q.z(), q.w());
+      }
+
       if (l_settings && l_settings->id) {
         osg::Vec3d v1, v2, v3;
         Vector node_pos;// = control->nodes->getPosition(l_settings->id);
@@ -263,7 +292,7 @@ namespace mars {
                                                    f_nearPlane,
                                                    f_farPlane);
         }
-    
+
         trans.makeIdentity();
         trans.makeTranslate(eyeSep*left, 0, 0);
         i = trans*myCameraMatrix;// *trans;
@@ -296,7 +325,7 @@ namespace mars {
         cout << "Draw FPS: " << timer.elapsed() << endl;
         #endif
       */
-  
+
       //move camera according to its movent state
       if(isMovingForward) moveForward(0.1f);
       if(isMovingBack) moveForward(-0.1f);
@@ -328,15 +357,15 @@ namespace mars {
 
       // get the intrinsic parameters of the camera
       double fovy, aspectRatio, Zn, Zf;
-      getOSGCamera()->getProjectionMatrixAsPerspective( fovy, aspectRatio, Zn, Zf );  
-  
+      getOSGCamera()->getProjectionMatrixAsPerspective( fovy, aspectRatio, Zn, Zf );
+
       // center points are just the center of the image
       s->center_x = width / 2.0;
       s->center_y = height / 2.0;
 
       // the f_x and f_y paramters are calculated from
       // the fovy parameter we got from osg.
-      // We set the scale value such that a 
+      // We set the scale value such that a
       // y value of tan(fovy/2) is equal to height/2.
       //
       // Note that fovy is in radians.
@@ -348,6 +377,7 @@ namespace mars {
     void GraphicsCamera::setCameraView(cameraStruct cs) {
       myCameraMatrix.setRotate(osg::Quat(cs.rot.x() ,cs.rot.y(), cs.rot.z(), cs.rot.w()));
       myCameraMatrix.setTrans(cs.pos.x() ,cs.pos.y(), cs.pos.z());
+      pivot = osg::Vec3f(cs.pos.x(), cs.pos.y(), cs.pos.z())+myCameraMatrix.getRotate()*osg::Vec3f(0, 0, -5);
     }
 
 
@@ -363,7 +393,7 @@ namespace mars {
        local->my_far);
        }
     */
-  
+
 
     void GraphicsCamera::setFrustumFromRad(double horizontalOpeningAngle,
                                            double verticalOpeningAngle,
@@ -375,7 +405,7 @@ namespace mars {
       double left = -right;
       double top = tan(verticalOpeningAngle/2.0) * near;
       double bottom = -top;
-    
+
       setFrustum(left, right, bottom, top, near, far);
     }
 
@@ -453,6 +483,7 @@ namespace mars {
         d_xr = rx;
         d_yr = ry;
         d_zr = rz;
+        pivot = osg::Vec3f(tx, ty, tz)+osg::Vec3f(0, 0, -5)*cameraRotation;
       }
     }
 
@@ -494,7 +525,7 @@ namespace mars {
       myCameraMatrix.preMult(rot);
       d_xp = tx;
       d_yp = ty;
-      d_zp = tz; 
+      d_zp = tz;
     }
 
     void GraphicsCamera::lookAtIso(double x, double y, double z)
@@ -503,27 +534,27 @@ namespace mars {
       if(camera !=ISO_CAM){
         setCamera(ISO_CAM);
       }
-  
+
       if(z > isoMinHeight && z < isoMaxHeight){d_zp = z;}
-  
+
       //calculate horizontal forward vector
       osg::Vec3 dirTMP(0, 1, 0);
       dirTMP = dirTMP*cameraRotation;
       osg::Vec3 dir(dirTMP.x(), dirTMP.y(), 0);
-  
+
       //calculate horizontal distance to targetPoint
       //camera angle
       double distance = d_zp * tan(osg::DegreesToRadians(30.0));
-      dir.normalize();    
+      dir.normalize();
       //go backwards
       dir *=-distance;
       d_xp = x + dir.x();
       d_yp = y + dir.y();
-      
+
       osg::Quat q;
       q = cameraRotation.getRotate();
       updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
-    
+
 
     }
 
@@ -608,7 +639,7 @@ namespace mars {
         d_zp += -speed;
         if(d_zp < isoMinHeight)d_zp = isoMinHeight;
         if(d_zp > isoMaxHeight)d_zp = isoMaxHeight;
-    
+
         osg::Quat q;
         q = cameraRotation.getRotate();
         updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
@@ -639,7 +670,7 @@ namespace mars {
         //get y vector of camera orientation which is somewhat horizontal
         //it would be better to get a completely horizontal vector so speed
         //is the same as in the other camera modes
-		    //move faster if cam is higher
+        //move faster if cam is higher
         osg::Vec3 dir(0, speed*(d_zp/isoMaxHeight)*1.7, 0);
         dir = dir*cameraRotation;
         d_xp +=dir.x();
@@ -695,8 +726,8 @@ namespace mars {
           osg::Vec3d worldIntersect =   result.getWorldIntersectPoint();
           return osg::Vec3f(worldIntersect.x(), worldIntersect.y(), 0);
 
-            
-           
+
+
         }else{
         //if no intersection use camera postion
         return osg::Vec3f(d_xp, d_yp, 0);
@@ -705,7 +736,7 @@ namespace mars {
 
     }
 
-    void GraphicsCamera::mouseDrag(int button, int x, int y) {
+    void GraphicsCamera::mouseDrag(int button, unsigned int modkey, int x, int y) {
       //mouse control for the ISO camera
       if(camera == ISO_CAM){
         //rotate the camera with middle mouse button
@@ -716,21 +747,21 @@ namespace mars {
           rot.makeRotate(angle, osg::Vec3(0, 0, 1));
           final = cameraRotation * rot;
           osg::Quat q= final.getRotate();
-      
+
           //move around the clicked point
           //if no intersection is returned move around cam center i.e. dont't move, only rotate
           osg::Vec3 rotPoint = getClickedPoint(x, y);
           osg::Vec3 rotCam = osg::Vec3(d_xp, d_yp , 0) - rotPoint;
-      
+
           osg::Matrixd rotMat;
           rotMat.makeRotate(angle, osg::Vec3(0, 0, 1));
           osg::Vec3 rotRes = rotCam * rotMat;
-      
+
           d_xp = rotRes.x()+rotPoint.x();
           d_yp = rotRes.y()+rotPoint.y();
-      
+
           updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
-      
+
           //pan with left mouse
         }else if(button == LMB){
           moveRight((xpos - x)*0.1);
@@ -741,77 +772,141 @@ namespace mars {
         return;
       }
       osg::Matrixd tmp, tmp2;
-      double td_xr = 0, td_yr = 0;
+      double td_xr = 0, td_yr = 0, td_zr = 0;
       osg::Vec3 vec(0,0,0);
+      osg::Quat q;
 
       tmp = cameraRotation;
       tmp2.makeIdentity();
 
-      if (button == LMB){
-        td_xr = (x - xpos)*0.5;
-        td_yr = -(y - ypos)*0.5;
-      }
-      else if (button == RMB){
-        vec = osg::Vec3(-(x-xpos)*0.01,0.0,(y-ypos)*0.01);
-        vec = vec*cameraRotation;
-        if (camType == 2){
-          vec[2] = vec[2]*0.02;
-          osg::Matrix projection;
-          float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
-          actOrtH-=(y-ypos)*0.1;
-          double w = actOrtH * aspectRatio;
-          projection.makeOrtho(-w/2,w/2,-actOrtH/2,actOrtH/2,1.0f,10000.0f);
-          mainCamera->setProjectionMatrix(projection);
-        }
-      }
-      else if ( (button == MMB) || (button == (LMB | RMB)) ) {
-        vec = osg::Vec3(-(x-xpos)*0.01,-(y-ypos)*0.01,0.0);
-        vec = vec*cameraRotation;
-      }
+      if(camera == TRACKBALL){
+        if ((button == MMB) || (button == (LMB | RMB))) {
+          if (modkey & osgGA::GUIEventAdapter::MODKEY_SHIFT) {
+            vec = osg::Vec3(-(x-xpos)*0.01,-(y-ypos)*0.01,0.0);
+            vec = vec*cameraRotation;
+            pivot += vec;
+            d_xp += vec.x();
+            d_yp += vec.y();
+            d_zp += vec.z();
+            q = cameraRotation.getRotate();
+            updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+          }
+          else {
+            double xdiff = (x-xpos)*0.5;
+            double ydiff = (y-ypos)*0.5;
+            double xratio = (x-width*0.5)/(width*0.5);
+            double yratio = (y-height*0.5)/(height*0.5);
+            double xdir = 1, ydir = 1;
+            if(xratio<0) xdir=-1;
+            if(yratio<0) ydir=-1;
+            xratio = fabs(xratio);
+            yratio = fabs(yratio);
+            td_zr = xdiff * (1-yratio);
+            td_yr = ydiff * (1-xratio);
+            td_xr = -ydiff*xdir*xratio + xdiff*ydir*yratio;
 
-      if (l_settings && !l_settings->id) {
-        // to be reimplemented via interface
-        //control->gui->viewportChange(td_xr, td_yr, vec.x(), vec.y(), vec.z());
+            osg::Matrixd rotate;
+            osg::Vec3 vx(1,0,0),vy(0,1,0),vz(0,0,1);
+            vec = osg::Vec3(d_xp,d_yp, d_zp);
+
+            vx = vx*cameraRotation;
+            vy = vy*cameraRotation;
+            vz = vz*cameraRotation;
+
+            if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
+            if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
+            if(td_zr < 0.4 && td_zr > -0.4) td_zr = 0.0;
+
+            rotate.makeRotate(osg::DegreesToRadians(-td_zr), vy,
+                              osg::DegreesToRadians(td_yr), vx,
+                              osg::DegreesToRadians(td_xr), vz);
+            vec = (vec-pivot)*rotate;
+            rotate.preMult(cameraRotation);
+            q = rotate.getRotate();
+
+            d_xp = pivot.x()+vec.x();
+            d_yp = pivot.y()+vec.y();
+            d_zp = pivot.z()+vec.z();
+            updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+          }
+        }
+        else if (button == LMB) {
+          vec = osg::Vec3(0.0,0.0,(y-ypos)*0.01);
+          vec = vec*cameraRotation;
+          d_xp += vec.x();
+          d_yp += vec.y();
+          d_zp += vec.z();
+          q = cameraRotation.getRotate();
+          updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+        }
       }
       else {
-        osg::Quat q;
-        if (camera == MICHA_CAM && !l_settings) {
-          osg::Matrixd rotate;
-          osg::Vec3 vx(1,0,0),vy(0,1,0),vz(0,0,1);
-      
-          vx = vx*cameraRotation;
-      
-          //rotate.makeRotate(0.0, vy, osg::DegreesToRadians(-td_xr), vz,
-          //                  osg::DegreesToRadians(-td_yr), vx);
-          rotate.makeRotate(0.0, vy, osg::DegreesToRadians(-td_yr), vx,
-                            osg::DegreesToRadians(-td_xr), vz);
-          rotate.preMult(cameraRotation);
-          q = rotate.getRotate();
-          d_xp += vec.x();
-          d_yp += vec.y();
-          d_zp += vec.z();
+        if (button == LMB){
+          td_xr = (x - xpos)*0.5;
+          td_yr = -(y - ypos)*0.5;
+        }
+        else if (button == RMB){
+          vec = osg::Vec3(-(x-xpos)*0.01,0.0,(y-ypos)*0.01);
+          vec = vec*cameraRotation;
+          if (camType == 2){
+            vec[2] = vec[2]*0.02;
+            osg::Matrix projection;
+            float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
+            actOrtH-=(y-ypos)*0.1;
+            double w = actOrtH * aspectRatio;
+            projection.makeOrtho(-w/2,w/2,-actOrtH/2,actOrtH/2,1.0f,10000.0f);
+            mainCamera->setProjectionMatrix(projection);
+          }
+        }
+        else if ( (button == MMB) || (button == (LMB | RMB)) ) {
+          vec = osg::Vec3(-(x-xpos)*0.01,-(y-ypos)*0.01,0.0);
+          vec = vec*cameraRotation;
+        }
+
+        if (l_settings && !l_settings->id) {
+          // to be reimplemented via interface
+          //control->gui->viewportChange(td_xr, td_yr, vec.x(), vec.y(), vec.z());
         }
         else {
-          osg::Matrixd rotate;
-          osg::Vec3 vx(1,0,0),vy(0,1,0),vz(0,0,1);
-      
-          vx = vx*cameraRotation;
-      
-          if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
-          if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
+          osg::Quat q;
+          if (camera == MICHA_CAM && !l_settings) {
+            osg::Matrixd rotate;
+            osg::Vec3 vx(1,0,0),vy(0,1,0),vz(0,0,1);
 
-          //rotate.makeRotate(0.0, vy, osg::DegreesToRadians(td_xr), vz,
-          //                  osg::DegreesToRadians(td_yr), vx);
-          rotate.makeRotate(0.0, vy, osg::DegreesToRadians(td_yr), vx,
-                            osg::DegreesToRadians(td_xr), vz);
-          rotate.preMult(cameraRotation);
-          q = rotate.getRotate();
-    
-          d_xp += vec.x();
-          d_yp += vec.y();
-          d_zp += vec.z();
+            vx = vx*cameraRotation;
+
+            //rotate.makeRotate(0.0, vy, osg::DegreesToRadians(-td_xr), vz,
+            //                  osg::DegreesToRadians(-td_yr), vx);
+            rotate.makeRotate(0.0, vy, osg::DegreesToRadians(-td_yr), vx,
+                              osg::DegreesToRadians(-td_xr), vz);
+            rotate.preMult(cameraRotation);
+            q = rotate.getRotate();
+            d_xp += vec.x();
+            d_yp += vec.y();
+            d_zp += vec.z();
+          }
+          else {
+            osg::Matrixd rotate;
+            osg::Vec3 vx(1,0,0),vy(0,1,0),vz(0,0,1);
+
+            vx = vx*cameraRotation;
+
+            if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
+            if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
+
+            //rotate.makeRotate(0.0, vy, osg::DegreesToRadians(td_xr), vz,
+            //                  osg::DegreesToRadians(td_yr), vx);
+            rotate.makeRotate(0.0, vy, osg::DegreesToRadians(td_yr), vx,
+                              osg::DegreesToRadians(td_xr), vz);
+            rotate.preMult(cameraRotation);
+            q = rotate.getRotate();
+
+            d_xp += vec.x();
+            d_yp += vec.y();
+            d_zp += vec.z();
+          }
+          updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
         }
-        updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
       }
       xpos = x;
       ypos = y;
@@ -826,7 +921,7 @@ namespace mars {
       osg::Matrixd tmp_matrix;
       tmp_matrix.makeIdentity();
       this->keyswitchManipulator = keyswitchManipulator;
-      keyswitchManipulator->setByMatrix(tmp_matrix);      
+      keyswitchManipulator->setByMatrix(tmp_matrix);
     }
 
     void GraphicsCamera::setStereoMode(bool _stereo) {
@@ -874,6 +969,154 @@ namespace mars {
       if(mainCamera->getNodeMask() == 0){
           mainCamera->setNodeMask(nodeMask);
       }
+    }
+
+    void GraphicsCamera::setPivot(osg::Vec3f p) {
+      osg::Vec3f c(d_xp, d_yp, d_zp);
+      double l = (c-pivot).length();
+      pivot = p;
+      if(camera == TRACKBALL){
+        osg::Quat q = cameraRotation.getRotate();
+        osg::Vec3f diff = q*osg::Vec3f(0, 0, 1);
+        d_xp = pivot.x()+diff.x()*l;
+        d_yp = pivot.y()+diff.y()*l;
+        d_zp = pivot.z()+diff.z()*l;
+        updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+      }
+    }
+
+    void GraphicsCamera::setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor) {
+      // create the quad to visualize.
+      osg::Geometry* polyGeom = new osg::Geometry();
+
+      polyGeom->setSupportsDisplayList(false);
+
+      osg::Vec3 origin(0.0f,0.0f,0.0f);
+      osg::Vec3 xAxis(1.0f,0.0f,0.0f);
+      osg::Vec3 yAxis(0.0f,1.0f,0.0f);
+      float height = 1024.0f;
+      float width = 1280.0f;
+      int noSteps = 50;
+
+      osg::Vec3Array* vertices = new osg::Vec3Array;
+      osg::Vec2Array* texcoords = new osg::Vec2Array;
+      osg::Vec4Array* colors = new osg::Vec4Array;
+
+      osg::Vec3 bottom = origin;
+      osg::Vec3 dx = xAxis*(width/((float)(noSteps-1)));
+      osg::Vec3 dy = yAxis*(height/((float)(noSteps-1)));
+
+      osg::Vec2 bottom_texcoord(0.0f,0.0f);
+      osg::Vec2 dx_texcoord(1.0f/(float)(noSteps-1),0.0f);
+      osg::Vec2 dy_texcoord(0.0f,1.0f/(float)(noSteps-1));
+
+      int i,j;
+      double f1 = factor*osg::PI*0.999;
+      double f2 = 0.5/tan(f1*0.5);
+      for(i=0;i<noSteps;++i) {
+        osg::Vec3 cursor = bottom+dy*(float)i;
+        osg::Vec2 texcoord = bottom_texcoord+dy_texcoord*(float)i;
+        for(j=0;j<noSteps;++j) {
+          vertices->push_back(cursor);
+          // texcoords->push_back(osg::Vec2((sin(texcoord.x()*osg::PI-osg::PI*0.5)+1.0f)*0.5f,
+          //                                (sin(texcoord.y()*osg::PI-osg::PI*0.5)+1.0f)*0.5f));
+          //texcoords->push_back(osg::Vec2(texcoord.x(), texcoord.y()));
+          double x = tan((texcoord.x()-0.5)*f1)*f2+0.5;
+          double y = tan((texcoord.y()-0.5)*f1)*f2+0.5;
+          texcoords->push_back(osg::Vec2f(x,y));
+          colors->push_back(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+
+          cursor += dx;
+          texcoord += dx_texcoord;
+        }
+      }
+
+      // pass the created vertex array to the points geometry object.
+      polyGeom->setVertexArray(vertices);
+      polyGeom->setColorArray(colors, osg::Array::BIND_PER_VERTEX);
+      polyGeom->setTexCoordArray(0,texcoords);
+
+
+      for(i=0;i<noSteps-1;++i) {
+        osg::DrawElementsUShort* elements = new osg::DrawElementsUShort(osg::PrimitiveSet::QUAD_STRIP);
+        for(j=0;j<noSteps;++j) {
+          elements->push_back(j+(i+1)*noSteps);
+          elements->push_back(j+(i)*noSteps);
+        }
+        polyGeom->addPrimitiveSet(elements);
+      }
+
+      // new we need to add the texture to the Drawable, we do so by creating a
+      // StateSet to contain the Texture StateAttribute.
+      osg::StateSet* stateset = polyGeom->getOrCreateStateSet();
+      stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::ON);
+      stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
+
+      osg::Geode* geode = new osg::Geode();
+      geode->addDrawable(polyGeom);
+
+      // set up the camera to render the textured quad
+      osg::Camera* camera = new osg::Camera;
+
+      // just inherit the main cameras view
+      camera->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
+      camera->setViewMatrix(osg::Matrix::identity());
+      camera->setViewport(0, 0, width, height);
+      camera->setProjectionMatrixAsOrtho2D(0,width,0,height);
+      camera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT);
+      camera->setAllowEventFocus(false);
+      camera->setClearColor(osg::Vec4(1, 0, 0, 0.5));
+      camera->setClearMask(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+      // set the camera to render before the main camera.
+      camera->setRenderOrder(osg::Camera::PRE_RENDER);
+      // add subgraph to render
+      camera->addChild(geode);
+      camera->attach(osg::Camera::COLOR_BUFFER, image);
+      mainScene->addChild(camera);
+    }
+
+    void GraphicsCamera::setTrakingTransform(osg::ref_ptr<osg::PositionAttitudeTransform> t) {
+      tracking = t;
+      if(tracking.valid()) {
+        double x[7];
+        getViewportQuat(x, x+1, x+2, x+3, x+4, x+5, x+6);
+        offsetPos.x() = x[0];
+        offsetPos.y() = x[1];
+        offsetPos.z() = x[2];
+        offsetRot.x() = x[3];
+        offsetRot.y() = x[4];
+        offsetRot.z() = x[5];
+        offsetRot.w() = x[6];
+      }
+    }
+
+    bool GraphicsCamera::isTracking() {
+      return tracking.valid();
+    }
+
+    void GraphicsCamera::getOffsetQuat(double *tx, double *ty, double *tz,
+                                       double *rx, double *ry, double *rz,
+                                       double *rw) {
+      *tx = offsetPos.x();
+      *ty = offsetPos.y();
+      *tz = offsetPos.z();
+      *rx = offsetRot.x();
+      *ry = offsetRot.y();
+      *rz = offsetRot.z();
+      *rw = offsetRot.w();
+    }
+
+    void GraphicsCamera::setOffsetQuat(double tx, double ty, double tz,
+                                       double rx, double ry, double rz,
+                                       double rw) {
+      offsetPos.x() = tx;
+      offsetPos.y() = ty;
+      offsetPos.z() = tz;
+      offsetRot.x() = rx;
+      offsetRot.y() = ry;
+      offsetRot.z() = rz;
+      offsetRot.w() = rw;
     }
 
   } // end of namespace graphics

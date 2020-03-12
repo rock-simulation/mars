@@ -98,8 +98,8 @@ namespace mars {
       sim_fault = false;
       // set the calculation step size in ms
       calc_ms      = 10; //defaultCFG->getInt("physics", "calc_ms", 10);
+      avg_count_steps = 20;
       my_real_time = 0;
-      show_time = 0;
       // to synchronise drawing and physics
       sync_time = 40;
       sync_count = 0;
@@ -109,6 +109,7 @@ namespace mars {
       arg_run    = 0;
       arg_grid   = 0;
       arg_ortho  = 0;
+
       Simulator::activeSimulator = this; // set this Simulator object to the active one
 
       gravity = Vector(0.0, 0.0, -9.81); // set gravity to earth conditions
@@ -119,6 +120,10 @@ namespace mars {
       control->sim = (SimulatorInterface*)this;
       control->cfg = 0;//defaultCFG;
       dbSimTimePackage.add("simTime", 0.);
+      dbSimDebugPackage.add("simUpdate", 0.);
+      dbSimDebugPackage.add("worldStep", 0.);
+      dbSimDebugPackage.add("logStep", 0.);
+
       // load optional libs
       checkOptionalDependency("data_broker");
       checkOptionalDependency("cfg_manager");
@@ -176,6 +181,10 @@ namespace mars {
                                                       dbSimTimePackage,
                                                       NULL,
                                                       data_broker::DATA_PACKAGE_READ_FLAG);
+          dbSimDebugId = control->dataBroker->pushData("mars_sim", "debugTime",
+                                                       dbSimDebugPackage,
+                                                       NULL,
+                                                       data_broker::DATA_PACKAGE_READ_FLAG);
           getTimeMutex.unlock();
           control->dataBroker->createTimer("mars_sim/simTimer");
           control->dataBroker->createTrigger("mars_sim/prePhysicsUpdate");
@@ -224,16 +233,16 @@ namespace mars {
         control->cfg->getOrCreateProperty("Preferences", "resources_path",
                                           std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
 
-	std::string loadFile = configPath.sValue+"/mars_Simulator.yaml";
-	control->cfg->loadConfig(loadFile.c_str());
-	loadFile = configPath.sValue+"/mars_Physics.yaml";
+        std::string loadFile = configPath.sValue+"/mars_Simulator.yaml";
+        control->cfg->loadConfig(loadFile.c_str());
+        loadFile = configPath.sValue+"/mars_Physics.yaml";
         control->cfg->loadConfig(loadFile.c_str());
 
         bool loadLastSave = false;
         control->cfg->getPropertyValue("Config", "loadLastSave", "value",
                                        &loadLastSave);
         if (loadLastSave) {
-	  loadFile = configPath.sValue+"/mars_saveOnClose.yaml";
+          loadFile = configPath.sValue+"/mars_saveOnClose.yaml";
           control->cfg->loadConfig(loadFile.c_str());
         }
 
@@ -270,7 +279,7 @@ namespace mars {
       physics->initTheWorld();
       // the physics step_size is in seconds
       physics->step_size = calc_ms/1000.;
-      physics->fast_step = false;
+      physics->fast_step = cfgFaststep.bValue;
 
       physics->world_erp = cfgWorldErp.dValue;
       physics->world_cfm = cfgWorldCfm.dValue;
@@ -285,7 +294,7 @@ namespace mars {
       fprintf(stderr, "INFO: set physics stack size to: %lu\n", getStackSize());
 #endif
 
-      // Add plugins that have been added via Simulator::addPlugin
+      /*// Add plugins that have been added via Simulator::addPlugin
       // before to start simulation
       for (unsigned int i = 0; i < newPlugins.size(); ++i) {
         LOG_DEBUG("[Simulator::runSimulation] init plugin: %s\n", newPlugins[i].name.c_str());
@@ -293,7 +302,9 @@ namespace mars {
         activePlugins.push_back(newPlugins[i]);
         newPlugins[i].p_interface->init();
       }
-      newPlugins.clear();      
+      newPlugins.clear();*/
+
+      std::cout << "ActivePlugins: " << activePlugins.size() << std::endl;
 
       // load scene
       while(arg_v_scene_name.size() > 0) {
@@ -383,24 +394,21 @@ namespace mars {
         simulationStatus = STEPPING;
       }
 
-      if(show_time) time = utils::getTime();
+      time = utils::getTime();
 
       if(control->dataBroker) {
         control->dataBroker->trigger("mars_sim/prePhysicsUpdate");
       }
       physics->stepTheWorld();
 
-      if(show_time) {
-        avg_step_time += getTimeDiff(time);
-      }
+      avg_step_time += getTimeDiff(time);
 
       control->nodes->updateDynamicNodes(calc_ms); //Moved update to here, otherwise RaySensor is one step behind the world every time
       control->joints->updateJoints(calc_ms);
       control->motors->updateMotors(calc_ms);
       control->controllers->updateControllers(calc_ms);
 
-      if(show_time)
-        time = utils::getTime();
+      time = utils::getTime();
 
       getTimeMutex.lock();
       dbSimTimePackage[0].d += calc_ms;
@@ -411,18 +419,15 @@ namespace mars {
         control->dataBroker->stepTimer("mars_sim/simTimer", calc_ms);
       }
 
-      if(show_time) {
-        avg_log_time += getTimeDiff(time);
-        if(++count > 20) {
-          avg_log_time /= count;
-          avg_step_time /= count;
-          count = 0;
-          fprintf(stderr, "Step World: %g\n", avg_step_time);
-          fprintf(stderr, "debug_log_time: %g\n", avg_log_time);
-          avg_step_time = avg_log_time = 0.0;
-        }
+      avg_log_time += getTimeDiff(time);
+      if(++count > avg_count_steps) {
+        avg_log_time /= count;
+        avg_step_time /= count;
+        count = 0;
+        dbSimDebugPackage[1].d = avg_step_time;
+        dbSimDebugPackage[2].d = avg_log_time;
+        avg_step_time = avg_log_time = 0.0;
       }
-
       pluginLocker.lockForRead();
 
       // It is possible for plugins to call switchPluginUpdateMode during
@@ -430,29 +435,33 @@ namespace mars {
       // We use erased_active to notify this loop about an erasure.
       for(unsigned int i = 0; i < activePlugins.size();) {
         erased_active = false;
-        if(show_time)
-          time = utils::getTime();
+        time = utils::getTime();
 
         activePlugins[i].p_interface->update(calc_ms);
 
         if(!erased_active) {
-          if(show_time) {
-            time = getTimeDiff(time);
-            activePlugins[i].timer += time;
-            activePlugins[i].t_count++;
-            if(activePlugins[i].t_count > 20) {
-              activePlugins[i].timer /= activePlugins[i].t_count;
-              activePlugins[i].t_count = 0;
-              fprintf(stderr, "debug_time: %s: %g\n",
-                      activePlugins[i].name.c_str(),
-                      activePlugins[i].timer);
-              activePlugins[i].timer = 0.0;
-            }
+          time = getTimeDiff(time);
+          activePlugins[i].timer += time;
+          activePlugins[i].t_count++;
+          if(activePlugins[i].t_count > avg_count_steps) {
+            activePlugins[i].timer /= activePlugins[i].t_count;
+            activePlugins[i].t_count = 0;
+            //fprintf(stderr, "debug_time: %s: %g\n",
+            //        activePlugins[i].name.c_str(),
+            //        activePlugins[i].timer);
+            getTimeMutex.lock();
+            dbSimDebugPackage[i+3].d = activePlugins[i].timer;
+            getTimeMutex.unlock();
+            activePlugins[i].timer = 0.0;
           }
           ++i;
         }
       }
       pluginLocker.unlock();
+      if(control->dataBroker) {
+        control->dataBroker->pushData(dbSimDebugId,
+                                      dbSimDebugPackage);
+      }
       if (sync_graphics) {
         calc_time += calc_ms;
         if (calc_time >= sync_time) {
@@ -491,6 +500,7 @@ namespace mars {
         break;
       case STOPPED:
         simulationStatus = RUNNING;
+        stepping_wc.wakeAll();
         break;
       case STEPPING:
          simulationStatus = RUNNING;
@@ -509,6 +519,10 @@ namespace mars {
 
     //consider the case where the time step is smaller than 1 ms
     void Simulator::myRealTime() {
+      static long myTime = utils::getTime();
+      long timeDiff = getTimeDiff(myTime);
+      static double avgTime = 0;
+      avgTime += timeDiff;
 #ifdef __linux__  //__unix__, wenn Darwin das mitmacht.
       //used to remember last time this function was called
       //and as absolute (minimum) wake-up time.
@@ -548,23 +562,17 @@ namespace mars {
           throw std::runtime_error("clock_gettime(CLOCK_MONOTONIC, ...) failed");
         }
 #else
-      static long myTime = utils::getTime();
-      long timeDiff = getTimeDiff(myTime);
-
-      if(show_time) {
-        fprintf(stderr, "timeDiff: %ld\n", timeDiff);
-      }
       if(timeDiff < calc_ms) {
         long valSleep = calc_ms - timeDiff;
         msleep(valSleep);
-        myTime = utils::getTime();
-        if(show_time) {
-          fprintf(stderr, "sleep time: %ld\n", valSleep);
-        }
-      } else {
-        myTime += timeDiff;
       }
 #endif
+      if(count+1 > avg_count_steps) {
+        avgTime /= count;
+        dbSimDebugPackage[0].d = avgTime;
+        avgTime = 0;
+      }
+      myTime += timeDiff;
     }
 
 
@@ -584,7 +592,7 @@ namespace mars {
 #else
         return configPath.sValue + std::string("/tmp/");
 #endif
-        
+
     }
 
     void Simulator::sceneHasChanged(bool reseted) {
@@ -718,6 +726,9 @@ namespace mars {
         for (unsigned int i=0; i<newPlugins.size(); i++) {
           allPlugins.push_back(newPlugins[i]);
           activePlugins.push_back(newPlugins[i]);
+          getTimeMutex.lock();
+          dbSimDebugPackage.add(newPlugins[i].name, 0.0);
+          getTimeMutex.unlock();
           newPlugins[i].p_interface->init();
         }
         newPlugins.clear();
@@ -725,13 +736,13 @@ namespace mars {
         pluginLocker.unlock();
       }
 
-
       pluginLocker.lockForRead();
       for (unsigned int i=0; i<guiPlugins.size(); i++) {
-        if(show_time)
-          time = utils::getTime();
-
         guiPlugins[i].p_interface->update(0);
+        // todo: fix time debuging for gui plugins
+        /*
+        time = utils::getTime();
+
 
         if(show_time) {
           time = getTimeDiff(time);
@@ -746,6 +757,7 @@ namespace mars {
             guiPlugins[i].timer_gui = 0.0;
           }
         }
+        */
       }
       pluginLocker.unlock();
 
@@ -755,6 +767,7 @@ namespace mars {
     void Simulator::newWorld(bool clear_all) {
       physicsThreadLock();
       // reset simTime
+      realStartTime = utils::getTime();
       dbSimTimePackage[0].set(0.);
       control->controllers->clearAllControllers();
       control->sensors->clearAllSensors(clear_all);
@@ -819,6 +832,26 @@ namespace mars {
         {"c_port",1,0,'c'},
         {0, 0, 0, 0}
       };
+
+      // pipe arguments into cfg_manager
+      if(control->cfg) {
+        std::vector<std::string> arguments;
+        for(int i=0; i<argc; ++i) {
+          arguments.push_back(argv[i]);
+        }
+        char label[55];
+        for(size_t i=0; i<arguments.size(); ++i) {
+          size_t f = arguments[i].find("=");
+          if(f != std::string::npos) {
+            control->cfg->getOrCreateProperty("Config", arguments[i].substr(0, f),
+                                     arguments[i].substr(f+1));
+          }
+          else {
+            sprintf(label, "arg%zu", i);
+            control->cfg->getOrCreateProperty("Config", label, arguments[i]);
+          }
+        }
+      }
 
       while (1) {
         c = getopt_long(argc, argv, "hrgoGs:C:p:", long_options, &option_index);
@@ -948,19 +981,37 @@ namespace mars {
       std::vector<pluginStruct>::iterator p_iter;
       bool afound = false;
       bool gfound = false;
+      bool bfound = false;
+      data_broker::DataPackage tmpPackage;
 
+      size_t i=0;
       for(p_iter=activePlugins.begin(); p_iter!=activePlugins.end();
-          p_iter++) {
+          p_iter++, ++i) {
         if((*p_iter).p_interface == pl) {
           afound = true;
           if(!(mode & PLUGIN_SIM_MODE)) {
             activePlugins.erase(p_iter);
             erased_active = true;
+            bfound = true;
           }
           break;
         }
       }
-
+      if(bfound) {
+        size_t offset = 3;
+        tmpPackage.add(dbSimDebugPackage[0]);
+        tmpPackage.add(dbSimDebugPackage[1]);
+        tmpPackage.add(dbSimDebugPackage[2]);
+        for(size_t k=0; k<activePlugins.size(); ++k) {
+          if(i==k) {
+            offset = 4;
+          }
+          tmpPackage.add(dbSimDebugPackage[k+offset]);
+        }
+        getTimeMutex.lock();
+        dbSimDebugPackage = tmpPackage;
+        getTimeMutex.unlock();
+      }
       for(p_iter=guiPlugins.begin(); p_iter!=guiPlugins.end();
           p_iter++) {
         if((*p_iter).p_interface == pl) {
@@ -974,8 +1025,12 @@ namespace mars {
       for(p_iter=allPlugins.begin(); p_iter!=allPlugins.end();
           p_iter++) {
         if((*p_iter).p_interface == pl) {
-          if(mode & PLUGIN_SIM_MODE && !afound)
+          if(mode & PLUGIN_SIM_MODE && !afound) {
             activePlugins.push_back(*p_iter);
+            getTimeMutex.lock();
+            dbSimDebugPackage.add(p_iter->name, 0.0);
+            getTimeMutex.unlock();
+          }
           if(mode & PLUGIN_GUI_MODE && !gfound)
             guiPlugins.push_back(*p_iter);
           break;
@@ -1069,10 +1124,25 @@ namespace mars {
 
       pluginLocker.lockForWrite();
 
+      size_t i=0;
       for(p_iter=activePlugins.begin(); p_iter!=activePlugins.end();
-          p_iter++) {
+          p_iter++, ++i) {
         if((*p_iter).p_interface == pl) {
           activePlugins.erase(p_iter);
+          data_broker::DataPackage tmpPackage;
+          size_t offset = 3;
+          tmpPackage.add(dbSimDebugPackage[0]);
+          tmpPackage.add(dbSimDebugPackage[1]);
+          tmpPackage.add(dbSimDebugPackage[2]);
+          for(size_t k=0; k<activePlugins.size(); ++k) {
+            if(i==k) {
+              offset = 4;
+            }
+            tmpPackage.add(dbSimDebugPackage[k+offset]);
+          }
+          getTimeMutex.lock();
+          dbSimDebugPackage = tmpPackage;
+          getTimeMutex.unlock();
           break;
         }
       }
@@ -1193,11 +1263,6 @@ namespace mars {
         return;
       }
 
-      if(_property.paramId == cfgDebugTime.paramId) {
-        show_time = _property.bValue;
-        return;
-      }
-
       if(_property.paramId == cfgSyncGui.paramId) {
         this->setSyncThreads(_property.bValue);
         return;
@@ -1246,6 +1311,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == cfgAvgCountSteps.paramId) {
+        avg_count_steps = _property.iValue;
+        return;
+      }
+
     }
 
     void Simulator::initCfgParams(void) {
@@ -1257,7 +1327,7 @@ namespace mars {
       cfgFaststep = control->cfg->getOrCreateProperty("Simulator", "faststep",
                                                       false, this);
       cfgRealtime = control->cfg->getOrCreateProperty("Simulator", "realtime calc",
-                                                      false, this);
+                                                      true, this);
       my_real_time = cfgRealtime.bValue;
 
       cfgDebugTime = control->cfg->getOrCreateProperty("Simulator", "debug time",
@@ -1282,10 +1352,10 @@ namespace mars {
                                                 -9.81, this);
 
       cfgWorldErp = control->cfg->getOrCreateProperty("Simulator", "world erp",
-                                                      0.1, this);
+                                                      0.2, this);
 
       cfgWorldCfm = control->cfg->getOrCreateProperty("Simulator", "world cfm",
-                                                      1e-10, this);
+                                                      1e-5, this);
 
       cfgVisRep = control->cfg->getOrCreateProperty("Simulator", "visual rep.",
                                                     (int)1, this);
@@ -1293,9 +1363,11 @@ namespace mars {
       cfgUseNow = control->cfg->getOrCreateProperty("Simulator", "getTime:useNow",
                                                     (bool)false, this);
 
+      cfgAvgCountSteps = control->cfg->getOrCreateProperty("Simulator", "avg count steps",
+                                                           avg_count_steps, this);
+      avg_count_steps = cfgAvgCountSteps.iValue;
       control->cfg->getOrCreateProperty("Simulator", "onPhysicsError",
                                         "abort", this);
-      show_time = cfgDebugTime.bValue;
 
     }
 
@@ -1354,7 +1426,7 @@ namespace mars {
       unsigned long returnTime;
       getTimeMutex.lock();
       if(cfgUseNow.bValue) {
-        returnTime = realStartTime+dbSimTimePackage[0].d;
+        returnTime = utils::getTime();
       }
       else {
         returnTime = realStartTime+dbSimTimePackage[0].d;

@@ -3,10 +3,17 @@ set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "This library wraps the osgText lib and adds the possiblity to use an background color and border for text labels.")
 cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
+include(CheckIncludeFileCXX)
 
 find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
+
+set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
+CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
+if(${HAVE_OSG_VERSION_H})
+    ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
+endif()
 
 include_directories(src)
 

@@ -8,6 +8,7 @@
     <depend package="tools/configmaps" />
     <depend package="simulation/mars/sim" />
     <depend package="simulation/mars/entity_generation/entity_factory" />
+    <depend package="zlib" />
 
     <tags>needs_opt</tags>
 </package>

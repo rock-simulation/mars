@@ -63,6 +63,7 @@
 #define MENU_VIEW_BOTTOM    -10
 #define MENU_SHOW_CONTACTS  -11
 #define MENU_SHOW_SELECTION -12
+#define MENU_VIEW_TRACKBALL -13
 
 namespace mars {
   namespace gui {
@@ -174,6 +175,9 @@ namespace mars {
       mainGui->addGenericMenuAction("../View/Camera/Bottom",
                                     MENU_VIEW_BOTTOM,
                                     (main_gui::MenuInterface*)this);
+      mainGui->addGenericMenuAction("../View/Trackball",
+                                    MENU_VIEW_TRACKBALL,
+                                    (main_gui::MenuInterface*)this, 'B');
     }
 
 
@@ -259,6 +263,9 @@ namespace mars {
       case MENU_VIEW_BOTTOM:
         control->graphics->setCameraDefaultView(-action-4);
         break;
+      case MENU_VIEW_TRACKBALL:
+        control->graphics->edit(0, "./mouse", "toggle_trackball");
+        break;
       }
     }
 
@@ -294,18 +301,18 @@ namespace mars {
 
     void MenuWindow::menu_addWindow(){
       static int num = 1;
-      QWidget* newWidget = new QWidget();
+      //QWidget* newWidget = new QWidget();
 
-      newWidget->setWindowTitle("marsGraphics");
-      unsigned long id = control->graphics->new3DWindow(newWidget);
-      //QWidget* newWidget = (QWidget*)control->graphics->getQTWidget(id);
+      //newWidget->setWindowTitle("marsGraphics");
+      unsigned long id = control->graphics->new3DWindow(NULL);
+      QWidget* newWidget = (QWidget*)control->graphics->getQTWidget(id);
       char title[55];
       sprintf(title, "graphics %d", num++);
       newWidget->setWindowTitle(title);
-      newWidget->resize(QSize(720, 405));
       newWidget->setMinimumSize(QSize(50, 50));
       mainGui->addDockWidget((void*)newWidget,0);
-      newWidget->show();
+      newWidget->resize(QSize(720, 405));
+      //newWidget->show();
     }
 
     void MenuWindow::menu_dock(bool checked) {
