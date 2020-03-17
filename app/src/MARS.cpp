@@ -258,7 +258,9 @@ namespace mars {
           if(mainGui) {
             marsGraphics->initializeOSG(NULL);
             QWidget *widget = (QWidget*)marsGraphics->getQTWidget(1);
-            mainGui->mainWindow_p()->setCentralWidget(widget);
+            if (widget) {
+              mainGui->mainWindow_p()->setCentralWidget(widget);
+            }
           }
           else {
             marsGraphics->initializeOSG(NULL, false);
