@@ -189,8 +189,7 @@ namespace mars {
                 info = control->cfg->getParamInfo(group, name);
                 switch(info.type) {
                 case cfg_manager::boolParam:
-                  control->cfg->setProperty(group, name,
-                                            (bool)atoi(value.c_str()));
+                  control->cfg->setProperty(group, name, (bool)atoi(value.c_str()));
                   break;
                 case cfg_manager::doubleParam:
                   control->cfg->setProperty(group, name, atof(value.c_str()));
@@ -264,6 +263,16 @@ namespace mars {
                   if(id) {
                     control->motors->edit(id, key, value);
                   }
+                }
+              }
+            }
+            if(map["edit"].hasKey("materials")) {
+              for(auto it: (ConfigMap&)(map["edit"]["materials"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  control->graphics->editMaterial(name, key, value);
                 }
               }
             }

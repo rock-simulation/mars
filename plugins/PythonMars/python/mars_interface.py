@@ -133,7 +133,7 @@ def edit(type_, name, key, value):
         iDict["edit"][type_] = {}
     if not name in iDict["edit"][type_]:
         iDict["edit"][type_][name] = []
-    iDict["edit"][type_][name].append({"k": key, "v": value})
+    iDict["edit"][type_][name].append({"k": key, "v": str(value)})
 
 def editNode(name, key, value):
     edit("nodes", name, key, value)
@@ -143,6 +143,9 @@ def editJoint(name, key, value):
 
 def editMotor(name, key, value):
     edit("motors", name, key, value)
+
+def editMaterial(name, key, value):
+    edit("materials", name, key, value)
 
 def editGraphics(key, value):
     edit("graphics", "-1", key, value)
