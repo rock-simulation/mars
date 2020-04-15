@@ -260,15 +260,29 @@ namespace osg_material_manager {
       else {
         info.texture = OsgMaterialManager::loadTexture(file);
       }
+      int filter = 1;
       if(nearest) {
+        filter = 0;
+      }
+      if(config.hasKey("filter")) {
+        filter = config["filter"];
+      }
+      if(filter == 0) {
+        fprintf(stderr, "set filter to nearest: %s\n", info.name.c_str());
         info.texture->setFilter(osg::Texture::MIN_FILTER,
                                 osg::Texture::NEAREST);
         info.texture->setFilter(osg::Texture::MAG_FILTER,
                                 osg::Texture::NEAREST);
       }
-      else {
+      else if(filter == 1) {
         info.texture->setFilter(osg::Texture::MIN_FILTER,
                                 osg::Texture::LINEAR_MIPMAP_LINEAR);
+        info.texture->setFilter(osg::Texture::MAG_FILTER,
+                                osg::Texture::LINEAR);
+      }
+      else if(filter == 2) {
+        info.texture->setFilter(osg::Texture::MIN_FILTER,
+                                osg::Texture::LINEAR);
         info.texture->setFilter(osg::Texture::MAG_FILTER,
                                 osg::Texture::LINEAR);
       }
