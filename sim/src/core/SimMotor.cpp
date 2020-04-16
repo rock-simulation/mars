@@ -788,6 +788,10 @@ namespace mars {
 
     void SimMotor::setOfflinePosition(interfaces::sReal value) {
       if(!control->sim->isSimRunning()) {
+        if(sMotor.type == MOTOR_TYPE_POSITION ||
+           sMotor.type == MOTOR_TYPE_PID) {
+          controlValue = value;
+        }
         myJoint->setOfflinePosition(value);
         refreshPositions();
       }
