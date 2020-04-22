@@ -1933,6 +1933,7 @@ namespace mars {
       if(nodeS->groupID > maxGroupID) {
         maxGroupID = nodeS->groupID;
       }
+      nodesToUpdate[sNode.index] = editedNode;
     }
 
   } // end of namespace sim
