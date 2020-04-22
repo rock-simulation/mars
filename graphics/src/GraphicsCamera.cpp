@@ -59,6 +59,7 @@ namespace mars {
       pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
       switch_eyes = true;
+      moveSpeed = 0.1;
 
       // set up ODE like camera
 
@@ -327,10 +328,10 @@ namespace mars {
       */
 
       //move camera according to its movent state
-      if(isMovingForward) moveForward(0.1f);
-      if(isMovingBack) moveForward(-0.1f);
-      if(isMovingLeft) moveRight(-0.1f);
-      if(isMovingRight) moveRight(0.1f);
+      if(isMovingForward) moveForward(moveSpeed);
+      if(isMovingBack) moveForward(-moveSpeed);
+      if(isMovingLeft) moveRight(-moveSpeed);
+      if(isMovingRight) moveRight(moveSpeed);
     }
 
     void GraphicsCamera::setViewport(int x, int y, int width, int height) {

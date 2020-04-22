@@ -112,6 +112,9 @@ namespace mars {
       virtual void setOffsetQuat(double tx, double ty, double tz,
                                  double rx, double ry, double rz,
                                  double rw) = 0;
+      virtual double getMoveSpeed() = 0;
+      virtual void setMoveSpeed(double s) = 0;
+
     }; // end of class GraphicsCameraInterface
 
   } // end of namespace interfaces

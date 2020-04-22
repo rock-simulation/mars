@@ -2453,6 +2453,9 @@ namespace mars {
           cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
         }
       }
+      else if(matchPattern("*/moveSpeed", key)) {
+        cam->setMoveSpeed(atof(value.c_str()));
+      }
     }
 
     osg::Vec3f GraphicsManager::getSelectedPos() {

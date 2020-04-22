@@ -486,7 +486,7 @@ namespace mars {
 
               if(gc->getCameraType() == 1) map["projection"] = "perspective";
               else map["projection"] = "orthogonal";
-
+              map["moveSpeed"] = gc->getMoveSpeed();
               if(mouse == ODE_CAM) map["mouse"] = "default";
               else if(mouse == MICHA_CAM) map["mouse"] = "invert";
               else if(mouse == OSG_CAM) map["mouse"] = "osg";

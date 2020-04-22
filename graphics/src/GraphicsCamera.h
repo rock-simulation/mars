@@ -132,6 +132,8 @@ namespace mars {
       virtual void setOffsetQuat(double tx, double ty, double tz,
                                  double rx, double ry, double rz,
                                  double rw);
+      virtual double getMoveSpeed() {return (double)moveSpeed;}
+      virtual void setMoveSpeed(double s) {moveSpeed = (float)s;}
 
     private:
       void calcEyeSep(void);
@@ -160,6 +162,7 @@ namespace mars {
       double f_win_ratio;
       double separation;
       double eyeSep; // separation of the eyes (displacement of one eye)
+      float moveSpeed;
       bool stereo;
       bool switch_eyes;
       short left;
