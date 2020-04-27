@@ -67,9 +67,9 @@ namespace mars {
      *     - the class should have saved the pointer to the physics implementation
      *     - the body and geom should be initialized to 0
      */
-    NodePhysics::NodePhysics(PhysicsInterface* world) {
+    NodePhysics::NodePhysics(std::shared_ptr<PhysicsInterface> world) {
       // At this moment we have not much things to do here. ^_^
-      theWorld = (WorldPhysics*)world;
+      theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
       nBody = 0;
       nGeom = 0;
       myVertices = 0;
@@ -584,8 +584,8 @@ namespace mars {
      *
      * I don't think that we need this function.
      */
-    void NodePhysics::setWorldObject(PhysicsInterface* world) {
-      theWorld = (WorldPhysics*)world;
+    void NodePhysics::setWorldObject(std::shared_ptr<PhysicsInterface>  world) {
+      theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
     }
 
     /**

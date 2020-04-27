@@ -902,7 +902,7 @@ namespace mars {
       physicsMutex.unlock();
     }
 
-    PhysicsInterface* Simulator::getPhysics(void) const {
+    std::shared_ptr<PhysicsInterface> Simulator::getPhysics(void) const {
       return physics;
     }
 

@@ -90,7 +90,7 @@ namespace mars {
       virtual void freeTheWorld(void);
       virtual void stepTheWorld(void);
       virtual bool existsWorld(void) const;
-      virtual const utils::Vector getCenterOfMass(const std::vector<interfaces::NodeInterface*> &nodes)const;
+      virtual const utils::Vector getCenterOfMass(const std::vector<std::shared_ptr<interfaces::NodeInterface>> &nodes)const;
       virtual void update(std::vector<interfaces::draw_item> *drawItems);
       virtual int checkCollisions(void);
       virtual interfaces::sReal getVectorCollision(const utils::Vector &pos, const utils::Vector &ray) const;

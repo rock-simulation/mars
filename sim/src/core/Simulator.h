@@ -159,7 +159,7 @@ namespace mars {
 
 
       //physics
-      virtual interfaces::PhysicsInterface* getPhysics(void) const;
+      virtual std::shared_ptr<interfaces::PhysicsInterface> getPhysics(void) const;
       virtual void handleError(interfaces::PhysicsError error);
       virtual void setGravity(const utils::Vector &gravity);
       virtual int checkCollisions(void);
@@ -261,7 +261,7 @@ namespace mars {
       interfaces::sReal calc_time;
       
       // physics
-      interfaces::PhysicsInterface *physics;
+      std::shared_ptr<interfaces::PhysicsInterface> physics;
       double calc_ms;
       int load_option;
       int std_port; ///< Controller port (default value: 1600)

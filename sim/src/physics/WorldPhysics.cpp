@@ -825,16 +825,16 @@ namespace mars {
       }
     }
 
-    const Vector WorldPhysics::getCenterOfMass(const std::vector<NodeInterface*> &nodes) const {
+    const Vector WorldPhysics::getCenterOfMass(const std::vector<std::shared_ptr<NodeInterface>> &nodes) const {
       MutexLocker locker(&iMutex);
       Vector center;
-      std::vector<NodeInterface*>::const_iterator iter;
+      std::vector<std::shared_ptr<NodeInterface>>::const_iterator iter;
       dMass sumMass;
       dMass tMass;
 
       dMassSetZero(&sumMass);
       for(iter = nodes.begin(); iter != nodes.end(); iter++) {
-        ((NodePhysics*)(*iter))->getAbsMass(&tMass);
+        (std::static_pointer_cast<NodePhysics>(*iter))->getAbsMass(&tMass);
         dMassAdd(&sumMass, &tMass);
       }
       center.x() = sumMass.c[0];
