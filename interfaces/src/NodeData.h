@@ -40,6 +40,15 @@ namespace mars {
     class LoadCenter;
     struct terrainStruct;
 
+    enum SimNodeType 
+    {
+      COLLISION = 0,
+      INERTIA = 1,
+      FRAME = 2,    // DUMMY SIMNODE 
+      VISUAL = 3,
+      NONE = 4
+    };
+
     /**
      * NodeData is a struct to exchange node information between the GUI
      * and the simulation
@@ -95,6 +104,10 @@ namespace mars {
         pos = position;
         rot = orientation;
         graphicsID1 = graphicsID2 = 0;
+
+        frameID = "";
+
+        simNodeType = SimNodeType::NONE;
       }
 
       /**
@@ -137,10 +150,14 @@ namespace mars {
                        bool exportDefault = false);
       void getFilesToSave(std::vector<std::string> *fileList);
 
+      SimNodeType simNodeType;
+
       /**
        * The name of the node. \verbatim Default value: "" \endverbatim
        */
       std::string name;
+
+      std::string frameID;
 
       /** The original object name; needed for importing objects from files (like
        * wavefront object files). \n

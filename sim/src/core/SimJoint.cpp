@@ -262,6 +262,10 @@ namespace mars {
           if(fabs(error) < 0.1) position2 -= error;
         }
         motor_torque = invert*physical_joint->getMotorTorque();
+
+        // FIXME this should be set only for Spring-joints!
+        // HACK use setTorque2 which only acts on spring joints
+        physical_joint->setTorque2(motor_torque);
       }
     }
 
