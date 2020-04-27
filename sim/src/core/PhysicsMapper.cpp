@@ -33,16 +33,20 @@ namespace mars {
   
     using namespace mars::interfaces;
 
-    PhysicsInterface* PhysicsMapper::newWorldPhysics(ControlCenter *control) {
-      return (PhysicsInterface*) (new WorldPhysics(control));
+    std::shared_ptr<PhysicsInterface> PhysicsMapper::newWorldPhysics(ControlCenter *control) {
+      std::shared_ptr<WorldPhysics> worldPhysics = std::make_shared<WorldPhysics>(control);
+      return std::static_pointer_cast<PhysicsInterface>(worldPhysics);
     }
 
-    NodeInterface* PhysicsMapper::newNodePhysics(PhysicsInterface *worldPhysics) {
-      return (NodeInterface*) (new NodePhysics(worldPhysics));
+    std::shared_ptr<NodeInterface> PhysicsMapper::newNodePhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
+      // Create a nodePhysics with the worldPhysics as constructor parameter, then downcast to a Node interface and return
+      std::shared_ptr<NodePhysics> nodePhysics = std::make_shared<NodePhysics>(worldPhysics);
+      return std::static_pointer_cast<NodeInterface>(nodePhysics);
     }
 
-    JointInterface* PhysicsMapper::newJointPhysics(PhysicsInterface *worldPhysics) {
-      return (JointInterface*) (new JointPhysics(worldPhysics));
+    std::shared_ptr<JointInterface> PhysicsMapper::newJointPhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
+      std::shared_ptr<JointPhysics> jointPhysics = std::make_shared<JointPhysics>(worldPhysics);
+      return std::static_pointer_cast<JointInterface>(jointPhysics);
     }
 
   } // end of namespace sim

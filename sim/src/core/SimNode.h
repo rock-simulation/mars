@@ -114,7 +114,7 @@ namespace mars {
       unsigned long getGraphicsID2(void) const;
       int getGroupID(void) const;
       const interfaces::NodeData getSNode(void) const; ///< Returns a pointer to the sNode.
-      interfaces::NodeInterface* getInterface(void) const; ///< Gets the node interface object.
+      std::shared_ptr<interfaces::NodeInterface>  getInterface(void) const; ///< Gets the node interface object.
       const interfaces::MaterialData getMaterial(void) const;
       unsigned long getID(void) const; ///< Returns the node ID.
       void getCoreExchange(interfaces::core_objects_exchange *obj) const;
@@ -150,7 +150,7 @@ namespace mars {
       void setMaterial(const interfaces::MaterialData &material);
       void setPhysicalState(const interfaces::nodeState &state);
       void setFromSNode(const interfaces::NodeData &sNode);
-      void setInterface(interfaces::NodeInterface *_interface); ///< Sets the node interface object.
+      void setInterface(std::shared_ptr<interfaces::NodeInterface>_interface); ///< Sets the node interface object.
       void setRelativePosition(const interfaces::NodeData &node);
       void setContactParams(const interfaces::contact_params &cp);
       void setLinearVelocity(const utils::Vector &vel);
@@ -207,7 +207,7 @@ namespace mars {
       utils::Vector a_acc;
       bool ground_contact;
       interfaces::sReal ground_contact_force;
-      interfaces::NodeInterface *my_interface;
+      std::shared_ptr<interfaces::NodeInterface> my_interface;
       bool has_sensor;
       interfaces::sReal i_velocity_sum;
       interfaces::sReal i_velocity[BACK_VEL];

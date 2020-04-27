@@ -43,7 +43,7 @@ namespace mars {
     class SimJoint;
     class SimNode;
 
-    typedef std::map<interfaces::NodeId, SimNode*> NodeMap;
+    typedef std::map<interfaces::NodeId, std::shared_ptr<SimNode>> NodeMap;
 
     /**
      * The declaration of the NodeManager class.
@@ -99,8 +99,8 @@ namespace mars {
       virtual void setContactParamMotion1(interfaces::NodeId id, interfaces::sReal motion);
       virtual void addNodeSensor(interfaces::BaseNodeSensor *sensor);
       virtual void reloadNodeSensor(interfaces::BaseNodeSensor *sensor);
-      virtual SimNode* getSimNode(interfaces::NodeId id);
-      virtual const SimNode* getSimNode(interfaces::NodeId id) const;
+      virtual std::shared_ptr<mars::sim::SimNode> getSimNode(interfaces::NodeId id);
+      virtual const std::shared_ptr<mars::sim::SimNode> getSimNode(interfaces::NodeId id) const;
       virtual void reloadNodes(bool reloadGraphics);
       virtual const utils::Vector setReloadExtent(interfaces::NodeId id, const utils::Vector &ext);
       virtual void setReloadPosition(interfaces::NodeId id, const utils::Vector &pos);
@@ -183,24 +183,24 @@ namespace mars {
       // recursively walks through the gids and joints and
       // applies the applyFunc with the given parameters.
       void recursiveHelper(interfaces::NodeId id, const Params *params,
-                           std::vector<SimJoint*> *joints,
+                           std::vector<std::shared_ptr<SimJoint> > *joints,
                            std::vector<int> *gids,
                            NodeMap *nodes,
-                           void (*applyFunc)(SimNode *node, const Params *params));
+                           void (*applyFunc)(std::shared_ptr<SimNode> node, const Params *params));
       void moveNodeRecursive(interfaces::NodeId id, const utils::Vector &offset,
-                             std::vector<SimJoint*> *joints,
+                             std::vector<std::shared_ptr<SimJoint> > *joints,
                              std::vector<int> *gids,
                              NodeMap *nodes);
       void rotateNodeRecursive(interfaces::NodeId id,
                                const utils::Vector &rotation_point,
                                const utils::Quaternion &rotation,
-                               std::vector<SimJoint*> *joints,
+                               std::vector<std::shared_ptr<SimJoint> > *joints,
                                std::vector<int> *gids,
                                NodeMap *nodes);
       // these static methods are used by moveNodeRecursive and rotateNodeRecursive
       // as applyFuncs for the recursiveHelper method
-      static void applyMove(SimNode *node, const Params *params);
-      static void applyRotation(SimNode *node, const Params *params);
+      static void applyMove(std::shared_ptr<SimNode> node, const Params *params);
+      static void applyRotation(std::shared_ptr<SimNode> node, const Params *params);
 
       void moveRelativeNodes(const SimNode &node, NodeMap *nodes, utils::Vector v);
       void rotateRelativeNodes(const SimNode &node, NodeMap *nodes,
@@ -211,16 +211,16 @@ namespace mars {
                               const utils::Quaternion *rotate = 0);
       void resetRelativeJoints(const SimNode &node,
                                NodeMap *nodes,
-                               std::vector<SimJoint*> *joints,
+                               std::vector<std::shared_ptr<SimJoint> > *joints,
                                const utils::Quaternion *rotate = 0);
       void setNodeStructPositionFromRelative(interfaces::NodeData *node) const;
       void clearRelativePosition(interfaces::NodeId id, bool lock);
       void removeNode(interfaces::NodeId id, bool lock,
                       bool clearGraphics=true);
-      void pushToUpdate(SimNode* node);
+      void pushToUpdate(std::shared_ptr<SimNode>  node);
 
       void printNodeMasses(bool onlysum);
-      void changeNode(SimNode *editedNode, interfaces::NodeData *nodeS);
+      void changeNode(std::shared_ptr<SimNode> editedNode, interfaces::NodeData *nodeS);
 
       // for passing parameters to the recursiveHelper.
       struct Params

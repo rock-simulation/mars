@@ -90,14 +90,14 @@ namespace mars {
      */
     class NodePhysics : public interfaces::NodeInterface {
     public:
-      NodePhysics(interfaces::PhysicsInterface *world);
+      NodePhysics(std::shared_ptr<interfaces::PhysicsInterface> world);
       virtual ~NodePhysics(void);
       virtual bool createNode(interfaces::NodeData *node);
       virtual void getPosition(utils::Vector *pos) const;
       virtual const utils::Vector setPosition(const utils::Vector &pos, bool move_group);
       virtual void getRotation(utils::Quaternion *q) const;
       virtual const utils::Quaternion setRotation(const utils::Quaternion &q, bool move_group);
-      virtual void setWorldObject(interfaces::PhysicsInterface *world);
+      virtual void setWorldObject(std::shared_ptr<interfaces::PhysicsInterface> world);
       virtual void getLinearVelocity(utils::Vector *vel) const;
       virtual void getAngularVelocity(utils::Vector *vel) const;
       virtual void getForce(utils::Vector *f) const;
@@ -135,7 +135,7 @@ namespace mars {
       dReal heightCallback(int x, int y);
 
     protected:
-      WorldPhysics *theWorld;
+      std::shared_ptr<WorldPhysics> theWorld;
       dBodyID nBody;
       dGeomID nGeom;
       dMass nMass;

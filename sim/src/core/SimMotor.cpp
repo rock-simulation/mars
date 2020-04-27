@@ -461,7 +461,7 @@ namespace mars {
         // pass speed (position/speed control) or torque to the attached
         // joint's setSpeed1/2 or setTorque1/2 methods
 
-        (myJoint->*setJointControlParameter)(*controlParameter, sMotor.axis);
+        (myJoint.get()->*setJointControlParameter)(*controlParameter, sMotor.axis);
         //for mimic in myJoint->mimics:
         //  mimic->*setJointControlParameter)(mimic_multiplier*controlParameter, axis);
       }
@@ -556,19 +556,19 @@ namespace mars {
 
 // from here on only getters and setters
 
-    void SimMotor::attachJoint(SimJoint *joint){
+    void SimMotor::attachJoint(std::shared_ptr<SimJoint> joint){
       myJoint = joint;
     }
 
-    void SimMotor::attachPlayJoint(SimJoint *joint){
+    void SimMotor::attachPlayJoint(std::shared_ptr<SimJoint> joint){
       myPlayJoint = joint;
     }
 
-    SimJoint* SimMotor::getJoint() const {
+    std::shared_ptr<SimJoint> SimMotor::getJoint() const {
       return myJoint;
     }
 
-    SimJoint* SimMotor::getPlayJoint() const {
+    std::shared_ptr<SimJoint> SimMotor::getPlayJoint() const {
       return myPlayJoint;
     }
 

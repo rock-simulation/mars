@@ -36,14 +36,14 @@ namespace mars {
     class JointPhysics:	public interfaces::JointInterface {
     public:
       ///the constructor 
-      JointPhysics(interfaces::PhysicsInterface* world);
+      JointPhysics(std::shared_ptr<interfaces::PhysicsInterface> world);
       ///the destructor
       virtual ~JointPhysics(void);
       ///create Joint getting as argument the JointData which give the 
       ///joint informations.
       virtual bool createJoint(interfaces::JointData *joint,
-                               const interfaces::NodeInterface *node1, 
-                               const interfaces::NodeInterface *node2);
+                               const std::shared_ptr<interfaces::NodeInterface> node1, 
+                               const std::shared_ptr<interfaces::NodeInterface> node2);
       ///get the anchor of the joint
       virtual void getAnchor(utils::Vector* anchor) const;
       /// set the anchor i.e. the position where the joint is created of the joint 
@@ -53,7 +53,7 @@ namespace mars {
       virtual void setAxis2(const utils::Vector &axis);
       virtual void getAxis(utils::Vector* axis) const;
       virtual void getAxis2(utils::Vector* axis) const;
-      virtual void setWorldObject(interfaces::PhysicsInterface* world);
+      virtual void setWorldObject(std::shared_ptr<interfaces::PhysicsInterface>  world);
       // methods to controll a joint through a motor
       virtual void setForceLimit(interfaces::sReal max_force);
       virtual void setForceLimit2(interfaces::sReal max_force);
@@ -88,7 +88,7 @@ namespace mars {
       virtual void setHighStop2(interfaces::sReal highStop2);
 
     private:
-      WorldPhysics* theWorld;
+      std::shared_ptr<WorldPhysics> theWorld;
       dJointID jointId, ball_motor;
       dJointFeedback feedback;
       dBodyID body1, body2;
