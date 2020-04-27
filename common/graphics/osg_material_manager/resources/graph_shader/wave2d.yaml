@@ -4,7 +4,7 @@ params:
     cos: {index: 1, type: float}
     s: {index: 2, type: vec4}
   out:
-    v: {index: 0, type: vec4}
+    v: {index: 3, type: vec4}
 uniforms:
   float:
     - {name: sinUniform}

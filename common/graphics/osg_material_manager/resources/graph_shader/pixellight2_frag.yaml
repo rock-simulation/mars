@@ -3,7 +3,7 @@ params:
     baseColor: {index: 0, type: vec4}
     normal: {index: 1, type: vec3}
   out:
-    shadedColor: {index: 0, type: vec4}
+    shadedColor: {index: 2, type: vec4}
 source: /graph_shader/plight_frag.frag
 minVersion: 120
 varyings:

@@ -2,7 +2,7 @@ params:
   in:
     viewPos: {index: 0, type: vec4}
   out:
-    worldPos: {index: 0, type: vec4}
+    worldPos: {index: 1, type: vec4}
 source: /graph_shader/worldPos.vert
 varyings:
   vec4:

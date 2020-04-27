@@ -9,7 +9,7 @@ void read_floats(sampler2D texture, float index,
   tex.y *= sy;
   tex += vec2(0.5*sx, 0.5*sy);
   vec4 color = texture2D(texture, tex);
-  float gScale = 0.0039215686;
+  float gScale = 0.003891045;
   float rScale = 1-gScale;
   values = vec2(color.r*rScale+color.g*gScale, color.b*rScale+color.a*gScale);
 }

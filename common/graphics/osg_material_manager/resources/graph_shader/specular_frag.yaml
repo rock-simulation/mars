@@ -3,7 +3,7 @@ params:
     base: {index: 0, type: vec4}
     normal: {index: 1, type: vec3}
   out:
-    outcol: {index: 0, type: vec4}
+    outcol: {index: 2, type: vec4}
 source: /graph_shader/specular_frag.frag
 minVersion: 120
 varyings:
