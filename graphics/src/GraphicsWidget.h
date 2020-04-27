@@ -21,6 +21,8 @@
 #ifndef MARS_GRAPHICS_WIDGET_H
 #define MARS_GRAPHICS_WIDGET_H
 
+#ifndef Q_MOC_RUN
+
 #ifdef _PRINT_HEADER_
   #warning "GraphicsWidget.h"
 #endif
@@ -337,5 +339,7 @@ namespace mars {
 
   } // end of namespace graphics
 } // end of namespace mars
+
+#endif
 
 #endif // GRAPHICS_WIDGET_H
