@@ -248,9 +248,21 @@ namespace mars {
         initCfgParams();
       }
 
-      control->nodes = new NodeManager(control, libManager);
-      control->joints = new JointManager(control);
-      control->motors = new MotorManager(control);
+      // If any manager is missing, create it from the default type.
+      if (control->nodes == NULL) {
+        LOG_DEBUG("[Simulator] Set default node manager in control->nodes");
+        control->nodes = new NodeManager(control, libManager);
+        //fprintf(stderr, "ERROR: No NodeManager is defined!\n");
+      }
+      if (control->joints == NULL) {
+        control->joints = new JointManager(control);
+        //fprintf(stderr, "ERROR: No JointManager is defined!\n");
+      }
+      if (control->motors == NULL) {
+        control->motors = new MotorManager(control);
+        //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
+      }
+
       control->sensors = new SensorManager(control);
       control->controllers = new ControllerManager(control);
       control->entities = new EntityManager(control);
