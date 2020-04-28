@@ -182,10 +182,11 @@ namespace mars {
       coreConfigFile = configDir+"/core_libs.txt";
       plugin_config = fopen(coreConfigFile.c_str() , "r");
       if(plugin_config) {
+        fprintf(stderr, "MARS::loadCoreLibs: load core libs from core_libs.txt\n");
         fclose(plugin_config);
         libManager->loadConfigFile(coreConfigFile);
       } else {
-        fprintf(stderr, "Loading default core libraries...\n");
+        fprintf(stderr, "MARS::loadCoreLibs: Loading default core libraries...\n");
         libManager->loadLibrary("data_broker");
         libManager->loadLibrary("mars_sim");
         libManager->loadLibrary("mars_scene_loader");
@@ -203,7 +204,7 @@ namespace mars {
 
     void MARS::loadAdditionalLibs() {
       {
-        fprintf(stderr, "Loading default additional libraries...\n");
+        fprintf(stderr, "MARS::loadAdditionalLibs: Loading default additional libraries...\n");
         // loading errors will be silent for the following optional libraries
         if(!noGUI) {
           libManager->loadLibrary("log_console", NULL, true);
