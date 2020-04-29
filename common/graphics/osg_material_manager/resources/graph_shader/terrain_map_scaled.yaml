@@ -1,0 +1,13 @@
+params:
+  out:
+    vModelPos: {index: 0, type: vec4}
+    vModelPosScaled: {index: 1, type: vec4}
+uniforms:
+  float:
+    - {name: texScale}
+    - {name: terrainScaleZ}
+  int:
+    - {name: terrainDim}
+  sampler2D:
+    - {name: terrainMap}
+source: /graph_shader/terrain_map_scaled.vert
