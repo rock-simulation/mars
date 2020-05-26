@@ -71,6 +71,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   mars_utils
                   osg_material_manager
                   osg_terrain
+                  osg_lines
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -88,6 +89,7 @@ set(HEADERS
            src/QtOsgMixGraphicsWidget.h
            
            src/shadow/ShadowMap.h
+           src/shadow/ParallelSplitShadowMap.h
 )
 
 set(HEADERS_2D
@@ -169,6 +171,7 @@ set(SOURCES
            src/2d_objects/HUDOSGNode.cpp
            
            src/shadow/ShadowMap.cpp
+           src/shadow/ParallelSplitShadowMap.cpp
 )
 
 if (${USE_QT5})

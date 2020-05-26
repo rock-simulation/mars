@@ -59,7 +59,7 @@ namespace mars {
       pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
       switch_eyes = true;
-      moveSpeed = 0.1;
+      moveSpeed = 0.5;
 
       // set up ODE like camera
 
