@@ -43,13 +43,14 @@
 #include <osg/Group>
 #include <osg/Uniform>
 #include <osg/Texture2D>
+#include <osg/Texture2DArray>
 
 #define COLOR_MAP_UNIT 0
-#define NORMAL_MAP_UNIT 1
-#define SHADOW_MAP_UNIT 2
-#define BUMP_MAP_UNIT 3
+#define SHADOW_MAP_UNIT 1
 #define NOISE_MAP_UNIT 4
-#define TANGENT_UNIT 7
+#define NORMAL_MAP_UNIT 5
+#define BUMP_MAP_UNIT 5
+#define TANGENT_UNIT 17
 #define DEFAULT_UV_UNIT 0
 
 #define SHADER_LIGHT_IS_SET                1 << 0
@@ -67,6 +68,16 @@ namespace osg_material_manager {
   class TextureInfo {
   public:
     osg::ref_ptr<osg::Texture2D> texture;
+    osg::ref_ptr<osg::Uniform> textureUniform;
+    std::string name;
+    int unit;
+    bool enabled;
+    // maybe define more attributes like filter
+  };
+
+  class TextureArrayInfo {
+  public:
+    osg::ref_ptr<osg::Texture2DArray> texture;
     osg::ref_ptr<osg::Uniform> textureUniform;
     std::string name;
     int unit;
@@ -102,6 +113,7 @@ namespace osg_material_manager {
     inline configmaps::ConfigMap getMaterialData() {return map;}
     void update();
     void addTexture(configmaps::ConfigMap &config, bool nearest=false);
+    void addTextureArray(configmaps::ConfigMap &config, bool nearest=false);
     void disableTexture(std::string name);
     void enableTexture(std::string name);
     bool checkTexture(std::string name);
@@ -132,6 +144,7 @@ namespace osg_material_manager {
 
     // new implementation for generic texture handling
     std::map<std::string, TextureInfo> textures;
+    std::map<std::string, TextureArrayInfo> textureArrays;
 
     bool hasShaderSources, isInit;
     bool useShader;

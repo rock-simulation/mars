@@ -1,0 +1,8 @@
+params:
+  in:
+    texCoord: {index: 0, type: vec2}
+    texture: {index: 1, type: sampler2D}
+    layer: {index: 2, type: float}
+  out:
+    color: {index: 3, type: vec4}
+source: /graph_shader/sample2DArray.frag

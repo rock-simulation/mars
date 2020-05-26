@@ -43,9 +43,19 @@ namespace osg_material_manager {
   using namespace mars::utils;
 
   MaterialNode::MaterialNode()
-    : isCreated(false), maxNumLights(1), useFog(true), useNoise(true),
-      getLight(true), brightness_(1.0), drawLineLaser(false), shadow(true),
-      needTangents(false), needInstancing(false), numInstances(1), iWidth(1), iHeight(1), iLength(1), renderBin(0) {
+    : isCreated(false),
+      useFog(true),
+      useNoise(true),
+      getLight(true),
+      brightness_(1.0),
+      drawLineLaser(false),
+      shadow(true),
+      maxNumLights(1),
+      needTangents(false),
+      needInstancing(false),
+      numInstances(1),
+      iWidth(1), iHeight(1), iLength(1),
+      renderBin(0) {
   }
 
   MaterialNode::~MaterialNode() {

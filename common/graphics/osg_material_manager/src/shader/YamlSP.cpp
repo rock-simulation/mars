@@ -35,28 +35,28 @@ namespace osg_material_manager {
 
   const set<GLSLUniform> &YamlSP::getUniforms() const {
     if (function.get() == nullptr) {
-      return set<GLSLUniform>();
+      return emptyUniforms;
     }
     return function.get()->getUniforms();
   }
 
   const set<GLSLAttribute> &YamlSP::getVaryings() const {
     if (function.get() == nullptr) {
-      return set<GLSLAttribute>();
+      return emptyAttributes;
     }
     return function.get()->getVaryings();
   }
 
   const std::set<GLSLConstant> &YamlSP::getConstants() const {
     if (function.get() == nullptr) {
-      return set<GLSLConstant>();
+      return emptyConstants;
     }
     return function.get()->getConstants();
   }
 
   const std::set<GLSLAttribute> &YamlSP::getAttributes() const {
     if (function.get() == nullptr) {
-      return set<GLSLAttribute>();
+      return emptyAttributes;
     }
     return function.get()->getAttributes();
   }
@@ -115,14 +115,14 @@ namespace osg_material_manager {
   const set<string> &YamlSP::getEnabledExtensions() const {
     if (function.get() == nullptr) {
       cout << "Sadly nullptr.." << endl;
-      return set<string>();
+      return emptyStrings;
     }
     return function.get()->getEnabledExtensions();
   }
 
   const set<string> &YamlSP::getDisabledExtensions() const {
     if (function.get() == nullptr) {
-      return set<string>();
+      return emptyStrings;
     }
     return function.get()->getDisabledExtensions();
   }
