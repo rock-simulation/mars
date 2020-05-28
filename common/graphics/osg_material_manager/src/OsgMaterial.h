@@ -50,7 +50,7 @@
 #define NOISE_MAP_UNIT 4
 #define NORMAL_MAP_UNIT 5
 #define BUMP_MAP_UNIT 5
-#define TANGENT_UNIT 17
+#define TANGENT_UNIT 1
 #define DEFAULT_UV_UNIT 0
 
 #define SHADER_LIGHT_IS_SET                1 << 0
