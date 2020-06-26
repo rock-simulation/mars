@@ -41,6 +41,7 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/PhysicsInterface.h>
 #include <mars/interfaces/graphics/draw_structs.h>
+#include <mars/interfaces/sim/MarsPluginTemplate.h>
 
 #include <vector>
 
@@ -130,6 +131,10 @@ namespace mars {
       // this functions are for the collision implementation
       void nearCallback (dGeomID o1, dGeomID o2);
       static void callbackForward(void *data, dGeomID o1, dGeomID o2);
+
+      void findPhysicsPlugins();
+      // List of physics pluging to be used as complements for ODE
+      std::vector<interfaces::MarsPluginTemplate*> physics_plugins;
     };
 
   } // end of namespace sim

@@ -128,6 +128,8 @@ namespace mars {
       checkOptionalDependency("cfg_manager");
       checkOptionalDependency("mars_graphics");
       checkOptionalDependency("log_console");
+      checkOptionalDependency("envire_mls");
+
 
       getTimeMutex.lock();
       realStartTime = utils::getTime();
@@ -219,6 +221,19 @@ namespace mars {
                                                       data_broker::DB_MESSAGE_TYPE_DEBUG);
             LOG_DEBUG("Simulator: no console loaded. output to stdout!");
           }
+        }
+      } else if(libName == "envire_mls") {
+        std::list<std::string>* libNames = new std::list<std::string>();
+        libManager->getAllLibraryNames(libNames);
+        volatile std::list<std::string> debugVar = *libNames;
+        lib_manager::LibInterface *lib = libManager->getLibrary(
+          "envire_mls");
+        if(lib){
+          mars::interfaces::MarsPluginTemplate * envireMls = (
+            dynamic_cast<mars::interfaces::MarsPluginTemplate*>(lib));
+          LOG_DEBUG(
+            "The library %s has been detected. ", 
+            envireMls->getLibName().c_str());
         }
       }
     }
