@@ -118,6 +118,7 @@ namespace mars {
       dSetErrorHandler (myErrorFunction);
       dSetDebugHandler (myDebugFunction);
       dSetMessageHandler (myMessageFunction);
+      findPhysicsPlugins();
     }
 
     /**
@@ -176,6 +177,13 @@ namespace mars {
         if(control->graphics)
           control->graphics->addDrawItems(&draw);
       }
+    }
+
+    void WorldPhysics::findPhysicsPlugins() {
+      LOG_DEBUG(
+        "In this method we check which physics plugins are available,"
+        "so we can later call them");
+
     }
 
     /**
