@@ -10,12 +10,13 @@ define_module_info()
 
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-			    data_broker
-			    mars_interfaces
-					mars_sim
-					mars_utils
-					configmaps
+			lib_manager
+			data_broker
+			mars_interfaces
+			mars_sim
+			mars_utils
+			configmaps
+			main_gui
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

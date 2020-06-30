@@ -26,8 +26,26 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
         lib_manager
+        configmaps
+        # optional but still requires include header to be available if used
+        mars_scene_loader
+        mars_graphics
+        mars_gui
+        mars_sim
+        main_gui
         mars_interfaces
-	configmaps
+        data_broker
+        cfg_manager
+        data_broker_gui
+        cfg_manager_gui
+        lib_manager_gui
+        log_console
+        data_broker_plotter2
+        SkyDomePlugin
+        CameraGUI
+        entity_view
+        mars_smurf
+        mars_smurf_loader
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
