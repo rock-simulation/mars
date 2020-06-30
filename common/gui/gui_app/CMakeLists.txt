@@ -21,6 +21,7 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
   lib_manager
+  configmaps
   cfg_manager
   main_gui
   mars_utils

@@ -12,6 +12,7 @@ define_module_info()
 include(CheckIncludeFileCXX)
 
 pkg_check_modules(PKGCONFIG REQUIRED
+			    cfg_manager
 			    lib_manager
 			    data_broker
 			    mars_interfaces

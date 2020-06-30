@@ -30,11 +30,12 @@ endif()
 setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-			    mars_interfaces
+          lib_manager
+          mars_interfaces
           mars_graphics
           main_gui
           mars_sim
+          config_map_gui
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
