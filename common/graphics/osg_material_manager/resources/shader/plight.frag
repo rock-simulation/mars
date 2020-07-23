@@ -22,10 +22,10 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
   float map2 = step(zShadow1, testZ)*step(testZ, zShadow2);
   float shadow0 = 0.0;
   float shadow1 = 0.0;
-  float shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
-  shadow2 = step(0.25,shadow2);
 
   if(useShadow == 1) {
+    float shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
+    shadow2 = step(0.25,shadow2);
     if(shadowSamples == 1) {
       shadow0 = shadow2D(shadowTexture0, gl_TexCoord[1].xyz).r;
       shadow0 = step(0.25,shadow0);
