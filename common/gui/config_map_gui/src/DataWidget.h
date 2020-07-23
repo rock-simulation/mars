@@ -21,7 +21,7 @@
 /**
  * \file DataWidget.h
  * \author Malte Langosz
- * \brief 
+ * \brief
  **/
 
 #ifndef DATA_WIDGET_H
@@ -51,15 +51,15 @@ namespace mars {
 
     class DataWidget : public QWidget,
                        public main_gui::PropertyCallback {
-    
+
       Q_OBJECT;
-      
+
     public:
       DataWidget(void* backwardCFG = 0, QWidget *parent = 0, bool onlyCompactView = false, bool allowAdd = true);
       ~DataWidget();
-    
+
       virtual void valueChanged(QtProperty *property, const QVariant &value);
-    
+
       main_gui::PropertyDialog *pDialog;
       void setConfigMap(const std::string &name,
                         const configmaps::ConfigMap &map);
@@ -111,6 +111,8 @@ namespace mars {
 
       int checkInPattern(const std::string &v,
                          const std::vector<std::string> &pattern);
+      configmaps::ConfigAtom* getAtom(std::string path);
+      configmaps::ConfigItem* getItem(std::string path);
 
     private slots:
       void addKey();
@@ -122,10 +124,9 @@ namespace mars {
       virtual void reject();
 
     };
-  
+
   } // end of namespace config_map_gui
 
-} // end of namespace mars 
+} // end of namespace mars
 
 #endif // DATA_WIDGET_H
-  
