@@ -120,7 +120,7 @@ namespace mars {
         //PythonMars_MainWin *plugin_win;
         utils::Mutex gpMutex, mutex, guiMapMutex, mutexPoints, mutexCamera;
         shared_ptr<Module> plugin;
-        std::map<std::string, unsigned long> motorMap;
+        std::map<std::string, unsigned long> motorMap, nodeMap;
         configmaps::ConfigItem requestMap;
         bool pythonException;
         std::map<std::string, PointStruct> points;

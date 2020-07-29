@@ -174,6 +174,50 @@ namespace mars {
             map.erase(iit);
           }
 
+          if(map.hasKey("applyForce") && control->sim->isSimRunning()) {
+            ConfigMap::iterator it = map["applyForce"].beginMap();
+            for(; it!=map["applyForce"].endMap(); ++it) {
+              std::string name = it->first;
+              if(it->second.hasKey("value")) {
+                ConfigVector v = it->second["value"];
+                if(nodeMap.find(name) == nodeMap.end()) {
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    nodeMap[name] = id;
+                    control->nodes->applyForce(id, Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]));
+                  }
+                }
+                else {
+                  control->nodes->applyForce(nodeMap[name], Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]));
+                }
+              }
+            }
+            ConfigMap::iterator iit = map.find("applyForce");
+            map.erase(iit);
+          }
+
+          if(map.hasKey("applyTorque") && control->sim->isSimRunning()) {
+            ConfigMap::iterator it = map["applyTorque"].beginMap();
+            for(; it!=map["applyTorque"].endMap(); ++it) {
+              std::string name = it->first;
+              if(it->second.hasKey("value")) {
+                ConfigVector v = it->second["value"];
+                if(nodeMap.find(name) == nodeMap.end()) {
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    nodeMap[name] = id;
+                    control->nodes->applyTorque(id, Vector(v[0], v[1], v[2]));
+                  }
+                }
+                else {
+                  control->nodes->applyTorque(nodeMap[name], Vector(v[0], v[1], v[2]));
+                }
+              }
+            }
+            ConfigMap::iterator iit = map.find("applyTorque");
+            map.erase(iit);
+          }
+
           if(map.hasKey("config")) {
             ConfigMap::iterator it = map["config"].beginMap();
             for(; it!=map["config"].endMap(); ++it) {
@@ -505,6 +549,7 @@ namespace mars {
 
       void PythonMars::reset() {
         motorMap.clear();
+        nodeMap.clear();
         //plugin->reload();
       }
 

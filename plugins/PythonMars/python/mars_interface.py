@@ -18,6 +18,8 @@ def clearDict():
     iDict["log"]["debug"] = []
     iDict["log"]["error"] = []
     iDict["commands"] = {}
+    iDict["applyForce"] = {}
+    iDict["applyTorque"] = {}
     iDict["request"] = []
     iDict["config"] = {}
     iDict["PointCloud"] = {}
@@ -32,6 +34,14 @@ def sendDict():
 def setMotor(name, value):
     global iDict
     iDict["commands"][name] = {"value": value}
+
+def applyForce(name, value):
+    global iDict
+    iDict["applyForce"][name] = {"value": value}
+
+def applyTorque(name, value):
+    global iDict
+    iDict["applyTorque"][name] = {"value": value}
 
 def setRunning(value):
     if value:
