@@ -27,6 +27,12 @@
                               //glDeleteBuffers
 #endif
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 #include "VertexBufferTerrain.h"
 
 #ifdef WIN32
@@ -87,7 +93,13 @@ namespace mars {
 #endif
       osg::State& state = *renderInfo.getState();
       state.disableAllVertexArrays();
-      osg::ArrayDispatchers& arrayDispatchers = state.getArrayDispatchers();
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 5) || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION < 9))
+    osg::ArrayDispatchers& arrayDispatchers = state.getArrayDispatchers();
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION > 5) || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION == 5 && OPENSCENEGRAPH_PATCH_VERSION >= 9))
+    osg::AttributeDispatchers& arrayDispatchers = state.getAttributeDispatchers();
+#else
+#error Unknown OSG Version
+#endif
 
       arrayDispatchers.reset();
       //arrayDispatchers.dispatch(osg::Geometry::BIND_OVERALL,0);
@@ -109,9 +121,17 @@ namespace mars {
       mrhmr->collideSphere(xPos, yPos, zPos, radius);
     }
 
-    osg::BoundingBox VertexBufferTerrain::computeBound() const {
-      return osg::BoundingBox(0.0, 0.0, 0.0, width, height, scale);
-    }
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 4))
+  osg::BoundingBox VertexBufferTerrain::computeBound() const {
+    return osg::BoundingBox(0.0, 0.0, 0.0, width, height, scale);
+  }
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
+  osg::BoundingSphere VertexBufferTerrain::computeBound() const {
+    return osg::BoundingSphere(osg::Vec3(width*0.5, height*0.5, scale*0.5), sqrt(width*width+height*height+scale*scale));
+  }
+#else
+#error Unknown OSG Version
+#endif
 
     void VertexBufferTerrain::setSelected(bool val) {
       if(val) {

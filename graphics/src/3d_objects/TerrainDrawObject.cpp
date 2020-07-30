@@ -25,6 +25,12 @@
  *  Created by Roemmermann on 21.10.09.
  */
 
+#ifdef HAVE_OSG_VERSION_H
+  #include <osg/Version>
+#else
+  #include <osg/Export>
+#endif
+
 #ifdef USE_VERTEX_BUFFER
 #include "VertexBufferTerrain.h"
 #endif
@@ -39,11 +45,6 @@
 #include <osg/CullFace>
 #include <osg/Geometry>
 
-#ifdef HAVE_OSG_VERSION_H
-  #include <osg/Version>
-#else
-  #include <osg/Export>
-#endif
 
 
 namespace mars {

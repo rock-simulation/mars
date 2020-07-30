@@ -63,7 +63,13 @@ namespace mars {
 
       virtual void drawImplementation(osg::RenderInfo& renderInfo) const;
       void collideSphere(double xPos, double yPos, double zPos, double radius);
-      virtual osg::BoundingBox computeBound() const;
+#if (OPENSCENEGRAPH_MAJOR_VERSION < 3 || ( OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION < 4))
+    osg::BoundingBox computeBound() const;
+#elif (OPENSCENEGRAPH_MAJOR_VERSION > 3 || (OPENSCENEGRAPH_MAJOR_VERSION == 3 && OPENSCENEGRAPH_MINOR_VERSION >= 4))
+    osg::BoundingSphere computeBound() const;
+#else
+#error Unknown OSG Version
+#endif
       void setSelected(bool val);
 
     private:
