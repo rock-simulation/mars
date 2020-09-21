@@ -584,7 +584,6 @@ namespace mars {
 
     int Simulator::loadScene(const std::string &filename,
                              bool wasrunning, const std::string &robotname, bool threadsave, bool blocking) {
-      printf("Load 2\n");
         if(!threadsave){
             return loadScene_internal(filename,wasrunning, robotname);
         }

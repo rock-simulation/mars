@@ -4,6 +4,7 @@
    </description>
     <depend package="simulation/lib_manager" />
     <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/common/gui/config_map_gui" />
     <depend package="simulation/mars/interfaces" />
     <depend package="simulation/mars/graphics" />
     <depend package="simulation/mars/sim" />

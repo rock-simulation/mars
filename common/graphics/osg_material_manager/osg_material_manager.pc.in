@@ -2,6 +2,7 @@ prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=@CMAKE_INSTALL_PREFIX@
 libdir=${prefix}/lib
 includedir=${prefix}/include
+sharedir=${prefix}/share/mars/@PROJECT_NAME@
 
 Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
