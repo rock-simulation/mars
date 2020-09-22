@@ -1,11 +1,11 @@
-from time import clock
+from time import time
 
 iDict = {}
-startTime = clock()
+startTime = time()
 
 def timing(s):
     global startTime
-    currentTime = clock()
+    currentTime = time()
     if currentTime > startTime+s:
         startTime = currentTime
         return True
