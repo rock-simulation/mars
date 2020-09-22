@@ -695,13 +695,20 @@ namespace mars {
 
     configmaps::ConfigItem* DataWidget::getItem(std::string path) {
       std::vector<std::string> arrPath = utils::explodeString('/', path);
-      ConfigItem *item = config[arrPath[1]];
-      for(size_t i=2; i<arrPath.size(); ++i) {
+      int index = 1;
+      if(cname.size() > 0) {
+        index = 2;
+      }
+      ConfigItem *item = config[arrPath[index]];
+      for(size_t i=index+1; i<arrPath.size(); ++i) {
         if(item->isMap()) {
           item = ((*item)[arrPath[i]]);
         }
         else if (item->isVector()) {
           item = ((*item)[atoi(arrPath[i].c_str())]);
+        }
+        else if (item->isAtom()) {
+          break;
         }
         else {
           fprintf(stderr, "ERROR: update configmap widget structure error!");
