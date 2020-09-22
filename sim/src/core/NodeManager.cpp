@@ -1754,7 +1754,16 @@ namespace mars {
       }
       NodeData nd = iter->second->getSNode();
       //// fprintf(stderr, "change: %s %s\n", key.c_str(), value.c_str());
-      if(matchPattern("*/position", key)) {
+      if(matchPattern("*/attach_camera", key)) {
+        iMutex.unlock();
+        if(control->graphics) {
+          int cameraId = atoi(value.c_str());
+          unsigned long drawId = getDrawID(id);
+          control->graphics->attacheCamToNode(cameraId, drawId);
+        }
+        return;
+      }
+      else if(matchPattern("*/position", key)) {
         //// fprintf(stderr, "position\n");
         double v = atof(value.c_str());
         if(key[key.size()-1] == 'x') nd.pos.x() = v;
