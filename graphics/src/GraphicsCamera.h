@@ -126,6 +126,7 @@ namespace mars {
       void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
       void setTrakingTransform(osg::ref_ptr<osg::PositionAttitudeTransform> t);
       virtual bool isTracking();
+      virtual void setTrackingLogRotation(bool b);
       virtual void getOffsetQuat(double *tx, double *ty, double *tz,
                                  double *rx, double *ry, double *rz,
                                  double *rw);
@@ -143,6 +144,7 @@ namespace mars {
       osg::ref_ptr<osg::Camera> mainCamera;
       osg::ref_ptr<osg::Camera> hudCamera;
       osg::ref_ptr<osg::PositionAttitudeTransform> tracking;
+      bool logTrackingRotation;
       osg::Matrixd myCameraMatrix;
       osg::Matrixd cameraRotation;
       osg::Matrixd cameraTrans;

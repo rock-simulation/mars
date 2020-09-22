@@ -114,6 +114,7 @@ namespace mars {
       isMovingLeft = isMovingRight = isMovingBack = isMovingForward = false;
       isoMinHeight = 2;
       isoMaxHeight = 20;
+      logTrackingRotation = false;
     }
 
     GraphicsCamera::~GraphicsCamera(void) {
@@ -203,7 +204,10 @@ namespace mars {
       if(tracking.valid()) {
         osg::Vec3d p = tracking->getPosition();
         osg::Quat q = tracking->getAttitude();
-
+        if(logTrackingRotation) {
+          q.x() = q.y() = q.z() = 0.0;
+          q.w() = 1.0;
+        }
         p += q*offsetPos;
         q *= offsetRot;
         updateViewportQuat(p.x(), p.y(), p.z(), q.x(), q.y(), q.z(), q.w());
@@ -1094,6 +1098,10 @@ namespace mars {
 
     bool GraphicsCamera::isTracking() {
       return tracking.valid();
+    }
+
+    void GraphicsCamera::setTrackingLogRotation(bool b) {
+      logTrackingRotation = b;
     }
 
     void GraphicsCamera::getOffsetQuat(double *tx, double *ty, double *tz,

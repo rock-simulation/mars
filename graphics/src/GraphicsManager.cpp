@@ -2485,6 +2485,9 @@ namespace mars {
       else if(matchPattern("*/moveSpeed", key)) {
         cam->setMoveSpeed(atof(value.c_str()));
       }
+      else if(matchPattern("*/logTrackingRotation", key)) {
+        cam->setTrackingLogRotation(atoi(value.c_str()));
+      }
     }
 
     osg::Vec3f GraphicsManager::getSelectedPos() {
