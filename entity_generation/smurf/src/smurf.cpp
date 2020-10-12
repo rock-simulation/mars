@@ -344,14 +344,26 @@ namespace mars {
       for (it = config["nodes"].begin(); it != config["nodes"].end(); ++it) {
         handleURIs(*it);
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
+        bool found = false;
         for (; nIt != nodeList.end(); ++nIt) {
           if ((std::string) (*nIt)["name"] == (std::string) (*it)["name"]) {
+            found = true;
             ConfigMap::iterator cIt = it->beginMap();
             for (; cIt != it->endMap(); ++cIt) {
               (*nIt)[cIt->first] = cIt->second;
             }
             break;
           }
+        }
+        if(!found) {
+          if(it->hasKey("parent")) {
+            (*it)["relativeid"] = linkIDMap[(*it)["parent"]];
+          }
+          if(it->hasKey("vizLink")) {
+            (*it)["vizLink"] = linkIDMap[(*it)["vizLink"]];
+          }
+          fprintf(stderr, "%s\n", it->toYamlString().c_str());
+          nodeList.push_back(*it);
         }
       }
       for (it = config["joint"].begin(); it != config["joint"].end(); ++it) {
