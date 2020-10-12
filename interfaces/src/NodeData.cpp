@@ -73,7 +73,7 @@ namespace mars {
         return sTypeNames[type];
       }
       else {
-        std::cerr << "initPrimitive: NodeType " << type << " not supported." << std::endl;
+        std::cerr << "initPrimitive (NodeData::toString()): NodeType " << type << " not supported." << std::endl;
         throw("Invalid Primitive type");
       }
     }
@@ -306,8 +306,17 @@ namespace mars {
       SET_VALUE("movable", movable, writeDefaults);
 
       if(writeDefaults || physicMode != defaultNode.physicMode) {
-        std::string tmp = toString(physicMode);
-        (*config)["physicmode"] = tmp;
+        if(noPhysical) {
+          try {
+            std::string tmp = toString(physicMode);
+            (*config)["physicmode"] = tmp;
+          } catch (...) {
+          }
+        }
+        else {
+          std::string tmp = toString(physicMode);
+          (*config)["physicmode"] = tmp;
+        }
       }
 
       SET_VALUE("origname", origName, false);
