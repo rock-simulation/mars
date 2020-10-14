@@ -84,6 +84,7 @@ namespace mars {
         }
         updateGraphics = false;
         nextStep = false;
+        updateTime = -1.0;
         if(control->graphics) {
           pf = new osg_points::PointsFactory();
           lf = new osg_lines::LinesFactory();
