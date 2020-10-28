@@ -30,6 +30,7 @@ setup_qt()
 
 #Get linker and compiler flags from pkg-config
 pkg_check_modules(PKGCONFIG REQUIRED
+			    data_broker
 			    lib_manager
 			    minizip
 			    mars_utils
