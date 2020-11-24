@@ -137,6 +137,8 @@ namespace mars {
       DataPackage *frontBuffer;
       LockableContainer<std::list<Receiver> > syncReceivers;
       LockableContainer<std::list<Receiver> > asyncReceivers;
+      std::list<ReceiverInterface*> timedReceivers;
+      std::list<ReceiverInterface*> triggeredReceivers;
       mars::utils::ReadWriteLock *bufferLock;
       mars::utils::ReadWriteLock *receiverLock;
       const ReceiverInterface *lastProducer;
