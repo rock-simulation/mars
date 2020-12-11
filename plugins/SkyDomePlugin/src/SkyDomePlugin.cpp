@@ -67,7 +67,7 @@ namespace mars {
       }
 
       SkyDomePlugin::SkyDomePlugin(lib_manager::LibManager *theManager)
-        : MarsPluginTemplateGUI(theManager, "SkyDomePlugin") {
+        : MarsPluginTemplateGUI(theManager, "SkyDomePlugin"), materialManager(0) {
       }
 
       void SkyDomePlugin::init() {
@@ -173,6 +173,7 @@ namespace mars {
       }
 
       SkyDomePlugin::~SkyDomePlugin() {
+        if(materialManager) libManager->releaseLibrary("osg_material_manager");
       }
 
 
