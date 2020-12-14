@@ -87,6 +87,7 @@ namespace mars {
     public:
       WorldPhysics(interfaces::ControlCenter *control);
       virtual ~WorldPhysics(void);
+      virtual void setPhysicsPlugins(std::vector<interfaces::pluginStruct> physicsPlugins);
       virtual void initTheWorld(void);
       virtual void freeTheWorld(void);
       virtual void stepTheWorld(void);
@@ -132,9 +133,8 @@ namespace mars {
       void nearCallback (dGeomID o1, dGeomID o2);
       static void callbackForward(void *data, dGeomID o1, dGeomID o2);
 
-      void findPhysicsPlugins();
       // List of physics pluging to be used as complements for ODE
-      std::vector<interfaces::MarsPluginTemplate*> physics_plugins;
+      std::vector<interfaces::pluginStruct> physics_plugins;
     };
 
   } // end of namespace sim

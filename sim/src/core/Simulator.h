@@ -275,6 +275,7 @@ namespace mars {
       std::vector<interfaces::pluginStruct> newPlugins;
       std::vector<interfaces::pluginStruct> activePlugins;
       std::vector<interfaces::pluginStruct> guiPlugins;
+      std::vector<interfaces::pluginStruct> physicsPlugins;
 
       // scenes
       int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
