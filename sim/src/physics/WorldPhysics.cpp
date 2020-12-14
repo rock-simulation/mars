@@ -118,7 +118,6 @@ namespace mars {
       dSetErrorHandler (myErrorFunction);
       dSetDebugHandler (myDebugFunction);
       dSetMessageHandler (myMessageFunction);
-      findPhysicsPlugins();
     }
 
     /**
@@ -137,6 +136,25 @@ namespace mars {
       // and close the ODE ...
       MutexLocker locker(&iMutex);
       dCloseODE();
+      lib_manager::LibManager * libManager = new lib_manager::LibManager();
+      for (auto it=physics_plugins.begin(); it!=physics_plugins.end(); it++)
+      {
+        libManager -> releaseLibrary(it->name);
+      }
+    }
+    
+    /**
+    *  \brief Sets the physics plugins to be used for computing interactions
+    *  with certain types of objects instead of ODE
+    *  
+    *  pre:
+    *     - Attribute physics_plugins is null
+    *  post
+    *     - physics_plugins is set to the parameter value
+    */
+    void WorldPhysics::setPhysicsPlugins(std::vector<interfaces::pluginStruct> physicsPlugins) {
+      LOG_DEBUG("Setting the physics plugins in world physics");
+      physics_plugins = physicsPlugins;
     }
 
     /**
@@ -177,13 +195,6 @@ namespace mars {
         if(control->graphics)
           control->graphics->addDrawItems(&draw);
       }
-    }
-
-    void WorldPhysics::findPhysicsPlugins() {
-      LOG_DEBUG(
-        "In this method we check which physics plugins are available,"
-        "so we can later call them");
-
     }
 
     /**

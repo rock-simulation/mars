@@ -32,6 +32,7 @@
 #endif
 
 #include "../MARSDefs.h"
+#include "PluginInterface.h"
 
 #include <mars/utils/Vector.h>
 
@@ -61,6 +62,7 @@ namespace mars {
       sReal world_cfm, world_erp;
 
       virtual ~PhysicsInterface() {}
+      virtual void setPhysicsPlugins(std::vector<mars::interfaces::pluginStruct> physicsPlugins) = 0;
       virtual void initTheWorld(void) = 0;
       virtual void freeTheWorld(void) = 0;
       virtual void stepTheWorld(void) = 0;

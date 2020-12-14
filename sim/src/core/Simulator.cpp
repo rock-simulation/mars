@@ -128,7 +128,9 @@ namespace mars {
       checkOptionalDependency("cfg_manager");
       checkOptionalDependency("mars_graphics");
       checkOptionalDependency("log_console");
-      checkOptionalDependency("envire_mls");
+
+      // physics plugins to pass to the physics engine
+      checkOptionalDependency("envire_mls"); 
 
 
       getTimeMutex.lock();
@@ -222,7 +224,8 @@ namespace mars {
             LOG_DEBUG("Simulator: no console loaded. output to stdout!");
           }
         }
-      } else if(libName == "envire_mls") {
+      } 
+      else if(libName == "envire_mls") {
         std::list<std::string>* libNames = new std::list<std::string>();
         libManager->getAllLibraryNames(libNames);
         volatile std::list<std::string> debugVar = *libNames;
@@ -234,6 +237,10 @@ namespace mars {
           LOG_DEBUG(
             "The library %s has been detected. ", 
             envireMls->getLibName().c_str());
+          interfaces::pluginStruct envireMlsS;
+          envireMlsS.name = "envire_mls";
+          envireMlsS.p_interface = envireMls;
+          physicsPlugins.push_back(envireMlsS);
         }
       }
     }
@@ -290,7 +297,16 @@ namespace mars {
       }
       // init the physics-engine
       //Convention startPhysics function
+      LOG_DEBUG("About to create the new physics world");
+      for (auto it = std::begin(physicsPlugins); it != std::end(physicsPlugins); it++)
+      {
+        LOG_DEBUG("Physics plugin to be handed to the physics engine: "+it->name);
+      }
       physics = PhysicsMapper::newWorldPhysics(control);
+      if (physicsPlugins.size() > 0)
+      {
+        physics -> setPhysicsPlugins(physicsPlugins); 
+      }
       physics->initTheWorld();
       // the physics step_size is in seconds
       physics->step_size = calc_ms/1000.;
