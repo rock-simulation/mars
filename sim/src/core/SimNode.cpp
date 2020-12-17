@@ -865,7 +865,7 @@ namespace mars {
                                      std::string *dataName) const {
       char format[] = "Nodes/%05lu_%s";
       int size = snprintf(0, 0, format, sNode.index, sNode.name.c_str());
-      char buffer[size];
+      char buffer[size+1];
       sprintf(buffer, format, sNode.index, sNode.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;

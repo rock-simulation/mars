@@ -879,7 +879,7 @@ namespace mars {
                                       std::string *dataName) const {
       char format[] = "Motors/%05lu_%s";
       int size = snprintf(0, 0, format, sMotor.index, sMotor.name.c_str());
-      char buffer[size];
+      char buffer[size+1];
       sprintf(buffer, format, sMotor.index, sMotor.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;
