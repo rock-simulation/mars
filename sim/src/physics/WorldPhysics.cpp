@@ -232,6 +232,38 @@ namespace mars {
       return world_init;
     }
 
+    /** 
+     *
+     * \brief Auxiliar methof of step the world. Checks required before
+     * computing the collision and the contact forces are done here.
+     * 
+     * The checks consist on: updating gravity, cfm and erp for coherence.
+     *
+     */
+    void WorldPhysics::preStepChecks(void)
+    {
+      if(old_gravity != world_gravity) {
+        old_gravity = world_gravity;
+        dWorldSetGravity(world, world_gravity.x(),
+                         world_gravity.y(), world_gravity.z());
+      }
+
+      if(old_cfm != world_cfm) {
+        old_cfm = world_cfm;
+        dWorldSetCFM(world, (dReal)world_cfm);
+      }
+
+      if(old_erp != world_erp) {
+        old_erp = world_erp;
+        dWorldSetERP(world, (dReal)world_erp);
+      }
+
+      for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
+      {
+        it->p_interface->preStepChecks();
+      }
+    }
+
     /**
      * \brief This function handles the calculation of a step in the world.
      *
@@ -252,21 +284,9 @@ namespace mars {
 
       // if world_init = false or step_size <= 0 debug something
       if(world_init && step_size > 0) {
-        if(old_gravity != world_gravity) {
-          old_gravity = world_gravity;
-          dWorldSetGravity(world, world_gravity.x(),
-                           world_gravity.y(), world_gravity.z());
-        }
+        preStepChecks();
 
-        if(old_cfm != world_cfm) {
-          old_cfm = world_cfm;
-          dWorldSetCFM(world, (dReal)world_cfm);
-        }
 
-        if(old_erp != world_erp) {
-          old_erp = world_erp;
-          dWorldSetERP(world, (dReal)world_erp);
-        }
 
         /// first clear the collision counters of all geoms
         for(i=0; i<dSpaceGetNumGeoms(space); i++) {
