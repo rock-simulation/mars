@@ -133,6 +133,9 @@ namespace mars {
       void nearCallback (dGeomID o1, dGeomID o2);
       static void callbackForward(void *data, dGeomID o1, dGeomID o2);
 
+      // Step the World auxiliar methods
+      void preStepChecks(void);
+
       // List of physics pluging to be used as complements for ODE
       std::vector<interfaces::pluginStruct> physics_plugins;
     };

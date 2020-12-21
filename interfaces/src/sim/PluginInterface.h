@@ -54,6 +54,7 @@ namespace mars {
       virtual void init(void) = 0;
       virtual void handleError(void) {};
       virtual void getSomeData(void* data) {(void)data;};
+      virtual void preStepChecks(void){};
 
     protected:
       ControlCenter *control;
