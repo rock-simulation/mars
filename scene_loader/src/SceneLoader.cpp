@@ -68,6 +68,12 @@ namespace mars {
       return loadObject.load();
     }
 
+    bool SceneLoader::loadFile(std::string filename, std::string tmpPath,
+                               std::string robotname, utils::Vector pos, utils::Vector rot) {
+      LOG_INFO("The scene loader assotiated to the file %s does not take into account the position and rotation received as parameter");
+      return loadFile(filename, tmpPath, robotname);
+    }
+
     int SceneLoader::saveFile(std::string filename, std::string tmpPath) {
       Save saveObject(filename.c_str(), control, tmpPath);
       return saveObject.prepare();

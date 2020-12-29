@@ -34,6 +34,7 @@
 #include <string>
 
 #include <lib_manager/LibInterface.hpp>
+#include <mars/utils/Vector.h>
 
 namespace mars {
 
@@ -47,6 +48,8 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname) = 0;
+      virtual bool loadFile(std::string filename, std::string tmpPath,
+                            std::string robotname, utils::Vector pos, utils::Vector rot) = 0;
       virtual int saveFile(std::string filename, std::string tmpPath) = 0;
     };
 

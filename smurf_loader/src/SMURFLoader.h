@@ -54,6 +54,8 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
+      virtual bool loadFile(std::string filename, std::string tmpPath,
+                            std::string robotname, utils::Vector pos, utils::Vector rot);
       virtual int saveFile(std::string filename, std::string tmpPath);
       virtual void loadEntity(configmaps::ConfigVector::iterator it, std::string path);
 

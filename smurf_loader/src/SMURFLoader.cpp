@@ -515,6 +515,12 @@ namespace mars {
       return 1; //TODO: check number of successfully loaded entities before returning 1
     }
 
+    bool SMURFLoader::loadFile(std::string filename, std::string tmpPath,
+                               std::string robotname, utils::Vector pos, utils::Vector rot) {
+      LOG_INFO("The scene loader assotiated to the file %s does not take into account the position and rotation received as parameter");
+      return loadFile(filename, tmpPath, robotname);
+    }
+
     int SMURFLoader::saveFile(std::string filename, std::string tmpPath) {
       return 0;
     }
