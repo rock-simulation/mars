@@ -44,6 +44,7 @@
 #include <mars/interfaces/sim/PluginInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
+#include <mars/utils/Vector.h>
 
 #include <iostream>
 
@@ -146,6 +147,10 @@ namespace mars {
       virtual int loadScene(const std::string &filename,
                             bool wasrunning=false,
                             const std::string &robotname="",bool threadsave=false, bool blocking=false);
+      virtual int loadScene(const std::string &filename,
+                          const std::string &robotname, 
+                          utils::Vector pos, 
+                          utils::Vector rot, bool threadsave=false, bool blocking=false, bool wasrunning=false);
       virtual int saveScene(const std::string &filename, bool wasrunning);
       virtual void exportScene() const; ///< Exports the current scene as both *.obj and *.osg file.
       virtual bool sceneChanged() const;
@@ -219,6 +224,9 @@ namespace mars {
         std::string filename;
         std::string robotname;
         bool wasRunning;
+        bool zeroPose;
+        utils::Vector pos;
+        utils::Vector rot;
       };
 
       // simulation control
@@ -279,6 +287,9 @@ namespace mars {
 
       // scenes
       int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
+      int loadScene_internal(const std::string &filename, const std::string &robotname,
+                             utils::Vector pos, utils::Vector rot, bool wasrunning);
+
       std::string scenename;
       std::list<std::string> arg_v_scene_name;
       bool b_SceneChanged;

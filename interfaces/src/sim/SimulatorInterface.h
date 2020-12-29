@@ -38,6 +38,7 @@
 #include "../sim_common.h"
 #include "../graphics/draw_structs.h"
 #include "../LightData.h"
+#include <mars/utils/Vector.h>
 
 namespace lib_manager {
   class LibManager;
@@ -77,6 +78,8 @@ namespace mars {
       virtual int loadScene(const std::string &filename, const std::string &robotname, bool threadsave=false, bool blocking=false) = 0;
       virtual int loadScene(const std::string &filename, bool wasrunning=false,
                         const std::string &robotname = "", bool threadsave=false, bool blocking=false) = 0;
+      virtual int loadScene(const std::string &filename, const std::string &robotname, utils::Vector pos, utils::Vector rot, 
+                        bool threadsave=false, bool blocking=false, bool wasrunning=false) = 0;
       virtual int saveScene(const std::string &filename, bool wasrunning) = 0;
       /**make sure the string objects exist during the execution of those functions even if they
        * are running in a different thread; it would probably be better to just copy them instead
