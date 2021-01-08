@@ -46,6 +46,8 @@
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
+#include "ContactsPhysics.hpp"
+
 #define EPSILON 1e-10
 
 namespace mars {
@@ -260,9 +262,47 @@ namespace mars {
 
       for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
       {
-        it->p_interface->preStepChecks();
+        it->p_interface->preStepChecks(); 
+        //Maybe we can rename this to init/update/reset or make a new interface
+        //deriving from plugin, instead of adding directly these methods to the
+        //interface
       }
     }
+
+        /** 
+     *
+     * \brief Auxiliar methof of step the world. 
+     * Clears the contact and contact feedback information from previous step.
+     *
+     */
+    void WorldPhysics::clearPreviousStep(void){
+      // Clear Previous Collisions
+      //	printf("now WorldPhysics.cpp..stepTheWorld(void)....1 : dSpaceGetNumGeoms: %d\n",dSpaceGetNumGeoms(space)); 
+      /// first clear the collision counters of all geoms
+      int i;
+      geom_data* data;
+      for(i=0; i<dSpaceGetNumGeoms(space); i++) {
+        data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
+        data->num_ground_collisions = 0;
+        data->contact_ids.clear();
+        data->contact_points.clear();
+        data->ground_feedbacks.clear();
+      }
+
+      std::vector<dJointFeedback*>::iterator iter;
+      // Clear Previous Contact Feedback
+      for(iter = contact_feedback_list.begin();
+          iter != contact_feedback_list.end(); iter++) {
+        free((*iter));
+      }
+      contact_feedback_list.clear();
+      // Clear draw_intern 
+      draw_intern.clear(); //TODO: Can we remove this?
+
+      // Clear contacts
+      dJointGroupEmpty(contactgroup);
+    }
+
 
     /**
      * \brief This function handles the calculation of a step in the world.
@@ -285,9 +325,9 @@ namespace mars {
       // if world_init = false or step_size <= 0 debug something
       if(world_init && step_size > 0) {
         preStepChecks();
+        clearPreviousStep();
 
-
-
+        /*
         /// first clear the collision counters of all geoms
         for(i=0; i<dSpaceGetNumGeoms(space); i++) {
           data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
@@ -304,9 +344,27 @@ namespace mars {
         draw_intern.clear();
         /// then we have to clear the contacts
         dJointGroupEmpty(contactgroup);
+        */
+
+        for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
+        {
+          // TODO: replace for something like this:
+          // contacts = it->p_interface->getContactPoints();
+          std::vector<mars::sim::ContactsPhysics> contacts;
+          void * data = &contacts;
+          it->p_interface->getSomeData(data);         
+          //std::vector<mars::sim::ContactsPhysics> * contacts = 
+          //  static_cast<std::vector<mars::sim::ContactsPhysics> *>(data);
+          int numContacts = contacts.size();
+          LOG_DEBUG("[WorldPhysics::StepTheWorld] %s found contacts with %i collidables.", 
+                    it->name.c_str(),
+                    contacts.size());
+        }
         /// first check for collisions
         num_contacts = log_contacts = 0;
         create_contacts = 1;
+
+
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
 
         drawLock.lock();
