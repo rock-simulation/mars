@@ -42,6 +42,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_interfaces
                 mars_utils
                 configmaps
+                smurf
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -86,6 +87,7 @@ set(SOURCES_H
        src/physics/JointPhysics.h
        src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
+       src/physics/ContactsPhysics.hpp
 
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h

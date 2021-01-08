@@ -135,6 +135,7 @@ namespace mars {
 
       // Step the World auxiliar methods
       void preStepChecks(void);
+      void clearPreviousStep(void);
 
       // List of physics pluging to be used as complements for ODE
       std::vector<interfaces::pluginStruct> physics_plugins;
