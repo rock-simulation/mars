@@ -49,6 +49,7 @@
  #include <highgui.h>
 #else
  #include <opencv/cv.h>
+ #include <opencv2/imgcodecs.hpp>
  #include <opencv/highgui.h>
 #endif
 
@@ -178,7 +179,7 @@ namespace osg_terrain {
     bool dirty;
     double minX, minY, minZ, maxX, maxY, maxZ;
     bool wireframe, solid, highWireframe, highSolid;
-    IplImage* img;
+    cv::Mat img;
 
     std::map<int, Tile*> subTiles;
     std::vector<Tile*> listSubTiles;
