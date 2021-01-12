@@ -11,6 +11,10 @@ find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+
 if(WIN32)
   # this fixes the error 998 from the LibManager
   set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--enable-auto-import")
@@ -30,10 +34,9 @@ endif()
 include_directories(src)
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    configmaps
-			    mars_utils
+          configmaps
+          mars_utils
           osg_material_manager
-          opencv
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

@@ -45,12 +45,9 @@
 #include <list>
 #include <vector>
 #ifdef _WIN32
- #include <cv.h>
- #include <highgui.h>
+ #include <imgcodecs.hpp>
 #else
- #include <opencv/cv.h>
  #include <opencv2/imgcodecs.hpp>
- #include <opencv/highgui.h>
 #endif
 
 #include <mars/utils/Thread.h>

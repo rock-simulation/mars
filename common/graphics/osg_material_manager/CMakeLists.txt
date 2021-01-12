@@ -13,6 +13,10 @@ find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+
 set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
 CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 if(${HAVE_OSG_VERSION_H})
@@ -22,12 +26,11 @@ endif()
 include_directories(src)
 
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-			    configmaps
-			    mars_utils
-          mars_interfaces
-          cfg_manager
-          opencv
+        lib_manager
+        configmaps
+        mars_utils
+        mars_interfaces
+        cfg_manager
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

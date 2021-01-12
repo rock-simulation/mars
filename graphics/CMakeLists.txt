@@ -52,7 +52,6 @@ endif()
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
 
-
 set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})
 CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 if(${HAVE_OSG_VERSION_H})
@@ -62,8 +61,11 @@ endif()
 set (QT_USE_QTOPENGL TRUE)
 setup_qt()
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+
 pkg_check_modules(PKGCONFIG REQUIRED
-                  opencv
                   lib_manager
                   mars_interfaces
                   cfg_manager

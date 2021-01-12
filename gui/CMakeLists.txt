@@ -20,14 +20,17 @@ ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 
+find_package(OpenCV REQUIRED)
+include_directories(${OpenCV_INCLUDE_DIRS})
+link_directories(${OpenCV_LIBRARY_DIRS})
+
 pkg_check_modules(PKGCONFIG REQUIRED
-			    lib_manager
-			    data_broker
-			    main_gui
-			    cfg_manager
-			    mars_interfaces
-			    opencv
-          configmaps
+       lib_manager
+       data_broker
+       main_gui
+       cfg_manager
+       mars_interfaces
+       configmaps
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
