@@ -6,7 +6,7 @@ includedir=${prefix}/include/
 Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator
 Version: @PROJECT_VERSION@
-Requires.private: mars_interfaces opencv lib_manager cfg_manager
+Requires.private: mars_interfaces lib_manager cfg_manager
 Libs: -L${libdir} -l@PROJECT_NAME@
 
 Cflags: -I${includedir}
