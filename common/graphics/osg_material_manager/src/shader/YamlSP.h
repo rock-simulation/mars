@@ -41,7 +41,7 @@ namespace osg_material_manager {
   class YamlSP : public IShaderProvider {
   public:
     YamlSP(string res_path);
-    ~YamlSP() {}
+    virtual ~YamlSP() {}
 
     int getMinVersion();
 

@@ -74,7 +74,7 @@ namespace osg_material_manager {
 
       if(numArgs > 0) {
         call += arguments[0];
-        for(int i=1; i<numArgs; ++i) {
+        for(size_t i=1; i<numArgs; ++i) {
           call += ", " + arguments[i];
         }
       }
@@ -96,7 +96,7 @@ namespace osg_material_manager {
     }
   } MainVar;
 
-  typedef struct PrioritizedLine : PrioritizedValue {
+  struct PrioritizedLine : PrioritizedValue {
     std::string line;
     PrioritizedLine(std::string p_line, int p_priority, int p_s_priority) : line(p_line) {
       priority = p_priority;
