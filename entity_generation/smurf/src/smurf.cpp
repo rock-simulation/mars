@@ -1028,7 +1028,7 @@ namespace mars {
       // if we have an actual file name
       if (!tmpfilename.empty()) {
         suffix = getFilenameSuffix(tmpfilename);
-        if (suffix == ".obj" || suffix == ".OBJ") {
+        if (suffix == ".obj" || suffix == ".OBJ" || suffix == ".stl" || suffix == ".STL") {
           // turn our relative filename into an absolute filename
           removeFilenameSuffix(&tmpfilename);
           tmpfilename.append(".bobj");
@@ -1036,18 +1036,26 @@ namespace mars {
           handleFilenamePrefix(&tmpfilename, tmpPath);
           // replace if that file exists
           if (pathExists(tmpfilename)) {
-            fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", tmpfilename.c_str());
+            fprintf(stderr, "Loading .bobj instead of %s for file: %s\n", suffix.c_str(), tmpfilename.c_str());
             config["filename"] = tmpfilename2;
           }
           else {
             // check if bobj files are in parallel folder
-            int index = tmpfilename2.find("obj/");
+            int index;
+            string dirname;
+            if (suffix == ".stl" || suffix == ".STL") {
+              index = tmpfilename2.find("stl/");
+              dirname = "stl/";
+            } else {
+              index = tmpfilename2.find("obj/");
+              dirname = "obj/";
+            }
             if (index != string::npos) {
-              string newfilename = replaceString(tmpfilename2, "obj/", "bobj/");
+              string newfilename = replaceString(tmpfilename2, dirname, "bobj/");
               string tmpfilename2 = newfilename;
               handleFilenamePrefix(&newfilename, tmpPath);
               if (pathExists(newfilename)) {
-                fprintf(stderr, "Loading .bobj instead of .obj for file: %s\n", newfilename.c_str());
+                fprintf(stderr, "Loading .bobj instead of %s for file: %s\n", suffix.c_str(), newfilename.c_str());
                 config["filename"] = tmpfilename2;
               }
             }
