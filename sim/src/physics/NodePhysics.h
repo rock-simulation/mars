@@ -124,6 +124,7 @@ namespace mars {
       virtual void destroyNode(void);
       virtual void getMass(interfaces::sReal *mass, interfaces::sReal *inertia=0) const;
       virtual const utils::Vector getContactForce(void) const;
+      virtual void addContacts(dJointID contactJointId, int numContacts, dContact contact, dJointFeedback* fb);
       virtual interfaces::sReal getCollisionDepth(void) const;
       void addCompositeOffset(dReal x, dReal y, dReal z);
       ///return the body; this function is created to make it possible to get the 

@@ -38,17 +38,23 @@
 
 #include "WorldPhysics.h"
 #include "NodePhysics.h"
+#include "SimNode.h"
 
 
 #include <mars/utils/MutexLocker.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
-#include "ContactsPhysics.hpp"
+
 
 #define EPSILON 1e-10
+
+#define DRAW_MLS_CONTACTS 1
+#define DEBUG_WORLD_PHYSICS 1
+
 
 namespace mars {
   namespace sim {
@@ -303,6 +309,97 @@ namespace mars {
       dJointGroupEmpty(contactgroup);
     }
 
+    void WorldPhysics::createFeedbackJoints(const std::vector<mars::sim::ContactsPhysics> & contacts)
+    // Previous parameters: const envire::core::FrameId frameId, const smurf::ContactParams contactParams, dContact *contactPtr, int numContacts)
+    {
+      LOG_DEBUG("[WorldPhysics::createFeedbackJoints] First line");
+      int totalContactCol = contacts.size();
+      for( int col_i=0; col_i < totalContactCol; col_i++ )
+      {
+        mars::sim::ContactsPhysics colContacts = contacts[col_i]; // collidable contacts
+        dVector3 v;
+        //dMatrix3 R;
+        dReal dot;
+        //numContacts is the number of collisions detected by fcl between the robot collidable and the mls
+        //num_contacts is a global variable of Worldphysics to keep track of the existent feedback joints
+        int numContacts = colContacts.numContacts;
+        //num_contacts++; // FIXME: This should increas by numContacs ...
+        num_contacts += numContacts; // FIXME: This should increas by numContacs ...
+        if(create_contacts){
+          #ifdef DRAW_MLS_CONTACTS
+            // NOTE Comment out this, so we don't draw the contacts
+            draw_item item;
+            item.id = 0;
+            item.type = DRAW_LINE;
+            item.draw_state = DRAW_STATE_CREATE;
+            item.point_size = 10;
+            item.myColor.r = 1;
+            item.myColor.g = 0;
+            item.myColor.b = 0;
+            item.myColor.a = 1;
+            item.label = "";
+            item.t_width = item.t_height = 0;
+            item.texture = "";
+            item.get_light = 0;
+          #endif
+          std::shared_ptr<std::vector<dContact>> contactsPtr = colContacts.contactsPtr;
+          const smurf::ContactParams contactParams = colContacts.collidable->getContactParams(); 
+          std::string nodeName = colContacts.collidable->getName();
+          std::vector<NodeId> nodeIds = control->nodes->getNodeIDs(nodeName);
+          std::shared_ptr<SimNode> nodePtr = control->nodes->getSimNode(nodeIds[0]);
+          for(int i=0;i<numContacts;i++){
+            if(contactParams.friction_direction1) {
+              v[0] = contactsPtr->operator[](i).geom.normal[0];
+              v[1] = contactsPtr->operator[](i).geom.normal[1];
+              v[2] = contactsPtr->operator[](i).geom.normal[2];
+              dot = dDOT(v, contactsPtr->operator[](i).fdir1);
+              dOPEC(v, *=, dot);
+              contactsPtr->operator[](i).fdir1[0] -= v[0];
+              contactsPtr->operator[](i).fdir1[1] -= v[1];
+              contactsPtr->operator[](i).fdir1[2] -= v[2];
+              //dNormalize3(contactPtrs[0].fdir1); // Why 0 and not i?
+              dNormalize3(contactsPtr->operator[](i).fdir1); // Why 0 and not i?
+            }
+            contactsPtr->operator[](i).geom.depth += (contactParams.depth_correction); // Why 0 and not i?
+            if(contactsPtr->operator[](i).geom.depth < 0.0) contactsPtr->operator[](i).geom.depth = 0.0; // Why 0 and not i ?
+            #ifdef DRAW_MLS_CONTACTS
+              item.start.x() = contactsPtr->operator[](i).geom.pos[0];
+              item.start.y() = contactsPtr->operator[](i).geom.pos[1];
+              item.start.z() = contactsPtr->operator[](i).geom.pos[2];
+              item.end.x() = contactsPtr->operator[](i).geom.pos[0] + contactsPtr->operator[](i).geom.normal[0];
+              item.end.y() = contactsPtr->operator[](i).geom.pos[1] + contactsPtr->operator[](i).geom.normal[1];
+              item.end.z() = contactsPtr->operator[](i).geom.pos[2] + contactsPtr->operator[](i).geom.normal[2];
+              draw_intern.push_back(item);
+            #endif
+            dJointID c=dJointCreateContact(world,contactgroup, &contactsPtr->operator[](i));
+            #ifdef DEBUG_WORLD_PHYSICS
+              //std::cout << "[WorldPhysics::createFeedbackJoints] We have the simnode! " << std::endl;
+            #endif            
+            dJointFeedback *fb;
+            fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+            dJointSetFeedback(c, fb); // ODE
+            contact_feedback_list.push_back(fb);
+            #ifdef DEBUG_WORLD_PHYSICS
+              Vector contact_point;
+              contact_point.x() = contactsPtr->operator[](i).geom.pos[0]; // These values have been corrupted, where?
+              contact_point.y() = contactsPtr->operator[](i).geom.pos[1];
+              contact_point.z() = contactsPtr->operator[](i).geom.pos[2];
+              std::cout << "[WorldPhysics::createFeedbackJoints]: Contact point x" << contact_point.x() << std::endl;
+              std::cout << "[WorldPhysics::createFeedbackJoints]: Contact point y" << contact_point.y() << std::endl;
+              std::cout << "[WorldPhysics::createFeedbackJoints]: Contact point z" << contact_point.z() << std::endl;
+            #endif
+            std::shared_ptr<mars::interfaces::NodeInterface> nodeIfPtr = nodePtr->getInterface();
+            // convert to nodePhysics
+            std::shared_ptr<NodePhysics> nodePhysPtr = std::dynamic_pointer_cast<NodePhysics>(nodeIfPtr);
+            nodePhysPtr -> addContacts(c, numContacts, contactsPtr->operator[](i), fb);
+            LOG_DEBUG("[WorldPhysics::createFeedbackJoints] Contacts were added to the node %s", nodePtr->getName().c_str());
+          } // for numContacts
+        } // if create contacts
+        #ifdef DEBUG_WORLD_PHYSICS
+          //std::cout << "[WorldPhysics::createFeedbackJoints] All done here " << std::endl;
+        #endif            
+      }
+    }
 
     /**
      * \brief This function handles the calculation of a step in the world.
@@ -346,23 +443,24 @@ namespace mars {
         dJointGroupEmpty(contactgroup);
         */
 
+        /// first check for collisions
+        num_contacts = log_contacts = 0;
+        create_contacts = 1;
+
         for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
         {
-          // TODO: replace for something like this:
-          // contacts = it->p_interface->getContactPoints();
           std::vector<mars::sim::ContactsPhysics> contacts;
           void * data = &contacts;
           it->p_interface->getSomeData(data);         
-          //std::vector<mars::sim::ContactsPhysics> * contacts = 
-          //  static_cast<std::vector<mars::sim::ContactsPhysics> *>(data);
           int numContacts = contacts.size();
           LOG_DEBUG("[WorldPhysics::StepTheWorld] %s found contacts with %i collidables.", 
                     it->name.c_str(),
                     contacts.size());
+          if (numContacts > 0)
+          {
+            createFeedbackJoints(contacts);
+          }
         }
-        /// first check for collisions
-        num_contacts = log_contacts = 0;
-        create_contacts = 1;
 
 
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
