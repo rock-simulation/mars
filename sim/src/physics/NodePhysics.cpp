@@ -1774,6 +1774,66 @@ namespace mars {
       }
     }
 
+    void NodePhysics::addContacts(dJointID contactJointId, int numContacts, dContact contact, dJointFeedback* fb){
+      // Here should the ODE stuff be made  
+
+      #ifdef DEBUG_NODEPHYSICS
+        std::cout << "[NodePhysics::addContact]: FOO" << std::endl;
+      #endif
+      Vector contact_point;
+      //dJointFeedback *fb;
+      //
+      //What if we don't create the joint? It does not break. Maybe is because I use 0 and not an existing object of the simulation?
+      dJointAttach(contactJointId, nBody, 0);
+
+      node_data.num_ground_collisions += numContacts;
+
+      contact_point.x() = contact.geom.pos[0];
+      contact_point.y() = contact.geom.pos[1];
+      contact_point.z() = contact.geom.pos[2];
+
+      #ifdef DEBUG_NODEPHYSICS
+        std::cout << "[NodePhysics::addContact]: Contact point x" << contact_point.x() << std::endl;
+        std::cout << "[NodePhysics::addContact]: Contact point y" << contact_point.y() << std::endl;
+        std::cout << "[NodePhysics::addContact]: Contact point z" << contact_point.z() << std::endl;
+      #endif
+
+      node_data.contact_ids.push_back(0);
+      node_data.contact_points.push_back(contact_point);
+
+      // Trying to set a proper fb
+      // Option 1:
+      //fb = 0; // causes assertion error in ODE
+      // Option 2 (done in the WorldPhysics class):
+      //fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+      //dJointSetFeedback(contactJointId, fb);
+      //contact_feedback_list.push_back(fb);
+
+      //      if(geom_data2->sense_contact_force) {
+      //        fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+      //        dJointSetFeedback(c, fb);
+      //     
+      //        contact_feedback_list.push_back(fb);
+      //        geom_data2->ground_feedbacks.push_back(fb);
+      //        geom_data2->node1 = false;
+      //      } 
+      //      //else if(dGeomGetClass(o2) == dPlaneClass) {
+      //      if(geom_data1->sense_contact_force) {
+      //        if(!fb) {
+      //          fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+      //          dJointSetFeedback(c, fb);
+      //            
+      //          contact_feedback_list.push_back(fb);
+      //        }
+      node_data.ground_feedbacks.push_back(fb);
+      node_data.node1 = true;
+      //      }
+      #ifdef DEBUG_NODEPHYSICS
+        std::cout << "[NodePhysics::addContact]: DONE" << std::endl;
+      #endif
+    }
+
+
     sReal NodePhysics::getCollisionDepth(void) const {
       if(nGeom && theWorld) {
         return theWorld->getCollisionDepth(nGeom);

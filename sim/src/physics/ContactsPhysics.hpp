@@ -45,7 +45,7 @@ namespace mars {
     /*
      */
     struct ContactsPhysics {
-        std::shared_ptr<dContact[]> contactPtrs;
+        std::shared_ptr<std::vector<dContact>> contactsPtr; 
         int numContacts;
         std::shared_ptr<smurf::Collidable> collidable;
     };
