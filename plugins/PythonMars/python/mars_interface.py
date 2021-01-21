@@ -18,6 +18,7 @@ def clearDict():
     iDict["log"]["debug"] = []
     iDict["log"]["error"] = []
     iDict["commands"] = {}
+    iDict["configMotorValues"] = {}
     iDict["applyForce"] = {}
     iDict["applyTorque"] = {}
     iDict["request"] = []
@@ -35,6 +36,10 @@ def setMotor(name, value):
     global iDict
     iDict["commands"][name] = {"value": value}
 
+def setConfigMotor(name, value):
+    global iDict
+    iDict["configMotorValues"][name] = {"value": value}
+
 def applyForce(name, value):
     global iDict
     iDict["applyForce"][name] = {"value": value}
@@ -50,6 +55,9 @@ def setRunning(value):
     else:
         iDict["startSim"] = False
         iDict["stopSim"] = True
+
+def resetSim():
+    iDict["resetSim"] = True
 
 def quitSim():
     iDict["quitSim"] = True

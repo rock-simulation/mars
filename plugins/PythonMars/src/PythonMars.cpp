@@ -126,6 +126,11 @@ namespace mars {
             ConfigMap::iterator it = map.find("stopSim");
             map.erase(it);
           }
+          if(map.hasKey("resetSim") && (bool)map["resetSim"]) {
+            ConfigMap::iterator it = map.find("resetSim");
+            map.erase(it);
+            control->sim->resetSim(false);
+          }
           if(map.hasKey("quitSim") && (bool)map["quitSim"]) {
             ConfigMap::iterator it = map.find("quitSim");
             map.erase(it);
@@ -172,6 +177,28 @@ namespace mars {
               }
             }
             ConfigMap::iterator iit = map.find("commands");
+            map.erase(iit);
+          }
+
+          if(map.hasKey("configMotorValues")) {
+            ConfigMap::iterator it = map["configMotorValues"].beginMap();
+            for(; it!=map["configMotorValues"].endMap(); ++it) {
+              std::string name = it->first;
+              if(it->second.hasKey("value")) {
+                double value = it->second["value"];
+                if(motorMap.find(name) == motorMap.end()) {
+                  unsigned long id = control->motors->getID(name);
+                  if(id) {
+                    motorMap[name] = id;
+                    control->motors->setOfflinePosition(id, value);
+                  }
+                }
+                else {
+                  control->motors->setOfflinePosition(motorMap[name], value);
+                }
+              }
+            }
+            ConfigMap::iterator iit = map.find("configMotorValues");
             map.erase(iit);
           }
 
@@ -552,6 +579,16 @@ namespace mars {
         motorMap.clear();
         nodeMap.clear();
         //plugin->reload();
+        try {
+          ConfigItem map;
+          toConfigMap(plugin->function("reset").call(0).returnObject(), map);
+          interpreteMap(map);
+          interpreteGuiMaps();
+        }
+        catch(const std::exception &e) {
+          LOG_FATAL("Error: %s", e.what());
+          pythonException = true;
+        }
       }
 
       void PythonMars::update(sReal time_ms) {
