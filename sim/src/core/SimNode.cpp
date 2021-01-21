@@ -682,6 +682,9 @@ namespace mars {
     void SimNode::changeNode(NodeData *node) {
       MutexLocker locker(&iMutex);
       if (my_interface) my_interface->changeNode(node);
+      sNode.pos = node->pos;
+      sNode.rot = node->rot;
+      sNode.ext = node->ext;
       bool handleDataBroker = false;
       if(sNode.name != node->name) {
         // handle databroker

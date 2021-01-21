@@ -3,5 +3,5 @@ params:
     value_a: {index: 0, type: float}
     value_b: {index: 1, type: float}
   out:
-    value: {index: 3, type: float}
+    value: {index: 2, type: float}
 source: /graph_shader/math_mod.frag

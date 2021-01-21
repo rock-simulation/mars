@@ -32,7 +32,7 @@
  *               - get and set the standard physical parameters
  *               - get and set the special ODE parameters via
  *                 a generic component through the Simulator class
- *               - handle sensor data 
+ *               - handle sensor data
  *
  */
 
@@ -45,6 +45,8 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/Logging.hpp>
+
+#define EPSILON 1e-10
 
 namespace mars {
   namespace sim {
@@ -149,7 +151,7 @@ namespace mars {
      */
     void WorldPhysics::initTheWorld(void) {
       MutexLocker locker(&iMutex);
-  
+
       // if world_init = true debug something
       if (!world_init) {
         //LOG_DEBUG("init physics world");
@@ -161,7 +163,7 @@ namespace mars {
         old_cfm = world_cfm;
         old_erp = world_erp;
 
-        dWorldSetGravity(world, world_gravity.x(), world_gravity.y(), world_gravity.z()); 
+        dWorldSetGravity(world, world_gravity.x(), world_gravity.y(), world_gravity.z());
         dWorldSetCFM(world, (dReal)world_cfm);
         dWorldSetERP (world, (dReal)world_erp);
 
@@ -267,7 +269,7 @@ namespace mars {
         num_contacts = log_contacts = 0;
         create_contacts = 1;
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
-        
+
         drawLock.lock();
         draw_extern.swap(draw_intern);
         drawLock.unlock();
@@ -279,10 +281,10 @@ namespace mars {
         } catch (...) {
           control->sim->handleError(PHYSICS_UNKNOWN);
         }
-	if(WorldPhysics::error) {
+        if(WorldPhysics::error) {
           control->sim->handleError(WorldPhysics::error);
           WorldPhysics::error = PHYSICS_NO_ERROR;
-	}
+        }
       }
     }
 
@@ -439,31 +441,31 @@ namespace mars {
       dVector3 v1, v;
       //dMatrix3 R;
       dReal dot;
-  
+
       if (dGeomIsSpace(o1) || dGeomIsSpace(o2)) {
         /// test if a space is colliding with something
         dSpaceCollide2(o1,o2,this,& WorldPhysics::callbackForward);
         return;
       }
-  
-      /// exit without doing anything if the two bodies are connected by a joint 
+
+      /// exit without doing anything if the two bodies are connected by a joint
       dBodyID b1=dGeomGetBody(o1);
       dBodyID b2=dGeomGetBody(o2);
 
       geom_data* geom_data1 = (geom_data*)dGeomGetData(o1);
       geom_data* geom_data2 = (geom_data*)dGeomGetData(o2);
 
-            // test if we have a ray sensor:
+      // test if we have a ray sensor:
       if(geom_data1->ray_sensor) {
         dContact contact;
         if(geom_data1->parent_geom == o2) {
           return;
         }
-        
+
         if(geom_data1->parent_body == dGeomGetBody(o2)) {
           return;
         }
-        
+
         numc = dCollide(o2, o1, 1|CONTACTS_UNIMPORTANT, &(contact.geom), sizeof(dContact));
         if(numc) {
           if(contact.geom.depth < geom_data1->value)
@@ -488,7 +490,7 @@ namespace mars {
         }
         return;
       }
-      
+
       if(b1 && b2 && dAreConnectedExcluding(b1,b2,dJointTypeContact))
         return;
 
@@ -507,8 +509,8 @@ namespace mars {
 
       //for granular test
       //if( (plane != o2) && (plane !=o1)) return ;
-  
-  
+
+
       /*
      /// we use the geomData to handle some special cases
      void* geom_data1 = dGeomGetData(o1);
@@ -521,11 +523,11 @@ namespace mars {
      if((geom_data2 && ((robot_geom*)geom_data2)->type & 16)) return;
      }
      else if((geom_data2 && ((robot_geom*)geom_data2)->type & 16) && (plane == o1)) return;
-  
+
      /// an other case is a ray geom that we use simulate ray sensors
      /// this geom has to be handled in a different way
      if((geom_data1 && ((robot_geom*)geom_data1)->type & 8) ||
-     (geom_data2 && ((robot_geom*)geom_data2)->type & 8)) {    
+     (geom_data2 && ((robot_geom*)geom_data2)->type & 8)) {
      int n;
      const int N = MAX_CONTACTS;
      dContactGeom contact[N];
@@ -546,9 +548,9 @@ namespace mars {
      return;
      }
       */
-  
 
-  
+
+
       // frist we set the softness values:
       contact[0].surface.mode = dContactSoftERP | dContactSoftCFM;
       contact[0].surface.soft_cfm = (geom_data1->c_params.cfm +
@@ -559,7 +561,7 @@ namespace mars {
       if(geom_data1->c_params.approx_pyramid ||
          geom_data2->c_params.approx_pyramid)
         contact[0].surface.mode |= dContactApprox1;
-  
+
       // Then check the friction for both directions
       contact[0].surface.mu = (geom_data1->c_params.friction1 +
                                geom_data2->c_params.friction1)/2;
@@ -568,6 +570,27 @@ namespace mars {
 
       if(contact[0].surface.mu != contact[0].surface.mu2)
         contact[0].surface.mode |= dContactMu2;
+
+      if(geom_data1->c_params.rolling_friction > EPSILON ||
+         geom_data2->c_params.rolling_friction > EPSILON) {
+        contact[0].surface.mode |= dContactRolling;
+        contact[0].surface.rho = geom_data1->c_params.rolling_friction + geom_data2->c_params.rolling_friction;
+        fprintf(stderr, "set rolling friction to: %g\n", contact[0].surface.rho);
+        if(geom_data1->c_params.rolling_friction2 > EPSILON ||
+           geom_data2->c_params.rolling_friction2 > EPSILON) {
+          contact[0].surface.rho2 = geom_data1->c_params.rolling_friction2 + geom_data2->c_params.rolling_friction2;
+        }
+        else {
+          contact[0].surface.rho2 = geom_data1->c_params.rolling_friction + geom_data2->c_params.rolling_friction;
+        }
+        if(geom_data1->c_params.spinning_friction > EPSILON ||
+           geom_data2->c_params.spinning_friction > EPSILON) {
+          contact[0].surface.rhoN = geom_data1->c_params.spinning_friction + geom_data2->c_params.spinning_friction;
+        }
+        else {
+          contact[0].surface.rhoN = 0.0;
+        }
+      }
 
       // check if we have to calculate friction direction1
       if(geom_data1->c_params.friction_direction1 ||
@@ -647,7 +670,7 @@ namespace mars {
         if(geom_data1->c_params.bounce_vel > geom_data2->c_params.bounce_vel)
           contact[0].surface.bounce_vel = geom_data1->c_params.bounce_vel;
         else
-          contact[0].surface.bounce_vel = geom_data2->c_params.bounce_vel;      
+          contact[0].surface.bounce_vel = geom_data2->c_params.bounce_vel;
       }
 
       for (i=1;i<maxNumContacts;i++){
@@ -655,7 +678,7 @@ namespace mars {
       }
 
       numc=dCollide(o1,o2, maxNumContacts, &contact[0].geom,sizeof(dContact));
-      if(numc){ 
+      if(numc){
         dJointFeedback *fb;
         draw_item item;
         Vector contact_point;
@@ -698,7 +721,7 @@ namespace mars {
             }
             contact[0].geom.depth += (geom_data1->c_params.depth_correction +
                                       geom_data2->c_params.depth_correction);
-        
+
             if(contact[0].geom.depth < 0.0) contact[0].geom.depth = 0.0;
             dJointID c=dJointCreateContact(world,contactgroup,contact+i);
             dJointAttach(c,b1,b2);
@@ -722,7 +745,7 @@ namespace mars {
               contact_feedback_list.push_back(fb);
               geom_data2->ground_feedbacks.push_back(fb);
               geom_data2->node1 = false;
-            } 
+            }
             //else if(dGeomGetClass(o2) == dPlaneClass) {
             if(geom_data1->sense_contact_force) {
               if(!fb) {
@@ -769,7 +792,7 @@ namespace mars {
       //bool first = 1;
 
       for(iter = comp_body_list.begin(); iter != comp_body_list.end(); iter++) {
-        if((*iter).body == theBody) {      
+        if((*iter).body == theBody) {
           dMassSetZero(&bodyMass);
           for(jter = (*iter).comp_nodes.begin();
               jter != (*iter).comp_nodes.end(); jter++) {
@@ -792,7 +815,7 @@ namespace mars {
       bpos = dBodyGetPosition(theBody);
       dBodySetPosition(theBody, bpos[0]+x, bpos[1]+y, bpos[2]+z);
       for(iter = comp_body_list.begin(); iter != comp_body_list.end(); iter++) {
-        if((*iter).body == theBody) {      
+        if((*iter).body == theBody) {
           for(jter = (*iter).comp_nodes.begin();
               jter != (*iter).comp_nodes.end(); jter++) {
             (*jter)->addCompositeOffset(-x, -y, -z);
@@ -823,7 +846,7 @@ namespace mars {
     void WorldPhysics::update(std::vector<draw_item>* drawItems) {
       MutexLocker locker(&drawLock);
       std::vector<draw_item>::iterator iter;
-  
+
       for(iter=drawItems->begin(); iter!=drawItems->end(); iter++) {
         iter->draw_state = DRAW_STATE_ERASE;
       }
@@ -878,11 +901,11 @@ namespace mars {
       MutexLocker locker(&iMutex);
       num_contacts = log_contacts = 0;
       create_contacts = 0;
-      dSpaceCollide(space,this, &WorldPhysics::callbackForward);	
+      dSpaceCollide(space,this, &WorldPhysics::callbackForward);
       return num_contacts;
     }
 
-    double WorldPhysics::getVectorCollision(const Vector &pos, 
+    double WorldPhysics::getVectorCollision(const Vector &pos,
                                             const Vector &ray) const {
       MutexLocker locker(&iMutex);
       dGeomID otherGeom;
@@ -890,9 +913,9 @@ namespace mars {
       //double depth = ray.length();
       double depth = ray.norm();
       int numc;
-  
+
       dGeomID theGeom = dCreateRay(space, depth);
-      dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z()); 
+      dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
 
       for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
         otherGeom = dSpaceGetGeom(space, i);

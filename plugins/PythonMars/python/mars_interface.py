@@ -1,11 +1,11 @@
-from time import clock
+from time import time
 
 iDict = {}
-startTime = clock()
+startTime = time()
 
 def timing(s):
     global startTime
-    currentTime = clock()
+    currentTime = time()
     if currentTime > startTime+s:
         startTime = currentTime
         return True
@@ -18,6 +18,8 @@ def clearDict():
     iDict["log"]["debug"] = []
     iDict["log"]["error"] = []
     iDict["commands"] = {}
+    iDict["applyForce"] = {}
+    iDict["applyTorque"] = {}
     iDict["request"] = []
     iDict["config"] = {}
     iDict["PointCloud"] = {}
@@ -32,6 +34,14 @@ def sendDict():
 def setMotor(name, value):
     global iDict
     iDict["commands"][name] = {"value": value}
+
+def applyForce(name, value):
+    global iDict
+    iDict["applyForce"][name] = {"value": value}
+
+def applyTorque(name, value):
+    global iDict
+    iDict["applyTorque"][name] = {"value": value}
 
 def setRunning(value):
     if value:
@@ -133,7 +143,7 @@ def edit(type_, name, key, value):
         iDict["edit"][type_] = {}
     if not name in iDict["edit"][type_]:
         iDict["edit"][type_][name] = []
-    iDict["edit"][type_][name].append({"k": key, "v": value})
+    iDict["edit"][type_][name].append({"k": key, "v": str(value)})
 
 def editNode(name, key, value):
     edit("nodes", name, key, value)
@@ -143,6 +153,9 @@ def editJoint(name, key, value):
 
 def editMotor(name, key, value):
     edit("motors", name, key, value)
+
+def editMaterial(name, key, value):
+    edit("materials", name, key, value)
 
 def editGraphics(key, value):
     edit("graphics", "-1", key, value)

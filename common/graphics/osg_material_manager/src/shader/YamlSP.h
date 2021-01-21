@@ -83,6 +83,11 @@ namespace osg_material_manager {
     /**
      * Pointer to the shader function containing all necessary information to generate the shader code
      */
+    set<GLSLUniform> emptyUniforms;
+    set<GLSLAttribute> emptyAttributes;
+    set<string> emptyStrings;
+    std::set<GLSLConstant> emptyConstants;
+
     unique_ptr<ShaderFunc> function;
   };
 }

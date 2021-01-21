@@ -84,6 +84,7 @@ namespace mars {
         }
         updateGraphics = false;
         nextStep = false;
+        updateTime = -1.0;
         if(control->graphics) {
           pf = new osg_points::PointsFactory();
           lf = new osg_lines::LinesFactory();
@@ -174,6 +175,50 @@ namespace mars {
             map.erase(iit);
           }
 
+          if(map.hasKey("applyForce") && control->sim->isSimRunning()) {
+            ConfigMap::iterator it = map["applyForce"].beginMap();
+            for(; it!=map["applyForce"].endMap(); ++it) {
+              std::string name = it->first;
+              if(it->second.hasKey("value")) {
+                ConfigVector v = it->second["value"];
+                if(nodeMap.find(name) == nodeMap.end()) {
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    nodeMap[name] = id;
+                    control->nodes->applyForce(id, Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]));
+                  }
+                }
+                else {
+                  control->nodes->applyForce(nodeMap[name], Vector(v[0], v[1], v[2]), Vector(v[3], v[4], v[5]));
+                }
+              }
+            }
+            ConfigMap::iterator iit = map.find("applyForce");
+            map.erase(iit);
+          }
+
+          if(map.hasKey("applyTorque") && control->sim->isSimRunning()) {
+            ConfigMap::iterator it = map["applyTorque"].beginMap();
+            for(; it!=map["applyTorque"].endMap(); ++it) {
+              std::string name = it->first;
+              if(it->second.hasKey("value")) {
+                ConfigVector v = it->second["value"];
+                if(nodeMap.find(name) == nodeMap.end()) {
+                  unsigned long id = control->nodes->getID(name);
+                  if(id) {
+                    nodeMap[name] = id;
+                    control->nodes->applyTorque(id, Vector(v[0], v[1], v[2]));
+                  }
+                }
+                else {
+                  control->nodes->applyTorque(nodeMap[name], Vector(v[0], v[1], v[2]));
+                }
+              }
+            }
+            ConfigMap::iterator iit = map.find("applyTorque");
+            map.erase(iit);
+          }
+
           if(map.hasKey("config")) {
             ConfigMap::iterator it = map["config"].beginMap();
             for(; it!=map["config"].endMap(); ++it) {
@@ -189,8 +234,7 @@ namespace mars {
                 info = control->cfg->getParamInfo(group, name);
                 switch(info.type) {
                 case cfg_manager::boolParam:
-                  control->cfg->setProperty(group, name,
-                                            (bool)atoi(value.c_str()));
+                  control->cfg->setProperty(group, name, (bool)atoi(value.c_str()));
                   break;
                 case cfg_manager::doubleParam:
                   control->cfg->setProperty(group, name, atof(value.c_str()));
@@ -264,6 +308,16 @@ namespace mars {
                   if(id) {
                     control->motors->edit(id, key, value);
                   }
+                }
+              }
+            }
+            if(map["edit"].hasKey("materials")) {
+              for(auto it: (ConfigMap&)(map["edit"]["materials"])) {
+                std::string name = it.first;
+                for(auto it2: (ConfigVector&)it.second) {
+                  std::string key = it2["k"];
+                  std::string value = it2["v"];
+                  control->graphics->editMaterial(name, key, value);
                 }
               }
             }
@@ -496,6 +550,7 @@ namespace mars {
 
       void PythonMars::reset() {
         motorMap.clear();
+        nodeMap.clear();
         //plugin->reload();
       }
 

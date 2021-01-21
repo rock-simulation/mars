@@ -1,8 +1,8 @@
 params:
   in:
     worldPos: {index: 0, type: vec4}
-    viewPos: {index: 0, type: vec4}
-    specularColor: {index: 1, type: vec4}
+    viewPos: {index: 1, type: vec4}
+    specularColor: {index: 2, type: vec4}
 source: /graph_shader/plight_vert.vert
 minVersion: 120
 varyings:

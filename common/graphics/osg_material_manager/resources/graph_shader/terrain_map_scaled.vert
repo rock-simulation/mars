@@ -1,12 +1,19 @@
-float tarrain_height_d(float x, float step) {
+float terrain_map_d2(float x, float step) {
   //return x;
   if(x > 0)
     return floor(x / step)*step;
   return ceil(x/step)*step;
 }
 
-void terrain_height(vec2 v, out float h) {
-  vec2 tex = vec2(-v.y, v.x)*texScale+vec2(0.5);
+void terrain_map_scaled(out vec4 vModelPos, out vec4 vModelPosScaled) {
+  vec2 vertex = gl_Vertex.xy;
+  float l = length(vertex);
+  if(l>40) {
+    vertex = vertex / l;
+    vertex = vertex*40.0 + (l-40)*4*vertex;
+  }
+  vec2 tex = vec2(-vertex.y+terrain_map_d2(-osg_ViewMatrixInverse[3].y, 6.),
+                  vertex.x+terrain_map_d2(osg_ViewMatrixInverse[3].x, 6.))*texScale+vec2(0.5);
   //clamp(tex, 0, 1);
   // todo: use texture resolution in x and y
   int res = terrainDim;
@@ -38,8 +45,13 @@ void terrain_height(vec2 v, out float h) {
   float dx = fi <= 0 ? dtex.x  : 1. - dtex.y;
   float dy = fi <= 0 ? dtex.y  : 1. - dtex.x;
   z = z + (z10-z)*dx + (z01-z)*dy;
-  h = z*terrainScaleZ;
+  vModelPos = vec4(gl_Vertex.xy, z*terrainScaleZ, gl_Vertex.w);
+  
   if(tex.x < 0.001 || tex.x > 0.999 || tex.y < 0.001 || tex.y > 0.999) {
-    h = 0;
+    vModelPos.z = 0;
   }
+
+  vModelPosScaled.xy = vertex.xy;
+  vModelPosScaled.z = vModelPos.z;
+  vModelPosScaled.w = vModelPos.w;
 }

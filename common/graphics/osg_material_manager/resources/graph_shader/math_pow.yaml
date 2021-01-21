@@ -1,0 +1,9 @@
+params:
+  in:
+    value_a: {index: 0, type: float}
+    value_b: {index: 1, type: float}
+    offset: {index: 2, type: float}
+    scale: {index: 3, type: float}
+  out:
+    value: {index: 4, type: float}
+source: /graph_shader/math_pow.frag

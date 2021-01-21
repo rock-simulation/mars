@@ -59,6 +59,7 @@ namespace mars {
       pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
       switch_eyes = true;
+      moveSpeed = 0.5;
 
       // set up ODE like camera
 
@@ -113,6 +114,7 @@ namespace mars {
       isMovingLeft = isMovingRight = isMovingBack = isMovingForward = false;
       isoMinHeight = 2;
       isoMaxHeight = 20;
+      logTrackingRotation = false;
     }
 
     GraphicsCamera::~GraphicsCamera(void) {
@@ -202,7 +204,10 @@ namespace mars {
       if(tracking.valid()) {
         osg::Vec3d p = tracking->getPosition();
         osg::Quat q = tracking->getAttitude();
-
+        if(logTrackingRotation) {
+          q.x() = q.y() = q.z() = 0.0;
+          q.w() = 1.0;
+        }
         p += q*offsetPos;
         q *= offsetRot;
         updateViewportQuat(p.x(), p.y(), p.z(), q.x(), q.y(), q.z(), q.w());
@@ -327,10 +332,10 @@ namespace mars {
       */
 
       //move camera according to its movent state
-      if(isMovingForward) moveForward(0.1f);
-      if(isMovingBack) moveForward(-0.1f);
-      if(isMovingLeft) moveRight(-0.1f);
-      if(isMovingRight) moveRight(0.1f);
+      if(isMovingForward) moveForward(moveSpeed);
+      if(isMovingBack) moveForward(-moveSpeed);
+      if(isMovingLeft) moveRight(-moveSpeed);
+      if(isMovingRight) moveRight(moveSpeed);
     }
 
     void GraphicsCamera::setViewport(int x, int y, int width, int height) {
@@ -1093,6 +1098,10 @@ namespace mars {
 
     bool GraphicsCamera::isTracking() {
       return tracking.valid();
+    }
+
+    void GraphicsCamera::setTrackingLogRotation(bool b) {
+      logTrackingRotation = b;
     }
 
     void GraphicsCamera::getOffsetQuat(double *tx, double *ty, double *tz,

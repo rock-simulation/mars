@@ -64,9 +64,6 @@ namespace gui_app {
 
   GuiApp::~GuiApp() {
 
-    //! close simulation
-    exit_main(0);
-
     libManager->releaseLibrary("cfg_manager");
     libManager->releaseLibrary("lib_manager_gui");
     libManager->releaseLibrary("main_gui");
@@ -79,6 +76,9 @@ namespace gui_app {
     // end scheduler of 1ms
     timeEndPeriod(1);
 #endif //WIN32
+
+    //! close simulation
+    exit_main(0);
 
   }
 

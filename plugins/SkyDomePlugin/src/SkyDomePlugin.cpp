@@ -46,32 +46,28 @@ namespace mars {
       using namespace mars::utils;
       using namespace mars::interfaces;
 
-      class SkyTransform : public osg::Transform {
-      public:
-        virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,
-                                               osg::NodeVisitor* nv) const  {
-          osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
-          if (cv) {
-            osg::Vec3 eyePointLocal = cv->getEyeLocal();
-            matrix.preMultTranslate(eyePointLocal);
-          }
-          return true;
+      bool SkyTransform::computeLocalToWorldMatrix(osg::Matrix& matrix,
+                                                   osg::NodeVisitor* nv) const  {
+        osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
+        if (cv) {
+          osg::Vec3 eyePointLocal = cv->getEyeLocal()*s1;
+          matrix.preMultTranslate(eyePointLocal);
         }
+        return true;
+      }
 
-        virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,
-                                               osg::NodeVisitor* nv) const {
-          osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
-          if (cv) {
-            osg::Vec3 eyePointLocal = cv->getEyeLocal();
-            matrix.postMultTranslate(-eyePointLocal);
-          }
-          return true;
+      bool SkyTransform::computeWorldToLocalMatrix(osg::Matrix& matrix,
+                                                   osg::NodeVisitor* nv) const {
+        osgUtil::CullVisitor* cv = dynamic_cast<osgUtil::CullVisitor*>(nv);
+        if (cv) {
+          osg::Vec3 eyePointLocal = cv->getEyeLocal()*s2;
+          matrix.postMultTranslate(-eyePointLocal);
         }
-      };
-
+        return true;
+      }
 
       SkyDomePlugin::SkyDomePlugin(lib_manager::LibManager *theManager)
-        : MarsPluginTemplateGUI(theManager, "SkyDomePlugin") {
+        : MarsPluginTemplateGUI(theManager, "SkyDomePlugin"), materialManager(0) {
       }
 
       void SkyDomePlugin::init() {
@@ -95,6 +91,18 @@ namespace mars {
           cfgEnableSD = control->cfg->getOrCreateProperty("Scene",
                                                           "skydome_enabled",
                                                           false, this);
+          cfgProp = control->cfg->getOrCreateProperty("Scene",
+                                                      "mesh",
+                                                      "");
+          meshPath = cfgProp.sValue;
+          cfgProp = control->cfg->getOrCreateProperty("Scene",
+                                                      "mesh_material",
+                                                      "");
+          meshMaterialName = cfgProp.sValue;
+          cfgProp = control->cfg->getOrCreateProperty("Scene",
+                                                      "mesh_scale",
+                                                      1.0);
+          meshScale = cfgProp.dValue;
         }
         else {
           cfgEnableSD.bValue = false;
@@ -106,6 +114,11 @@ namespace mars {
 
         if(pathExists(resPath+"/Textures/"+folder)) {
           folder = resPath+"/Textures/"+folder;
+        }
+
+        if(!pathExists(meshPath)) {
+          LOG_ERROR("SkyDome: Mesh path not found: %s", meshPath.c_str());
+          meshPath = "";
         }
 
         // todo: handle wrong path
@@ -120,10 +133,35 @@ namespace mars {
                         osg::StateAttribute::OFF | osg::StateAttribute::PROTECTED);
         //states->setMode(GL_BLEND,osg::StateAttribute::OFF);
         states->setMode(GL_FOG, osg::StateAttribute::OFF);
-        states->setRenderBinDetails( -1, "RenderBin");
+        states->setRenderBinDetails( -3, "RenderBin");
         states->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
         //states->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
         //states->setMode(GL_BLEND,osg::StateAttribute::ON);
+        materialManager = libManager->getLibraryAs<osg_material_manager::OsgMaterialManager>("osg_material_manager", true);
+
+        // setup mesh
+        if(meshPath.size() > 0) {
+          meshPos = new SkyTransform();
+          meshPos->s1 = meshScale;
+          meshPos->s2 = 1/meshScale;
+          osg::ref_ptr<osg::Node> mesh = osgDB::readNodeFile(meshPath);
+          mesh->setCullingActive(false);
+          osg::StateSet *states = mesh->getOrCreateStateSet();
+          states->setMode(GL_FOG, osg::StateAttribute::OFF);
+          states->setRenderBinDetails( -2, "RenderBin");
+          states->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
+          if(meshMaterialName != "") {
+            materialGroup = materialManager->getNewMaterialGroup(meshMaterialName);
+          }
+          meshPos->addChild(mesh.get());
+          if(cfgEnableSD.bValue) {
+            if(materialGroup.valid()) {
+              materialGroup->addChild(meshPos);
+            } else {
+              scene->addChild(meshPos);
+            }
+          }
+        }
 
         control->sim->switchPluginUpdateMode(0, this);
         gui->addGenericMenuAction("../View/", 0, NULL, 0, "", 0, -1); // separator
@@ -135,6 +173,7 @@ namespace mars {
       }
 
       SkyDomePlugin::~SkyDomePlugin() {
+        if(materialManager) libManager->releaseLibrary("osg_material_manager");
       }
 
 
@@ -194,8 +233,18 @@ namespace mars {
             updateProp = false;
             gui->setMenuActionSelected("../View/Sky dome", cfgEnableSD.bValue);
             scene->removeChild(posTransform.get());
+            if(materialGroup.valid()) {
+              materialGroup->removeChild(meshPos.get());
+            } else {
+              scene->removeChild(meshPos.get());
+            }
             if(cfgEnableSD.bValue) {
               scene->addChild(posTransform.get());
+              if(materialGroup.valid()) {
+                materialGroup->addChild(meshPos.get());
+              } else {
+                scene->addChild(meshPos.get());
+              }
             }
             updateProp = true;
           }

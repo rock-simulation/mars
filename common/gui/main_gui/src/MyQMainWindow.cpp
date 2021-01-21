@@ -128,7 +128,7 @@ namespace mars {
       }
     }
 
-    MyQMainWindow::~MyQMainWindow() {
+    void MyQMainWindow::prepareClose() {
       if(!cfg) return;
       saveDockGeometry();
       int windowTop = geometry().y();
@@ -177,6 +177,10 @@ namespace mars {
       saveFile.append("/configWindows.yml");
       cfg->writeConfig(saveFile.c_str(), "Windows");
       libManager->releaseLibrary("cfg_manager");
+    }
+
+    MyQMainWindow::~MyQMainWindow() {
+      prepareClose();
     }
 
     void MyQMainWindow::setCentralWidget(QWidget *widget) {
@@ -446,7 +450,9 @@ namespace mars {
           base->setHiddenCloseState(base->isHidden());
           base->saveState();
         }
+#ifndef USE_QT5
         (*dockit)->close();
+#endif
       }
       for(dockit = dyDockWidgets.begin(); dockit != dyDockWidgets.end(); dockit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>((*dockit)->widget());
@@ -454,7 +460,9 @@ namespace mars {
           base->setHiddenCloseState(base->isHidden());
           base->saveState();
         }
+#ifndef USE_QT5
         (*dockit)->close();
+#endif
       }
       for(subit = stSubWindows.begin(); subit != stSubWindows.end(); subit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
@@ -462,7 +470,9 @@ namespace mars {
           base->setHiddenCloseState(base->isHidden());
           base->saveState();
         }
+#ifndef USE_QT5
         (*subit)->close();
+#endif
       }
       for(subit = dySubWindows.begin(); subit != dySubWindows.end(); subit++) {
         BaseWidget *base = dynamic_cast<BaseWidget*>(*subit);
@@ -470,8 +480,10 @@ namespace mars {
           base->setHiddenCloseState(base->isHidden());
           base->saveState();
         }
+#ifndef USE_QT5
         (*subit)->close();
         delete *subit;
+#endif
       }
       if(myCentralWidget) {
         myCentralWidget->close();

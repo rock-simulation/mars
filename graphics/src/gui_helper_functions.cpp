@@ -300,7 +300,7 @@ namespace mars {
           if (myTestingNode == 0) {
             return;
           }
-          if (myTestingNode->getName() == node->origName) {
+          if (myTestingNode->getName() == node->origName or node->origName.size() == 0) {
             myTestingNode->setStateSet(stateset.get());
             myCreatedGroup->addChild(myTestingNode.get());
             found = true;

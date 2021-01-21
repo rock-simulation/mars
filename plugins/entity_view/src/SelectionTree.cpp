@@ -486,7 +486,7 @@ namespace mars {
 
               if(gc->getCameraType() == 1) map["projection"] = "perspective";
               else map["projection"] = "orthogonal";
-
+              map["moveSpeed"] = gc->getMoveSpeed();
               if(mouse == ODE_CAM) map["mouse"] = "default";
               else if(mouse == MICHA_CAM) map["mouse"] = "invert";
               else if(mouse == OSG_CAM) map["mouse"] = "osg";
@@ -535,7 +535,7 @@ namespace mars {
         map["contact"]["cfdir1"]["y"] = 0.;
         map["contact"]["cfdir1"]["z"] = 0.;
       }
-      std::vector<std::string> move {"cmax_num_contacts", "cerp", "ccfm", "cfriction1", "cfriction2", "cmotion1", "cmotion2", "cfds1", "cfds2", "cbounce", "cbounce_vel", "capprox", "coll_bitmask", "cfdir1"};
+      std::vector<std::string> move {"cmax_num_contacts", "cerp", "ccfm", "cfriction1", "cfriction2", "cmotion1", "cmotion2", "cfds1", "cfds2", "cbounce", "cbounce_vel", "capprox", "coll_bitmask", "cfdir1", "rolling_friction", "rolling_friction2", "spinning_friction"};
       for(auto it: move) {
         if(map.hasKey(it)) {
           map["contact"][it] = map[it];

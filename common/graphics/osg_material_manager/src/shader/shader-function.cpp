@@ -89,7 +89,7 @@ namespace osg_material_manager {
 
       if(numArgs > 0) {
         call += args[0];
-        for(int i=1; i<numArgs; ++i) {
+        for(unsigned long i=1; i<numArgs; ++i) {
           call += ", " + args[i];
         }
       }

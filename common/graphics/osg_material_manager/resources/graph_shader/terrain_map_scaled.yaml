@@ -1,8 +1,7 @@
 params:
-  in:
-    xy: {index: 0, type: vec2}
   out:
-    height: {index: 1, type: float}
+    vModelPos: {index: 0, type: vec4}
+    vModelPosScaled: {index: 1, type: vec4}
 uniforms:
   float:
     - {name: texScale}
@@ -11,4 +10,4 @@ uniforms:
     - {name: terrainDim}
   sampler2D:
     - {name: terrainMap}
-source: /graph_shader/terrain_height.vert
+source: /graph_shader/terrain_map_scaled.vert

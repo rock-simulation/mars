@@ -18,6 +18,7 @@
 std::string getString(PyObject *object)
 {
   std::string result;
+  if(!object) return result;
   if(PyUnicode_Check(object)) {
     PyObject* temp_bytes = PyUnicode_AsEncodedString(object, "UTF-8", "strict"); // Owned reference
     if (temp_bytes != NULL) {

@@ -621,10 +621,36 @@ namespace mars {
       //LOG_DEBUG("%d %d", node->mesh.vertexcount, node->mesh.indexcount);
       // first we have to copy the mesh data to prevent errors in case
       // of double to float conversion
+      dReal minx, miny, minz, maxx, maxy, maxz;
       for(i=0; i<node->mesh.vertexcount; i++) {
         myVertices[i][0] = (dReal)node->mesh.vertices[i][0];
         myVertices[i][1] = (dReal)node->mesh.vertices[i][1];
         myVertices[i][2] = (dReal)node->mesh.vertices[i][2];
+        if(i==0) {
+          minx = myVertices[i][0];
+          maxx = myVertices[i][0];
+          miny = myVertices[i][1];
+          maxy = myVertices[i][1];
+          minz = myVertices[i][2];
+          maxz = myVertices[i][2];
+        }
+        else {
+          if(minx > myVertices[i][0]) minx = myVertices[i][0];
+          if(maxx < myVertices[i][0]) maxx = myVertices[i][0];
+          if(miny > myVertices[i][1]) miny = myVertices[i][1];
+          if(maxy < myVertices[i][1]) maxy = myVertices[i][1];
+          if(minz > myVertices[i][2]) minz = myVertices[i][2];
+          if(maxz < myVertices[i][2]) maxz = myVertices[i][2];
+        }
+      }
+      // rescale
+      dReal sx = node->ext.x()/(maxx-minx);
+      dReal sy = node->ext.y()/(maxy-miny);
+      dReal sz = node->ext.z()/(maxz-minz);
+      for(i=0; i<node->mesh.vertexcount; i++) {
+        myVertices[i][0] *= sx;
+        myVertices[i][1] *= sy;
+        myVertices[i][2] *= sz;
       }
       for(i=0; i<node->mesh.indexcount; i++) {
         myIndices[i] = (dTriIndex)node->mesh.indices[i];
