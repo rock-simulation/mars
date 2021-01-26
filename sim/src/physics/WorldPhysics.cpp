@@ -443,33 +443,11 @@ namespace mars {
     void WorldPhysics::stepTheWorld(void) {
       MutexLocker locker(&iMutex);
       std::vector<dJointFeedback*>::iterator iter;
-      geom_data* data;
-      int i;
 
       // if world_init = false or step_size <= 0 debug something
       if(world_init && step_size > 0) {        
         preStepChecks();
         clearPreviousStep();
-
-        /*
-        /// first clear the collision counters of all geoms
-        for(i=0; i<dSpaceGetNumGeoms(space); i++) {
-          data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
-          data->num_ground_collisions = 0;
-          data->contact_ids.clear();
-          data->contact_points.clear();
-          data->ground_feedbacks.clear();
-        }
-        for(iter = contact_feedback_list.begin();
-            iter != contact_feedback_list.end(); iter++) {
-          free((*iter));
-        }
-        contact_feedback_list.clear();
-        draw_intern.clear();
-        /// then we have to clear the contacts
-        dJointGroupEmpty(contactgroup);
-        */
-
         /// first check for collisions
         num_contacts = log_contacts = 0;
         create_contacts = 1;
