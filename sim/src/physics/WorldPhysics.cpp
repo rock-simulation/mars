@@ -402,6 +402,33 @@ namespace mars {
     }
 
     /**
+     * \brief This function creates feedback joints between collision objects
+     * based on the contacts detected by physics plugins
+     * 
+     * pre: 
+     *     - Feedback joints from previous step have been cleared out
+     * post:
+     *     - New feedback joints have been set according to the contacts detected
+     *     by the plugins
+     */
+    void WorldPhysics::setContactsFromPlugins(void){
+      for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
+      {
+        std::vector<mars::sim::ContactsPhysics> contacts;
+        void * data = &contacts;
+        it->p_interface->getSomeData(data);         
+        int numContacts = contacts.size();
+        LOG_DEBUG("[WorldPhysics::StepTheWorld] %s found contacts with %i collidables.", 
+                  it->name.c_str(),
+                  contacts.size());
+        if (numContacts > 0)
+        {
+          createFeedbackJoints(contacts);
+        }
+      }
+    }
+
+    /**
      * \brief This function handles the calculation of a step in the world.
      *
      * pre:
@@ -420,7 +447,7 @@ namespace mars {
       int i;
 
       // if world_init = false or step_size <= 0 debug something
-      if(world_init && step_size > 0) {
+      if(world_init && step_size > 0) {        
         preStepChecks();
         clearPreviousStep();
 
@@ -446,22 +473,7 @@ namespace mars {
         /// first check for collisions
         num_contacts = log_contacts = 0;
         create_contacts = 1;
-
-        for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
-        {
-          std::vector<mars::sim::ContactsPhysics> contacts;
-          void * data = &contacts;
-          it->p_interface->getSomeData(data);         
-          int numContacts = contacts.size();
-          LOG_DEBUG("[WorldPhysics::StepTheWorld] %s found contacts with %i collidables.", 
-                    it->name.c_str(),
-                    contacts.size());
-          if (numContacts > 0)
-          {
-            createFeedbackJoints(contacts);
-          }
-        }
-
+        setContactsFromPlugins();
 
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
 
