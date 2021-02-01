@@ -46,6 +46,10 @@
 #include <cmath>
 #include <set>
 
+#include <mars/interfaces/Logging.hpp>
+
+#include <ode/odemath.h>
+
 
 namespace mars {
   namespace sim {
@@ -1774,29 +1778,98 @@ namespace mars {
       }
     }
 
-    void NodePhysics::addContacts(dJointID contactJointId, int numContacts, dContact contact, dJointFeedback* fb){
+    std::vector<dJointFeedback*> NodePhysics::addContacts(ContactsPhysics contacts, dWorldID world, dJointGroupID contactgroup){
+      dVector3 v;
+      //dMatrix3 R;
+      dReal dot;
+      std::vector<dJointFeedback*> fbs; 
+
+      std::shared_ptr<std::vector<dContact>> contactsPtr = contacts.contactsPtr;
+      const smurf::ContactParams contactParams = contacts.collidable->getContactParams(); 
+      std::string nodeName = contacts.collidable->getName();
+      if (nodeName == "col_wheel_rear_right_03")
+      {
+        LOG_WARN("This is the problematic collidable");
+      }
+      for(int i=0; i<contacts.numContacts; i++){
+        //if(contactParams.friction_direction1) { // For now it won't go in here
+        //  v[0] = contactsPtr->operator[](i).geom.normal[0];
+        //  v[1] = contactsPtr->operator[](i).geom.normal[1];
+        //  v[2] = contactsPtr->operator[](i).geom.normal[2];
+        //  dot = dDOT(v, contactsPtr->operator[](i).fdir1);
+        //  dOPEC(v, *=, dot);
+        //  contactsPtr->operator[](i).fdir1[0] -= v[0];
+        //  contactsPtr->operator[](i).fdir1[1] -= v[1];
+        //  contactsPtr->operator[](i).fdir1[2] -= v[2];
+        //  //dNormalize3(contactsPtr->operator[](0).fdir1); // Why 0 and not i?
+        //  dNormalize3(contactsPtr->operator[](i).fdir1); // Why 0 and not i?
+        //}
+        contactsPtr->operator[](i).geom.depth += (contactParams.depth_correction); // Why 0 and not i?
+        //if(contactsPtr->operator[](i).geom.depth > 0.001)
+        //{
+        //  LOG_DEBUG("[NodePhysics::createContacts]:The colision detected might have too large depth, reducing it to the maxmimum allowed");
+        //  std::cout << "[NodePhysics::createContacts]: Depth " << contactsPtr->operator[](i).geom.depth << std::endl;
+        //  contactsPtr->operator[](i).geom.depth = 0.001; 
+        //}
+        if(contactsPtr->operator[](i).geom.depth < 0.0) contactsPtr->operator[](i).geom.depth = 0.0; // Why 0 and not i ?
+        //contactsPtr->operator[](0).geom.depth += (contactParams.depth_correction); // Why 0 and not i?
+        //if(contactsPtr->operator[](0).geom.depth < 0.0) contactsPtr->operator[](0).geom.depth = 0.0; // Why 0 and not i ?
+        dJointID c=dJointCreateContact(world, contactgroup, &contactsPtr->operator[](i));
+        //std::vector<dContact>* odeContactsV = contactsPtr.get();
+        //dContact odeContact = odeContactsV->operator[](0);
+        //dJointID c=dJointCreateContact(world,contactgroup, &odeContact+i);
+        dJointFeedback *fb;
+        fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+        dJointSetFeedback(c, fb); // ODE
+        //if (isnan(abs(fb->f1[0]))||isnan(abs(fb->f1[1]))||isnan(abs(fb->f1[2])) || isnan(abs(fb->f1[3])) ||
+        //  isnan(abs(fb->t1[0]))||isnan(abs(fb->t1[1]))||isnan(abs(fb->t1[2])) || isnan(abs(fb->t1[3])) ||
+        //  isnan(abs(fb->f2[0]))||isnan(abs(fb->f2[1]))||isnan(abs(fb->f2[2])) || isnan(abs(fb->f2[3])) ||
+        //  isnan(abs(fb->t2[0]))||isnan(abs(fb->t2[1]))||isnan(abs(fb->t2[2])) || isnan(abs(fb->t2[3])) )
+        //{
+        //  LOG_WARN("Catched a nan in the feedback forces, won't be used");
+        //}
+        //else
+        //{ 
+        //  dVector4 t1 = {fb->t1[0], fb->t1[1], fb->t1[2], fb->t1[3]};
+        //  dVector4 t2 = {fb->t2[0], fb->t2[1], fb->t2[2], fb->t2[3]};
+        //  dVector4 f1 = {fb->f1[0], fb->f1[1], fb->f1[2], fb->f1[3]};
+        //  dVector4 f2 = {fb->f2[0], fb->f2[1], fb->f2[2], fb->f2[3]};
+        //  bool include = true;
+        //  try{
+        //    LOG_DEBUG("before normalization");
+        //    dNormalize4(t1);
+        //    dNormalize4(f1);
+        //    dNormalize4(t2);
+        //    dNormalize4(f2);
+        //    LOG_DEBUG("After normalization");
+        //  }
+        //  catch(...){             
+        //    include = false;
+        //    LOG_DEBUG("Catched error on normalization, the feedback won't be included");
+        //  }
+        //  if (include)
+        //  {
+            fbs.push_back(fb);
+            LOG_DEBUG("[NodePhysics::createContacts] Contacts were added to the node %s", nodeName.c_str());
+            addContact(c, contactsPtr->operator[](i), fb); // You are are passing only one contact. Should be done outside the loop with a vector of fbs and cs
+          //}
+        //}
+        //}
+        //}
+      } // for numContacts
+      return fbs;
+    }
+
+    void NodePhysics::addContact(dJointID contactJointId, dContact contact, dJointFeedback* fb){
       // Here should the ODE stuff be made  
 
-      #ifdef DEBUG_NODEPHYSICS
-        std::cout << "[NodePhysics::addContact]: FOO" << std::endl;
-      #endif
       Vector contact_point;
-      //dJointFeedback *fb;
-      //
-      //What if we don't create the joint? It does not break. Maybe is because I use 0 and not an existing object of the simulation?
       dJointAttach(contactJointId, nBody, 0);
-
-      node_data.num_ground_collisions += numContacts;
+      node_data.num_ground_collisions ++; 
 
       contact_point.x() = contact.geom.pos[0];
       contact_point.y() = contact.geom.pos[1];
       contact_point.z() = contact.geom.pos[2];
-
-      #ifdef DEBUG_NODEPHYSICS
-        std::cout << "[NodePhysics::addContact]: Contact point x" << contact_point.x() << std::endl;
-        std::cout << "[NodePhysics::addContact]: Contact point y" << contact_point.y() << std::endl;
-        std::cout << "[NodePhysics::addContact]: Contact point z" << contact_point.z() << std::endl;
-      #endif
 
       node_data.contact_ids.push_back(0);
       node_data.contact_points.push_back(contact_point);
@@ -1827,10 +1900,6 @@ namespace mars {
       //        }
       node_data.ground_feedbacks.push_back(fb);
       node_data.node1 = true;
-      //      }
-      #ifdef DEBUG_NODEPHYSICS
-        std::cout << "[NodePhysics::addContact]: DONE" << std::endl;
-      #endif
     }
 
 
