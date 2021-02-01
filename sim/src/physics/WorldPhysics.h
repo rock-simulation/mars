@@ -110,6 +110,8 @@ namespace mars {
       int handleCollision(dGeomID theGeom);
       interfaces::sReal getCollisionDepth(dGeomID theGeom);
       mutable utils::Mutex iMutex;
+      dReal max_angular_speed;
+      dReal max_correcting_vel;
 
       static interfaces::PhysicsError error;
 
@@ -140,6 +142,8 @@ namespace mars {
       void clearPreviousStep(void);
       void setContactsFromPlugins(void); 
       void createFeedbackJoints( const std::vector<mars::sim::ContactsPhysics> & contacts); 
+
+
 
       // List of physics plugins to be used as complements for ODE
       std::vector<interfaces::pluginStruct> physics_plugins;
