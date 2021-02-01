@@ -1793,16 +1793,16 @@ namespace mars {
       }
       for(int i=0; i<contacts.numContacts; i++){
         //if(contactParams.friction_direction1) { // For now it won't go in here
-        //  v[0] = contactsPtr->operator[](i).geom.normal[0];
-        //  v[1] = contactsPtr->operator[](i).geom.normal[1];
-        //  v[2] = contactsPtr->operator[](i).geom.normal[2];
-        //  dot = dDOT(v, contactsPtr->operator[](i).fdir1);
-        //  dOPEC(v, *=, dot);
-        //  contactsPtr->operator[](i).fdir1[0] -= v[0];
-        //  contactsPtr->operator[](i).fdir1[1] -= v[1];
-        //  contactsPtr->operator[](i).fdir1[2] -= v[2];
-        //  //dNormalize3(contactsPtr->operator[](0).fdir1); // Why 0 and not i?
-        //  dNormalize3(contactsPtr->operator[](i).fdir1); // Why 0 and not i?
+          v[0] = contactsPtr->operator[](i).geom.normal[0];
+          v[1] = contactsPtr->operator[](i).geom.normal[1];
+          v[2] = contactsPtr->operator[](i).geom.normal[2];
+          dot = dDOT(v, contactsPtr->operator[](i).fdir1);
+          dOPEC(v, *=, dot);
+          contactsPtr->operator[](i).fdir1[0] -= v[0];
+          contactsPtr->operator[](i).fdir1[1] -= v[1];
+          contactsPtr->operator[](i).fdir1[2] -= v[2];
+          //dNormalize3(contactsPtr->operator[](0).fdir1); // Why 0 and not i?
+          dNormalize3(contactsPtr->operator[](i).fdir1); // Why 0 and not i?
         //}
         contactsPtr->operator[](i).geom.depth += (contactParams.depth_correction); // Why 0 and not i?
         //if(contactsPtr->operator[](i).geom.depth > 0.001)
