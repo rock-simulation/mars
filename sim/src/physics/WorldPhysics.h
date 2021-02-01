@@ -142,9 +142,7 @@ namespace mars {
       void clearPreviousStep(void);
       void setContactsFromPlugins(void); 
       void createFeedbackJoints( const std::vector<mars::sim::ContactsPhysics> & contacts); 
-
-
-
+      void draw_contacts(const mars::sim::ContactsPhysics & colContacts);
       // List of physics plugins to be used as complements for ODE
       std::vector<interfaces::pluginStruct> physics_plugins;
     };
