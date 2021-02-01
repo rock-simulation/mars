@@ -110,6 +110,8 @@ namespace mars {
       num_contacts = 0;
       create_contacts = 1;
       log_contacts = 0;
+      max_angular_speed = 10.0; // I guess this is rad/s
+      max_correcting_vel = 5.0; 
 
       // the step size in seconds
       step_size = 0.01;
@@ -193,6 +195,8 @@ namespace mars {
         dWorldSetGravity(world, world_gravity.x(), world_gravity.y(), world_gravity.z());
         dWorldSetCFM(world, (dReal)world_cfm);
         dWorldSetERP (world, (dReal)world_erp);
+        dWorldSetMaxAngularSpeed(world, max_angular_speed);
+        dWorldSetContactMaxCorrectingVel(world, max_correcting_vel);
 
         dWorldSetAutoDisableFlag (world,0);
         // if usefull for some tests a ground can be created here
