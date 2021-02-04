@@ -1428,6 +1428,7 @@ namespace mars {
                 gd->parent_geom = nGeom;
                 gd->parent_body = nBody;
                 sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
+                dGeomRaySetClosestHit(sle.geom, 1);
                 dGeomSetCollideBits(sle.geom, 32768);
                 dGeomSetCategoryBits(sle.geom, 32768);
                 
@@ -1465,6 +1466,7 @@ namespace mars {
               gd->parent_geom = nGeom;
               gd->parent_body = nBody;
               sle.geom = dCreateRay(NULL, polarSensor->maxDistance);
+              dGeomRaySetClosestHit(sle.geom, 1);
               dGeomSetCollideBits(sle.geom, 32768);
               dGeomSetCategoryBits(sle.geom, 32768);
               direction = Vector(cos(rad_start+i*polarSensor->stepX),
@@ -1527,6 +1529,7 @@ namespace mars {
             gd->parent_geom = nGeom;
             sle.geom = dCreateRay(theWorld->getSpace(),
                                   polarGridSensor->maxDistance);
+            dGeomRaySetClosestHit(sle.geom, 1);
             dGeomSetCollideBits(sle.geom, 32768);
             dGeomSetCategoryBits(sle.geom, 32768);
         
