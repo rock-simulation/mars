@@ -52,8 +52,8 @@
 
 #define EPSILON 1e-10
 
-#define DRAW_MLS_CONTACTS 1
-#define DEBUG_WORLD_PHYSICS 1
+//#define DRAW_MLS_CONTACTS 1
+//#define DEBUG_WORLD_PHYSICS 1
 
 
 namespace mars {
@@ -307,7 +307,7 @@ namespace mars {
       }
       contact_feedback_list.clear();
       // Clear draw_intern 
-      draw_intern.clear(); //TODO: Can we remove this?
+      draw_intern.clear(); 
 
       // Clear contacts
       dJointGroupEmpty(contactgroup);
@@ -315,7 +315,6 @@ namespace mars {
 
     void WorldPhysics::draw_contacts(const mars::sim::ContactsPhysics & colContacts)
     {
-      // NOTE Comment out this, so we don't draw the contacts
       for(int i=0; i<colContacts.numContacts; i++)
       {
         draw_item item;
@@ -343,7 +342,6 @@ namespace mars {
 
     void WorldPhysics::createFeedbackJoints(const std::vector<mars::sim::ContactsPhysics> & contacts)
     {
-      LOG_DEBUG("[WorldPhysics::createFeedbackJoints] First line");
       int totalContactCol = contacts.size();
       for( int col_i=0; col_i < totalContactCol; col_i++ )
       {
@@ -365,7 +363,12 @@ namespace mars {
         {
           contact_feedback_list.push_back(*it);
         }
-        num_contacts += contactFeedbacks.size(); // Not all contacts might become feedback joints, so it it better this than using colContacts.numContacts;
+        // Some feedback joints might not be set even if contacts exists if
+        // errors are detected.
+        // Currently though all are used but for future potential fixes that do
+        // this it is better to use this size than directly using
+        // colContacts.numContacts;
+        num_contacts += contactFeedbacks.size(); 
       } // For each collidable
     }
 
@@ -386,9 +389,11 @@ namespace mars {
         void * data = &contacts;
         it->p_interface->getSomeData(data);         
         int numContacts = contacts.size();
-        LOG_DEBUG("[WorldPhysics::StepTheWorld] %s found contacts with %i collidables.", 
-                  it->name.c_str(),
-                  contacts.size());
+        #ifdef DEBUG_WORLD_PHYSICS
+          LOG_DEBUG("[WorldPhysics::setContactsFromPlugins] %s found contacts with %i collidables.", 
+                    it->name.c_str(),
+                    contacts.size());
+        #endif
         if (numContacts > 0)
         {
           createFeedbackJoints(contacts);
@@ -434,8 +439,9 @@ namespace mars {
           if(fast_step) dWorldQuickStep(world, step_size);
           else dWorldStep(world, step_size);
         } catch (int id) {
-          if(id==3) LOG_WARN("Problem normalizing a vector");
-          if(id==4) LOG_WARN("Problem normalizing a quaternion");
+          // TODO Check that you really need this before doing the patch
+          if(id==3) LOG_ERROR("Problem normalizing a vector");
+          if(id==4) LOG_ERROR("Problem normalizing a quaternion");
         } catch (...) {
           control->sim->handleError(PHYSICS_UNKNOWN);
         }
