@@ -96,6 +96,29 @@ namespace mars {
 #endif //WIN32
     }
 
+    void MARS::releaseEnvireLibs()
+    {
+      // To release other core libraries
+      std::list<std::string> needRelease{"envire_mls", "envire_managers", "envire_smurf_loader", "envire_graphics", "envire_graph_loader"};
+      std::list<std::string> * allLibs = new std::list<std::string>();
+      libManager->getAllLibraryNames(allLibs);
+      std::list<std::string>::iterator iter;      
+      for(iter = allLibs->begin();
+        iter != allLibs->end(); iter++) 
+      {
+        lib_manager::LibInfo libInfo = libManager->getLibraryInfo(*iter);
+        if (std::find(needRelease.begin(), needRelease.end(), *iter) != needRelease.end())
+        {
+          while(libInfo.references >0)
+          {
+            libManager->releaseLibrary(*iter);
+            libInfo = libManager->getLibraryInfo(*iter);
+          }
+        }
+      }
+      delete allLibs;
+    }
+
     MARS::MARS(lib_manager::LibManager *theManager) : configDir(DEFAULT_CONFIG_DIR),
                    libManager(theManager),
                    marsGui(NULL), ownLibManager(false),
@@ -122,7 +145,7 @@ namespace mars {
       if(control->graphics) libManager->releaseLibrary("mars_graphics");
       libManager->releaseLibrary("main_gui");
       libManager->releaseLibrary("cfg_manager");
-
+      releaseEnvireLibs();
       if(ownLibManager) delete libManager;
 
 #ifdef WIN32
