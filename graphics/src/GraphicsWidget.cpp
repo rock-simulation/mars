@@ -782,7 +782,7 @@ namespace mars {
         initialize();
         view->addEventHandler(this);
         view->addEventHandler(keyswitchManipulator.get());
-        // osg doen't handle the focus correctly
+        // osg doesn't handle the focus correctly
         if(widgetID == 1) {
           view->addEventHandler(new osgViewer::StatsHandler);
         }
@@ -1789,6 +1789,5 @@ namespace mars {
         myHUD->setViewOffsets(x1, x2, y1, y2);
       }
     }
-
   } // end of namespace graphics
 } // end of namespace mars

@@ -124,6 +124,17 @@ namespace mars {
       void setPivot(osg::Vec3f p);
       void toggleTrackball();
       void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
+      void setTrakingTransform(osg::ref_ptr<osg::PositionAttitudeTransform> t);
+      virtual bool isTracking();
+      virtual void setTrackingLogRotation(bool b);
+      virtual void getOffsetQuat(double *tx, double *ty, double *tz,
+                                 double *rx, double *ry, double *rz,
+                                 double *rw);
+      virtual void setOffsetQuat(double tx, double ty, double tz,
+                                 double rx, double ry, double rz,
+                                 double rw);
+      virtual double getMoveSpeed() {return (double)moveSpeed;}
+      virtual void setMoveSpeed(double s) {moveSpeed = (float)s;}
 
     private:
       void calcEyeSep(void);
@@ -132,11 +143,14 @@ namespace mars {
 
       osg::ref_ptr<osg::Camera> mainCamera;
       osg::ref_ptr<osg::Camera> hudCamera;
+      osg::ref_ptr<osg::PositionAttitudeTransform> tracking;
+      bool logTrackingRotation;
       osg::Matrixd myCameraMatrix;
       osg::Matrixd cameraRotation;
       osg::Matrixd cameraTrans;
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator;
-      osg::Vec3f pivot;
+      osg::Vec3f pivot, offsetPos;
+      osg::Quat offsetRot;
       int camera;
       int camType, previousType;
       double actOrtH;
@@ -150,6 +164,7 @@ namespace mars {
       double f_win_ratio;
       double separation;
       double eyeSep; // separation of the eyes (displacement of one eye)
+      float moveSpeed;
       bool stereo;
       bool switch_eyes;
       short left;

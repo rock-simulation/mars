@@ -189,6 +189,7 @@ namespace mars {
           }
         }
       }
+      nameMap[guiElem] = name;
       addMap[guiElem] = &map;
       pDialog->expandTree(guiElem);
     }
@@ -370,29 +371,19 @@ namespace mars {
       if(checkInPattern(name, colorPattern)) {
         std::map<std::string, QtVariantProperty*>::iterator it = propMap.find(name);
         if(it != propMap.end()) {
-          ConfigMap &cMap = *(colorMap[it->second]);
+          ConfigItem *item = getItem(name);
+          if(!item) return;
+          ConfigMap &cMap = *item;
           cMap = map;
           QColor c;
           c.setRgbF(map["r"],map["g"], map["b"], map["a"]);
           it->second->setValue(c);
         }
         else { // add the element
-          std::vector<std::string> arrPath = utils::explodeString('/', name);
-          ConfigItem *item = config[arrPath[1]];
-          for(size_t i=2; i<arrPath.size(); ++i) {
-            if(item->isMap()) {
-              item = ((*item)[arrPath[i]]);
-            }
-            else if (item->isVector()) {
-              item = ((*item)[atoi(arrPath[i].c_str())]);
-            }
-            else {
-              fprintf(stderr, "ERROR: update configmap widget structure error!");
-              return;
-            }
-          }
+          ConfigItem *item = getItem(name);
+          if(!item) return;
           *item = map;
-          addConfigMap(name, *item);
+          addConfigMap(name, map);
         }
         return;
       }
@@ -440,7 +431,12 @@ namespace mars {
         ConfigAtom atom = v;
         ConfigAtom::ItemType type = atom.getType();
         guiElem = propMap[name];
-        *(dataMap[guiElem]) = v;
+        //*(dataMap[guiElem]) = v;
+
+        ConfigAtom *atom_ = getAtom(name);
+        if(!atom_) return;
+        *atom_ = v;
+
         // todo: handle dropDownPattern
         if(type == ConfigAtom::UNDEFINED_TYPE) {
           guiElem->setValue(QVariant(QString::fromStdString(atom.getUnparsedString())));
@@ -465,22 +461,10 @@ namespace mars {
         }
       }
       else { // add the element
-        std::vector<std::string> arrPath = utils::explodeString('/', name);
-        ConfigItem *item = config[arrPath[1]];
-        for(size_t i=2; i<arrPath.size(); ++i) {
-          if(item->isMap()) {
-            item = ((*item)[arrPath[i]]);
-          }
-          else if (item->isVector()) {
-            item = ((*item)[atoi(arrPath[i].c_str())]);
-          }
-          else {
-            fprintf(stderr, "ERROR: update configmap widget structure error!");
-            return;
-          }
-        }
-        *item = v;
-        addConfigAtom(name, *item);
+        ConfigAtom *atom = getAtom(name);
+        if(!atom) return;
+        *atom = v;
+        addConfigAtom(name, *atom);
       }
     }
 
@@ -523,63 +507,68 @@ namespace mars {
           map<QtVariantProperty*, ConfigMap*>::iterator it;
           it = colorMap.find(vp);
           if(it != colorMap.end()) {
+            std::string n = nameMap[vp];
             QColor c = value.value<QColor>();
-            (*(it->second))["r"] = c.redF();
-            (*(it->second))["g"] = c.greenF();
-            (*(it->second))["b"] = c.blueF();
-            (*(it->second))["a"] = c.alphaF();
+            ConfigItem *item = getItem(n);
+            (*item)["r"] = c.redF();
+            (*item)["g"] = c.greenF();
+            (*item)["b"] = c.blueF();
+            (*item)["a"] = c.alphaF();
             // emit colorChanged(nameMap[vp], c.redF(), c.greenF(),
             //                   c.blueF(), c.alphaF());
-            std::string n = nameMap[vp];
-            emit valueChanged(n+"/r", (*(it->second))["r"].toString());
-            emit valueChanged(n+"/g", (*(it->second))["g"].toString());
-            emit valueChanged(n+"/b", (*(it->second))["b"].toString());
-            emit valueChanged(n+"/a", (*(it->second))["a"].toString());
+            emit valueChanged(n+"/r", (*item)["r"].toString());
+            emit valueChanged(n+"/g", (*item)["g"].toString());
+            emit valueChanged(n+"/b", (*item)["b"].toString());
+            emit valueChanged(n+"/a", (*item)["a"].toString());
           }
         }
         else if(vp->propertyType() == QtVariantPropertyManager::enumTypeId()) {
+          std::string n = nameMap[(QtVariantProperty*)property];
           map<QtVariantProperty*, ConfigAtom*>::iterator it;
           it = dataMap.find((QtVariantProperty*)property);
           if(it != dataMap.end()) {
-            ConfigAtom::ItemType type = it->second->getType();
+            ConfigAtom *atom = getAtom(n);
+            if(!atom) return;
+            ConfigAtom::ItemType type = atom->getType();
             if(type == ConfigAtom::UNDEFINED_TYPE) {
-              it->second->setUnparsedString(property->valueText().toStdString());
+              atom->setUnparsedString(property->valueText().toStdString());
             }
             else if(type == ConfigAtom::STRING_TYPE) {
-              it->second->setString(property->valueText().toStdString());
+              atom->setString(property->valueText().toStdString());
             }
-            emit valueChanged(nameMap[(QtVariantProperty*)property],
-                              it->second->toString());
+            emit valueChanged(n, atom->toString());
           }
         }
         else {
+          std::string n = nameMap[(QtVariantProperty*)property];
           map<QtVariantProperty*, ConfigAtom*>::iterator it;
           it = dataMap.find((QtVariantProperty*)property);
           if(it != dataMap.end()) {
-            ConfigAtom::ItemType type = it->second->getType();
+            ConfigAtom *atom = getAtom(n);
+            if(!atom) return;
+            ConfigAtom::ItemType type = atom->getType();
             if(type == ConfigAtom::UNDEFINED_TYPE) {
-              it->second->setUnparsedString(value.toString().toStdString());
+              atom->setUnparsedString(value.toString().toStdString());
             }
             else if(type == ConfigAtom::STRING_TYPE) {
-              it->second->setString(value.toString().toStdString());
+              atom->setString(value.toString().toStdString());
             }
             else if(type == ConfigAtom::INT_TYPE) {
-              it->second->setInt(value.toInt());
+              atom->setInt(value.toInt());
             }
             else if(type == ConfigAtom::UINT_TYPE) {
-              it->second->setUInt(value.toUInt());
+              atom->setUInt(value.toUInt());
             }
             else if(type == ConfigAtom::DOUBLE_TYPE) {
-              it->second->setDouble(value.toDouble());
+              atom->setDouble(value.toDouble());
             }
             else if(type == ConfigAtom::ULONG_TYPE) {
-              it->second->setULong(value.toULongLong());
+              atom->setULong(value.toULongLong());
             }
             else if(type == ConfigAtom::BOOL_TYPE) {
-              it->second->setBool(value.toBool());
+              atom->setBool(value.toBool());
             }
-            emit valueChanged(nameMap[(QtVariantProperty*)property],
-                              it->second->toString());
+            emit valueChanged(n, atom->toString());
           }
           else {
             map<QtVariantProperty*, std::string>::iterator it;
@@ -628,17 +617,17 @@ namespace mars {
           map<QtVariantProperty*, ConfigMap*>::iterator it;
           it = addMap.find(prop);
           if(it != addMap.end()) {
-            m = it->second;
+            ConfigItem *item = getItem(nameMap[prop]);
+            m = *item;
           }
         }
         else {
-          fprintf(stderr, "use global config\n");
           m = &config;
         }
         if(m) {
-    if(m->hasKey(key)) {
-      m->erase(key);
-    }
+          if(m->hasKey(key)) {
+            m->erase(key);
+          }
           if(typeBox->currentIndex() == 0) { // map
             (*m)[key] = ConfigMap();
           }
@@ -659,16 +648,18 @@ namespace mars {
           map<QtVariantProperty*, ConfigVector*>::iterator it;
           it = addVector.find(prop);
           if(it != addVector.end()) {
+            std::string n = nameMap[prop];
+            ConfigItem *item = getItem(n);
             if(typeBox->currentIndex() == 0) { // map
-              it->second->append(ConfigMap());
+              item->append(ConfigMap());
             }
             else if(typeBox->currentIndex() == 1) { // vector
-              it->second->append(ConfigVector());
+              item->append(ConfigVector());
             }
             else {
-              it->second->append(ConfigAtom(value));
+              item->append(ConfigAtom(value));
               char da[10];
-              sprintf(da, "/%d", (int)it->second->size()-1);
+              sprintf(da, "/%d", (int)item->size()-1);
               emit valueChanged(nameMap[prop]+da, value);
             }
           }
@@ -692,6 +683,39 @@ namespace mars {
         }
       }
       ignore_change = 0;
+    }
+
+    configmaps::ConfigAtom* DataWidget::getAtom(std::string path) {
+      ConfigItem *item = getItem(path);
+      if(item) {
+        return *item;
+      }
+      return NULL;
+    }
+
+    configmaps::ConfigItem* DataWidget::getItem(std::string path) {
+      std::vector<std::string> arrPath = utils::explodeString('/', path);
+      int index = 1;
+      if(cname.size() > 0) {
+        index = 2;
+      }
+      ConfigItem *item = config[arrPath[index]];
+      for(size_t i=index+1; i<arrPath.size(); ++i) {
+        if(item->isMap()) {
+          item = ((*item)[arrPath[i]]);
+        }
+        else if (item->isVector()) {
+          item = ((*item)[atoi(arrPath[i].c_str())]);
+        }
+        else if (item->isAtom()) {
+          break;
+        }
+        else {
+          fprintf(stderr, "ERROR: update configmap widget structure error!");
+          return NULL;
+        }
+      }
+      return item;
     }
 
   } // end of namespace config_map_widget

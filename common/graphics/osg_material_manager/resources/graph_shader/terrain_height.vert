@@ -20,7 +20,7 @@ void terrain_height(vec2 v, out float h) {
   vec2 stex = (tex - mtex)*(res-1)*step2;
   //vec4 terrainCol = texture2D(terrainMap, tex);
   vec4 terrainCol = texture2D(terrainMap, stex+vec2(step05));
-  float gScale = 0.0039215686;
+  float gScale = 0.003891045;
   float rScale = 1-gScale;
   float z = (terrainCol.r*rScale+terrainCol.g*gScale);
   //float z = (terrainCol.r+terrainCol.g*0.0039215686);

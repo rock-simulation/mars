@@ -81,6 +81,7 @@ namespace mars {
       interfaces::sReal getMomentaryMaxSpeed();
       void refreshPosition();
       void refreshPositions();
+      void setOfflinePosition(interfaces::sReal value);
       void runPositionController(interfaces::sReal time_ms);
       void runVelocityController(interfaces::sReal time_ms);
       void runEffortController(interfaces::sReal time_ms);

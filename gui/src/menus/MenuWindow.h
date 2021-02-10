@@ -47,6 +47,9 @@ namespace mars {
 
   namespace gui {
 
+    class CameraConfigurator;
+    class CaptureWindow;
+
     /**
      * \brief MenuWindow creates the menus and menu items in the Window menu of the simulation.
      */
@@ -86,6 +89,8 @@ namespace mars {
       cfg_manager::cfgPropertyStruct cfgVisRep, cfgShowCoords, cfgShowGrid;
       cfg_manager::cfgPropertyStruct cfgShowContacts, cfgShowSelection;
       bool updateProp;
+      CameraConfigurator *cameraConfigurator;
+      CaptureWindow *captureWindow;
 
     private slots:
       void closeWidget(void* widget);

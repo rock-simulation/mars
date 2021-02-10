@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2011, 2012, 2020, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -20,7 +20,7 @@
 
 /**
  * \file DataBroker.h
- * \author Malte Roemmermann, Lorenz Quack
+ * \author Malte Langosz, Lorenz Quack
  * \brief DataBroker A small library to manage data communication
  *        within a software framework.
  *
@@ -241,6 +241,7 @@ namespace mars {
                                              timerIt->second.t,
                                              pendingIt->callbackParam};
               timerIt->second.receivers.locked_push_back(timedReceiver);
+              element->timedReceivers.push_back(pendingIt->receiver);
               pendingIt = pendingTimedRegistrations.erase(pendingIt);
               advanceIterator = false;
             }
@@ -321,6 +322,15 @@ namespace mars {
           deferredCallback.receivers.clear();
 
           element->bufferLock->lockForWrite();
+          // we skip the update if we have no receivers
+          if(element->timedReceivers.empty() and
+             element->triggeredReceivers.empty() and
+             element->syncReceivers.empty() and
+             element->asyncReceivers.empty() and
+             element->connections.empty()) {
+            element->bufferLock->unlock();
+            continue;
+          }
           producerIt->producer->produceData(element->info,
                                             element->backBuffer,
                                             producerIt->callbackParam);
@@ -440,6 +450,7 @@ namespace mars {
           TimedReceiver timedReceiver = {receiver, element, updatePeriod,
                                          timerIt->second.t, callbackParam};
           timerIt->second.receivers.locked_push_back(timedReceiver);
+          element->timedReceivers.push_back(receiver);
           ok = true;
           if(timerName == "_REALTIME_") {
             lockRealtimeMutex();
@@ -476,6 +487,7 @@ namespace mars {
                                              const std::string &timerName) {
       std::map<std::string, Timer>::iterator timerIt, endIt;
       std::list<TimedReceiver>::iterator receiverIt;
+      std::list<ReceiverInterface*>::iterator receiverIt2;
       bool ok = false;
       timersLock.lockForRead();
       timerIt = timers.find(timerName);
@@ -488,6 +500,15 @@ namespace mars {
           if(receiverIt->receiver == receiver) {
             if(matchPattern(groupName, receiverIt->element->info.groupName) &&
                matchPattern(dataName, receiverIt->element->info.dataName)) {
+              for(receiverIt2 = receiverIt->element->timedReceivers.begin();
+                  receiverIt2 != receiverIt->element->timedReceivers.end();) {
+                if(*receiverIt2 == receiver) {
+                  receiverIt2 = receiverIt->element->timedReceivers.erase(receiverIt2);
+                }
+                else {
+                  ++receiverIt2;
+                }
+              }
               receiverIt = timerIt->second.receivers.erase(receiverIt);
               ok = true;
             }
@@ -703,6 +724,7 @@ namespace mars {
         if(elementIt != elementsByName.end()) {
           TriggeredReceiver triggeredReceiver = { receiver, elementIt->second,
                                                   callbackParam };
+          elementIt->second->triggeredReceivers.push_back(receiver);
           triggerIt->second.receivers.locked_push_back(triggeredReceiver);
           ok = true;
         }
@@ -718,6 +740,7 @@ namespace mars {
       std::map<std::string, Trigger>::iterator triggerIt, endIt;
       std::map<std::pair<std::string, std::string>, DataElement*>::iterator elementIt;
       std::list<TriggeredReceiver>::iterator receiverIt;
+      std::list<ReceiverInterface*>::iterator receiverIt2;
       bool ok = false;
       triggersLock.lockForRead();
       triggerIt = triggers.find(triggerName);
@@ -732,6 +755,16 @@ namespace mars {
               receiverIt != triggerIt->second.receivers.end(); /* do nothing */) {
             if((receiverIt->receiver == receiver) &&
                (receiverIt->element == elementIt->second)) {
+              for(receiverIt2 = receiverIt->element->triggeredReceivers.begin();
+                  receiverIt2 != receiverIt->element->triggeredReceivers.end();) {
+                if(*receiverIt2 == receiver) {
+                  receiverIt2 = receiverIt->element->triggeredReceivers.erase(receiverIt2);
+                }
+                else {
+                  ++receiverIt2;
+                }
+              }
+
               receiverIt = triggerIt->second.receivers.erase(receiverIt);
               ok = true;
             } else {
@@ -1269,6 +1302,7 @@ namespace mars {
                                 timerIt->second.t,
                                 timedRegistrationIt->callbackParam };
             timerIt->second.receivers.push_back(r);
+            newElement->timedReceivers.push_back(timedRegistrationIt->receiver);
             // if the registration has wildcards keep it in the pending list...
             if(!hasWildcards(timedRegistrationIt->groupName) &&
                !hasWildcards(timedRegistrationIt->dataName)) {
@@ -1296,6 +1330,7 @@ namespace mars {
                                     newElement,
                                     triggeredRegistrationIt->callbackParam };
             triggerIt->second.receivers.push_back(r);
+            newElement->triggeredReceivers.push_back(r.receiver);
             // if the registration has no wildcards remove
             // it from the pending list
             if(!hasWildcards(triggeredRegistrationIt->groupName) &&

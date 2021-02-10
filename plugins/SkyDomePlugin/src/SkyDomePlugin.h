@@ -38,6 +38,8 @@
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
+#include <mars/osg_material_manager/OsgMaterialManager.h>
+#include <mars/osg_material_manager/MaterialNode.h>
 
 #include <string>
 
@@ -47,6 +49,17 @@ namespace mars {
 
   namespace plugin {
     namespace SkyDomePlugin {
+
+      class SkyTransform : public osg::Transform {
+      public:
+        SkyTransform(): s1(1.0), s2(1.0) {}
+        virtual bool computeLocalToWorldMatrix(osg::Matrix& matrix,
+                                               osg::NodeVisitor* nv) const;
+
+        virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,
+                                               osg::NodeVisitor* nv) const;
+        double s1, s2;
+      };
 
       // inherit from MarsPluginTemplateGUI for extending the gui
       class SkyDomePlugin: public mars::interfaces::MarsPluginTemplateGUI,
@@ -88,9 +101,12 @@ namespace mars {
 
         osg::ref_ptr<SkyDome> _skyDome;
         osg::ref_ptr<osg::Group> scene;
-        osg::ref_ptr<osg::Transform> posTransform;
-        std::string resPath, folder;
+        osg::ref_ptr<osg_material_manager::MaterialNode> materialGroup;
+        osg::ref_ptr<SkyTransform> posTransform, meshPos;
+        std::string resPath, folder, meshPath, meshMaterialName;
+        double meshScale;
         bool updateProp;
+        osg_material_manager::OsgMaterialManager *materialManager;
 
         osg::ref_ptr<osg::TextureCubeMap> loadCubeMapTextures();
       }; // end of class definition SkyDomePlugin

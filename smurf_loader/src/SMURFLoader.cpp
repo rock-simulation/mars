@@ -468,6 +468,18 @@ namespace mars {
             if (envmap.hasKey("terrain")) {
               control->cfg->createParam("Scene","terrain_path", cfg_manager::stringParam);
               control->cfg->setPropertyValue("Scene", "terrain_path", "value", std::string(envmap["terrain"]["path"]));
+              if(envmap["terrain"].hasKey("mesh")) {
+                control->cfg->createParam("Scene","mesh", cfg_manager::stringParam);
+                control->cfg->setPropertyValue("Scene", "mesh", "value", std::string(envmap["terrain"]["mesh"]));
+              }
+              if(envmap["terrain"].hasKey("mesh_material")) {
+                control->cfg->createParam("Scene","mesh_material", cfg_manager::stringParam);
+                control->cfg->setPropertyValue("Scene", "mesh_material", "value", std::string(envmap["terrain"]["mesh_material"]));
+              }
+              if(envmap["terrain"].hasKey("mesh_scale")) {
+                control->cfg->createParam("Scene","mesh_scale", cfg_manager::doubleParam);
+                control->cfg->setPropertyValue("Scene", "mesh_scale", "value", (double)(envmap["terrain"]["mesh_scale"]));
+              }
             }
             interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
             if (envmap.hasKey("background")) {

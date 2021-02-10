@@ -543,6 +543,14 @@ namespace mars {
       }
     }
 
+    void MotorManager::setOfflinePosition(interfaces::MotorId id,
+                                          sReal pos) {
+      MutexLocker locker(&iMutex);
+      map<unsigned long, SimMotor*>::iterator iter = simMotors.find(id);
+      if (iter != simMotors.end())
+        iter->second->setOfflinePosition(pos);
+    }
+
     void MotorManager::edit(interfaces::MotorId id, const std::string &key,
                             const std::string &value) {
       MutexLocker locker(&iMutex);

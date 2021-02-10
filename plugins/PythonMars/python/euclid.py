@@ -204,48 +204,48 @@ class Vector2:
                            other.y - self[1])
 
     def __mul__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(self.x * other,
                        self.y * other)
 
     __rmul__ = __mul__
 
     def __imul__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         self.x *= other
         self.y *= other
         return self
 
     def __div__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.div(self.x, other),
                        operator.div(self.y, other))
 
 
     def __rdiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.div(other, self.x),
                        operator.div(other, self.y))
 
     def __floordiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.floordiv(self.x, other),
                        operator.floordiv(self.y, other))
 
 
     def __rfloordiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.floordiv(other, self.x),
                        operator.floordiv(other, self.y))
 
     def __truediv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.truediv(self.x, other),
                        operator.truediv(self.y, other))
 
 
     def __rtruediv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector2(operator.truediv(other, self.x),
                        operator.truediv(other, self.y))
     
@@ -447,7 +447,7 @@ class Vector3:
                           self.y * other.y,
                           self.z * other.z)
         else: 
-            assert type(other) in (int, long, float)
+            assert type(other) in (int, float)
             return Vector3(self.x * other,
                            self.y * other,
                            self.z * other)
@@ -455,47 +455,47 @@ class Vector3:
     __rmul__ = __mul__
 
     def __imul__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         self.x *= other
         self.y *= other
         self.z *= other
         return self
 
     def __div__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.div(self.x, other),
                        operator.div(self.y, other),
                        operator.div(self.z, other))
 
 
     def __rdiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.div(other, self.x),
                        operator.div(other, self.y),
                        operator.div(other, self.z))
 
     def __floordiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.floordiv(self.x, other),
                        operator.floordiv(self.y, other),
                        operator.floordiv(self.z, other))
 
 
     def __rfloordiv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.floordiv(other, self.x),
                        operator.floordiv(other, self.y),
                        operator.floordiv(other, self.z))
 
     def __truediv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.truediv(self.x, other),
                        operator.truediv(self.y, other),
                        operator.truediv(self.z, other))
 
 
     def __rtruediv__(self, other):
-        assert type(other) in (int, long, float)
+        assert type(other) in (int, float)
         return Vector3(operator.truediv(other, self.x),
                        operator.truediv(other, self.y),
                        operator.truediv(other, self.z))

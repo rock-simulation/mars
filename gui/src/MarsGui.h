@@ -41,6 +41,10 @@ namespace mars {
   }
 
   namespace gui {
+    class MenuAdd;
+    class MenuFile;
+    class MenuSimulation;
+    class MenuWindow;
 
     /**
      * \brief Sets up the main gui of the simulation and handles various generic gui options.
@@ -70,6 +74,10 @@ namespace mars {
       cfg_manager::cfgPropertyStruct marsStyle;
       cfg_manager::cfgPropertyStruct dockStyle;
       cfg_manager::cfgPropertyStruct stateNamesProp, dockArea, dockFloat, dockLeft, dockTop, dockWidth, dockHeight;
+      MenuAdd *menuAdd;
+      MenuFile *menuFile;
+      MenuSimulation *menuSim;
+      MenuWindow *menuWindow;
 
     };
 

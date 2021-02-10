@@ -40,7 +40,10 @@ namespace mars {
 
     MarsGui::MarsGui(lib_manager::LibManager *theManager) : MarsGuiInterface(theManager), 
                                                             control(NULL), gui(NULL) {
-
+        menuFile   = NULL;
+        menuAdd    = NULL;
+        menuSim    = NULL;
+        menuWindow = NULL;
     }
 
     MarsGui::~MarsGui() {
@@ -51,7 +54,11 @@ namespace mars {
       if(gui) {
         libManager->releaseLibrary("main_gui");
       }  
-      //fprintf(stderr, "Delete mars_gui\n");
+      if(menuFile) delete menuFile;
+      if(menuAdd) delete menuAdd;
+      if(menuSim) delete menuSim;
+      if(menuWindow) delete menuWindow;
+      fprintf(stderr, "Delete mars_gui\n");
     }
 
 
@@ -104,10 +111,10 @@ namespace mars {
           */
         }
 
-        new MenuFile(control, gui, resourcesPath.sValue, libManager);
-        new MenuAdd(control, gui, resourcesPath.sValue, libManager);
-        new MenuSimulation(control, gui, resourcesPath.sValue);
-        new MenuWindow(control, gui);
+        menuFile = new MenuFile(control, gui, resourcesPath.sValue, libManager);
+        menuAdd = new MenuAdd(control, gui, resourcesPath.sValue, libManager);
+        menuSim = new MenuSimulation(control, gui, resourcesPath.sValue);
+        menuWindow = new MenuWindow(control, gui);
       }
     }
 

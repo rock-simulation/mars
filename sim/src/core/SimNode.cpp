@@ -682,6 +682,9 @@ namespace mars {
     void SimNode::changeNode(NodeData *node) {
       MutexLocker locker(&iMutex);
       if (my_interface) my_interface->changeNode(node);
+      sNode.pos = node->pos;
+      sNode.rot = node->rot;
+      sNode.ext = node->ext;
       bool handleDataBroker = false;
       if(sNode.name != node->name) {
         // handle databroker
@@ -865,7 +868,7 @@ namespace mars {
                                      std::string *dataName) const {
       char format[] = "Nodes/%05lu_%s";
       int size = snprintf(0, 0, format, sNode.index, sNode.name.c_str());
-      char buffer[size];
+      char buffer[size+1];
       sprintf(buffer, format, sNode.index, sNode.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;

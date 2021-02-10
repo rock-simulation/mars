@@ -16,37 +16,53 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
   vec4 screenPos = (gl_ModelViewProjectionMatrix * modelVertex);
   screenPos /= screenPos.w;
   s = 0.0078125; // 1/128
+  float testZ = gl_FragCoord.z*2.0-1.0;
+  float map0 = step(testZ, zShadow0);
+  float map1 = step(zShadow0, testZ)*step(testZ, zShadow1);
+  float map2 = step(zShadow1, testZ)*step(testZ, zShadow2);
+  float shadow0 = 0.0;
+  float shadow1 = 0.0;
+
+  if(useShadow == 1) {
+    float shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
+    shadow2 = step(0.25,shadow2);
+    if(shadowSamples == 1) {
+      shadow0 = shadow2D(shadowTexture0, gl_TexCoord[1].xyz).r;
+      shadow0 = step(0.25,shadow0);
+      shadow1 = shadow2D(shadowTexture1, gl_TexCoord[2].xyz).r;
+      shadow1 = step(0.25,shadow1);
+    }
+    else {
+      float da = 128/shadowSamples;
+      float w = gl_TexCoord[1].w*invShadowTextureSize;
+      float w2 = gl_TexCoord[2].w*invShadowTextureSize;
+      vec2 offset = floor(da*screenPos.xy*10)*shadowSamples;
+      for(int k=0; k<shadowSamples; ++k) {
+        for(int l=0; l<shadowSamples; ++l) {
+          x = offset.x*s + k*s;
+          y = offset.y*s + l*s;
+          v = texture2D( NoiseMap, vec2(x,y)).xy-0.5;
+          v *= 8;
+          shadowCoord = gl_TexCoord[1] + vec4(v.x*w, v.y*w, 0.0, 0);
+          shadow0 += shadow2DProj( shadowTexture0, shadowCoord ).r * invShadowSamples;
+          shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.0, 0);
+          shadow1 += shadow2DProj( shadowTexture1, shadowCoord ).r * invShadowSamples;
+        }
+      }
+    }
+    float term0 = map0*(1-shadow0);
+    float term1 = map1*(1-shadow1);
+    float term2 = map2*(1-shadow2);
+    shadow = 1-clamp(term0+term1+term2, 0.0, 1.0);
+  } else {
+    shadow = 1.0f;
+  }
+
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i]==1) {
       nDotL = max(dot( n, normalize(  -lightVec[i] ) ), 0.0);
       reflected = normalize(reflect(lightVec[i], n ) );
       rDotE = max(dot( reflected, eye ), 0.0);
-      if(useShadow == 1) {
-        shadow = 0;
-        if(shadowSamples == 1) {
-          shadow += shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r * invShadowSamples;
-        }
-        else {
-          float da = 128/shadowSamples;
-          float w = gl_TexCoord[2].w*invShadowTextureSize;
-          vec2 offset = floor(da*screenPos.xy*10)*shadowSamples;
-          for(int k=0; k<shadowSamples; ++k) {
-            for(int l=0; l<shadowSamples; ++l) {
-              x = offset.x*s + k*s;
-              y = offset.y*s + l*s;
-              v = texture2D( NoiseMap, vec2(x,y)).xy-0.5;
-              v *= 8;
-              shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.0, 0);
-              shadow += shadow2DProj( osgShadow_shadowTexture, shadowCoord ).r * invShadowSamples;
-            }
-          }
-        }
-        //shadow *= shadow*shadow* osgShadow_ambientBias.y;
-        //shadow *= osgShadow_ambientBias.y;
-        //shadow += osgShadow_ambientBias.x;
-      } else {
-        shadow = 1.0f;
-      }
       //#if USE_LSPSM_SHADOW
       //shadow = shadow2DProj( shadowTexture, gl_TexCoord[6] ).r;
       //#elif USE_PSSM_SHADOW
@@ -110,4 +126,5 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
     float fog = gl_Fog.density*clamp(gl_Fog.scale*(length(eyeVec)-gl_Fog.start) , 0.0, 1.0);
     outcol = mix(gl_Fog.color, outcol, 1-fog);
   }
+  //outcol = vec4(positionVarying.x, shadow, positionVarying.y, 1.0);
 }

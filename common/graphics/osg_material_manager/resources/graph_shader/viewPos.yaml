@@ -2,5 +2,5 @@ params:
   in:
     modelPos: {index: 0, type: vec4}
   out:
-    viewPos: {index: 0, type: vec4}
+    viewPos: {index: 1, type: vec4}
 source: /graph_shader/viewPos.vert

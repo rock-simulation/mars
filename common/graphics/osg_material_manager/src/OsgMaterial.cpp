@@ -56,13 +56,13 @@ namespace osg_material_manager {
 
   OsgMaterial::OsgMaterial(std::string resPath)
     : material(0),
-      hasShaderSources(false),
+      hasShaderSources(false), isInit(false),
       useShader(true),
       maxNumLights(1),
-      resPath(resPath),
       invShadowTextureSize(1./1024),
       useWorldTexCoords(false),
-      loadPath(""), isInit(false) {
+      resPath(resPath),
+      loadPath("") {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
     sinUniform = new osg::Uniform("sinUniform", 0.0f);
@@ -87,17 +87,17 @@ namespace osg_material_manager {
     noiseMap->setFilter(osg::Texture::MIN_FILTER, osg::Texture::NEAREST);
     noiseMap->setFilter(osg::Texture::MAG_FILTER, osg::Texture::NEAREST);
     unitMap["diffuseMap"] = 0;
-    unitMap["normalMap"] = 1;
-    unitMap["displacementMap"] = 3;
+    unitMap["normalMap"] = 5;
+    unitMap["displacementMap"] = 6;
     unitMap["environmentMap"] = 0;
-    unitMap["envMapR"] = 5;
-    unitMap["envMapG"] = 6;
-    unitMap["envMapB"] = 8;
-    unitMap["envMapA"] = 9;
-    unitMap["normalMapR"] = 10;
-    unitMap["normalMapG"] = 11;
-    unitMap["normalMapB"] = 12;
-    unitMap["terrainMap"] = 3;
+    unitMap["envMapR"] = 8;
+    unitMap["envMapG"] = 9;
+    unitMap["envMapB"] = 10;
+    unitMap["envMapA"] = 11;
+    unitMap["normalMapR"] = 12;
+    unitMap["normalMapG"] = 13;
+    unitMap["normalMapB"] = 14;
+    unitMap["terrainMap"] = 6;
     t = 0;
   }
 
@@ -180,9 +180,15 @@ namespace osg_material_manager {
     std::map<std::string, TextureInfo>::iterator it = textures.begin();
     for(; it!=textures.end(); ++it) {
       it->second.enabled = false;
-      state->setTextureAttributeAndModes(it->second.unit,
-                                         it->second.texture,
-                                         osg::StateAttribute::OFF);
+      if(it->second.cubemap) {
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.cubemap,
+                                           osg::StateAttribute::OFF);
+      } else {
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.texture,
+                                           osg::StateAttribute::OFF);
+      }
       state->removeUniform(it->second.textureUniform);
     }
     if (!texturename.empty()) {
@@ -208,7 +214,15 @@ namespace osg_material_manager {
     if(map.hasKey("textures")) {
       ConfigVector::iterator it = map["textures"].begin();
       for(; it!=map["textures"].end(); ++it) {
-        addTexture(*it, map.hasKey("instancing"));
+        if(it->hasKey("layer")) {
+          addTextureArray(*it);
+        }
+        else if(it->hasKey("cubemap")) {
+          addCubemap(*it);
+        }
+        else {
+          addTexture(*it, map.hasKey("instancing"));
+        }
       }
     }
     useWorldTexCoords = map.get("useWorldTexCoords", false);
@@ -226,6 +240,85 @@ namespace osg_material_manager {
     }
   }
     
+  void OsgMaterial::addCubemap(ConfigMap &config) {
+    osg::StateSet *state = getOrCreateStateSet();
+    std::map<std::string, TextureInfo>::iterator it = textures.find((std::string)config["name"]);
+    if(it != textures.end()) {
+      TextureInfo &info = it->second;
+      // todo: handle changes in texture unit etc.
+      std::map<std::string, int> mapping;
+      mapping["north"] = osg::TextureCubeMap::POSITIVE_Z;
+      mapping["east"] = osg::TextureCubeMap::POSITIVE_X;
+      mapping["south"] = osg::TextureCubeMap::NEGATIVE_Z;
+      mapping["west"] = osg::TextureCubeMap::NEGATIVE_X;
+      mapping["up"] = osg::TextureCubeMap::NEGATIVE_Y;
+      mapping["down"] = osg::TextureCubeMap::POSITIVE_Y;
+
+      for(auto it: mapping) {
+        std::string file = config["cubemap"][it.first];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
+        info.cubemap->setImage(it.second,
+                               OsgMaterialManager::loadImage(file));
+      }
+      if(!info.enabled) {
+        state->setTextureAttributeAndModes(info.unit, info.cubemap,
+                                           osg::StateAttribute::ON);
+        state->addUniform(info.textureUniform.get());
+        info.enabled = true;
+      }
+    }
+    else {
+      TextureInfo info;
+      info.name << config["name"];
+      fprintf(stderr, "load cubemap: %s\n", info.name.c_str());
+
+      info.cubemap = new osg::TextureCubeMap();
+      info.cubemap->setInternalFormat(GL_RGBA);
+      info.cubemap->setFilter(osg::Texture::MIN_FILTER,
+                              osg::Texture::LINEAR_MIPMAP_LINEAR);
+      info.cubemap->setFilter(osg::Texture::MAG_FILTER,
+                              osg::Texture::LINEAR);
+      info.cubemap->setWrap(osg::Texture::WRAP_S,
+                            osg::Texture::CLAMP_TO_EDGE);
+      info.cubemap->setWrap(osg::Texture::WRAP_T,
+                            osg::Texture::CLAMP_TO_EDGE);
+
+      std::map<std::string, int> mapping;
+      mapping["north"] = osg::TextureCubeMap::POSITIVE_Z;
+      mapping["east"] = osg::TextureCubeMap::POSITIVE_X;
+      mapping["south"] = osg::TextureCubeMap::NEGATIVE_Z;
+      mapping["west"] = osg::TextureCubeMap::NEGATIVE_X;
+      mapping["up"] = osg::TextureCubeMap::NEGATIVE_Y;
+      mapping["down"] = osg::TextureCubeMap::POSITIVE_Y;
+      for(auto it: mapping) {
+        std::string file = config["cubemap"][it.first];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
+        fprintf(stderr, "load image %s: %s\n", it.first.c_str(), file.c_str());
+        info.cubemap->setImage(it.second,
+                               OsgMaterialManager::loadImage(file));
+      }
+
+      info.unit = 0;
+      if(unitMap.hasKey(info.name)) {
+        info.unit = unitMap[info.name];
+      }
+      if(config.hasKey("unit")) {
+        info.unit = config["unit"];
+      }
+      fprintf(stderr, "set unit: %d\n", info.unit);
+      info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
+      state->setTextureAttributeAndModes(info.unit, info.cubemap,
+                                         osg::StateAttribute::ON);
+      state->addUniform(info.textureUniform.get());
+      info.enabled = true;
+      textures[info.name] = info;
+    }
+  }
+
   void OsgMaterial::addTexture(ConfigMap &config, bool nearest) {
     osg::StateSet *state = getOrCreateStateSet();
     std::map<std::string, TextureInfo>::iterator it = textures.find((std::string)config["name"]);
@@ -260,15 +353,29 @@ namespace osg_material_manager {
       else {
         info.texture = OsgMaterialManager::loadTexture(file);
       }
+      int filter = 1;
       if(nearest) {
+        filter = 0;
+      }
+      if(config.hasKey("filter")) {
+        filter = config["filter"];
+      }
+      if(filter == 0) {
+        fprintf(stderr, "set filter to nearest: %s\n", info.name.c_str());
         info.texture->setFilter(osg::Texture::MIN_FILTER,
                                 osg::Texture::NEAREST);
         info.texture->setFilter(osg::Texture::MAG_FILTER,
                                 osg::Texture::NEAREST);
       }
-      else {
+      else if(filter == 1) {
         info.texture->setFilter(osg::Texture::MIN_FILTER,
                                 osg::Texture::LINEAR_MIPMAP_LINEAR);
+        info.texture->setFilter(osg::Texture::MAG_FILTER,
+                                osg::Texture::LINEAR);
+      }
+      else if(filter == 2) {
+        info.texture->setFilter(osg::Texture::MIN_FILTER,
+                                osg::Texture::LINEAR);
         info.texture->setFilter(osg::Texture::MAG_FILTER,
                                 osg::Texture::LINEAR);
       }
@@ -300,34 +407,170 @@ namespace osg_material_manager {
     }
   }
 
+    void OsgMaterial::addTextureArray(ConfigMap &config, bool nearest) {
+    osg::StateSet *state = getOrCreateStateSet();
+    std::map<std::string, TextureArrayInfo>::iterator it = textureArrays.find((std::string)config["name"]);
+    if(it != textureArrays.end()) {
+      TextureArrayInfo &info = it->second;
+      // todo: handle changes in texture unit etc.
+      int layer = config["layer"];
+      std::string file = config["file"];
+      if(!loadPath.empty() && file[0] != '/') {
+        file = loadPath + file;
+      }
+      osg::ref_ptr<osg::Image> image = OsgMaterialManager::loadImage(file);
+      info.texture->setImage(layer, image.get());
+      if(!info.enabled) {
+        state->setTextureAttributeAndModes(info.unit, info.texture,
+                                           osg::StateAttribute::ON);
+        state->addUniform(info.textureUniform.get());
+        info.enabled = true;
+      }
+    }
+    else {
+      TextureArrayInfo info;
+      info.name << config["name"];
+      fprintf(stderr, "generate texture array: %s\n", info.name.c_str());
+      int layer = config["layer"];
+      std::string file = config["file"];
+      if(!loadPath.empty() && file[0] != '/') {
+        file = loadPath + file;
+      }
+      fprintf(stderr, "     image file: %s\n", file.c_str());
+      osg::ref_ptr<osg::Image> image = OsgMaterialManager::loadImage(file);
+      info.texture->setImage(layer, image.get());
+      int filter = 1;
+      if(nearest) {
+        filter = 0;
+      }
+      if(config.hasKey("filter")) {
+        filter = config["filter"];
+      }
+      if(filter == 0) {
+        fprintf(stderr, "set filter to nearest: %s\n", info.name.c_str());
+        info.texture->setFilter(osg::Texture::MIN_FILTER,
+                                osg::Texture::NEAREST);
+        info.texture->setFilter(osg::Texture::MAG_FILTER,
+                                osg::Texture::NEAREST);
+      }
+      else if(filter == 1) {
+        info.texture->setFilter(osg::Texture::MIN_FILTER,
+                                osg::Texture::LINEAR_MIPMAP_LINEAR);
+        info.texture->setFilter(osg::Texture::MAG_FILTER,
+                                osg::Texture::LINEAR);
+      }
+      else if(filter == 2) {
+        info.texture->setFilter(osg::Texture::MIN_FILTER,
+                                osg::Texture::LINEAR);
+        info.texture->setFilter(osg::Texture::MAG_FILTER,
+                                osg::Texture::LINEAR);
+      }
+      info.texture->setWrap( osg::Texture::WRAP_S, osg::Texture::REPEAT );
+      info.texture->setWrap( osg::Texture::WRAP_T, osg::Texture::REPEAT );
+      info.texture->setMaxAnisotropy(8);
+      info.unit = 0;
+      if(unitMap.hasKey(info.name)) {
+        info.unit = unitMap[info.name];
+      }
+      if(config.hasKey("unit")) {
+        info.unit = config["unit"];
+      }
+      fprintf(stderr, "set unit: %d\n", info.unit);
+      info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
+      state->setTextureAttributeAndModes(info.unit, info.texture,
+                                         osg::StateAttribute::ON);
+      state->addUniform(info.textureUniform.get());
+      if(config.hasKey("texScale") && (double)config["texScale"] != 1.0) {
+        osg::ref_ptr<osg::TexMat> scaleTexture = new osg::TexMat();
+        float tex_scale = (double)config["texScale"];
+        scaleTexture->setMatrix(osg::Matrix::scale(tex_scale, tex_scale,
+                                                   tex_scale));
+        state->setTextureAttributeAndModes(info.unit, scaleTexture.get(),
+                                           osg::StateAttribute::ON);
+      }
+      info.enabled = true;
+      textureArrays[info.name] = info;
+    }
+  }
+
   void OsgMaterial::disableTexture(std::string name) {
-    std::map<std::string, TextureInfo>::iterator it = textures.find(name);
-    if(it != textures.end()) {
-      osg::StateSet *state = getOrCreateStateSet();
-      it->second.enabled = false;
-      state->setTextureAttributeAndModes(it->second.unit,
-                                         it->second.texture,
-                                         osg::StateAttribute::OFF);
-      state->removeUniform(it->second.textureUniform);
+    {
+      std::map<std::string, TextureInfo>::iterator it = textures.find(name);
+      if(it != textures.end()) {
+        osg::StateSet *state = getOrCreateStateSet();
+        it->second.enabled = false;
+        if(it->second.cubemap) {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.cubemap,
+                                             osg::StateAttribute::OFF);
+        }
+        else {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.texture,
+                                             osg::StateAttribute::OFF);
+        }
+        state->removeUniform(it->second.textureUniform);
+        return;
+      }
+    }
+    {
+      std::map<std::string, TextureArrayInfo>::iterator it = textureArrays.find(name);
+      if(it != textureArrays.end()) {
+        osg::StateSet *state = getOrCreateStateSet();
+        it->second.enabled = false;
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.texture,
+                                           osg::StateAttribute::OFF);
+        state->removeUniform(it->second.textureUniform);
+      }
     }
   }
 
   void OsgMaterial::enableTexture(std::string name) {
-    std::map<std::string, TextureInfo>::iterator it = textures.find(name);
-    if(it != textures.end()) {
-      osg::StateSet *state = getOrCreateStateSet();
-      it->second.enabled = true;
-      state->setTextureAttributeAndModes(it->second.unit,
-                                         it->second.texture,
-                                         osg::StateAttribute::ON);
-      state->addUniform(it->second.textureUniform);
+    {
+      std::map<std::string, TextureInfo>::iterator it = textures.find(name);
+      if(it != textures.end()) {
+        osg::StateSet *state = getOrCreateStateSet();
+        it->second.enabled = true;
+        if(it->second.cubemap) {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.cubemap,
+                                             osg::StateAttribute::ON);
+        } else {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.texture,
+                                             osg::StateAttribute::ON);
+        }
+        state->addUniform(it->second.textureUniform);
+        return;
+      }
+    }
+    {
+      std::map<std::string, TextureArrayInfo>::iterator it = textureArrays.find(name);
+      if(it != textureArrays.end()) {
+        osg::StateSet *state = getOrCreateStateSet();
+        it->second.enabled = true;
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.texture,
+                                           osg::StateAttribute::ON);
+        state->addUniform(it->second.textureUniform);
+        return;
+      }
     }
   }
 
   bool OsgMaterial::checkTexture(std::string name) {
-    std::map<std::string, TextureInfo>::iterator it = textures.find(name);
-    if(it != textures.end()) {
-      return it->second.enabled;
+    {
+      std::map<std::string, TextureInfo>::iterator it = textures.find(name);
+      if(it != textures.end()) {
+        return it->second.enabled;
+      }
+    }
+    {
+      std::map<std::string, TextureArrayInfo>::iterator it = textureArrays.find(name);
+      if(it != textureArrays.end()) {
+        return it->second.enabled;
+      }
     }
     return false;
   }
@@ -784,7 +1027,7 @@ namespace osg_material_manager {
       cv::Scalar s;
       int depth = img.depth();
       int v;
-      double imageMaxValue = pow(2., depth);
+      //double imageMaxValue = pow(2., depth);
       double s256 = 1./256;
       for(int x=0; x<img.cols; ++x) {
         for(int y=0; y<img.rows; ++y) {

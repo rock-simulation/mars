@@ -8,7 +8,7 @@
 #define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #include <numpy/arrayobject.h>
 
-#ifdef PYTHON3
+#if PYTHON_VERSION == 3
 #define PyInt_FromLong PyLong_FromLong
 #define PyInt_AsLong PyLong_AsLong
 #define PyInt_Check PyLong_Check
@@ -18,6 +18,7 @@
 std::string getString(PyObject *object)
 {
   std::string result;
+  if(!object) return result;
   if(PyUnicode_Check(object)) {
     PyObject* temp_bytes = PyUnicode_AsEncodedString(object, "UTF-8", "strict"); // Owned reference
     if (temp_bytes != NULL) {
@@ -279,7 +280,7 @@ struct ListBuilderState
     bool knownType = true;
 
     if(PyBool_Check(obj)) {
-      item = (bool)PyObject_IsTrue(obj);      
+      item = (bool)PyObject_IsTrue(obj);
     }
     else if(PyInt_Check(obj)) {
       item = (int)PyInt_AsLong(obj);
@@ -288,10 +289,10 @@ struct ListBuilderState
       item = PyFloat_AsDouble(obj);
     }
     else if(PyString_Check(obj)) {
-      item = PyString_AsString(obj);      
+      item = PyString_AsString(obj);
     }
     else if(PyList_Check(obj)) {
-      const unsigned size = PyList_Size(obj);      
+      const unsigned size = PyList_Size(obj);
       for(unsigned i = 0; i < size; i++) {
         PyObject *elem = PyList_GetItem(obj, i);
         item[(int)i] = ConfigItem();
@@ -300,7 +301,7 @@ struct ListBuilderState
     }
     else if(PyDict_Check(obj)) {
       PyObject *keyList = PyDict_Keys(obj);
-      const unsigned size = PyList_Size(keyList);      
+      const unsigned size = PyList_Size(keyList);
       for(unsigned i = 0; i < size; i++) {
         PyObject *key = PyList_GetItem(keyList, i);
         item[std::string(PyString_AsString(key))];
@@ -324,7 +325,7 @@ struct ListBuilderState
         PyObject* obj = mapToPyObjectPtr_(it->second);
         if(obj) {
           PyDict_SetItemString(dict, it->first.c_str(), obj);
-          Py_XDECREF(obj);        
+          Py_XDECREF(obj);
         }
       }
       return dict;
@@ -334,9 +335,9 @@ struct ListBuilderState
       ConfigVector::iterator it = map->begin();
       for(; it!=map->end(); ++it) {
         PyObject* obj = mapToPyObjectPtr_(*it);
-        if(obj) {        
+        if(obj) {
           PyList_Append(list, obj);
-          Py_XDECREF(obj);          
+          Py_XDECREF(obj);
         }
       }
       return list;
@@ -360,7 +361,7 @@ struct ListBuilderState
     }
     return NULL;
   }
-  
+
   PyObjectPtr mapToPyObjectPtr(ConfigMap *map) {
     ConfigItem item(*map);
     return makePyObjectPtr(mapToPyObjectPtr_(&item));
@@ -441,9 +442,10 @@ struct ListBuilderState
 //////////////////////// Public interface //////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-#ifdef PYTHON3
+#if PYTHON_VERSION == 3
 int initNumpy() {
   import_array();
+  return NULL;
 #else
 void initNumpy() {
   import_array();

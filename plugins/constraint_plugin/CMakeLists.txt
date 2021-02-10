@@ -11,6 +11,7 @@ define_module_info()
 
 pkg_check_modules(PKGCONFIG REQUIRED
         lib_manager
+        data_broker
         cfg_manager
         main_gui
         mars_interfaces

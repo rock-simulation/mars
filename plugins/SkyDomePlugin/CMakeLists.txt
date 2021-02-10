@@ -19,6 +19,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    main_gui
 			    mars_utils
 			    configmaps
+          osg_material_manager
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

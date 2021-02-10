@@ -2,5 +2,5 @@ params:
   in:
     value_a: {index: 0, type: float}
   out:
-    output: {index: 3, type: float}
+    output: {index: 1, type: float}
 source: /graph_shader/math_sin.frag

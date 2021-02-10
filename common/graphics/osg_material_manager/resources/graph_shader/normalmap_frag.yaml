@@ -3,7 +3,7 @@ params:
     nt: {index: 0, type: vec4}
     n: {index: 1 , type: vec3}
   out:
-    n: {index: 0, type: vec3}
+    n: {index: 2, type: vec3}
 source: /shader/normalmap.frag
 varyings:
   mat3:

@@ -100,8 +100,8 @@ namespace mars {
                                     GUI_ACTION_CONTROLLER_CONFIG,
                                     (main_gui::MenuInterface*)this, 0);
 
-      new CameraConfigurator(control, mainGui);
-      new CaptureWindow(control, mainGui);
+      cameraConfigurator = new CameraConfigurator(control, mainGui);
+      captureWindow = new CaptureWindow(control, mainGui);
 
 
       //mainGui->addGenericMenuAction("../Windows/", 0, NULL, 0, "", 0, -1);
@@ -184,6 +184,8 @@ namespace mars {
     //! The destructor destroys the dynamically loaded dialogs.
     MenuWindow::~MenuWindow() {
 
+      delete cameraConfigurator;
+      delete captureWindow;
     }
 
     void MenuWindow::menuAction(int action, bool checked)

@@ -1734,12 +1734,36 @@ namespace mars {
                            const std::string &value) {
       iMutex.lock();
       NodeMap::iterator iter;
+
       // todo: cfdir1 is a vector
       iter = simNodes.find(id);
-      if(iter == simNodes.end()) return;
+      if(iter == simNodes.end()) {
+        // hack to attache camera to node:
+        iMutex.unlock();
+        if(control->graphics) {
+          if(matchPattern("*/node", key)) {
+            id = getID(value);
+            unsigned long drawId = 0;
+            if(id) {
+              drawId = getDrawID(id);
+            }
+            control->graphics->attacheCamToNode(1, drawId);
+          }
+        }
+        return;
+      }
       NodeData nd = iter->second->getSNode();
       //// fprintf(stderr, "change: %s %s\n", key.c_str(), value.c_str());
-      if(matchPattern("*/position", key)) {
+      if(matchPattern("*/attach_camera", key)) {
+        iMutex.unlock();
+        if(control->graphics) {
+          int cameraId = atoi(value.c_str());
+          unsigned long drawId = getDrawID(id);
+          control->graphics->attacheCamToNode(cameraId, drawId);
+        }
+        return;
+      }
+      else if(matchPattern("*/position", key)) {
         //// fprintf(stderr, "position\n");
         double v = atof(value.c_str());
         if(key[key.size()-1] == 'x') nd.pos.x() = v;
@@ -1828,6 +1852,9 @@ namespace mars {
             c.friction_direction1 = 0;
           }
         }
+        else if(matchPattern("*/rolling_friction2", key)) c.rolling_friction2 = atof(value.c_str());
+        else if(matchPattern("*/rolling_friction", key)) c.rolling_friction = atof(value.c_str());
+        else if(matchPattern("*/spinning_friction", key)) c.spinning_friction = atof(value.c_str());
         iter->second->setContactParams(c);
         iMutex.unlock();
       }
@@ -1915,6 +1942,7 @@ namespace mars {
       if(nodeS->groupID > maxGroupID) {
         maxGroupID = nodeS->groupID;
       }
+      nodesToUpdate[sNode.index] = editedNode;
     }
 
   } // end of namespace sim

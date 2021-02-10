@@ -2,7 +2,7 @@ params:
   in:
     xy: {index: 0, type: vec2}
   out:
-    height: {index: 0, type: float}
+    height: {index: 1, type: float}
 uniforms:
   float:
     - {name: texScale}

@@ -10,13 +10,14 @@ lib_defaults()
 define_module_info()
 
 #This adds base-lib to the package-config as dep.
-set(LIB_DEPS "base-lib")
 
 pkg_check_modules(PKGCONFIG REQUIRED
         configmaps
         data_broker
         mars_utils
 )
+set(LIB_DEPS "base-lib configmaps data_broker mars_utils")
+
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
 add_definitions(${PKGCONFIG_CLFAGS_OTHER})  #flags excluding the ones with -I

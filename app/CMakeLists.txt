@@ -26,8 +26,12 @@ CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
 pkg_check_modules(PKGCONFIG
         lib_manager
+        configmaps
         mars_interfaces
-	configmaps
+        mars_utils
+        cfg_manager
+        # optional but still requires include header to be available if used
+        main_gui
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

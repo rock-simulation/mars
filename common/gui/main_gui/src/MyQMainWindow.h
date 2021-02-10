@@ -65,6 +65,8 @@ namespace mars {
       //! A constructor.
       MyQMainWindow(QWidget *parent, lib_manager::LibManager *libManager);
 
+      void prepareClose(void);
+
       //! A destructor.
       ~MyQMainWindow();
 

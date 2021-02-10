@@ -786,6 +786,18 @@ namespace mars {
       setControlValue(value);
     }
 
+    void SimMotor::setOfflinePosition(interfaces::sReal value) {
+      if(control->sim->isSimRunning()) {
+        LOG_WARN("SimMotor: Setting the \"offline\" position if the simulation is running can produce bad simulation states!");
+      }
+      if(sMotor.type == MOTOR_TYPE_POSITION ||
+         sMotor.type == MOTOR_TYPE_PID) {
+        controlValue = value;
+      }
+      myJoint->setOfflinePosition(value);
+      refreshPositions();
+    }
+
     void SimMotor::setControlValue(interfaces::sReal value) {
       controlValue = value;
       if(sMotor.type == MOTOR_TYPE_POSITION ||
@@ -879,7 +891,7 @@ namespace mars {
                                       std::string *dataName) const {
       char format[] = "Motors/%05lu_%s";
       int size = snprintf(0, 0, format, sMotor.index, sMotor.name.c_str());
-      char buffer[size];
+      char buffer[size+1];
       sprintf(buffer, format, sMotor.index, sMotor.name.c_str());
       *groupName = "mars_sim";
       *dataName = buffer;

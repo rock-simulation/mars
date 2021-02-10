@@ -108,6 +108,7 @@ namespace osg_material_manager {
     filterMap["vec3"] = 1;
     filterMap["vec4"] = 1;
     filterMap["sampler2D"] = 1;
+    filterMap["samplerCube"] = 1;
     filterMap["outColor"] = 1;
 
 

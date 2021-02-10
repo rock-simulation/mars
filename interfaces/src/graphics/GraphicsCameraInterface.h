@@ -105,6 +105,16 @@ namespace mars {
       virtual void deactivateCam() = 0;
       virtual void activateCam() = 0;
       virtual void toggleTrackball() = 0;
+      virtual bool isTracking() = 0;
+      virtual void setTrackingLogRotation(bool b) = 0;
+      virtual void getOffsetQuat(double *tx, double *ty, double *tz,
+                                 double *rx, double *ry, double *rz,
+                                 double *rw) = 0;
+      virtual void setOffsetQuat(double tx, double ty, double tz,
+                                 double rx, double ry, double rz,
+                                 double rw) = 0;
+      virtual double getMoveSpeed() = 0;
+      virtual void setMoveSpeed(double s) = 0;
 
     }; // end of class GraphicsCameraInterface
 

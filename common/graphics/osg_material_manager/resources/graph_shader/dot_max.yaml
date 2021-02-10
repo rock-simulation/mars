@@ -1,0 +1,8 @@
+params:
+  in:
+    vector_a: {index: 0, type: vec3}
+    vector_b: {index: 1, type: vec3}
+    m: {index: 1, type: float}
+  out:
+    value: {index: 3, type: float}
+source: /graph_shader/dot_max.frag

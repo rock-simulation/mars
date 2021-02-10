@@ -1,0 +1,10 @@
+params:
+  in:
+    texture: {index: 0, type: sampler2D}
+    index: {index: 1, type: float}
+    resolution: {index: 2, type: vec2}
+    skip: {index: 3, type: float}
+    offset: {index: 4, type: float}
+  out:
+    values: {index: 5, type: vec2}
+source: /graph_shader/read_floats.vert

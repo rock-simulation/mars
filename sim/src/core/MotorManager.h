@@ -314,6 +314,8 @@ namespace mars {
                                       std::string *dataName) const;
 
       virtual void connectMimics();
+      virtual void setOfflinePosition(interfaces::MotorId id,
+                                      interfaces::sReal pos);
       virtual void edit(interfaces::MotorId id, const std::string &key,
                         const std::string &value);
 

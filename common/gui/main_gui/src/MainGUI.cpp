@@ -66,7 +66,11 @@ namespace mars {
 
 
     MainGUI::~MainGUI(void) {
+#ifdef USE_QT5
+      mainWindow->prepareClose();
+#else
       delete mainWindow;
+#endif
     }
 
     void MainGUI::show(void) {

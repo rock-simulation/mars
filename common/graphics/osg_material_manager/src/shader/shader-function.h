@@ -49,6 +49,8 @@ namespace osg_material_manager {
       shaderCode = code();
     }
 
+    virtual ~ShaderFunc() {}
+
     void setMinVersion(int minVersion) {
       if (minVersion>this->minVersion)
         this->minVersion = minVersion;
@@ -120,7 +122,6 @@ namespace osg_material_manager {
     }
 
     void addMainVarDec(GLSLAttribute att) {
-      std::set<GLSLAttribute>::const_iterator it = mainVarDecs.begin();
       mainVarDecs.insert(att);
     }
 
@@ -200,4 +201,3 @@ namespace osg_material_manager {
 } // end of namespace osg_material_manager
 
 #endif /* OSG_MATERIAL_MANAGER_SHADER_FUNC_H */
-

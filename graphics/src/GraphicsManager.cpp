@@ -277,6 +277,7 @@ namespace mars {
 
         shadowedScene->setReceivesShadowTraversalMask(ReceivesShadowTraversalMask);
         shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
+        shadowStateset = shadowedScene->getOrCreateStateSet();
         {
 #if USE_LSPSM_SHADOW
           osg::ref_ptr<osgShadow::LightSpacePerspectiveShadowMapDB> sm =
@@ -291,22 +292,24 @@ namespace mars {
 
           shadowedScene->setShadowTechnique( sm.get() );
 #elif USE_PSSM_SHADOW
-          osg::ref_ptr<osgShadow::ParallelSplitShadowMap> pssm =
-            new osgShadow::ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
+          pssm = new ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
 
-          pssm->enableShadowGLSLFiltering(false);
-          pssm->setTextureResolution(2048);
+          //pssm->enableShadowGLSLFiltering(false);
+          pssm->setTextureResolution(shadowTextureSize.iValue);
           pssm->setMinNearDistanceForSplits(0);
-          pssm->setMaxFarDistance(100);
+          pssm->setMaxFarDistance(500);
           pssm->setMoveVCamBehindRCamFactor(0);
-          //pssm->setPolygonOffset(osg::Vec2(-1.0,-4.0));
+          pssm->setPolygonOffset(osg::Vec2(1.2,1.2));
+          //pssm->applyState(shadowStateset.get());
+          if(marsShadow.bValue) {
+            shadowedScene->setShadowTechnique(pssm.get());
+          }
+          pssm->applyState(scene->getOrCreateStateSet());
+#else
 
-          shadowedScene->setShadowTechnique(pssm.get());
-#endif
           shadowMap = new ShadowMap;
           shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
           shadowMap->initTexture();
-          shadowStateset = shadowedScene->getOrCreateStateSet();
           shadowMap->applyState(shadowStateset.get());
           if(marsShadow.bValue) {
             shadowedScene->setShadowTechnique(shadowMap.get());
@@ -316,6 +319,7 @@ namespace mars {
             //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
             //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
           }
+#endif
         }
 
         // TODO: check this out:
@@ -367,6 +371,9 @@ namespace mars {
           materialManager->setShadowSamples(shadowSamples.iValue);
           materialManager->setDefaultMaxNumLights(defaultMaxNumNodeLights.iValue);
           materialManager->setBrightness((float)brightness.dValue);
+          if(pssm) {
+            pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
+          }
           shadowedScene->addChild(materialManager->getMainStateGroup());
           ConfigMap map = ConfigMap::fromYamlFile(resources_path.sValue+"/defaultMaterials.yml");
           MaterialData md;
@@ -441,11 +448,11 @@ namespace mars {
     }
 
     void GraphicsManager::saveScene(const string &filename) const {
-      osgDB::writeNodeFile(*(scene.get()), filename);
+      osgDB::writeNodeFile(*(shadowedScene.get()), filename);
     }
 
     void GraphicsManager::exportScene(const string &filename) const {
-      osgDB::writeNodeFile(*(scene.get()), filename.data());
+      osgDB::writeNodeFile(*(shadowedScene.get()), filename.data());
     }
 
     void* GraphicsManager::getStateSet() const {
@@ -754,7 +761,9 @@ namespace mars {
         if(useNoise) {
           materialManager->updateShadowSamples();
         }
-        materialManager->setShadowScale(shadowMap->getTexScale());
+        if(shadowMap.valid()) {
+          materialManager->setShadowScale(shadowMap->getTexScale());
+        }
       }
 
       // Render a complete new frame.
@@ -1143,7 +1152,12 @@ namespace mars {
         lm.free = false;
         if(ls.map.find("produceShadow") != ls.map.end()) {
           if((bool)ls.map["produceShadow"]) {
-            shadowMap->setLight(lm.light.get());
+            if(shadowMap.valid()) {
+              shadowMap->setLight(lm.light.get());
+            }
+            if(pssm.valid()) {
+              pssm->setLight(lm.light.get());
+            }
           }
         }
         lightGroup->addChild( myLightSource.get() );
@@ -2119,10 +2133,20 @@ namespace mars {
     void GraphicsManager::setUseShader(bool val) {
       if(materialManager) materialManager->setUseShader(val);
       if(val) {
-        shadowMap->addTexture(shadowStateset.get());
+        if(shadowMap.valid()) {
+          shadowMap->addTexture(shadowStateset.get());
+        }
+        if(pssm.valid()) {
+          pssm->addTexture(shadowStateset.get());
+        }
       }
       else {
-        shadowMap->removeTexture(shadowStateset.get());
+        if(shadowMap.valid()) {
+          shadowMap->removeTexture(shadowStateset.get());
+        }
+        if(pssm.valid()) {
+          pssm->removeTexture(shadowStateset.get());
+        }
       }
       /*
       map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator iter;
@@ -2238,6 +2262,21 @@ namespace mars {
       //shadowedScene->removeChild(childTransform);
     }
 
+    void GraphicsManager::attacheCamToNode(unsigned long winId, unsigned long drawId) {
+      GraphicsWidget* gw=getGraphicsWindow(winId);
+      OSGNodeStruct *parent = findDrawObject(drawId);
+      GraphicsCamera* gc = dynamic_cast<GraphicsCamera*>(gw->getCameraInterface());
+
+      if(parent) {
+        osg::PositionAttitudeTransform *parentTransform;
+        parentTransform = parent->object()->getPosTransform();
+        gc->setTrakingTransform(parentTransform);
+      }
+      else {
+        gc->setTrakingTransform(NULL);
+      }
+    }
+
     void GraphicsManager::setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) {
       if(materialManager) {
         materialManager->setExperimentalLineLaser(pos, normal, color,
@@ -2279,7 +2318,12 @@ namespace mars {
       marsShadow.bValue = v;
 
       if(v) {
-        shadowedScene->setShadowTechnique(shadowMap.get());
+        if(pssm.valid()) {
+          shadowedScene->setShadowTechnique(pssm.get());
+        }
+        else if(shadowMap.valid()) {
+          shadowedScene->setShadowTechnique(shadowMap.get());
+        }
       }
       else {
         shadowedScene->setShadowTechnique(NULL);
@@ -2396,17 +2440,32 @@ namespace mars {
       else if(matchPattern("*/position", key)) {
         double d = atof(value.c_str());
         double v[7];
-        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        if(cam->isTracking()) {
+          cam->getOffsetQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
+        else {
+          cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
         if(key[key.size()-1] == 'x') v[0] = d;
         else if(key[key.size()-1] == 'y') v[1] = d;
         else if(key[key.size()-1] == 'z') v[2] = d;
-        cam->updateViewportQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        if(cam->isTracking()) {
+          cam->setOffsetQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        }
+        else {
+          cam->updateViewportQuat(v[0], v[1], v[2], v[3], v[4], v[5], v[6]);
+        }
       }
       else if(matchPattern("*/euler", key)) {
         double d = atof(value.c_str());
         double v[7];
         Quaternion q;
-        cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        if(cam->isTracking()) {
+          cam->getOffsetQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
+        else {
+          cam->getViewportQuat(v, v+1, v+2, v+3, v+4, v+5, v+6);
+        }
         q.x() = v[3];
         q.y() = v[4];
         q.z() = v[5];
@@ -2416,7 +2475,18 @@ namespace mars {
         else if(key.find("beta") != string::npos) r.beta = d;
         else if(key.find("gamma") != string::npos) r.gamma = d;
         q = eulerToQuaternion(r);
-        cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        if(cam->isTracking()) {
+          cam->setOffsetQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        }
+        else {
+          cam->updateViewportQuat(v[0], v[1], v[2], q.x(), q.y(), q.z(), q.w());
+        }
+      }
+      else if(matchPattern("*/moveSpeed", key)) {
+        cam->setMoveSpeed(atof(value.c_str()));
+      }
+      else if(matchPattern("*/logTrackingRotation", key)) {
+        cam->setTrackingLogRotation(atoi(value.c_str()));
       }
     }
 
