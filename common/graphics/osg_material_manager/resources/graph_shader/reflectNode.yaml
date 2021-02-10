@@ -4,4 +4,4 @@ params:
     normal: {index: 0, type: vec3}
   out:
     vec_out: {index: 1, type: vec3}
-source: /graph_shader/reflect.frag
+source: /graph_shader/reflectNode.frag
