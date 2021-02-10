@@ -76,7 +76,8 @@ namespace mars {
       // register with DataBroker
       std::string groupName, dataName;
       control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
-      control->dataBroker->registerTimedReceiver(this, groupName, dataName, "mars_sim/simTimer",
+      if (control->dataBroker)
+        control->dataBroker->registerTimedReceiver(this, groupName, dataName, "mars_sim/simTimer",
           updateRate);
       dbPackage.add("id", (long) config.id);
       char nametag[7];
@@ -88,9 +89,11 @@ namespace mars {
       }
       char text[55];
       sprintf(text, "Sensors/HF_%05lu", config.id);
-      dbPushId = control->dataBroker->pushData("mars_sim", text, dbPackage, NULL,
-          data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, "mars_sim", text, "mars_sim/simTimer", 0);
+      if (control->dataBroker) {
+        dbPushId = control->dataBroker->pushData("mars_sim", text, dbPackage, NULL,
+            data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, "mars_sim", text, "mars_sim/simTimer", 0);
+      }
 
       position = control->nodes->getPosition(attached_node);
       orientation = control->nodes->getRotation(attached_node);
@@ -138,8 +141,10 @@ namespace mars {
 
     HapticFieldSensor::~HapticFieldSensor(void) {
       control->graphics->removeDrawItems((DrawInterface*) this);
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
-      control->dataBroker->unregisterTimedProducer(this, "*", "*", "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+        control->dataBroker->unregisterTimedProducer(this, "*", "*", "mars_sim/simTimer");
+      }
     }
 
     int HapticFieldSensor::getAsciiData(char* data) const {

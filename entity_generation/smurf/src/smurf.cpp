@@ -199,9 +199,21 @@ namespace mars {
 
         entity = new sim::SimEntity(control, entityconfig);
         bool fixed = false;
-        if (entityconfig.find("parent") != entityconfig.end())
-          if ((std::string)entityconfig["parent"] == "world")
-            fixed = true;
+        //// incompatible with smurfa
+        // if (entityconfig.hasKey("anchor")) {
+        //   if (
+        //     (std::string)entityconfig["anchor"] == "world" ||
+        //     (
+        //       (std::string)entityconfig["anchor"] == "parent" &&
+        //       (
+        //         (entityconfig.hasKey("parent") && (std::string)entityconfig["parent"] == "world") ||
+        //         !entityconfig.hasKey("parent")
+        //       )
+        //     )
+        //   ) {
+        //     fixed = true;
+        //   }
+        //}
         createModel(fixed);
 
         ConfigMap::iterator it;
@@ -983,41 +995,49 @@ namespace mars {
 #ifdef DEBUG_SCENE_MAP
       debugMap.toYamlFile("debugMap.yml");
 #endif
-      for (unsigned int i = 0; i < materialList.size(); ++i)
+      for (unsigned int i = 0; i < materialList.size(); ++i) {
         if (!loadMaterial(materialList[i]))
           return 0;
-      for (unsigned int i = 0; i < nodeList.size(); ++i)
+      }
+
+      for (unsigned int i = 0; i < nodeList.size(); ++i) {
         if (!loadNode(nodeList[i])) {
           fprintf(stderr, "Couldn't load node %lu, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
           return 0;
         }
+      }
 
-
-      for (unsigned int i = 0; i < jointList.size(); ++i)
+      for (unsigned int i = 0; i < jointList.size(); ++i) {
         if (!loadJoint(jointList[i]))
           return 0;
+      }
 
-      for (unsigned int i = 0; i < motorList.size(); ++i)
+      for (unsigned int i = 0; i < motorList.size(); ++i) {
         if (!loadMotor(motorList[i]))
           return 0;
+      }
 
       control->motors->connectMimics();
 
-      for (unsigned int i = 0; i < sensorList.size(); ++i)
+      for (unsigned int i = 0; i < sensorList.size(); ++i) {
         if (!loadSensor(sensorList[i]))
           return 0;
+      }
 
-      for (unsigned int i = 0; i < controllerList.size(); ++i)
+      for (unsigned int i = 0; i < controllerList.size(); ++i) {
         if (!loadController(controllerList[i]))
           return 0;
+      }
 
-      for (unsigned int i = 0; i < lightList.size(); ++i)
+      for (unsigned int i = 0; i < lightList.size(); ++i) {
         if (!loadLight(lightList[i]))
           return 0;
+      }
 
-      for (unsigned int i = 0; i < graphicList.size(); ++i)
+      for (unsigned int i = 0; i < graphicList.size(); ++i) {
         if (!loadGraphic(graphicList[i]))
           return 0;
+      }
 
       // set model pose
       ConfigMap map;

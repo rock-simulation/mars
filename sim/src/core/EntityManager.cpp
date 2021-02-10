@@ -59,19 +59,40 @@ namespace mars {
       return id;
     }
 
-    void EntityManager::removeEntity(const std::string &name) {
+    void EntityManager::removeEntity(const std::string &name, bool completeAssembly) {
       SimEntity* entity = getEntity(name);
-      //remove from entity map
-      for (auto it = entities.begin(); it != entities.end(); ++it) {
-        if (it->second == entity) {
-          entities.erase(it);
-          break;
+      if (completeAssembly && entity->getAssembly() != "") {
+        removeAssembly(entity->getAssembly());
+      } else {
+        //remove from entity map
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+          if (it->second == entity) {
+            entities.erase(it);
+            break;
+          }
         }
+        //delete entity
+        entity->removeEntity();
+        /*TODO we have to free the memory here, but we don't know if this entity
+        is allocated on the heap or the stack*/
       }
-      //delete entity
-      entity->removeEntity();
-      /*TODO we have to free the memory here, but we don't know if this entity
-      is allocated on the heap or the stack*/
+    }
+
+    void EntityManager::removeAssembly(const std::string &assembly_name) {
+      std::vector<SimEntity*> parts = getEntitiesOfAssembly(assembly_name);
+      for (auto p: parts) {
+        //remove from entity map
+        for (auto it = entities.begin(); it != entities.end(); ++it) {
+          if (it->second == p) {
+            fprintf(stderr, "Deleting entity %s\n", p->getName().c_str());
+            entities.erase(it);
+            break;
+          }
+        }
+        //delete entity
+        p->removeEntity();
+        // REVIEW Do we have to delete the anchor joints here?
+      }
     }
 
     void EntityManager::notifySubscribers(SimEntity* entity) {
@@ -161,17 +182,32 @@ namespace mars {
       //TODO <jonas.peter@dfki.de> handle deselection
     }
 
+    SimEntity* EntityManager::getEntity(long unsigned int id) {
+      //TODO replace with find
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (iter->first == id) {
+          return iter->second;
+        }
+      }
+      return 0;
+    }
+
     SimEntity* EntityManager::getEntity(const std::string& name) {
+      return getEntity(name, true);
+    }
+
+    SimEntity* EntityManager::getEntity(const std::string& name, bool verbose) {
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
         if (iter->second->getName() == name) {
           return iter->second;
         }
       }
-      fprintf(stderr, "ERROR: Entity with name %s not found!\n", name.c_str());
+      if (verbose)
+        fprintf(stderr, "ERROR: Entity with name %s not found!\n", name.c_str());
       return 0;
     }
-
 
     std::vector<SimEntity*> EntityManager::getEntities(const std::string &name) {
       std::vector<SimEntity*> out;
@@ -184,15 +220,45 @@ namespace mars {
       return out;
     }
 
-    SimEntity* EntityManager::getEntity(long unsigned int id) {
-      //TODO replace with find
+    std::vector<SimEntity*> EntityManager::getEntitiesOfAssembly(
+      const std::string &assembly_name)
+    {
+      std::vector<SimEntity*> out;
       for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
           iter != entities.end(); ++iter) {
-        if (iter->first == id) {
-          return iter->second;
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
+          out.push_back(iter->second);
+        }
+      }
+      return out;
+    }
+
+    SimEntity* EntityManager::getRootOfAssembly(
+      const std::string &assembly_name)
+    {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
+          configmaps::ConfigMap map = iter->second->getConfig();
+          if (map.hasKey("root") && (bool) map["root"]) return iter->second;
         }
       }
       return 0;
+    }
+
+    SimEntity* EntityManager::getMainEntityOfAssembly(
+      const std::string &assembly_name)
+    {
+      std::vector<SimEntity*> out;
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (matchPattern(assembly_name, iter->second->getAssembly())) {
+          configmaps::ConfigMap map = iter->second->getConfig();
+          if (map.hasKey("main_entity") && (bool) map["main_entity"]) return iter->second;
+        }
+      }
+      return getRootOfAssembly(assembly_name);
     }
 
     long unsigned int EntityManager::getEntityNode(const std::string& entityName,
@@ -275,9 +341,11 @@ namespace mars {
     }
 
     void EntityManager::resetPose() {
-      std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
-      for (; iter != entities.end(); ++iter) {
-        iter->second->setInitialPose(true);
+      for (auto iter: entities) {
+        iter.second->removeAnchor();
+      }
+      for (auto iter: entities) {
+        iter.second->setInitialPose(true);
       }
     }
 

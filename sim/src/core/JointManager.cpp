@@ -115,6 +115,23 @@ namespace mars {
         // set the next free id
         jointS->index = next_joint_id;
         next_joint_id++;
+        if (jointS->config.hasKey("desired_id"))
+        {
+          unsigned long des_id=jointS->config["desired_id"];
+          bool found = false;
+          for (auto j : simJoints)
+          {
+            if (j.first == des_id) {
+              found = true;
+            }
+          }
+          if (!found) {
+            jointS->index = des_id;
+            next_joint_id--;
+            if (des_id>= next_joint_id)
+              next_joint_id = des_id + 1;
+          }
+        }
         SimJoint* newJoint = new SimJoint(control, *jointS);
         newJoint->setAttachedNodes(node1, node2);
         //    newJoint->setSJoint(*jointS);
@@ -377,6 +394,20 @@ namespace mars {
           return joint.index;
       }
       return 0;
+    }
+
+    std::vector<unsigned long> JointManager::getIDsByNodeID(unsigned long node_id) {
+      map<unsigned long, SimJoint*>::iterator iter;
+      MutexLocker locker(&iMutex);
+      std::vector<unsigned long> out;
+      for (iter = simJoints.begin(); iter != simJoints.end(); iter++)
+        if((iter->second->getNodeId() == node_id ||
+            iter->second->getNodeId(2) == node_id) ||
+           (iter->second->getNodeId() == node_id ||
+            iter->second->getNodeId(2) == node_id)) {
+          out.push_back(iter->first);
+        }
+      return out;
     }
 
     unsigned long JointManager::getIDByNodeIDs(unsigned long id1, unsigned long id2) {
