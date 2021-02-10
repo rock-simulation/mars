@@ -44,6 +44,7 @@
 #include <osg/Uniform>
 #include <osg/Texture2D>
 #include <osg/Texture2DArray>
+#include <osg/TextureCubeMap>
 
 #define COLOR_MAP_UNIT 0
 #define SHADOW_MAP_UNIT 1
@@ -68,6 +69,7 @@ namespace osg_material_manager {
   class TextureInfo {
   public:
     osg::ref_ptr<osg::Texture2D> texture;
+    osg::ref_ptr<osg::TextureCubeMap> cubemap;
     osg::ref_ptr<osg::Uniform> textureUniform;
     std::string name;
     int unit;
@@ -113,6 +115,7 @@ namespace osg_material_manager {
     inline configmaps::ConfigMap getMaterialData() {return map;}
     void update();
     void addTexture(configmaps::ConfigMap &config, bool nearest=false);
+    void addCubemap(configmaps::ConfigMap &config);
     void addTextureArray(configmaps::ConfigMap &config, bool nearest=false);
     void disableTexture(std::string name);
     void enableTexture(std::string name);
