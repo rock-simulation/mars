@@ -1,7 +1,7 @@
 params:
   in:
     vec_a: {index: 0, type: vec3}
-    normal: {index: 0, type: vec3}
+    normal: {index: 1, type: vec3}
   out:
-    vec_out: {index: 1, type: vec3}
+    vec_out: {index: 2, type: vec3}
 source: /graph_shader/reflectNode.frag
