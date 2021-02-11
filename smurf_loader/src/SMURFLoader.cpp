@@ -330,8 +330,12 @@ namespace mars {
       std::string fulluri = combined_path+uri;
       // the following allows adding an old MARS scene file in a smurf scene
       if (((std::string)(*it)["type"] == "scn") || ((std::string)(*it)["type"] == "scene") || ((std::string)(*it)["type"] == "yml")) {
+        std::string name = (*it)["name"];
         control->loadCenter->loadScene[uri_extension]->loadFile(fulluri,
-            path, (std::string)(*it)["name"]);
+                                                                path, name);
+        mars::sim::SimEntity* entity = control->entities->getEntity(name);
+        entity->appendConfig(*it);
+        entity->setInitialPose();
       }
       else if(((std::string)(*it)["type"] == "smurfs") || ((std::string)(*it)["type"] == "smurfa")) {
         // backup internal state:

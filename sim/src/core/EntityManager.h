@@ -63,6 +63,8 @@ namespace mars {
 
       virtual void removeAssembly(const std::string &assembly_name);
 
+      virtual void appendConfig(const std::string &name, configmaps::ConfigMap &map);
+
       /**adds a node and maps the nodeId to the name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId,
           const std::string &nodeName);

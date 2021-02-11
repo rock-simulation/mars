@@ -31,6 +31,7 @@
 
 #include <string>
 #include <vector>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
 
@@ -63,6 +64,8 @@ namespace mars {
       *   their entity map entry
       */
       virtual void removeAssembly(const std::string &assembly_name) = 0;
+
+      virtual void appendConfig(const std::string &name, configmaps::ConfigMap &map) = 0;
 
       /**adds a node to the entity and maps the nodeId to its name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId, const std::string &nodeName) = 0;

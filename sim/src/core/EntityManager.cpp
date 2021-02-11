@@ -78,6 +78,22 @@ namespace mars {
       }
     }
 
+    void EntityManager::appendConfig(const std::string &name, configmaps::ConfigMap &map) {
+      SimEntity *entity = 0;
+      //iterate over all robots to find the robot with the given name
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (iter->second->getName() == name) {
+          entity = iter->second;
+          break;
+        }
+      }
+      if (entity) {
+        MutexLocker locker(&iMutex);
+        entity->appendConfig(map);
+      }
+    }
+
     void EntityManager::removeAssembly(const std::string &assembly_name) {
       std::vector<SimEntity*> parts = getEntitiesOfAssembly(assembly_name);
       for (auto p: parts) {
