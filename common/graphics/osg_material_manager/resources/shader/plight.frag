@@ -30,6 +30,8 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
       shadow0 = step(0.25,shadow0);
       shadow1 = shadow2D(shadowTexture1, gl_TexCoord[2].xyz).r;
       shadow1 = step(0.25,shadow1);
+      shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
+      shadow2 = step(0.25,shadow2);
     }
     else {
       float da = 128/shadowSamples;
