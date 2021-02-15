@@ -100,6 +100,7 @@ namespace osg_material_manager {
                                   float openingAngle);
     void updateShadowSamples();
 
+    static osg::ref_ptr<osg::TextureCubeMap> loadCubemap(configmaps::ConfigMap &info, std::string loadPath="");
     static osg::ref_ptr<osg::Texture2D> loadTexture(std::string filename);
     static osg::ref_ptr<osg::Image> loadImage(std::string filename);
 
@@ -122,7 +123,7 @@ namespace osg_material_manager {
 
     static std::vector<textureFileStruct> textureFiles;
     static std::vector<imageFileStruct> imageFiles;
-
+    static std::map<std::string,osg::ref_ptr<osg::TextureCubeMap>> cubemaps;
   };
 
 } // end of namespace: osg_material_manager

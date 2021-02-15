@@ -272,35 +272,8 @@ namespace osg_material_manager {
     else {
       TextureInfo info;
       info.name << config["name"];
-      fprintf(stderr, "load cubemap: %s\n", info.name.c_str());
-
-      info.cubemap = new osg::TextureCubeMap();
-      info.cubemap->setInternalFormat(GL_RGBA);
-      info.cubemap->setFilter(osg::Texture::MIN_FILTER,
-                              osg::Texture::LINEAR_MIPMAP_LINEAR);
-      info.cubemap->setFilter(osg::Texture::MAG_FILTER,
-                              osg::Texture::LINEAR);
-      info.cubemap->setWrap(osg::Texture::WRAP_S,
-                            osg::Texture::CLAMP_TO_EDGE);
-      info.cubemap->setWrap(osg::Texture::WRAP_T,
-                            osg::Texture::CLAMP_TO_EDGE);
-
-      std::map<std::string, int> mapping;
-      mapping["north"] = osg::TextureCubeMap::POSITIVE_Z;
-      mapping["east"] = osg::TextureCubeMap::POSITIVE_X;
-      mapping["south"] = osg::TextureCubeMap::NEGATIVE_Z;
-      mapping["west"] = osg::TextureCubeMap::NEGATIVE_X;
-      mapping["up"] = osg::TextureCubeMap::NEGATIVE_Y;
-      mapping["down"] = osg::TextureCubeMap::POSITIVE_Y;
-      for(auto it: mapping) {
-        std::string file = config["cubemap"][it.first];
-        if(!loadPath.empty() && file[0] != '/') {
-          file = loadPath + file;
-        }
-        fprintf(stderr, "load image %s: %s\n", it.first.c_str(), file.c_str());
-        info.cubemap->setImage(it.second,
-                               OsgMaterialManager::loadImage(file));
-      }
+      info.cubemap = OsgMaterialManager::loadCubemap(config["cubemap"],
+                                                     loadPath);
 
       info.unit = 0;
       if(unitMap.hasKey(info.name)) {
