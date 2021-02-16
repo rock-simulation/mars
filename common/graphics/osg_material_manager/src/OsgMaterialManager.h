@@ -91,6 +91,7 @@ namespace osg_material_manager {
     void setDrawLineLaser(bool v);
     void setUseShadow(bool v);
     void setBrightness(float v);
+    void setNoiseAmmount(float v);
 
     std::vector<configmaps::ConfigMap> getMaterialList();
     void setExperimentalLineLaser(mars::utils::Vector pos,
@@ -119,7 +120,7 @@ namespace osg_material_manager {
     float shadowScale;
     // global MaterialNode properties
     bool useFog, useNoise, drawLineLaser, useShadow;
-    float brightness;
+    float brightness, noiseAmmount;
 
     static std::vector<textureFileStruct> textureFiles;
     static std::vector<imageFileStruct> imageFiles;

@@ -121,8 +121,8 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
   outcol.a = alpha*base.a;
   if(useNoise == 1) {
     float noiseScale = 6;
-    outcol.rg += 0.05*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
-    outcol.b += 0.05*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
+    outcol.rg += noiseAmmount*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
+    outcol.b += noiseAmmount*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
   }
 
   if(useFog == 1) {

@@ -47,7 +47,6 @@ namespace osg_material_manager {
       useFog(true),
       useNoise(true),
       getLight(true),
-      brightness_(1.0),
       drawLineLaser(false),
       shadow(true),
       maxNumLights(1),
@@ -91,6 +90,7 @@ namespace osg_material_manager {
     lightSpotExponentUniform = new osg::Uniform(osg::Uniform::FLOAT, "lightSpotExponent", maxNumLights);
     useFogUniform = new osg::Uniform("useFog", 1);
     useNoiseUniform = new osg::Uniform("useNoise", 1);
+    noiseAmmountUniform = new osg::Uniform("noiseAmmount", 1.0f);
     useShadowUniform = new osg::Uniform("useShadow", 1);
     numLightsUniform = new osg::Uniform("numLights", maxNumLights);
     drawLineLaserUniform = new osg::Uniform("drawLineLaser", 0);
@@ -119,6 +119,7 @@ namespace osg_material_manager {
     state->addUniform(lineLaserOpeningAngle.get());
     state->addUniform(useFogUniform.get());
     state->addUniform(useNoiseUniform.get());
+    state->addUniform(noiseAmmountUniform.get());
     state->addUniform(useShadowUniform.get());
     state->addUniform(numLightsUniform.get());
     state->addUniform(drawLineLaserUniform.get());
@@ -210,6 +211,11 @@ namespace osg_material_manager {
     useNoise = val;
     if(val) useNoiseUniform->set(1);
     else useNoiseUniform->set(0);
+  }
+
+  void MaterialNode::setNoiseAmmount(float val) {
+    if(!isCreated) return;
+    noiseAmmountUniform->set(val);
   }
 
   void MaterialNode::setDrawLineLaser(bool val) {

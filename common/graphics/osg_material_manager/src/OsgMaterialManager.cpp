@@ -82,6 +82,7 @@ namespace osg_material_manager {
     useShadow = true;
     defaultMaxNumNodeLights = 1;
     brightness = 1.0;
+    noiseAmmount = 0.05;
   }
 
   OsgMaterialManager::~OsgMaterialManager(void) {
@@ -267,6 +268,7 @@ namespace osg_material_manager {
       n->setDrawLineLaser(drawLineLaser);
       n->setUseShadow(useShadow);
       n->setBrightness(brightness);
+      n->setNoiseAmmount(noiseAmmount);
       it->second->addMaterialNode(n);
       n->setMaterial(it->second);
       it->second->addChild(n);
@@ -364,6 +366,14 @@ namespace osg_material_manager {
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setBrightness(brightness);
+    }
+  }
+
+  void OsgMaterialManager::setNoiseAmmount(float v) {
+    noiseAmmount = v;
+    std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
+    for(; it!=materialNodes.end(); ++it) {
+      (*it)->setNoiseAmmount(noiseAmmount);
     }
   }
 
