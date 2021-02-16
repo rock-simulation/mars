@@ -35,7 +35,6 @@
 #include <osg/PositionAttitudeTransform>
 #include <iostream>
 
-
 #define LMB osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON
 #define MMB osgGA::GUIEventAdapter::MIDDLE_MOUSE_BUTTON
 #define RMB osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON
@@ -60,7 +59,6 @@ namespace mars {
       camType = 1;
       switch_eyes = true;
       moveSpeed = 0.5;
-
       // set up ODE like camera
 
       xpos = 0;
@@ -742,13 +740,19 @@ namespace mars {
     }
 
     void GraphicsCamera::mouseDrag(int button, unsigned int modkey, int x, int y) {
+      if(abs(x-xpos) < 1 and abs(y-ypos) < 1) return;
+      double xdiff = (x-xpos)*0.2;
+      double ydiff = (y-ypos)*0.2;
+      xpos = x;
+      ypos = y;
+
       //mouse control for the ISO camera
       if(camera == ISO_CAM){
         //rotate the camera with middle mouse button
         if ( (button == MMB) || (button == (LMB | RMB)) ){
           osg::Matrixd final, rot;
           //mouse up and down rotates(value is arbitrary)
-          float angle = osg::DegreesToRadians(3.f*(x-xpos));
+          float angle = osg::DegreesToRadians(3.f*(xdiff));
           rot.makeRotate(angle, osg::Vec3(0, 0, 1));
           final = cameraRotation * rot;
           osg::Quat q= final.getRotate();
@@ -769,11 +773,9 @@ namespace mars {
 
           //pan with left mouse
         }else if(button == LMB){
-          moveRight((xpos - x)*0.1);
-          moveForward((ypos - y)*0.1);
+          moveRight(-xdiff*0.1);
+          moveForward(-ydiff*0.1);
         }
-        xpos = x;
-        ypos = y;
         return;
       }
       osg::Matrixd tmp, tmp2;
@@ -787,7 +789,7 @@ namespace mars {
       if(camera == TRACKBALL){
         if ((button == MMB) || (button == (LMB | RMB))) {
           if (modkey & osgGA::GUIEventAdapter::MODKEY_SHIFT) {
-            vec = osg::Vec3(-(x-xpos)*0.01,-(y-ypos)*0.01,0.0);
+            vec = osg::Vec3(-xdiff*0.1,-ydiff*0.1,0.0);
             vec = vec*cameraRotation;
             pivot += vec;
             d_xp += vec.x();
@@ -797,8 +799,6 @@ namespace mars {
             updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
           }
           else {
-            double xdiff = (x-xpos)*0.5;
-            double ydiff = (y-ypos)*0.5;
             double xratio = (x-width*0.5)/(width*0.5);
             double yratio = (y-height*0.5)/(height*0.5);
             double xdir = 1, ydir = 1;
@@ -818,9 +818,9 @@ namespace mars {
             vy = vy*cameraRotation;
             vz = vz*cameraRotation;
 
-            if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
-            if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
-            if(td_zr < 0.4 && td_zr > -0.4) td_zr = 0.0;
+            //if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
+            //if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
+            //if(td_zr < 0.4 && td_zr > -0.4) td_zr = 0.0;
 
             rotate.makeRotate(osg::DegreesToRadians(-td_zr), vy,
                               osg::DegreesToRadians(td_yr), vx,
@@ -836,7 +836,7 @@ namespace mars {
           }
         }
         else if (button == LMB) {
-          vec = osg::Vec3(0.0,0.0,(y-ypos)*0.01);
+          vec = osg::Vec3(0.0,0.0,ydiff*0.1);
           vec = vec*cameraRotation;
           d_xp += vec.x();
           d_yp += vec.y();
@@ -847,24 +847,24 @@ namespace mars {
       }
       else {
         if (button == LMB){
-          td_xr = (x - xpos)*0.5;
-          td_yr = -(y - ypos)*0.5;
+          td_xr = xdiff;
+          td_yr = -ydiff;
         }
         else if (button == RMB){
-          vec = osg::Vec3(-(x-xpos)*0.01,0.0,(y-ypos)*0.01);
+          vec = osg::Vec3(-xdiff*0.05,0.0,ydiff*0.05);
           vec = vec*cameraRotation;
           if (camType == 2){
             vec[2] = vec[2]*0.02;
             osg::Matrix projection;
             float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
-            actOrtH-=(y-ypos)*0.1;
+            actOrtH-=ydiff*0.5;
             double w = actOrtH * aspectRatio;
             projection.makeOrtho(-w/2,w/2,-actOrtH/2,actOrtH/2,1.0f,10000.0f);
             mainCamera->setProjectionMatrix(projection);
           }
         }
         else if ( (button == MMB) || (button == (LMB | RMB)) ) {
-          vec = osg::Vec3(-(x-xpos)*0.01,-(y-ypos)*0.01,0.0);
+          vec = osg::Vec3(-xdiff*0.05,-ydiff*0.05,0.0);
           vec = vec*cameraRotation;
         }
 
@@ -896,8 +896,8 @@ namespace mars {
 
             vx = vx*cameraRotation;
 
-            if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
-            if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
+            //if(td_xr < 0.4 && td_xr > -0.4) td_xr = 0.0;
+            //if(td_yr < 0.4 && td_yr > -0.4) td_yr = 0.0;
 
             //rotate.makeRotate(0.0, vy, osg::DegreesToRadians(td_xr), vz,
             //                  osg::DegreesToRadians(td_yr), vx);
@@ -913,8 +913,6 @@ namespace mars {
           updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
         }
       }
-      xpos = x;
-      ypos = y;
     }
 
     void GraphicsCamera::eventStartPos(int x, int y) {
