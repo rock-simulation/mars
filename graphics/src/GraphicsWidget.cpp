@@ -756,7 +756,8 @@ namespace mars {
     }
 
     void GraphicsWidget::initializeOSG(void* data,
-                                       GraphicsWidget* shared, int width, int height) {
+                                       GraphicsWidget* shared, int width, int height,
+                                       bool vsync) {
       osg::ref_ptr<osgGA::KeySwitchMatrixManipulator> keyswitchManipulator;
 
       if(width > 0) widgetWidth = width;
@@ -765,7 +766,7 @@ namespace mars {
       // do not use osg default lighting
       view->setLightingMode(osg::View::NO_LIGHT);
 
-      createContext(data, shared, widgetWidth, widgetHeight);
+      createContext(data, shared, widgetWidth, widgetHeight, vsync);
       if(!isRTTWidget) {
         graphicsWindow->setWindowName("3D Environment");
 
@@ -800,7 +801,8 @@ namespace mars {
     }
 
     void GraphicsWidget::createContext(void* parent,
-                                       GraphicsWidget* shared, int g_width, int g_height) {
+                                       GraphicsWidget* shared, int g_width, int g_height,
+                                       bool vsync) {
       (void)parent;
       (void)g_width;
       (void)g_height;
@@ -826,7 +828,7 @@ namespace mars {
         traits->stencil = ds->getMinimumNumStencilBits();
         traits->sampleBuffers = ds->getMultiSamples();
         traits->samples = ds->getNumMultiSamples();
-        traits->vsync = false;
+        traits->vsync = vsync;
         if (shared) {
           traits->sharedContext = shared->getGraphicsWindow();
         } else {
