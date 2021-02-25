@@ -1275,7 +1275,7 @@ namespace mars {
 
       if(pickmode == DISABLED && graphicsCamera->getCamera() != TRACKBALL)
         return false;
-      if(graphicsCamera->getCamera() == TRACKBALL && mouseMask != osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON && pickmode == DISABLED)
+      if(graphicsCamera->getCamera() == TRACKBALL && mouseMask != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && pickmode == DISABLED)
         return false;
 
       osgViewer::View* view = dynamic_cast<osgViewer::View*>(&aa);

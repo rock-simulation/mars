@@ -53,7 +53,7 @@ namespace mars {
       hudCamera = 0;
       keyswitchManipulator = 0;
       nodeMask = mainCamera->getNodeMask();
-      camera = ODE_CAM;
+      camera = TRACKBALL;
       previousType = camera;
       pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
@@ -835,7 +835,7 @@ namespace mars {
             updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
           }
         }
-        else if (button == LMB) {
+        else if (button == RMB) {
           vec = osg::Vec3(0.0,0.0,ydiff*0.1);
           vec = vec*cameraRotation;
           d_xp += vec.x();
