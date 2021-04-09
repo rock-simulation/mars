@@ -54,7 +54,7 @@ namespace mars {
       keyswitchManipulator = 0;
       nodeMask = mainCamera->getNodeMask();
       camera = TRACKBALL;
-      previousType = camera;
+      previousType = ODE_CAM;
       pivot = osg::Vec3f(0.0, 0.0, 0.0);
       camType = 1;
       switch_eyes = true;
