@@ -43,6 +43,7 @@ namespace osg_material_manager {
 
   std::vector<OsgMaterialManager::textureFileStruct> OsgMaterialManager::textureFiles;
   std::vector<OsgMaterialManager::imageFileStruct> OsgMaterialManager::imageFiles;
+  std::map<std::string,osg::ref_ptr<osg::TextureCubeMap>> OsgMaterialManager::cubemaps;
 
   OsgMaterialManager::OsgMaterialManager(const std::string &resourcesPath) : lib_manager::LibInterface(NULL) {
     resPath.sValue = resourcesPath;
@@ -81,11 +82,48 @@ namespace osg_material_manager {
     useShadow = true;
     defaultMaxNumNodeLights = 1;
     brightness = 1.0;
+    noiseAmmount = 0.05;
   }
 
   OsgMaterialManager::~OsgMaterialManager(void) {
     if(cfg) libManager->releaseLibrary("cfg_manager");
     //fprintf(stderr, "Delete osg_material_manager\n");
+  }
+
+  osg::ref_ptr<osg::TextureCubeMap> OsgMaterialManager::loadCubemap(configmaps::ConfigMap &info, std::string loadPath) {
+    std::string name = info["name"];
+    std::map<std::string,osg::ref_ptr<osg::TextureCubeMap>>::iterator it;
+    it = cubemaps.find(name);
+    if(it != cubemaps.end()) return it->second;
+    fprintf(stderr, "load cubemap: %s\n", name.c_str());
+    osg::ref_ptr<osg::TextureCubeMap> cubemap = new osg::TextureCubeMap();
+    cubemap->setInternalFormat(GL_RGBA);
+    cubemap->setFilter(osg::Texture::MIN_FILTER,
+                       osg::Texture::LINEAR_MIPMAP_LINEAR);
+    cubemap->setFilter(osg::Texture::MAG_FILTER,
+                       osg::Texture::LINEAR);
+    cubemap->setWrap(osg::Texture::WRAP_S,
+                     osg::Texture::CLAMP_TO_EDGE);
+    cubemap->setWrap(osg::Texture::WRAP_T,
+                     osg::Texture::CLAMP_TO_EDGE);
+
+    std::map<std::string, int> mapping;
+    mapping["north"] = osg::TextureCubeMap::POSITIVE_Z;
+    mapping["east"] = osg::TextureCubeMap::POSITIVE_X;
+    mapping["south"] = osg::TextureCubeMap::NEGATIVE_Z;
+    mapping["west"] = osg::TextureCubeMap::NEGATIVE_X;
+    mapping["up"] = osg::TextureCubeMap::NEGATIVE_Y;
+    mapping["down"] = osg::TextureCubeMap::POSITIVE_Y;
+    for(auto it: mapping) {
+      std::string file = info[it.first];
+      if(!loadPath.empty() && file[0] != '/') {
+        file = loadPath + file;
+      }
+      osg::Image* image = loadImage(file);
+      cubemap->setImage(it.second, image);
+    }
+    cubemaps[name] = cubemap;
+    return cubemap;
   }
 
   osg::ref_ptr<osg::Texture2D> OsgMaterialManager::loadTexture(std::string filename) {
@@ -230,6 +268,7 @@ namespace osg_material_manager {
       n->setDrawLineLaser(drawLineLaser);
       n->setUseShadow(useShadow);
       n->setBrightness(brightness);
+      n->setNoiseAmmount(noiseAmmount);
       it->second->addMaterialNode(n);
       n->setMaterial(it->second);
       it->second->addChild(n);
@@ -327,6 +366,14 @@ namespace osg_material_manager {
     std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setBrightness(brightness);
+    }
+  }
+
+  void OsgMaterialManager::setNoiseAmmount(float v) {
+    noiseAmmount = v;
+    std::vector<osg::ref_ptr<MaterialNode> >::iterator it = materialNodes.begin();
+    for(; it!=materialNodes.end(); ++it) {
+      (*it)->setNoiseAmmount(noiseAmmount);
     }
   }
 

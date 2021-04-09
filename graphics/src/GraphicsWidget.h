@@ -67,7 +67,7 @@ namespace mars {
                      int f=0, GraphicsManager *gm=0);
       ~GraphicsWidget();
       void initializeOSG(void *data = 0, GraphicsWidget* shared = 0,
-                         int width = 0, int height = 0);
+                         int width = 0, int height = 0, bool vsync = false);
 
       unsigned long getID(void);
 
@@ -310,7 +310,8 @@ namespace mars {
       virtual void initialize() {};
       virtual osg::ref_ptr<osg::GraphicsContext> createWidgetContext(
                                                                      void* parent, osg::ref_ptr<osg::GraphicsContext::Traits> traits);
-      void createContext(void* parent, GraphicsWidget* shared, int width, int height);
+      void createContext(void* parent, GraphicsWidget* shared, int width, int height,
+                         bool vsync=false);
 
       // implements osgGA::GUIEventHandler::handle
       bool handle(const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa);

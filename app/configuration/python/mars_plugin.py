@@ -22,6 +22,10 @@ def init():
 
 def update(marsData):
     clearDict()
+    return sendDict()
+
+def update(marsData):
+    clearDict()
     # dof = [0, 0, 0, 0, 0, 0]
     # rotation = [0, 0, 0, 0]
     # x = 0.;

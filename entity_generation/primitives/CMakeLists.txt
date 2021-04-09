@@ -19,6 +19,7 @@ include(FindPkgConfig)
 #include(${CMAKE_INSTALL_PREFIX}/cmake/mars.cmake)
 
 find_package(lib_manager)
+lib_defaults()
 define_module_info()
 
 #Get linker and compiler flags from pkg-config

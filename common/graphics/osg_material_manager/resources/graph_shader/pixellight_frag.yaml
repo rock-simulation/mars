@@ -45,6 +45,7 @@ uniforms:
     - {name: lightIsDirectional, arraySize: numLights}
   float:
     - {name: brightness}
+    - {name: noiseAmmount}
     - {name: alpha}
     - {name: shadowScale}
     - {name: invShadowSamples}

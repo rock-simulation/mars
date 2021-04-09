@@ -1,0 +1,19 @@
+params:
+  in:
+    in_vec4 : {index: 0, type: vec4}
+    noise_ammount : {index: 1, type: float}
+    pixel_scale : {index: 2, type: float}
+  out:
+    out_vec4: {index: 1, type: vec4}
+source: /graph_shader/pixel_noise.frag
+
+varyings:
+  vec4:
+    - {name: modelVertex}
+uniforms:
+  int:
+    - {name: useNoise}
+  float:
+    - {name: noiseAmmount}
+  sampler2D:
+    - {name: NoiseMap}

@@ -180,9 +180,15 @@ namespace osg_material_manager {
     std::map<std::string, TextureInfo>::iterator it = textures.begin();
     for(; it!=textures.end(); ++it) {
       it->second.enabled = false;
-      state->setTextureAttributeAndModes(it->second.unit,
-                                         it->second.texture,
-                                         osg::StateAttribute::OFF);
+      if(it->second.cubemap) {
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.cubemap,
+                                           osg::StateAttribute::OFF);
+      } else {
+        state->setTextureAttributeAndModes(it->second.unit,
+                                           it->second.texture,
+                                           osg::StateAttribute::OFF);
+      }
       state->removeUniform(it->second.textureUniform);
     }
     if (!texturename.empty()) {
@@ -211,6 +217,9 @@ namespace osg_material_manager {
         if(it->hasKey("layer")) {
           addTextureArray(*it);
         }
+        else if(it->hasKey("cubemap")) {
+          addCubemap(*it);
+        }
         else {
           addTexture(*it, map.hasKey("instancing"));
         }
@@ -231,6 +240,58 @@ namespace osg_material_manager {
     }
   }
     
+  void OsgMaterial::addCubemap(ConfigMap &config) {
+    osg::StateSet *state = getOrCreateStateSet();
+    std::map<std::string, TextureInfo>::iterator it = textures.find((std::string)config["name"]);
+    if(it != textures.end()) {
+      TextureInfo &info = it->second;
+      // todo: handle changes in texture unit etc.
+      std::map<std::string, int> mapping;
+      mapping["north"] = osg::TextureCubeMap::POSITIVE_Z;
+      mapping["east"] = osg::TextureCubeMap::POSITIVE_X;
+      mapping["south"] = osg::TextureCubeMap::NEGATIVE_Z;
+      mapping["west"] = osg::TextureCubeMap::NEGATIVE_X;
+      mapping["up"] = osg::TextureCubeMap::NEGATIVE_Y;
+      mapping["down"] = osg::TextureCubeMap::POSITIVE_Y;
+
+      for(auto it: mapping) {
+        std::string file = config["cubemap"][it.first];
+        if(!loadPath.empty() && file[0] != '/') {
+          file = loadPath + file;
+        }
+        info.cubemap->setImage(it.second,
+                               OsgMaterialManager::loadImage(file));
+      }
+      if(!info.enabled) {
+        state->setTextureAttributeAndModes(info.unit, info.cubemap,
+                                           osg::StateAttribute::ON);
+        state->addUniform(info.textureUniform.get());
+        info.enabled = true;
+      }
+    }
+    else {
+      TextureInfo info;
+      info.name << config["name"];
+      info.cubemap = OsgMaterialManager::loadCubemap(config["cubemap"],
+                                                     loadPath);
+
+      info.unit = 0;
+      if(unitMap.hasKey(info.name)) {
+        info.unit = unitMap[info.name];
+      }
+      if(config.hasKey("unit")) {
+        info.unit = config["unit"];
+      }
+      fprintf(stderr, "set unit: %d\n", info.unit);
+      info.textureUniform = new osg::Uniform(info.name.c_str(), info.unit);
+      state->setTextureAttributeAndModes(info.unit, info.cubemap,
+                                         osg::StateAttribute::ON);
+      state->addUniform(info.textureUniform.get());
+      info.enabled = true;
+      textures[info.name] = info;
+    }
+  }
+
   void OsgMaterial::addTexture(ConfigMap &config, bool nearest) {
     osg::StateSet *state = getOrCreateStateSet();
     std::map<std::string, TextureInfo>::iterator it = textures.find((std::string)config["name"]);
@@ -411,9 +472,16 @@ namespace osg_material_manager {
       if(it != textures.end()) {
         osg::StateSet *state = getOrCreateStateSet();
         it->second.enabled = false;
-        state->setTextureAttributeAndModes(it->second.unit,
-                                           it->second.texture,
-                                           osg::StateAttribute::OFF);
+        if(it->second.cubemap) {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.cubemap,
+                                             osg::StateAttribute::OFF);
+        }
+        else {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.texture,
+                                             osg::StateAttribute::OFF);
+        }
         state->removeUniform(it->second.textureUniform);
         return;
       }
@@ -437,9 +505,15 @@ namespace osg_material_manager {
       if(it != textures.end()) {
         osg::StateSet *state = getOrCreateStateSet();
         it->second.enabled = true;
-        state->setTextureAttributeAndModes(it->second.unit,
-                                           it->second.texture,
-                                           osg::StateAttribute::ON);
+        if(it->second.cubemap) {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.cubemap,
+                                             osg::StateAttribute::ON);
+        } else {
+          state->setTextureAttributeAndModes(it->second.unit,
+                                             it->second.texture,
+                                             osg::StateAttribute::ON);
+        }
         state->addUniform(it->second.textureUniform);
         return;
       }

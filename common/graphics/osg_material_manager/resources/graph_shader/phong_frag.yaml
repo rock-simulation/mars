@@ -6,7 +6,7 @@ params:
     specular_base: {index: 3, type: vec4}
     Ie: {index: 4, type: vec4}
   out:
-    If: {index: 0, type: vec4}
+    If: {index: 5, type: vec4}
 source: /graph_shader/phong.frag
 minVersion: 120
 varyings:
@@ -37,3 +37,4 @@ uniforms:
     - {name: lightSpotExponent, arraySize: numLights}
   float:
     - {name: brightness}
+    - {name: alpha}

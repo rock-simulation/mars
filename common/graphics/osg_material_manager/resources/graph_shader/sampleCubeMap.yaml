@@ -1,0 +1,7 @@
+params:
+  in:
+    texDir: {index: 0, type: vec3}
+    texture: {index: 1, type: samplerCube}
+  out:
+    color: {index: 2, type: vec4}
+source: /graph_shader/sampleCubeMap.frag

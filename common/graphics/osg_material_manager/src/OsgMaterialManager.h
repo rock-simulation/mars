@@ -91,6 +91,7 @@ namespace osg_material_manager {
     void setDrawLineLaser(bool v);
     void setUseShadow(bool v);
     void setBrightness(float v);
+    void setNoiseAmmount(float v);
 
     std::vector<configmaps::ConfigMap> getMaterialList();
     void setExperimentalLineLaser(mars::utils::Vector pos,
@@ -100,6 +101,7 @@ namespace osg_material_manager {
                                   float openingAngle);
     void updateShadowSamples();
 
+    static osg::ref_ptr<osg::TextureCubeMap> loadCubemap(configmaps::ConfigMap &info, std::string loadPath="");
     static osg::ref_ptr<osg::Texture2D> loadTexture(std::string filename);
     static osg::ref_ptr<osg::Image> loadImage(std::string filename);
 
@@ -118,11 +120,11 @@ namespace osg_material_manager {
     float shadowScale;
     // global MaterialNode properties
     bool useFog, useNoise, drawLineLaser, useShadow;
-    float brightness;
+    float brightness, noiseAmmount;
 
     static std::vector<textureFileStruct> textureFiles;
     static std::vector<imageFileStruct> imageFiles;
-
+    static std::map<std::string,osg::ref_ptr<osg::TextureCubeMap>> cubemaps;
   };
 
 } // end of namespace: osg_material_manager

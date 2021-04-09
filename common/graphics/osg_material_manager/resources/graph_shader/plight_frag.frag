@@ -1,12 +1,17 @@
 void pixellight2_frag(vec4 base, vec3 n, out vec4 outcol) {
   vec4 ambient = vec4(0.0);
   vec4 diffuse_ = vec4(0.0);
-  float nDotL;
+  vec4 specular_ = vec4(0.0);
+  vec4 test_specular_;
+  vec3 eye = normalize(  eyeVec );
+  float nDotL, rDotE;
   float spot = 1.0;
-  float dist, atten, x, y, s;
+  float dist, atten;
   for(int i=0; i<numLights; ++i) {
     if(lightIsSet[i]==1) {
       nDotL = max(dot( n, normalize(  -lightVec[i] ) ), 0.0);
+      reflected = normalize(reflect(lightVec[i], n ) );
+      rDotE = max(dot( reflected, eye ), 0.0);
 
       // add diffuse and specular light
       if(lightIsDirectional[i] == 1) {
@@ -24,10 +29,13 @@ void pixellight2_frag(vec4 base, vec3 n, out vec4 outcol) {
       }
       ambient  += lightAmbient[i]*gl_FrontMaterial.ambient;
       diffuse_  += spot * (atten*diffuse[i] * nDotL);
+      test_specular_ = (spot*specularShadow * atten*specular[i]
+                        * pow(rDotE, gl_FrontMaterial.shininess));
+      specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);
     }
   }
 
   // calculate output color
-  outcol = brightness* ((ambient + diffuse_)*base  + gl_FrontMaterial.emission*base);
+  outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);
   outcol.a = alpha*base.a;
 }

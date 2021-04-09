@@ -76,8 +76,9 @@ namespace mars {
       /* add sensors to physics engine */
       control->nodes->addNodeSensor(this->node_id, this->s_cfg);
       control->nodes->getDataBrokerNames(this->node_id, &groupName, &dataName);
-      control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",sSensor->rate);
-    
+      if (control->dataBroker)
+        control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",sSensor->rate);
+
       /* add draw items */
       draw.ptr_draw = (garphics::DrawInterface*)this;
 
@@ -90,8 +91,9 @@ namespace mars {
     RayGridSensor::~RayGridSensor(void)
     {
 #if 0
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", 
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker)
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
       if (s_cfg.sensorPositions)
         free(s_cfg.sensorPositions);
       control->graphics->removeDrawItems(this);

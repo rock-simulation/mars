@@ -177,7 +177,7 @@ namespace mars {
                                     (main_gui::MenuInterface*)this);
       mainGui->addGenericMenuAction("../View/Trackball",
                                     MENU_VIEW_TRACKBALL,
-                                    (main_gui::MenuInterface*)this, 'B');
+                                    (main_gui::MenuInterface*)this, QKeySequence("CTRL+B")[0]);
     }
 
 

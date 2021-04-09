@@ -49,20 +49,24 @@ namespace mars {
 
       typeName = "JointLoad";
       loadIndices[0] = -1;
-      dbPackage.add("id", (long)config.id);
-      dbPackage.add("load", 0.0);
-      char text[55];
-      sprintf(text, "Sensors/Load_%05lu", config.id);
-      control->dataBroker->pushData("mars_sim", text,
-                                    dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, "mars_sim", text,
-                                                 "mars_sim/simTimer", 0);
+      if (control->dataBroker) {
+        dbPackage.add("id", (long)config.id);
+        dbPackage.add("load", 0.0);
+        char text[55];
+        sprintf(text, "Sensors/Load_%05lu", config.id);
+        control->dataBroker->pushData("mars_sim", text,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, "mars_sim", text,
+                                                   "mars_sim/simTimer", 0);
+      }
     }
 
     JointLoadSensor::~JointLoadSensor(void) {
-      control->dataBroker->unregisterTimedProducer(this, "*", "*",
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedProducer(this, "*", "*",
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

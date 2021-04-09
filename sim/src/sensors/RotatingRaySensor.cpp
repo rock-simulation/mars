@@ -169,7 +169,8 @@ namespace mars {
 
     RotatingRaySensor::~RotatingRaySensor(void) {
       control->graphics->removeDrawItems((DrawInterface*)this);
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+      if (control->dataBroker)
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
       closeThread = true;
       this->wait();
     }

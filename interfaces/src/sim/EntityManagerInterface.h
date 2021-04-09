@@ -31,6 +31,7 @@
 
 #include <string>
 #include <vector>
+#include <configmaps/ConfigData.h>
 
 namespace mars {
 
@@ -57,7 +58,14 @@ namespace mars {
       virtual unsigned long addEntity(sim::SimEntity* entity) = 0;
 
       /**deletes an existing entity and removes it's entity map entry*/
-      virtual void removeEntity(const std::string &name) = 0;
+      virtual void removeEntity(const std::string &name, bool completeAssembly=false) = 0;
+
+      /**deletes all entities that belong to the given assembly and removes
+      *   their entity map entry
+      */
+      virtual void removeAssembly(const std::string &assembly_name) = 0;
+
+      virtual void appendConfig(const std::string &name, configmaps::ConfigMap &map) = 0;
 
       /**adds a node to the entity and maps the nodeId to its name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId, const std::string &nodeName) = 0;
@@ -77,6 +85,7 @@ namespace mars {
       /**returns the entity with the given name
        */
       virtual sim::SimEntity* getEntity(const std::string &name) = 0;
+      virtual sim::SimEntity* getEntity(const std::string &name, bool verbose) = 0;
 
       /**returns the entities that contain the given name string
        */
@@ -84,6 +93,23 @@ namespace mars {
 
       /**returns the entity with the given id*/
       virtual sim::SimEntity* getEntity(unsigned long id) = 0;
+
+      /**returns the entities that belong to the assembly with the given name
+       */
+      virtual std::vector<sim::SimEntity*> getEntitiesOfAssembly(
+        const std::string &assembly_name) = 0;
+
+      /**returns the root entity of the given assembly
+       */
+      virtual sim::SimEntity* getRootOfAssembly(
+        const std::string &assembly_name) = 0;
+
+      /**returns the main entity of the given assembly if there is one, otherwise
+       returns the root entity.
+       @see getRootOfAssembly()
+       */
+      virtual sim::SimEntity* getMainEntityOfAssembly(
+        const std::string &assembly_name) = 0;
 
       /**returns the node of the given entity; returns 0 if the entity or the node don't exist*/
       virtual unsigned long getEntityNode(const std::string &entityName, const std::string &nodeName) = 0;

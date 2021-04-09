@@ -64,21 +64,26 @@ namespace mars {
       dbPackage.add("roll", 0.0);
       dbPackage.add("pitch", 0.0);
       dbPackage.add("yaw", 0.0);
-      std::string groupName = "mars_sim";
-      std::string dataName = "Sensors/"+name;
-      control->dataBroker->pushData(groupName, dataName,
-                                    dbPackage, NULL,
-                                    data_broker::DATA_PACKAGE_READ_FLAG);
-      control->dataBroker->registerTimedProducer(this, groupName, dataName,
-                                                 "mars_sim/simTimer",
-                                                 updateRate);
+      if (control->dataBroker) {
+        std::string groupName = "mars_sim";
+        std::string dataName = "Sensors/"+name;
+        control->dataBroker->pushData(groupName, dataName,
+                                      dbPackage, NULL,
+                                      data_broker::DATA_PACKAGE_READ_FLAG);
+        control->dataBroker->registerTimedProducer(this, groupName, dataName,
+                                                   "mars_sim/simTimer",
+                                                   updateRate);
+      }
     }
+
     NodeRotationSensor::~NodeRotationSensor() {
-      std::string groupName = "mars_sim";
-      std::string dataName = "Sensors/"+name;
-      control->dataBroker->unregisterTimedProducer(this, groupName,
-                                                   dataName,
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        std::string groupName = "mars_sim";
+        std::string dataName = "Sensors/"+name;
+        control->dataBroker->unregisterTimedProducer(this, groupName,
+                                                     dataName,
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

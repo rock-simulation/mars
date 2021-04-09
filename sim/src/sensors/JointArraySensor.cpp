@@ -80,17 +80,21 @@ namespace mars {
 
       for(it=config.ids.begin(); it!=config.ids.end(); ++it) {
         control->joints->getDataBrokerNames(*it, &groupName, &dataName);
-        control->dataBroker->registerTimedReceiver(this, groupName, dataName,
-                                                   "mars_sim/simTimer",
-                                                   updateRate,
-                                                   countIDs++);
+        if (control->dataBroker) {
+          control->dataBroker->registerTimedReceiver(this, groupName, dataName,
+                                                     "mars_sim/simTimer",
+                                                     updateRate,
+                                                     countIDs++);
+        }
         if(initArray) doubleArray.push_back(0.0);
       }
     }
 
     JointArraySensor::~JointArraySensor(void) {
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*",
-                                                   "mars_sim/simTimer");
+      if (control->dataBroker) {
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*",
+                                                     "mars_sim/simTimer");
+      }
     }
 
     // this function should be overwritten by the special sensor to

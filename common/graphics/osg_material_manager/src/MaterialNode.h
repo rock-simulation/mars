@@ -91,6 +91,7 @@ namespace osg_material_manager {
     void setBrightness(float val);
     void setUseFog(bool val);
     void setUseNoise(bool val);
+    void setNoiseAmmount(float val);
     void setDrawLineLaser(bool val);
     void setUseShadow(bool val);
 
@@ -121,7 +122,6 @@ namespace osg_material_manager {
     bool isCreated;
     bool useFog, useNoise;
     bool getLight;
-    float brightness_;
     osg::ref_ptr<osg::Uniform> lightPosUniform, lightAmbientUniform, lightDiffuseUniform;
     osg::ref_ptr<osg::Uniform> lightSpecularUniform, lightIsSpotUniform;
     osg::ref_ptr<osg::Uniform> lightSpotDirUniform, lightIsDirectionalUniform;
@@ -138,7 +138,7 @@ namespace osg_material_manager {
     osg::ref_ptr<osg::Uniform> lineLaserColor;
     osg::ref_ptr<osg::Uniform> lineLaserDirection;
     osg::ref_ptr<osg::Uniform> lineLaserOpeningAngle;
-    osg::ref_ptr<osg::Uniform> useFogUniform, useNoiseUniform;
+    osg::ref_ptr<osg::Uniform> useFogUniform, useNoiseUniform, noiseAmmountUniform;
     osg::ref_ptr<osg::Uniform> useShadowUniform;
     osg::ref_ptr<osg::Uniform> numLightsUniform;
     osg::ref_ptr<osg::Uniform> drawLineLaserUniform;

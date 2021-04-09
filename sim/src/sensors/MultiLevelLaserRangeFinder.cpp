@@ -41,12 +41,14 @@ MultiLevelLaserRangeFinder::MultiLevelLaserRangeFinder(ControlCenter *control, M
         rotationIndices[i] = -1;
 
     control->nodes->addNodeSensor(this);
-    bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
-    assert(erg);
-    
-    //register timer for caputuring the data
-    control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate);
+    if (control->dataBroker) {
+        std::string groupName, dataName;
+        bool erg = control->nodes->getDataBrokerNames(attached_node, &groupName, &dataName);
+        assert(erg);
 
+        //register timer for caputuring the data
+        control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",updateRate);
+    }
     if(control->graphics) {
         double anglePerCamera = M_PI /2.0;
         
@@ -147,7 +149,8 @@ MultiLevelLaserRangeFinder::MultiLevelLaserRangeFinder(ControlCenter *control, M
 MultiLevelLaserRangeFinder::~MultiLevelLaserRangeFinder(void) {
   if(control->graphics)
     control->graphics->removeDrawItems((DrawInterface*)this);
-  control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+  if (control->dataBroker)
+    control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
 }
 
 void MultiLevelLaserRangeFinder::preGraphicsUpdate(void )

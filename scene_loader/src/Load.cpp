@@ -52,7 +52,7 @@ namespace mars {
                std::string tmpPath_, const std::string &robotname) :
       mFileName(fileName), mRobotName(robotname),
       control(c), tmpPath(tmpPath_) {
-    	mFileSuffix = utils::getFilenameSuffix(mFileName);
+      mFileSuffix = utils::getFilenameSuffix(mFileName);
     }
 
     unsigned int Load::load() {
@@ -305,8 +305,9 @@ namespace mars {
         unsigned long id = it->second;
         if(id) {
           std::map<unsigned long, MaterialData>::iterator it = materials.find(id);
-          if(it != materials.end())
+          if(it != materials.end()) {
             node.material = it->second;
+          }
         }
       }
 
@@ -324,6 +325,11 @@ namespace mars {
 
       if(mRobotName != "") {
         control->entities->addNode(mRobotName, node.index, node.name);
+        if(oldId == 1) {
+          configmaps::ConfigMap map;
+          map["rootNode"] = node.name;
+          control->entities->appendConfig(mRobotName, map);
+        }
       }
       return 1;
     }

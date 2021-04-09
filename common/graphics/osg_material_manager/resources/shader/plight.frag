@@ -22,20 +22,22 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
   float map2 = step(zShadow1, testZ)*step(testZ, zShadow2);
   float shadow0 = 0.0;
   float shadow1 = 0.0;
+  float shadow2 = 0.0;
 
   if(useShadow == 1) {
-    float shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
-    shadow2 = step(0.25,shadow2);
     if(shadowSamples == 1) {
       shadow0 = shadow2D(shadowTexture0, gl_TexCoord[1].xyz).r;
       shadow0 = step(0.25,shadow0);
       shadow1 = shadow2D(shadowTexture1, gl_TexCoord[2].xyz).r;
       shadow1 = step(0.25,shadow1);
+      shadow2 = shadow2D(shadowTexture2, gl_TexCoord[3].xyz).r;
+      shadow2 = step(0.25,shadow2);
     }
     else {
       float da = 128/shadowSamples;
       float w = gl_TexCoord[1].w*invShadowTextureSize;
       float w2 = gl_TexCoord[2].w*invShadowTextureSize;
+      float w3 = gl_TexCoord[3].w*invShadowTextureSize;
       vec2 offset = floor(da*screenPos.xy*10)*shadowSamples;
       for(int k=0; k<shadowSamples; ++k) {
         for(int l=0; l<shadowSamples; ++l) {
@@ -45,8 +47,10 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
           v *= 8;
           shadowCoord = gl_TexCoord[1] + vec4(v.x*w, v.y*w, 0.0, 0);
           shadow0 += shadow2DProj( shadowTexture0, shadowCoord ).r * invShadowSamples;
-          shadowCoord = gl_TexCoord[2] + vec4(v.x*w, v.y*w, 0.0, 0);
+          shadowCoord = gl_TexCoord[2] + vec4(v.x*w2, v.y*w2, 0.0, 0);
           shadow1 += shadow2DProj( shadowTexture1, shadowCoord ).r * invShadowSamples;
+          shadowCoord = gl_TexCoord[3] + vec4(v.x*w3, v.y*w3, 0.0, 0);
+          shadow2 += shadow2DProj( shadowTexture2, shadowCoord ).r * invShadowSamples;
         }
       }
     }
@@ -117,8 +121,8 @@ void pixellight_frag(vec4 base, vec3 n, out vec4 outcol) {
   outcol.a = alpha*base.a;
   if(useNoise == 1) {
     float noiseScale = 6;
-    outcol.rg += 0.05*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
-    outcol.b += 0.05*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
+    outcol.rg += noiseAmmount*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
+    outcol.b += noiseAmmount*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
   }
 
   if(useFog == 1) {

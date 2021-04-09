@@ -204,6 +204,9 @@ namespace mars {
           showSelectionProp = cfg->getOrCreateProperty("Graphics",
                                                        "showSelection",
                                                        true, this);
+          vsyncProp = cfg->getOrCreateProperty("Graphics",
+                                               "vsync",
+                                               false, this);
         }
         else {
           marsShadow.bValue = false;
@@ -371,6 +374,7 @@ namespace mars {
           materialManager->setShadowSamples(shadowSamples.iValue);
           materialManager->setDefaultMaxNumLights(defaultMaxNumNodeLights.iValue);
           materialManager->setBrightness((float)brightness.dValue);
+          materialManager->setNoiseAmmount((float)noiseAmmount.dValue);
           if(pssm) {
             pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
           }
@@ -587,7 +591,7 @@ namespace mars {
                                 next_window_id++, 0,
                                                     0, this);
         */
-        gw->initializeOSG(myQTWidget, 0, width, height);
+        gw->initializeOSG(myQTWidget, 0, width, height, vsyncProp.bValue);
       }
       activeWindow = gw;
       gw->setName(name);
@@ -767,7 +771,9 @@ namespace mars {
       }
 
       // Render a complete new frame.
-      if(viewer) viewer->frame();
+      if(viewer) {
+        viewer->frame();
+      }
       ++framecount;
       for(it=graphicsUpdateObjects.begin();
           it!=graphicsUpdateObjects.end(); ++it) {
@@ -1907,6 +1913,9 @@ namespace mars {
       brightness = cfg->getOrCreateProperty("Graphics", "brightness", 1.0,
                                             cfgClient);
 
+      noiseAmmount = cfg->getOrCreateProperty("Graphics", "noiseAmmount", 0.05,
+                                            cfgClient);
+
       grab_frames = cfg->getOrCreateProperty("Graphics", "make movie", false,
                                              cfgClient);
 
@@ -2017,6 +2026,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == noiseAmmount.paramId) {
+        setNoiseAmmount(_property.dValue);
+        return;
+      }
+
       if(_property.paramId == marsShader.paramId) {
         setUseShader(_property.bValue);
         return;
@@ -2115,9 +2129,12 @@ namespace mars {
       osg::DisplaySettings::instance()->setNumMultiSamples(num_samples);
     }
 
-    // todo: handle brightness as global setting in materialmanager
     void GraphicsManager::setBrightness(double val) {
       if(materialManager) materialManager->setBrightness(float(val));
+    }
+
+    void GraphicsManager::setNoiseAmmount(double val) {
+      if(materialManager) materialManager->setNoiseAmmount(float(val));
     }
 
     void GraphicsManager::setUseNoise(bool val) {

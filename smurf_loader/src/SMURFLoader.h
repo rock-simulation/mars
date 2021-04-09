@@ -41,6 +41,15 @@
 namespace mars {
   namespace smurf {
 
+    struct ConfigStruct {
+      utils::Vector pos;
+      utils::Quaternion rot;
+      std::string anchor;
+      std::string parent;
+
+      ConfigStruct() : pos(0,0,0), rot(1,0,0,0), anchor("none"), parent("world") {}
+    };
+
     class SMURFLoader : public interfaces::LoadSceneInterface {
 
     public:
@@ -54,8 +63,19 @@ namespace mars {
 
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname);
+      /* Overloading this enables us to use this method without changing
+       * all the interfaces.
+       * In the future it might be a good idea to implement passing of the
+       * cfgstruct to other loaders, too, to apply the transformation there
+       * as well.
+      */
+      virtual bool loadFile(std::string filename, std::string tmpPath,
+                            std::string robotname, void* args,
+                            bool do_not_create=false);
       virtual int saveFile(std::string filename, std::string tmpPath);
-      virtual void loadEntity(configmaps::ConfigVector::iterator it, std::string path);
+      //virtual void loadEntity(configmaps::ConfigMap* it, std::string path);
+      virtual void loadEntity(configmaps::ConfigMap* it, std::string path,
+                              bool do_not_create=false);
 
       // SMURF-Loader specific functions
       void checkEncodings();
@@ -76,6 +96,12 @@ namespace mars {
 
       unsigned int unzip(const std::string& destinationDir,
                          const std::string& zipFilename);
+      void applyConfigStruct(ConfigStruct* cfg_struct, configmaps::ConfigMap& m,
+        bool is_smurfa=false);
+      void transformConfigMapPose(utils::Vector pos_offset,
+        utils::Quaternion rot_offset, configmaps::ConfigMap* map);
+      void getPoseFromConfigMap(configmaps::ConfigMap &map,
+        utils::Vector* pos, utils::Quaternion* rot);
     };
 
   } // end of namespace smurf

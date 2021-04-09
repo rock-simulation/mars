@@ -30,6 +30,8 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/sim/SensorManagerInterface.h>
+#include <mars/interfaces/sim/ControllerManagerInterface.h>
 #include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <math.h>
 #include <float.h>
@@ -68,7 +70,9 @@ namespace mars {
 
     void SimEntity::removeEntity() {
       for (auto it = nodeIds.begin(); it != nodeIds.end(); ++it) {
-         control->nodes->removeNode(it->first);
+        std::vector<unsigned long> joints = control->joints->getIDsByNodeID(it->first);
+        for (auto j: joints) control->joints->removeJoint(j);
+        control->nodes->removeNode(it->first);
       }
       nodeIds.clear();
 
@@ -76,11 +80,22 @@ namespace mars {
          control->joints->removeJoint(it->first);
       }
       jointIds.clear();
+      if (hasAnchorJoint()) control->joints->removeJoint(anchorJointId);
 
       for (auto it = motorIds.begin(); it != motorIds.end(); ++it) {
          control->motors->removeMotor(it->first);
       }
       motorIds.clear();
+
+      for (auto it = sensorIds.begin(); it != sensorIds.end(); ++it) {
+         control->sensors->removeSensor(it->first);
+      }
+      sensorIds.clear();
+
+      for (auto it = controllerIds.begin(); it != controllerIds.end(); ++it) {
+         control->controllers->removeController(*it);
+      }
+      controllerIds.clear();
     }
 
     void SimEntity::addNode(unsigned long nodeId, const std::string& name) {
@@ -114,6 +129,13 @@ namespace mars {
       } else {
         return false;
       }
+    }
+
+    std::string SimEntity::getAssembly() {
+      if (config.hasKey("assembly")) {
+        return (std::string) config["assembly"];
+      }
+      return "";
     }
 
     long unsigned int SimEntity::getRootestId(std::string name_specifier /*="" */) {
@@ -295,15 +317,19 @@ namespace mars {
       }
     }
 
+    void SimEntity::removeAnchor() {
+      if (hasAnchorJoint()) control->joints->removeJoint(anchorJointId);
+    }
+
     bool SimEntity::hasAnchorJoint() {
       return (anchorJointId != 0);
     }
 
-    void SimEntity::setInitialPose(bool reset/*=false*/, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
+    void SimEntity::setInitialPose(bool reset, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
         NodeId id = getNode((std::string)config["rootNode"]);
         if (!control->nodes->exists(id)) {
-          fprintf(stderr, "ERROR: Did not find node id %d in setInitialPose()\n", id);
+          fprintf(stderr, "ERROR: Did not find node id %lu in setInitialPose()\n", id);
           return;
         }
         NodeData rootNode = control->nodes->getFullNode(id);
@@ -314,14 +340,42 @@ namespace mars {
           if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
           if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
           cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
-          cfg["parent"] = pPoseCfg->get("parent", (std::string) "");
+          cfg["parent"] = pPoseCfg->get("parent", (std::string) "world");
           cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
+        }
+        //parent defines the frame for position and rotation
+        // check if there is a parent
+        std::string parentname = "world";
+        unsigned long parentid = 0;
+        utils::Vector parentpos(0,0,0);
+        utils::Quaternion parentrot(1,0,0,0);
+        if (cfg.hasKey("parent") && (std::string)cfg["parent"] != "none" && (std::string)cfg["parent"] != "") { // backwards compatibility
+          parentname << cfg["parent"];
+        }
+        if (!parentname.empty() && parentname != "world") {
+          std::string entityname, linkname;
+          unsigned int splitsignpos = parentname.find("::");
+          if (splitsignpos >= 0) {
+            entityname = parentname.substr(0, splitsignpos);
+            linkname = parentname.substr(splitsignpos+2);
+            SimEntity* parententity = control->entities->getEntity(entityname);
+            if (parententity != 0) {
+              unsigned long linkid = parententity->getNode(linkname);
+              if (linkid > 0) {
+                parentid = linkid;
+                parentpos = control->nodes->getPosition(parentid);
+                parentrot = control->nodes->getRotation(parentid);
+              } else
+                fprintf(stderr, "No valid link id for '%s' in parent entity '%s' .\n", linkname.c_str(), entityname.c_str());
+            } else
+              fprintf(stderr, "No valid parent entity '%s' in scene.\n", entityname.c_str());
+          } else
+            fprintf(stderr, "No valid parent specified by parent: '%s'\n", parentname.c_str());
         }
         if(cfg.find("position") != cfg.end()) {
           rootNode.pos.x() = cfg["position"][0];
           rootNode.pos.y() = cfg["position"][1];
           rootNode.pos.z() = cfg["position"][2];
-          control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         }
         if(cfg.find("rotation") != cfg.end()) {
           // check if euler angles or quaternion is provided; rotate around z
@@ -344,69 +398,75 @@ namespace mars {
             break;
           }
           rootNode.rot = tmpQ;
-          control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
         }
-        // check if there is an anchor / parent (anchor is deprecated...)
-        std::string parentname = "";
-        if (cfg.hasKey("parent")) {
-          parentname << cfg["parent"];
+        rootNode.pos = parentrot * rootNode.pos + parentpos;
+        rootNode.rot = parentrot * rootNode.rot;
+
+        if (reset && hasAnchorJoint()) {
+          control->joints->removeJoint(anchorJointId);
+          jointIds.erase(anchorJointId);
         }
+
+        control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
+        control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
+
+        //anchor defines the node to which the fixed joint is created
+        // check if there is an anchor
+        std::string anchorname = "";
         if (cfg.hasKey("anchor") && (std::string)cfg["anchor"] != "none") { // backwards compatibility
-          parentname << cfg["anchor"];
+          anchorname << cfg["anchor"];
         }
-        if(!parentname.empty()) {
-          if (reset) {
-            fprintf(stderr, "Resetting initial entity pose.\n");
-            std::map<unsigned long, std::string>::iterator it;
-            anchorJointId = 0;
-            for (it=jointIds.begin(); it!=jointIds.end(); ++it) {
-              if (it->second == "anchor_"+name) {
-                anchorJointId = it->first;
+        if(!anchorname.empty()) {
+          unsigned long anchorid = 0;
+          if (anchorname == "parent") {
+            anchorid = parentid;
+          } else if (anchorname != "world") {// if entity gets attached to other entity
+            std::string entityname, linkname;
+            unsigned int splitsignpos = anchorname.find("::");
+            if (splitsignpos >= 0) {
+              entityname = anchorname.substr(0, splitsignpos);
+              linkname = anchorname.substr(splitsignpos+2);
+              SimEntity* anchorentity = control->entities->getEntity(entityname);
+              if (anchorentity != 0) {
+                unsigned long linkid = anchorentity->getNode(linkname);
+                if (linkid > 0) {
+                  anchorid = linkid;
+                } else {
+                  fprintf(stderr, "No valid link id for '%s' in anchor entity '%s' .\n", linkname.c_str(), entityname.c_str());
+                }
+              } else {
+                fprintf(stderr, "No valid anchor entity '%s' in scene.\n", entityname.c_str());
+              }
+            } else {
+              fprintf(stderr, "No valid anchor specified by parent: '%s'\n", anchorname.c_str());
+            }
+          }
+          JointData anchorjoint;
+          //fprintf(stderr, "Creating anchor joint between nodes %lu and %lu\n", id, anchorid);
+          anchorjoint.nodeIndex1 = id;
+          anchorjoint.nodeIndex2 = anchorid;
+          anchorjoint.anchorPos = ANCHOR_NODE1;
+          anchorjoint.type = JOINT_TYPE_FIXED;
+          anchorjoint.name = "anchor_"+name;
+          if (cfg.hasKey("data_package")) {
+            switch ((int) cfg["data_package"]) {
+              case 0:
+                anchorjoint.config["noDataPackage"] = true;
                 break;
-              }
+              case 1:
+                anchorjoint.config["reducedDataPackage"] = true;
+                break;
+              default:
+                break;
             }
-            SimJoint* anchorjoint = control->joints->getSimJoint(anchorJointId);
-            if (anchorjoint != NULL) {
-              anchorjoint->reattachJoint();
-            }
-            else fprintf(stderr, "Could not reset anchor of entity %s.\n", name.c_str());
           }
-          else {
-            unsigned long parentid;
-            if (parentname == "world") {
-              parentid = 0;
-            } else {  // if entity gets attached to other entity
-              std::string entityname, linkname;
-              unsigned int splitsignpos = parentname.find("::");
-              if (splitsignpos >= 0) {
-                entityname = parentname.substr(0, splitsignpos);
-                linkname = parentname.substr(splitsignpos+2);
-                SimEntity* parententity = control->entities->getEntity(entityname);
-                if (parententity != 0) {
-                  unsigned long linkid = parententity->getNode(linkname);
-                  if (linkid > 0) {
-                    parentid = linkid;
-                  } else
-                    fprintf(stderr, "No valid link id in parent entity.\n");
-                } else
-                  fprintf(stderr, "No valid entity in scene.\n");
-              }
-            }
-            JointData anchorjoint;
-            anchorjoint.nodeIndex1 = id;
-            anchorjoint.nodeIndex2 = parentid;
-            anchorjoint.type = JOINT_TYPE_FIXED;
-            anchorjoint.name = "anchor_"+name;
-            anchorJointId = control->joints->addJoint(&anchorjoint);
-            addJoint(anchorJointId, anchorjoint.name);
-          }
-        } else {
+          if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
+          anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
+          addJoint(anchorJointId, anchorjoint.name);
+        } else if (anchorJointId != 0){
           //if there was a joint before, remove it
-          if (anchorJointId != 0) {
-            control->joints->removeJoint(anchorJointId);
-            jointIds.erase(anchorJointId);
-            anchorJointId = 0;
-          }
+          fprintf(stderr, "Removing anchor joint\n");
+          anchorJointId = 0;
         }
         // set Joints
         configmaps::ConfigVector::iterator it;

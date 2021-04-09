@@ -59,7 +59,11 @@ namespace mars {
 
       virtual unsigned long addEntity(SimEntity* entity);
 
-      virtual void removeEntity(const std::string &name);
+      virtual void removeEntity(const std::string &name, bool completeAssembly=false);
+
+      virtual void removeAssembly(const std::string &assembly_name);
+
+      virtual void appendConfig(const std::string &name, configmaps::ConfigMap &map);
 
       /**adds a node and maps the nodeId to the name*/
       virtual void addNode(const std::string &entityName, unsigned long nodeId,
@@ -82,10 +86,28 @@ namespace mars {
       /**returns the entity with the given name
        */
       virtual SimEntity* getEntity(const std::string &name);
+      virtual SimEntity* getEntity(const std::string &name, bool verbose);
 
       /**returns the entities that contain the given name string
        */
       virtual std::vector<SimEntity*> getEntities(const std::string &name);
+
+      /**returns the entities that belong to the assembly with the given name
+       */
+      virtual std::vector<SimEntity*> getEntitiesOfAssembly(
+        const std::string &assembly_name);
+
+      /**returns the root entity of the given assembly
+       */
+      virtual SimEntity* getRootOfAssembly(
+        const std::string &assembly_name);
+
+      /**returns the main entity of the given assembly if there is one, otherwise
+       returns the root entity.
+       @see getRootOfAssembly()
+       */
+      virtual SimEntity* getMainEntityOfAssembly(
+        const std::string &assembly_name);
 
       /**returns the entity with the given id
        */

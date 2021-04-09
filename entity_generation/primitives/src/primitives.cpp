@@ -181,14 +181,22 @@ namespace mars {
         // Z is up)
         node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
       }
-      std::string parentname;
-      if (entityconfig.hasKey("parent")) {
-          parentname = (std::string)entityconfig["parent"];
-            if (parentname == "world") {
-               node.movable = false;
-               node.groupID = 666;
-            }
-        }
+      // if (entityconfig.hasKey("anchor")) {
+      //   if (
+      //     (std::string)entityconfig["anchor"] == "world" ||
+      //     (
+      //       (std::string)entityconfig["anchor"] == "parent" &&
+      //       (
+      //         (entityconfig.hasKey("parent") && (std::string)entityconfig["parent"] == "world") ||
+      //         !entityconfig.hasKey("parent")
+      //       )
+      //     )
+      //   )
+      //   {
+      //     node.movable = false;
+      //     node.groupID = 666;
+      //   }
+      // }
       NodeId oldId = node.index;
       NodeId newId = control->nodes->addNode(&node);
       if (!newId) {

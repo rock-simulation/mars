@@ -135,7 +135,8 @@ namespace mars {
       bool erg = control->nodes->getDataBrokerNames(nodeID[1], &groupName, &dataName);
       (void)erg;
       assert(erg);
-      control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",config.updateRate);
+      if (control->dataBroker)
+        control->dataBroker->registerTimedReceiver(this, groupName, dataName,"mars_sim/simTimer",config.updateRate);
 
 
       if(config.only_ray){
@@ -188,7 +189,8 @@ namespace mars {
     }
 
     ScanningSonar::~ScanningSonar(void){
-      control->dataBroker->unregisterTimedReceiver(this, "*", "*","mars_sim/simTimer");
+      if (control->dataBroker)
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*","mars_sim/simTimer");
     }
 
 

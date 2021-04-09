@@ -89,6 +89,11 @@ namespace mars {
         return name;
       }
 
+      /* @brief returns the assembly name of the assembly to which the robot
+      *  belongs. Returns "" if the robot is not part of an assembly
+      */
+      std::string getAssembly();
+
       // returns true if the robot is selected
       bool isSelected() {
         return selected;
@@ -142,6 +147,8 @@ namespace mars {
       std::string getJoint(unsigned long id);
 
       const configmaps::ConfigMap getConfig();
+
+      void removeAnchor();
 
       bool hasAnchorJoint();
 

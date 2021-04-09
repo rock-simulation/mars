@@ -401,10 +401,10 @@ namespace mars {
       cfg_manager::CFGManagerInterface *cfg;
       cfg_manager::cfgPropertyStruct cfgW_top, cfgW_left, cfgW_height, cfgW_width;
       cfg_manager::cfgPropertyStruct draw_normals, drawRain, drawSnow,
-        multisamples, noiseProp, brightness, marsShader, backfaceCulling,
+        multisamples, noiseProp, brightness, noiseAmmount, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
         hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize,
-        showGridProp, showCoordsProp, showSelectionProp;
+        showGridProp, showCoordsProp, showSelectionProp, vsyncProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;
@@ -420,6 +420,7 @@ namespace mars {
       unsigned long findCoreObject(unsigned long draw_id) const;
       void setMultisampling(int num_samples);
       void setBrightness(double val);
+      void setNoiseAmmount(double val);
       void setUseNoise(bool val);
       void setUseShader(bool val);
 

@@ -184,6 +184,13 @@ namespace mars {
       virtual unsigned long getID(const std::string &joint_name) const = 0;
 
       /**
+       * Retrieve the ids of all joints connected to the given node
+       * \param node_id Id of the connected node
+       * \return vector of ids of the joints if they exist any, otherwise empty
+       */
+      virtual std::vector<unsigned long> getIDsByNodeID(unsigned long node_id) = 0;
+
+      /**
        * Retrieve the id of a joint by the ids of the connected nodes
        * \param id1, id2 Ids of the connected nodes
        * \return Id of the joint if it exists, otherwise 0
