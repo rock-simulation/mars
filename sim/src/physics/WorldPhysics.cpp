@@ -575,7 +575,7 @@ namespace mars {
          geom_data2->c_params.rolling_friction > EPSILON) {
         contact[0].surface.mode |= dContactRolling;
         contact[0].surface.rho = geom_data1->c_params.rolling_friction + geom_data2->c_params.rolling_friction;
-        fprintf(stderr, "set rolling friction to: %g\n", contact[0].surface.rho);
+        // fprintf(stderr, "set rolling friction to: %g\n", contact[0].surface.rho);
         if(geom_data1->c_params.rolling_friction2 > EPSILON ||
            geom_data2->c_params.rolling_friction2 > EPSILON) {
           contact[0].surface.rho2 = geom_data1->c_params.rolling_friction2 + geom_data2->c_params.rolling_friction2;

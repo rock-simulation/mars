@@ -340,6 +340,16 @@ namespace mars {
           }
         }
       }
+      for (it = config["material"].begin(); it != config["material"].end(); ++it) {
+        handleURIs(*it);
+        std::vector<ConfigMap>::iterator mIt = materialList.begin();
+        for (; mIt != materialList.end(); ++mIt) {
+          if ((std::string) (*mIt)["name"] == (std::string) (*it)["name"]) {
+            mIt->append(*it);
+            break;
+          }
+        }
+      }
       for (it = config["link"].begin(); it != config["link"].end(); ++it) {
         handleURIs(*it);
         std::vector<ConfigMap>::iterator nIt = nodeList.begin();
