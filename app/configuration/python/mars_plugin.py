@@ -20,7 +20,7 @@ def init():
     logMessage("setup python interface")
     return sendDict()
 
-def update(marsData):
+def reload(marsData):
     clearDict()
     return sendDict()
 
