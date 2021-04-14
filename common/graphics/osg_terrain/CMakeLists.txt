@@ -33,7 +33,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    configmaps
 			    mars_utils
           osg_material_manager
-          opencv
+          opencv4
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})

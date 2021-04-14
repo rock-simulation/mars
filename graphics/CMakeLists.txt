@@ -63,7 +63,7 @@ set (QT_USE_QTOPENGL TRUE)
 setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
-                  opencv
+                  opencv4
                   lib_manager
                   mars_interfaces
                   cfg_manager

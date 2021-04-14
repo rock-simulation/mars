@@ -1,4 +1,4 @@
-﻿/*
+/*
  *  Copyright 2016, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
@@ -69,8 +69,8 @@ namespace osg_terrain {
     solid = true;
     highSolid = true;
     camX = camY = 0;
-    img=cvLoadImage(imagefile.data(), -1);
-    if(!img) {
+    img=cv::imread(imagefile.data(), cv::IMREAD_ANYDEPTH);
+    if(!img.data) {
       fprintf(stderr, "error loading heightmap file!\n");
     }
     finish = false;
@@ -557,34 +557,48 @@ namespace osg_terrain {
   double MultiResHeightMapRenderer::getHeight(double x, double y) {
     // need to replaced by image
     //if(!isInitialized) return 0;
-    int stepx = targetWidth / img->width;
-    int stepy = targetHeight / img->height;
+    int stepx = targetWidth / img.cols;
+    int stepy = targetHeight / img.rows;
 
-    x = img->width*x/targetWidth;
-    y = img->height*y/targetHeight;
+    x = img.cols*x/targetWidth;
+    y = img.rows*y/targetHeight;
     if(x < 0) x = 0;
     if(y < 0) y = 0;
     int gridX = floor(x);
     int gridY = floor(y);
-    if(gridX > img->width-1) gridX = img->width-1;
-    if(gridY > img->height-1) gridY = img->height-1;
+    if(gridX > img.cols-1) gridX = img.cols-1;
+    if(gridY > img.rows-1) gridY = img.rows-1;
     int gridX2 = gridX+1;
-    if(gridX2 > img->width-1) gridX2 = gridX;
+    if(gridX2 > img.cols-1) gridX2 = gridX;
     int gridY2 = gridY+1;
-    if(gridY2 > img->height-1) gridY2 = gridY;
+    if(gridY2 > img.rows-1) gridY2 = gridY;
     double dx = (x - gridX);
     double dy = (y - gridY);
     double cornerHeights[4];
-    double imageMaxValue = pow(2., img->depth);
-    CvScalar s;
-    s = cvGet2D(img, gridY, gridX);
-    cornerHeights[0] = s.val[0] / imageMaxValue;
-    s = cvGet2D(img, gridY2, gridX);
-    cornerHeights[1] = s.val[0] / imageMaxValue;
-    s = cvGet2D(img, gridY, gridX2);
-    cornerHeights[2] = s.val[0] / imageMaxValue;
-    s = cvGet2D(img, gridY2, gridX2);
-    cornerHeights[3] = s.val[0] / imageMaxValue;
+    double imageMaxValue = pow(2., 8);
+    if(depth==CV_16U) {
+      imageMaxValue = pow(2., 16);
+    }
+    cv::Scalar s;
+    if(depth == CV_16U) {
+      s = img.at<ushort>(gridY, gridX);
+      cornerHeights[0] = s.val[0] / imageMaxValue;
+      s = img.at<ushort>(gridY2, gridX);
+      cornerHeights[1] = s.val[0] / imageMaxValue;
+      s = img.at<ushort>(gridY, gridX2);
+      cornerHeights[2] = s.val[0] / imageMaxValue;
+      s = img.at<ushort>(gridY2, gridX2);
+      cornerHeights[3] = s.val[0] / imageMaxValue;
+    } else {
+      s = img.at<uchar>(gridY, gridX);
+      cornerHeights[0] = s.val[0] / imageMaxValue;
+      s = img.at<uchar>(gridY2, gridX);
+      cornerHeights[1] = s.val[0] / imageMaxValue;
+      s = img.at<uchar>(gridY, gridX2);
+      cornerHeights[2] = s.val[0] / imageMaxValue;
+      s = img.at<uchar>(gridY2, gridX2);
+      cornerHeights[3] = s.val[0] / imageMaxValue;
+    }
     double height = (cornerHeights[0] * (1-dx) * (1-dy) +
                      cornerHeights[1] * (1-dx) * dy +
                      cornerHeights[2] * dx * (1-dy) +

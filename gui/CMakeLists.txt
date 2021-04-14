@@ -26,7 +26,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    main_gui
 			    cfg_manager
 			    mars_interfaces
-			    opencv
+			    opencv4
           configmaps
 )
 

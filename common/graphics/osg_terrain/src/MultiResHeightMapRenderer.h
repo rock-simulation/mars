@@ -44,13 +44,7 @@
 #include <map>
 #include <list>
 #include <vector>
-#ifdef _WIN32
- #include <cv.h>
- #include <highgui.h>
-#else
- #include <opencv/cv.h>
- #include <opencv/highgui.h>
-#endif
+#include <opencv2/opencv.hpp>
 
 #include <mars/utils/Thread.h>
 #include <mars/utils/Mutex.h>
@@ -178,7 +172,7 @@ namespace osg_terrain {
     bool dirty;
     double minX, minY, minZ, maxX, maxY, maxZ;
     bool wireframe, solid, highWireframe, highSolid;
-    IplImage* img;
+    cv::Mat img;
 
     std::map<int, Tile*> subTiles;
     std::vector<Tile*> listSubTiles;
