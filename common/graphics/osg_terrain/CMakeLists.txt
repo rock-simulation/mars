@@ -7,6 +7,9 @@ include(CheckIncludeFileCXX)
 
 add_definitions(-std=c++11)
 
+find_package(lib_manager)
+lib_defaults()
+
 find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
@@ -29,11 +32,11 @@ endif()
 
 include_directories(src)
 
+setup_opencv()
 pkg_check_modules(PKGCONFIG REQUIRED
 			    configmaps
 			    mars_utils
           osg_material_manager
-          opencv
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -77,6 +80,7 @@ endif(WIN32)
 target_link_libraries(${PROJECT_NAME}
                       ${OPENSCENEGRAPH_LIBRARIES}
                       ${PKGCONFIG_LIBRARIES}
+                      ${OPENCV_LIBRARIES}
                       ${APPLE_LIBS}
                       ${WIN_LIBS}
 )

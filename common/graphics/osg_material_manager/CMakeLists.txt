@@ -21,13 +21,14 @@ endif()
 
 include_directories(src)
 
+setup_opencv()
+
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
 			    configmaps
 			    mars_utils
           mars_interfaces
           cfg_manager
-          opencv
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
@@ -70,6 +71,7 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 target_link_libraries(${PROJECT_NAME}
                       ${OPENSCENEGRAPH_LIBRARIES}
                       ${PKGCONFIG_LIBRARIES}
+                      ${OPENCV_LIBRARIES}
 )
 
 if(WIN32)
