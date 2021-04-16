@@ -27,7 +27,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    mars_utils
           mars_interfaces
           cfg_manager
-          opencv4
+          opencv
 )
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
 link_directories(${PKGCONFIG_LIBRARY_DIRS})
