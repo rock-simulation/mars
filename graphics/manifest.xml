@@ -13,6 +13,7 @@
     <depend package="simulation/mars/interfaces" />
     <depend package="opencv" />
     <depend package="tools/configmaps" />
+    <depend package="external/osgQt" />
     <rosdep name="osg" />
     <tags>needs_opt</tags>
 </package>
