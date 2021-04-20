@@ -25,7 +25,7 @@
 #include <QString>
 #include <QEvent>
 #include <QKeyEvent>
-#include <QtDesigner/QDesignerExportWidget>
+//#include <QtDesigner/QDesignerExportWidget>
 
 #include "ui_CrossWidget.h"
 

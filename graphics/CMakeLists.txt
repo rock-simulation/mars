@@ -61,9 +61,9 @@ endif()
 
 set (QT_USE_QTOPENGL TRUE)
 setup_qt()
+setup_opencv()
 
 pkg_check_modules(PKGCONFIG REQUIRED
-                  opencv
                   lib_manager
                   mars_interfaces
                   cfg_manager
@@ -213,6 +213,7 @@ target_link_libraries(${PROJECT_NAME}
             ${QT_LIBRARIES}
             ${OPENSCENEGRAPH_LIBRARIES}
             ${PKGCONFIG_LIBRARIES}
+            ${OPENCV_LIBRARIES}
             ${APPLE_LIBS}
             ${WIN_LIBS}
             ${EXTRA_LIBS}

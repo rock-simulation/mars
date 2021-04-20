@@ -19,6 +19,7 @@ MACRO(CMAKE_USE_FULL_RPATH install_rpath)
 ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
+setup_opencv()
 
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager
@@ -26,7 +27,6 @@ pkg_check_modules(PKGCONFIG REQUIRED
 			    main_gui
 			    cfg_manager
 			    mars_interfaces
-			    opencv
           configmaps
 )
 
@@ -182,6 +182,7 @@ IF(APPLE)
                         ${QT_QTXML_LIBRARY}
                         ${QT_QTOPENGL_LIBRARIES} 
                         ${PKGCONFIG_LIBRARIES}
+                        ${OPENCV_LIBRARIES}
                         ${WIN_LIBS}
                         ${OPENSCENEGRAPH_LIBRARIES}
                        -L/opt/local/lib opencv_core opencv_highgui
@@ -192,6 +193,7 @@ ELSE(APPLE)
                         ${QT_QTXML_LIBRARY}
                         ${QT_QTOPENGL_LIBRARIES} 
                         ${PKGCONFIG_LIBRARIES} ${PKGCONFIG_LDFLAGS_OTHER}
+                        ${OPENCV_LIBRARIES}
                         ${WIN_LIBS}
                         ${OPENSCENEGRAPH_LIBRARIES}
   )
