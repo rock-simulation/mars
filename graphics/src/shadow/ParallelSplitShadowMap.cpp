@@ -80,9 +80,9 @@ namespace mars {
     _polgyonOffset.set(0.0f,0.0f);
     setSplitCalculationMode(SPLIT_EXP);
     osg_lines::LinesFactory lF;
-    l = lF.createLines();
-    l->setColor(osg_lines::Color(0.0, 1.0, 0.0, 1.0));
-    l->setLineWidth(8);
+    //l = lF.createLines();
+    //l->setColor(osg_lines::Color(0.0, 1.0, 0.0, 1.0));
+    //l->setLineWidth(8);
     initIntern();
     }
 
@@ -105,10 +105,10 @@ namespace mars {
       _ambientBiasUniform(NULL),
       _ambientBias(copy._ambientBias),
       isInit(false),
-      haveLines(false)
+      haveLines(true)
     {
       osg_lines::LinesFactory lF;
-      l = lF.createLines();
+      //l = lF.createLines();
     }
 
     void ParallelSplitShadowMap::resizeGLObjectBuffers(unsigned int maxSize)
@@ -172,7 +172,7 @@ namespace mars {
     {
       if (!_shadowedScene) return;
       if (!isInit) initIntern();
-      _shadowedScene->addChild((osg::Node*)(l->getOSGNode()));
+      //_shadowedScene->addChild((osg::Node*)(l->getOSGNode()));
     }
 
     void ParallelSplitShadowMap::initIntern()
@@ -426,7 +426,7 @@ namespace mars {
       OSG_DEBUG << "------ cull PSSM " << std::endl;
       std::list<osg_lines::Vector> points;
       //l->setData(points);
-      l->drawStrip(false);
+      //l->drawStrip(false);
       // record the traversal mask on entry so we can reapply it later.
       unsigned int traversalMask = cv.getTraversalMask();
       osgUtil::RenderStage* orig_rs = cv.getRenderStage();
