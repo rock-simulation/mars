@@ -321,7 +321,7 @@ namespace osg_material_manager {
       fprintf(stderr, "     texture file: %s\n", file.c_str());
       if(info.name == "terrainMap") {
         info.texture = loadTerrainTexture(file);
-        //nearest = true;
+        nearest = true;
       }
       else {
         info.texture = OsgMaterialManager::loadTexture(file);
