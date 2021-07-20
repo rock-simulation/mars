@@ -638,6 +638,7 @@ namespace mars {
 
       config["origname"] = "sphere";
       config["material"] = "_originMaterial";
+      config["createFrame"] = true;
 
 #ifdef DEBUG_SCENE_MAP
       debugMap["nodes"] += config;

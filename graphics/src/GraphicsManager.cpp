@@ -114,7 +114,7 @@ namespace mars {
       //osg::setNotifyLevel( osg::WARN );
 
       // first check if we have the cfg_manager lib
-
+      framesFactory = new osg_frames::FramesFactory();
     }
 
     GraphicsManager::~GraphicsManager() {
@@ -126,6 +126,7 @@ namespace mars {
       }
       if(materialManager) libManager->releaseLibrary("osg_material_manager");
       //fprintf(stderr, "Delete mars_graphics\n");
+      delete framesFactory;
     }
 
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {
@@ -875,7 +876,14 @@ namespace mars {
 
       DrawCoreIds.insert(pair<unsigned long int, unsigned long int>(id, snode.index));
       drawObjects_[id] = drawObject;
-
+      ConfigMap config = snode.map;
+      if(config.hasKey("createFrame") and (bool)config["createFrame"] == true) {
+        drawObject->object()->frame = framesFactory->createFrame();
+        drawObject->object()->frame->setScale(scaleFramesProp.dValue);
+        if(showFramesProp.bValue) {
+          scene->addChild((osg::PositionAttitudeTransform*)drawObject->object()->frame->getOSGNode());
+        }
+      }
       if(snode.isShadowCaster) {
         mask |= CastsShadowTraversalMask;
       }
@@ -1928,6 +1936,11 @@ namespace mars {
       drawSnow = cfg->getOrCreateProperty("Graphics", "drawSnow", false,
                                           cfgClient);
 
+      showFramesProp = cfg->getOrCreateProperty("Graphics", "showFrames", false,
+                                                cfgClient);
+      scaleFramesProp = cfg->getOrCreateProperty("Graphics", "scaleFrames", 0.1,
+                                                cfgClient);
+
       drawMainCamera = cfg->getOrCreateProperty("Graphics", "drawMainCamera", true,
                                           cfgClient);
 
@@ -1938,6 +1951,8 @@ namespace mars {
                                 cfgW_width.iValue, cfgW_height.iValue);
       if(drawRain.bValue) showRain(true);
       if(drawSnow.bValue) showSnow(true);
+      if(showFramesProp.bValue) showFrames(true);
+      scaleFrames(scaleFramesProp.dValue);
       if(!drawMainCamera.bValue){
             deactivate3DWindow(1);
       }
@@ -1993,6 +2008,18 @@ namespace mars {
 
       if(_property.paramId == drawSnow.paramId) {
         showSnow(_property.bValue);
+        return;
+      }
+
+      if(_property.paramId == showFramesProp.paramId) {
+        showFramesProp.bValue = _property.bValue;
+        showFrames(_property.bValue);
+        return;
+      }
+
+      if(_property.paramId == scaleFramesProp.paramId) {
+        scaleFramesProp.dValue = _property.dValue;
+        scaleFrames(_property.dValue);
         return;
       }
 
@@ -2515,6 +2542,29 @@ namespace mars {
         return osg::Vec3f(p.x(), p.y(), p.z());
       }
       return osg::Vec3f(0, 0, 0);
+    }
+
+    void GraphicsManager::showFrames(bool val) {
+      for (DrawObjects::iterator iter = drawObjects_.begin();
+           iter != drawObjects_.end(); ++iter) {
+        if(iter->second->object()->frame) {
+          if(val) {
+            scene->addChild((osg::PositionAttitudeTransform*)(iter->second->object()->frame->getOSGNode()));
+          }
+          else {
+            scene->removeChild((osg::PositionAttitudeTransform*)(iter->second->object()->frame->getOSGNode()));
+          }
+        }
+      }
+    }
+
+    void GraphicsManager::scaleFrames(double x) {
+      for (DrawObjects::iterator iter = drawObjects_.begin();
+           iter != drawObjects_.end(); ++iter) {
+        if(iter->second->object()->frame) {
+          iter->second->object()->frame->setScale(x);
+        }
+      }
     }
 
   } // end of namespace graphics

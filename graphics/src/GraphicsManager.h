@@ -67,6 +67,7 @@
 #include <mars/osg_material_manager/OsgMaterialManager.h>
 #include <mars/osg_material_manager/MaterialNode.h>
 #include <mars/osg_material_manager/OsgMaterial.h>
+#include <osg_frames/FramesFactory.hpp>
 
 #include "gui_helper_functions.h"
 
@@ -391,6 +392,8 @@ namespace mars {
       osg::ref_ptr<ShadowMap> shadowMap;
       osg::ref_ptr<ParallelSplitShadowMap> pssm;
 
+      osg_frames::FramesFactory *framesFactory;
+
       /**\brief adds a preview node to the scene */
       int createPreviewNode(const std::vector<mars::interfaces::NodeData> &allNodes);
 
@@ -404,7 +407,7 @@ namespace mars {
         multisamples, noiseProp, brightness, noiseAmmount, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
         hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize,
-        showGridProp, showCoordsProp, showSelectionProp, vsyncProp;
+        showGridProp, showCoordsProp, showSelectionProp, vsyncProp, showFramesProp, scaleFramesProp;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;
@@ -423,6 +426,8 @@ namespace mars {
       void setNoiseAmmount(double val);
       void setUseNoise(bool val);
       void setUseShader(bool val);
+      void showFrames(bool val);
+      void scaleFrames(double x);
 
       void initDefaultLight();
       void setColor(utils::Color *c, const std::string &key,

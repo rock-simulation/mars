@@ -77,7 +77,8 @@ namespace mars {
         sharedStateGroup(false),
         showSelected(true),
         isHidden(true),
-        brightness(1.0) {
+        brightness(1.0),
+        frame(NULL) {
     }
 
     DrawObject::~DrawObject() {
@@ -228,12 +229,18 @@ namespace mars {
     void DrawObject::setPosition(const Vector &_pos) {
       position_ = _pos;
       posTransform_->setPosition(osg::Vec3(position_.x(), position_.y(), position_.z()));
+      if(frame) {
+        frame->setPosition(position_.x(), position_.y(), position_.z());
+      }
     }
 
     void DrawObject::setQuaternion(const Quaternion &q) {
       osg::Quat oQuat;
       oQuat.set(q.x(), q.y(), q.z(), q.w());
       posTransform_->setAttitude(oQuat);
+      if(frame) {
+        frame->setRotation(q.x(), q.y(), q.z(), q.w());
+      }
       quaternion_ = q;
     }
 

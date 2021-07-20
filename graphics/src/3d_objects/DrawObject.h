@@ -53,6 +53,7 @@
 
 #include <mars/osg_material_manager/OsgMaterial.h>
 #include <mars/osg_material_manager/MaterialNode.h>
+#include <osg_frames/Frame.hpp>
 
 
 namespace mars {
@@ -153,6 +154,7 @@ namespace mars {
       void seperateMaterial();
       void addSelectionChild(DrawObject* c) {selectionChilds.push_back(c);}
 
+      osg_frames::Frame* frame;
     protected:
       unsigned long id_;
       unsigned int nodeMask_;
@@ -175,6 +177,7 @@ namespace mars {
       bool isHidden;
       double brightness;
       GraphicsManager *g;
+
       virtual std::list< osg::ref_ptr< osg::Geode > > createGeometry() = 0;
     }; // end of class DrawObject
 

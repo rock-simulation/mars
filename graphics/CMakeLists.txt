@@ -72,6 +72,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   osg_material_manager
                   osg_terrain
                   osg_lines
+                  osg_frames
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
