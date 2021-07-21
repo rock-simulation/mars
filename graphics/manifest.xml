@@ -10,6 +10,7 @@
     <depend package="simulation/mars/common/graphics/osg_material_manager" />
     <depend package="simulation/mars/common/graphics/osg_terrain" />
     <depend package="simulation/mars/common/graphics/osg_lines" />
+    <depend package="simulation/mars/common/graphics/osg_frames" />
     <depend package="simulation/mars/interfaces" />
     <depend package="opencv" />
     <depend package="tools/configmaps" />
