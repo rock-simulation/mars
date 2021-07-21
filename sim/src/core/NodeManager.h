@@ -126,6 +126,7 @@ namespace mars {
                                  std::list<interfaces::NodeId> *ids) const;
       virtual void updateRay(interfaces::NodeId id);
       virtual interfaces::NodeId getDrawID(interfaces::NodeId id) const;
+      virtual interfaces::NodeId getDrawID2(interfaces::NodeId id) const;
       virtual void setVisualRep(interfaces::NodeId id, int val);
       virtual const utils::Vector getContactForce(interfaces::NodeId id) const;
       virtual void setVisualQOffset(interfaces::NodeId id, const utils::Quaternion &q);

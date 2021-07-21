@@ -250,7 +250,7 @@ namespace mars {
         bool selected;
         /* todo: get drawid2 should be used, so far we assume every node
            uses two ids */
-        unsigned long drawID;
+        unsigned long drawID, drawID2;
         for(size_t i=0; i<simNodes.size(); ++i) {
           drawID = control->nodes->getDrawID(simNodes[i].index);
           if(!drawID) continue;
@@ -263,7 +263,10 @@ namespace mars {
             }
           }
           control->graphics->setDrawObjectSelected(drawID, selected);
-          control->graphics->setDrawObjectSelected(drawID+1, selected);
+          drawID2 = control->nodes->getDrawID2(simNodes[i].index);
+          if(drawID2) {
+            control->graphics->setDrawObjectSelected(drawID2, selected);
+          }
         }
       }
 

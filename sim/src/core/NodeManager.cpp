@@ -1511,6 +1511,15 @@ namespace mars {
         return INVALID_ID;
     }
 
+    NodeId NodeManager::getDrawID2(NodeId id) const {
+      MutexLocker locker(&iMutex);
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if (iter != simNodes.end())
+        return iter->second->getGraphicsID2();
+      else
+        return INVALID_ID;
+    }
+
 
     const Vector NodeManager::getContactForce(NodeId id) const {
       MutexLocker locker(&iMutex);
