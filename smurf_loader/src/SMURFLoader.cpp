@@ -490,13 +490,14 @@ namespace mars {
                 control->cfg->setPropertyValue("Scene", "mesh_scale", "value", (double)(envmap["terrain"]["mesh_scale"]));
               }
             }
-            interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
-            if (envmap.hasKey("background")) {
-              Color bgcol;
-              bgcol.fromConfigItem(envmap["background"]);
-              goptions.clearColor = bgcol;
-            }
-            if (envmap.hasKey("fog")) {
+            if(control->graphics) {
+              interfaces::GraphicData goptions = control->graphics->getGraphicOptions();
+              if (envmap.hasKey("background")) {
+                Color bgcol;
+                bgcol.fromConfigItem(envmap["background"]);
+                goptions.clearColor = bgcol;
+              }
+              if (envmap.hasKey("fog")) {
                 goptions.fogEnabled = true;
                 goptions.fogDensity = envmap["fog"]["density"];
                 goptions.fogStart = envmap["fog"]["start"];
@@ -504,10 +505,11 @@ namespace mars {
                 Color fogcol;
                 fogcol.fromConfigItem(envmap["fog"]["color"]);
                 goptions.fogColor = fogcol;
-            } else {
+              } else {
                 goptions.fogEnabled = false;
+              }
+              control->graphics->setGraphicOptions(goptions);
             }
-            control->graphics->setGraphicOptions(goptions);
           }
           if (map.hasKey("lights")) {
             for (it = map["lights"].begin(); it!= map["lights"].end(); ++it) {
