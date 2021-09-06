@@ -694,7 +694,34 @@ namespace mars {
     }
 
     configmaps::ConfigItem* DataWidget::getItem(std::string path) {
-      std::vector<std::string> arrPath = utils::explodeString('/', path);
+      std::vector<std::string> tmpPath = utils::explodeString('/', path);
+      std::vector<std::string> arrPath;
+      std::string current = "";
+      bool append = true;
+      for(size_t i=0; i<tmpPath.size(); ++i) {
+        if(tmpPath[i].size() == 0) {
+          if(!append) {
+            current += "/";
+            append = true;
+          }
+          else {
+            append = false;
+          }
+        }
+        else if(append) {
+          current += tmpPath[i];
+          append = false;
+        }
+        else {
+          arrPath.push_back(current);
+          current = tmpPath[i];
+          append = false;
+        }
+      }
+      if(current.size() > 0) {
+        arrPath.push_back(current);
+      }
+
       int index = 1;
       if(cname.size() > 0) {
         index = 2;
@@ -711,7 +738,7 @@ namespace mars {
           break;
         }
         else {
-          fprintf(stderr, "ERROR: update configmap widget structure error!");
+          fprintf(stderr, "ERROR: update configmap widget structure error! [%s]\n", path.c_str());
           return NULL;
         }
       }
