@@ -1772,6 +1772,25 @@ namespace mars {
         }
         return;
       }
+      else if(matchPattern("*/attach_node", key)) {
+        iMutex.unlock();
+        interfaces::JointData jointdata;
+        jointdata.nodeIndex1 = id;
+        jointdata.nodeIndex2 = getID(value);
+        jointdata.type = interfaces::JOINT_TYPE_FIXED;
+        jointdata.name = "connector_"+nd.name+"_"+value;
+        unsigned long jointid = control->joints->addJoint(&jointdata, true);
+        return;
+      }
+      else if(matchPattern("*/dettach_node", key)) {
+        iMutex.unlock();
+        string name =  "connector_"+nd.name+"_"+value;
+        unsigned long jointid = control->joints->getID(name);
+        if(jointid) {
+          control->joints->removeJoint(jointid);
+        }
+        return;
+      }
       else if(matchPattern("*/position", key)) {
         //// fprintf(stderr, "position\n");
         double v = atof(value.c_str());
