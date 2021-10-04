@@ -355,7 +355,9 @@ namespace mars {
                                    int callbackParam) {
       CPP_UNUSED(info);
       mutex.lock();
-      renderCam = 2+config.frameOffset;
+      if(renderCam == 0) {
+        renderCam = 2+config.frameOffset;
+      }
       if(dbPosIndices[0] == -1) {
         dbPosIndices[0] = package.getIndexByName("position/x");
         dbPosIndices[1] = package.getIndexByName("position/y");
