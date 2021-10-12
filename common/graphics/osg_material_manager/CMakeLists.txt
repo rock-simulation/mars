@@ -9,6 +9,8 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+setup_opencv()
+
 find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
@@ -21,7 +23,6 @@ endif()
 
 include_directories(src)
 
-setup_opencv()
 
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager

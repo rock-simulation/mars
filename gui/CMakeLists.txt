@@ -9,6 +9,8 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+setup_opencv()
+
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR} "${PROJECT_SOURCE_DIR}/cmake")
 
 MACRO(CMAKE_USE_FULL_RPATH install_rpath)
@@ -19,7 +21,6 @@ MACRO(CMAKE_USE_FULL_RPATH install_rpath)
 ENDMACRO(CMAKE_USE_FULL_RPATH)
 CMAKE_USE_FULL_RPATH("${CMAKE_INSTALL_PREFIX}/lib")
 
-setup_opencv()
 
 pkg_check_modules(PKGCONFIG REQUIRED
 			    lib_manager

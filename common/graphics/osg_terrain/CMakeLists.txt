@@ -10,6 +10,8 @@ add_definitions(-std=c++11)
 find_package(lib_manager)
 lib_defaults()
 
+setup_opencv()
+
 find_package(OpenSceneGraph REQUIRED  osgDB osgText osgUtil)
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
 link_directories(${OPENSCENEGRAPH_LIBRARY_DIRS})
@@ -32,7 +34,6 @@ endif()
 
 include_directories(src)
 
-setup_opencv()
 pkg_check_modules(PKGCONFIG REQUIRED
 			    configmaps
 			    mars_utils
