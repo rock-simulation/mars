@@ -748,6 +748,7 @@ namespace mars {
       virtual void updateRay(NodeId id) = 0;
       /** \todo write docs */
       virtual NodeId getDrawID(NodeId id) const = 0;
+      virtual NodeId getDrawID2(NodeId id) const = 0;
       /** \todo write docs */
       virtual void setVisualRep(NodeId id, int val) = 0;
       /** \todo write docs */

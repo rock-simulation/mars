@@ -236,10 +236,9 @@ namespace mars {
           if(!my_interface->createNode(&sNode)) {
             LOG_ERROR("SimNode: unhandled error in setPosition");
           }
-          return diff;
         }
       }
-      return Vector(0.0, 0.0, 0.0);
+      return diff;
     }
 
 

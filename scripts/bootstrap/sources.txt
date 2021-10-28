@@ -1,3 +1,0 @@
-# list file including package definitions
-packages.yml
-entity_packages.yml

@@ -17,6 +17,8 @@ find_package(lib_manager)
 lib_defaults()
 define_module_info()
 
+setup_opencv()
+
 include_directories(
       src 
       src/interfaces
@@ -61,7 +63,6 @@ endif()
 
 set (QT_USE_QTOPENGL TRUE)
 setup_qt()
-setup_opencv()
 
 pkg_check_modules(PKGCONFIG REQUIRED
                   lib_manager
@@ -72,6 +73,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   osg_material_manager
                   osg_terrain
                   osg_lines
+                  osg_frames
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})

@@ -40,11 +40,7 @@
 #include <osg/TexMat>
 #include <osg/CullFace>
 
-#ifdef WIN32
- #include <opencv2/opencv.hpp>
-#else
- #include <opencv2/opencv.hpp>
-#endif
+#include <opencv2/opencv.hpp>
 
 #include <cmath>
 

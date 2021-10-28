@@ -1511,6 +1511,15 @@ namespace mars {
         return INVALID_ID;
     }
 
+    NodeId NodeManager::getDrawID2(NodeId id) const {
+      MutexLocker locker(&iMutex);
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if (iter != simNodes.end())
+        return iter->second->getGraphicsID2();
+      else
+        return INVALID_ID;
+    }
+
 
     const Vector NodeManager::getContactForce(NodeId id) const {
       MutexLocker locker(&iMutex);
@@ -1760,6 +1769,25 @@ namespace mars {
           int cameraId = atoi(value.c_str());
           unsigned long drawId = getDrawID(id);
           control->graphics->attacheCamToNode(cameraId, drawId);
+        }
+        return;
+      }
+      else if(matchPattern("*/attach_node", key)) {
+        iMutex.unlock();
+        interfaces::JointData jointdata;
+        jointdata.nodeIndex1 = id;
+        jointdata.nodeIndex2 = getID(value);
+        jointdata.type = interfaces::JOINT_TYPE_FIXED;
+        jointdata.name = "connector_"+nd.name+"_"+value;
+        unsigned long jointid = control->joints->addJoint(&jointdata, true);
+        return;
+      }
+      else if(matchPattern("*/dettach_node", key)) {
+        iMutex.unlock();
+        string name =  "connector_"+nd.name+"_"+value;
+        unsigned long jointid = control->joints->getID(name);
+        if(jointid) {
+          control->joints->removeJoint(jointid);
         }
         return;
       }

@@ -36,6 +36,7 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/sim/CameraSensor.h>
+#include <mars/sim/SimNode.h>
 #include <mars/app/MARS.h>
 #include <mars/utils/misc.h>
 #ifdef __unix__
@@ -621,15 +622,20 @@ namespace mars {
 
             if(type == "Node") {
               unsigned long id = control->nodes->getID(name);
-              Vector pos = control->nodes->getPosition(id);
-              Quaternion rot = control->nodes->getRotation(id);
-              sendMap["Nodes"][name]["pos"]["x"] = pos.x();
-              sendMap["Nodes"][name]["pos"]["y"] = pos.y();
-              sendMap["Nodes"][name]["pos"]["z"] = pos.z();
-              sendMap["Nodes"][name]["rot"]["x"] = rot.x();
-              sendMap["Nodes"][name]["rot"]["y"] = rot.y();
-              sendMap["Nodes"][name]["rot"]["z"] = rot.z();
-              sendMap["Nodes"][name]["rot"]["w"] = rot.w();
+              if(id) {
+                sim::SimNode *node = control->nodes->getSimNode(id);
+                Vector pos = node->getPosition();
+                Quaternion rot = node->getRotation();
+                bool contact = node->getGroundContact();
+                sendMap["Nodes"][name]["pos"]["x"] = pos.x();
+                sendMap["Nodes"][name]["pos"]["y"] = pos.y();
+                sendMap["Nodes"][name]["pos"]["z"] = pos.z();
+                sendMap["Nodes"][name]["rot"]["x"] = rot.x();
+                sendMap["Nodes"][name]["rot"]["y"] = rot.y();
+                sendMap["Nodes"][name]["rot"]["z"] = rot.z();
+                sendMap["Nodes"][name]["rot"]["w"] = rot.w();
+                sendMap["Nodes"][name]["contact"] = contact;
+              }
             }
 
             if(type == "Motor") {

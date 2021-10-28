@@ -64,6 +64,7 @@ namespace mars {
         transf_sensor_rot_to_sensor.setIdentity();
         horizontal_offset = 0.0;
         vertical_offset = (10.67/180.0)*M_PI;
+	cloud_offset = 0.0;
       }
 
       unsigned long attached_node;
@@ -79,6 +80,7 @@ namespace mars {
       double maxDistance;
       bool draw_rays;
       double horizontal_resolution;
+      double cloud_offset;
       // Describes the orientation of the sensor in the unturned sensor frame. 
       // Can be used compensate the node orientation / to define the turning axis.
       // Pass the node orientation to receive an unturned sensor.
@@ -185,7 +187,7 @@ namespace mars {
       double vertical_resolution;
       bool update_available;
       bool full_scan;
-      double turning_offset;
+      double turning_offset, cloud_offset_v, cloud_offset_h;
       double turning_end_fullscan; // Defines the upper border for the turning_offset. 
       utils::Quaternion orientation_offset; // Used to turn the sensor during each simulation step.
       long positionIndices[3];

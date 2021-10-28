@@ -54,18 +54,20 @@ namespace mars {
     }
 
     RotatingRaySensor::RotatingRaySensor(ControlCenter *control, RotatingRayConfig config):
-        BasePolarIntersectionSensor(config.id, 
-                                    config.name, 
-                                    config.bands*config.lasers,
-                                    1, 
-                                    config.opening_width,
-                                    config.opening_height),
-        SensorInterface(control), 
-        config(config) {
+      BasePolarIntersectionSensor(config.id,
+                                  config.name,
+                                  config.bands*config.lasers,
+                                  1,
+                                  config.opening_width,
+                                  config.opening_height),
+      SensorInterface(control),
+      config(config) {
 
       updateRate = config.updateRate;
       orientation.setIdentity();
       maxDistance = config.maxDistance;
+      cloud_offset_v = 0.0;
+      cloud_offset_h = 0.0;
       turning_offset = 0.0;
       full_scan = false;
       current_pose.setIdentity();
@@ -96,7 +98,7 @@ namespace mars {
       position = control->nodes->getPosition(attached_node);
       orientation = control->nodes->getRotation(attached_node);
       orientation_offset.setIdentity();
-      
+
       // Fills the direction array.
       if(config.bands < 1) {
         std::cerr << "Number of bands too low("<< config.bands <<"),will be set to 1" << std::endl;
@@ -106,12 +108,11 @@ namespace mars {
         std::cerr << "Number of lasers too low("<< config.lasers <<"),will be set to 1" << std::endl;
         config.lasers = 1;
       }
-      
+
       // All bands will be turned from 'turning_offset' to 'turning_end_fullscan' in 'turning_step steps'.
-      turning_offset = 0;
       turning_end_fullscan = config.opening_width / config.bands;
-      turning_step = config.horizontal_resolution; 
-      
+      turning_step = config.horizontal_resolution;
+
       double vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
       double hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
       vertical_resolution = config.lasers <= 1 ? 0 : config.opening_height/(config.lasers-1);
@@ -126,11 +127,11 @@ namespace mars {
           v_angle_cur = l*vAngle - config.opening_height / 2.0 + config.vertical_offset;
 
           tmp = Eigen::AngleAxisd(h_angle_cur, Eigen::Vector3d::UnitZ()) *
-              Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
-              Vector(1,0,0);
-              
+            Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
+            Vector(1,0,0);
+
           directions.push_back(tmp);
-        
+
           // Add a drawing item for each ray regarding the initial sensor orientation.
           if(config.draw_rays) {
             draw.ptr_draw = (DrawInterface*)this;
@@ -145,7 +146,7 @@ namespace mars {
             item.texture = "";
             item.t_width = item.t_height = 0;
             item.get_light = 0.0;
-            
+
             // Initial vector length is set to 1.0
             item.start = position;
             item.end = orientation * tmp;
@@ -182,7 +183,7 @@ namespace mars {
         pcloud.swap(pointcloud_full);
         return true;
       } else {
-          return false;
+        return false;
       }
     }
 
@@ -199,8 +200,8 @@ namespace mars {
     }
 
     void RotatingRaySensor::receiveData(const data_broker::DataInfo &info,
-                                const data_broker::DataPackage &package,
-                                int callbackParam) {
+                                        const data_broker::DataPackage &package,
+                                        int callbackParam) {
       CPP_UNUSED(info);
       CPP_UNUSED(callbackParam);
       long id;
@@ -216,10 +217,10 @@ namespace mars {
         rotationIndices[3] = package.getIndexByName("rotation/w");
       }
       for(int i = 0; i < 3; ++i)
-      {
-        package.get(positionIndices[i], &position[i]);
-      }
-      
+        {
+          package.get(positionIndices[i], &position[i]);
+        }
+
       Eigen::Vector3d position;
       package.get(positionIndices[0], &position.x());
       package.get(positionIndices[1], &position.y());
@@ -275,19 +276,19 @@ namespace mars {
       if(config.draw_rays) {
         if(!(*drawItems)[0].draw_state) {
           for(i=0; i<data.size(); i++) {
-              (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
-              // Updates the rays using the current sensor pose. 
-              (*drawItems)[i].start = position;
-              (*drawItems)[i].end = (orientation * orientation_offset * directions[i]);
-              (*drawItems)[i].end *= data[i];
-              (*drawItems)[i].end += (*drawItems)[i].start;
+            (*drawItems)[i].draw_state = DRAW_STATE_UPDATE;
+            // Updates the rays using the current sensor pose.
+            (*drawItems)[i].start = position;
+            (*drawItems)[i].end = (orientation * orientation_offset * directions[i]);
+            (*drawItems)[i].end *= data[i];
+            (*drawItems)[i].end += (*drawItems)[i].start;
           }
         }
       }
     }
 
-    utils::Quaternion RotatingRaySensor::turn() {  
-      
+    utils::Quaternion RotatingRaySensor::turn() {
+
       // If the scan is full the pointcloud will be copied.
       mutex_pointcloud.lock();
       turning_offset += turning_step;
@@ -303,11 +304,39 @@ namespace mars {
           nextCloud = 2;
         }
         convertPointCloud = true;
-        turning_offset = 0;
+        double vAngle = config.lasers <= 1 ? config.opening_height/2.0 : config.opening_height/(config.lasers-1);
+        double hAngle = config.bands <= 1 ? 0 : config.opening_width/config.bands;
+        cloud_offset_h += config.cloud_offset;
+        if(cloud_offset_h >= turning_step) {
+          cloud_offset_h -= turning_step;
+        }
+        cloud_offset_v += config.cloud_offset;
+        while(cloud_offset_v >= vAngle) {
+          cloud_offset_v -= vAngle;
+        }
+        turning_offset = cloud_offset_h;
+
+        double h_angle_cur = 0.0;
+        double v_angle_cur = 0.0;
+        Vector tmp;
+        directions.clear();
+        for(int b=0; b<config.bands; ++b) {
+          h_angle_cur = b*hAngle - config.opening_width / 2.0 + config.horizontal_offset;
+
+          for(int l=0; l<config.lasers; ++l) {
+            v_angle_cur = cloud_offset_v+l*vAngle - config.opening_height / 2.0 + config.vertical_offset;
+
+            tmp = Eigen::AngleAxisd(h_angle_cur, Eigen::Vector3d::UnitZ()) *
+              Eigen::AngleAxisd(v_angle_cur, Eigen::Vector3d::UnitY()) *
+              Vector(1,0,0);
+
+            directions.push_back(tmp);
+          }
+        }
       }
       orientation_offset = utils::angleAxisToQuaternion(turning_offset, utils::Vector(0.0, 0.0, 1.0));
       mutex_pointcloud.unlock();
-      
+
       return orientation_offset;
     }
 
@@ -349,7 +378,7 @@ namespace mars {
     }
 
     BaseConfig* RotatingRaySensor::parseConfig(ControlCenter *control,
-                                       ConfigMap *config) {
+                                               ConfigMap *config) {
       RotatingRayConfig *cfg = new RotatingRayConfig;
       unsigned int mapIndex = (*config)["mapIndex"];
       unsigned long attachedNodeID = (*config)["attached_node"];
@@ -380,10 +409,12 @@ namespace mars {
         cfg->vertical_offset = it->second;
       if((it = config->find("rate")) != config->end())
         cfg->updateRate = it->second;
+      if((it = config->find("cloud_offset")) != config->end())
+        cfg->cloud_offset = it->second;
       if((it = config->find("horizontal_resolution")) != config->end())
         cfg->horizontal_resolution = it->second;
       cfg->attached_node = attachedNodeID;
-      
+
       ConfigMap::iterator it2;
       if((it = config->find("rotation_offset")) != config->end()) {
         if(it->second.hasKey("yaw")) {
@@ -423,6 +454,7 @@ namespace mars {
       cfg["horizontal_offset"] = config.horizontal_offset;
       cfg["rate"] = config.updateRate;
       cfg["horizontal_resolution"] = config.horizontal_resolution;
+      cfg["cloud_offset"] = config.cloud_offset;
       //cfg["rotation_offset"] = config.transf_sensor_rot_to_sensor;
       /*
         cfg["stepX"] = config.stepX;
