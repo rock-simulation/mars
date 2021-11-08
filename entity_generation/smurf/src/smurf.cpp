@@ -1089,6 +1089,9 @@ namespace mars {
             if (suffix == ".stl" || suffix == ".STL") {
               index = tmpfilename2.find("stl/");
               dirname = "stl/";
+            } else if (tmpfilename2.find("mars_obj/") != string::npos) {
+              index = tmpfilename2.find("mars_obj/");
+              dirname = "mars_obj/";
             } else {
               index = tmpfilename2.find("obj/");
               dirname = "obj/";
