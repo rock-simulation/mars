@@ -83,6 +83,7 @@ namespace mars {
       axis1.setZero();
       axis2.setZero();
       invertAxis = false;
+      frameID = "";      
     }
 
     bool JointData::fromConfigMap(ConfigMap *config,
@@ -218,6 +219,40 @@ namespace mars {
 
     void JointData::getFilesToSave(std::vector<std::string> *fileList) {
       CPP_UNUSED(fileList);
+    }
+
+    void JointData::print()
+    {
+      std::cout << "name: " <<  name << std::endl;
+      std::cout << "index: " <<  index << std::endl;
+      std::cout << "type: " <<  type << std::endl;
+
+      std::cout << "nodeIndex1: " <<  nodeIndex1 << std::endl;
+      std::cout << "nodeIndex2: " <<  nodeIndex2 << std::endl;
+
+      std::cout << "anchor: " <<  anchor << std::endl;
+      std::cout << "anchorPos: " <<  anchorPos << std::endl;
+
+      std::cout << "axis1: " <<  axis1 << std::endl;
+      std::cout << "axis2: " <<  axis2 << std::endl;
+
+      std::cout << "spring_constant: " << spring_constant << std::endl;
+      std::cout << "damping_constant: " << damping_constant << std::endl;
+
+      std::cout << "lowStopAxis1: " << lowStopAxis1 << std::endl;
+      std::cout << "highStopAxis1: " << highStopAxis1 << std::endl;
+      std::cout << "damping_const_constraint_axis1: " << damping_const_constraint_axis1 << std::endl;
+      std::cout << "spring_const_constraint_axis1: " << spring_const_constraint_axis1 << std::endl;
+
+      std::cout << "lowStopAxis2: " << lowStopAxis2 << std::endl;
+      std::cout << "highStopAxis2: " << highStopAxis2 << std::endl;
+      std::cout << "damping_const_constraint_axis2: " << damping_const_constraint_axis2 << std::endl;
+      std::cout << "spring_const_constraint_axis2: " << spring_const_constraint_axis2 << std::endl;
+
+      std::cout << "angle1_offset: " << angle1_offset << std::endl;
+      std::cout << "angle2_offset: " << angle2_offset << std::endl;
+      
+      std::cout << "invertAxis: " << invertAxis << std::endl;
     }
 
   } // end of namespace interfaces

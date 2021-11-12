@@ -81,6 +81,7 @@ namespace mars {
       jointIndex = 0;
       jointIndex2 = 0;
       axis = 1;
+      value = 0;
       maxSpeed = 0;
       maxEffort = 0;
       maxAcceleration = 0;
@@ -89,7 +90,8 @@ namespace mars {
       d = 0;
       maxValue = M_PI;
       minValue = -M_PI;
-      value = 0;
+      minSpeed = 0;
+      this->jointName = "";
     }
 
     bool MotorData::fromConfigMap(ConfigMap *config,
@@ -135,6 +137,10 @@ namespace mars {
       GET_VALUE("p", p, Double);
       GET_VALUE("i", i, Double);
       GET_VALUE("d", d, Double);
+      //To avoid "ambiguous overload for ‘operator=’" error.
+      if((it = config->find("joint")) != config->end()) {                         
+        jointName = (std::string)((*config)["joint"]);                                   
+      }
       GET_VALUE("position", value, Double);
       GET_VALUE("maxPosition", maxValue, Double);
       GET_VALUE("minPosition", minValue, Double);
@@ -172,6 +178,9 @@ namespace mars {
       SET_VALUE("p", p);
       SET_VALUE("i", i);
       SET_VALUE("d", d);
+
+      SET_VALUE("position", value);
+      SET_VALUE("joint", jointName);
       SET_VALUE("maxPosition", maxValue);
       SET_VALUE("minPosition", minValue);
     }

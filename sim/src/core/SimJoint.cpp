@@ -76,7 +76,7 @@ namespace mars {
                                                        "mars_sim/simTimer");
         }
       }
-      if(physical_joint) delete physical_joint;
+      if(physical_joint) physical_joint.reset();
     }
 
     void SimJoint::reattachJoint(void) {
@@ -108,7 +108,7 @@ namespace mars {
       node1ToAnchor = snode1->getRotation().inverse()*node1ToAnchor;
     }
 
-    void SimJoint::setAttachedNodes(SimNode* node1, SimNode* node2){
+    void SimJoint::setAttachedNodes(std::shared_ptr<SimNode> node1, std::shared_ptr<SimNode> node2){
       snode1 = node1;
       snode2 = node2;
       Quaternion inverseQNode1 = node1->getRotation().inverse();
@@ -117,15 +117,15 @@ namespace mars {
       axis1InNode1 = inverseQNode1*sJoint.axis1;
     }
 
-    SimNode* SimJoint::getAttachedNode(unsigned char axis_index) const {
+    std::shared_ptr<SimNode> SimJoint::getAttachedNode(unsigned char axis_index) const {
       return axis_index == 1 ? snode1 : snode2;
     }
 
-    SimNode* SimJoint::getAttachedNode1() const { // deprecated
+    std::shared_ptr<SimNode> SimJoint::getAttachedNode1() const { // deprecated
       return snode1;
     }
 
-    SimNode* SimJoint::getAttachedNode2() const { // deprecated
+    std::shared_ptr<SimNode> SimJoint::getAttachedNode2() const { // deprecated
       return snode2;
     }
 
@@ -262,6 +262,10 @@ namespace mars {
           if(fabs(error) < 0.1) position2 -= error;
         }
         motor_torque = invert*physical_joint->getMotorTorque();
+
+        // FIXME this should be set only for Spring-joints!
+        // HACK use setTorque2 which only acts on spring joints
+        physical_joint->setTorque2(motor_torque);
       }
     }
 
@@ -320,11 +324,11 @@ namespace mars {
       return tmp;
     }
 
-    void SimJoint::setPhysicalJoint(interfaces::JointInterface *physical_joint) {
+    void SimJoint::setPhysicalJoint(std::shared_ptr<interfaces::JointInterface> physical_joint) {
       this->physical_joint = physical_joint;
     }
 
-    void SimJoint::setInterface(JointInterface* physical_joint) { // deprecated
+    void SimJoint::setInterface(std::shared_ptr<interfaces::JointInterface> physical_joint) { // deprecated
       setPhysicalJoint(physical_joint);
     }
 

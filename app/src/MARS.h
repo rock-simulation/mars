@@ -82,6 +82,8 @@ namespace mars {
       bool needQApp, noGUI;
 
     private:
+      void releaseEnvireLibs();
+
       lib_manager::LibManager *libManager;
       app::GraphicsTimer *graphicsTimer;
       interfaces::MarsGuiInterface *marsGui;

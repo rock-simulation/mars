@@ -129,6 +129,11 @@ namespace mars {
       checkOptionalDependency("mars_graphics");
       checkOptionalDependency("log_console");
 
+      // physics plugins to pass to the physics engine
+      checkOptionalDependency("envire_mls"); 
+      checkOptionalDependency("envire_mls_tests"); 
+
+
       getTimeMutex.lock();
       realStartTime = utils::getTime();
       getTimeMutex.unlock();
@@ -220,7 +225,41 @@ namespace mars {
             LOG_DEBUG("Simulator: no console loaded. output to stdout!");
           }
         }
+      } 
+      else if(libName == "envire_mls") {
+        std::list<std::string>* libNames = new std::list<std::string>();
+        libManager->getAllLibraryNames(libNames);
+        volatile std::list<std::string> debugVar = *libNames;
+        lib_manager::LibInterface *lib = libManager->getLibrary(
+          "envire_mls");
+        if(lib){
+          mars::interfaces::MarsPluginTemplate * envireMls = (
+            dynamic_cast<mars::interfaces::MarsPluginTemplate*>(lib));
+          LOG_DEBUG(
+            "The library %s has been detected. ", 
+            envireMls->getLibName().c_str());
+          interfaces::pluginStruct envireMlsS;
+          envireMlsS.name = "envire_mls";
+          envireMlsS.p_interface = envireMls;
+          physicsPlugins.push_back(envireMlsS);
+        }
       }
+      /*
+      else if(libName == "envire_mls_tests") {
+        std::list<std::string>* libNames = new std::list<std::string>();
+        libManager->getAllLibraryNames(libNames);
+        volatile std::list<std::string> debugVar = *libNames;
+        lib_manager::LibInterface *lib = libManager->getLibrary(
+          "envire_mls_tests");
+        if(lib){
+          mars::interfaces::MarsPluginTemplate * envireMlsTests = (
+            dynamic_cast<mars::interfaces::MarsPluginTemplate*>(lib));
+          LOG_DEBUG(
+            "The library %s has been detected. ", 
+            envireMlsTests->getLibName().c_str());
+        }
+      }
+      */
     }
 
     void Simulator::runSimulation(bool startThread) {
@@ -248,9 +287,21 @@ namespace mars {
         initCfgParams();
       }
 
-      control->nodes = new NodeManager(control, libManager);
-      control->joints = new JointManager(control);
-      control->motors = new MotorManager(control);
+      // If any manager is missing, create it from the default type.
+      if (control->nodes == NULL) {
+        LOG_DEBUG("[Simulator] Set default node manager in control->nodes");
+        control->nodes = new NodeManager(control, libManager);
+        //fprintf(stderr, "ERROR: No NodeManager is defined!\n");
+      }
+      if (control->joints == NULL) {
+        control->joints = new JointManager(control);
+        //fprintf(stderr, "ERROR: No JointManager is defined!\n");
+      }
+      if (control->motors == NULL) {
+        control->motors = new MotorManager(control);
+        //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
+      }
+
       control->sensors = new SensorManager(control);
       control->controllers = new ControllerManager(control);
       control->entities = new EntityManager(control);
@@ -263,7 +314,16 @@ namespace mars {
       }
       // init the physics-engine
       //Convention startPhysics function
+      LOG_DEBUG("About to create the new physics world");
+      for (auto it = std::begin(physicsPlugins); it != std::end(physicsPlugins); it++)
+      {
+        LOG_DEBUG("Physics plugin to be handed to the physics engine: "+it->name);
+      }
       physics = PhysicsMapper::newWorldPhysics(control);
+      if (physicsPlugins.size() > 0)
+      {
+        physics -> setPhysicsPlugins(physicsPlugins); 
+      }
       physics->initTheWorld();
       // the physics step_size is in seconds
       physics->step_size = calc_ms/1000.;
@@ -594,6 +654,7 @@ namespace mars {
         lo.filename = filename;
         lo.wasRunning = wasrunning;
         lo.robotname = robotname;
+        lo.zeroPose = true;
         filesToLoad.push_back(lo);
         externalMutex.unlock();
 
@@ -602,6 +663,72 @@ namespace mars {
         }
         return 1;
     }
+
+    int Simulator::loadScene(const std::string &filename,
+                          const std::string &robotname, 
+                          utils::Vector pos, 
+                          utils::Vector rot, bool threadsave, bool blocking, bool wasrunning)
+    {
+      if(!threadsave){
+          return loadScene_internal(filename, robotname, pos, rot, wasrunning);
+      }
+
+      //Loading is handles inside the mars thread itsels later
+      externalMutex.lock();
+      LoadOptions lo;
+      lo.filename = filename;
+      lo.wasRunning = wasrunning;
+      lo.robotname = robotname;
+      lo.zeroPose = false;
+      lo.pos = pos;
+      lo.rot = rot;
+      filesToLoad.push_back(lo);
+      externalMutex.unlock();
+
+      while(blocking && !filesToLoad.empty()){
+          msleep(10);
+      }
+      return 1;  
+
+    }
+
+    int Simulator::loadScene_internal(const std::string &filename,
+                             const std::string &robotname,
+                             utils::Vector pos, utils::Vector rot,
+                             bool wasrunning) {
+
+      LOG_DEBUG("[Simulator::loadScene_internal] Loading scene internal with given position\n");
+
+      if(control->loadCenter->loadScene.empty()) {
+        LOG_ERROR("Simulator:: no module to load scene found");
+        return 0;
+      }
+
+      try {
+        std::string suffix = utils::getFilenameSuffix(filename);
+        LOG_DEBUG("[Simulator::loadScene] suffix: %s", suffix.c_str());
+        if( control->loadCenter->loadScene.find(suffix) !=
+            control->loadCenter->loadScene.end() ) {
+            if (! control->loadCenter->loadScene[suffix]->loadFile(filename.c_str(), getTmpPath().c_str(), robotname.c_str(), pos, rot)) {
+                return 0; //failed
+            }
+        }
+        else {
+          // no scene loader found
+          LOG_ERROR("Simulator: Could not find scene loader for: %s (%s)",
+                    filename.c_str(), suffix.c_str());
+          return 0; //failed
+        }
+      } catch(SceneParseException e) {
+        LOG_ERROR("Could not parse scene: %s", e.what());
+      }
+
+      if (wasrunning) {
+        startStopTrigger();//if the simulation has been stopped for loading, now it continues
+      }
+      sceneHasChanged(false);
+      return 1;
+    }    
 
     int Simulator::loadScene_internal(const std::string &filename,
                              bool wasrunning, const std::string &robotname) {
@@ -902,7 +1029,7 @@ namespace mars {
       physicsMutex.unlock();
     }
 
-    PhysicsInterface* Simulator::getPhysics(void) const {
+    std::shared_ptr<PhysicsInterface> Simulator::getPhysics(void) const {
       return physics;
     }
 
@@ -1197,8 +1324,17 @@ namespace mars {
         }
 
         for(unsigned int i=0;i<filesToLoad.size();i++){
-          loadScene_internal(filesToLoad[i].filename, false,
-                             filesToLoad[i].robotname);
+          if (filesToLoad[i].zeroPose == true)
+          {
+            loadScene_internal(filesToLoad[i].filename, false,
+                              filesToLoad[i].robotname);
+          } else 
+          {
+            loadScene_internal(filesToLoad[i].filename,
+                             filesToLoad[i].robotname,
+                             filesToLoad[i].pos, filesToLoad[i].rot,
+                             false);           
+          }
         }
         filesToLoad.clear();
 

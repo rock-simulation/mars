@@ -44,6 +44,7 @@
 #include <mars/interfaces/sim/PluginInterface.h>
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/graphics/GraphicsUpdateInterface.h>
+#include <mars/utils/Vector.h>
 
 #include <iostream>
 
@@ -146,6 +147,10 @@ namespace mars {
       virtual int loadScene(const std::string &filename,
                             bool wasrunning=false,
                             const std::string &robotname="",bool threadsave=false, bool blocking=false);
+      virtual int loadScene(const std::string &filename,
+                          const std::string &robotname, 
+                          utils::Vector pos, 
+                          utils::Vector rot, bool threadsave=false, bool blocking=false, bool wasrunning=false);
       virtual int saveScene(const std::string &filename, bool wasrunning);
       virtual void exportScene() const; ///< Exports the current scene as both *.obj and *.osg file.
       virtual bool sceneChanged() const;
@@ -159,7 +164,7 @@ namespace mars {
 
 
       //physics
-      virtual interfaces::PhysicsInterface* getPhysics(void) const;
+      virtual std::shared_ptr<interfaces::PhysicsInterface> getPhysics(void) const;
       virtual void handleError(interfaces::PhysicsError error);
       virtual void setGravity(const utils::Vector &gravity);
       virtual int checkCollisions(void);
@@ -219,6 +224,9 @@ namespace mars {
         std::string filename;
         std::string robotname;
         bool wasRunning;
+        bool zeroPose;
+        utils::Vector pos;
+        utils::Vector rot;
       };
 
       // simulation control
@@ -261,7 +269,7 @@ namespace mars {
       interfaces::sReal calc_time;
       
       // physics
-      interfaces::PhysicsInterface *physics;
+      std::shared_ptr<interfaces::PhysicsInterface> physics;
       double calc_ms;
       int load_option;
       int std_port; ///< Controller port (default value: 1600)
@@ -275,9 +283,13 @@ namespace mars {
       std::vector<interfaces::pluginStruct> newPlugins;
       std::vector<interfaces::pluginStruct> activePlugins;
       std::vector<interfaces::pluginStruct> guiPlugins;
+      std::vector<interfaces::pluginStruct> physicsPlugins;
 
       // scenes
       int loadScene_internal(const std::string &filename, bool wasrunning, const std::string &robotname);
+      int loadScene_internal(const std::string &filename, const std::string &robotname,
+                             utils::Vector pos, utils::Vector rot, bool wasrunning);
+
       std::string scenename;
       std::list<std::string> arg_v_scene_name;
       bool b_SceneChanged;

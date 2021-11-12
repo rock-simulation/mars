@@ -38,15 +38,23 @@
 
 #include "WorldPhysics.h"
 #include "NodePhysics.h"
+#include "SimNode.h"
 
 
 #include <mars/utils/MutexLocker.h>
 #include <mars/interfaces/graphics/draw_structs.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
 
+
+
 #define EPSILON 1e-10
+
+//#define DRAW_MLS_CONTACTS 1
+//#define DEBUG_WORLD_PHYSICS 1
+
 
 namespace mars {
   namespace sim {
@@ -102,6 +110,8 @@ namespace mars {
       num_contacts = 0;
       create_contacts = 1;
       log_contacts = 0;
+      max_angular_speed = 10.0; // I guess this is rad/s
+      max_correcting_vel = 5.0; 
 
       // the step size in seconds
       step_size = 0.01;
@@ -136,6 +146,25 @@ namespace mars {
       // and close the ODE ...
       MutexLocker locker(&iMutex);
       dCloseODE();
+      lib_manager::LibManager * libManager = new lib_manager::LibManager();
+      for (auto it=physics_plugins.begin(); it!=physics_plugins.end(); it++)
+      {
+        libManager -> releaseLibrary(it->name);
+      }
+    }
+    
+    /**
+    *  \brief Sets the physics plugins to be used for computing interactions
+    *  with certain types of objects instead of ODE
+    *  
+    *  pre:
+    *     - Attribute physics_plugins is null
+    *  post
+    *     - physics_plugins is set to the parameter value
+    */
+    void WorldPhysics::setPhysicsPlugins(std::vector<interfaces::pluginStruct> physicsPlugins) {
+      LOG_DEBUG("Setting the physics plugins in world physics");
+      physics_plugins = physicsPlugins;
     }
 
     /**
@@ -166,6 +195,8 @@ namespace mars {
         dWorldSetGravity(world, world_gravity.x(), world_gravity.y(), world_gravity.z());
         dWorldSetCFM(world, (dReal)world_cfm);
         dWorldSetERP (world, (dReal)world_erp);
+        dWorldSetMaxAngularSpeed(world, max_angular_speed);
+        dWorldSetContactMaxCorrectingVel(world, max_correcting_vel);
 
         dWorldSetAutoDisableFlag (world,0);
         // if usefull for some tests a ground can be created here
@@ -213,6 +244,163 @@ namespace mars {
       return world_init;
     }
 
+    /** 
+     *
+     * \brief Auxiliar methof of step the world. Checks required before
+     * computing the collision and the contact forces are done here.
+     * 
+     * The checks consist on: updating gravity, cfm and erp for coherence.
+     *
+     */
+    void WorldPhysics::preStepChecks(void)
+    {
+      if(old_gravity != world_gravity) {
+        old_gravity = world_gravity;
+        dWorldSetGravity(world, world_gravity.x(),
+                         world_gravity.y(), world_gravity.z());
+      }
+
+      if(old_cfm != world_cfm) {
+        old_cfm = world_cfm;
+        dWorldSetCFM(world, (dReal)world_cfm);
+      }
+
+      if(old_erp != world_erp) {
+        old_erp = world_erp;
+        dWorldSetERP(world, (dReal)world_erp);
+      }
+
+      for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
+      {
+        it->p_interface->preStepChecks(); 
+        //Maybe we can rename this to init/update/reset or make a new interface
+        //deriving from plugin, instead of adding directly these methods to the
+        //interface
+      }
+    }
+
+        /** 
+     *
+     * \brief Auxiliar methof of step the world. 
+     * Clears the contact and contact feedback information from previous step.
+     *
+     */
+    void WorldPhysics::clearPreviousStep(void){
+      // Clear Previous Collisions
+      //	printf("now WorldPhysics.cpp..stepTheWorld(void)....1 : dSpaceGetNumGeoms: %d\n",dSpaceGetNumGeoms(space)); 
+      /// first clear the collision counters of all geoms
+      int i;
+      geom_data* data;
+      for(i=0; i<dSpaceGetNumGeoms(space); i++) {
+        data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
+        data->num_ground_collisions = 0;
+        data->contact_ids.clear();
+        data->contact_points.clear();
+        data->ground_feedbacks.clear();
+      }
+
+      std::vector<dJointFeedback*>::iterator iter;
+      // Clear Previous Contact Feedback
+      for(iter = contact_feedback_list.begin();
+          iter != contact_feedback_list.end(); iter++) {
+        free((*iter));
+      }
+      contact_feedback_list.clear();
+      // Clear draw_intern 
+      draw_intern.clear(); 
+
+      // Clear contacts
+      dJointGroupEmpty(contactgroup);
+    }
+
+    void WorldPhysics::draw_contacts(const mars::sim::ContactsPhysics & colContacts)
+    {
+      for(int i=0; i<colContacts.numContacts; i++)
+      {
+        draw_item item;
+        item.id = 0;
+        item.type = DRAW_LINE;
+        item.draw_state = DRAW_STATE_CREATE;
+        item.point_size = 10;
+        item.myColor.r = 1;
+        item.myColor.g = 0;
+        item.myColor.b = 0;
+        item.myColor.a = 1;
+        item.label = "";
+        item.t_width = item.t_height = 0;
+        item.texture = "";
+        item.get_light = 0;
+        item.start.x() = colContacts.contactsPtr->operator[](i).geom.pos[0];
+        item.start.y() = colContacts.contactsPtr->operator[](i).geom.pos[1];
+        item.start.z() = colContacts.contactsPtr->operator[](i).geom.pos[2];
+        item.end.x() = colContacts.contactsPtr->operator[](i).geom.pos[0] + colContacts.contactsPtr->operator[](i).geom.normal[0];
+        item.end.y() = colContacts.contactsPtr->operator[](i).geom.pos[1] + colContacts.contactsPtr->operator[](i).geom.normal[1];
+        item.end.z() = colContacts.contactsPtr->operator[](i).geom.pos[2] + colContacts.contactsPtr->operator[](i).geom.normal[2];
+        draw_intern.push_back(item);
+      }
+    }
+
+    void WorldPhysics::createFeedbackJoints(const std::vector<mars::sim::ContactsPhysics> & contacts)
+    {
+      int totalContactCol = contacts.size();
+      for( int col_i=0; col_i < totalContactCol; col_i++ )
+      {
+        mars::sim::ContactsPhysics colContacts = contacts[col_i]; // collidable contacts
+        //num_contacts is an attribute of Worldphysics to keep track of the existent feedback joints
+        #ifdef DRAW_MLS_CONTACTS
+          draw_contacts(colContacts);
+        #endif
+        std::string nodeName = colContacts.collidable->getName();
+        std::vector<NodeId> nodeIds = control->nodes->getNodeIDs(nodeName);
+        std::shared_ptr<SimNode> nodePtr = control->nodes->getSimNode(nodeIds[0]);
+        std::shared_ptr<mars::interfaces::NodeInterface> nodeIfPtr = nodePtr->getInterface();
+        std::shared_ptr<NodePhysics> nodePhysPtr = std::dynamic_pointer_cast<NodePhysics>(nodeIfPtr);
+        std::vector<dJointFeedback*> contactFeedbacks = 
+          nodePhysPtr->addContacts(colContacts, world, contactgroup);
+        std::vector<utils::Vector> * contactPoints = new std::vector<utils::Vector>();
+        nodePhysPtr->getContactPoints(contactPoints);
+        for (auto it = std::begin(contactFeedbacks); it !=std::end(contactFeedbacks); ++it)
+        {
+          contact_feedback_list.push_back(*it);
+        }
+        // Some feedback joints might not be set even if contacts exists if
+        // errors are detected.
+        // Currently though all are used but for future potential fixes that do
+        // this it is better to use this size than directly using
+        // colContacts.numContacts;
+        num_contacts += contactFeedbacks.size(); 
+      } // For each collidable
+    }
+
+    /**
+     * \brief This function creates feedback joints between collision objects
+     * based on the contacts detected by physics plugins
+     * 
+     * pre: 
+     *     - Feedback joints from previous step have been cleared out
+     * post:
+     *     - New feedback joints have been set according to the contacts detected
+     *     by the plugins
+     */
+    void WorldPhysics::setContactsFromPlugins(void){
+      for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
+      {
+        std::vector<mars::sim::ContactsPhysics> contacts;
+        void * data = &contacts;
+        it->p_interface->getSomeData(data);         
+        int numContacts = contacts.size();
+        #ifdef DEBUG_WORLD_PHYSICS
+          LOG_DEBUG("[WorldPhysics::setContactsFromPlugins] %s found contacts with %i collidables.", 
+                    it->name.c_str(),
+                    contacts.size());
+        #endif
+        if (numContacts > 0)
+        {
+          createFeedbackJoints(contacts);
+        }
+      }
+    }
+
     /**
      * \brief This function handles the calculation of a step in the world.
      *
@@ -228,46 +416,18 @@ namespace mars {
     void WorldPhysics::stepTheWorld(void) {
       MutexLocker locker(&iMutex);
       std::vector<dJointFeedback*>::iterator iter;
-      geom_data* data;
-      int i;
 
       // if world_init = false or step_size <= 0 debug something
-      if(world_init && step_size > 0) {
-        if(old_gravity != world_gravity) {
-          old_gravity = world_gravity;
-          dWorldSetGravity(world, world_gravity.x(),
-                           world_gravity.y(), world_gravity.z());
-        }
-
-        if(old_cfm != world_cfm) {
-          old_cfm = world_cfm;
-          dWorldSetCFM(world, (dReal)world_cfm);
-        }
-
-        if(old_erp != world_erp) {
-          old_erp = world_erp;
-          dWorldSetERP(world, (dReal)world_erp);
-        }
-
-        /// first clear the collision counters of all geoms
-        for(i=0; i<dSpaceGetNumGeoms(space); i++) {
-          data = (geom_data*)dGeomGetData(dSpaceGetGeom(space, i));
-          data->num_ground_collisions = 0;
-          data->contact_ids.clear();
-          data->contact_points.clear();
-          data->ground_feedbacks.clear();
-        }
-        for(iter = contact_feedback_list.begin();
-            iter != contact_feedback_list.end(); iter++) {
-          free((*iter));
-        }
-        contact_feedback_list.clear();
-        draw_intern.clear();
-        /// then we have to clear the contacts
-        dJointGroupEmpty(contactgroup);
+      if(world_init && step_size > 0) {        
+        preStepChecks();
+        clearPreviousStep();
         /// first check for collisions
         num_contacts = log_contacts = 0;
         create_contacts = 1;
+        if (create_contacts){
+          setContactsFromPlugins();
+        }
+
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
 
         drawLock.lock();
@@ -278,6 +438,10 @@ namespace mars {
         try {
           if(fast_step) dWorldQuickStep(world, step_size);
           else dWorldStep(world, step_size);
+        } catch (int id) {
+          // TODO Check that you really need this before doing the patch
+          if(id==3) LOG_ERROR("Problem normalizing a vector");
+          if(id==4) LOG_ERROR("Problem normalizing a quaternion");
         } catch (...) {
           control->sim->handleError(PHYSICS_UNKNOWN);
         }
@@ -825,16 +989,16 @@ namespace mars {
       }
     }
 
-    const Vector WorldPhysics::getCenterOfMass(const std::vector<NodeInterface*> &nodes) const {
+    const Vector WorldPhysics::getCenterOfMass(const std::vector<std::shared_ptr<NodeInterface>> &nodes) const {
       MutexLocker locker(&iMutex);
       Vector center;
-      std::vector<NodeInterface*>::const_iterator iter;
+      std::vector<std::shared_ptr<NodeInterface>>::const_iterator iter;
       dMass sumMass;
       dMass tMass;
 
       dMassSetZero(&sumMass);
       for(iter = nodes.begin(); iter != nodes.end(); iter++) {
-        ((NodePhysics*)(*iter))->getAbsMass(&tMass);
+        (std::static_pointer_cast<NodePhysics>(*iter))->getAbsMass(&tMass);
         dMassAdd(&sumMass, &tMass);
       }
       center.x() = sumMass.c[0];

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2021 DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,36 +19,38 @@
  */
 
  /**
- * \file PhysicsMapper.h
- * \author Malte Roemmermann
- * \brief "PhysicsMapper" connects the implemented interface classes to
- * the interface objects that are handled in the core layer.
+ * \file ContactsPhysics.hpp
+ * \author Raul Dominguez
+ * \brief "ContactsPhysisc" is a struct to exchange contact information between the core of Mars and Physics Plugins.
  *
  */
 
-#ifndef PHYSICS_MAPPER_H
-#define PHYSICS_MAPPER_H
+#ifndef CONTACTS_PHYSICS_H
+#define CONTACTS_PHYSICS_H
 
 #ifdef _PRINT_HEADER_
-  #warning "PhysicsMapper.h"
+  #warning "ContactPhysics.h"
 #endif
 
-#include "WorldPhysics.h"
-#include "NodePhysics.h"
-#include "JointPhysics.h"
+#include <ode/contact.h>
+#include <smurf/Collidable.hpp>
+
+#ifndef ODE11
+  #define dTriIndex int
+#endif
 
 namespace mars {
   namespace sim {
 
-    class PhysicsMapper {
-    public:
-      static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
-      static std::shared_ptr<interfaces::NodeInterface> newNodePhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
-      static std::shared_ptr<interfaces::JointInterface> newJointPhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
-    
+    /*
+     */
+    struct ContactsPhysics {
+        std::shared_ptr<std::vector<dContact>> contactsPtr; 
+        int numContacts;
+        std::shared_ptr<smurf::Collidable> collidable;
     };
 
   } // end of namespace sim
 } // end of namespace mars
 
-#endif  // PHYSICS_MAPPER_H
+#endif  // CONTACT_PHYSICS_H

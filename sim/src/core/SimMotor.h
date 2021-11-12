@@ -72,8 +72,8 @@ namespace mars {
       void updateController();
       void activate(void);
       void deactivate(void);
-      void attachJoint(SimJoint *joint);
-      void attachPlayJoint(SimJoint *joint);
+      void attachJoint(std::shared_ptr<SimJoint> joint);
+      void attachPlayJoint(std::shared_ptr<SimJoint> joint);
       void estimateCurrent();
       void estimateTemperature(interfaces::sReal time_ms);
       // the following two functions might be simple getters or carry out calculations
@@ -104,12 +104,12 @@ namespace mars {
       interfaces::sReal getEffort(void) const;
       unsigned long getIndex(void) const;
       bool isServo() const;
-      SimJoint* getJoint() const;
+      std::shared_ptr<SimJoint>  getJoint() const;
       unsigned long getJointIndex(void) const;
       const std::string getName() const;
       interfaces::sReal getMaxEffort() const;
       interfaces::sReal getMaxSpeed() const;
-      SimJoint* getPlayJoint() const;
+      std::shared_ptr<SimJoint>  getPlayJoint() const;
       interfaces::sReal getPosition() const;
       const interfaces::MotorData getSMotor(void) const;
       interfaces::sReal getVelocity() const;
@@ -173,7 +173,7 @@ namespace mars {
 
       // motor
       unsigned char axis;
-      SimJoint* myJoint, *myPlayJoint;
+      std::shared_ptr<SimJoint>  myJoint, myPlayJoint;
       interfaces::ControlCenter *control;
       interfaces::MotorData sMotor;
       interfaces::sReal time;

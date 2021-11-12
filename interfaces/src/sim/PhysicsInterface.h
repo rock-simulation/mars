@@ -32,9 +32,11 @@
 #endif
 
 #include "../MARSDefs.h"
+#include "PluginInterface.h"
 
 #include <mars/utils/Vector.h>
 
+#include <memory>
 #include <vector>
 
 namespace mars {
@@ -60,11 +62,12 @@ namespace mars {
       sReal world_cfm, world_erp;
 
       virtual ~PhysicsInterface() {}
+      virtual void setPhysicsPlugins(std::vector<mars::interfaces::pluginStruct> physicsPlugins) = 0;
       virtual void initTheWorld(void) = 0;
       virtual void freeTheWorld(void) = 0;
       virtual void stepTheWorld(void) = 0;
       virtual bool existsWorld(void) const = 0;
-      virtual const utils::Vector getCenterOfMass(const std::vector<NodeInterface*> &nodes) const = 0;
+      virtual const utils::Vector getCenterOfMass(const std::vector<std::shared_ptr<NodeInterface>> &nodes) const = 0;
       virtual int checkCollisions(void) = 0;
       virtual sReal getVectorCollision(const utils::Vector &pos, const utils::Vector &ray) const = 0;
     };
