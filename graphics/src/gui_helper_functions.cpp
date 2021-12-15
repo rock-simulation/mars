@@ -34,11 +34,7 @@
   #include <osg/Export>
 #endif
 
-#ifdef WIN32
- #include <opencv2/opencv.hpp>
-#else
- #include <opencv2/opencv.hpp>
-#endif
+#include <opencv2/opencv.hpp>
 
 #include <mars/utils/mathUtils.h>
 
@@ -566,7 +562,6 @@ namespace mars {
     // maybe move to NodeFactory ??
     void GuiHelper::readPixelData(mars::interfaces::terrainStruct *terrain) {
 
-#if !defined (WIN32) && !defined (__linux__)
       cv::Mat img;
 
       img=cv::imread(terrain->srcname, cv::IMREAD_ANYDEPTH);
@@ -589,8 +584,6 @@ namespace mars {
         if(depth==CV_16U) {
           imageMaxValue = pow(2., 16);
         }
-        //for(int y=0; y<terrain->height; y++) {
-        //for(int x=terrain->width-1; x>=0; x--) {
         for(int y=terrain->height-1; y>=0; y--) {
           for(int x=0; x<terrain->width; x++) {
              if(depth == CV_16U) {
@@ -599,60 +592,10 @@ namespace mars {
                s = img.at<uchar>(y,x);
              }
             terrain->pixelData[count++] = ((double)s[0])/(imageMaxValue-1);
-            // if(y==0 || y == terrain->height-1 ||
-            //    x==0 || x == terrain->width-1)
-            //   terrain->pixelData[count-1] -= 0.002;
-            // if(terrain->pixelData[count-1] <= 0.0)
-            //   terrain->pixelData[count-1] = 0.001;
-
           }
         }
         img.release();
-        //cvReleaseImage(&img);
       }
-
-#else
-      //QImage image(QString::fromStdString(snode->filename));
-#ifdef __linux__
-
-      std::string absolutePathIndicator = terrain->srcname.substr(0,1);
-      if( absolutePathIndicator != "/") {
-        fprintf(stderr, "Terrain file needs to be provided by using an absolute path: currently given \"%s\"\n", terrain->srcname.c_str());
-        // exit(0);
-      }
-#endif
-
-      osg::Image* image = osgDB::readImageFile(terrain->srcname);
-
-      if(image) {
-        terrain->width = image->s();
-        terrain->height = image->t();
-        //if(terrain->pixelData) free(terrain->pixelData);
-
-        terrain->pixelData = (double*)calloc((terrain->width*
-                                              terrain->height),
-                                             sizeof(double));
-        //image->setPixelFormat(GL_RGB);
-        //image->setDataType(GL_UNSIGNED_SHORT);
-        //osgDB::writeImageFile(*image, std::string("test.jpg"));
-        float r = 0;
-  //float g = 0, b = 0;
-        int count = 0;
-        osg::Vec4 pixel;
-        for (int y = terrain->height; y >= 1; --y){
-          for (int x = terrain->width; x >= 1; --x){
-            pixel = image->getColor(osg::Vec2(x, y));
-            r = pixel[0];
-            //g = pixel[1];
-            //b = pixel[2];
-            //QColor converter(image.pixel(x, y));
-            //converter.getRgb(&r, &g, &b);
-            //convert to greyscale by common used scale
-            terrain->pixelData[count++] = r;//((r*0.3+g*0.59+b*0.11));
-          }
-        }
-      }
-#endif
     }
 
     osg::ref_ptr<osg::Texture2D> GuiHelper::loadTexture(string filename) {
