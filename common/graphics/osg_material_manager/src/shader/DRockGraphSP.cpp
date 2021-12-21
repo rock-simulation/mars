@@ -115,6 +115,11 @@ namespace osg_material_manager {
     ConfigVector::iterator it;
     ConfigMap::iterator mit;
 
+    // first store options as const variables:
+    for(auto optIt: options) {
+      constants.insert((GLSLConstant) {"int", optIt.first, optIt.second.toString()});
+    }
+
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
@@ -136,7 +141,9 @@ namespace osg_material_manager {
           function << nodeConfig[name]["loadName"];
         }
         if (type == "uniform") {
-          uniforms.insert((GLSLUniform) {function, name});
+          if(!options.hasKey(name)) {
+            uniforms.insert((GLSLUniform) {function, name});
+          }
         } else if (type == "varying") {
           varyings.insert((GLSLAttribute) {function, name});
         }
@@ -320,7 +327,9 @@ namespace osg_material_manager {
             s << "[" << num << "]";
             name.append(s.str());
           }
-          uniforms.insert((GLSLUniform) {type_name, name});
+          if(!options.hasKey(name)) {
+            uniforms.insert((GLSLUniform) {type_name, name});
+          }
         }
       }
     }

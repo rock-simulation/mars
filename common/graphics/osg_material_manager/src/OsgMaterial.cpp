@@ -65,6 +65,7 @@ namespace osg_material_manager {
     cosUniform = new osg::Uniform("cosUniform", 1.0f);
     shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
     bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
+    shadowSamples = 1;
     shadowSamplesUniform = new osg::Uniform("shadowSamples", 1);
     invShadowSamplesUniform = new osg::Uniform("invShadowSamples",
                                                1.f/1);
@@ -712,6 +713,7 @@ namespace osg_material_manager {
       if ((string)map["shader"]["provider"] == "DRockGraph") {
         ConfigMap options;
         options["numLights"] = maxNumLights;
+        options["shadowSamples"] = shadowSamples;
         string vertexPath = map["shader"]["vertex"];
         string fragmentPath = map["shader"]["fragment"];
         if(!loadPath.empty() && vertexPath[0] != '/') {
@@ -788,6 +790,7 @@ namespace osg_material_manager {
       if (map["shader"].hasKey("PixelLightFragment")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
         map2["mappings"]["numLights"] = s.str();
+        map2["mappings"]["shadowSamples"] = shadowSamples;
         YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
         if(checkTexture("diffuseMap")) {
           plightFrag->addMainVar( (GLSLVariable) { "vec4", "col", "texture2D(diffuseMap, texCoord)" }, 1);
@@ -919,8 +922,11 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::setShadowSamples(int v) {
+    bool needUpdate = (shadowSamples != v);
+    shadowSamples = v;
     shadowSamplesUniform->set(v);
     invShadowSamplesUniform->set(1.f/(v*v));
+    if(needUpdate) updateShader(true);
   }
 
   void OsgMaterial::removeMaterialNode(MaterialNode* d) {
