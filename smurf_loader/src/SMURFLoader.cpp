@@ -411,15 +411,21 @@ namespace mars {
       std::string uri_extension;
       fprintf(stderr, "Reading in %s...\n", (path+_filename).c_str());
       if(file_extension == ".smurfs" || file_extension == ".smurfa") {
-	configmaps::ConfigVector::iterator it;
-	map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
-	//map.toYamlFile("smurfs_debugmap.yml");
-	// first check for plugins to load:
-	if (map.hasKey("plugins")) {
-	  for(auto nt: map["plugins"]) {
-	    libManager->loadLibrary((std::string)nt, NULL, false);
-	  }
-	}
+        configmaps::ConfigVector::iterator it;
+        map = configmaps::ConfigMap::fromYamlFile(path+_filename, true);
+        //map.toYamlFile("smurfs_debugmap.yml");
+        // first check for plugins to load:
+        std::string libName = "";
+        lib_manager::LibInfo libInfo;
+        if (map.hasKey("plugins")) {
+          for(auto nt: map["plugins"]) {
+            libName << nt;
+            libInfo = libManager->getLibraryInfo(libName);
+            if(libInfo.name != libName) {
+              libManager->loadLibrary(libName, NULL, false);
+            }
+          }
+        }
 	for (it = map["smurfs"].begin(); it != map["smurfs"].end(); ++it) { // backwards compatibility
 	  configmaps::ConfigMap &m = *it;
 	  applyConfigStruct((ConfigStruct*)args, m);
