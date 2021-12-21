@@ -83,6 +83,7 @@ namespace osg_material_manager {
     defaultMaxNumNodeLights = 1;
     brightness = 1.0;
     noiseAmmount = 0.05;
+    shadowTechnique = "none";
   }
 
   OsgMaterialManager::~OsgMaterialManager(void) {
@@ -230,6 +231,8 @@ namespace osg_material_manager {
       m->setShadowTextureSize(shadowTextureSize);
       m->setMaterial(map);
       m->setUseShader(useShader);
+      m->setUseShadow(useShadow);
+      m->setShadowTechnique(shadowTechnique);
       m->setNoiseImage(noiseImage.get());
       m->setShadowSamples(shadowSamples.iValue);
       materialMap[name] = m;
@@ -359,7 +362,20 @@ namespace osg_material_manager {
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setUseShadow(useShadow);
     }
+    std::map<std::string, osg::ref_ptr<OsgMaterial> >::iterator it2 = materialMap.begin();
+    for(; it2!=materialMap.end(); ++it2) {
+      it2->second->setUseShadow(useShadow);
+    }
   }
+
+  void OsgMaterialManager::setShadowTechnique(std::string v) {
+    shadowTechnique = v;
+    std::map<std::string, osg::ref_ptr<OsgMaterial> >::iterator it2 = materialMap.begin();
+    for(; it2!=materialMap.end(); ++it2) {
+      it2->second->setShadowTechnique(shadowTechnique);
+    }
+  }
+
 
   void OsgMaterialManager::setBrightness(float v) {
     brightness = v;

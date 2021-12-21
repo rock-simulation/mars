@@ -54,11 +54,13 @@ namespace osg_material_manager {
     : material(0),
       hasShaderSources(false), isInit(false),
       useShader(true),
+      useShadow(false),
       maxNumLights(1),
       invShadowTextureSize(1./1024),
       useWorldTexCoords(false),
       resPath(resPath),
-      loadPath("") {
+      loadPath(""),
+      shadowTechnique("none") {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
     sinUniform = new osg::Uniform("sinUniform", 0.0f);
@@ -665,6 +667,22 @@ namespace osg_material_manager {
     }
   }
 
+  void OsgMaterial::setUseShadow(bool val) {
+    //fprintf(stderr, "use shader: %d %d\n", useShader, val);
+    if(useShadow != val) {
+      useShadow = val;
+      updateShader(true);
+    }
+  }
+
+  void OsgMaterial::setShadowTechnique(std::string val) {
+    //fprintf(stderr, "use shader: %d %d\n", useShader, val);
+    if(shadowTechnique != val) {
+      shadowTechnique = val;
+      updateShader(true);
+    }
+  }
+
   void OsgMaterial::setShadowScale(float v) {
     shadowScaleUniform->set(1.f/(v*v));
   }
@@ -725,7 +743,11 @@ namespace osg_material_manager {
         ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
         ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
         DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
-        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
+        string shadowTechnique_ = "none";
+        if(useShadow) {
+          shadowTechnique_ = shadowTechnique;
+        }
+        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options, shadowTechnique_);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
         if(textures.find("terrainMap") != textures.end()) {
@@ -797,6 +819,12 @@ namespace osg_material_manager {
           plightFrag->addUniform((GLSLUniform) {"sampler2D", "diffuseMap"});
         }
         fragmentShader->addShaderFunction(plightFrag);
+        if(useShadow and shadowTechnique != "none") {
+          ConfigMap map3 = ConfigMap::fromYamlFile(resPath+"/shader/shadow_"+shadowTechnique+".yaml");
+          map3["mappings"]["shadowSamples"] = shadowSamples;
+          YamlShader *shadowFrag = new YamlShader((string)map3["name"], args, map3, resPath);
+          fragmentShader->addShaderFunction(shadowFrag);
+        }
       }
       if(map["shader"].hasKey("NormalMapFragment")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");

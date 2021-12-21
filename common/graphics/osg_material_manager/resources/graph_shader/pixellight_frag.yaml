@@ -2,8 +2,9 @@ params:
   in:
     baseColor: {index: 0, type: vec4}
     normal: {index: 1, type: vec3}
+    shadow: {index: 2, type: float}
   out:
-    shadedColor: {index: 2, type: vec4}
+    shadedColor: {index: 3, type: vec4}
 source: /shader/plight.frag
 minVersion: 120
 varyings:

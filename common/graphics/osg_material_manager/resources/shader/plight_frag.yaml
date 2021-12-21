@@ -1,6 +1,7 @@
 params:
   - pcol
   - n
+  - shadow
   - col
 varyings:
   vec3:
@@ -67,11 +68,17 @@ uniforms:
     - {name: shadowTexture1}
     - {name: shadowTexture2}
 mainVarDecs:
+  float:
+    - {name: shadow}
   vec3:
     - {name: n}
   vec4:
     - {name: pcol}
 mainVars:
+  float:
+    - name: shadow
+      value: 1
+      priority: 0
   vec3:
     - name: n
       value: "normalize( gl_FrontFacing ? normalVarying : -normalVarying )"

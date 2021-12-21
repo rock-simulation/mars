@@ -1,0 +1,5 @@
+params:
+  out:
+    shadow: {index: 0, type: float}
+source: /shader/shadow_none.frag
+minVersion: 120

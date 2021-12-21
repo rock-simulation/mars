@@ -377,6 +377,7 @@ namespace mars {
           materialManager->setBrightness((float)brightness.dValue);
           materialManager->setNoiseAmmount((float)noiseAmmount.dValue);
           if(pssm) {
+            materialManager->setShadowTechnique("pssm");
             pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
           }
           shadowedScene->addChild(materialManager->getMainStateGroup());

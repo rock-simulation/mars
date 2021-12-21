@@ -31,10 +31,11 @@ namespace osg_material_manager {
   using namespace std;
 
   using namespace mars::utils;
-  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options) : IShaderProvider(res_path) {
+  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options, string shadowTechnique) : IShaderProvider(res_path) {
     this->model = model;
     this->options = options;
     this->minVersion = 100;
+    this->shadowTechnique = shadowTechnique;
     parseGraph();
   }
 
@@ -131,6 +132,11 @@ namespace osg_material_manager {
     unsigned long id = 1;
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
       string function = (*it)["model"]["name"];
+      // replace abstract shadow node
+      if(function == "shadow") {
+        function = "shadow_"+shadowTechnique;
+        (*it)["model"]["name"] = function;
+      }
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
       (*it)["name"] = name;
       nodeMap[id] = (*it);
@@ -228,6 +234,24 @@ namespace osg_material_manager {
               varName = "default_" + mit->first + "_for_" + nodeName;
               string varType = (mit->second)["type"];
               defaultVars.push_back(GLSLVariable {varType, varName, nodeConfig[nodeName]["inputs"][mit->first]});
+            }
+            else {
+              varName = "default_" + mit->first + "_for_" + nodeName;
+              string varType = (mit->second)["type"].toString();
+              string value = "1.0";
+              if(varType == "vec2") {
+                value = "vec2(0, 0)";
+              }
+              if(varType == "vec3") {
+                value = "vec2(0, 0, 0)";
+              }
+              if(varType == "vec4") {
+                value = "vec4(0, 0, 0, 1)";
+              }
+              else {
+                fprintf(stderr, "Shader ERROR: input not connected: node %s input %lu\n", nodeName.c_str(), incoming.size());
+              }
+              defaultVars.push_back(GLSLVariable {varType, varName, value});
             }
             incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][mit->first]["index"], 0});
           }

@@ -1,0 +1,4 @@
+params:
+  out:
+    shadow: {index: 0, type: float}
+source: abstract
