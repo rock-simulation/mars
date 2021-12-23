@@ -1,0 +1,25 @@
+params:
+  - shadow
+uniforms:
+  vec2:
+    - {name: osgShadow_ambientBias}
+  int:
+    - {name: useShadow}
+    - {name: shadowSamples}
+  float:
+    - {name: shadowScale}
+    - {name: invShadowSamples}
+    - {name: invShadowTextureSize}
+  sampler2D:
+    - {name: NoiseMap}
+  sampler2DShadow:
+    - {name: osgShadow_shadowTexture}
+mainVarDecs:
+  vec4:
+    - {name: shadow}
+snippets:
+  - source: /shader/test.snippet
+    priority: -1
+source: /shader/shadow_sm.frag
+priority: 10
+name: shadow_sm

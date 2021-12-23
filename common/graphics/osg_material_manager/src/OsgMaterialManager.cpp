@@ -227,6 +227,7 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it == materialMap.end()) {
       OsgMaterial *m = new OsgMaterial(resPath.sValue+"/mars/osg_material_manager/resources");
+      m->no_update = true;
       m->setMaxNumLights(defaultMaxNumNodeLights);
       m->setShadowTextureSize(shadowTextureSize);
       m->setMaterial(map);
@@ -235,6 +236,7 @@ namespace osg_material_manager {
       m->setShadowTechnique(shadowTechnique);
       m->setNoiseImage(noiseImage.get());
       m->setShadowSamples(shadowSamples.iValue);
+      m->no_update = false;
       materialMap[name] = m;
       mainStateGroup->addChild(m);
     }
@@ -310,6 +312,10 @@ namespace osg_material_manager {
     for(; it!=materialMap.end(); ++it) {
       it->second->setUseShader(useShader);
     }
+  }
+
+  bool OsgMaterialManager::getUseShader() const {
+    return useShader;
   }
 
   void OsgMaterialManager::setShadowTextureSize(int size) {

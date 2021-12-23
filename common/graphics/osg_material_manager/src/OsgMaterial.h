@@ -126,6 +126,7 @@ namespace osg_material_manager {
     int getNumInstances();
     double getInstancesWidth();
 
+    bool no_update;
   protected:
     std::vector<osg::ref_ptr<MaterialNode> > materialNodeVector;
 

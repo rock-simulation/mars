@@ -417,6 +417,22 @@ namespace mars {
       }
     }
 
+    void ParallelSplitShadowMap::removeState(osg::StateSet* state) {
+      if(_PSSMShadowSplitTextureMap.size() < 1) {
+        return;
+      }
+      for(unsigned int i=0; i<_number_of_splits; ++i) {
+        state->setTextureAttributeAndModes(_PSSMShadowSplitTextureMap[i]._textureUnit, NULL,
+                                           osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+      }
+
+      // // add the uniform list to the stateset
+      for(std::vector< osg::ref_ptr<osg::Uniform> >::const_iterator itr=uniformList.begin();
+          itr!=uniformList.end(); ++itr) {
+        state->removeUniform(itr->get());
+      }
+    }
+
     void ParallelSplitShadowMap::update(osg::NodeVisitor& nv){
       _shadowedScene->osg::Group::traverse(nv);
     }

@@ -74,6 +74,7 @@ namespace mars {
         return texture.get();
       }
       void applyState(osg::StateSet *state);
+      void removeState(osg::StateSet* state);
       void removeTexture(osg::StateSet* state);
       void addTexture(osg::StateSet* state);
       void updateTexScale();

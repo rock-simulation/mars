@@ -83,6 +83,7 @@ namespace osg_material_manager {
 
     // setter for global states
     void setUseShader(bool v);
+    bool getUseShader() const;
     void setShadowTextureSize(int size);
     void setShadowScale(float v);
     void setDefaultMaxNumLights(int v);

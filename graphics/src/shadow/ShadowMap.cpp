@@ -79,7 +79,6 @@ namespace mars {
       light = l;
     }
 
-
     void ShadowMap::setLight(osg::LightSource *l) {
       ls = l;
       light = ls->getLight();
@@ -133,6 +132,17 @@ namespace mars {
           itr!=uniformList.end(); ++itr) {
         state->addUniform(itr->get());
       }
+    }
+
+    void ShadowMap::removeState(osg::StateSet* state) {
+      state->setTextureAttributeAndModes(shadowTextureUnit,NULL,
+                                         osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+      // add the uniform list to the stateset
+      for(std::vector< osg::ref_ptr<osg::Uniform> >::const_iterator itr=uniformList.begin();
+          itr!=uniformList.end(); ++itr) {
+        state->removeUniform(itr->get());
+      }
+
     }
 
     void ShadowMap::removeTexture(osg::StateSet* state) {

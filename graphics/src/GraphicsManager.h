@@ -71,12 +71,6 @@
 
 #include "gui_helper_functions.h"
 
-
-#define USE_LSPSM_SHADOW 0
-#define USE_PSSM_SHADOW 1
-#define NUM_PSSM_SPLITS 3
-
-
 namespace mars {
   namespace graphics {
 
@@ -320,6 +314,7 @@ namespace mars {
       void edit(unsigned long widgetID, const std::string &key,
                 const std::string &value);
       osg::Vec3f getSelectedPos();
+      void setShadowTechnique(std::string s);
 
     private:
       mars::interfaces::GraphicData graphicOptions;
@@ -394,6 +389,7 @@ namespace mars {
 
       osg_frames::FramesFactory *framesFactory;
 
+
       /**\brief adds a preview node to the scene */
       int createPreviewNode(const std::vector<mars::interfaces::NodeData> &allNodes);
 
@@ -407,7 +403,8 @@ namespace mars {
         multisamples, noiseProp, brightness, noiseAmmount, marsShader, backfaceCulling,
         drawLineLaserProp, drawMainCamera, marsShadow, hudWidthProp,
         hudHeightProp, defaultMaxNumNodeLights, shadowTextureSize,
-        showGridProp, showCoordsProp, showSelectionProp, vsyncProp, showFramesProp, scaleFramesProp;
+        showGridProp, showCoordsProp, showSelectionProp, vsyncProp, showFramesProp, scaleFramesProp,
+        shadowTechnique;
       cfg_manager::cfgPropertyStruct grab_frames;
       cfg_manager::cfgPropertyStruct resources_path;
       cfg_manager::cfgPropertyStruct configPath;
@@ -432,6 +429,8 @@ namespace mars {
       void initDefaultLight();
       void setColor(utils::Color *c, const std::string &key,
                     const std::string &value);
+      void initShadowMap();
+      void initShadowPSSM();
 
     }; // end of class GraphicsManager
 

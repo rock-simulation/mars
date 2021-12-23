@@ -51,7 +51,7 @@ namespace osg_material_manager {
   using namespace configmaps;
 
   OsgMaterial::OsgMaterial(std::string resPath)
-    : material(0),
+    : no_update(false), material(0),
       hasShaderSources(false), isInit(false),
       useShader(true),
       useShadow(false),
@@ -688,6 +688,9 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::updateShader(bool reload) {
+    if(no_update) {
+      return;
+    }
     osg::StateSet* stateSet = getOrCreateStateSet();
 
     //return;

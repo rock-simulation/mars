@@ -1,0 +1,18 @@
+params:
+  out:
+    shadow: {index: 0, type: float}
+source: /shader/shadow_sm.frag
+minVersion: 120
+uniforms:
+  vec2:
+    - {name: osgShadow_ambientBias}
+  int:
+    - {name: useShadow}
+    - {name: shadowSamples}
+  float:
+    - {name: invShadowSamples}
+    - {name: invShadowTextureSize}
+  sampler2D:
+    - {name: NoiseMap}
+  sampler2DShadow:
+    - {name: osgShadow_shadowTexture}

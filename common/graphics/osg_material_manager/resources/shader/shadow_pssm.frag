@@ -1,5 +1,4 @@
 void shadow_pssm(out float shadow) {
-  float diffuseShadow;
   vec4 shadowCoord = gl_TexCoord[2];
   float x, y, s = 0.0078125; // 1/128
   float testZ = gl_FragCoord.z*2.0-1.0;
