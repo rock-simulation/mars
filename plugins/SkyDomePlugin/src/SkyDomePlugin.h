@@ -97,7 +97,7 @@ namespace mars {
         // SkyDomePlugin methods
 
       private:
-        cfg_manager::cfgPropertyStruct cfgProp, cfgEnableSD;
+        cfg_manager::cfgPropertyStruct cfgProp, cfgPropPath, cfgEnableSD;
 
         osg::ref_ptr<SkyDome> _skyDome;
         osg::ref_ptr<osg::Group> scene;
