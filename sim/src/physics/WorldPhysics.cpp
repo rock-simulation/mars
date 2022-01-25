@@ -111,7 +111,7 @@ namespace mars {
       create_contacts = 1;
       log_contacts = 0;
       max_angular_speed = 10.0; // I guess this is rad/s
-      max_correcting_vel = 5.0; 
+      max_correcting_vel = 5.0;
 
       // the step size in seconds
       step_size = 0.01;
@@ -152,11 +152,11 @@ namespace mars {
         libManager -> releaseLibrary(it->name);
       }
     }
-    
+
     /**
     *  \brief Sets the physics plugins to be used for computing interactions
     *  with certain types of objects instead of ODE
-    *  
+    *
     *  pre:
     *     - Attribute physics_plugins is null
     *  post
@@ -244,11 +244,11 @@ namespace mars {
       return world_init;
     }
 
-    /** 
+    /**
      *
      * \brief Auxiliar methof of step the world. Checks required before
      * computing the collision and the contact forces are done here.
-     * 
+     *
      * The checks consist on: updating gravity, cfm and erp for coherence.
      *
      */
@@ -272,22 +272,22 @@ namespace mars {
 
       for (auto it = std::begin(physics_plugins); it !=std::end(physics_plugins); ++it)
       {
-        it->p_interface->preStepChecks(); 
+        it->p_interface->preStepChecks();
         //Maybe we can rename this to init/update/reset or make a new interface
         //deriving from plugin, instead of adding directly these methods to the
         //interface
       }
     }
 
-        /** 
+        /**
      *
-     * \brief Auxiliar methof of step the world. 
+     * \brief Auxiliar methof of step the world.
      * Clears the contact and contact feedback information from previous step.
      *
      */
     void WorldPhysics::clearPreviousStep(void){
       // Clear Previous Collisions
-      //	printf("now WorldPhysics.cpp..stepTheWorld(void)....1 : dSpaceGetNumGeoms: %d\n",dSpaceGetNumGeoms(space)); 
+      //	printf("now WorldPhysics.cpp..stepTheWorld(void)....1 : dSpaceGetNumGeoms: %d\n",dSpaceGetNumGeoms(space));
       /// first clear the collision counters of all geoms
       int i;
       geom_data* data;
@@ -306,8 +306,8 @@ namespace mars {
         free((*iter));
       }
       contact_feedback_list.clear();
-      // Clear draw_intern 
-      draw_intern.clear(); 
+      // Clear draw_intern
+      draw_intern.clear();
 
       // Clear contacts
       dJointGroupEmpty(contactgroup);
@@ -355,7 +355,7 @@ namespace mars {
         std::shared_ptr<SimNode> nodePtr = control->nodes->getSimNode(nodeIds[0]);
         std::shared_ptr<mars::interfaces::NodeInterface> nodeIfPtr = nodePtr->getInterface();
         std::shared_ptr<NodePhysics> nodePhysPtr = std::dynamic_pointer_cast<NodePhysics>(nodeIfPtr);
-        std::vector<dJointFeedback*> contactFeedbacks = 
+        std::vector<dJointFeedback*> contactFeedbacks =
           nodePhysPtr->addContacts(colContacts, world, contactgroup);
         std::vector<utils::Vector> * contactPoints = new std::vector<utils::Vector>();
         nodePhysPtr->getContactPoints(contactPoints);
@@ -368,15 +368,15 @@ namespace mars {
         // Currently though all are used but for future potential fixes that do
         // this it is better to use this size than directly using
         // colContacts.numContacts;
-        num_contacts += contactFeedbacks.size(); 
+        num_contacts += contactFeedbacks.size();
       } // For each collidable
     }
 
     /**
      * \brief This function creates feedback joints between collision objects
      * based on the contacts detected by physics plugins
-     * 
-     * pre: 
+     *
+     * pre:
      *     - Feedback joints from previous step have been cleared out
      * post:
      *     - New feedback joints have been set according to the contacts detected
@@ -387,10 +387,10 @@ namespace mars {
       {
         std::vector<mars::sim::ContactsPhysics> contacts;
         void * data = &contacts;
-        it->p_interface->getSomeData(data);         
+        it->p_interface->getSomeData(data);
         int numContacts = contacts.size();
         #ifdef DEBUG_WORLD_PHYSICS
-          LOG_DEBUG("[WorldPhysics::setContactsFromPlugins] %s found contacts with %i collidables.", 
+          LOG_DEBUG("[WorldPhysics::setContactsFromPlugins] %s found contacts with %i collidables.",
                     it->name.c_str(),
                     contacts.size());
         #endif
@@ -418,7 +418,7 @@ namespace mars {
       std::vector<dJointFeedback*>::iterator iter;
 
       // if world_init = false or step_size <= 0 debug something
-      if(world_init && step_size > 0) {        
+      if(world_init && step_size > 0) {
         preStepChecks();
         clearPreviousStep();
         /// first check for collisions
@@ -1079,6 +1079,7 @@ namespace mars {
       int numc;
 
       dGeomID theGeom = dCreateRay(space, depth);
+      dGeomRaySetClosestHit( theGeom, 1 );
       dGeomRaySet(theGeom, pos.x(), pos.y(), pos.z(), ray.x(), ray.y(), ray.z());
 
       for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
@@ -1096,6 +1097,39 @@ namespace mars {
 
       dGeomDestroy(theGeom);
       return depth;
+    }
+
+    void WorldPhysics::getSphereCollision(const Vector &pos,
+                                          const double r,
+                                          std::vector<utils::Vector> &contacts,
+                                          std::vector<double> &depths) const {
+      MutexLocker locker(&iMutex);
+      dGeomID otherGeom;
+      dContact contact[1];
+      //double depth = ray.length();
+      int numc;
+      Vector contactPos;
+      dGeomID theGeom = dCreateSphere(space, r);
+      dGeomSetPosition(theGeom, (dReal)pos.x(), (dReal)pos.y(), (dReal)pos.z());
+
+      for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
+        otherGeom = dSpaceGetGeom(space, i);
+
+        if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
+          continue;
+        numc = dCollide(theGeom, otherGeom, 1,
+                        &(contact[0].geom), sizeof(dContact));
+        if(numc) {
+          // todo: return contact position
+          contactPos.x() = contact[0].geom.pos[0];
+          contactPos.y() = contact[0].geom.pos[1];
+          contactPos.z() = contact[0].geom.pos[2];
+          contacts.push_back(contactPos);
+          depths.push_back(contact[0].geom.depth);
+        }
+      }
+
+      dGeomDestroy(theGeom);
     }
 
   } // end of namespace sim

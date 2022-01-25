@@ -98,6 +98,10 @@ namespace mars {
       virtual void update(std::vector<interfaces::draw_item> *drawItems);
       virtual int checkCollisions(void);
       virtual interfaces::sReal getVectorCollision(const utils::Vector &pos, const utils::Vector &ray) const;
+      virtual void getSphereCollision(const utils::Vector &pos,
+                                      const double r,
+                                      std::vector<utils::Vector> &contacts,
+                                      std::vector<double> &depths) const;
 
       // this functions are used by the other physical classes
       dWorldID getWorld(void) const;
