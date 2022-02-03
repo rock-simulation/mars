@@ -83,9 +83,6 @@ namespace mars {
       active = true;
 
       // controller
-      p=0;
-      i=0;
-      d=0;
       last_error = 0;
       integ_error = 0;
       controlValue = 0;
@@ -738,15 +735,15 @@ namespace mars {
     }
 
     sReal SimMotor::getP() const {
-      return p;
+      return sMotor.p;
     }
 
     sReal SimMotor::getI() const {
-      return i;
+      return sMotor.i;
     }
 
     sReal SimMotor::getD() const {
-      return d;
+      return sMotor.d;
     }
 
     void SimMotor::setSMotor(const MotorData &sMotor) {
