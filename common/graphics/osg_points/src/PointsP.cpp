@@ -31,7 +31,7 @@
 #include <cstdio>
 
 namespace osg_points {
-  
+
   PointsP::PointsP() {
 
     pointsTransform = new osg::MatrixTransform;
@@ -58,7 +58,7 @@ namespace osg_points {
     drawArray = new osg::DrawArrays(GL_POINTS, 0, points->size());
     drawArray->setFirst(0);
     drawArray->setCount(points->size());
-        
+
     pointsGeom->addPrimitiveSet(drawArray.get());
     node->addDrawable(pointsGeom.get());
 
@@ -69,9 +69,9 @@ namespace osg_points {
     linew = new osg::Point(2.0);
     node->getOrCreateStateSet()->setAttributeAndModes(linew.get(),
                                                       osg::StateAttribute::ON);
-	
+
     //node->getOrCreateStateSet()->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
-    node->getOrCreateStateSet()->setRenderBinDetails(10, "RenderBin");	
+    node->getOrCreateStateSet()->setRenderBinDetails(10, "RenderBin");
     node->getOrCreateStateSet()->setMode(GL_LIGHTING,osg::StateAttribute::OFF);
     node->getOrCreateStateSet()->setMode(GL_BLEND,osg::StateAttribute::OFF);
   }
@@ -101,6 +101,15 @@ namespace osg_points {
     dirty();
   }
 
+  void PointsP::setColors(const std::vector<Color> &colors_) {
+    colors->clear();
+    for(auto c: colors_) {
+      colors->push_back(osg::Vec4(c.r, c.g, c.b, c.a));
+    }
+    pointsGeom->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+    dirty();
+  }
+
   void PointsP::setLineWidth(double w) {
     linew->setSize(w);
     dirty();
@@ -108,7 +117,7 @@ namespace osg_points {
 
   void PointsP::dirty(void) {
     pointsGeom->dirtyDisplayList();
-    pointsGeom->dirtyBound();   
+    pointsGeom->dirtyBound();
   }
 
   void* PointsP::getOSGNode() {
