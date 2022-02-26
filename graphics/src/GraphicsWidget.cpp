@@ -1163,7 +1163,7 @@ namespace mars {
         width = rttDepthImage->s();
         height = rttDepthImage->t();
         *data = (float*)malloc(width*height*sizeof(float));
-        getRTTDepthData(data, width, height);
+        getRTTDepthData(*data, width, height);
       } else {
         throw std::runtime_error("Depth image not supported on non RTT Widges");
       }
