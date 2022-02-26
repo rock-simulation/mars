@@ -309,6 +309,77 @@ namespace mars {
       return 0;
     }
 
+    void CameraSensor::getColoredPointcloud(std::vector<Vector> *points,
+                                            std::vector<Vector> *colors) {
+
+      if(!gw or !gc)
+        return;
+
+      int width, height;
+      double maxDistance = 0;
+      if(config.map.hasKey("range")) {
+        maxDistance = config.map["range"];
+      }
+      cameraStruct cam_info;
+      gc->getCameraInfo(&cam_info);
+      unsigned char *buffer;
+      gw->getImageData((void**)&buffer, width, height);
+      unsigned int size = width*height;
+      if(size == 0) return;
+      float *buffer2;
+      gw->getRTTDepthData((float**)&buffer2, width, height);
+      unsigned int size2 = width*height;
+      if(size2 == 0) {
+        free(buffer);
+        return;
+      }
+      else if(size != size2) {
+        free(buffer);
+        free(buffer2);
+        return;
+      }
+      std::vector<double> frustum;
+      gc->getFrustum(frustum);
+      double s = 1./255;
+      double depth;
+      Vector ray;
+      // 0.5*(top-bottom) to scale -1 -> 1 to bottom -> top;
+      double sy = 0.5*(frustum[3]-frustum[2]);
+      double sx = 0.5*(frustum[1]-frustum[0]);
+      double dy, dx;
+      unsigned int index, index2;
+      for(unsigned int y=0; y<height; ++y) {
+        for(unsigned int x=0; x<width; ++x) {
+          index = (height-1-y)*width+(width-1-x);
+          index2 = (y*width+(width-1-x))*4;
+          depth = buffer2[index];
+          if((maxDistance == 0 or depth <= maxDistance) and !std::isnan(depth)) {
+            dy = y;
+            dx = x;
+            // get the correct direction of the ray
+            ray.z() = (2*((dy+0.5)/height)-1.0)*sy;
+            ray.y() = (2*((dx+0.5)/width )-1.0)*sx;
+            ray.x() = frustum[4]; // near
+            ray = ray * (depth/frustum[4]);
+            points->push_back(config.ori_offset*ray+config.pos_offset);
+            colors->push_back(Vector(buffer[index2]*s,
+                                     buffer[index2+1]*s,
+                                     buffer[index2+2]*s));
+            }
+        }
+      }
+      // for(int i=0; i<=10; ++i) {
+      //   ray.x() = i*0.1;
+      //   ray.y() = 0;
+      //   ray.z() = 0;
+      //   points->push_back(config.ori_offset*ray+config.pos_offset);
+      //   colors->push_back(Vector(0.2, 0.8, 0.2));
+      // }
+      free(buffer);
+      free(buffer2);
+
+    }
+
     void CameraSensor::deactivateRendering() {
       if(config.enabled){
         control->graphics->deactivate3DWindow(cam_window_id);

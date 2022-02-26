@@ -116,6 +116,8 @@ namespace mars {
       ~CameraSensor(void);
 
       virtual int getSensorData(interfaces::sReal** data) const;
+      void getColoredPointcloud(std::vector<utils::Vector> *data,
+                                std::vector<utils::Vector> *colors);
 
       void getImage(std::vector<Pixel> &buffer) const;
       void getDepthImage(std::vector<DistanceMeasurement> &buffer) const;
