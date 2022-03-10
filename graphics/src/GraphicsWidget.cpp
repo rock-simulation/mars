@@ -1163,7 +1163,7 @@ namespace mars {
         width = rttDepthImage->s();
         height = rttDepthImage->t();
         *data = (float*)malloc(width*height*sizeof(float));
-        getRTTDepthData(data, width, height);
+        getRTTDepthData(*data, width, height);
       } else {
         throw std::runtime_error("Depth image not supported on non RTT Widges");
       }
@@ -1273,8 +1273,15 @@ namespace mars {
       isMouseButtonDown = false;
       isMouseMoving = false;
 
-      if(pickmode == DISABLED && graphicsCamera->getCamera() != TRACKBALL)
+      if(pickmode == DISABLED) {// && graphicsCamera->getCamera() != TRACKBALL)
+        // if mouse was not move set trackball pivot
+        if(graphicsCamera->getCamera() == TRACKBALL and mouseMask == osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON) {
+          if(mouseX==(int)ea.getX() || mouseY==(int)ea.getY()) {
+            graphicsCamera->setPivot(ea.getX(), ea.getY());
+          }
+        }
         return false;
+      }
       if(graphicsCamera->getCamera() == TRACKBALL && mouseMask != osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON && pickmode == DISABLED)
         return false;
 
@@ -1459,10 +1466,14 @@ namespace mars {
 
     bool GraphicsWidget::handleScrollEvent(const osgGA::GUIEventAdapter& ea)
     {
-      if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_UP){
-        graphicsCamera->zoom(1);
-      }else if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_DOWN){
-        graphicsCamera->zoom(-1);
+      if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_UP) {
+        graphicsCamera->zoom(1, ea.getX(), ea.getY(), ea.getModKeyMask());
+      } else if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_DOWN) {
+        graphicsCamera->zoom(-1, ea.getX(), ea.getY(), ea.getModKeyMask());
+      } else if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_LEFT) {
+        graphicsCamera->scrollX(-1, ea.getX(), ea.getY(), ea.getModKeyMask());
+      } else if(ea.getScrollingMotion()==osgGA::GUIEventAdapter::SCROLL_RIGHT) {
+        graphicsCamera->scrollX(1, ea.getX(), ea.getY(), ea.getModKeyMask());
       }
       return false;
     }

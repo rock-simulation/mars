@@ -70,6 +70,11 @@ namespace mars {
       virtual const utils::Vector getCenterOfMass(const std::vector<std::shared_ptr<NodeInterface>> &nodes) const = 0;
       virtual int checkCollisions(void) = 0;
       virtual sReal getVectorCollision(const utils::Vector &pos, const utils::Vector &ray) const = 0;
+      virtual void getSphereCollision(const utils::Vector &pos,
+                                      const double r,
+                                      std::vector<utils::Vector> &contacts,
+                                      std::vector<double> &depths) const = 0;
+
     };
 
   } // end of namespace interfaces

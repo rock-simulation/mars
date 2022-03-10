@@ -98,7 +98,8 @@ namespace mars {
       void move(bool isMoving, Direction dir);
   
       /**moves camera up and donwn in iso mode*/
-      void zoom(float speed);
+      void zoom(float speed, int x=0, int y=0, unsigned int modkey=0);
+      void scrollX(float speed, int x=0, int y=0, unsigned int modkey=0);
   
 
       //protected slots:
@@ -121,6 +122,7 @@ namespace mars {
       void setRightEye(void) {left = false;}
       void deactivateCam();
       void activateCam();
+      void setPivot(int x, int y);
       void setPivot(osg::Vec3f p);
       void toggleTrackball();
       void setupDistortion(osg::Texture2D *texture, osg::Image *image, osg::Group *mainScene, double factor);
@@ -169,6 +171,8 @@ namespace mars {
       bool switch_eyes;
       short left;
       int nodeMask;
+      double scrollSpeed;
+      int haveScrollEvent;
       /*flags that are set to true when corresponing key is pressed 
        * and to false when it is release*/
       bool isMovingForward, isMovingBack, isMovingLeft, isMovingRight;

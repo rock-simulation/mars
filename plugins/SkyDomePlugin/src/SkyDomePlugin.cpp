@@ -83,11 +83,11 @@ namespace mars {
                                                       "resources_path",
                                                       ".");
           resPath = cfgProp.sValue;
-          cfgProp = control->cfg->getOrCreateProperty("Scene",
-                                                      "skydome_path",
-                                                      "cubemap",
-                                                      this);
-          folder = cfgProp.sValue;
+          cfgPropPath = control->cfg->getOrCreateProperty("Scene",
+                                                          "skydome_path",
+                                                          "cubemap",
+                                                          this);
+          folder = cfgPropPath.sValue;
           cfgEnableSD = control->cfg->getOrCreateProperty("Scene",
                                                           "skydome_enabled",
                                                           false, this);
@@ -115,10 +115,12 @@ namespace mars {
         if(pathExists(resPath+"/Textures/"+folder)) {
           folder = resPath+"/Textures/"+folder;
         }
-
-        if(!pathExists(meshPath)) {
-          LOG_ERROR("SkyDome: Mesh path not found: %s", meshPath.c_str());
-          meshPath = "";
+        LOG_INFO("SkyDome: init with folder: %s", folder.c_str());
+        if(meshPath != "") {
+          if(!pathExists(meshPath)) {
+            LOG_ERROR("SkyDome: Mesh path not found: %s", meshPath.c_str());
+            meshPath = "";
+          }
         }
 
         // todo: handle wrong path
@@ -249,12 +251,15 @@ namespace mars {
             updateProp = true;
           }
         }
-        else if(cfgProp.paramId == _property.paramId) {
-          folder = cfgProp.sValue = _property.sValue;
+        else if(cfgPropPath.paramId == _property.paramId) {
+          folder = cfgPropPath.sValue = _property.sValue;
+          LOG_INFO("SkyDome: try to switch to folder: %s", folder.c_str());
+
           if(pathExists(resPath + "/Textures/"+folder)) {
             folder = resPath + "/Textures/"+folder;
           }
           if(pathExists(folder)) {
+            LOG_INFO("SkyDome: switch to folder: %s", folder.c_str());
             _skyDome->setCubeMap(loadCubeMapTextures().get());
           }
         }

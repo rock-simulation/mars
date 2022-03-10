@@ -59,6 +59,8 @@ namespace mars {
       camType = 1;
       switch_eyes = true;
       moveSpeed = 0.5;
+      scrollSpeed = 1.0;
+      haveScrollEvent = 0;
       // set up ODE like camera
 
       xpos = 0;
@@ -196,6 +198,12 @@ namespace mars {
       // pass frame stamp to the SceneView so that the update, cull
       // and draw traversals all use the same FrameStamp
       //   setFrameStamp(frameStamp.get());
+
+      if(haveScrollEvent > 0) {
+        if(--haveScrollEvent == 0) {
+          scrollSpeed = 1.0;
+        }
+      }
 
       // eventually update camera position
 
@@ -635,7 +643,7 @@ namespace mars {
       return (-1)*this->separation;
     }
 
-    void GraphicsCamera::zoom(float speed)
+    void GraphicsCamera::zoom(float speed, int x, int y, unsigned int modkey)
     {
       if (camera == ISO_CAM) {
         //positive speed means zoom in which is moving downwards in this case
@@ -646,6 +654,24 @@ namespace mars {
         osg::Quat q;
         q = cameraRotation.getRotate();
         updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+      }
+      else if(camera == TRACKBALL) {
+        haveScrollEvent = 4;
+        xpos = x;
+        ypos = y;
+        if(scrollSpeed < 20) scrollSpeed += 0.2;
+        mouseDrag(MMB, modkey, xpos, ypos-speed*scrollSpeed);
+      }
+    }
+
+    void GraphicsCamera::scrollX(float speed, int x, int y, unsigned int modkey)
+    {
+      if(camera == TRACKBALL) {
+        haveScrollEvent = 4;
+        xpos = x;
+        ypos = y;
+        if(scrollSpeed < 20) scrollSpeed += 0.2;
+        mouseDrag(MMB, modkey, xpos-speed*scrollSpeed, ypos);
       }
     }
 
@@ -727,13 +753,11 @@ namespace mars {
           //use first intersection
           const osgUtil::LineSegmentIntersector::Intersection& result = *(intersector->getIntersections().begin());
           osg::Vec3d worldIntersect =   result.getWorldIntersectPoint();
-          return osg::Vec3f(worldIntersect.x(), worldIntersect.y(), 0);
-
-
+          return worldIntersect;
 
         }else{
         //if no intersection use camera postion
-        return osg::Vec3f(d_xp, d_yp, 0);
+        return osg::Vec3f(d_xp, d_yp, d_zp);
       }
 
 
@@ -760,6 +784,7 @@ namespace mars {
           //move around the clicked point
           //if no intersection is returned move around cam center i.e. dont't move, only rotate
           osg::Vec3 rotPoint = getClickedPoint(x, y);
+          rotPoint.z() = 0;
           osg::Vec3 rotCam = osg::Vec3(d_xp, d_yp , 0) - rotPoint;
 
           osg::Matrixd rotMat;
@@ -792,6 +817,15 @@ namespace mars {
             vec = osg::Vec3(-xdiff*0.1,-ydiff*0.1,0.0);
             vec = vec*cameraRotation;
             pivot += vec;
+            d_xp += vec.x();
+            d_yp += vec.y();
+            d_zp += vec.z();
+            q = cameraRotation.getRotate();
+            updateViewportQuat(d_xp, d_yp, d_zp, q.x(), q.y(), q.z(), q.w());
+          }
+          else if (modkey & osgGA::GUIEventAdapter::MODKEY_CTRL) {
+            vec = osg::Vec3(0.0,0.0,ydiff*0.1);
+            vec = vec*cameraRotation;
             d_xp += vec.x();
             d_yp += vec.y();
             d_zp += vec.z();
@@ -974,9 +1008,17 @@ namespace mars {
       }
     }
 
+    void GraphicsCamera::setPivot(int x, int y) {
+      osg::Vec3f diff = getClickedPoint(x, y);
+      if(fabs(d_xp-diff.x()) > 0.001 or
+         fabs(d_yp-diff.y()) > 0.001 or
+         fabs(d_zp-diff.z()) > 0.001)
+        setPivot(diff);
+    }
+
     void GraphicsCamera::setPivot(osg::Vec3f p) {
       osg::Vec3f c(d_xp, d_yp, d_zp);
-      double l = (c-pivot).length();
+      double l = 5;//(c-pivot).length();
       pivot = p;
       if(camera == TRACKBALL){
         osg::Quat q = cameraRotation.getRotate();

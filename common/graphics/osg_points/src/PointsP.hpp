@@ -45,6 +45,7 @@ namespace osg_points {
     void appendData(Vector v);
     void setData(const std::vector<Vector> &points);
     void setColor(Color c);
+    void setColors(const std::vector<Color> &colors);
     void setLineWidth(double w);
     void dirty(void);
     void* getOSGNode();
