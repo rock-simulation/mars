@@ -5,10 +5,11 @@ void shadow_sm(out float shadow) {
   vec2 v;
   screenPos /= screenPos.w;
 
-  if(useShadow == 1) {
-    shadow = 0;
+  //if(useShadow == 1) {
+
+    shadow = 0.0;
     if(shadowSamples == 1) {
-      shadow += shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r;
+      shadow = shadow2DProj( osgShadow_shadowTexture, gl_TexCoord[2] ).r;
     }
     else {
       float da = 128/shadowSamples;
@@ -25,10 +26,11 @@ void shadow_sm(out float shadow) {
         }
       }
     }
+    if(shadow > 0.5) shadow = 1.0;
     //shadow *= shadow*shadow* osgShadow_ambientBias.y;
     //shadow *= osgShadow_ambientBias.y;
     //shadow += osgShadow_ambientBias.x;
-  } else {
-    shadow = 1.0f;
-  }
+  // } else {
+  //   shadow = 1.0f;
+  // }
 }

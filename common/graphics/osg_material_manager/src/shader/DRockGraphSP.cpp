@@ -137,6 +137,11 @@ namespace osg_material_manager {
         function = "shadow_"+shadowTechnique;
         (*it)["model"]["name"] = function;
       }
+      else if(function == "shadow_vert") {
+        function = "shadow_"+shadowTechnique+"_vert";
+        (*it)["model"]["name"] = function;
+        fprintf(stderr, "replace shadow_vert by: %s\n", function.c_str());
+      }
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
       (*it)["name"] = name;
       nodeMap[id] = (*it);
@@ -213,6 +218,8 @@ namespace osg_material_manager {
       }
       if (!filterMap.hasKey(nodeFunction)) {
         ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
+        // could handle shadow_map samples here
+
         parse_functionInfo(nodeFunction, functionInfo);
         stringstream call;
         call.clear();

@@ -745,11 +745,12 @@ namespace osg_material_manager {
         }
         ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
         ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
-        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
         string shadowTechnique_ = "none";
         if(useShadow) {
           shadowTechnique_ = shadowTechnique;
         }
+
+        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options, shadowTechnique_);
         DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options, shadowTechnique_);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);

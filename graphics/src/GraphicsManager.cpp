@@ -385,6 +385,9 @@ namespace mars {
           if(pssm.valid()) {
             pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
           }
+          else if(shadowMap.valid()) {
+            shadowMap->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
+          }
           shadowedScene->addChild(materialManager->getMainStateGroup());
           ConfigMap map = ConfigMap::fromYamlFile(resources_path.sValue+"/defaultMaterials.yml");
           MaterialData md;

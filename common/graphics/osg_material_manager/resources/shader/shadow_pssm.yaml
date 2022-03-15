@@ -1,13 +1,9 @@
 params:
   - shadow
 uniforms:
-  vec2:
-    - {name: osgShadow_ambientBias}
   int:
-    - {name: useShadow}
     - {name: shadowSamples}
   float:
-    - {name: shadowScale}
     - {name: invShadowSamples}
     - {name: invShadowTextureSize}
     - {name: zShadow0}
@@ -16,7 +12,6 @@ uniforms:
   sampler2D:
     - {name: NoiseMap}
   sampler2DShadow:
-#    - {name: osgShadow_shadowTexture}
     - {name: shadowTexture0}
     - {name: shadowTexture1}
     - {name: shadowTexture2}

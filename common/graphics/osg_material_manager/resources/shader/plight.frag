@@ -43,6 +43,7 @@ void pixellight_frag(vec4 base, vec3 n, float shadow, out vec4 outcol) {
         test_specular_ = (spot * shadow * atten*specular[i]
                           * pow(rDotE, gl_FrontMaterial.shininess));
         specular_ += (gl_FrontMaterial.shininess > 0) ? test_specular_ : vec4(0.0);
+        ambient  += lightAmbient[i]*gl_FrontMaterial.ambient;
       }
       else {
         ambient  += lightAmbient[i]*gl_FrontMaterial.ambient;
@@ -57,28 +58,31 @@ void pixellight_frag(vec4 base, vec3 n, float shadow, out vec4 outcol) {
   // calculate output color
   outcol = brightness* ((ambient + diffuse_)*base  + specular_ + gl_FrontMaterial.emission*base);
 
-  if(drawLineLaser == 1) {
-    vec3 lwP = positionVarying.xyz - lineLaserPos.xyz;
-    if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.002) {
-      vec3 lwPNorm = normalize(lwP);
-      vec3 directionNorm = normalize(lineLaserDirection);
-      float v2Laser = acos( dot(directionNorm, lwPNorm) );
-      if( v2Laser < (lineLaserOpeningAngle / 2.0f) ){
-        outcol = lineLaserColor;
-      }
-    }
-  }
+  /* if(drawLineLaser == 1) { */
+  /*   vec3 lwP = positionVarying.xyz - lineLaserPos.xyz; */
+  /*   if(abs(dot(lineLaserNormal.xyz, lwP)) < 0.002) { */
+  /*     vec3 lwPNorm = normalize(lwP); */
+  /*     vec3 directionNorm = normalize(lineLaserDirection); */
+  /*     float v2Laser = acos( dot(directionNorm, lwPNorm) ); */
+  /*     if( v2Laser < (lineLaserOpeningAngle / 2.0f) ){ */
+  /*       outcol = lineLaserColor; */
+  /*     } */
+  /*   } */
+  /* } */
+
   outcol.a = alpha*base.a;
+
   if(useNoise == 1) {
     float noiseScale = 6;
     outcol.rg += noiseAmmount*(texture2D( NoiseMap, noiseScale*screenPos.xy).zw-0.5);
     outcol.b += noiseAmmount*(texture2D( NoiseMap, noiseScale*(screenPos.xy+vec2(0.5, 0.5))).z-0.5);
   }
 
-  if(useFog == 1) {
-    // FIXME: eyevec maybe in tbn space !
-    float fog = gl_Fog.density*clamp(gl_Fog.scale*(length(eyeVec)-gl_Fog.start) , 0.0, 1.0);
-    outcol = mix(gl_Fog.color, outcol, 1-fog);
-  }
+  /* if(useFog == 1) { */
+  /*   // FIXME: eyevec maybe in tbn space ! */
+  /*   float fog = gl_Fog.density*clamp(gl_Fog.scale*(length(eyeVec)-gl_Fog.start) , 0.0, 1.0); */
+  /*   outcol = mix(gl_Fog.color, outcol, 1-fog); */
+  /* } */
+
   //outcol = vec4(positionVarying.x, shadow, positionVarying.y, 1.0);
 }

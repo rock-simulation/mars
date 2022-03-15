@@ -1,0 +1,5 @@
+params:
+  - vViewPos
+source: /shader/shadow_sm.vert
+priority: 10
+name: shadow_sm_vert

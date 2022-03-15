@@ -21,8 +21,6 @@ varyings:
     - {name: diffuse, arraySize: numLights}
     - {name: specular, arraySize: numLights}
 uniforms:
-  vec2:
-    - {name: osgShadow_ambientBias}
   vec3:
     - {name: lineLaserPos}
     - {name: lineLaserNormal}
@@ -34,12 +32,10 @@ uniforms:
   vec4[]:
     - {name: lightAmbient, arraySize: numLights}
   int:
-    - {name: useShadow}
     - {name: numLights}
     - {name: useFog}
     - {name: useNoise}
     - {name: drawLineLaser}
-    - {name: shadowSamples}
   int[]:
     - {name: lightIsSpot, arraySize: numLights}
     - {name: lightIsSet, arraySize: numLights}
@@ -48,13 +44,7 @@ uniforms:
     - {name: brightness}
     - {name: noiseAmmount}
     - {name: alpha}
-    - {name: shadowScale}
-    - {name: invShadowSamples}
-    - {name: invShadowTextureSize}
     - {name: lineLaserOpeningAngle}
-    - {name: zShadow0}
-    - {name: zShadow1}
-    - {name: zShadow2}
   float[]:
     - {name: lightCosCutoff, arraySize: numLights}
     - {name: lightSpotExponent, arraySize: numLights}
@@ -66,8 +56,3 @@ uniforms:
     - {name: osg_ViewMatrix}
   sampler2D:
     - {name: NoiseMap}
-  sampler2DShadow:
-#    - {name: osgShadow_shadowTexture}
-    - {name: shadowTexture0}
-    - {name: shadowTexture1}
-    - {name: shadowTexture2}
