@@ -76,6 +76,7 @@ namespace mars {
       LightData defaultLight;
 
       *config = map;
+      SET_VALUE("index", index);
       SET_VALUE("name", name);
       SET_OBJECT("position", pos, vector);
       SET_OBJECT("lookat", lookAt, vector);

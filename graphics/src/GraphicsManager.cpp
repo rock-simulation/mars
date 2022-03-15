@@ -768,6 +768,14 @@ namespace mars {
               }
             }
           }
+          else if(myLights[i].lStruct.node != "") {
+            for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter) {
+              if(drawIter->second->name() == myLights[i].lStruct.node) {
+                myLights[i].lStruct.drawID = drawIter->first;
+                break;
+              }
+            }
+          }
         }
       }
 
@@ -1182,6 +1190,18 @@ namespace mars {
             }
             if(pssm.valid()) {
               pssm->setLight(lm.light.get());
+            }
+          }
+        }
+        if(ls.map.hasKey("nodeName")) {
+          // todo: if we don't find the node name the camera should ask for
+          // it on update
+          lm.lStruct.node << ls.map["nodeName"];
+          map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator it;
+          for(it=drawObjects_.begin(); it!=drawObjects_.end(); ++it) {
+            if(it->second->name() == lm.lStruct.node) {
+              lm.lStruct.drawID = it->first;
+              break;
             }
           }
         }
