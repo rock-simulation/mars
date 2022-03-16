@@ -1014,6 +1014,7 @@ namespace mars {
       for (unsigned int i = 0; i < nodeList.size(); ++i) {
         if (!loadNode(nodeList[i])) {
           fprintf(stderr, "Couldn't load node %lu, %s..\n'", (unsigned long)nodeList[i]["index"], ((std::string)nodeList[i]["name"]).c_str());
+          fprintf(stderr, "node info:\n%s\n", nodeList[i].toYamlString().c_str());
           return 0;
         }
       }
