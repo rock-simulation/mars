@@ -413,14 +413,17 @@ namespace mars {
       std::vector<osg::Vec3> vertices;
       std::vector<osg::Vec3> normals;
       std::vector<osg::Vec2> texcoords;
+      std::vector<osg::Vec4> colors;
 
       std::vector<osg::Vec3> vertices2;
       std::vector<osg::Vec3> normals2;
       std::vector<osg::Vec2> texcoords2;
+      std::vector<osg::Vec4> colors2;
 
       osg::ref_ptr<osg::Vec3Array> osgVertices = new osg::Vec3Array();
       osg::ref_ptr<osg::Vec2Array> osgTexcoords = new osg::Vec2Array();
       osg::ref_ptr<osg::Vec3Array> osgNormals = new osg::Vec3Array();
+      osg::ref_ptr<osg::Vec4Array> osgColors;
       osg::ref_ptr<osg::DrawElementsUInt> osgIndices = new osg::DrawElementsUInt(osg::PrimitiveSet::TRIANGLES, 0);
       bool useIndices = true;
       while((r = fread(buffer+foo, 1, 256, input)) > 0 ) {
@@ -466,6 +469,9 @@ namespace mars {
             // add osg vertices etc.
             osgIndices->push_back(iData[0]-1);
             vertices2.push_back(vertices[iData[0]-1]);
+            if(colors.size() == vertices.size()) {
+              colors2.push_back(colors[iData[0]-1]);
+            }
             if(iData[1] > 0) {
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
@@ -483,6 +489,9 @@ namespace mars {
             osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
             vertices2.push_back(vertices[iData[0]-1]);
+            if(colors.size() == vertices.size()) {
+              colors2.push_back(colors[iData[0]-1]);
+            }
             if(iData[1] > 0) {
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
@@ -490,7 +499,7 @@ namespace mars {
 
             // 3. vertice
             for(i=0; i<3; i++) {
-	      memcpy(iData+i, buffer+o, sizeof(int));
+              memcpy(iData+i, buffer+o, sizeof(int));
               //iData[i] = *(int*)(buffer+o);
               o+=4;
             }
@@ -500,10 +509,21 @@ namespace mars {
             osgIndices->push_back(iData[0]-1);
             // add osg vertices etc.
             vertices2.push_back(vertices[iData[0]-1]);
+            if(colors.size() == vertices.size()) {
+              colors2.push_back(colors[iData[0]-1]);
+            }
             if(iData[1] > 0) {
               texcoords2.push_back(texcoords[iData[1]-1]);
             }
             normals2.push_back(normals[iData[2]-1]);
+          }
+          else if(da == 5) { // vertex colors
+            for(i=0; i<4; i++) {
+              memcpy(fData+i, buffer+o, sizeof(float));
+              //fData[i] = *(float*)(buffer+o);
+              o+=4;
+            }
+            colors.push_back(osg::Vec4(fData[0], fData[1], fData[2], fData[3]));
           }
         }
         foo = r+foo-o;
@@ -511,9 +531,15 @@ namespace mars {
       }
 
       if(useIndices) {
+        if(colors.size() > 0) {
+          osgColors = new osg::Vec4Array();
+        }
         for(size_t i=0; i<vertices.size(); ++i) {
           osgVertices->push_back(vertices[i]);
           osgNormals->push_back(normals[i]);
+          if(colors.size() > 0) {
+            osgColors->push_back(colors[i]);
+          }
           if(texcoords.size() > i) {
             osgTexcoords->push_back(texcoords[i]);
           }
@@ -529,12 +555,23 @@ namespace mars {
         for(size_t i=0; i<texcoords2.size(); ++i) {
           osgTexcoords->push_back(texcoords2[i]);
         }
+        if(colors2.size() > 0) {
+          osgColors = new osg::Vec4Array();
+        }
+        for(size_t i=0; i<colors2.size(); ++i) {
+          osgColors->push_back(colors2[i]);
+        }
       }
 
       osg::Geometry* geometry = new osg::Geometry;
       geometry->setVertexArray(osgVertices.get());
       geometry->setNormalArray(osgNormals.get());
       geometry->setNormalBinding(osg::Geometry::BIND_PER_VERTEX);
+      if(osgColors.valid()) {
+        fprintf(stderr, "Bobj: add colors per vertex.\n");
+        geometry->setColorArray(osgColors.get());
+        geometry->setColorBinding(osg::Geometry::BIND_PER_VERTEX);
+      }
       if(osgTexcoords->size() > 0) {
         geometry->setTexCoordArray(0, osgTexcoords.get());
       }
