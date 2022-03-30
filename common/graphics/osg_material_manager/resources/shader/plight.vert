@@ -17,4 +17,6 @@ void pixellight_vert(vec4 v, vec4 eye, vec4 scol) {
       spotDir[i] = lightSpotDir[i];
     }
   }
+  gl_FrontColor = gl_Color;
+  gl_BackColor = gl_Color;
 }
