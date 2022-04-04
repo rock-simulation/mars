@@ -13,7 +13,6 @@
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/utils/misc.h>
-#include <random_cpp/RandomGenerator.h>
 #include <osg/Texture2D>
 #include <osgDB/WriteFile>
 
