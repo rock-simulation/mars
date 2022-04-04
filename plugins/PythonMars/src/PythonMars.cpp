@@ -623,7 +623,7 @@ namespace mars {
             if(type == "Node") {
               unsigned long id = control->nodes->getID(name);
               if(id) {
-                sim::SimNode *node = control->nodes->getSimNode(id);
+                sim::SimNode *node = control->nodes->getSimNode(id).get();
                 Vector pos = node->getPosition();
                 Quaternion rot = node->getRotation();
                 bool contact = node->getGroundContact();
