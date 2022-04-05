@@ -486,7 +486,7 @@ namespace mars {
 	      control->cfg->setPropertyValue("Scene", "skydome_enabled", "value",
 					     true);
 	    }
-      if(envmap.hasKey("animation")) {
+      if(envmap.hasKey("animations")) {
         if(envmap["animations"].hasKey("config_path")) {
           control->cfg->createParam("Scene","animations_path", cfg_manager::stringParam);
           control->cfg->setPropertyValue("Scene", "animations_path", "value", std::string(envmap["animations"]["config_path"]));

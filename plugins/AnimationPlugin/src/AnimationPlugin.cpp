@@ -45,7 +45,7 @@ namespace mars {
         configmaps::ConfigMap map;
         try {
           // get config path
-          std::string configPath = control->cfg->getOrCreateProperty("Config", "config_path", ".").sValue;
+          configPath = control->cfg->getOrCreateProperty("Config", "config_path", ".").sValue;
           // the animations have to be linked with the scene loading / entity management
           std::string animationsPath = "";
           control->cfg->getPropertyValue("Scene", "animations_path", "value",
