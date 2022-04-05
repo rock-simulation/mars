@@ -67,10 +67,12 @@ namespace mars {
 
       cfg = libManager->getLibraryAs<cfg_manager::CFGManagerInterface>("cfg_manager");
       if(cfg) {
-        cfg_manager::cfgPropertyStruct r_path;
-        r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string("."));
-        path = r_path.sValue;
+        path = cfg->getOrCreateProperty("Preferences", "resources_path",
+                                          "").sValue;
+	if(path == "") {
+	  path = MARS_DEFAULT_RESOURCES_PATH;
+	}
+
         showOnStdError = cfg->getOrCreateProperty("log_console",
                                                   "showOnStdError",
                                                   false, this);

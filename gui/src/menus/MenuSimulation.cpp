@@ -18,7 +18,7 @@
  *
  */
 
-
+#include "config.h"
 #include "MenuSimulation.h"
 
 #include <mars/main_gui/GuiInterface.h>
@@ -93,10 +93,11 @@ namespace mars {
       tmp1.append("/mesh.png");
 
       if (control->cfg) {
-        cfg_manager::cfgPropertyStruct r_path;
-        r_path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
-                                                   std::string("."));
-        resourcesPath = r_path.sValue;
+        resourcesPath = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
+							  "").sValue;
+	if(resourcesPath == "") {
+	  resourcesPath = MARS_GUI_DEFAULT_RESOURCES_PATH;
+	}
       }
 
       mainGui->addGenericMenuAction("../Deprecated/Controllers",

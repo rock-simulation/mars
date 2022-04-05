@@ -190,9 +190,11 @@ namespace mars {
         configPath = cfg->getOrCreateProperty("Config", "config_path",
                                               configDir);
         prefPath = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                            std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
-        prefPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
-        cfg->setProperty(prefPath);
+                                            "");
+	if(prefPath.sValue == "") {
+	  prefPath.sValue = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+	}
+        //cfg->setProperty(prefPath);
         // load preferences
         std::string loadFile = configDir + "/mars_Preferences.yaml";
         cfg->loadConfig(loadFile.c_str());

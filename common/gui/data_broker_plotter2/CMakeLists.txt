@@ -51,6 +51,8 @@ set (QT_MOC_HEADER
 	src/qcustomplot/qcustomplot.h
 )
 
+add_definitions(-DMARS_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+
 if (${USE_QT5})
 qt5_wrap_ui( SOURCES_UI_H ${SOURCES_UI})
 qt5_wrap_cpp ( QT_MOC_HEADER_SRC ${QT_MOC_HEADER} )

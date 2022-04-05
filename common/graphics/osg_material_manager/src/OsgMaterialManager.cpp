@@ -65,7 +65,10 @@ namespace osg_material_manager {
     shadowSamples.iValue = 1;
     if(cfg) {
       resPath = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                         resPath.sValue, this);
+                                         "", this);
+      if(resPath.sValue == "") {
+	resPath.sValue = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+      }
       shadowSamples = cfg->getOrCreateProperty("Graphics",
                                                "shadowSamples",
                                                shadowSamples.iValue, this);

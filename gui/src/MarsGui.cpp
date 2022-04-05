@@ -88,7 +88,10 @@ namespace mars {
           control->cfg->loadConfig(loadFile.c_str());
 
           resourcesPath = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
-                                                            string(MARS_GUI_DEFAULT_RESOURCES_PATH));
+                                                            "");
+	  if(resourcesPath.sValue == "") {
+	    resourcesPath.sValue = MARS_GUI_DEFAULT_RESOURCES_PATH;
+	  }
 
           main_gui::MainGUI *mainGui;
           if((mainGui = dynamic_cast<main_gui::MainGUI*>(gui))) {

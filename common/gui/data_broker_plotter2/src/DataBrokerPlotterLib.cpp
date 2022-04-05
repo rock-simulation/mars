@@ -18,7 +18,7 @@ namespace data_broker_plotter2 {
     cfg(NULL), dataBroker(NULL), num(0) {
 
     // setup GUI with default path
-    setupGUI("../resources/");
+    setupGUI(MARS_DEFAULT_RESOURCES_PATH);
   }
 
   void DataBrokerPlotterLib::setupGUI(std::string rPath) {
@@ -28,12 +28,12 @@ namespace data_broker_plotter2 {
     cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
 
     if(cfg) {
-      cfgPropertyStruct path;
-      path = cfg->getOrCreateProperty("Preferences", "resources_path", rPath);
-      rPath = path.sValue;
+      rPath = cfg->getOrCreateProperty("Preferences", "resources_path", "").sValue;
+      if(rPath == "") {
+	rPath = MARS_DEFAULT_RESOURCES_PATH;
+      }
 
-      path = cfg->getOrCreateProperty("Config", "config_path", string("."));
-      configPath = path.sValue;
+      configPath = cfg->getOrCreateProperty("Config", "config_path", string(".")).sValue;
     } else {
       fprintf(stderr, "******* gui_cfg: couldn't find cfg_manager\n");
     }

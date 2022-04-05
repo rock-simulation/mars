@@ -168,9 +168,15 @@ namespace mars {
                                dynamic_cast<cfg_manager::CFGClient*>(this));
           setMultisampling(multisamples.iValue);
 
-          resources_path = cfg->getOrCreateProperty("Graphics", "resources_path",
-                                                    string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH),
-                                                    dynamic_cast<cfg_manager::CFGClient*>(this));
+	  std::string s = cfg->getOrCreateProperty("Graphics", "resources_path",
+						   "",
+						   dynamic_cast<cfg_manager::CFGClient*>(this)).sValue;
+	  if(s != "") {
+	    resources_path.sValue = s;
+	  }
+	  else {
+	    resources_path.sValue = string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH);
+	  }
 
           noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
                                                true, this);

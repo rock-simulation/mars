@@ -41,6 +41,8 @@ set(HEADERS
     src/MyApp.hpp
 )
 
+add_definitions(-DMARS_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+
 add_executable(${PROJECT_NAME} ${SOURCES} src/main.cpp)
 
 add_library(${PROJECT_NAME}_lib SHARED ${SOURCES})

@@ -268,8 +268,8 @@ namespace mars {
         configPath = control->cfg->getOrCreateProperty("Config", "config_path",
                                                          config_dir);
 
-        control->cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
+        //control->cfg->getOrCreateProperty("Preferences", "resources_path",
+        //                                  std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
 
         std::string loadFile = configPath.sValue+"/mars_Simulator.yaml";
         control->cfg->loadConfig(loadFile.c_str());

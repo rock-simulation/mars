@@ -93,7 +93,10 @@ namespace mars {
         }
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
-                                                                "../../share").sValue;
+                                                                "").sValue;
+	if(resPath == "") {
+	  resPath = MARS_DEFAULT_RESOURCES_PATH;
+	}
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;

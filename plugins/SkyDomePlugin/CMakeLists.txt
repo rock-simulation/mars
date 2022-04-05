@@ -41,6 +41,9 @@ set(HEADERS
 	src/SphereSegment.h
 )
 
+add_definitions(-DMARS_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+
+
 add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}

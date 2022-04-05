@@ -57,18 +57,13 @@ namespace mars {
             newplugin.t_count = newplugin.t_count_gui = 0;
       
             if(control->cfg) {
-              cfg_manager::cfgPropertyStruct cfgPath;
-              cfgPath = control->cfg->getOrCreateProperty("Preferences",
+              resourcesPath = control->cfg->getOrCreateProperty("Preferences",
                                                           "resources_path",
-                                                          std::string("."));
-          
-              resourcesPath = cfgPath.sValue;
+                                                          "").sValue;
 
-              cfgPath = control->cfg->getOrCreateProperty("Config",
-                                                          "config_path",
-                                                          std::string("."));
-      
-              configPath = cfgPath.sValue;
+              configPath = control->cfg->getOrCreateProperty("Config",
+							     "config_path",
+							     ".").sValue;
             }
           }
         }

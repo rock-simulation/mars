@@ -79,9 +79,12 @@ namespace mars {
 
         resPath = ".";
         if(control->cfg) {
-          cfgProp = control->cfg->getOrCreateProperty("Graphics",
+          cfgProp = control->cfg->getOrCreateProperty("Preferences",
                                                       "resources_path",
-                                                      ".");
+                                                      "");
+	  if(cfgProp.sValue == "") {
+	    cfgProp.sValue = MARS_DEFAULT_RESOURCES_PATH;
+	  }
           resPath = cfgProp.sValue;
           cfgPropPath = control->cfg->getOrCreateProperty("Scene",
                                                           "skydome_path",
@@ -112,8 +115,8 @@ namespace mars {
           scene->addChild(posTransform);
         }
 
-        if(pathExists(resPath+"/Textures/"+folder)) {
-          folder = resPath+"/Textures/"+folder;
+        if(pathExists(resPath+"/mars/graphics/resources/Textures/"+folder)) {
+          folder = resPath+"/mars/graphics/resources/Textures/"+folder;
         }
         LOG_INFO("SkyDome: init with folder: %s", folder.c_str());
         if(meshPath != "") {

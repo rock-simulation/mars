@@ -18,6 +18,7 @@
  *
  */
 
+#include "config.h"
 #include "BlenderExportGUI.h"
 
 #include <mars/main_gui/GuiInterface.h>
@@ -64,7 +65,10 @@ namespace mars {
       pDialog->addGenericButton("Stop", this, SLOT(stopButton()));  
 
       rPath = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
-                                                ".").sValue;
+                                                "").sValue;
+      if(rPath == "") {
+	rPath = MARS_GUI_DEFAULT_RESOURCES_PATH;
+      }
     }
 
 
