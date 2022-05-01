@@ -21,6 +21,8 @@ def clearDict():
     iDict["configMotorValues"] = {}
     iDict["applyForce"] = {}
     iDict["applyTorque"] = {}
+    iDict["connectNodes"] = []
+    iDict["disconnectNodes"] = []
     iDict["request"] = []
     iDict["config"] = {}
     iDict["PointCloud"] = {}
@@ -47,6 +49,14 @@ def applyForce(name, value):
 def applyTorque(name, value):
     global iDict
     iDict["applyTorque"][name] = {"value": value}
+
+def connectNodes(name1, name2):
+    global iDict
+    iDict["connectNodes"].append([name1, name2])
+
+def disconnectNodes(name1, name2):
+    global iDict
+    iDict["disconnectNodes"].append([name1, name2])
 
 def setRunning(value):
     if value:

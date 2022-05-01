@@ -33,6 +33,7 @@
 #include <mars/interfaces/sim/SensorManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/data_broker/DataPackage.h>
 #include <mars/sim/CameraSensor.h>
@@ -250,6 +251,20 @@ namespace mars {
             map.erase(iit);
           }
 
+
+          if(map.hasKey("disconnectNodes") && control->sim->isSimRunning()) {
+            ConfigVector::iterator it = map["disconnectNodes"].begin();
+            for(; it!=map["disconnectNodes"].end(); ++it) {
+              std::string name1 = (*it)[0];
+              std::string name2 = (*it)[1];
+              unsigned long id1 = control->nodes->getID(name1);
+              unsigned long id2 = control->nodes->getID(name2);
+              control->sim->disconnectNodes(id1, id2);
+            }
+            ConfigMap::iterator iit = map.find("disconnectNodes");
+            map.erase(iit);
+          }
+
           if(map.hasKey("config")) {
             ConfigMap::iterator it = map["config"].beginMap();
             for(; it!=map["config"].endMap(); ++it) {
@@ -367,6 +382,19 @@ namespace mars {
                 }
               }
             }
+          }
+
+          if(map.hasKey("connectNodes") && control->sim->isSimRunning()) {
+            ConfigVector::iterator it = map["connectNodes"].begin();
+            for(; it!=map["connectNodes"].end(); ++it) {
+              std::string name1 = (*it)[0];
+              std::string name2 = (*it)[1];
+              unsigned long id1 = control->nodes->getID(name1);
+              unsigned long id2 = control->nodes->getID(name2);
+              control->sim->connectNodes(id1, id2);
+            }
+            ConfigMap::iterator iit = map.find("connectNodes");
+            map.erase(iit);
           }
 
           if(map.hasKey("request") && map["request"].isVector()) {
