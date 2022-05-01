@@ -43,6 +43,7 @@ namespace mars {
         // 1. load instances: is done by loading scene
         std::string configFile;
         configmaps::ConfigMap map;
+
         try {
           // get config path
           configPath = control->cfg->getOrCreateProperty("Config", "config_path", ".").sValue;
