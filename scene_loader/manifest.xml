@@ -9,6 +9,6 @@
     <depend package="simulation/mars/common/data_broker" />
     <depend package="tools/configmaps" />
     <depend package="external/minizip" />
-    <rosdep name="qt4" />
+    <rosdep name="qt5" />
     <tags>needs_opt</tags>
 </package>
