@@ -553,6 +553,10 @@ namespace mars {
       return getUpperLimit(2);
     }
 
+    sReal SimJoint::getCFM() const {
+      return physical_joint->getCFM();
+    }
+
     void SimJoint::setLowerLimit(sReal limit, unsigned char axis_index) {
       if (axis_index == 1) {
         this->lowerLimit1 = limit;
@@ -590,6 +594,10 @@ namespace mars {
     void SimJoint::setHighStop2(sReal highStop2) { // deprecated
       this->upperLimit2 = highStop2;
       physical_joint->setHighStop2(highStop2*invert);
+    }
+
+    void SimJoint::setCFM(sReal cfm) const {
+      physical_joint->setCFM(cfm);
     }
 
     // for dataBroker communication

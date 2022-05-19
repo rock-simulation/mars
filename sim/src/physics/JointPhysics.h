@@ -82,10 +82,12 @@ namespace mars {
       virtual interfaces::sReal getHighStop() const;
       virtual interfaces::sReal getLowStop2() const;
       virtual interfaces::sReal getHighStop2() const;
+      virtual interfaces::sReal getCFM() const;
       virtual void setLowStop(interfaces::sReal lowStop);
       virtual void setHighStop(interfaces::sReal highStop);
       virtual void setLowStop2(interfaces::sReal lowStop2);
       virtual void setHighStop2(interfaces::sReal highStop2);
+      virtual void setCFM(interfaces::sReal cfm);
 
     private:
       std::shared_ptr<WorldPhysics> theWorld;
