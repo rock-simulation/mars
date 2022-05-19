@@ -123,6 +123,7 @@ namespace mars {
       const utils::Vector getJointLoad(void) const;
       interfaces::sReal getLowerLimit(unsigned char axis_index=1) const;
       interfaces::sReal getUpperLimit(unsigned char axis_index=1) const;
+      interfaces::sReal getCFM() const;
       interfaces::sReal getMotorTorque(void) const;  // FIXME: this should not be in the joint
       interfaces::NodeId getNodeId(unsigned char node_index=1) const;
       const interfaces::JointData getSJoint(void) const;
@@ -146,6 +147,7 @@ namespace mars {
       void setEffort(interfaces::sReal torque, unsigned char axis_index=1);
       void setLowerLimit(interfaces::sReal limit, unsigned char axis_index=1);
       void setUpperLimit(interfaces::sReal limit, unsigned char axis_index=1);
+      void setCFM(interfaces::sReal cfm) const;
       void setInvertAxis(bool v);
       // inherited from DataBroker ProducerInterface
       void getDataBrokerNames(std::string *groupName, std::string *dataName) const;

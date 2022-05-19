@@ -1351,6 +1351,21 @@ namespace mars {
       }
     }
 
+    interfaces::sReal JointPhysics::getCFM() const {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        return dJointGetHingeParam(jointId, dParamCFM);
+      case JOINT_TYPE_HINGE2:
+        return dJointGetHinge2Param(jointId, dParamCFM);
+      case JOINT_TYPE_SLIDER:
+        return dJointGetSliderParam(jointId, dParamCFM);
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: cfm for type %d not implemented yet\n", joint_type);
+        return 0.;
+      }
+    }
+
     void JointPhysics::setLowStop(interfaces::sReal lowStop) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
@@ -1407,6 +1422,24 @@ namespace mars {
       default:
         // not implemented yes
         fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        break;
+      }
+    }
+
+    void JointPhysics::setCFM(interfaces::sReal cfm) {
+      switch(joint_type) {
+      case JOINT_TYPE_HINGE:
+        dJointSetHingeParam(jointId, dParamCFM, cfm);
+        break;
+      case JOINT_TYPE_HINGE2:
+        dJointSetHinge2Param(jointId, dParamCFM, cfm);
+        break;
+      case JOINT_TYPE_SLIDER:
+        dJointSetSliderParam(jointId, dParamCFM, cfm);
+        break;
+      default:
+        // not implemented yes
+        fprintf(stderr, "mars::sim::JointPhysics: cfm for type %d not implemented yet\n", joint_type);
         break;
       }
     }

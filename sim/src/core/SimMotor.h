@@ -194,7 +194,6 @@ namespace mars {
       interfaces::sReal* controlLimit;
       JointControlFunction setJointControlParameter;
       MotorControlFunction runController;
-      interfaces::sReal p, i, d;
       interfaces::sReal last_error;
       interfaces::sReal integ_error;
       interfaces::sReal joint_velocity;

@@ -72,10 +72,12 @@ namespace mars {
       virtual sReal getHighStop() const = 0;
       virtual sReal getLowStop2() const = 0;
       virtual sReal getHighStop2() const = 0;
+      virtual sReal getCFM() const = 0;
       virtual void setLowStop(sReal lowStop) = 0;
       virtual void setHighStop(sReal lowStop) = 0;
       virtual void setLowStop2(sReal lowStop) = 0;
       virtual void setHighStop2(sReal lowStop) = 0;
+      virtual void setCFM(sReal cfm) = 0;
     };
 
   } // end of namespace interfaces
