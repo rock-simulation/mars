@@ -56,11 +56,11 @@ namespace mars {
 	control->loadCenter->loadScene[".zsmurf"] = this; // zipped smurf model
 	control->loadCenter->loadScene[".zsmurfs"] = this; // zipped smurf scene
 	control->loadCenter->loadScene[".zsmurfa"] = this; // zipped smurf assembly
-	control->loadCenter->loadScene[".smurf"] = this; // smurf model
+	//control->loadCenter->loadScene[".smurf"] = this; // smurf model
 	control->loadCenter->loadScene[".smurfs"] = this; // smurf scene
 	control->loadCenter->loadScene[".smurfa"] = this; // smurf assembly
 	control->loadCenter->loadScene[".svg"] = this; // smurfed vector graphic
-	control->loadCenter->loadScene[".urdf"] = this; // urdf model
+	//control->loadCenter->loadScene[".urdf"] = this; // urdf model
 	LOG_INFO("smurf_loader: added SMURF loader to loadCenter");
       }
 
