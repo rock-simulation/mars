@@ -65,7 +65,7 @@ namespace mars {
 
     DrawObject::DrawObject(GraphicsManager *g)
       : id_(0),
-        nodeMask_(0xff),
+        nodeMask_(0xfffffff),
         stateFilename_(""),
         selected_(false),
         selectable_(true),
