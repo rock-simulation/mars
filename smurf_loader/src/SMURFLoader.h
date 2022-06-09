@@ -29,9 +29,6 @@
   #warning "SMURFLoader.h"
 #endif
 
-#include <QtXml>
-#include <QDomNodeList>
-
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
