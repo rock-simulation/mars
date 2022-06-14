@@ -304,6 +304,13 @@ namespace mars {
               editPattern.push_back(preStr+"density");
               editPattern.push_back(preStr+"movable");
               editPattern.push_back(preStr+"groupid");
+              dropDownPattern.push_back(preStr+"nodeType");
+              dropDownValues.resize(1);
+              dropDownValues[0].push_back("COLLISION");
+              dropDownValues[0].push_back("INERTIA");
+              dropDownValues[0].push_back("FRAME");
+              dropDownValues[0].push_back("VISUAL");         
+              dropDownValues[0].push_back("NONE");      
               //editPattern.push_back(preStr+"rotation*");
               nodeData.toConfigMap(&map, false, true);
               updateNodeMap(map);

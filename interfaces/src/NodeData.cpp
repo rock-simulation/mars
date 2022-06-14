@@ -308,6 +308,25 @@ namespace mars {
       SET_VALUE("noPhysical", noPhysical, writeDefaults);
       SET_VALUE("movable", movable, writeDefaults);
 
+      if(simNodeType==0) {
+        (*config)["nodeType"] = "COLLISION";
+      }
+      else if (simNodeType == 1) {
+        (*config)["nodeType"] = "INERTIA";
+      }
+      else if (simNodeType == 2) {
+        (*config)["nodeType"] = "FRAME";
+      }
+      else if (simNodeType == 3) {
+        (*config)["nodeType"] = "VISUAL";
+      }      
+      else if (simNodeType == 4) {
+        (*config)["nodeType"] = "NONE";
+      }           
+      else {
+        (*config)["nodeType"] = simNodeType;
+      }      
+
       if(writeDefaults || physicMode != defaultNode.physicMode) {
         if(noPhysical) {
           try {
