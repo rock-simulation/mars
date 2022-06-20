@@ -68,6 +68,8 @@ add_library(${PROJECT_NAME} SHARED ${TARGET_SRC})
 
 if (${USE_QT5})
 #qt5_use_modules(${PROJECT_NAME} Xml)
+find_package(Qt5Xml)
+include_directories(${PROJECT_NAME} ${Qt5XML_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} Qt5::Xml)
 endif (${USE_QT5})
 

@@ -177,18 +177,22 @@ set(SOURCES
            src/shadow/ParallelSplitShadowMap.cpp
 )
 
-if (${USE_QT5})
-qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets QT5::OpenGL Qt5::MacExtras)
-else (${USE_QT5})
-qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
-endif (${USE_QT5})
-
 #cmake variables
 configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/config.h @ONLY)
 include_directories("${CMAKE_BINARY_DIR}")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
+
+if (${USE_QT5})
+qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+#qt5_use_modules(${PROJECT_NAME} MacExtras)
+find_package(Qt5 REQUIRED COMPONENTS Widgets OpenGL)
+include_directories(${PROJECT_NAME} ${Qt5Widgets_INCLUDE_DIRS}
+                                    ${Qt5OpenGL_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::OpenGL)
+else (${USE_QT5})
+qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+endif (${USE_QT5})
 
 if(APPLE)
  FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
