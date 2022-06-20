@@ -179,8 +179,7 @@ set(SOURCES
 
 if (${USE_QT5})
 qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
-qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
-#qt5_use_modules(${PROJECT_NAME} MacExtras)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets QT5::OpenGL Qt5::MacExtras)
 else (${USE_QT5})
 qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
 endif (${USE_QT5})
