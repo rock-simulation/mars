@@ -202,7 +202,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/src/qtpropertybrowser)
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} ${QT_OWN_MOC})
 
 if (${USE_QT5})
-qt5_use_modules(${PROJECT_NAME} Widgets)
+#qt5_use_modules(${PROJECT_NAME} Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 endif (${USE_QT5})
 
 target_link_libraries(${PROJECT_NAME}

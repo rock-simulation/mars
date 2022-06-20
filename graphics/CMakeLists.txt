@@ -41,11 +41,12 @@ endif()
 
 pkg_check_modules(OSGQT openscenegraph-osgQt5)
 if(OSGQT_FOUND)
-find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 
+find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 include_directories(${OSGQT_INCLUDE_DIRS})
 link_directories(${OSGQT_LIBRARY_DIRS})
 add_definitions(${OSGQT_CFLAGS_OTHER})  #cflags without -I
+SET(EXTRA_LIBS ${OSGQT_LIBRARIES})
 
 else()
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
@@ -178,6 +179,8 @@ set(SOURCES
 
 if (${USE_QT5})
 qt5_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
+qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
+#qt5_use_modules(${PROJECT_NAME} MacExtras)
 else (${USE_QT5})
 qt4_wrap_cpp( QT_MOC_HEADER_SRC ${QT_MOC_HEADERS})
 endif (${USE_QT5})
@@ -187,11 +190,6 @@ configure_file(${CMAKE_SOURCE_DIR}/config.h.in ${CMAKE_BINARY_DIR}/config.h @ONL
 include_directories("${CMAKE_BINARY_DIR}")
 
 add_library(${PROJECT_NAME} SHARED ${SOURCES} ${QT_MOC_HEADER_SRC} config.h)
-
-if (${USE_QT5})
-qt5_use_modules(${PROJECT_NAME} Widgets OpenGL)
-#qt5_use_modules(${PROJECT_NAME} MacExtras)
-endif (${USE_QT5})
 
 if(APPLE)
  FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
@@ -206,10 +204,6 @@ if(WIN32)
   endif(USE_VERTEX_BUFFER) 
   SET(WIN_LIBS ${WIN_LIBS} ${OSGQT_LIBRARIES})
 endif(WIN32)
-
-if(OSGQT_FOUND)
-  SET(EXTRA_LIBS ${OSGQT_LIBRARIES})
-endif()
 
 target_link_libraries(${PROJECT_NAME}         
             ${QT_LIBRARIES}
