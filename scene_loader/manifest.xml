@@ -10,5 +10,6 @@
     <depend package="tools/configmaps" />
     <depend package="external/minizip" />
     <rosdep name="qt4" />
+    <rosdep name="zlib" />
     <tags>needs_opt</tags>
 </package>
