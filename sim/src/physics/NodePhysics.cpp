@@ -197,12 +197,19 @@ namespace mars {
           if(node->physicMode == NODE_TYPE_TERRAIN) {
             dGeomGetQuaternion(nGeom, t1);
             dQMultiply0(t2, tmp, t1);
+            dNormalize4(t2);
             dGeomSetQuaternion(nGeom, t2);
           }
           else
             dGeomSetQuaternion(nGeom, tmp);
         }
         node_data.id = node->index;
+        if(node->map.hasKey("c_filter_depth")) {
+          node_data.filter_depth = node->map["c_filter_depth"];
+        }
+        if(node->map.hasKey("c_filter_angle")) {
+          node_data.filter_angle = node->map["c_filter_angle"];
+        }
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);
