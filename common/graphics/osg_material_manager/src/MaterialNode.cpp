@@ -254,8 +254,13 @@ namespace osg_material_manager {
     std::list<mars::interfaces::LightData*>::iterator it2;
     double dist1, dist2;
     Vector position_;
+    configmaps::ConfigMap materialData = material->getMaterialData();
     getNodePosition(&position_);
     for(it=lightList.begin(); it!=lightList.end(); ++it) {
+      // filter lights
+      if(materialData.hasKey("filter_lights") and materialData["filter_lights"].hasKey((*it)->name)) {
+        continue;
+      }
       dist1 = Vector((*it)->pos - position_).norm();
       for(it2=lightList_.begin(); it2!=lightList_.end(); ++it2) {
         dist2 = Vector((*it2)->pos - position_).norm();
