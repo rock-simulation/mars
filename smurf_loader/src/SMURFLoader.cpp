@@ -27,6 +27,9 @@
 #include "SMURFLoader.h"
 #include "zipit.h"
 
+#include <QtXml>
+#include <QDomNodeList>
+
 #include <algorithm>
 #include <lib_manager/LibManager.hpp>
 #include <lib_manager/LibInterface.hpp>
