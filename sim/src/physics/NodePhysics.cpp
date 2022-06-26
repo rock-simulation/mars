@@ -210,6 +210,12 @@ namespace mars {
         if(node->map.hasKey("c_filter_angle")) {
           node_data.filter_angle = node->map["c_filter_angle"];
         }
+        if(node->map.hasKey("c_filter_sphere")) {
+          node_data.filter_sphere.x() = node->map["c_filter_sphere"][0];
+          node_data.filter_sphere.y() = node->map["c_filter_sphere"][1];
+          node_data.filter_sphere.z() = 0.0;//node->map["c_filter_sphere"][2];
+          node_data.filter_radius = node->map["c_filter_sphere"][3];
+        }
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);

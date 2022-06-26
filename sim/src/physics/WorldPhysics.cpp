@@ -684,6 +684,19 @@ namespace mars {
       if(geom_data2->filter_angle > 0.0 and  geom_data2->filter_angle > geom_data1->filter_angle) {
         filter_angle = geom_data2->filter_angle;
       }
+
+      double filter_radius = -1.0;
+      Vector filter_sphere;
+      if(geom_data1->filter_radius > filter_radius) {
+        filter_radius = geom_data1->filter_radius;
+        filter_sphere = geom_data1->filter_sphere;
+      }
+      if(geom_data2->filter_radius > filter_radius) {
+        filter_radius = geom_data2->filter_radius;
+        filter_sphere = geom_data2->filter_sphere;
+      }
+
+
       //for granular test
       //if( (plane != o2) && (plane !=o1)) return ;
 
@@ -866,7 +879,17 @@ namespace mars {
           // filter_depth is used to filter heightmaps contact under the surface
           if(filter_depth > 0.0) {
             if(contact[i].geom.normal[2] < 0.5 or filter_depth < contact[i].geom.depth) {
-            continue;
+              continue;
+            }
+          }
+          if(filter_radius > 0.0) {
+            Vector v;
+            v.x() = contact[i].geom.pos[0];
+            v.y() = contact[i].geom.pos[1];
+            v.z() = 0.0;//contact[i].geom.pos[2];
+            v -= filter_sphere;
+            if(v.norm() <= filter_radius) {
+              continue;
             }
           }
           have_contact = true;
@@ -894,6 +917,16 @@ namespace mars {
             // filter_depth is used to filter heightmaps contact under the surface
             if(filter_depth > 0.0) {
               if(contact[i].geom.normal[2] < 0.5 or filter_depth < contact[i].geom.depth) {
+                continue;
+              }
+            }
+            if(filter_radius > 0.0) {
+              Vector v;
+              v.x() = contact[i].geom.pos[0];
+              v.y() = contact[i].geom.pos[1];
+              v.z() = 0.0;//contact[i].geom.pos[2];
+              v -= filter_sphere;
+              if(v.norm() <= filter_radius) {
                 continue;
               }
             }
