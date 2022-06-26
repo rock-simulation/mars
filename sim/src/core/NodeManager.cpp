@@ -1427,6 +1427,12 @@ namespace mars {
         iter->second->setAngularDamping(damping);
     }
 
+    void NodeManager::setLinearDamping(NodeId id, sReal damping) {
+      MutexLocker locker(&iMutex);
+      NodeMap::iterator iter = simNodes.find(id);
+      if (iter != simNodes.end())
+        iter->second->setLinearDamping(damping);
+    }
 
     void NodeManager::addRotation(NodeId id, const Quaternion &q) {
       MutexLocker locker(&iMutex);
