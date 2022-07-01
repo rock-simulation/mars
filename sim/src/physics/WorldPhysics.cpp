@@ -670,6 +670,32 @@ namespace mars {
       }
       dContact *contact = new dContact[maxNumContacts];
 
+      double filter_depth = -1.0;
+      if(geom_data1->filter_depth > filter_depth) {
+        filter_depth = geom_data1->filter_depth;
+      }
+      if(geom_data2->filter_depth > filter_depth) {
+        filter_depth = geom_data2->filter_depth;
+      }
+      double filter_angle = 0.5;
+      if(geom_data1->filter_angle > 0.0) {
+        filter_angle = geom_data1->filter_angle;
+      }
+      if(geom_data2->filter_angle > 0.0 and  geom_data2->filter_angle > geom_data1->filter_angle) {
+        filter_angle = geom_data2->filter_angle;
+      }
+
+      double filter_radius = -1.0;
+      Vector filter_sphere;
+      if(geom_data1->filter_radius > filter_radius) {
+        filter_radius = geom_data1->filter_radius;
+        filter_sphere = geom_data1->filter_sphere;
+      }
+      if(geom_data2->filter_radius > filter_radius) {
+        filter_radius = geom_data2->filter_radius;
+        filter_sphere = geom_data2->filter_sphere;
+      }
+
 
       //for granular test
       //if( (plane != o2) && (plane !=o1)) return ;
@@ -847,7 +873,31 @@ namespace mars {
         draw_item item;
         Vector contact_point;
 
-        num_contacts++;
+        // todo: add depth handling here too
+        bool have_contact = false;
+        for(i=0;i<numc;i++) {
+          // filter_depth is used to filter heightmaps contact under the surface
+          if(filter_depth > 0.0) {
+            if(contact[i].geom.normal[2] < 0.5 or filter_depth < contact[i].geom.depth) {
+              continue;
+            }
+          }
+          if(filter_radius > 0.0) {
+            Vector v;
+            v.x() = contact[i].geom.pos[0];
+            v.y() = contact[i].geom.pos[1];
+            v.z() = 0.0;//contact[i].geom.pos[2];
+            v -= filter_sphere;
+            if(v.norm() <= filter_radius) {
+              continue;
+            }
+          }
+          have_contact = true;
+          break;
+        }
+        if(have_contact) {
+          num_contacts++;
+        }
         if(create_contacts) {
           fb = 0;
           item.id = 0;
@@ -863,7 +913,23 @@ namespace mars {
           item.texture = "";
           item.get_light = 0;
 
-          for(i=0;i<numc;i++){
+          for(i=0;i<numc;i++) {
+            // filter_depth is used to filter heightmaps contact under the surface
+            if(filter_depth > 0.0) {
+              if(contact[i].geom.normal[2] < 0.5 or filter_depth < contact[i].geom.depth) {
+                continue;
+              }
+            }
+            if(filter_radius > 0.0) {
+              Vector v;
+              v.x() = contact[i].geom.pos[0];
+              v.y() = contact[i].geom.pos[1];
+              v.z() = 0.0;//contact[i].geom.pos[2];
+              v -= filter_sphere;
+              if(v.norm() <= filter_radius) {
+                continue;
+              }
+            }
             item.start.x() = contact[i].geom.pos[0];
             item.start.y() = contact[i].geom.pos[1];
             item.start.z() = contact[i].geom.pos[2];
@@ -883,10 +949,10 @@ namespace mars {
               contact[i].fdir1[2] -= v[2];
               dNormalize3(contact[0].fdir1);
             }
-            contact[0].geom.depth += (geom_data1->c_params.depth_correction +
+            contact[i].geom.depth += (geom_data1->c_params.depth_correction +
                                       geom_data2->c_params.depth_correction);
 
-            if(contact[0].geom.depth < 0.0) contact[0].geom.depth = 0.0;
+            if(contact[i].geom.depth < 0.0) contact[i].geom.depth = 0.0;
             dJointID c=dJointCreateContact(world,contactgroup,contact+i);
             dJointAttach(c,b1,b2);
 

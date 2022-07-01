@@ -27,6 +27,9 @@
 #include "SMURFLoader.h"
 #include "zipit.h"
 
+#include <QtXml>
+#include <QDomNodeList>
+
 #include <algorithm>
 #include <lib_manager/LibManager.hpp>
 #include <lib_manager/LibInterface.hpp>
@@ -38,6 +41,8 @@
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
 
+#include <QtXml>
+#include <QDomNodeList>
 
 namespace mars {
   namespace smurf {

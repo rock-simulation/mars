@@ -683,6 +683,7 @@ namespace mars {
        */
       virtual void setAngularDamping(NodeId id, sReal damping) = 0;
 
+      virtual void setLinearDamping(NodeId id, sReal damping) = 0;
       /**
        * \brief Adds a additional rotation to the orientation of a node.
        *

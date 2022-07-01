@@ -47,10 +47,10 @@ namespace osg_animation {
     bone->init_pos.x() = map["pos"][0];
     bone->init_pos.y() = map["pos"][1];
     bone->init_pos.z() = map["pos"][2];
-    bone->init_q.w() = map["rot"][0];
-    bone->init_q.x() = map["rot"][1];
-    bone->init_q.y() = map["rot"][2];
-    bone->init_q.z() = map["rot"][3];
+    bone->init_q.w() = (double)map["rot"][0];
+    bone->init_q.x() = (double)map["rot"][1];
+    bone->init_q.y() = (double)map["rot"][2];
+    bone->init_q.z() = (double)map["rot"][3];
     bone->r_pos = bone->init_pos;
     bone->r_q = bone->init_q;
     bone->q.w() = 1.0;
@@ -339,10 +339,11 @@ namespace osg_animation {
             boneMap[it.first]->pos.x() = it.second[animation_index][0][0];
             boneMap[it.first]->pos.y() = it.second[animation_index][0][1];
             boneMap[it.first]->pos.z() = it.second[animation_index][0][2];
-            boneMap[it.first]->q.x() = it.second[animation_index][1][1];
-            boneMap[it.first]->q.y() = it.second[animation_index][1][2];
-            boneMap[it.first]->q.z() = it.second[animation_index][1][3];
-            boneMap[it.first]->q.w() = it.second[animation_index][1][0];
+            //TODO Suggestion: Add a templated method   
+            boneMap[it.first]->q.x() = (double)(it.second[animation_index][1][1]);
+            boneMap[it.first]->q.y() = (double)(it.second[animation_index][1][2]);
+            boneMap[it.first]->q.z() = (double)(it.second[animation_index][1][3]);
+            boneMap[it.first]->q.w() = (double)(it.second[animation_index][1][0]);
           }
         }
         // unsigned char *data = i->data();

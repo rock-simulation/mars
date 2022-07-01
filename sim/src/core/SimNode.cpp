@@ -805,6 +805,11 @@ namespace mars {
       sNode.angular_damping = damping;
     }
 
+    void SimNode::setLinearDamping(sReal damping) {
+      MutexLocker locker(&iMutex);
+      sNode.linear_damping = damping;
+    }
+
     void SimNode::addRotation(const Quaternion &q) {
       MutexLocker locker(&iMutex);
       sNode.rot = q*sNode.rot;

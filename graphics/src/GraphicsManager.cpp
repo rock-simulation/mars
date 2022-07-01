@@ -81,8 +81,8 @@ namespace mars {
     using namespace mars::interfaces;
     using namespace utils;
 
-    static int ReceivesShadowTraversalMask = 0x1000;
-    static int CastsShadowTraversalMask = 0x2000;
+    static int ReceivesShadowTraversalMask = 0x10000000;
+    static int CastsShadowTraversalMask = 0x20000000;
 
 
     GraphicsManager::GraphicsManager(lib_manager::LibManager *theManager,

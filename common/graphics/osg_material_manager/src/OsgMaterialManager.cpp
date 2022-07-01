@@ -269,7 +269,7 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it != materialMap.end()) {
       MaterialNode *n = new MaterialNode();
-      n->setMaxNumLights(defaultMaxNumNodeLights);
+      n->setMaxNumLights(it->second->getMaxNumLights());
       n->createNodeState();
       n->setUseFog(useFog);
       n->setUseNoise(useNoise);

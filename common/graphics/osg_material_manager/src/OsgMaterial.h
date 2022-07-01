@@ -104,6 +104,7 @@ namespace osg_material_manager {
     void edit(const std::string &key, const std::string &value);
 
     void setMaxNumLights(int n);
+    int getMaxNumLights();
 
     void setUseShader(bool val);
     void setUseShadow(bool val);
