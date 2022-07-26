@@ -70,7 +70,6 @@ target_link_libraries(${PROJECT_NAME}
 TARGET_LINK_LIBRARIES(${PROJECT_NAME}
             ${PKGCONFIG_LIBRARIES}
             ${WIN_LIBS}
-            z
 )
 
 
