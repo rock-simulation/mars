@@ -49,8 +49,12 @@ set(HEADERS
 )
 
 if("$ENV{PYTHON}" STREQUAL "")
-    set(PYTHON "python")
     message(STATUS "Using default python.")
+    find_package(Python)
+    if (${Python_FOUND})
+      set(PYTHON ${Python_EXECUTABLE})
+      message(STATUS "Found python: ${PYTHON}")
+    endif()
 else()
     set(PYTHON $ENV{PYTHON})
 endif()
