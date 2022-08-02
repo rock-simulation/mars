@@ -243,8 +243,10 @@ namespace mars {
       // create the physical node data
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
-        std::shared_ptr<NodeInterface> newNodeInterface = PhysicsMapper::newNodePhysics(control->sim->getPhysics());
-        if (!newNodeInterface->createNode(nodeS)) {
+        std::shared_ptr<NodeInterface> newNodeInterface = PhysicsMapper::newODEObject(control->sim->getPhysics(), nodeS);
+        std::cout << "DEBUGGG: create ODEObject pointer with getPhyiscs NodeManager " << __FILE__ << ":" << __LINE__ << std::endl;
+
+        if (newNodeInterface.get() == nullptr) {
           // if no node was created in physics
           // delete the objects
           newNode.reset();
@@ -253,6 +255,7 @@ namespace mars {
           LOG_ERROR("NodeManager::addNode: No node was created in physics.");
           return INVALID_ID;
         }
+
         // put all data to the correct place
         //      newNode->setSNode(*nodeS);
         newNode->setInterface(newNodeInterface);

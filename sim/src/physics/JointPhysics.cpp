@@ -31,7 +31,7 @@
 #include <mars/utils/MutexLocker.h>
 
 #include "JointPhysics.h"
-#include "NodePhysics.h"
+#include "ODEObject.h"
 
 #include <cstdio>
 
@@ -119,8 +119,8 @@ namespace mars {
       if ( theWorld && theWorld->existsWorld() ) {
         //get the bodies from the interfaces nodes
         //here we have to make some verifications
-        const std::shared_ptr<NodePhysics> n1 = std::dynamic_pointer_cast<NodePhysics>(node1);
-        const std::shared_ptr<NodePhysics> n2 = std::dynamic_pointer_cast<NodePhysics>(node2);
+        const std::shared_ptr<ODEObject> n1 = std::dynamic_pointer_cast<ODEObject>(node1);
+        const std::shared_ptr<ODEObject> n2 = std::dynamic_pointer_cast<ODEObject>(node2);
         dBodyID b1 = 0, b2 = 0;
 
         calculateCfmErp(jointS);

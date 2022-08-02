@@ -38,13 +38,65 @@ namespace mars {
       return std::static_pointer_cast<PhysicsInterface>(worldPhysics);
     }
 
-    std::shared_ptr<NodeInterface> PhysicsMapper::newNodePhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
+    std::shared_ptr<NodeInterface> PhysicsMapper::newODEObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) {
       // Create a nodePhysics with the worldPhysics as constructor parameter, then downcast to a Node interface and return
-      std::shared_ptr<NodePhysics> nodePhysics = std::make_shared<NodePhysics>(worldPhysics);
-      return std::static_pointer_cast<NodeInterface>(nodePhysics);
+      std::shared_ptr<NodeInterface> nodeInterface;
+      // first we create a ode geometry for the node
+      switch(nodeData->physicMode) {
+//     case NODE_TYPE_MESH:
+//       ret = createMesh(node);
+//       break;
+      case NODE_TYPE_BOX:
+          nodeInterface = std::static_pointer_cast<NodeInterface>(std::make_shared<ODEBox>(worldPhysics, nodeData));
+        break;
+//      case NODE_TYPE_SPHERE:
+//        ret = createSphere(node);
+//        break;
+//      case NODE_TYPE_CAPSULE:
+//        ret = createCapsule(node);
+//        break;
+//      case NODE_TYPE_CYLINDER:
+//        ret = createCylinder(node);
+//        break;
+//      case NODE_TYPE_PLANE:
+//        ret = createPlane(node);
+//        break;
+//      case NODE_TYPE_TERRAIN:
+//        ret = createHeightfield(node);
+//        break;
+      default:
+        // no correct type is spezified, so no physically node will be created
+        std::cout << "DEBUGGG: default of switch case in PhysicsMapper " << __FILE__ << ":" << __LINE__ << std::endl;
+        return 0;
+        break;
+      }
+
+      if( ! nodeInterface) {
+        // Error creating the physical Node
+        std::cout << "DEBUGGG: ODEObject creation failed in PhysicsMapper " << __FILE__ << ":" << __LINE__ << std::endl;
+        return 0;
+      }
+
+      if ( nodeInterface )
+      {
+        std::cout << "DEBUGGG: After switch: nodeInterface initialized and valid for some reason" << __FILE__ << ":" << __LINE__ << std::endl;
+      }
+      if ( nodeInterface.get() ) {
+        std::cout << "DEBUGGG: After switch: nodeInterface initialized and internal ptr valid for some reason" << __FILE__ << ":" << __LINE__ << std::endl;
+      }
+      if ( nodeInterface.get() == nullptr ) {
+        std::cout << "DEBUGGG: After switch: nodeInterface initialized and internal ptr == nullptr" << __FILE__ << ":" << __LINE__ << std::endl;
+      }
+      if ( nodeInterface == nullptr ) {
+        std::cout << "DEBUGGG: After switch: nodeInterface initialized and shared_ptr == nullptr" << __FILE__ << ":" << __LINE__ << std::endl;
+      }
+
+      std::cout << "DEBUGGG: return NodeInterface as static cast of ODEObject" << __FILE__ << ":" << __LINE__ << std::endl;
+      return nodeInterface;
+
     }
 
-    std::shared_ptr<JointInterface> PhysicsMapper::newJointPhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
+      std::shared_ptr<JointInterface> PhysicsMapper::newJointPhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
       std::shared_ptr<JointPhysics> jointPhysics = std::make_shared<JointPhysics>(worldPhysics);
       return std::static_pointer_cast<JointInterface>(jointPhysics);
     }

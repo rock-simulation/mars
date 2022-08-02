@@ -37,7 +37,7 @@
  */
 
 #include "WorldPhysics.h"
-#include "NodePhysics.h"
+#include "ODEObject.h"
 #include "SimNode.h"
 
 
@@ -354,7 +354,7 @@ namespace mars {
         std::vector<NodeId> nodeIds = control->nodes->getNodeIDs(nodeName);
         std::shared_ptr<SimNode> nodePtr = control->nodes->getSimNode(nodeIds[0]);
         std::shared_ptr<mars::interfaces::NodeInterface> nodeIfPtr = nodePtr->getInterface();
-        std::shared_ptr<NodePhysics> nodePhysPtr = std::dynamic_pointer_cast<NodePhysics>(nodeIfPtr);
+        std::shared_ptr<ODEObject> nodePhysPtr = std::dynamic_pointer_cast<ODEObject>(nodeIfPtr);
         std::vector<dJointFeedback*> contactFeedbacks =
           nodePhysPtr->addContacts(colContacts, world, contactgroup);
         std::vector<utils::Vector> * contactPoints = new std::vector<utils::Vector>();
@@ -499,7 +499,7 @@ namespace mars {
      *     - retruned true if a body was created, otherwise retruned false
      */
     bool WorldPhysics::getCompositeBody(int comp_group, dBodyID* body,
-                                        NodePhysics *node) {
+                                        ODEObject *node) {
       body_nbr_tupel tmp_tupel;
 
       // if comp_group is bad, debug something
@@ -538,9 +538,9 @@ namespace mars {
      *       counter of connected geoms
      *     - otherwise, if only one geom is connected to the body, destroy the body
      */
-    void WorldPhysics::destroyBody(dBodyID theBody, NodePhysics* node) {
+    void WorldPhysics::destroyBody(dBodyID theBody, ODEObject* node) {
       std::vector<body_nbr_tupel>::iterator iter;
-      std::vector<NodePhysics*>::iterator jter;
+      std::vector<ODEObject*>::iterator jter;
 
       for(iter = comp_body_list.begin(); iter != comp_body_list.end(); iter++) {
         if((*iter).body == theBody) {
@@ -951,7 +951,7 @@ namespace mars {
      */
     void WorldPhysics::resetCompositeMass(dBodyID theBody) {
       std::vector<body_nbr_tupel>::iterator iter;
-      std::vector<NodePhysics*>::iterator jter;
+      std::vector<ODEObject*>::iterator jter;
       dMass bodyMass, tmpMass;
       //bool first = 1;
 
@@ -971,7 +971,7 @@ namespace mars {
     void WorldPhysics::moveCompositeMassCenter(dBodyID theBody, dReal x,
                                                dReal y, dReal z) {
       std::vector<body_nbr_tupel>::iterator iter;
-      std::vector<NodePhysics*>::iterator jter;
+      std::vector<ODEObject*>::iterator jter;
       const dReal *bpos;
 
       // first we have to calculate the offset in bodyframe
@@ -998,7 +998,7 @@ namespace mars {
 
       dMassSetZero(&sumMass);
       for(iter = nodes.begin(); iter != nodes.end(); iter++) {
-        (std::static_pointer_cast<NodePhysics>(*iter))->getAbsMass(&tMass);
+        (std::static_pointer_cast<ODEObject>(*iter))->getAbsMass(&tMass);
         dMassAdd(&sumMass, &tMass);
       }
       center.x() = sumMass.c[0];

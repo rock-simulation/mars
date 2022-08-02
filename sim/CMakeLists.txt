@@ -3,6 +3,8 @@ set(PROJECT_VERSION 1.0)
 set(PROJECT_DESCRIPTION "This library ...")
 cmake_minimum_required(VERSION 2.6)
 
+set(CMAKE_BUILD_TYPE DEBUG)
+
 find_package(Rock)
 
 include(FindPkgConfig)
@@ -85,7 +87,9 @@ set(SOURCES_H
        src/sensors/RotatingRaySensor.h
 
        src/physics/JointPhysics.h
-       src/physics/NodePhysics.h
+       src/physics/ODEObject.h
+       src/physics/ODEBox.h
+#       src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
 
@@ -137,7 +141,9 @@ set(TARGET_SRC
        src/sensors/RotatingRaySensor.cpp
 
        src/physics/JointPhysics.cpp
-       src/physics/NodePhysics.cpp
+       #       src/physics/NodePhysics.cpp
+       src/physics/ODEObject.cpp
+       src/physics/ODEBox.cpp
        src/physics/WorldPhysics.cpp
 
        src/sensors/CameraSensor.cpp
