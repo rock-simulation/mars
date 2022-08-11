@@ -75,12 +75,13 @@ namespace mars {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
       }
-      std::cout << "Here " << std::endl;  
-      odeObjectFactory = new ODEObjectCreator();
+      std::cout << "Here 1" << std::endl;  
+      odeObjectFactory = ODEObjectCreator::getInstance();
     }
 
     NodeManager::~NodeManager()
     {
+      std::cout << "Destroyed " << std::endl;  
       delete odeObjectFactory;
     }
 

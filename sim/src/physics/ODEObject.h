@@ -89,20 +89,14 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
+
     class ODEObject : public interfaces::NodeInterface {
     public:
       ODEObject(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual ~ODEObject(void);
 
-      virtual bool createNode(interfaces::NodeData *node) override {
-	//TODO still need switch interface here?
-      	std::cout << "DEBUGGG: createNode in ODEObject " << __FILE__ << ":" << __LINE__ << std::endl;
-	return true;
-      };
-      virtual bool changeNode(interfaces::NodeData *node) override {
-      	std::cout << "DEBUGGG: changeNode in ODEObject " << __FILE__ << ":" << __LINE__ << std::endl;
-	return true;
-      };
+      virtual bool createNode(interfaces::NodeData *node) override;
+      virtual bool changeNode(interfaces::NodeData *node) override;
       virtual void getPosition(utils::Vector *pos) const;
       virtual const utils::Vector setPosition(const utils::Vector &pos, bool move_group);
       virtual void getRotation(utils::Quaternion *q) const;
@@ -158,13 +152,6 @@ namespace mars {
       interfaces::terrainStruct *terrain;
       dReal *height_data;
       std::vector<sensor_list_element> sensor_list;
-      bool createMesh(interfaces::NodeData *node);
-      bool createBox(interfaces::NodeData *node);
-      bool createSphere(interfaces::NodeData *node);
-      bool createCapsule(interfaces::NodeData *node);
-      bool createCylinder(interfaces::NodeData *node);
-      bool createPlane(interfaces::NodeData *node);
-      bool createHeightfield(interfaces::NodeData *node);
       void setProperties(interfaces::NodeData *node);
       void setInertiaMass(interfaces::NodeData *node);
     };

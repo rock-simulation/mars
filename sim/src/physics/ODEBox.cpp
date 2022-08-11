@@ -29,7 +29,7 @@ namespace mars {
     ODEBox::ODEBox(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
       // At this moment we have not much things to do here. ^_^
       std::cout << "DEBUGGG: in ODEBox Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
-      createNode(nodeData);
+      createNode(nodeData); // pass a function pointer?
     }
 
     ODEBox::~ODEBox(void) {
@@ -49,6 +49,7 @@ namespace mars {
      *     - a physical node should be created in the world
      *     - the node properties should be set
      */
+
     bool ODEBox::createNode(NodeData* node) {
 #ifdef _VERIFY_WORLD_
       std::cout << "DEBUGGG: in ODEBox create Node " << __FILE__ << ":" << __LINE__ << std::endl;
@@ -61,7 +62,7 @@ namespace mars {
       MutexLocker locker(&(theWorld->iMutex));
       if(theWorld && theWorld->existsWorld()) {
         bool ret;
-        ret = createBox(node);
+        ret = createBox(node); //could this be a lamda or a function pointer?
         if(ret == 0) {
           // Error createing the physical Node
           return 0;

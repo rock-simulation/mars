@@ -89,6 +89,7 @@ set(SOURCES_H
        src/physics/JointPhysics.h
        src/physics/ODEObject.h
        src/physics/ODEBox.h
+       src/physics/ODEMesh.h
 #       src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
@@ -146,6 +147,7 @@ set(TARGET_SRC
        #       src/physics/NodePhysics.cpp
        src/physics/ODEObject.cpp
        src/physics/ODEBox.cpp
+       src/physics/ODEMesh.cpp
        src/physics/WorldPhysics.cpp
        src/physics/ODEObjectCreator.cpp
 

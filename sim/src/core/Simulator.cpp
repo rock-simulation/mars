@@ -288,10 +288,10 @@ namespace mars {
       }
 
       // If any manager is missing, create it from the default type.
-      if (control->storage == NULL) {
-        LOG_ERROR("[Simulator] No storage manager is defined.");
-        throw std::exception();
-      }
+      //if (control->storage == NULL) {
+      //  LOG_ERROR("[Simulator] No storage manager is defined.");
+      //  throw std::exception();
+      //}
 
       if (control->nodes == NULL) {
         LOG_DEBUG("[Simulator] Set default node manager in control->nodes");

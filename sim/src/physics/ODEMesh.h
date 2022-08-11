@@ -19,17 +19,17 @@
  */
 
  /**
- * \file ODEBox.h
+ * \file ODEMesh.h
  * \author Malte Roemmermann, Leon Danter
- * \brief "ODEBox" implements an ODE box geometry and collision using the ODEObject class
+ * \brief "ODEMesh" implements an ode mesh representation of the given node.
  *
  */
 
-#ifndef ODE_BOX_H
-#define ODE_BOX_H
+#ifndef ODE_MESH_H
+#define ODE_MESH_H
 
 #ifdef _PRINT_HEADER_
-  #warning "ODEBox.h"
+  #warning "ODEMesh.h"
 #endif
 
 #include <mars/utils/MutexLocker.h>
@@ -47,19 +47,14 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
-    class ODEBox : public ODEObject {
+    class ODEMesh : public ODEObject {
     public:
-      ODEBox(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
-      virtual ~ODEBox(void);
-
-      //TODO createGeometry vs createCollision? nBody vs nCollision
-      //     review header comment on ODEBox
-      virtual bool createNode(interfaces::NodeData *node) override; //this can go to ODEObject
-      virtual bool changeNode(interfaces::NodeData *node) override;
-      bool createBox(interfaces::NodeData *node);
+      ODEMesh(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEMesh(void);
+      bool createMesh(interfaces::NodeData *node);
     };
 
   } // end of namespace sim
 } // end of namespace mars
 
-#endif  // ODE_BOX_H
+#endif  // ODE_MESH_H
