@@ -37,6 +37,9 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 
+#include <ODEObjectFactory.h>
+#include <ODEObjectCreator.h>
+
 namespace mars {
   namespace sim {
 
@@ -54,8 +57,7 @@ namespace mars {
     public:
       NodeManager(interfaces::ControlCenter *c,
                   lib_manager::LibManager *theManager);
-      virtual ~NodeManager(){}
-
+      virtual ~NodeManager();
       virtual interfaces::NodeId createPrimitiveNode(const std::string &name,
                                                      interfaces::NodeType type,
                                                      bool movable=false,
@@ -163,6 +165,9 @@ namespace mars {
                         const std::string &value);
 
     private:
+
+      ODEObjectFactory* odeObjectFactory; 
+
       interfaces::NodeId next_node_id;
       bool update_all_nodes;
       int visual_rep;

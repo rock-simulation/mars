@@ -92,6 +92,8 @@ set(SOURCES_H
 #       src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
+       src/physics/ODEObjectCreator.h
+       src/physics/ODEObjectFactory.h
 
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h
@@ -145,6 +147,7 @@ set(TARGET_SRC
        src/physics/ODEObject.cpp
        src/physics/ODEBox.cpp
        src/physics/WorldPhysics.cpp
+       src/physics/ODEObjectCreator.cpp
 
        src/sensors/CameraSensor.cpp
        src/sensors/Joint6DOFSensor.cpp

@@ -75,6 +75,13 @@ namespace mars {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
       }
+      std::cout << "Here " << std::endl;  
+      odeObjectFactory = new ODEObjectCreator();
+    }
+
+    NodeManager::~NodeManager()
+    {
+      delete odeObjectFactory;
     }
 
 
@@ -243,7 +250,9 @@ namespace mars {
       // create the physical node data
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
-        std::shared_ptr<NodeInterface> newNodeInterface = PhysicsMapper::newODEObject(control->sim->getPhysics(), nodeS);
+        //std::shared_ptr<NodeInterface> newNodeInterface = PhysicsMapper::newODEObject(control->sim->getPhysics(), nodeS);
+        std::shared_ptr<NodeInterface> newNodeInterface = odeObjectFactory->createObject(control->sim->getPhysics(), nodeS);   
+
         std::cout << "DEBUGGG: create ODEObject pointer with getPhyiscs NodeManager " << __FILE__ << ":" << __LINE__ << std::endl;
 
         if (newNodeInterface.get() == nullptr) {
