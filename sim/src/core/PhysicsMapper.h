@@ -34,8 +34,6 @@
 #endif
 
 #include "WorldPhysics.h"
-#include "ODEBox.h"
-#include "ODEObject.h"
 #include "JointPhysics.h"
 
 namespace mars {
@@ -44,11 +42,7 @@ namespace mars {
     class PhysicsMapper {
     public:
       static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
-      //TODO naming. Would prefer ODEObject here
-      //     check other files if NodeInterface pointer would be preferable over ODEObject pointer?
-      static std::shared_ptr<interfaces::NodeInterface> newODEObject(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics, interfaces::NodeData * nodeData);
       static std::shared_ptr<interfaces::JointInterface> newJointPhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
-    
     };
 
   } // end of namespace sim

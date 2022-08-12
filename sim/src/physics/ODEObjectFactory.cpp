@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ODEObjectCreator.h>
+#include <ODEObjectFactory.h>
 #include <ODEBox.h>
 #include <ODECapsule.h>
 #include <ODECylinder.h>
@@ -16,22 +16,22 @@ namespace sim{
 
 using namespace ::mars::interfaces;
 
-ODEObjectCreator* ODEObjectCreator::instance = NULL;
+ODEObjectFactory* ODEObjectFactory::instance = NULL;
 
-ODEObjectCreator* ODEObjectCreator::getInstance(){
+ODEObjectFactory* ODEObjectFactory::getInstance(){
   if (NULL == instance){
-    instance = new ODEObjectCreator();
+    instance = new ODEObjectFactory();
   }
   return instance;
 } 
 
-ODEObjectCreator::ODEObjectCreator(){
+ODEObjectFactory::ODEObjectFactory(){
 }
 
-ODEObjectCreator::~ODEObjectCreator(){
+ODEObjectFactory::~ODEObjectFactory(){
 }
 
-std::shared_ptr<NodeInterface> ODEObjectCreator::createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData){
+std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData){
   switch(nodeData->physicMode) {
   case NODE_TYPE_BOX:
     return std::static_pointer_cast<NodeInterface>(std::make_shared<ODEBox>(worldPhysics, nodeData));

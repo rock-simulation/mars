@@ -1,15 +1,24 @@
 #pragma once
 
-#include <mars/interfaces/sim/NodeInterface.h>
+#include <ObjectFactoryInterface.h>
 
 namespace mars{
 namespace sim{
 
 using namespace ::mars::interfaces;
 
-class ODEObjectFactory{
+class ODEObjectFactory : public ObjectFactoryInterface{
 public:
-  virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) = 0;
+  static ODEObjectFactory* getInstance();
+
+protected:
+  ODEObjectFactory();
+  virtual ~ODEObjectFactory();    
+  virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) override;
+
+private:
+  static ODEObjectFactory* instance;  
 };
+
 }
 }
