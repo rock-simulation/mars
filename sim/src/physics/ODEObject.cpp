@@ -26,13 +26,14 @@
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
-#include <mars/interfaces/terrainStruct.h>
 #include <cmath>
 #include <set>
 
 #include <mars/interfaces/Logging.hpp>
 
 #include <ode/odemath.h>
+
+#include <iostream>
 
 
 namespace mars {
@@ -61,13 +62,9 @@ namespace mars {
       theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
       nBody = 0;
       nGeom = 0;
-      myVertices = 0;
-      myIndices = 0;
-      myTriMeshData = 0;
       composite = false;
       //node_data.num_ground_collisions = 0;
-      node_data.setZero();
-      height_data = 0;
+      node_data.setZero();      
       dMassSetZero(&nMass);
     }
 
@@ -91,10 +88,6 @@ namespace mars {
 
       if(nGeom) dGeomDestroy(nGeom);
 
-      if(myVertices) free(myVertices);
-      if(myIndices) free(myIndices);
-      if(height_data) free(height_data);
-
       // TODO: how does this loop work? why doesn't it run forever?
       for(iter = sensor_list.begin(); iter != sensor_list.end();) {
         if((*iter).gd){
@@ -104,11 +97,6 @@ namespace mars {
         dGeomDestroy((*iter).geom);
         sensor_list.erase(iter);
       }
-      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
-    }
-
-    dReal heightfield_callback(void* pUserData, int x, int z ) {
-      return ((ODEObject*)pUserData)->heightCallback(x, z);
     }
 
     /**
@@ -126,6 +114,149 @@ namespace mars {
      *       the physical position of the node
      *     - otherwise the position should be set to zero
      */
+
+    bool ODEObject::createODEGeometry(interfaces::NodeData *node){
+      std::cout << "ODEObject: using default createODEGeometry func. Did you forget to override it?." << std::endl;
+      LOG_WARN("ODEObject: using default createODEGeometry func. Did you forget to override it?.");
+      return true;
+    }
+
+    bool ODEObject::changeNode(interfaces::NodeData* node) {
+      dReal pos[3] = {node->pos.x(), node->pos.y(), node->pos.z()};
+      dQuaternion rotation;
+      rotation[1] = node->rot.x();
+      rotation[2] = node->rot.y();
+      rotation[3] = node->rot.z();
+      rotation[0] = node->rot.w();
+      const dReal *tpos;
+#ifdef _VERIFY_WORLD_
+      sRotation euler = utils::quaternionTosRotation(node->rot);
+      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
+              node->index, node->pos.x(), node->pos.y(),
+              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
+              node->mass, node->density);
+#endif
+      MutexLocker locker(&(theWorld->iMutex));
+
+      if(nGeom && theWorld && theWorld->existsWorld()) {
+        if(composite) {
+          dGeomGetQuaternion(nGeom, rotation);
+          tpos = dGeomGetPosition(nGeom);
+          pos[0] = tpos[0];
+          pos[1] = tpos[1];
+          pos[2] = tpos[2];
+        }
+        // deferre destruction of geom until after the successful creation of 
+        // a new geom
+        dGeomID tmpGeomId = nGeom;
+        // first we create a ode geometry for the node
+        bool success = false;
+        success = createODEGeometry(node);
+        if(!success) {
+          fprintf(stderr, "creation of body geometry failed.\n");
+          return 0;
+        }
+        if(nBody) {
+          theWorld->destroyBody(nBody, this);
+          nBody = NULL;
+        }
+        dGeomDestroy(tmpGeomId);
+        // now the geom is rebuild and we have to reconnect it to the body
+        // and reset the mass of the body
+        if(!node->movable) {
+          dGeomSetBody(nGeom, nBody);
+          dGeomSetQuaternion(nGeom, rotation);
+          dGeomSetPosition(nGeom, (dReal)node->pos.x(),
+                           (dReal)node->pos.y(), (dReal)node->pos.z());
+        }
+        else {
+          bool body_created = false;
+          if(node->groupID) {
+            body_created = theWorld->getCompositeBody(node->groupID, &nBody, this);
+            composite = true;
+          }
+          else {
+            composite = false;
+            if(!nBody) nBody = dBodyCreate(theWorld->getWorld());
+          }
+          if(nBody) {
+            dGeomSetBody(nGeom, nBody);
+            if(!composite) {
+              dBodySetMass(nBody, &nMass);
+              dGeomSetQuaternion(nGeom, rotation);
+              dGeomSetPosition(nGeom, pos[0], pos[1], pos[2]);
+            }
+            else {
+              // if the geom is part of a composite object
+              // we have to translate and rotate the geom mass
+              if(body_created) {
+                dBodySetMass(nBody, &nMass);
+                dBodySetPosition(nBody, pos[0], pos[1], pos[2]);
+                dBodySetQuaternion(nBody, rotation);
+              }
+              else {
+                dGeomSetOffsetWorldQuaternion(nGeom, rotation);
+                dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+                theWorld->resetCompositeMass(nBody);
+              }
+            }
+          }
+        }
+        dGeomSetData(nGeom, &node_data);
+        locker.unlock();
+        setContactParams(node->c_params);
+      }
+      return 1;
+    }
+    
+    bool ODEObject::createNode(interfaces::NodeData* node) {
+#ifdef _VERIFY_WORLD_
+      sRotation euler = utils::quaternionTosRotation(node->rot);
+      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
+              node->index, node->pos.x(), node->pos.y(),
+              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
+              node->mass, node->density);
+#endif
+      MutexLocker locker(&(theWorld->iMutex));
+      if(theWorld && theWorld->existsWorld()) {
+        bool ret;
+        ret = createODEGeometry(node); //could this be a lamda or a function pointer?
+        if(ret == 0) {
+          // Error createing the physical Node
+          return 0;
+        }
+
+        // then, if the geometry was sucsessfully build, we can create a
+        // body for the node or add the node to an existing body
+        if(node->movable) setProperties(node);
+        else if(node->physicMode != NODE_TYPE_PLANE) {
+          dQuaternion tmp, t1, t2;
+          tmp[1] = (dReal)node->rot.x();
+          tmp[2] = (dReal)node->rot.y();
+          tmp[3] = (dReal)node->rot.z();
+          tmp[0] = (dReal)node->rot.w();
+          dGeomSetPosition(nGeom, (dReal)node->pos.x(),
+                            (dReal)node->pos.y(), (dReal)node->pos.z());
+          //TODO is this irrelevant as we are in ODEBox now? or is this still possible due to wrong parameter definition/ class selection
+          if(node->physicMode == NODE_TYPE_TERRAIN) {
+            dGeomGetQuaternion(nGeom, t1);
+            dQMultiply0(t2, tmp, t1);
+            dGeomSetQuaternion(nGeom, t2);
+          }
+          else
+            dGeomSetQuaternion(nGeom, tmp);
+        }
+        node_data.id = node->index;
+        dGeomSetData(nGeom, &node_data);
+        locker.unlock();
+        setContactParams(node->c_params);
+        return 1;
+      }
+      LOG_WARN("ODEBox: tried to create a Box without there being a world.");
+      return 0;
+    }
+
+
     void ODEObject::getPosition(Vector* pos) const {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) {
@@ -885,11 +1016,6 @@ namespace mars {
       dMassTranslate(tMass, pos[0], pos[1], pos[2]);
     }
 
-    dReal ODEObject::heightCallback(int x, int y) {
-
-      return (dReal)height_data[(y*terrain->width)+x]*terrain->scale;
-    }
-
     void ODEObject::setContactParams(contact_params& c_params) {
       MutexLocker locker(&(theWorld->iMutex));
       node_data.c_params = c_params;
@@ -1246,22 +1372,13 @@ namespace mars {
     void ODEObject::destroyNode(void) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) theWorld->destroyBody(nBody, this);
-
       if(nGeom) dGeomDestroy(nGeom);
-
-      if(myVertices) free(myVertices);
-      if(myIndices) free(myIndices);
-      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
-
       nBody = 0;
       nGeom = 0;
-      myVertices = 0;
-      myIndices = 0;
-      myTriMeshData = 0;
       composite = false;
       //node_data.num_ground_collisions = 0;
       node_data.setZero();
-      height_data = 0;
+      std::cout << "Destroyed Parent" << std::endl;
     }
 
     void ODEObject::setInertiaMass(NodeData* node) {

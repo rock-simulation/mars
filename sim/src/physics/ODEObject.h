@@ -97,6 +97,7 @@ namespace mars {
 
       virtual bool createNode(interfaces::NodeData *node) override;
       virtual bool changeNode(interfaces::NodeData *node) override;
+      virtual bool createODEGeometry(interfaces::NodeData *node);       
       virtual void getPosition(utils::Vector *pos) const;
       virtual const utils::Vector setPosition(const utils::Vector &pos, bool move_group);
       virtual void getRotation(utils::Quaternion *q) const;
@@ -137,20 +138,14 @@ namespace mars {
       dMass getODEMass(void) const;
       void addMassToCompositeBody(dBodyID theBody, dMass *bodyMass);
       void getAbsMass(dMass *pMass) const;
-      dReal heightCallback(int x, int y);
 
     protected:
       std::shared_ptr<WorldPhysics> theWorld;
       dBodyID nBody;
       dGeomID nGeom;
       dMass nMass;
-      dVector3 *myVertices;
-      dTriIndex *myIndices;
-      dTriMeshDataID myTriMeshData;
       bool composite;
       geom_data node_data;
-      interfaces::terrainStruct *terrain;
-      dReal *height_data;
       std::vector<sensor_list_element> sensor_list;
       void setProperties(interfaces::NodeData *node);
       void setInertiaMass(interfaces::NodeData *node);
