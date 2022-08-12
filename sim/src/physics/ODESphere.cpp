@@ -40,7 +40,7 @@ namespace mars {
      * The method creates an ode shpere representation of the given node.
      *
      */
-    bool NodePhysics::createSphere(NodeData* node) {
+    bool ODESphere::createODEGeometry(NodeData* node) {
       if (!node->inertia_set && node->ext.x() <= 0) {
         LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
                   "  Sphere Nodes must have ext.x() > 0.\n"
@@ -62,6 +62,7 @@ namespace mars {
       else if(node->mass > 0) {
         dMassSetSphereTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x());
       }
+      std::cout <<"Created ODESphere!" << std::endl;
       return true;
     }
 

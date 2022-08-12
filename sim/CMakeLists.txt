@@ -89,7 +89,12 @@ set(SOURCES_H
        src/physics/JointPhysics.h
        src/physics/ODEObject.h
        src/physics/ODEBox.h
+       src/physics/ODECapsule.h
        src/physics/ODEMesh.h
+       src/physics/ODESphere.h
+       src/physics/ODECylinder.h
+       src/physics/ODEPlane.h
+       src/physics/ODEHeightField.h
 #       src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
@@ -147,7 +152,12 @@ set(TARGET_SRC
        #       src/physics/NodePhysics.cpp
        src/physics/ODEObject.cpp
        src/physics/ODEBox.cpp
+       src/physics/ODECapsule.cpp
        src/physics/ODEMesh.cpp
+       src/physics/ODESphere.cpp
+       src/physics/ODECylinder.cpp
+       src/physics/ODEPlane.cpp
+       src/physics/ODEHeightField.cpp
        src/physics/WorldPhysics.cpp
        src/physics/ODEObjectCreator.cpp
 

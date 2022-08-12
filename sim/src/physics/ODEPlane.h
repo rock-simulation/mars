@@ -19,17 +19,17 @@
  */
 
  /**
- * \file ODEMesh.h
+ * \file ODEPlane.h
  * \author Malte Roemmermann, Leon Danter
- * \brief "ODEMesh" implements an ode mesh representation of the given node.
+ * \brief "ODEPlane" implements an ODE box geometry and collision using the ODEObject class
  *
  */
 
-#ifndef ODE_MESH_H
-#define ODE_MESH_H
+#ifndef ODE_PLANE_H
+#define ODE_PLANE_H
 
 #ifdef _PRINT_HEADER_
-  #warning "ODEMesh.h"
+  #warning "ODEPlane.h"
 #endif
 
 #include <mars/utils/MutexLocker.h>
@@ -47,19 +47,14 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
-    class ODEMesh : public ODEObject {
+    class ODEPlane : public ODEObject {
     public:
-      ODEMesh(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
-      virtual ~ODEMesh(void);
-      virtual bool createODEGeometry(interfaces::NodeData *node) override;
-      virtual void destroyNode(void) override;
-    protected:
-      dVector3 *myVertices;
-      dTriIndex *myIndices;
-      dTriMeshDataID myTriMeshData; 
+      ODEPlane(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEPlane(void);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override; 
     };
 
   } // end of namespace sim
 } // end of namespace mars
 
-#endif  // ODE_MESH_H
+#endif  // ODE_PLANE_H

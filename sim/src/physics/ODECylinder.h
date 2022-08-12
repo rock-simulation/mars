@@ -19,17 +19,17 @@
  */
 
  /**
- * \file ODEMesh.h
+ * \file ODECylinder.h
  * \author Malte Roemmermann, Leon Danter
- * \brief "ODEMesh" implements an ode mesh representation of the given node.
+ * \brief "ODECylinder" implements an ODE cylinder geometry and collision using the ODEObject class
  *
  */
 
-#ifndef ODE_MESH_H
-#define ODE_MESH_H
+#ifndef ODE_CYLINDER_H
+#define ODE_CYLINDER_H
 
 #ifdef _PRINT_HEADER_
-  #warning "ODEMesh.h"
+  #warning "ODECylinder.h"
 #endif
 
 #include <mars/utils/MutexLocker.h>
@@ -47,19 +47,14 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
-    class ODEMesh : public ODEObject {
+    class ODECylinder : public ODEObject {
     public:
-      ODEMesh(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
-      virtual ~ODEMesh(void);
-      virtual bool createODEGeometry(interfaces::NodeData *node) override;
-      virtual void destroyNode(void) override;
-    protected:
-      dVector3 *myVertices;
-      dTriIndex *myIndices;
-      dTriMeshDataID myTriMeshData; 
+      ODECylinder(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODECylinder(void);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override; 
     };
 
   } // end of namespace sim
 } // end of namespace mars
 
-#endif  // ODE_MESH_H
+#endif  // ODE_CYLINDER_H

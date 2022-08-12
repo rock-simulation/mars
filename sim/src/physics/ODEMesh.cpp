@@ -34,13 +34,26 @@ namespace mars {
 
     ODEMesh::~ODEMesh(void) {
       std::cout << "DEBUGGG: in ODEMesh Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
+      if(myVertices) free(myVertices);
+      if(myIndices) free(myIndices);
+      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
     }
+
+    void ODEMesh::destroyNode(void) {
+      ODEObject::destroyNode();
+      if(myVertices) free(myVertices);
+      if(myIndices) free(myIndices);
+      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);      
+      myVertices = 0;
+      myIndices = 0;
+      myTriMeshData = 0;
+    }    
 
     /**
      * The method creates an ode box representation of the given node.
      *
      */
-    bool ODEMesh::createMesh(NodeData* node) {
+    bool ODEMesh::createODEGeometry(NodeData* node) {
       int i;
 
       if (!node->inertia_set && 
@@ -113,6 +126,7 @@ namespace mars {
         dMassSetBoxTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x(),
                          (dReal)node->ext.y(),(dReal)node->ext.z());
       }
+      std::cout << "Created ODEMesh" << std::endl;
       return true;
     }
   } // end of namespace sim

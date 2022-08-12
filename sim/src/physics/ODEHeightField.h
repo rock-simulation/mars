@@ -19,17 +19,17 @@
  */
 
  /**
- * \file ODEMesh.h
+ * \file ODEHeightField.h
  * \author Malte Roemmermann, Leon Danter
- * \brief "ODEMesh" implements an ode mesh representation of the given node.
+ * \brief "ODEHeightField" implements an ODE heightfield geometry and collision using the ODEObject class
  *
  */
 
-#ifndef ODE_MESH_H
-#define ODE_MESH_H
+#ifndef ODE_HEIGHTFIELD_H
+#define ODE_HEIGHTFIELD_H
 
 #ifdef _PRINT_HEADER_
-  #warning "ODEMesh.h"
+  #warning "ODEHeightField.h"
 #endif
 
 #include <mars/utils/MutexLocker.h>
@@ -47,19 +47,20 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
-    class ODEMesh : public ODEObject {
+    class ODEHeightField : public ODEObject {
     public:
-      ODEMesh(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
-      virtual ~ODEMesh(void);
-      virtual bool createODEGeometry(interfaces::NodeData *node) override;
+      ODEHeightField(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEHeightField(void);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override; 
       virtual void destroyNode(void) override;
+      dReal heightCallback(int x, int y);
+
     protected:
-      dVector3 *myVertices;
-      dTriIndex *myIndices;
-      dTriMeshDataID myTriMeshData; 
+      interfaces::terrainStruct *terrain;
+      dReal *height_data;  
     };
 
   } // end of namespace sim
 } // end of namespace mars
 
-#endif  // ODE_MESH_H
+#endif  // ODE_HEIGHTFIELD_H

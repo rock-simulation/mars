@@ -18,7 +18,7 @@
  *
  */
 
-#include "ODEBox.h"
+#include "ODECylinder.h"
 
 namespace mars {
 namespace sim {
@@ -26,46 +26,43 @@ namespace sim {
   using namespace utils;
   using namespace interfaces;
 
-  ODEBox::ODEBox(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
+  ODECylinder::ODECylinder(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
     // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODEBox Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
-    createNode(nodeData); // pass a function pointer?    
+    std::cout << "DEBUGGG: in ODECylinder Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
+    createNode(nodeData); // pass a function pointer?
   }
 
-  ODEBox::~ODEBox(void) {
-    std::cout << "DEBUGGG: in ODEBox Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
+  ODECylinder::~ODECylinder(void) {
+    std::cout << "DEBUGGG: in ODECylinder Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
 
-  bool ODEBox::createODEGeometry(interfaces::NodeData *node){
-    if (!node->inertia_set && 
-        (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {
+  bool ODECylinder::createODEGeometry(interfaces::NodeData *node){
+    if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
       LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                "  Box Nodes must have ext.x(), ext.y(), and ext.z() > 0.\n"
-                "  Current values are: x=%g; y=%g, z=%g",
+                "  Cylinder Nodes must have ext.x() and ext.y() > 0.\n"
+                "  Current values are: x=%g; y=%g",
                 node->name.c_str(), node->index,
-                node->ext.x(), node->ext.y(), node->ext.z());
+                node->ext.x(), node->ext.y());
       return false;
     }
 
     // build the ode representation
-    nGeom = dCreateBox(theWorld->getSpace(), (dReal)(node->ext.x()),
-                        (dReal)(node->ext.y()), (dReal)(node->ext.z()));
+    nGeom = dCreateCylinder(theWorld->getSpace(), (dReal)node->ext.x(),
+                            (dReal)node->ext.y());
 
-    // create the mass object for the box
+    // create the mass object for the cylinder
     if(node->inertia_set) {
       setInertiaMass(node);
     }
     else if(node->density > 0) {
-      dMassSetBox(&nMass, (dReal)(node->density), (dReal)(node->ext.x()),
-                  (dReal)(node->ext.y()),(dReal)(node->ext.z()));
+      dMassSetCylinder(&nMass, (dReal)node->density, 3, (dReal)node->ext.x(),
+                        (dReal)node->ext.y());
     }
     else if(node->mass > 0) {
-      dReal tempMass =(dReal)(node->mass);
-      dMassSetBoxTotal(&nMass, tempMass, (dReal)(node->ext.x()),
-                        (dReal)(node->ext.y()),(dReal)(node->ext.z()));
+      dMassSetCylinderTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
+                            (dReal)node->ext.y());
     }
-
-    std::cout << "Created Box!" << std::endl;
+    std::cout << "Created ODECylinder!" << std::endl;
     return true;
   }
 } // end of namespace sim

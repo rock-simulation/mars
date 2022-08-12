@@ -51,7 +51,7 @@ namespace mars {
     public:
       ODESphere(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual ~ODESphere(void);
-      bool createSphere(interfaces::NodeData *node);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override;
     };
 
   } // end of namespace sim

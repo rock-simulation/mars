@@ -54,9 +54,7 @@ namespace mars {
 
       //TODO createGeometry vs createCollision? nBody vs nCollision
       //     review header comment on ODEBox
-      virtual bool createNode(interfaces::NodeData *node) override; //this can go to ODEObject
-      virtual bool changeNode(interfaces::NodeData *node) override;
-      bool createBox(interfaces::NodeData *node);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override; 
     };
 
   } // end of namespace sim
