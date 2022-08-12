@@ -20,8 +20,8 @@
 
  /**
  * \file ODEPlane.h
- * \author Malte Roemmermann, Leon Danter
- * \brief "ODEPlane" implements an ODE box geometry and collision using the ODEObject class
+ * \author Muhammad Haider Khan Lodhi
+ * \brief "ODEPlane" implements an ODE plane geometry and collision using the ODEObject class
  *
  */
 

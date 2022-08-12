@@ -20,7 +20,7 @@
 
  /**
  * \file ODEMesh.h
- * \author Malte Roemmermann, Leon Danter
+ * \author Muhammad Haider Khan Lodhi
  * \brief "ODEMesh" implements an ode mesh representation of the given node.
  *
  */

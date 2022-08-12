@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2022, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *

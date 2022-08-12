@@ -20,7 +20,7 @@
 
  /**
  * \file ODESphere.h
- * \author Malte Roemmermann, Leon Danter
+ * \author Muhammad Haider Khan Lodhi
  * \brief "ODESphere" implements an ODE sphere represenation for the given node
  *
  */

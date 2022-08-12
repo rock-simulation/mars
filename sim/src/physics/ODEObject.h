@@ -20,8 +20,8 @@
 
  /**
  * \file ODEObject.h
- * \author Malte Roemmermann, Leon Danter
- * \brief "ODEObject" implements a factory to create physical ode objects for the nodes.
+ * \author Malte Roemmermann, Leon Danter, Muhammad Haider Khan Lodhi
+ * \brief "ODEObject" implements an ODEObject as parent of ode objects.
  *
  */
 
