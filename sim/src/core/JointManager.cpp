@@ -109,7 +109,7 @@ namespace sim {
       // create an interface object to the physics
       newJointInterface = ODEJointFactory::Instance().createJoint(control->sim->getPhysics(), jointS, i_node1, i_node2);  
       //newJointInterface = PhysicsMapper::newJointPhysics(control->sim->getPhysics());
-      std::cout << "DEBUGGG: create ODEObject pointer with odeJointFactory in JointManager " << __FILE__ << ":" << __LINE__ << std::endl;
+      std::cout << "DEBUGGG: create ODEJoint pointer with odeJointFactory in JointManager " << __FILE__ << ":" << __LINE__ << std::endl;
 
       // create the physical node data
       if (newJointInterface.get() == nullptr) {

@@ -40,27 +40,30 @@ ODEObjectFactory::~ODEObjectFactory(){
 }
 
 std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData){
+
+  std::shared_ptr<ODEObject> newObject;
+
   switch(nodeData->physicMode) {
   case NODE_TYPE_BOX:
-    return std::make_shared<ODEBox>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODEBox>(worldPhysics, nodeData);
     break;
   case NODE_TYPE_CAPSULE:
-    return std::make_shared<ODECapsule>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODECapsule>(worldPhysics, nodeData);
     break; 
   case NODE_TYPE_CYLINDER:
-    return std::make_shared<ODECylinder>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODECylinder>(worldPhysics, nodeData);
     break; 
   case NODE_TYPE_MESH:
-    return std::make_shared<ODEMesh>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODEMesh>(worldPhysics, nodeData);
     break;  
   case NODE_TYPE_PLANE:
-    return std::make_shared<ODEPlane>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODEPlane>(worldPhysics, nodeData);
     break; 
   case NODE_TYPE_SPHERE:
-    return std::make_shared<ODESphere>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODESphere>(worldPhysics, nodeData);
     break;    
   case NODE_TYPE_TERRAIN:
-    return std::make_shared<ODEHeightField>(worldPhysics, nodeData);
+    newObject = std::make_shared<ODEHeightField>(worldPhysics, nodeData);
     break; 
   default:
     // no correct type is spezified, so no physically node will be created
@@ -68,6 +71,14 @@ std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<Ph
     return std::shared_ptr<NodeInterface>(nullptr);
     break;
   }
+
+  if(newObject->isObjectCreated()){
+    return newObject;
+  }
+  else{
+    return std::shared_ptr<NodeInterface>(nullptr);
+  }
+
 }
 }
 }

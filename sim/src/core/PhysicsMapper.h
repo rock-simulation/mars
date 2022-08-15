@@ -34,7 +34,6 @@
 #endif
 
 #include "WorldPhysics.h"
-#include "JointPhysics.h"
 
 namespace mars {
   namespace sim {
@@ -42,7 +41,6 @@ namespace mars {
     class PhysicsMapper {
     public:
       static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
-      static std::shared_ptr<interfaces::JointInterface> newJointPhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
     };
 
   } // end of namespace sim

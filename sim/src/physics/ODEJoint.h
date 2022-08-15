@@ -104,6 +104,8 @@ namespace sim {
       utils::Vector axis1_torque, axis2_torque, joint_load;
       dReal motor_torque;
       void calculateCfmErp(const interfaces::JointData *jointS);  
+      
+    private:  
       bool joint_created;  
     };
 

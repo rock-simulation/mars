@@ -138,6 +138,7 @@ namespace sim {
       dMass getODEMass(void) const;
       void addMassToCompositeBody(dBodyID theBody, dMass *bodyMass);
       void getAbsMass(dMass *pMass) const;
+      bool isObjectCreated();
 
     protected:
       std::shared_ptr<WorldPhysics> theWorld;
@@ -149,6 +150,9 @@ namespace sim {
       std::vector<sensor_list_element> sensor_list;
       void setProperties(interfaces::NodeData *node);
       void setInertiaMass(interfaces::NodeData *node);
+      
+    private:  
+      bool object_created;
     };
 
 } // end of namespace sim

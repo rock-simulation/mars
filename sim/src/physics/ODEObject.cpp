@@ -64,6 +64,7 @@ namespace sim {
       //node_data.num_ground_collisions = 0;
       node_data.setZero();      
       dMassSetZero(&nMass);
+      object_created = false;
     }
 
     /**
@@ -94,6 +95,10 @@ namespace sim {
         dGeomDestroy((*iter).geom);
         sensor_list.erase(iter);
       }
+    }
+
+    bool ODEObject::isObjectCreated(){
+      return object_created;
     }
 
     /**
@@ -247,6 +252,7 @@ namespace sim {
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);
+        object_created = true;
         return 1;
       }
       LOG_WARN("ODEBox: tried to create a Box without there being a world.");

@@ -29,19 +29,14 @@
 #include "PhysicsMapper.h"
 
 namespace mars {
-  namespace sim {
+namespace sim {
   
     using namespace mars::interfaces;
 
       std::shared_ptr<PhysicsInterface> PhysicsMapper::newWorldPhysics(ControlCenter *control) {
       std::shared_ptr<WorldPhysics> worldPhysics = std::make_shared<WorldPhysics>(control);
       return std::static_pointer_cast<PhysicsInterface>(worldPhysics);
-    }
+      }
 
-      std::shared_ptr<JointInterface> PhysicsMapper::newJointPhysics(std::shared_ptr<PhysicsInterface> worldPhysics) {
-      std::shared_ptr<JointPhysics> jointPhysics = std::make_shared<JointPhysics>(worldPhysics);
-      return std::static_pointer_cast<JointInterface>(jointPhysics);
-    }
-
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
