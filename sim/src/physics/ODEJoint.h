@@ -44,7 +44,7 @@ namespace sim {
       virtual bool createJoint(interfaces::JointData *joint,
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2);       
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2);       
                                
       ///get the anchor of the joint
       virtual void getAnchor(utils::Vector* anchor) const;
@@ -90,6 +90,7 @@ namespace sim {
       virtual void setLowStop2(interfaces::sReal lowStop2);
       virtual void setHighStop2(interfaces::sReal highStop2);
       virtual void setCFM(interfaces::sReal cfm);
+      bool isJointCreated();  
 
     protected:
       std::shared_ptr<WorldPhysics> theWorld;
@@ -102,8 +103,8 @@ namespace sim {
       dReal damping, spring, jointCFM;
       utils::Vector axis1_torque, axis2_torque, joint_load;
       dReal motor_torque;
-
-      void calculateCfmErp(const interfaces::JointData *jointS);
+      void calculateCfmErp(const interfaces::JointData *jointS);  
+      bool joint_created;  
     };
 
 } // end of namespace sim

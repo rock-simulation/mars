@@ -26,8 +26,8 @@
  */
 
 #pragma once
-
-#include <mars/interfaces/sim/NodeInterface.h>
+#include "WorldPhysics.h"
+#include <mars/interfaces/sim/JointInterface.h>
 
 namespace mars{
 namespace sim{
@@ -36,7 +36,8 @@ using namespace ::mars::interfaces;
 
 class JointFactoryInterface{
 public:
-  virtual std::shared_ptr<JointInterface> createJoint(interfaces::JointData *joint,
+  virtual std::shared_ptr<JointInterface> createJoint(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics,
+                               interfaces::JointData *joint,
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2) = 0;
 };

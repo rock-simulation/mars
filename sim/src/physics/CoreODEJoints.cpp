@@ -31,13 +31,13 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2)
   : ODEJoint(world) {
-    createJoint(joint, node1, node2 );    
+    createJoint(joint, node1, node2 );
   }
 
   ODEHingeJoint::~ODEHingeJoint(void) {
   }
 
-  bool ODEHingeJoint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2){
+  bool ODEHingeJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateHinge(theWorld->getWorld(),0);
     dJointAttach(jointId, body1, body2);
@@ -84,7 +84,7 @@ namespace sim {
   ODEHinge2Joint::~ODEHinge2Joint(void) {
   }
   
-  bool ODEHinge2Joint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2){
+  bool ODEHinge2Joint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     if (body1 || body2){  
 
@@ -135,7 +135,7 @@ namespace sim {
   ODESliderJoint::~ODESliderJoint(void) {
   }
 
-  bool ODESliderJoint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2){
+  bool ODESliderJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateSlider(theWorld->getWorld(),0);
     dJointAttach(jointId, body1, body2);
@@ -174,7 +174,7 @@ namespace sim {
   ODEBallJoint::~ODEBallJoint(void) {
   }
 
-  bool ODEBallJoint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2){
+  bool ODEBallJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateBall(theWorld->getWorld(),0);
     dJointAttach(jointId, body1, body2);
@@ -227,7 +227,7 @@ namespace sim {
   ODEUniversalJoint::~ODEUniversalJoint(void) {
   }
 
-  bool ODEUniversalJoint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) {
+  bool ODEUniversalJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) {
     if (body1 || body2){  
       jointId= dJointCreateUniversal(theWorld->getWorld(),0);
       dJointAttach(jointId, body1, body2);
@@ -284,7 +284,7 @@ namespace sim {
   ODEFixedJoint::~ODEFixedJoint(void) {
   }
 
-  bool ODEFixedJoint::createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2){
+  bool ODEFixedJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
     if (body1 || body2){  
       CPP_UNUSED(jointS);
       jointId = dJointCreateFixed(theWorld->getWorld(), 0);

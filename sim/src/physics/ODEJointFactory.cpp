@@ -43,24 +43,27 @@ std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<int
                                interfaces::JointData *jointData,
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2){
+
+  std::shared_ptr<ODEJoint> newJoint; 
+
   switch(jointData->type) {
   case JOINT_TYPE_HINGE:
-    return std::make_shared<ODEHingeJoint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODEHingeJoint>(worldPhysics, jointData, node1, node2);
     break;
   case JOINT_TYPE_HINGE2:
-    return std::make_shared<ODEHinge2Joint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODEHinge2Joint>(worldPhysics, jointData, node1, node2);
     break; 
   case JOINT_TYPE_SLIDER:
-    return std::make_shared<ODESliderJoint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODESliderJoint>(worldPhysics, jointData, node1, node2);
     break; 
   case JOINT_TYPE_BALL:
-    return std::make_shared<ODEBallJoint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODEBallJoint>(worldPhysics, jointData, node1, node2);
     break;  
   case JOINT_TYPE_UNIVERSAL:
-    return std::make_shared<ODEUniversalJoint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODEUniversalJoint>(worldPhysics, jointData, node1, node2);
     break; 
   case JOINT_TYPE_FIXED:
-    return std::make_shared<ODEFixedJoint>(worldPhysics, jointData, node1, node2);
+    newJoint = std::make_shared<ODEFixedJoint>(worldPhysics, jointData, node1, node2);
     break;    
   default:
     // no correct type is spezified, so no physically node will be created
@@ -68,6 +71,14 @@ std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<int
     return std::shared_ptr<JointInterface>(nullptr);
     break;
   }
+
+  if(newJoint->isJointCreated()){
+    return newJoint;
+  }
+  else{
+    return std::shared_ptr<JointInterface>(nullptr);
+  }
+
 }
 }
 }

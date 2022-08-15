@@ -51,7 +51,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEHingeJoint(void);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) override; 
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override; 
     };
 
     class ODEHinge2Joint : public ODEJoint {
@@ -61,7 +61,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEHinge2Joint(void);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) override;
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 
     class ODESliderJoint : public ODEJoint {
@@ -71,7 +71,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODESliderJoint(void);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) override;
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 
     class ODEBallJoint : public ODEJoint {
@@ -81,7 +81,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEBallJoint(void);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) override;
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 
     class ODEUniversalJoint : public ODEJoint {
@@ -91,7 +91,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEUniversalJoint(void);
-      virtual bool createODEJoint(interfaces::NodeData *node) override;
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 
     class ODEFixedJoint : public ODEJoint {
@@ -101,7 +101,7 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEFixedJoint(void);
-      virtual bool createODEJoint(JointData *jointS, dBodyID body1, dBodyID body2) override;
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 
 } // end of namespace sim

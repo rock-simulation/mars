@@ -28,7 +28,7 @@ namespace sim {
   using namespace interfaces;
 
   ODEBox::ODEBox(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    createNode(nodeData); // pass a function pointer?    
+    createNode(nodeData);  
   }
 
   ODEBox::~ODEBox(void) {
@@ -66,7 +66,7 @@ namespace sim {
   }
 
   ODECapsule::ODECapsule(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    createNode(nodeData); // pass a function pointer?
+    createNode(nodeData); 
   }
 
   ODECapsule::~ODECapsule(void) {

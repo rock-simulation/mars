@@ -30,8 +30,8 @@
 #include "SimJoint.h"
 #include "JointManager.h"
 #include "NodeManager.h"
-#include "PhysicsMapper.h"
-
+//#include "PhysicsMapper.h"
+#include <ODEJointFactory.h>
 
 #include <stdexcept>
 
@@ -44,7 +44,7 @@
 #include <mars/data_broker/DataBrokerInterface.h>
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
     using namespace utils;
     using namespace interfaces;
@@ -84,8 +84,6 @@ namespace mars {
         return 0;
       }
 
-      // create an interface object to the physics
-      newJointInterface = PhysicsMapper::newJointPhysics(control->sim->getPhysics());
       // reset the anchor
       //if node index is 0, the node connects to the environment.
       node1 = control->nodes->getSimNode(jointS->nodeIndex1);
@@ -108,8 +106,21 @@ namespace mars {
         jointS->anchor = (node1->getPosition() + node2->getPosition()) / 2.;
       }
 
+      // create an interface object to the physics
+      newJointInterface = ODEJointFactory::Instance().createJoint(control->sim->getPhysics(), jointS, i_node1, i_node2);  
+      //newJointInterface = PhysicsMapper::newJointPhysics(control->sim->getPhysics());
+      std::cout << "DEBUGGG: create ODEObject pointer with odeJointFactory in JointManager " << __FILE__ << ":" << __LINE__ << std::endl;
+
       // create the physical node data
-      if (newJointInterface->createJoint(jointS, i_node1, i_node2)) {
+      if (newJointInterface.get() == nullptr) {
+        std::cerr << "JointManager: Could not create new joint (ODEJoint::isJointCreated() returned false)." << std::endl;
+        // if no node was created in physics
+        // delete the objects
+        newJointInterface.reset();
+        // and return false
+        return 0;
+      }
+      else {
         // put all data to the correct place
         iMutex.lock();
         // set the next free id
@@ -132,7 +143,7 @@ namespace mars {
               next_joint_id = des_id + 1;
           }
         }
-	std::shared_ptr<SimJoint> newJoint = std::make_shared<SimJoint>(control, *jointS);
+	      std::shared_ptr<SimJoint> newJoint = std::make_shared<SimJoint>(control, *jointS);
         newJoint->setAttachedNodes(node1, node2);
         //    newJoint->setSJoint(*jointS);
         newJoint->setPhysicalJoint(newJointInterface);
@@ -140,13 +151,6 @@ namespace mars {
         iMutex.unlock();
         control->sim->sceneHasChanged(false);
         return jointS->index;
-      } else {
-        std::cerr << "JointManager: Could not create new joint (JointInterface::createJoint() returned false)." << std::endl;
-        // if no node was created in physics
-        // delete the objects
-        newJointInterface.reset();
-        // and return false
-        return 0;
       }
     }
 
@@ -587,5 +591,5 @@ namespace mars {
       }
     }
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars

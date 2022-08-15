@@ -55,6 +55,7 @@ namespace sim {
       spring = 0;
       body1 = 0;
       body2 = 0;
+      joint_created = false;
     }
 
     /**
@@ -103,11 +104,15 @@ namespace sim {
         cfm2 = (cfm2>0)?1/cfm2:0.000000000001;
     }
 
+    bool ODEJoint::isJointCreated(){
+      return joint_created;
+    }
+
     /**
      * \brief create the joint with the informations giving from jointS 
      * 
      */
-    bool ODEJoint::createJoint(JointData *jointS, const std::shared_ptr<NodeInterface> node1,
+    bool ODEJoint::createJoint(interfaces::JointData *jointS, const std::shared_ptr<NodeInterface> node1,
                                    const std::shared_ptr<NodeInterface> node2) {
 #ifdef _VERIFY_WORLD_
       fprintf(stderr, "joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f\n",
@@ -133,11 +138,11 @@ namespace sim {
         if(n2) b2 = n2->getBody();
         body1 = b1;
         body2 = b2;
-        
+
         bool ret;
         ret = createODEJoint(jointS, body1, body2);
         if(ret == 0) {
-          // Error createing the joint
+          // Error createing the joint         
           return 0;
         }
 
@@ -145,15 +150,16 @@ namespace sim {
         // of the forces the joint attached to the bodies
         // we need to set a feedback pointer for the joint (ode stuff)
         dJointSetFeedback(jointId, &feedback);
+        joint_created = true;
         return 1;
       }
       return 0;
     }
 
-    bool ODEJoint::createODEJoint(interfaces::NodeData *node){
+    bool ODEJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
       std::cout << "ODEJoint: using default createODEJoint func. Did you forget to override it?." << std::endl;
       LOG_WARN("ODEObject: using default createODEJoint func. Did you forget to override it?.");
-      return true;
+      return 0;
     }
 
     ///get the anchor of the joint
