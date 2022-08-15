@@ -28,8 +28,6 @@ namespace sim{
 
 using namespace ::mars::interfaces;
 
-//ODEObjectFactory* ODEObjectFactory::instance = NULL;
-
 ODEObjectFactory& ODEObjectFactory::Instance(){
   static ODEObjectFactory instance;
   return instance;
@@ -66,7 +64,7 @@ std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<Ph
     break; 
   default:
     // no correct type is spezified, so no physically node will be created
-    std::cout << "Unknown type of ODEObject requested. No physically node was created." << std::endl;
+    std::cout << "Unknown type of ODEObject requested. No physical node was created." << std::endl;
     return std::shared_ptr<NodeInterface>(nullptr);
     break;
   }

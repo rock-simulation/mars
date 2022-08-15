@@ -217,7 +217,7 @@ namespace sim {
       MutexLocker locker(&(theWorld->iMutex));
       if(theWorld && theWorld->existsWorld()) {
         bool ret;
-        ret = createODEGeometry(node); //could this be a lamda or a function pointer?
+        ret = createODEGeometry(node); 
         if(ret == 0) {
           // Error createing the physical Node
           return 0;
