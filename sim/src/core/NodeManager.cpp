@@ -250,7 +250,6 @@ namespace mars {
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
         std::shared_ptr<NodeInterface> newNodeInterface = ODEObjectFactory::Instance().createObject(control->sim->getPhysics(), nodeS);   
-        std::cout << "DEBUGGG: create ODEObject pointer with odeObjectFactory in NodeManager " << __FILE__ << ":" << __LINE__ << std::endl;
 
         if (newNodeInterface.get() == nullptr) {
           // if no node was created in physics

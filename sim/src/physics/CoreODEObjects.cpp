@@ -62,6 +62,7 @@ namespace sim {
       dMassSetBoxTotal(&nMass, tempMass, (dReal)(node->ext.x()),
                         (dReal)(node->ext.y()),(dReal)(node->ext.z()));
     }
+    return false;
     return true;
   }
 
