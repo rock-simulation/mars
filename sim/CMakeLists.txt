@@ -86,13 +86,17 @@ set(SOURCES_H
        src/core/Simulator.h
        src/sensors/RotatingRaySensor.h
 
-       src/physics/JointPhysics.h
+       #src/physics/JointPhysics.h
        src/physics/ODEObject.h
+       src/physics/ODEJoint.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
        src/physics/ODEObjectFactory.h
        src/physics/ObjectFactoryInterface.h
        src/physics/CoreODEObjects.h
+       src/physics/ODEJointFactory.h
+       src/physics/JointFactoryInterface.h
+       src/physics/CoreODEJoints.h
 
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h
@@ -141,12 +145,15 @@ set(TARGET_SRC
        src/sensors/MultiLevelLaserRangeFinder.cpp
        src/sensors/RotatingRaySensor.cpp
 
-       src/physics/JointPhysics.cpp
+       #src/physics/JointPhysics.cpp
+       src/physics/ODEJoint.cpp
        src/physics/ODEObject.cpp
        src/physics/WorldPhysics.cpp
        src/physics/ODEObjectFactory.cpp
        src/physics/CoreODEObjects.cpp
-       
+       src/physics/ODEJointFactory.cpp
+       src/physics/CoreODEJoints.cpp
+
        src/sensors/CameraSensor.cpp
        src/sensors/Joint6DOFSensor.cpp
        src/sensors/JointArraySensor.cpp
