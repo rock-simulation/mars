@@ -28,13 +28,10 @@ namespace sim {
   using namespace interfaces;
 
   ODEBox::ODEBox(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODEBox Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
     createNode(nodeData); // pass a function pointer?    
   }
 
   ODEBox::~ODEBox(void) {
-    std::cout << "DEBUGGG: in ODEBox Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
 
   bool ODEBox::createODEGeometry(interfaces::NodeData *node){
@@ -65,19 +62,14 @@ namespace sim {
       dMassSetBoxTotal(&nMass, tempMass, (dReal)(node->ext.x()),
                         (dReal)(node->ext.y()),(dReal)(node->ext.z()));
     }
-
-    std::cout << "Created Box!" << std::endl;
     return true;
   }
 
   ODECapsule::ODECapsule(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODECapsule Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
     createNode(nodeData); // pass a function pointer?
   }
 
   ODECapsule::~ODECapsule(void) {
-    std::cout << "DEBUGGG: in ODECapsule Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
   
   bool ODECapsule::createODEGeometry(interfaces::NodeData *node){
@@ -106,18 +98,14 @@ namespace sim {
       dMassSetCapsuleTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
                             (dReal)node->ext.y());
     }
-    std::cout << "Created ODECapsule" << std::endl;
     return true;
   }
 
   ODECylinder::ODECylinder(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODECylinder Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
-    createNode(nodeData); // pass a function pointer?
+    createNode(nodeData); 
   }
 
   ODECylinder::~ODECylinder(void) {
-    std::cout << "DEBUGGG: in ODECylinder Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
 
   bool ODECylinder::createODEGeometry(interfaces::NodeData *node){
@@ -146,19 +134,15 @@ namespace sim {
       dMassSetCylinderTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
                             (dReal)node->ext.y());
     }
-    std::cout << "Created ODECylinder!" << std::endl;
     return true;
   }
 
   ODEHeightField::ODEHeightField(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODEHeightField Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
     height_data = 0;
-    createNode(nodeData); // pass a function pointer?
+    createNode(nodeData); 
   }
 
   ODEHeightField::~ODEHeightField(void) {
-    std::cout << "DEBUGGG: in ODEHeightField Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
     if(height_data) free(height_data);
     if(terrain) free (terrain);
   }
@@ -208,18 +192,14 @@ namespace sim {
     dRSetIdentity(R);
     dRFromAxisAndAngle(R, 1, 0, 0, M_PI/2);
     dGeomSetRotation(nGeom, R);
-    std::cout << "Created ODEHeightField!" << std::endl;
     return true;
   }
 
   ODEMesh::ODEMesh(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODEMesh Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
     createNode(nodeData);
   }
 
   ODEMesh::~ODEMesh(void) {
-    std::cout << "DEBUGGG: in ODEMesh Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
     if(myVertices) free(myVertices);
     if(myIndices) free(myIndices);
     if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
@@ -312,35 +292,27 @@ namespace sim {
       dMassSetBoxTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x(),
                         (dReal)node->ext.y(),(dReal)node->ext.z());
     }
-    std::cout << "Created ODEMesh" << std::endl;
     return true;
   }
 
   ODEPlane::ODEPlane(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODEPlane Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
-    createNode(nodeData); // pass a function pointer?
+    createNode(nodeData); 
   }
 
   ODEPlane::~ODEPlane(void) {
-    std::cout << "DEBUGGG: in ODEPlane Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
 
   bool ODEPlane::createODEGeometry(interfaces::NodeData *node){
     // build the ode representation
     nGeom = dCreatePlane(theWorld->getSpace(), 0, 0, 1, (dReal)node->pos.z());
-    std::cout << "Created Plane!" << std::endl;
     return true;
   }
 
   ODESphere::ODESphere(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) : ODEObject(world, nodeData) {
-    // At this moment we have not much things to do here. ^_^
-    std::cout << "DEBUGGG: in ODESphere Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
     createNode(nodeData);
   }
 
   ODESphere::~ODESphere(void) {
-    std::cout << "DEBUGGG: in ODESphere Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
   }
 
   /**
@@ -369,7 +341,6 @@ namespace sim {
     else if(node->mass > 0) {
       dMassSetSphereTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x());
     }
-    std::cout <<"Created ODESphere!" << std::endl;
     return true;
   }
 

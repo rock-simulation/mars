@@ -42,7 +42,7 @@
 
 //TODO move struct descriptions to seperate file!
 namespace mars {
-  namespace sim {
+namespace sim {
 
     /*
      * we need a data structure to handle different collision parameter
@@ -151,7 +151,7 @@ namespace mars {
       void setInertiaMass(interfaces::NodeData *node);
     };
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
 
 #endif  // NODE_PHYSICS_H

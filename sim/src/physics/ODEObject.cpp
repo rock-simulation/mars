@@ -37,7 +37,7 @@
 
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
     using namespace utils;
     using namespace interfaces;
@@ -57,8 +57,6 @@ namespace mars {
      *     - the body and geom should be initialized to 0
      */
     ODEObject::ODEObject(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) {
-      // At this moment we have not much things to do here. ^_^
-      std::cout << "DEBUGGG: in ODEObject Constructor " << __FILE__ << ":" << __LINE__ << std::endl;
       theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
       nBody = 0;
       nGeom = 0;
@@ -80,7 +78,6 @@ namespace mars {
      * are the geom and the body realy all thing to take care of?
      */
     ODEObject::~ODEObject(void) {
-      std::cout << "DEBUGGG: in ODEObject Destructor " << __FILE__ << ":" << __LINE__ << std::endl;
       std::vector<sensor_list_element>::iterator iter;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -1497,5 +1494,5 @@ namespace mars {
       return 0.0;
     }
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
