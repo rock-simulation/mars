@@ -36,15 +36,12 @@ using namespace ::mars::interfaces;
 
 class ODEObjectFactory : public ObjectFactoryInterface{
 public:
-  static ODEObjectFactory* getInstance();
+  static ODEObjectFactory& Instance();
+  virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) override;
 
 protected:
   ODEObjectFactory();
   virtual ~ODEObjectFactory();    
-  virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) override;
-
-private:
-  static ODEObjectFactory* instance;  
 };
 
 }

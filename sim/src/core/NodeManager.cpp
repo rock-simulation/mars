@@ -47,6 +47,9 @@
 
 #include <mars/utils/MutexLocker.h>
 
+#include <ODEObjectFactory.h>
+#include <CoreODEObjects.h>
+
 namespace mars {
   namespace sim {
 
@@ -75,15 +78,11 @@ namespace mars {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
       }
-      odeObjectFactory = ODEObjectFactory::getInstance();
     }
 
     NodeManager::~NodeManager()
     {
-      std::cout << "Destroyed " << std::endl;  
-      delete odeObjectFactory;
     }
-
 
     NodeId NodeManager::createPrimitiveNode(const std::string &name,
                                             NodeType type,
@@ -250,7 +249,7 @@ namespace mars {
       // create the physical node data
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
-        std::shared_ptr<NodeInterface> newNodeInterface = odeObjectFactory->createObject(control->sim->getPhysics(), nodeS);   
+        std::shared_ptr<NodeInterface> newNodeInterface = ODEObjectFactory::Instance().createObject(control->sim->getPhysics(), nodeS);   
         std::cout << "DEBUGGG: create ODEObject pointer with odeObjectFactory in NodeManager " << __FILE__ << ":" << __LINE__ << std::endl;
 
         if (newNodeInterface.get() == nullptr) {

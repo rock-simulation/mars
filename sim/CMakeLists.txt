@@ -88,18 +88,11 @@ set(SOURCES_H
 
        src/physics/JointPhysics.h
        src/physics/ODEObject.h
-       src/physics/ODEBox.h
-       src/physics/ODECapsule.h
-       src/physics/ODEMesh.h
-       src/physics/ODESphere.h
-       src/physics/ODECylinder.h
-       src/physics/ODEPlane.h
-       src/physics/ODEHeightField.h
-#       src/physics/NodePhysics.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
        src/physics/ODEObjectFactory.h
        src/physics/ObjectFactoryInterface.h
+       src/physics/CoreODEObjects.h
 
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h
@@ -149,18 +142,11 @@ set(TARGET_SRC
        src/sensors/RotatingRaySensor.cpp
 
        src/physics/JointPhysics.cpp
-       #       src/physics/NodePhysics.cpp
        src/physics/ODEObject.cpp
-       src/physics/ODEBox.cpp
-       src/physics/ODECapsule.cpp
-       src/physics/ODEMesh.cpp
-       src/physics/ODESphere.cpp
-       src/physics/ODECylinder.cpp
-       src/physics/ODEPlane.cpp
-       src/physics/ODEHeightField.cpp
        src/physics/WorldPhysics.cpp
        src/physics/ODEObjectFactory.cpp
-
+       src/physics/CoreODEObjects.cpp
+       
        src/sensors/CameraSensor.cpp
        src/sensors/Joint6DOFSensor.cpp
        src/sensors/JointArraySensor.cpp
