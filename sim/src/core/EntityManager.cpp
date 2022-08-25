@@ -188,7 +188,7 @@ namespace mars {
         for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
             iter != entities.end(); ++iter) {
           //select returns true if the node belongs to the robot
-          if (iter->second->select(id)) {
+          if (iter->second != NULL && iter->second->select(id)) {
             //TODO <jonas.peter@dfki.de> notify about selection change only if new selection
             std::cout << "robot has been selected: " << iter->second->getName() << std::endl;
             //TODO <jonas.peter@dfki.de> notify clients about selection change
