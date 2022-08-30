@@ -44,7 +44,7 @@ void JoystickWidget::setRightSpeed(int speed) {
     ui.vSliderRight->setValue(0);
   }
   actualSpeedRight = ((double)speed/100.0) * maxSpeed;
-  emit newSpeed(actualSpeedLeft, actualSpeedRight);
+  emit newSpeed(actualSpeedLeft, actualSpeedRight, crossValueX, crossValueY);
   updateWidget();
 }
 
@@ -55,7 +55,7 @@ void JoystickWidget::setLeftSpeed(int speed) {
     ui.vSliderLeft->setValue(0);
   }
   actualSpeedLeft = ((double)speed/100.0) * maxSpeed;
-  emit newSpeed(actualSpeedLeft, actualSpeedRight);
+  emit newSpeed(actualSpeedLeft, actualSpeedRight, crossValueX, crossValueY);
   updateWidget();
 }
 
@@ -123,7 +123,7 @@ void JoystickWidget::calcSpeed(void) {
 void JoystickWidget::setSpeed(void) {
   actualSpeedLeft  = newSpeedLeft;
   actualSpeedRight = newSpeedRight;
-  emit newSpeed(actualSpeedLeft, actualSpeedRight);
+  emit newSpeed(actualSpeedLeft, actualSpeedRight, crossValueX, crossValueY);
   ui.vSliderRight->setValue((int)((actualSpeedRight/maxSpeed) * 100));
   ui.vSliderLeft->setValue((int)((actualSpeedLeft/maxSpeed) * 100));
 }

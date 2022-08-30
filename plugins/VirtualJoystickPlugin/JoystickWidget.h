@@ -45,7 +45,7 @@ public slots:
     void updateCrossValue(double valueX, double valueY, bool leftMouseButton);
 
 signals:
-    void newSpeed(double speedLeft, double speedRight);
+    void newSpeed(double speedLeft, double speedRight, double x, double y);
     void hideSignal(void);
     void closeSignal(void);
 
