@@ -25,7 +25,7 @@ namespace osg_animation {
     virtual void loadBonesFile(std::string file) = 0;
     virtual void loadBonesString(std::string str) = 0;
     virtual void loadAnimation(std::string name, std::string file) = 0;
-    virtual void playAnimation(std::string name, int repeat=-1) = 0;
+    virtual void playAnimation(std::string name, int repeat=-1, double speed_scale=1.0) = 0;
     // rotate bone by value
     virtual void rotateBone(std::string name, double x, double y, double z, double angle) = 0;
     // set rotation to initial*new
