@@ -57,7 +57,7 @@ Q_OBJECT
 
  private slots:
 
-  void newSpeed(double leftValue, double rightValue);
+  void newSpeed(double leftValue, double rightValue, double xValue, double yValue);
   void hideWidget(void);
   void closeWidget(void);
 
@@ -65,7 +65,7 @@ Q_OBJECT
  private:
   mars::main_gui::GuiInterface* gui;
   JoystickWidget *joystick;
-  double leftValue, rightValue;
+  double leftValue, rightValue, xValue, yValue;
   mars::data_broker::DataBrokerInterface *dataBroker;
   mars::data_broker::DataPackage dataPackage;
   mars::cfg_manager::CFGManagerInterface *cfg;

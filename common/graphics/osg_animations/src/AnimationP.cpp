@@ -36,6 +36,7 @@ namespace osg_animation {
     framesFactory = new osg_frames::FramesFactory();
     graphics = NULL;
     animation_index = 0;
+    speed_scale = 1.0;
     current_animation = "";
   }
 
@@ -126,13 +127,16 @@ namespace osg_animation {
     //current_animation = name;
   }
 
-  void AnimationP::playAnimation(std::string name, int repeat) {
+  void AnimationP::playAnimation(std::string name, int repeat, double speed_scale) {
     this->repeat = repeat;
-    if(animations.hasKey(name)) {
-      current_animation = name;
-      animation_index = 0;
-      loop = 0;
-      next_update_time = 0;
+    this->speed_scale = 1.0/speed_scale;
+    if(current_animation != name) {
+      if(animations.hasKey(name)) {
+        current_animation = name;
+        animation_index = 0;
+        loop = 0;
+        next_update_time = 0;
+      }
     }
   }
 
@@ -311,12 +315,12 @@ namespace osg_animation {
       if(current_animation != "") {
         unsigned long t = mars::utils::getTime();
         if(next_update_time == 0) {
-          next_update_time = t+40;
+          next_update_time = t+40*speed_scale;
           refresh = true;
         }
         if(t >= next_update_time) {
           refresh = true;
-          next_update_time += 40;
+          next_update_time += 40*speed_scale;
           animation_index += 1;
           if(animation_index >= animations[current_animation][armature->name].size()) {
             if(repeat == -1 or loop < repeat) {

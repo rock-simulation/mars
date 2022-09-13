@@ -40,7 +40,7 @@ namespace osg_animation {
     virtual void loadBonesFile(std::string file);
     virtual void loadBonesString(std::string str);
     virtual void loadAnimation(std::string name, std::string file);
-    virtual void playAnimation(std::string name, int repeat=-1);
+    virtual void playAnimation(std::string name, int repeat=-1, double speed_scale=1.0);
 
     // rotate bone by value
     virtual void rotateBone(std::string name, double x, double y, double z, double angle);
@@ -75,6 +75,7 @@ namespace osg_animation {
     configmaps::ConfigMap animations;
     size_t animation_index, loop;
     int repeat;
+    double speed_scale;
     std::string current_animation, name, load_path;
     unsigned long next_update_time;
 

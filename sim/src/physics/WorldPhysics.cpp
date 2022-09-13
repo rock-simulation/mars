@@ -1171,27 +1171,60 @@ namespace mars {
                                           std::vector<double> &depths) const {
       MutexLocker locker(&iMutex);
       dGeomID otherGeom;
-      dContact contact[1];
+      dContact contact[4];
       //double depth = ray.length();
       int numc;
       Vector contactPos;
       dGeomID theGeom = dCreateSphere(space, r);
       dGeomSetPosition(theGeom, (dReal)pos.x(), (dReal)pos.y(), (dReal)pos.z());
 
-      for(int i=0; i<dSpaceGetNumGeoms(space); i++) {
-        otherGeom = dSpaceGetGeom(space, i);
+      for(int k=0; k<dSpaceGetNumGeoms(space); k++) {
+        otherGeom = dSpaceGetGeom(space, k);
 
         if(!(dGeomGetCollideBits(theGeom) & dGeomGetCollideBits(otherGeom)))
           continue;
-        numc = dCollide(theGeom, otherGeom, 1,
+        numc = dCollide(theGeom, otherGeom, 4,
                         &(contact[0].geom), sizeof(dContact));
-        if(numc) {
+        for(int i=0; i<numc; ++i) {
+          geom_data* geom_data1 = (geom_data*)dGeomGetData(otherGeom);
+          double filter_depth = -1.0;
+          if(geom_data1->filter_depth > filter_depth) {
+            filter_depth = geom_data1->filter_depth;
+          }
+          double filter_angle = 0.5;
+          if(geom_data1->filter_angle > 0.0) {
+            filter_angle = geom_data1->filter_angle;
+          }
+
+          double filter_radius = -1.0;
+          Vector filter_sphere;
+          if(geom_data1->filter_radius > filter_radius) {
+            filter_radius = geom_data1->filter_radius;
+            filter_sphere = geom_data1->filter_sphere;
+          }
+
+          if(filter_depth > 0.0) {
+            if(contact[i].geom.normal[2] < 0.5 or filter_depth < contact[i].geom.depth) {
+              continue;
+            }
+          }
+          if(filter_radius > 0.0) {
+            Vector v;
+            v.x() = contact[i].geom.pos[0];
+            v.y() = contact[i].geom.pos[1];
+            v.z() = 0.0;//contact[i].geom.pos[2];
+            v -= filter_sphere;
+            if(v.norm() <= filter_radius) {
+              continue;
+            }
+          }
+
           // todo: return contact position
-          contactPos.x() = contact[0].geom.pos[0];
-          contactPos.y() = contact[0].geom.pos[1];
-          contactPos.z() = contact[0].geom.pos[2];
+          contactPos.x() = contact[i].geom.pos[0];
+          contactPos.y() = contact[i].geom.pos[1];
+          contactPos.z() = contact[i].geom.pos[2];
           contacts.push_back(contactPos);
-          depths.push_back(contact[0].geom.depth);
+          depths.push_back(contact[i].geom.depth);
         }
       }
 

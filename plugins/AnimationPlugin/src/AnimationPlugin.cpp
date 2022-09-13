@@ -128,10 +128,14 @@ namespace mars {
             for(auto it: animations) {
               if(it->getName() == cmd[0]) {
                 int repeat = -1;
-                if(cmd.size() == 3) {
+                double speed_scale = 1.0;
+                if(cmd.size() >= 3) {
                   repeat = atoi(cmd[2].c_str());
                 }
-                it->playAnimation(cmd[1], repeat);
+                if(cmd.size() >= 4) {
+                  speed_scale = atof(cmd[3].c_str());
+                }
+                it->playAnimation(cmd[1], repeat, speed_scale);
                 break;
               }
             }
