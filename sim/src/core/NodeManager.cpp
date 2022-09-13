@@ -1806,6 +1806,24 @@ namespace mars {
         iMutex.unlock();
         control->nodes->editNode(&nd, (EDIT_NODE_POS | EDIT_NODE_MOVE_ALL));
       }
+      else if(matchPattern("*/linear_velocity", key)) {
+        double v = atof(value.c_str());
+        Vector v1 = iter->second->getLinearVelocity();
+        if(key[key.size()-1] == 'x') v1.x() = v;
+        else if(key[key.size()-1] == 'y') v1.y() = v;
+        else if(key[key.size()-1] == 'z') v1.z() = v;
+        iMutex.unlock();
+        setVelocity(id, v1);
+      }
+      else if(matchPattern("*/angular_velocity", key)) {
+        double v = atof(value.c_str());
+        Vector v1 = iter->second->getAngularVelocity();
+        if(key[key.size()-1] == 'x') v1.x() = v;
+        else if(key[key.size()-1] == 'y') v1.y() = v;
+        else if(key[key.size()-1] == 'z') v1.z() = v;
+        iMutex.unlock();
+        setAngularVelocity(id, v1);
+      }
       else if(matchPattern("*/rotation", key)) {
         //// fprintf(stderr, "rotation\n");
         double v = atof(value.c_str());
