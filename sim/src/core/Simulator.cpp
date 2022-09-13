@@ -300,8 +300,11 @@ namespace mars {
         control->motors = new MotorManager(control);
         //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
       }
+      if (control->sensors == NULL) {
+        control->sensors = new SensorManager(control);
+        //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
+      }      
 
-      control->sensors = new SensorManager(control);
       control->controllers = new ControllerManager(control);
       control->entities = new EntityManager(control);
 
