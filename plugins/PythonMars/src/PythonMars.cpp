@@ -95,9 +95,9 @@ namespace mars {
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "").sValue;
-	if(resPath == "") {
-	  resPath = MARS_DEFAULT_RESOURCES_PATH;
-	}
+  if(resPath == "") {
+    resPath = MARS_DEFAULT_RESOURCES_PATH;
+  }
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;
@@ -318,6 +318,22 @@ namespace mars {
           }
 
           if(map.hasKey("edit")) {
+            if(map["edit"].hasKey("nodePose")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodePose"])) {
+                std::string name = it.first;
+                unsigned long id = control->nodes->getID(name);
+                if(id) {
+                  Vector v(it.second[0], it.second[1], it.second[2]);
+                  Quaternion q;
+                  q.x() = it.second[3];
+                  q.y() = it.second[4];
+                  q.z() = it.second[5];
+                  q.w() = it.second[6];
+                  control->nodes->setPosition(id, v);
+                  control->nodes->setRotation(id, q);
+                }
+              }
+            }
             if(map["edit"].hasKey("nodes")) {
               for(auto it: (ConfigMap&)(map["edit"]["nodes"])) {
                 std::string name = it.first;

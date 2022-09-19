@@ -180,3 +180,10 @@ def editGraphics(key, value):
 
 def editGraphicsWindow(winid, key, value):
     edit("graphics", str(winid), key, value)
+
+def setNodePose(name, x, y, z, qx, qy, qz, qw):
+    if not "edit" in iDict:
+        iDict["edit"] = {"nodePose": {}}
+    elif not "nodePose" in iDict["edit"]:
+        iDict["edit"]["nodePose"] = {}
+    iDict["edit"]["nodePose"][name] = [x, y, z, qx, qy, qz, qw]
