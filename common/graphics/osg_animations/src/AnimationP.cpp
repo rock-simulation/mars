@@ -403,6 +403,24 @@ namespace osg_animation {
     if(t>6.28) t-=6.28;
   }
 
+  void AnimationP::getPose(const std::string &name, double *x, double *y, double *z, double *qx, double *qy, double *qz, double *qw) {
+    Bone *b = getBone(name, armature);
+    if(b) {
+      *x = b->pos.x();
+      *y = b->pos.y();
+      *z = b->pos.z();
+      *qx = b->q.x();
+      *qy = b->q.y();
+      *qz = b->q.z();
+      *qw = b->q.w();
+    }
+  }
+
+  bool AnimationP::hasBone(const std::string &name) {
+    Bone *b = getBone(name, armature);
+    return b!=NULL;
+  }
+
   void AnimationP::printBone(Bone *bone, osg::Vec3d &parent_pos, osg::Quat &parent_q, int depth) {
     osg::Vec3d pos = parent_pos + parent_q*bone->init_pos;
     osg::Quat q = bone->q * parent_q;

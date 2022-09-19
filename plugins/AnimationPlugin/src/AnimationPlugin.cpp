@@ -118,6 +118,24 @@ namespace mars {
       void AnimationPlugin::preGraphicsUpdate() {
         for(auto it: animations) {
           it->updatePose();
+          unsigned long id = control->nodes->getID("hand_r");
+          unsigned long id2 = control->nodes->getID(it->getName());
+          if(id and id2 and it->hasBone("hand_r")) {
+            double x, y, z, qx, qy, qz, qw;
+            it->getPose("hand_r", &x, &y, &z, &qx, &qy, &qz, &qw);
+            Vector v(x, y, z);
+            Quaternion q;
+            q.x() = qx;
+            q.y() = qy;
+            q.z() = qz;
+            q.w() = qw;
+            Vector v2 = control->nodes->getPosition(id2);
+            Quaternion q2 = control->nodes->getRotation(id2);
+            v = q2*v + v2;
+            q = q2*q;
+            control->nodes->setPosition(id, v);
+            control->nodes->setRotation(id, q);
+          }
         }
       }
 
