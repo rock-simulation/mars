@@ -91,6 +91,10 @@ def requestConfig(group, name):
     global iDict
     iDict["request"].append({"type": "Config", "group": group, "name": name})
 
+def requestDataBroker(group_name, package_name, data_name):
+    global iDict
+    iDict["request"].append({"type": "DataBroker", "g": group_name, "name": package_name, "d": data_name})
+
 def logMessage(s):
     global iDict
     iDict["log"]["debug"].append(s)
@@ -187,3 +191,10 @@ def setNodePose(name, x, y, z, qx, qy, qz, qw):
     elif not "nodePose" in iDict["edit"]:
         iDict["edit"]["nodePose"] = {}
     iDict["edit"]["nodePose"][name] = [x, y, z, qx, qy, qz, qw]
+
+def setSingleNodePose(name, x, y, z, qx, qy, qz, qw):
+    if not "edit" in iDict:
+        iDict["edit"] = {"nodePoseSingle": {}}
+    elif not "nodePoseSingle" in iDict["edit"]:
+        iDict["edit"]["nodePoseSingle"] = {}
+    iDict["edit"]["nodePoseSingle"][name] = [x, y, z, qx, qy, qz, qw]
