@@ -1157,6 +1157,20 @@ namespace mars {
       updateDynamicNodes(0, false);
     }
 
+    void NodeManager::setSingleNodePose(NodeId id, utils::Vector pos, utils::Quaternion q) {
+      MutexLocker locker(&iMutex);
+      NodeMap::iterator iter = simNodes.find(id);
+      if(iter == simNodes.end()) {
+        iMutex.unlock();
+        LOG_ERROR("NodeManager::setSingleNodePose: node id not found!");
+        return;
+      }
+      std::shared_ptr<SimNode> editedNode = iter->second;
+      editedNode->setPosition(pos, false);
+      editedNode->setRotation(q, false);
+      nodesToUpdate[id] = iter->second;
+    }
+
     void NodeManager::rotateNodeRecursive(NodeId id,
                                           const Vector &rotation_point,
                                           const Quaternion &rotation,
