@@ -67,6 +67,8 @@ add_library(${PROJECT_NAME} SHARED ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME}
           ${PKGCONFIG_LIBRARIES}
+          ${CARBON}
+          ${IOKIT}
 )
 
 install(TARGETS ${PROJECT_NAME}
