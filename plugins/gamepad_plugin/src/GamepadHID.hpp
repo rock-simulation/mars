@@ -10,7 +10,8 @@
 #define LOGITECH_SPACE_PILOT_DEVICE_ID     0xc625
 #define LOGITECH_SPACE_NAVIGATOR_DEVICE_ID 0xc626
 #define LOGITECH_SPACE_EXPLORER_DEVICE_ID  0xc627
-
+#define CLS_VENDOR_ID 0x0e8f
+#define CLS_GAMEPAD_ID 0x0003
 
 namespace mars {
   namespace plugins {

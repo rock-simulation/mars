@@ -19,6 +19,7 @@ namespace mars {
 
       /* file descriptor of the /dev/input node of the SpaceMouse */
       static int fd = -1;
+      static struct input_id device_info;
 
 
       /* Scan all devices in /dev/input/ to find the SpaceMouse.
@@ -28,7 +29,6 @@ namespace mars {
         struct dirent *entry;
         DIR *dp;
         char path[PATH_BUFFER_SIZE];
-        struct input_id device_info;
         const char *devDirectory = "/dev/input/";
 
         /* open the directory */
@@ -56,6 +56,11 @@ namespace mars {
 
             if((device_info.vendor == LOGITECH_VENDOR_ID) &&
                (device_info.product == LOGITECH_F510_ID)) {
+              /* BINGO!!! this is it! */
+              break;
+            }
+            if((device_info.vendor == CLS_VENDOR_ID) &&
+               (device_info.product == CLS_GAMEPAD_ID)) {
               /* BINGO!!! this is it! */
               break;
             }
@@ -112,40 +117,82 @@ namespace mars {
         }
 
         /* handle input events sequentially */
-        for(i = 0; i < eventCnt; ++i) {
-          if(EV_KEY == events[i].type) {
-            switch(events[i].code) {
-            case BTN_SOUTH:
-              if(events[i].value) {
-                rawValues->button1 = events[i].value;
+        if((device_info.vendor == CLS_VENDOR_ID) &&
+           (device_info.product == CLS_GAMEPAD_ID)) {
+          for(i = 0; i < eventCnt; ++i) {
+            if(EV_KEY == events[i].type) {
+              switch(events[i].code) {
+              case 290: //BTN_SOUTH:
+                if(events[i].value) {
+                  rawValues->button1 = events[i].value;
+                }
+                idleFrameCount[4] = 0;
+                break;
+              case 289: //BTN_EAST:
+                if(events[i].value) {
+                  rawValues->button2 = events[i].value;
+                }
+                idleFrameCount[5] = 0;
+                break;
               }
-              idleFrameCount[4] = 0;
-              break;
-            case BTN_EAST:
-              if(events[i].value) {
-                rawValues->button2 = events[i].value;
+            } else if(EV_ABS == events[i].type) {
+              switch(events[i].code) {
+              case ABS_X:
+                rawValues->a1x = (events[i].value-128.0)*250;
+                idleFrameCount[0] = 0;
+                break;
+              case ABS_Y:
+                rawValues->a1y = (events[i].value-128.0)*250;
+                idleFrameCount[1] = 0;
+                break;
+              case 2:
+                rawValues->a2x = (events[i].value-128.0)*250;
+                idleFrameCount[2] = 0;
+                break;
+              case 5:
+                rawValues->a2y = (events[i].value-128.0)*250;
+                idleFrameCount[3] = 0;
+                break;
               }
-              idleFrameCount[5] = 0;
-              break;
             }
-          } else if(EV_ABS == events[i].type) {
-            switch(events[i].code) {
-            case ABS_X:
-              rawValues->a1x = events[i].value;
-              idleFrameCount[0] = 0;
-              break;
-            case ABS_Y:
-              rawValues->a1y = events[i].value;
-              idleFrameCount[1] = 0;
-              break;
-            case ABS_RX:
-              rawValues->a2x = events[i].value;
-              idleFrameCount[2] = 0;
-              break;
-            case ABS_RY:
-              rawValues->a2y = events[i].value;
-              idleFrameCount[3] = 0;
-              break;
+          }          
+        }
+        else {
+          for(i = 0; i < eventCnt; ++i) {
+            if(EV_KEY == events[i].type) {
+              switch(events[i].code) {
+              case BTN_SOUTH:
+                if(events[i].value) {
+                  rawValues->button1 = events[i].value;
+                }
+                idleFrameCount[4] = 0;
+                break;
+              case BTN_EAST:
+                if(events[i].value) {
+                  rawValues->button2 = events[i].value;
+                }
+                idleFrameCount[5] = 0;
+                break;
+              }
+            } else if(EV_ABS == events[i].type) {
+              switch(events[i].code) {
+              case ABS_X:
+                rawValues->a1x = events[i].value;
+                idleFrameCount[0] = 0;
+                break;
+              case ABS_Y:
+                rawValues->a1y = events[i].value;
+                idleFrameCount[1] = 0;
+                break;
+              case ABS_RX:
+                rawValues->a2x = events[i].value;
+                idleFrameCount[2] = 0;
+                break;
+              case ABS_RY:
+                rawValues->a2y = events[i].value;
+                idleFrameCount[3] = 0;
+                break;
+              }
             }
           }
         }
