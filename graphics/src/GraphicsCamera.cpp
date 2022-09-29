@@ -61,6 +61,7 @@ namespace mars {
       moveSpeed = 0.5;
       scrollSpeed = 1.0;
       haveScrollEvent = 0;
+      actOrtH = 5;
       // set up ODE like camera
 
       xpos = 0;
@@ -136,11 +137,17 @@ namespace mars {
     void GraphicsCamera::changeCameraTypeToOrtho() {
       osg::Matrix projection;
       float aspectRatio = static_cast<float>(width)/static_cast<float>(height);
-      actOrtH = 5;
       double w = actOrtH * aspectRatio;
       projection.makeOrtho(-w/2,w/2,-actOrtH/2,actOrtH/2,1.0f,10000.0f);
       if (!l_settings) mainCamera->setProjectionMatrix(projection);
       camType = 2;
+    }
+
+    void GraphicsCamera::setOrthoH(double v) {
+      actOrtH = v;
+      if(camType == 2) {
+        changeCameraTypeToOrtho();
+      }
     }
 
     void GraphicsCamera::toggleTrackball() {
@@ -350,6 +357,12 @@ namespace mars {
       mainCamera->setViewport(x, y, width, height);
       if (hudCamera) {
         hudCamera->setViewport(0, 0, width, height);
+      }
+      if(camType == 1) {
+        changeCameraTypeToPerspective();
+      }
+      else if(camType == 2) {
+        changeCameraTypeToOrtho();
       }
     }
 

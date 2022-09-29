@@ -794,7 +794,7 @@ namespace mars {
         graphicsCamera->setKeyswitchManipulator(keyswitchManipulator);
         postDrawCallback->setSize(widgetWidth, widgetHeight);
         graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
-        graphicsCamera->changeCameraTypeToPerspective();
+        //graphicsCamera->changeCameraTypeToPerspective();
         if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
         if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
       }
@@ -1235,7 +1235,7 @@ namespace mars {
     void GraphicsWidget::applyResize() {
       if(!isRTTWidget) postDrawCallback->setSize(widgetWidth, widgetHeight);
       graphicsCamera->setViewport(0, 0, widgetWidth, widgetHeight);
-      graphicsCamera->changeCameraTypeToPerspective();
+      //graphicsCamera->changeCameraTypeToPerspective();
       if (hudCamera) hudCamera->setViewport(0, 0, widgetWidth, widgetHeight);
       if (myHUD) myHUD->resize(widgetWidth, widgetHeight);
 

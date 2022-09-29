@@ -2614,6 +2614,10 @@ namespace mars {
         if(key[key.size()-1] == 'b') clearColor.b = v;
         win->setClearColor(clearColor);
       }
+      else if(matchPattern("*/orthoH", key)) {
+        double v = atof(value.c_str());
+        cam->setOrthoH(v);
+      }
       else if(matchPattern("*/position", key)) {
         double d = atof(value.c_str());
         double v[7];
