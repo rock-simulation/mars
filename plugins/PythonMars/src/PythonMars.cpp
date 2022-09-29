@@ -319,47 +319,6 @@ namespace mars {
           }
 
           if(map.hasKey("edit")) {
-            if(map["edit"].hasKey("nodePose")) {
-              for(auto it: (ConfigMap&)(map["edit"]["nodePose"])) {
-                std::string name = it.first;
-                unsigned long id = control->nodes->getID(name);
-                if(id) {
-                  Vector v(it.second[0], it.second[1], it.second[2]);
-                  Quaternion q;
-                  q.x() = it.second[3];
-                  q.y() = it.second[4];
-                  q.z() = it.second[5];
-                  q.w() = it.second[6];
-                  NodeData my_node;
-                  my_node.index = id;
-                  my_node.pos = v;
-                  my_node.rot = q;
-                  control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
-                }
-              }
-            }
-            if(map["edit"].hasKey("nodePoseSingle")) {
-              for(auto it: (ConfigMap&)(map["edit"]["nodePoseSingle"])) {
-                std::string name = it.first;
-                unsigned long id;
-                if(nodeIDs.hasKey(name)) {
-                  id = nodeIDs[name];
-                }
-                else {
-                  id = control->nodes->getID(name);
-                  nodeIDs[name] = id;
-                }
-                if(id) {
-                  Vector v(it.second[0], it.second[1], it.second[2]);
-                  Quaternion q;
-                  q.x() = it.second[3];
-                  q.y() = it.second[4];
-                  q.z() = it.second[5];
-                  q.w() = it.second[6];
-                  control->nodes->setSingleNodePose(id, v, q);
-                }
-              }
-            }
             if(map["edit"].hasKey("nodes")) {
               for(auto it: (ConfigMap&)(map["edit"]["nodes"])) {
                 std::string name = it.first;
@@ -421,6 +380,54 @@ namespace mars {
                   else {
                     control->graphics->edit(id, key, value);
                   }
+                }
+              }
+            }
+            if(map["edit"].hasKey("nodePose")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodePose"])) {
+                std::string name = it.first;
+                unsigned long id;
+                if(nodeIDs.hasKey(name)) {
+                  id = nodeIDs[name];
+                }
+                else {
+                  id = control->nodes->getID(name);
+                  nodeIDs[name] = id;
+                }
+                if(id) {
+                  Vector v(it.second[0], it.second[1], it.second[2]);
+                  Quaternion q;
+                  q.x() = it.second[3];
+                  q.y() = it.second[4];
+                  q.z() = it.second[5];
+                  q.w() = it.second[6];
+                  NodeData my_node;
+                  my_node.index = id;
+                  my_node.pos = v;
+                  my_node.rot = q;
+                  control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
+                }
+              }
+            }
+            if(map["edit"].hasKey("nodePoseSingle")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodePoseSingle"])) {
+                std::string name = it.first;
+                unsigned long id;
+                if(nodeIDs.hasKey(name)) {
+                  id = nodeIDs[name];
+                }
+                else {
+                  id = control->nodes->getID(name);
+                  nodeIDs[name] = id;
+                }
+                if(id) {
+                  Vector v(it.second[0], it.second[1], it.second[2]);
+                  Quaternion q;
+                  q.x() = it.second[3];
+                  q.y() = it.second[4];
+                  q.z() = it.second[5];
+                  q.w() = it.second[6];
+                  control->nodes->setSingleNodePose(id, v, q);
                 }
               }
             }
