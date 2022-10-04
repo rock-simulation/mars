@@ -220,8 +220,8 @@ namespace osg_terrain {
   void MultiResHeightMapRenderer::render() {
     static double t = 0.0;
     t += 0.001;
-    double x = camX;//targetWidth*0.5+2.7;
-    double y = camY;//targetHeight*0.5+3.1;
+    //double x = camX;//targetWidth*0.5+2.7;
+    //double y = camY;//targetHeight*0.5+3.1;
     //x += sin(t)*4;
     //y += cos(t)*4;
 
@@ -431,7 +431,7 @@ namespace osg_terrain {
     for(it=tile->subTiles.begin(); it!=tile->subTiles.end(); ++it) {
       if(*it) clearTile(*it);
     }
-    if(tile->listPos < listSubTiles.size()-1) {
+    if(tile->listPos < static_cast<int>(listSubTiles.size()-1)) {
       // copy last entry
       Tile* lastTile = listSubTiles.back();
 
@@ -447,7 +447,7 @@ namespace osg_terrain {
       listSubTiles.pop_back();
       //fprintf(stderr, "move3: %d %d %d\n", listSubTiles.size(), lastTile->indicesArrayOffset, listSubTiles.back()->indicesArrayOffset);
     }
-    else if(tile->listPos == listSubTiles.size()-1) {
+    else if(tile->listPos == static_cast<int>(listSubTiles.size()-1)) {
       listSubTiles.pop_back();
     }
     else {
@@ -557,8 +557,8 @@ namespace osg_terrain {
   double MultiResHeightMapRenderer::getHeight(double x, double y) {
     // need to replaced by image
     //if(!isInitialized) return 0;
-    int stepx = targetWidth / img.cols;
-    int stepy = targetHeight / img.rows;
+    //int stepx = targetWidth / img.cols;
+    //int stepy = targetHeight / img.rows;
 
     x = img.cols*x/targetWidth;
     y = img.rows*y/targetHeight;
@@ -644,7 +644,7 @@ namespace osg_terrain {
     int vOffset = -numVertices;
 
     if(listSubTiles.size() > 0) {
-      if(listSubTiles.size() == maxNumSubTiles) return NULL;
+      if(static_cast<int>(listSubTiles.size()) == maxNumSubTiles) return NULL;
       //fprintf(stderr, "%lu: ", listSubTiles.back());
       iOffset = listSubTiles.back()->indicesArrayOffset;
       vOffset = listSubTiles.back()->verticesArrayOffset;
