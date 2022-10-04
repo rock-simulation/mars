@@ -1,3 +1,5 @@
+
+
 /*
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
@@ -30,7 +32,7 @@
 #ifdef _PRINT_HEADER_
   #warning "MainGUI.h"
 #endif
-
+#include <functional>
 #include "MenuInterface.h"
 #include "GuiInterface.h"
 #include "MyQMdiArea.h"
@@ -38,6 +40,7 @@
 
 #include <vector>
 #include <QtGui>
+#include <QComboBox>
 
 namespace mars {
   namespace main_gui {
@@ -129,8 +132,21 @@ namespace mars {
        * \see LibInterface::getLibName(void)
        */
       const std::string getLibName() const;
-      CREATE_MODULE_INFO();
+      /**
+       * \brief gets the label of Toolbar
+       */
+      QToolBar *getToolbar(const std::string label);
+      /**
+       * \brief adds a QComboBox to toolbar
+       * \param toolbar_label: label text of the QToolbar to add QComboBox to
+       * \param elements: elements strings to put into the QComboBox
+       * \param on_element_changed: callback function to be triggered when an element is selected from the QComboBox
+       */
+      void addComboBoxToToolbar(const std::string &toolbar_label,
+                                const std::vector<std::string> &elements,
+                                std::function<void(std::string)> on_element_changed);
 
+      CREATE_MODULE_INFO();
 
     public slots:
 
@@ -138,14 +154,14 @@ namespace mars {
        * \brief Makes a widget dockable in the main window.
        * \see GuiInterface::addDockWidget(void*, int, int)
        */
-      void addDockWidget(void *window, int p=0, int a=0,
-                         bool possibleCentralWidget=false);
+      void addDockWidget(void *window, int p = 0, int a = 0,
+                         bool possibleCentralWidget = false);
 
       /**
        * \brief Removes a widget from the dockables.
        * \see GuiInterface::removeDockWidget(void*, int)
        */
-      void removeDockWidget(void *window, int p=0);
+      void removeDockWidget(void *window, int p = 0);
 
       /**
        * \brief Called when a menu item is selected. Calls the
@@ -158,7 +174,10 @@ namespace mars {
        * \brief Shows the standard qt about dialog
        */
       void aboutQt() const;
-
+      /**
+       * \brief
+       */
+      void on_toolbar_cb_changed(const QString &input);
 
     private:
       /**
@@ -198,6 +217,9 @@ namespace mars {
       */
       std::vector<menuStruct> v_qmenu;
       std::vector<genericMenu> genericMenus;
+
+    public:
+      std::map<QComboBox *, std::function<void(std::string)>> toolbar_cb_callbacks;
 
     }; // end class MainGUI
 
