@@ -360,6 +360,47 @@ namespace mars {
       connect(line_edit, SIGNAL(textChanged(const QString &)), this, SLOT(on_toolbar_le_text_changed(const QString &)));
       toolbar_le_callbacks.push_back(std::make_tuple(id, line_edit, on_text_changed));
     }
+
+    void MainGUI::disableToolbarLineEdit(std::vector<int> id){
+      for (auto [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        for(const auto &i : id)
+        {
+        if(_id == i)
+        {
+          line_edit->setEnabled(false);
+          id.push_back(_id);
+          break;
+        }
+        }
+      }
+    }
+    void MainGUI::enableToolbarLineEdit(std::vector<int> id){
+      for (auto [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        for( const auto &i : id)
+        {
+        if(_id == i)
+        {
+          line_edit->setEnabled(true);
+          id.push_back(_id);
+          break;
+        }
+        }
+      }
+    }
+    std::string MainGUI::getToolbarLineEditText(int id)
+    {
+      for (const auto& [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        if(_id == id)
+          return line_edit->text().toStdString();
+        
+      }
+       throw std::invalid_argument("Could not find QLineEdit with id "+ std::to_string(id));
+      
+    }
+
     QToolBar *MainGUI::getToolbar(std::string label)
     {
       for (const auto &m : v_qmenu)
@@ -377,6 +418,18 @@ namespace mars {
         if (it.first == dynamic_cast<QComboBox *>(sender()))
         {
           it.second(input.toStdString());
+          break;
+        }
+      }
+    }
+
+    void MainGUI::on_toolbar_le_text_changed(const QString &input)
+    {
+      for (auto [id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        if (line_edit == dynamic_cast<QLineEdit *>(sender()))
+        {
+          callback(input.toStdString());
           break;
         }
       }

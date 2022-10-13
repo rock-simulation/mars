@@ -22,7 +22,7 @@
 
 /**
  * \file MainGUI.h
- * \author Malte Römmermann
+ * \author Malte RÃ¶mmermann
  * \author Vladimir Komsiyski
  */
 
@@ -39,6 +39,7 @@
 #include "MyQMainWindow.h"
 
 #include <vector>
+#include <tuple>
 #include <QtGui>
 #include <QComboBox>
 
@@ -155,6 +156,22 @@ namespace mars {
       void addLineEditToToolbar(int id, const std::string &toolbar_label, 
                                 const std::string &label_text, const std::string &default_text,
                                 std::function<void(std::string)> on_text_changed);
+      /**
+       * \brief enable LineEditText to toolbar
+       * \param id: no of id which field should be enable
+       */
+      void enableToolbarLineEdit(std::vector<int> id);
+      /**
+       * \brief enable LineEditText to toolbar
+       * \param id: no of id which field should be disable during the text switch in 
+       */
+      void disableToolbarLineEdit(std::vector<int> id);
+       /**
+       * \brief  returns the text of the field with id no 
+       * \param id: id to get the text of the field
+       */
+      std::string getToolbarLineEditText(int id);
+    
       CREATE_MODULE_INFO();
 
     public slots:
@@ -187,6 +204,10 @@ namespace mars {
        * \brief
        */
       void on_toolbar_cb_changed(const QString &input);
+          /**
+       * \brief
+       */
+      void on_toolbar_le_text_changed(const QString &input);
 
     private:
       /**
@@ -227,9 +248,9 @@ namespace mars {
       std::vector<menuStruct> v_qmenu;
       std::vector<genericMenu> genericMenus;
 
-    public:
+    private:
       std::map<QComboBox *, std::function<void(std::string)>> toolbar_cb_callbacks;
-
+      std::vector< std::tuple< int, QLineEdit *, std::function<void(std::string)>>> toolbar_le_callbacks;
     }; // end class MainGUI
 
   } // end namespace main_gui
