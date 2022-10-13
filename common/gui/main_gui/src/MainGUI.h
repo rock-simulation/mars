@@ -145,7 +145,16 @@ namespace mars {
       void addComboBoxToToolbar(const std::string &toolbar_label,
                                 const std::vector<std::string> &elements,
                                 std::function<void(std::string)> on_element_changed);
-
+      /**
+       * \brief adds a LineEditText to toolbar
+       * \param toolbar_label: label QToolbar to add text field to
+       * \param label_text: label the text 
+       * \param default_text: set the default text
+       * \param on_text_changed: callback function to be triggered 
+       */
+      void addLineEditToToolbar(int id, const std::string &toolbar_label, 
+                                const std::string &label_text, const std::string &default_text,
+                                std::function<void(std::string)> on_text_changed);
       CREATE_MODULE_INFO();
 
     public slots:

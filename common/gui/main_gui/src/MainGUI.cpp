@@ -344,6 +344,22 @@ namespace mars {
       toolbar_cb_callbacks[combobox] = on_element_changed;
     }
 
+    void MainGUI::addLineEditToToolbar(int id, const std::string &toolbar_label,
+                                       const std::string &label_text, const std::string &default_text,
+                                       std::function<void(std::string)> on_text_changed)
+    {
+      QToolBar *toolbar = this->getToolbar(toolbar_label);
+      QLineEdit *line_edit = new QLineEdit;
+      QLabel *label = new QLabel(QString::fromStdString(label_text));
+      line_edit->setText(QString::fromStdString(default_text));
+      line_edit->setFixedWidth(120);
+      //add to widget
+      toolbar->addWidget(label);
+      toolbar->addWidget(line_edit);
+      //connect
+      connect(line_edit, SIGNAL(textChanged(const QString &)), this, SLOT(on_toolbar_le_text_changed(const QString &)));
+      toolbar_le_callbacks.push_back(std::make_tuple(id, line_edit, on_text_changed));
+    }
     QToolBar *MainGUI::getToolbar(std::string label)
     {
       for (const auto &m : v_qmenu)
