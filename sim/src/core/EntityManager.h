@@ -73,6 +73,9 @@ namespace mars {
       virtual void addMotor(const std::string &entityName, unsigned long motorId,
           const std::string &motorName);
 
+      virtual void addSensor(const std::string& entityName, long unsigned int sensorId,
+        const std::string& sensorName);
+
       /**adds a controller id to the controller list*/
       virtual void addController(const std::string &entityName, unsigned long controllerId);
 
@@ -118,6 +121,9 @@ namespace mars {
 
       virtual unsigned long getEntityMotor(const std::string &entityName,
           const std::string &motorName);
+
+      virtual unsigned long getEntitySensor(const std::string &entityName,
+          const std::string &sensorName);          
 
       virtual std::vector<unsigned long> getEntityControllerList(const std::string &entityName);
 

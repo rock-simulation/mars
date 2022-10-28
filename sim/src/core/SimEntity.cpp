@@ -265,10 +265,26 @@ namespace mars {
       return 0;
     }
 
+    unsigned long SimEntity::getSensor(const std::string &name) {
+       for (std::map<unsigned long, std::string>::const_iterator iter = sensorIds.begin();
+          iter != sensorIds.end(); ++iter) {
+        if (iter->second == name)
+          return iter->first;
+      }
+      return 0;     
+    }    
+
     std::string SimEntity::getMotor(long unsigned int id) {
       //TODO problem if node does not exist
       return motorIds.find(id)->second;
     }
+
+     std::string SimEntity::getSensor(long unsigned int id) {
+        //TODO problem if node does not exist       
+        return sensorIds.find(id)->second;
+     }  
+
+
 
     long unsigned int SimEntity::getJoint(const std::string& name) {
       for (std::map<unsigned long, std::string>::const_iterator iter = jointIds.begin();
