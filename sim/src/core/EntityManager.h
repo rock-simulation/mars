@@ -72,7 +72,7 @@ namespace mars {
       /**adds a motor to the entity and maps the motorId to its name*/
       virtual void addMotor(const std::string &entityName, unsigned long motorId,
           const std::string &motorName);
-
+      /**adds a motor to the entity and maps the sensorId to its name*/
       virtual void addSensor(const std::string& entityName, long unsigned int sensorId,
         const std::string& sensorName);
 
