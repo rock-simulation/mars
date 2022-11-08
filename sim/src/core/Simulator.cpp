@@ -304,9 +304,12 @@ namespace mars {
         control->sensors = new SensorManager(control);
         //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
       }      
+      if (control->entities == NULL) {
+        control->entities = new EntityManager(control);
+      }
 
       control->controllers = new ControllerManager(control);
-      control->entities = new EntityManager(control);
+      
 
       control->controllers->setDefaultPort(std_port);
       control->nodes->setVisualRep(0, cfgVisRep.iValue);
