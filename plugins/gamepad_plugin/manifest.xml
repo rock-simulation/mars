@@ -1,0 +1,13 @@
+<package>
+    <description brief="connexion_plugin">
+      ConnexionPlugin for MARS
+    </description>
+	<maintainer>Matthias Goldhoorn/matthias@goldhoorn.eu</maintainer>
+
+    <depend package="simulation/lib_manager" />
+    <depend package="simulation/mars/common/data_broker" />
+    <depend package="simulation/mars/common/gui/main_gui" />
+    <depend package="simulation/mars/interfaces" />
+    <tags>needs_opt</tags>
+    <rosdep name="qt4" />
+</package>

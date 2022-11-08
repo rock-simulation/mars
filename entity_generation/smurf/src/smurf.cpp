@@ -1209,6 +1209,8 @@ namespace mars {
       if (sensor != 0) {
         control->loadCenter->setMappedID(config["index"], sensor->getID(), MAP_TYPE_SENSOR,
             mapIndex);
+
+        entity->addSensor(sensor->getID(), sensor->getName());
       }
 
       return sensor;

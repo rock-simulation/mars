@@ -118,7 +118,7 @@ namespace mars {
       private:
         cfg_manager::cfgPropertyStruct example;
         //PythonMars_MainWin *plugin_win;
-        utils::Mutex gpMutex, mutex, guiMapMutex, mutexPoints, mutexCamera;
+        utils::Mutex gpMutex, mutex, guiMapMutex, mutexPoints, mutexCamera, dbLock;
         shared_ptr<Module> plugin;
         std::map<std::string, unsigned long> motorMap, nodeMap;
         configmaps::ConfigItem requestMap;
@@ -134,7 +134,9 @@ namespace mars {
         configmaps::ConfigItem iMap;
         double updateTime;
         std::vector<configmaps::ConfigMap> guiMaps;
-
+        int next_db_item_id;
+        configmaps::ConfigMap dbItems;
+        configmaps::ConfigMap nodeIDs;
         }; // end of class definition PythonMars
 
     } // end of namespace PythonMars

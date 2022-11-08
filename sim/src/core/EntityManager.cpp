@@ -155,6 +155,19 @@ namespace mars {
       }
     }
 
+    void EntityManager::addSensor(const std::string& entityName, long unsigned int sensorId,
+        const std::string& sensorName) {
+      //iterate over all robots to find the robot with the given name
+      for (std::map<unsigned long, SimEntity*>::iterator iter = entities.begin();
+          iter != entities.end(); ++iter) {
+        if (iter->second->getName() == entityName) {
+          MutexLocker locker(&iMutex);
+          iter->second->addSensor(sensorId, sensorName);
+          break;
+        }
+      }
+    }    
+
     void EntityManager::addJoint(const std::string& entityName, long unsigned int jointId,
         const std::string& jointName) {
       //iterate over all robots to find the robot with the given name
@@ -299,6 +312,18 @@ namespace mars {
       }
       return motor;
     }
+
+    long unsigned int EntityManager::getEntitySensor(const std::string& entityName,
+        const std::string& sensorName) {
+      //not sure if a mutex lock is needed here
+      MutexLocker locker(&iMutex);
+      SimEntity *entity = getEntity(entityName);
+      unsigned long sensor = 0;
+      if (entity) {
+        sensor = entity->getSensor(sensorName);
+      }
+      return sensor;
+    }    
 
     std::vector<unsigned long> EntityManager::getEntityControllerList(
         const std::string &entityName) {

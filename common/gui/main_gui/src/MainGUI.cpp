@@ -1,3 +1,5 @@
+
+
 /*
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
@@ -311,11 +313,9 @@ namespace mars {
     const std::string MainGUI::getLibName() const {
       return "main_gui";
     }
-
     void MainGUI::aboutQt() const {
       QMessageBox::aboutQt(mainWindow, "About Qt");
     }
-
     void MainGUI::setMenuActionSelected(const std::string &path, bool checked) {
       for(size_t i=0; i<genericMenus.size(); ++i) {
         if(genericMenus[i].path == path) {
@@ -327,6 +327,113 @@ namespace mars {
       }
     }
 
+    void MainGUI::addComboBoxToToolbar(const std::string &toolbar_label,
+                                       const std::vector<std::string> &elements,
+                                       std::function<void(std::string)> on_element_changed)
+    {
+      QToolBar *toolbar = this->getToolbar(toolbar_label);
+      QComboBox *combobox = new QComboBox;
+      for (auto const &e : elements)
+      {
+        combobox->addItem(QString::fromStdString(e));
+      }
+      toolbar->addWidget(combobox);
+
+      connect(combobox, SIGNAL(currentIndexChanged(const QString &)), this, SLOT(on_toolbar_cb_changed(const QString &)));
+
+      toolbar_cb_callbacks[combobox] = on_element_changed;
+    }
+
+    void MainGUI::addLineEditToToolbar(int id, const std::string &toolbar_label,
+                                       const std::string &label_text, const std::string &default_text,
+                                       std::function<void(std::string)> on_text_changed)
+    {
+      QToolBar *toolbar = this->getToolbar(toolbar_label);
+      QLineEdit *line_edit = new QLineEdit;
+      QLabel *label = new QLabel(QString::fromStdString(label_text));
+      line_edit->setText(QString::fromStdString(default_text));
+      line_edit->setFixedWidth(120);
+      //add to widget
+      toolbar->addWidget(label);
+      toolbar->addWidget(line_edit);
+      //connect
+      connect(line_edit, SIGNAL(textChanged(const QString &)), this, SLOT(on_toolbar_le_text_changed(const QString &)));
+      toolbar_le_callbacks.push_back(std::make_tuple(id, line_edit, on_text_changed));
+    }
+
+    void MainGUI::disableToolbarLineEdit(std::vector<int> id){
+      for (auto [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        for(const auto &i : id)
+        {
+        if(_id == i)
+        {
+          line_edit->setEnabled(false);
+          id.push_back(_id);
+          break;
+        }
+        }
+      }
+    }
+    void MainGUI::enableToolbarLineEdit(std::vector<int> id){
+      for (auto [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        for( const auto &i : id)
+        {
+        if(_id == i)
+        {
+          line_edit->setEnabled(true);
+          id.push_back(_id);
+          break;
+        }
+        }
+      }
+    }
+    std::string MainGUI::getToolbarLineEditText(int id)
+    {
+      for (const auto& [_id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        if(_id == id)
+          return line_edit->text().toStdString();
+        
+      }
+       throw std::invalid_argument("Could not find QLineEdit with id "+ std::to_string(id));
+      
+    }
+
+    QToolBar *MainGUI::getToolbar(std::string label)
+    {
+      for (const auto &m : v_qmenu)
+      {
+        if (m.label == label)
+          return m.toolbar;
+      }
+      throw std::invalid_argument("label toolbar " + label + " does not exist");
+    }
+
+    void MainGUI::on_toolbar_cb_changed(const QString &input)
+    {
+      for (auto it : toolbar_cb_callbacks)
+      {
+        if (it.first == dynamic_cast<QComboBox *>(sender()))
+        {
+          it.second(input.toStdString());
+          break;
+        }
+      }
+    }
+
+    void MainGUI::on_toolbar_le_text_changed(const QString &input)
+    {
+      for (auto [id, line_edit, callback] : toolbar_le_callbacks)
+      {
+        if (line_edit == dynamic_cast<QLineEdit *>(sender()))
+        {
+          callback(input.toStdString());
+          break;
+        }
+      }
+    }
   } // end namespace main_gui
 } // end namespace mars
 

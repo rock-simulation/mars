@@ -57,10 +57,12 @@ namespace osg_animation {
     virtual void setMaterialManager(osg_material_manager::OsgMaterialManager *materialManager);
     virtual void setMatrixTexture(std::string material_name, std::string texture_name);
     virtual void updatePose();
+    virtual void getPose(const std::string &name, double *x, double *y, double *z, double *qx, double *qy, double *qz, double *qw);
     virtual void printBones();
     virtual void setGraphics(mars::interfaces::GraphicsManagerInterface *g);
     virtual void setName(std::string name);
     virtual std::string getName();
+    virtual bool hasBone(const std::string &name);
     virtual void setLoadPath(std::string path);
 
   private:

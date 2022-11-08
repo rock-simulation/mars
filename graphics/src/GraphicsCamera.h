@@ -106,6 +106,7 @@ namespace mars {
       /**\brief set camera type by context menu */
       virtual void changeCameraTypeToPerspective();
       virtual void changeCameraTypeToOrtho();
+      virtual void setOrthoH(double v);
       void openSetCamViewport();
       void context_setCamPredefLeft();
       void context_setCamPredefRight();

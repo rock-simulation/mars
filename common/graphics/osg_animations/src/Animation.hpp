@@ -38,10 +38,12 @@ namespace osg_animation {
     virtual void setMatrixTexture(std::string material_name, std::string texture_name) = 0;
     // todo: add method to set pixel offset
     virtual void updatePose() = 0;
+    virtual void getPose(const std::string &name, double *x, double *y, double *z, double *qx, double *qy, double *qz, double *qw) = 0;
     virtual void printBones() = 0;
     virtual void setGraphics(mars::interfaces::GraphicsManagerInterface *g) = 0;
     virtual void setName(std::string name) = 0;
     virtual std::string getName() = 0;
+    virtual bool hasBone(const std::string &name) = 0;
     virtual void setLoadPath(std::string path) = 0;
   };
 

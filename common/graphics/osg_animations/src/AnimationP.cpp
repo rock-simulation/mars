@@ -220,7 +220,7 @@ namespace osg_animation {
     invQ.x() *= -1;
     invQ.y() *= -1;
     invQ.z() *= -1;
-    osg::Quat dQ = q*invQ;
+    //osg::Quat dQ = q*invQ;
     //dQ.x() = dQ.y() = dQ.z() = 0.0;
     //dQ.w() = 1.0;
     osg::Matrixd m1;
@@ -277,7 +277,7 @@ namespace osg_animation {
   }
 
   void AnimationP::updatePose() {
-    static long numFile = 0;
+    //static long numFile = 0;
     static double t = 0.0;
     static bool init_vertex_weights = true;
     bool refresh = false;
@@ -323,7 +323,7 @@ namespace osg_animation {
           next_update_time += 40*speed_scale;
           animation_index += 1;
           if(animation_index >= animations[current_animation][armature->name].size()) {
-            if(repeat == -1 or loop < repeat) {
+            if(repeat == -1 or static_cast<int>(loop) < repeat) {
               animation_index = 0;
               loop += 1;
             }
@@ -338,7 +338,7 @@ namespace osg_animation {
         if(refresh) {
           //fprintf(stderr, "animation_index: %lu of %s\n", animation_index, current_animation.c_str());
           for(auto it:(configmaps::ConfigMap)animations[current_animation]) {
-            Bone *b = boneMap[it.first];
+            //Bone *b = boneMap[it.first];
             //fprintf(stderr, "bone: %s\n", it.first.c_str());
             boneMap[it.first]->pos.x() = it.second[animation_index][0][0];
             boneMap[it.first]->pos.y() = it.second[animation_index][0][1];
@@ -401,6 +401,24 @@ namespace osg_animation {
     }
     t += 0.03;
     if(t>6.28) t-=6.28;
+  }
+
+  void AnimationP::getPose(const std::string &name, double *x, double *y, double *z, double *qx, double *qy, double *qz, double *qw) {
+    Bone *b = getBone(name, armature);
+    if(b) {
+      *x = b->pos.x();
+      *y = b->pos.y();
+      *z = b->pos.z();
+      *qx = b->q.x();
+      *qy = b->q.y();
+      *qz = b->q.z();
+      *qw = b->q.w();
+    }
+  }
+
+  bool AnimationP::hasBone(const std::string &name) {
+    Bone *b = getBone(name, armature);
+    return b!=NULL;
   }
 
   void AnimationP::printBone(Bone *bone, osg::Vec3d &parent_pos, osg::Quat &parent_q, int depth) {

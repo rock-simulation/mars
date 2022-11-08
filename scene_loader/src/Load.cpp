@@ -392,6 +392,10 @@ namespace mars {
         control->loadCenter->setMappedID(sceneID, sensor->getID(),
                                          MAP_TYPE_SENSOR,
                                          mapIndex);
+
+        if(mRobotName != "") {
+          control->entities->addSensor(mRobotName, sensor->getID(), sensor->getName());
+        }                                         
       }
 
       return sensor;
