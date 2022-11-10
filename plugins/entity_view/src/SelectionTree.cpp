@@ -151,8 +151,8 @@ namespace mars {
       tmpList.swap(simNodes);
       //treeWidget->expandAll();
 
-      control->nodes->getListNodes(&simNodes);
-      addCoreExchange(simNodes, "nodes");
+      //control->nodes->getListNodes(&simNodes);
+      //addCoreExchange(simNodes, "nodes");
 
       control->joints->getListJoints(&simJoints);
       addCoreExchange(simJoints, "joints");
