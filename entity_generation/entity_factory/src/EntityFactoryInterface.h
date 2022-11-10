@@ -58,7 +58,7 @@ namespace mars {
       virtual ~EntityFactoryInterface(void) {
       }
       ;
-      virtual sim::SimEntity* createEntity(const configmaps::ConfigMap& config) = 0;
+      virtual std::shared_ptr<mars::sim::SimEntity> createEntity(const configmaps::ConfigMap& config) = 0;
       virtual std::string getType() {
         return this->type;
       }

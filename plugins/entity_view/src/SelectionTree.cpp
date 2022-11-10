@@ -21,6 +21,7 @@
 
 #include "SelectionTree.h"
 
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/sim/JointManagerInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
@@ -133,19 +134,25 @@ namespace mars {
       }
     }
 
-    void SelectionTree::createTree()  {
+    // TODO: sort nodes/joints/motors by their entities and show list of nodes/joints/... that are not belong to any entity
+    void SelectionTree::createTree()  {    
+      control->entities->getListEntities(&simEntities);
+      addCoreExchange(simEntities, "entities");      
+      
       std::vector<interfaces::core_objects_exchange> tmpList;
       present.clear();
       control->nodes->getListNodes(&tmpList);
       simNodes = tmpList;
-      QStringList temp;
-      temp << "nodes";
-      QTreeWidgetItem *current = new QTreeWidgetItem(temp);
-      treeWidget->addTopLevelItem(current);
+
+      QTreeWidgetItem *current = new QTreeWidgetItem(QStringList("nodes"));
+      treeWidget->addTopLevelItem(current);      
 
       while(simNodes.size() > 0) fill(simNodes[0].index, current);
       tmpList.swap(simNodes);
       //treeWidget->expandAll();
+
+      control->nodes->getListNodes(&simNodes);
+      addCoreExchange(simNodes, "nodes");
 
       control->joints->getListJoints(&simJoints);
       addCoreExchange(simJoints, "joints");
@@ -159,6 +166,7 @@ namespace mars {
       control->controllers->getListController(&simControllers);
       addCoreExchange(simControllers, "controllers");
 
+      QStringList temp;
       temp.clear();
       temp << "materials";
       current = new QTreeWidgetItem(temp);
@@ -828,6 +836,5 @@ namespace mars {
         }
       }
     }
-
   } // end of namespace plugins
 } // end of namespace mars

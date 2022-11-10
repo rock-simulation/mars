@@ -28,13 +28,16 @@
 #ifndef SIMENTITY_H
 #define SIMENTITY_H
 
-
-#include <configmaps/ConfigData.h>
 #include <string>
 #include <set>
 #include <map>
 #include <vector>
+
+#include <configmaps/ConfigData.h>
+
 #include <mars/interfaces/MARSDefs.h>
+#include <mars/interfaces/core_objects_exchange.h>
+
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
 
@@ -85,14 +88,21 @@ namespace mars {
       bool deSelect(unsigned long nodeId);
 
       // returns the name of the robot
-      std::string getName() {
-        return name;
-      }
+      std::string getName();
+
+      void setID(unsigned int id);
+
+      unsigned long getID();
 
       /* @brief returns the assembly name of the assembly to which the robot
       *  belongs. Returns "" if the robot is not part of an assembly
       */
       std::string getAssembly();
+
+      /* @brief returns frame id where the sim entity is stored in the graph. 
+      * Returns "" if no frame id was set.
+      */
+      std::string getFrameID();
 
       // returns true if the robot is selected
       bool isSelected() {
@@ -162,13 +172,16 @@ namespace mars {
 
       utils::Vector getEntityCOM();
 
+      void getCoreExchange(interfaces::core_objects_exchange *obj) const;
+
       //debug functions
-      void printNodes();
-      void printMotors();
-      void printControllers();
+      void printNodes() const;
+      void printMotors() const;
+      void printControllers() const;
 
     private:
       std::string name;
+      unsigned long id;
       interfaces::ControlCenter *control;
       configmaps::ConfigMap config;
       unsigned long anchorJointId = 0;

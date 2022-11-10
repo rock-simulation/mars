@@ -43,17 +43,20 @@ namespace mars {
 
     SimEntity::SimEntity(const std::string &name) : name(name), control(NULL),
                                                     selected(false) {
+      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());                                                        
     }
 
     SimEntity::SimEntity(const configmaps::ConfigMap& parameters) : control(NULL),
                                                                     selected(false) {
       config = parameters;
       this->name = (std::string) config["name"];
+      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());
     }
 
     SimEntity::SimEntity(ControlCenter *c,
                          const std::string &name) : name(name), control(c),
                                                     selected(false) {
+      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());                                                      
     }
 
     SimEntity::SimEntity(ControlCenter *c,
@@ -137,6 +140,27 @@ namespace mars {
       }
       return "";
     }
+
+    std::string SimEntity::getFrameID() {
+      if (config.hasKey("frame_id")) {
+        return (std::string) config["frame_id"];
+      }
+      return "";
+    }
+
+
+    // returns the name of the robot
+    std::string SimEntity::getName() {
+      return name;
+    }
+
+    void SimEntity::setID(unsigned int id) {
+      this->id = id;
+    }
+
+    unsigned long SimEntity::getID() {
+      return id;
+    }    
 
     long unsigned int SimEntity::getRootestId(std::string name_specifier /*="" */) {
       unsigned int id_specified = INVALID_ID;
@@ -308,7 +332,12 @@ namespace mars {
       return controllerIds;
     }
 
-    void SimEntity::printNodes() {
+    void SimEntity::getCoreExchange(interfaces::core_objects_exchange *obj) const {
+      obj->name = name;
+      obj->index = id;
+    }
+
+    void SimEntity::printNodes() const {
       std::cout << "Nodes of Robot " << name << "with id: " << ":\n";
       for (std::map<unsigned long, std::string>::const_iterator iter = nodeIds.begin();
           iter != nodeIds.end(); ++iter) {
@@ -317,7 +346,7 @@ namespace mars {
       std::cout << std::endl;
     }
 
-    void SimEntity::printMotors() {
+    void SimEntity::printMotors() const {
       std::cout << "Motors of Robot " << name << ":\n";
       for (std::map<unsigned long, std::string>::const_iterator iter = motorIds.begin();
           iter != motorIds.end(); ++iter) {
@@ -326,7 +355,7 @@ namespace mars {
       std::cout << std::endl;
     }
 
-    void SimEntity::printControllers() {
+    void SimEntity::printControllers() const {
       std::cout << "Controllers of Robot " << name << ":\n";
       for (size_t i = 0; i < controllerIds.size(); i++) {
         std::cout << controllerIds.at(i) << std::endl;

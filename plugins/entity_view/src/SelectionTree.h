@@ -65,6 +65,7 @@ namespace mars {
       bool filled, selectAllowed;
       int editCategory;
       int currentWindowID;
+      std::vector<interfaces::core_objects_exchange> simEntities;
       std::vector<interfaces::core_objects_exchange> simNodes, simJoints;
       std::vector<interfaces::core_objects_exchange> simMotors, simSensors;
       std::vector<interfaces::core_objects_exchange> simControllers;

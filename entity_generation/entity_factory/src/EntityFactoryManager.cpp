@@ -79,7 +79,7 @@ namespace mars {
       }
       if(knowntype) {
         fprintf(stderr, "Loading Entity of type %s.\n", ((std::string)config["type"]).c_str());
-        sim::SimEntity* newentity = factories[config["type"]]->createEntity(config);
+        std::shared_ptr<mars::sim::SimEntity> newentity = factories[config["type"]]->createEntity(config);
         id = control->entities->addEntity(newentity);
       }
       else {

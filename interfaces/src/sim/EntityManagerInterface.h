@@ -31,7 +31,10 @@
 
 #include <string>
 #include <vector>
+
 #include <configmaps/ConfigData.h>
+
+#include <mars/interfaces/core_objects_exchange.h>
 
 namespace mars {
 
@@ -55,7 +58,7 @@ namespace mars {
       virtual unsigned long addEntity(const std::string &name) = 0;
 
       /**adds an existing entity to its entity map, returning the assigned id*/
-      virtual unsigned long addEntity(sim::SimEntity* entity) = 0;
+      virtual unsigned long addEntity(std::shared_ptr<mars::sim::SimEntity> entity) = 0;
 
       /**deletes an existing entity and removes it's entity map entry*/
       virtual void removeEntity(const std::string &name, bool completeAssembly=false) = 0;
@@ -92,6 +95,8 @@ namespace mars {
       /**returns the entities that contain the given name string
        */
       virtual std::vector<sim::SimEntity*> getEntities(const std::string &name) = 0;
+
+      virtual void getListEntities(std::vector<mars::interfaces::core_objects_exchange>* entityList) = 0;
 
       /**returns the entity with the given id*/
       virtual sim::SimEntity* getEntity(unsigned long id) = 0;

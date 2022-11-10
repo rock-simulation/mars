@@ -34,7 +34,8 @@
 #include "MotorManager.h"
 #include "SensorManager.h"
 #include "ControllerManager.h"
-#include "EntityManager.h"
+//#include "EntityManager.h"
+#include <mars/interfaces/sim/EntityManagerInterface.h>
 #include "Controller.h"
 
 #include <mars/utils/misc.h>
@@ -305,7 +306,8 @@ namespace mars {
         //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
       }      
       if (control->entities == NULL) {
-        control->entities = new EntityManager(control);
+        throw std::runtime_error("[Simulator] No Entity Manager!");
+        //control->entities = new EntityManager(control);
       }
 
       control->controllers = new ControllerManager(control);

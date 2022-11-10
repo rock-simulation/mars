@@ -71,7 +71,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
 set(SOURCES_H
        src/core/Controller.h
        src/core/ControllerManager.h
-       src/core/EntityManager.h
+       #src/core/EntityManager.h
        src/core/JointManager.h
        src/core/MotorManager.h
        src/core/NodeManager.h
@@ -122,7 +122,7 @@ set(SOURCES_H
 set(TARGET_SRC
        src/core/Controller.cpp
        src/core/ControllerManager.cpp
-       src/core/EntityManager.cpp
+       #src/core/EntityManager.cpp
        src/core/JointManager.cpp
        src/core/MotorManager.cpp
        src/core/NodeManager.cpp
