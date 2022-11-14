@@ -29,6 +29,7 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
+#include <mars/sim/PhysicsMapper.h>
 
 #include <iostream>
 #include <cstdlib>
@@ -137,6 +138,16 @@ namespace mars {
       }
       if(pushToDataBroker > 0) {
         addToDataBroker();
+      }
+
+      // create physics
+      if(sNode.noPhysical == false) {
+        my_interface = mars::sim::PhysicsMapper::newNodePhysics(control->sim->getPhysics());
+
+        if (!my_interface->createNode(&sNode)) {
+          my_interface.reset();
+          throw std::runtime_error("[SimNode] No physic could be created for " + sNode.name);
+        }
       }
     }
 
