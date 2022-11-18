@@ -23,7 +23,6 @@
     <depend package="simulation/mars/plugins/CameraGUI" optional="1" />
     <!--depend package="simulation/mars/plugins/PythonMars" optional="1" /-->
     <depend package="simulation/mars/plugins/entity_view" optional="1" />
-    <depend package="simulation/mars/entity_generation/smurf" optional="1" />
     <depend package="simulation/mars/smurf_loader" optional="1" />
     <depend package="simulation/mars/plugins/connectors" optional="1" />
     <rosdep name="qt4" optional="1" />
