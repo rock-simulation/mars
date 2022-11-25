@@ -37,6 +37,8 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QMessageBox>
+#include <QLineEdit>
+#include <QLabel>
 
 using namespace std;
 
