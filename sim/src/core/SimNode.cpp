@@ -29,7 +29,7 @@
 #include <mars/interfaces/sim/NodeManagerInterface.h>
 #include <mars/interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars/interfaces/Logging.hpp>
-#include <mars/sim/PhysicsMapper.h>
+#include "PhysicsMapper.h"
 
 #include <iostream>
 #include <cstdlib>
