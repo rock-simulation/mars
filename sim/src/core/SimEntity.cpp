@@ -37,13 +37,15 @@
 #include <float.h>
 #include <iterator> // ostream_iterator
 
+// TODO: currently we dont store nodes/motors/etc in entity if we load smurf over envire smurf loader, since all corresponded nodes/motors/etc. are stored as children in the graph, check if we need to fill nodeIds/motorsIds anyway for fast access
+
 namespace mars {
   using namespace interfaces;
   namespace sim {
 
     SimEntity::SimEntity(const std::string &name) : name(name), control(NULL),
                                                     selected(false) {
-      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());                                                        
+      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());
     }
 
     SimEntity::SimEntity(const configmaps::ConfigMap& parameters) : control(NULL),
@@ -56,7 +58,7 @@ namespace mars {
     SimEntity::SimEntity(ControlCenter *c,
                          const std::string &name) : name(name), control(c),
                                                     selected(false) {
-      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());                                                      
+      fprintf(stderr, "Create SimEntity with the name: %s\n", this->name.c_str());
     }
 
     SimEntity::SimEntity(ControlCenter *c,
@@ -160,7 +162,7 @@ namespace mars {
 
     unsigned long SimEntity::getID() {
       return id;
-    }    
+    }
 
     long unsigned int SimEntity::getRootestId(std::string name_specifier /*="" */) {
       unsigned int id_specified = INVALID_ID;
@@ -295,8 +297,8 @@ namespace mars {
         if (iter->second == name)
           return iter->first;
       }
-      return 0;     
-    }    
+      return 0;
+    }
 
     std::string SimEntity::getMotor(long unsigned int id) {
       //TODO problem if node does not exist
@@ -304,9 +306,9 @@ namespace mars {
     }
 
      std::string SimEntity::getSensor(long unsigned int id) {
-        //TODO problem if node does not exist       
+        //TODO problem if node does not exist
         return sensorIds.find(id)->second;
-     }  
+     }
 
 
 
@@ -371,158 +373,170 @@ namespace mars {
     }
 
     void SimEntity::setInitialPose(bool reset, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
+      NodeId id;
       if(control && (config.find("rootNode") != config.end())) {
-        NodeId id = getNode((std::string)config["rootNode"]);
+        id = getNode((std::string)config["rootNode"]);
         if (!control->nodes->exists(id)) {
           fprintf(stderr, "ERROR: Did not find node id %lu in setInitialPose()\n", id);
           return;
         }
-        NodeData rootNode = control->nodes->getFullNode(id);
-        utils::Quaternion tmpQ(1, 0, 0, 0);
-        utils::Vector tmpV;
-        configmaps::ConfigMap cfg = config;
-        if (pPoseCfg != nullptr) {
-          if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
-          if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
-          cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
-          cfg["parent"] = pPoseCfg->get("parent", (std::string) "world");
-          cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
+      } else if (control && (config.find("rootNodeID") != config.end()))
+      {
+        id = config["rootNodeID"];
+        if (!control->nodes->exists(id)) {
+          fprintf(stderr, "ERROR: Did not find node id %lu in setInitialPose()\n", id);
+          return;
         }
-        //parent defines the frame for position and rotation
-        // check if there is a parent
-        std::string parentname = "world";
-        unsigned long parentid = 0;
-        utils::Vector parentpos(0,0,0);
-        utils::Quaternion parentrot(1,0,0,0);
-        if (cfg.hasKey("parent") && (std::string)cfg["parent"] != "none" && (std::string)cfg["parent"] != "") { // backwards compatibility
-          parentname << cfg["parent"];
-        }
-        if (!parentname.empty() && parentname != "world") {
-          std::string entityname, linkname;
-          unsigned int splitsignpos = parentname.find("::");
-          if (splitsignpos >= 0) {
-            entityname = parentname.substr(0, splitsignpos);
-            linkname = parentname.substr(splitsignpos+2);
-            SimEntity* parententity = control->entities->getEntity(entityname);
-            if (parententity != 0) {
-              unsigned long linkid = parententity->getNode(linkname);
-              if (linkid > 0) {
-                parentid = linkid;
-                parentpos = control->nodes->getPosition(parentid);
-                parentrot = control->nodes->getRotation(parentid);
-              } else
-                fprintf(stderr, "No valid link id for '%s' in parent entity '%s' .\n", linkname.c_str(), entityname.c_str());
+      } else {
+        fprintf(stderr, "ERROR: Entity has no root node\n", id);
+        return;
+      }
+
+      NodeData rootNode = control->nodes->getFullNode(id);
+      utils::Quaternion tmpQ(1, 0, 0, 0);
+      utils::Vector tmpV;
+      configmaps::ConfigMap cfg = config;
+      if (pPoseCfg != nullptr) {
+        if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
+        if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
+        cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
+        cfg["parent"] = pPoseCfg->get("parent", (std::string) "world");
+        cfg["pose"] = pPoseCfg->get("pose", (std::string) "");
+      }
+      //parent defines the frame for position and rotation
+      // check if there is a parent
+      std::string parentname = "world";
+      unsigned long parentid = 0;
+      utils::Vector parentpos(0,0,0);
+      utils::Quaternion parentrot(1,0,0,0);
+      if (cfg.hasKey("parent") && (std::string)cfg["parent"] != "none" && (std::string)cfg["parent"] != "") { // backwards compatibility
+        parentname << cfg["parent"];
+      }
+      if (!parentname.empty() && parentname != "world") {
+        std::string entityname, linkname;
+        unsigned int splitsignpos = parentname.find("::");
+        if (splitsignpos >= 0) {
+          entityname = parentname.substr(0, splitsignpos);
+          linkname = parentname.substr(splitsignpos+2);
+          SimEntity* parententity = control->entities->getEntity(entityname);
+          if (parententity != 0) {
+            unsigned long linkid = parententity->getNode(linkname);
+            if (linkid > 0) {
+              parentid = linkid;
+              parentpos = control->nodes->getPosition(parentid);
+              parentrot = control->nodes->getRotation(parentid);
             } else
-              fprintf(stderr, "No valid parent entity '%s' in scene.\n", entityname.c_str());
+              fprintf(stderr, "No valid link id for '%s' in parent entity '%s' .\n", linkname.c_str(), entityname.c_str());
           } else
-            fprintf(stderr, "No valid parent specified by parent: '%s'\n", parentname.c_str());
+            fprintf(stderr, "No valid parent entity '%s' in scene.\n", entityname.c_str());
+        } else
+          fprintf(stderr, "No valid parent specified by parent: '%s'\n", parentname.c_str());
+      }
+      if(cfg.find("position") != cfg.end()) {
+        rootNode.pos.x() = cfg["position"][0];
+        rootNode.pos.y() = cfg["position"][1];
+        rootNode.pos.z() = cfg["position"][2];
+      }
+      if(cfg.find("rotation") != cfg.end()) {
+        // check if euler angles or quaternion is provided; rotate around z
+        // if only one angle is provided
+        switch (cfg["rotation"].size()) {
+        case 1: tmpV[0] = 0;
+          tmpV[1] = 0;
+          tmpV[2] = cfg["rotation"][0];
+          tmpQ = utils::eulerToQuaternion(tmpV);
+          break;
+        case 3: tmpV[0] = cfg["rotation"][0];
+          tmpV[1] = cfg["rotation"][1];
+          tmpV[2] = cfg["rotation"][2];
+          tmpQ = utils::eulerToQuaternion(tmpV);
+          break;
+        case 4: tmpQ.x() = (sReal)cfg["rotation"][1];
+          tmpQ.y() = (sReal)cfg["rotation"][2];
+          tmpQ.z() = (sReal)cfg["rotation"][3];
+          tmpQ.w() = (sReal)cfg["rotation"][0];
+          break;
         }
-        if(cfg.find("position") != cfg.end()) {
-          rootNode.pos.x() = cfg["position"][0];
-          rootNode.pos.y() = cfg["position"][1];
-          rootNode.pos.z() = cfg["position"][2];
-        }
-        if(cfg.find("rotation") != cfg.end()) {
-          // check if euler angles or quaternion is provided; rotate around z
-          // if only one angle is provided
-          switch (cfg["rotation"].size()) {
-          case 1: tmpV[0] = 0;
-            tmpV[1] = 0;
-            tmpV[2] = cfg["rotation"][0];
-            tmpQ = utils::eulerToQuaternion(tmpV);
-            break;
-          case 3: tmpV[0] = cfg["rotation"][0];
-            tmpV[1] = cfg["rotation"][1];
-            tmpV[2] = cfg["rotation"][2];
-            tmpQ = utils::eulerToQuaternion(tmpV);
-            break;
-          case 4: tmpQ.x() = (sReal)cfg["rotation"][1];
-            tmpQ.y() = (sReal)cfg["rotation"][2];
-            tmpQ.z() = (sReal)cfg["rotation"][3];
-            tmpQ.w() = (sReal)cfg["rotation"][0];
-            break;
-          }
-          rootNode.rot = tmpQ;
-        }
-        rootNode.pos = parentrot * rootNode.pos + parentpos;
-        rootNode.rot = parentrot * rootNode.rot;
+        rootNode.rot = tmpQ;
+      }
+      rootNode.pos = parentrot * rootNode.pos + parentpos;
+      rootNode.rot = parentrot * rootNode.rot;
 
-        if (reset && hasAnchorJoint()) {
-          control->joints->removeJoint(anchorJointId);
-          jointIds.erase(anchorJointId);
-        }
+      if (reset && hasAnchorJoint()) {
+        control->joints->removeJoint(anchorJointId);
+        jointIds.erase(anchorJointId);
+      }
 
-        control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
-        control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
+      control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
+      control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
 
-        //anchor defines the node to which the fixed joint is created
-        // check if there is an anchor
-        std::string anchorname = "";
-        if (cfg.hasKey("anchor") && (std::string)cfg["anchor"] != "none") { // backwards compatibility
-          anchorname << cfg["anchor"];
-        }
-        if(!anchorname.empty()) {
-          unsigned long anchorid = 0;
-          if (anchorname == "parent") {
-            anchorid = parentid;
-          } else if (anchorname != "world") {// if entity gets attached to other entity
-            std::string entityname, linkname;
-            unsigned int splitsignpos = anchorname.find("::");
-            if (splitsignpos >= 0) {
-              entityname = anchorname.substr(0, splitsignpos);
-              linkname = anchorname.substr(splitsignpos+2);
-              SimEntity* anchorentity = control->entities->getEntity(entityname);
-              if (anchorentity != 0) {
-                unsigned long linkid = anchorentity->getNode(linkname);
-                if (linkid > 0) {
-                  anchorid = linkid;
-                } else {
-                  fprintf(stderr, "No valid link id for '%s' in anchor entity '%s' .\n", linkname.c_str(), entityname.c_str());
-                }
+      //anchor defines the node to which the fixed joint is created
+      // check if there is an anchor
+      std::string anchorname = "";
+      if (cfg.hasKey("anchor") && (std::string)cfg["anchor"] != "none") { // backwards compatibility
+        anchorname << cfg["anchor"];
+      }
+      if(!anchorname.empty()) {
+        unsigned long anchorid = 0;
+        if (anchorname == "parent") {
+          anchorid = parentid;
+        } else if (anchorname != "world") {// if entity gets attached to other entity
+          std::string entityname, linkname;
+          unsigned int splitsignpos = anchorname.find("::");
+          if (splitsignpos >= 0) {
+            entityname = anchorname.substr(0, splitsignpos);
+            linkname = anchorname.substr(splitsignpos+2);
+            SimEntity* anchorentity = control->entities->getEntity(entityname);
+            if (anchorentity != 0) {
+              unsigned long linkid = anchorentity->getNode(linkname);
+              if (linkid > 0) {
+                anchorid = linkid;
               } else {
-                fprintf(stderr, "No valid anchor entity '%s' in scene.\n", entityname.c_str());
+                fprintf(stderr, "No valid link id for '%s' in anchor entity '%s' .\n", linkname.c_str(), entityname.c_str());
               }
             } else {
-              fprintf(stderr, "No valid anchor specified by parent: '%s'\n", anchorname.c_str());
+              fprintf(stderr, "No valid anchor entity '%s' in scene.\n", entityname.c_str());
             }
+          } else {
+            fprintf(stderr, "No valid anchor specified by parent: '%s'\n", anchorname.c_str());
           }
-          JointData anchorjoint;
-          //fprintf(stderr, "Creating anchor joint between nodes %lu and %lu\n", id, anchorid);
-          anchorjoint.nodeIndex1 = id;
-          anchorjoint.nodeIndex2 = anchorid;
-          anchorjoint.anchorPos = ANCHOR_NODE1;
-          anchorjoint.type = JOINT_TYPE_FIXED;
-          anchorjoint.name = "anchor_"+name;
-          if (cfg.hasKey("data_package")) {
-            switch ((int) cfg["data_package"]) {
-              case 0:
-                anchorjoint.config["noDataPackage"] = true;
-                break;
-              case 1:
-                anchorjoint.config["reducedDataPackage"] = true;
-                break;
-              default:
-                break;
-            }
-          }
-          if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
-          anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
-          addJoint(anchorJointId, anchorjoint.name);
-        } else if (anchorJointId != 0){
-          //if there was a joint before, remove it
-          fprintf(stderr, "Removing anchor joint\n");
-          anchorJointId = 0;
         }
-        // set Joints
-        configmaps::ConfigVector::iterator it;
-        configmaps::ConfigMap::iterator joint_it;
-        for (it = config["poses"].begin(); it!= config["poses"].end(); ++it) {
-          if ((std::string)(*it)["name"] == (std::string)config["pose"]) {
-            for (joint_it = (*it)["joints"].beginMap();
-                 joint_it!= (*it)["joints"].endMap(); ++joint_it) {
-              control->motors->setOfflinePosition(getMotor(joint_it->first),
-                                                  joint_it->second);
-            }
+        JointData anchorjoint;
+        //fprintf(stderr, "Creating anchor joint between nodes %lu and %lu\n", id, anchorid);
+        anchorjoint.nodeIndex1 = id;
+        anchorjoint.nodeIndex2 = anchorid;
+        anchorjoint.anchorPos = ANCHOR_NODE1;
+        anchorjoint.type = JOINT_TYPE_FIXED;
+        anchorjoint.name = "anchor_"+name;
+        if (cfg.hasKey("data_package")) {
+          switch ((int) cfg["data_package"]) {
+            case 0:
+              anchorjoint.config["noDataPackage"] = true;
+              break;
+            case 1:
+              anchorjoint.config["reducedDataPackage"] = true;
+              break;
+            default:
+              break;
+          }
+        }
+        if (hasAnchorJoint()) anchorjoint.config["desired_id"] = anchorJointId;
+        anchorJointId = control->joints->addJoint(&anchorjoint, hasAnchorJoint());
+        addJoint(anchorJointId, anchorjoint.name);
+      } else if (anchorJointId != 0){
+        //if there was a joint before, remove it
+        fprintf(stderr, "Removing anchor joint\n");
+        anchorJointId = 0;
+      }
+      // set Joints
+      configmaps::ConfigVector::iterator it;
+      configmaps::ConfigMap::iterator joint_it;
+      for (it = config["poses"].begin(); it!= config["poses"].end(); ++it) {
+        if ((std::string)(*it)["name"] == (std::string)config["pose"]) {
+          for (joint_it = (*it)["joints"].beginMap();
+                joint_it!= (*it)["joints"].endMap(); ++joint_it) {
+            control->motors->setOfflinePosition(getMotor(joint_it->first),
+                                                joint_it->second);
           }
         }
       }
