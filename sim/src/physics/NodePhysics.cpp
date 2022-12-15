@@ -46,6 +46,10 @@
 #include <cmath>
 #include <set>
 
+#include <mars/interfaces/Logging.hpp>
+
+#include <ode/odemath.h>
+
 
 namespace mars {
   namespace sim {
@@ -67,9 +71,9 @@ namespace mars {
      *     - the class should have saved the pointer to the physics implementation
      *     - the body and geom should be initialized to 0
      */
-    NodePhysics::NodePhysics(PhysicsInterface* world) {
+    NodePhysics::NodePhysics(std::shared_ptr<PhysicsInterface> world) {
       // At this moment we have not much things to do here. ^_^
-      theWorld = (WorldPhysics*)world;
+      theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
       nBody = 0;
       nGeom = 0;
       myVertices = 0;
@@ -193,12 +197,25 @@ namespace mars {
           if(node->physicMode == NODE_TYPE_TERRAIN) {
             dGeomGetQuaternion(nGeom, t1);
             dQMultiply0(t2, tmp, t1);
+            dNormalize4(t2);
             dGeomSetQuaternion(nGeom, t2);
           }
           else
             dGeomSetQuaternion(nGeom, tmp);
         }
         node_data.id = node->index;
+        if(node->map.hasKey("c_filter_depth")) {
+          node_data.filter_depth = node->map["c_filter_depth"];
+        }
+        if(node->map.hasKey("c_filter_angle")) {
+          node_data.filter_angle = node->map["c_filter_angle"];
+        }
+        if(node->map.hasKey("c_filter_sphere")) {
+          node_data.filter_sphere.x() = node->map["c_filter_sphere"][0];
+          node_data.filter_sphere.y() = node->map["c_filter_sphere"][1];
+          node_data.filter_sphere.z() = 0.0;//node->map["c_filter_sphere"][2];
+          node_data.filter_radius = node->map["c_filter_sphere"][3];
+        }
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);
@@ -584,8 +601,8 @@ namespace mars {
      *
      * I don't think that we need this function.
      */
-    void NodePhysics::setWorldObject(PhysicsInterface* world) {
-      theWorld = (WorldPhysics*)world;
+    void NodePhysics::setWorldObject(std::shared_ptr<PhysicsInterface>  world) {
+      theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
     }
 
     /**
@@ -1773,6 +1790,80 @@ namespace mars {
         inertia[8] = nMass.I[10];
       }
     }
+
+    std::vector<dJointFeedback*> NodePhysics::addContacts(ContactsPhysics contacts, dWorldID world, dJointGroupID contactgroup){
+      dVector3 v;
+      //dMatrix3 R;
+      dReal dot;
+      std::vector<dJointFeedback*> fbs; 
+      std::shared_ptr<std::vector<dContact>> contactsPtr = contacts.contactsPtr;
+      const smurf::ContactParams contactParams = contacts.collidable->getContactParams(); 
+      std::string nodeName = contacts.collidable->getName();
+      for(int i=0; i<contacts.numContacts; i++){
+        /*
+          TODO: check how friction direction1 has to be properly set. Currently
+          the setting is hardcoded and it is needed for succesful interaction
+        */
+        //if(contactParams.friction_direction1) { // For now it won't go in here
+        v[0] = contactsPtr->operator[](i).geom.normal[0];
+        v[1] = contactsPtr->operator[](i).geom.normal[1];
+        v[2] = contactsPtr->operator[](i).geom.normal[2];
+        dot = dDOT(v, contactsPtr->operator[](i).fdir1);
+        dOPEC(v, *=, dot);
+        contactsPtr->operator[](i).fdir1[0] -= v[0];
+        contactsPtr->operator[](i).fdir1[1] -= v[1];
+        contactsPtr->operator[](i).fdir1[2] -= v[2];
+        //dNormalize3(contactsPtr->operator[](0).fdir1); // Why 0 and not i?
+        dNormalize3(contactsPtr->operator[](i).fdir1); 
+        //}
+        contactsPtr->operator[](i).geom.depth += (contactParams.depth_correction); 
+        /*
+        // TODO: If after further testing this is not needed, then remove.
+        // Otherwise use a parameter for this
+        if(contactsPtr->operator[](i).geom.depth > 0.001)
+        {
+          LOG_DEBUG("[NodePhysics::createContacts]:The colision detected might have too large depth, reducing it to the maxmimum allowed");
+          std::cout << "[NodePhysics::createContacts]: Depth " << contactsPtr->operator[](i).geom.depth << std::endl;
+          contactsPtr->operator[](i).geom.depth = 0.001; 
+        }
+        */
+        if(contactsPtr->operator[](i).geom.depth < 0.0) contactsPtr->operator[](i).geom.depth = 0.0; 
+        //contactsPtr->operator[](0).geom.depth += (contactParams.depth_correction); // Why 0 and not i?
+        contactsPtr->operator[](i).geom.depth += (contactParams.depth_correction); 
+        //if(contactsPtr->operator[](0).geom.depth < 0.0) contactsPtr->operator[](0).geom.depth = 0.0; // Why 0 and not i ?
+        dJointID c=dJointCreateContact(world, contactgroup, &contactsPtr->operator[](i));
+        dJointFeedback *fb;
+        fb = (dJointFeedback*)malloc(sizeof(dJointFeedback));
+        dJointSetFeedback(c, fb); // ODE
+        #ifdef DEBUG_ADD_CONTACTS
+          if (isnan(abs(fb->f1[0]))||isnan(abs(fb->f1[1]))||isnan(abs(fb->f1[2])) || isnan(abs(fb->f1[3])) ||
+            isnan(abs(fb->t1[0]))||isnan(abs(fb->t1[1]))||isnan(abs(fb->t1[2])) || isnan(abs(fb->t1[3])) ||
+            isnan(abs(fb->f2[0]))||isnan(abs(fb->f2[1]))||isnan(abs(fb->f2[2])) || isnan(abs(fb->f2[3])) ||
+            isnan(abs(fb->t2[0]))||isnan(abs(fb->t2[1]))||isnan(abs(fb->t2[2])) || isnan(abs(fb->t2[3])) )
+          {
+            LOG_WARN("Catched a nan in the feedback forces, won't be used");
+          }
+          LOG_DEBUG("[NodePhysics::addContacts] Contacts were added to the node %s", nodeName.c_str());
+        #endif
+        fbs.push_back(fb);
+        addContact(c, contactsPtr->operator[](i), fb); 
+      } // for numContacts
+      return fbs;
+    }
+
+    void NodePhysics::addContact(dJointID contactJointId, dContact contact, dJointFeedback* fb){
+      Vector contact_point;
+      dJointAttach(contactJointId, nBody, 0);
+      node_data.num_ground_collisions ++; 
+      contact_point.x() = contact.geom.pos[0];
+      contact_point.y() = contact.geom.pos[1];
+      contact_point.z() = contact.geom.pos[2];
+      node_data.contact_ids.push_back(0);
+      node_data.contact_points.push_back(contact_point);
+      node_data.ground_feedbacks.push_back(fb);
+      node_data.node1 = true;
+    }
+
 
     sReal NodePhysics::getCollisionDepth(void) const {
       if(nGeom && theWorld) {

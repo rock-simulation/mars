@@ -60,8 +60,11 @@ namespace mars {
         */
         std::string rPath = control->cfg->getOrCreateProperty("MarsGui",
                                                               "resources_path",
-                                                              ".").sValue;
+                                                              "").sValue;
 
+	if(rPath == "") {
+	  rPath = MARS_DEFAULT_RESOURCES_PATH;
+	}
         // Create a nonphysical box:
 
         // Create a camera fixed on the box:

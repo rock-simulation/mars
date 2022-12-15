@@ -51,20 +51,23 @@ namespace osg_material_manager {
   using namespace configmaps;
 
   OsgMaterial::OsgMaterial(std::string resPath)
-    : material(0),
+    : no_update(false), material(0),
       hasShaderSources(false), isInit(false),
       useShader(true),
+      useShadow(false),
       maxNumLights(1),
       invShadowTextureSize(1./1024),
       useWorldTexCoords(false),
       resPath(resPath),
-      loadPath("") {
+      loadPath(""),
+      shadowTechnique("none") {
     noiseMapUniform = new osg::Uniform("NoiseMap", NOISE_MAP_UNIT);
     texScaleUniform = new osg::Uniform("texScale", 1.0f);
     sinUniform = new osg::Uniform("sinUniform", 0.0f);
     cosUniform = new osg::Uniform("cosUniform", 1.0f);
     shadowScaleUniform = new osg::Uniform("shadowScale", 0.5f);
     bumpNorFacUniform = new osg::Uniform("bumpNorFac", 1.0f);
+    shadowSamples = 1;
     shadowSamplesUniform = new osg::Uniform("shadowSamples", 1);
     invShadowSamplesUniform = new osg::Uniform("invShadowSamples",
                                                1.f/1);
@@ -116,6 +119,12 @@ namespace osg_material_manager {
     //return;
     map = map_;
     material = new osg::Material();
+
+    if(map.hasKey("maxNumLights")) {
+      maxNumLights = map["maxNumLights"];
+      fprintf(stderr, "...+++ set maxNumLights: %d\n", maxNumLights);
+    }
+
     // reinit if the material is already created
     if(isInit) initMaterial();
   }
@@ -222,6 +231,7 @@ namespace osg_material_manager {
       }
     }
     useWorldTexCoords = map.get("useWorldTexCoords", false);
+
     updateShader(true);
 
     {
@@ -664,11 +674,30 @@ namespace osg_material_manager {
     }
   }
 
+  void OsgMaterial::setUseShadow(bool val) {
+    //fprintf(stderr, "use shader: %d %d\n", useShader, val);
+    if(useShadow != val) {
+      useShadow = val;
+      updateShader(true);
+    }
+  }
+
+  void OsgMaterial::setShadowTechnique(std::string val) {
+    //fprintf(stderr, "use shader: %d %d\n", useShader, val);
+    if(shadowTechnique != val) {
+      shadowTechnique = val;
+      updateShader(true);
+    }
+  }
+
   void OsgMaterial::setShadowScale(float v) {
     shadowScaleUniform->set(1.f/(v*v));
   }
 
   void OsgMaterial::updateShader(bool reload) {
+    if(no_update) {
+      return;
+    }
     osg::StateSet* stateSet = getOrCreateStateSet();
 
     //return;
@@ -712,6 +741,7 @@ namespace osg_material_manager {
       if ((string)map["shader"]["provider"] == "DRockGraph") {
         ConfigMap options;
         options["numLights"] = maxNumLights;
+        options["shadowSamples"] = shadowSamples;
         string vertexPath = map["shader"]["vertex"];
         string fragmentPath = map["shader"]["fragment"];
         if(!loadPath.empty() && vertexPath[0] != '/') {
@@ -722,8 +752,13 @@ namespace osg_material_manager {
         }
         ConfigMap vertexModel = ConfigMap::fromYamlFile(vertexPath);
         ConfigMap fragmentModel = ConfigMap::fromYamlFile(fragmentPath);
-        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options);
-        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options);
+        string shadowTechnique_ = "none";
+        if(useShadow) {
+          shadowTechnique_ = shadowTechnique;
+        }
+
+        DRockGraphSP *vertexProvider = new DRockGraphSP(resPath, vertexModel, options, shadowTechnique_);
+        DRockGraphSP *fragmentProvider = new DRockGraphSP(resPath, fragmentModel, options, shadowTechnique_);
         factory.setShaderProvider(vertexProvider, SHADER_TYPE_VERTEX);
         factory.setShaderProvider(fragmentProvider, SHADER_TYPE_FRAGMENT);
         if(textures.find("terrainMap") != textures.end()) {
@@ -788,12 +823,19 @@ namespace osg_material_manager {
       if (map["shader"].hasKey("PixelLightFragment")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/plight_frag.yaml");
         map2["mappings"]["numLights"] = s.str();
+        map2["mappings"]["shadowSamples"] = shadowSamples;
         YamlShader *plightFrag = new YamlShader((string)map2["name"], args, map2, resPath);
         if(checkTexture("diffuseMap")) {
           plightFrag->addMainVar( (GLSLVariable) { "vec4", "col", "texture2D(diffuseMap, texCoord)" }, 1);
           plightFrag->addUniform((GLSLUniform) {"sampler2D", "diffuseMap"});
         }
         fragmentShader->addShaderFunction(plightFrag);
+        if(useShadow and shadowTechnique != "none") {
+          ConfigMap map3 = ConfigMap::fromYamlFile(resPath+"/shader/shadow_"+shadowTechnique+".yaml");
+          map3["mappings"]["shadowSamples"] = shadowSamples;
+          YamlShader *shadowFrag = new YamlShader((string)map3["name"], args, map3, resPath);
+          fragmentShader->addShaderFunction(shadowFrag);
+        }
       }
       if(map["shader"].hasKey("NormalMapFragment")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_frag.yaml");
@@ -919,8 +961,11 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::setShadowSamples(int v) {
+    bool needUpdate = (shadowSamples != v);
+    shadowSamples = v;
     shadowSamplesUniform->set(v);
     invShadowSamplesUniform->set(1.f/(v*v));
+    if(needUpdate) updateShader(true);
   }
 
   void OsgMaterial::removeMaterialNode(MaterialNode* d) {
@@ -968,9 +1013,16 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::setMaxNumLights(int n) {
+    if(map.hasKey("maxNumLights")) {
+      return;
+    }
     bool needUpdate = (maxNumLights != n);
     maxNumLights = n;
     if(needUpdate) updateShader(true);
+  }
+
+  int OsgMaterial::getMaxNumLights() {
+    return maxNumLights;
   }
 
   osg::Texture2D* OsgMaterial::loadTerrainTexture(std::string filename) {

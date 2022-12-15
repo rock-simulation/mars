@@ -84,10 +84,11 @@ namespace mars {
       // negative last argument meaning this is separator
 
       if (control->cfg) {
-        cfg_manager::cfgPropertyStruct r_path;
-        r_path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
-                                                   std::string(MARS_GUI_DEFAULT_RESOURCES_PATH));
-        path = r_path.sValue;
+        path = control->cfg->getOrCreateProperty("MarsGui", "resources_path",
+						 "").sValue;
+	if(path == "") {
+	  path = MARS_GUI_DEFAULT_RESOURCES_PATH;
+	}
       }
 
       path.append("/images/blender.png");

@@ -1,0 +1,12 @@
+data_broker
+mars_sim
+mars_entity_factory
+mars_scene_loader
+main_gui
+mars_gui
+osgviz_mars_graphics
+envire_managers
+envire_smurf_loader
+envire_graphics
+envire_mls
+envire_graph_loader

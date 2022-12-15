@@ -68,6 +68,7 @@
 #include <stdexcept>
 
 #define SINGLE_THREADED
+#define NUM_PSSM_SPLITS 3
 
 using namespace osg_material_manager;
 
@@ -80,8 +81,8 @@ namespace mars {
     using namespace mars::interfaces;
     using namespace utils;
 
-    static int ReceivesShadowTraversalMask = 0x1000;
-    static int CastsShadowTraversalMask = 0x2000;
+    static int ReceivesShadowTraversalMask = 0x10000000;
+    static int CastsShadowTraversalMask = 0x20000000;
 
 
     GraphicsManager::GraphicsManager(lib_manager::LibManager *theManager,
@@ -167,9 +168,15 @@ namespace mars {
                                dynamic_cast<cfg_manager::CFGClient*>(this));
           setMultisampling(multisamples.iValue);
 
-          resources_path = cfg->getOrCreateProperty("Graphics", "resources_path",
-                                                    string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH),
-                                                    dynamic_cast<cfg_manager::CFGClient*>(this));
+	  std::string s = cfg->getOrCreateProperty("Graphics", "resources_path",
+						   "",
+						   dynamic_cast<cfg_manager::CFGClient*>(this)).sValue;
+	  if(s != "") {
+	    resources_path.sValue = s;
+	  }
+	  else {
+	    resources_path.sValue = string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH);
+	  }
 
           noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
                                                true, this);
@@ -189,6 +196,8 @@ namespace mars {
 
           marsShadow = cfg->getOrCreateProperty("Graphics", "marsShadow",
                                                 false, this);
+          shadowTechnique = cfg->getOrCreateProperty("Graphics", "shadowTechnique",
+                                                "pssm", this);
           defaultMaxNumNodeLights = cfg->getOrCreateProperty("Graphics",
                                                              "defaultMaxNumNodeLights",
                                                              1, this);
@@ -283,47 +292,50 @@ namespace mars {
         shadowedScene->setCastsShadowTraversalMask(CastsShadowTraversalMask);
         shadowStateset = shadowedScene->getOrCreateStateSet();
         {
-#if USE_LSPSM_SHADOW
-          osg::ref_ptr<osgShadow::LightSpacePerspectiveShadowMapDB> sm =
-            new osgShadow::LightSpacePerspectiveShadowMapDB;
+// #if USE_LSPSM_SHADOW
+//           osg::ref_ptr<osgShadow::LightSpacePerspectiveShadowMapDB> sm =
+//             new osgShadow::LightSpacePerspectiveShadowMapDB;
 
-          //sm->setDebugDraw(true);
-          sm->setMinLightMargin( 10.0f );
-          sm->setMaxFarPlane( 0.0f );
-          sm->setTextureSize( osg::Vec2s( 2028, 2028 ) );
-          sm->setShadowTextureCoordIndex( 6 );
-          sm->setShadowTextureUnit( 6 );
+//           //sm->setDebugDraw(true);
+//           sm->setMinLightMargin( 10.0f );
+//           sm->setMaxFarPlane( 0.0f );
+//           sm->setTextureSize( osg::Vec2s( 2028, 2028 ) );
+//           sm->setShadowTextureCoordIndex( 6 );
+//           sm->setShadowTextureUnit( 6 );
 
-          shadowedScene->setShadowTechnique( sm.get() );
-#elif USE_PSSM_SHADOW
-          pssm = new ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
+//           shadowedScene->setShadowTechnique( sm.get() );
+// #elif USE_PSSM_SHADOW
+          // todo: it shoud be fine to use setShadowTechnique here but somehow it is not working
+          if(shadowTechnique.sValue == "pssm") {
+            pssm = new ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
 
-          //pssm->enableShadowGLSLFiltering(false);
-          pssm->setTextureResolution(shadowTextureSize.iValue);
-          pssm->setMinNearDistanceForSplits(0);
-          pssm->setMaxFarDistance(500);
-          pssm->setMoveVCamBehindRCamFactor(0);
-          pssm->setPolygonOffset(osg::Vec2(1.2,1.2));
-          //pssm->applyState(shadowStateset.get());
-          if(marsShadow.bValue) {
-            shadowedScene->setShadowTechnique(pssm.get());
+            //pssm->enableShadowGLSLFiltering(false);
+            pssm->setTextureResolution(shadowTextureSize.iValue);
+            pssm->setMinNearDistanceForSplits(0);
+            pssm->setMaxFarDistance(500);
+            pssm->setMoveVCamBehindRCamFactor(0);
+            pssm->setPolygonOffset(osg::Vec2(1.2,1.2));
+            //pssm->applyState(shadowStateset.get());
+            if(marsShadow.bValue) {
+              shadowedScene->setShadowTechnique(pssm.get());
+            }
+            pssm->applyState(scene->getOrCreateStateSet());
           }
-          pssm->applyState(scene->getOrCreateStateSet());
-#else
-
-          shadowMap = new ShadowMap;
-          shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
-          shadowMap->initTexture();
-          shadowMap->applyState(shadowStateset.get());
-          if(marsShadow.bValue) {
-            shadowedScene->setShadowTechnique(shadowMap.get());
-            //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
-            //shadowMap->setTextureUnit(2);
-            //shadowMap->clearShaderList();
-            //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
-            //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+          else {
+            shadowMap = new ShadowMap;
+            shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
+            shadowMap->initTexture();
+            shadowMap->applyState(shadowStateset.get());
+            if(marsShadow.bValue) {
+              shadowedScene->setShadowTechnique(shadowMap.get());
+              //shadowMap->setTextureSize(osg::Vec2s(4096,4096));
+              //shadowMap->setTextureUnit(2);
+              //shadowMap->clearShaderList();
+              //shadowMap->setAmbientBias(osg::Vec2(0.5f,0.5f));
+              //shadowMap->setPolygonOffset(osg::Vec2(-1.2,-1.2));
+            }
           }
-#endif
+// #endif
         }
 
         // TODO: check this out:
@@ -335,7 +347,6 @@ namespace mars {
         //effectNode->setIntensity(2.5);
         //effectNode->setScale(4);
         //scene->addChild(effectNode.get());
-
         grid = new GridPrimitive(osgWidget);
         if(showGridProp.bValue) showGrid();
 
@@ -376,8 +387,12 @@ namespace mars {
           materialManager->setDefaultMaxNumLights(defaultMaxNumNodeLights.iValue);
           materialManager->setBrightness((float)brightness.dValue);
           materialManager->setNoiseAmmount((float)noiseAmmount.dValue);
-          if(pssm) {
+          materialManager->setShadowTechnique(shadowTechnique.sValue);
+          if(pssm.valid()) {
             pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
+          }
+          else if(shadowMap.valid()) {
+            shadowMap->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
           }
           shadowedScene->addChild(materialManager->getMainStateGroup());
           ConfigMap map = ConfigMap::fromYamlFile(resources_path.sValue+"/defaultMaterials.yml");
@@ -395,6 +410,8 @@ namespace mars {
             }
           }
         }
+        // initialize shadow technique
+        //setShadowTechnique(shadowTechnique.sValue);
 
         if(backfaceCulling.bValue)
           globalStateset->setAttributeAndModes(cull, osg::StateAttribute::ON);
@@ -753,6 +770,14 @@ namespace mars {
                 myLights[i].lStruct.lookAt = pos;
                 myLights[i].light->setDirection(osg::Vec3(pos.x(), pos.y(),
                                                           pos.z()));
+                break;
+              }
+            }
+          }
+          else if(myLights[i].lStruct.node != "") {
+            for(drawIter=drawObjects_.begin(); drawIter!=drawObjects_.end(); ++drawIter) {
+              if(drawIter->second->name() == myLights[i].lStruct.node) {
+                myLights[i].lStruct.drawID = drawIter->first;
                 break;
               }
             }
@@ -1174,6 +1199,18 @@ namespace mars {
             }
           }
         }
+        if(ls.map.hasKey("nodeName")) {
+          // todo: if we don't find the node name the camera should ask for
+          // it on update
+          lm.lStruct.node << ls.map["nodeName"];
+          map<unsigned long, osg::ref_ptr<OSGNodeStruct> >::iterator it;
+          for(it=drawObjects_.begin(); it!=drawObjects_.end(); ++it) {
+            if(it->second->name() == lm.lStruct.node) {
+              lm.lStruct.drawID = it->first;
+              break;
+            }
+          }
+        }
         lightGroup->addChild( myLightSource.get() );
         globalStateset->setMode(GL_LIGHT0+lightIndex, osg::StateAttribute::ON);
         myLightSource->setStateSetModes(*globalStateset, osg::StateAttribute::ON);
@@ -1210,7 +1247,7 @@ namespace mars {
           lightGroup->addChild(defaultLight.lightSource.get());
           lightList.push_back(&defaultLight.lStruct);
         }
-
+        // todo: do we have to remove the light from the shadow implementation?
         //for(iter=drawObjects_.begin(); iter!=drawObjects_.end(); ++iter)
         //iter->second->object()->updateShader(lightList, true);
       }
@@ -2068,6 +2105,11 @@ namespace mars {
         return;
       }
 
+      if(_property.paramId == shadowTechnique.paramId) {
+        setShadowTechnique(_property.sValue);
+        return;
+      }
+
       if(_property.paramId == shadowSamples.paramId) {
         setShadowSamples(_property.iValue);
         return;
@@ -2375,6 +2417,97 @@ namespace mars {
       if(materialManager) materialManager->setUseShadow(v);
     }
 
+    void GraphicsManager::initShadowMap() {
+      if(!shadowMap.valid()) {
+        shadowMap = new ShadowMap;
+        shadowMap->setShadowTextureSize(shadowTextureSize.iValue);
+        shadowMap->initTexture();
+        shadowMap->applyState(shadowStateset.get());
+      }
+      if(marsShadow.bValue) {
+        shadowedScene->setShadowTechnique(shadowMap.get());
+      }
+      for(auto lm: myLights) {
+        if(lm.lStruct.map.hasKey("produceShadow")) {
+          if((bool)lm.lStruct.map["produceShadow"]) {
+            shadowMap->setLight(lm.light.get());
+          }
+        }
+      }
+      if(materialManager and materialManager->getUseShader()) {
+        shadowMap->addTexture(shadowStateset.get());
+      }
+    }
+
+    void GraphicsManager::initShadowPSSM() {
+      bool useShader = false;
+      if(!pssm.valid()) {
+        pssm = new ParallelSplitShadowMap(NULL,NUM_PSSM_SPLITS);
+
+        //pssm->enableShadowGLSLFiltering(false);
+        pssm->setTextureResolution(shadowTextureSize.iValue);
+        pssm->setMinNearDistanceForSplits(0);
+        pssm->setMaxFarDistance(500);
+        pssm->setMoveVCamBehindRCamFactor(0);
+        pssm->setPolygonOffset(osg::Vec2(1.2,1.2));
+        //pssm->applyState(shadowStateset.get());
+        pssm->applyState(scene->getOrCreateStateSet());
+        if(materialManager) {
+          useShader = materialManager->getUseShader();
+          pssm->applyState(materialManager->getMainStateGroup()->getOrCreateStateSet());
+        }
+      }
+      if(marsShadow.bValue) {
+        shadowedScene->setShadowTechnique(pssm.get());
+      }
+
+      for(auto lm: myLights) {
+        if(lm.lStruct.map.hasKey("produceShadow")) {
+          if((bool)lm.lStruct.map["produceShadow"]) {
+            pssm->setLight(lm.light.get());
+          }
+        }
+      }
+
+      if(useShader) {
+        pssm->addTexture(shadowStateset.get());
+      }
+    }
+
+    void GraphicsManager::setShadowTechnique(std::string s) {
+      if(shadowTechnique.sValue != s) {
+        shadowedScene->setShadowTechnique(NULL);
+        if(shadowMap.valid()) {
+          shadowMap->removeState(scene->getOrCreateStateSet());
+          shadowMap->removeTexture(shadowStateset.get());
+          shadowMap = NULL;
+        }
+        if(pssm.valid()) {
+          pssm->removeState(scene->getOrCreateStateSet());
+          if(materialManager) {
+            pssm->removeState(materialManager->getMainStateGroup()->getOrCreateStateSet());
+          }
+          pssm->removeTexture(shadowStateset.get());
+          pssm = NULL;
+        }
+        if(s=="pssm") {
+          initShadowPSSM();
+        }
+        else if(s=="sm") {
+          initShadowMap();
+        }
+        else if(s=="none") {
+          // nothing to do here
+        }
+        else {
+          fprintf(stderr, "Selected shadow technique *%s* unknown, set to \"none\". Please select from [none, sm, pssm]\n", s.c_str());
+          s = "none";
+        }
+        shadowTechnique.sValue = s;
+        if(materialManager) materialManager->setShadowTechnique(s);
+      }
+    }
+
     void GraphicsManager::setCameraDefaultView(int view) {
       interfaces::GraphicsCameraInterface* cam;
       if(!activeWindow) return;
@@ -2480,6 +2613,10 @@ namespace mars {
         if(key[key.size()-1] == 'g') clearColor.g = v;
         if(key[key.size()-1] == 'b') clearColor.b = v;
         win->setClearColor(clearColor);
+      }
+      else if(matchPattern("*/orthoH", key)) {
+        double v = atof(value.c_str());
+        cam->setOrthoH(v);
       }
       else if(matchPattern("*/position", key)) {
         double d = atof(value.c_str());

@@ -530,7 +530,10 @@ namespace data_broker_plotter2 {
     }
     infoMap.toYamlFile(exportPath+"config.yml");
     std::string resourcesPath = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                                          string(".")).sValue;
+                                                          "").sValue;
+    if(resourcesPath == "") {
+      resourcesPath = MARS_DEFAULT_RESOURCES_PATH;
+    }
     std::string copyPath = resourcesPath + "/data_broker_plotter2/plot.py";
     std::string cmd = "cp " + copyPath + " " + exportPath;
     system(cmd.c_str());

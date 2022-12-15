@@ -42,9 +42,10 @@ namespace mars {
 
     class PhysicsMapper {
     public:
-      static interfaces::PhysicsInterface* newWorldPhysics(interfaces::ControlCenter *control);
-      static interfaces::NodeInterface* newNodePhysics(interfaces::PhysicsInterface *worldPhysics);
-      static interfaces::JointInterface* newJointPhysics(interfaces::PhysicsInterface *worldPhysics);
+      static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
+      static std::shared_ptr<interfaces::NodeInterface> newNodePhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
+      static std::shared_ptr<interfaces::JointInterface> newJointPhysics(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics);
+    
     };
 
   } // end of namespace sim

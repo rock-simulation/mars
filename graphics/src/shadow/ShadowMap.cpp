@@ -34,12 +34,15 @@
 #include <osg/PolygonOffset>
 #include <osg/CullFace>
 #include <osg/io_utils>
+#include <osg/AlphaFunc>
 
 #ifdef HAVE_OSG_VERSION_H
   #include <osg/Version>
 #else
   #include <osg/Export>
 #endif
+
+#include <osgDB/WriteFile>
 
 #include <cstdio>
 
@@ -66,7 +69,7 @@ namespace mars {
     }
 
     ShadowMap::ShadowMap(const ShadowMap& copy, const osg::CopyOp& copyop) :
-      ShadowTechnique(copy, copyop) { 
+      ShadowTechnique(copy, copyop) {
       shadowTextureUnit = 2;
       centerObject = copy.centerObject;
       radius = 1.0;
@@ -78,7 +81,6 @@ namespace mars {
     void ShadowMap::setLight(osg::Light *l) {
       light = l;
     }
-
 
     void ShadowMap::setLight(osg::LightSource *l) {
       ls = l;
@@ -102,6 +104,9 @@ namespace mars {
     }
 
     void ShadowMap::initTexture() {
+      image = new osg::Image();
+      image->allocateImage(shadowTextureSize, shadowTextureSize,
+                           1, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT);
       texture = new osg::Texture2D;
       texture->setTextureSize(shadowTextureSize, shadowTextureSize);
       texture->setInternalFormat(GL_DEPTH_COMPONENT);
@@ -114,6 +119,7 @@ namespace mars {
       texture->setWrap(osg::Texture2D::WRAP_S,osg::Texture2D::CLAMP_TO_BORDER);
       texture->setWrap(osg::Texture2D::WRAP_T,osg::Texture2D::CLAMP_TO_BORDER);
       texture->setBorderColor(osg::Vec4(1.0f,1.0f,1.0f,1.0f));
+      texture->setImage(image);
     }
 
     void ShadowMap::applyState(osg::StateSet* state) {
@@ -133,6 +139,17 @@ namespace mars {
           itr!=uniformList.end(); ++itr) {
         state->addUniform(itr->get());
       }
+    }
+
+    void ShadowMap::removeState(osg::StateSet* state) {
+      state->setTextureAttributeAndModes(shadowTextureUnit,NULL,
+                                         osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+      // add the uniform list to the stateset
+      for(std::vector< osg::ref_ptr<osg::Uniform> >::const_iterator itr=uniformList.begin();
+          itr!=uniformList.end(); ++itr) {
+        state->removeUniform(itr->get());
+      }
+
     }
 
     void ShadowMap::removeTexture(osg::StateSet* state) {
@@ -166,7 +183,8 @@ namespace mars {
         camera->setRenderTargetImplementation(osg::Camera::FRAME_BUFFER_OBJECT);
         //camera->setRenderTargetImplementation(osg::Camera::SEPERATE_WINDOW);
         // attach the texture and use it as the color buffer.
-        camera->attach(osg::Camera::DEPTH_BUFFER, texture.get());
+
+        camera->attach(osg::Camera::DEPTH_BUFFER, image.get());
         osg::StateSet* stateset = camera->getOrCreateStateSet();
 
         // cull front faces so that only backfaces contribute to depth map
@@ -174,17 +192,37 @@ namespace mars {
         cull_face->setMode(osg::CullFace::FRONT);
         stateset->setAttribute(cull_face.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
         stateset->setMode(GL_CULL_FACE, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+        // opt:
+        //stateset->setMode(GL_CULL_FACE, osg::StateAttribute::OFF);// | osg::StateAttribute::OVERRIDE);
 
         // negative polygonoffset - move the backface nearer to the eye point so that backfaces
         // shadow themselves
-        float factor = 1.2;
-        float units =  1.2;
+        float factor = 1.1;
+        float units =  4.0;
 
         osg::ref_ptr<osg::PolygonOffset> polygon_offset = new osg::PolygonOffset;
         polygon_offset->setFactor(factor);
         polygon_offset->setUnits(units);
         stateset->setAttribute(polygon_offset.get(), osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
         stateset->setMode(GL_POLYGON_OFFSET_FILL, osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE);
+        stateset->setRenderBinDetails(0, "RenderBin", osg::StateSet::OVERRIDE_RENDERBIN_DETAILS);
+        // opt:
+        stateset->setAttributeAndModes( new osg::AlphaFunc( osg::AlphaFunc::GREATER, 0 ), osg::StateAttribute::ON );
+
+        stateset->setAttributeAndModes( new osg::ColorMask( false, false, false, false ),
+                                        osg::StateAttribute::ON | osg::StateAttribute::OVERRIDE );
+        stateset->setMode
+            ( GL_LIGHTING, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+        stateset->setMode
+            ( GL_BLEND, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+        for( unsigned stage = 1; stage < 4; stage ++ ) {
+#if !defined(OSG_GLES1_AVAILABLE) && !defined(OSG_GLES2_AVAILABLE) && !defined(OSG_GLES3_AVAILABLE)
+          stateset->setTextureMode( stage, GL_TEXTURE_1D, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+#endif
+          stateset->setTextureMode( stage, GL_TEXTURE_2D, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+          stateset->setTextureMode( stage, GL_TEXTURE_3D, osg::StateAttribute::OVERRIDE | osg::StateAttribute::OFF );
+
+       }
       }
 
       {
@@ -209,7 +247,7 @@ namespace mars {
     }
 
     void ShadowMap::updateTexScale() {
-      fprintf(stderr, "texscale: %g\n", 1./(texscale*2));
+      //fprintf(stderr, "Shadow texscale: %g\n", 1./(texscale*2));
       textureScaleUniform->set(0);//1./(texscale*1000));
     }
 
@@ -281,10 +319,11 @@ namespace mars {
         //std::cout<<"----- VxOSG::ShadowMap selectLight spot cutoff "<<selectLight->getSpotCutoff()<<std::endl;
 
         texscale = 1000;
-        float fov = selectLight->getSpotCutoff() * 2;
+        float fov = 180.*((selectLight->getSpotCutoff() * 2.3)/3.1416);
         if(fov < 180.0f) {  // spotlight, then we don't need the bounding box
+          //fprintf(stderr, "spotlight: %g %g %g %g %g %g %g\n", fov, lightpos.x(), lightpos.y(), lightpos.z(), lightDir.x(), lightDir.y(), lightDir.z());
           osg::Vec3 position(lightpos.x(), lightpos.y(), lightpos.z());
-          camera->setProjectionMatrixAsPerspective(fov, 1.0, 0.1, 1000.0);
+          camera->setProjectionMatrixAsPerspective(fov, 1.0, 0.5, 1000.0);
           camera->setViewMatrixAsLookAt(position,position+lightDir,computeOrthogonalVector(lightDir));
         }
         else {
@@ -391,23 +430,22 @@ namespace mars {
 
         // do RTT camera traversal
         camera->accept(cv);
-        texgen->setMode(osg::TexGen::EYE_LINEAR);
 
-#if IMPROVE_TEXGEN_PRECISION
-        // compute the matrix which takes a vertex from local coords into tex coords
-        // We actually use two matrices one used to define texgen
-        // and second that will be used as modelview when appling to OpenGL
-        texgen->setPlanesFromMatrix( camera->getProjectionMatrix() *
-                                     osg::Matrix::translate(1.0,1.0,1.0) *
-                                     osg::Matrix::scale(0.5f,0.5f,0.5f) );
+// #if IMPROVE_TEXGEN_PRECISION
+//         // compute the matrix which takes a vertex from local coords into tex coords
+//         // We actually use two matrices one used to define texgen
+//         // and second that will be used as modelview when appling to OpenGL
+//         texgen->setPlanesFromMatrix( camera->getProjectionMatrix() *
+//                                      osg::Matrix::translate(1.0,1.0,1.0) *
+//                                      osg::Matrix::scale(0.5f,0.5f,0.5f) );
 
-        // Place texgen with modelview which removes big offsets (making it float friendly)
-        osg::RefMatrix * refMatrix = new osg::RefMatrix
-          ( camera->getInverseViewMatrix() * *cv.getModelViewMatrix() );
+//         // Place texgen with modelview which removes big offsets (making it float friendly)
+//         osg::RefMatrix * refMatrix = new osg::RefMatrix
+//           ( camera->getInverseViewMatrix() * *cv.getModelViewMatrix() );
 
-        cv.getRenderStage()->getPositionalStateContainer()->
-          addPositionedTextureAttribute( shadowTextureUnit, refMatrix, texgen.get() );
-#else
+//         cv.getRenderStage()->getPositionalStateContainer()->
+//           addPositionedTextureAttribute( shadowTextureUnit, refMatrix, texgen.get() );
+// #else
         // compute the matrix which takes a vertex from local coords into tex coords
         // will use this later to specify osg::TexGen..
         osg::Matrix MVPT = camera->getViewMatrix() *
@@ -415,15 +453,32 @@ namespace mars {
           osg::Matrix::translate(1.0,1.0,1.0) *
           osg::Matrix::scale(0.5f,0.5f,0.5f);
 
+        texgen->setMode(osg::TexGen::EYE_LINEAR);
         texgen->setPlanesFromMatrix(MVPT);
         texGenMatrixUniform->set(MVPT);
         orig_rs->getPositionalStateContainer()->addPositionedTextureAttribute(shadowTextureUnit, cv.getModelViewMatrix(), texgen.get());
-#endif
+        //#endif
       }
 
 
       // reapply the original traversal mask
       cv.setTraversalMask( traversalMask );
+
+      // FILE *im = fopen("shadow.ppm", "w");
+      // fprintf(im, "P2\n");
+      // fprintf(im, "%d %d\n", shadowTextureSize, shadowTextureSize);
+      // fprintf(im, "255\n");
+      // GLuint* data2 = (GLuint *)image->data();
+      // for(int x=0; x<shadowTextureSize; ++x) {
+      //   for(int y=0; y<shadowTextureSize; ++y) {
+
+      //     GLuint di = data2[x*shadowTextureSize+y];
+      //     const float dv = ((float) di) / std::numeric_limits< GLuint >::max() ;
+      //     fprintf(im, " %d\n", (int)(dv*255));
+      //   }
+      //   fprintf(im, "\n");
+      // }
+      // fclose(im);
     }
 
     void ShadowMap::resizeGLObjectBuffers(unsigned int maxSize) {

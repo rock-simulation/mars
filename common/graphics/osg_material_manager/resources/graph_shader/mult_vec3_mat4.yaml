@@ -1,0 +1,7 @@
+params:
+  in:
+    vector: {index: 0, type: vec3}
+    matrix: {index: 1, type: mat4}
+  out:
+    vector: {index: 2, type: vec3}
+source: /graph_shader/mult_vec3_mat4.vert

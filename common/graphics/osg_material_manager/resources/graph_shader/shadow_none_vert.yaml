@@ -1,0 +1,5 @@
+params:
+  in:
+    viewPos: {index: 0, type: vec4}
+source: /shader/shadow_none.vert
+minVersion: 120

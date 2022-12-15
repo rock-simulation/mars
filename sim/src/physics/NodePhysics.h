@@ -55,6 +55,9 @@ namespace mars {
         sense_contact_force = 1;
         value = 0;
         c_params.setZero();
+        filter_depth = -1.;
+        filter_angle = -1.;
+        filter_radius = -1.0;
       }
 
       geom_data(){
@@ -72,6 +75,8 @@ namespace mars {
       interfaces::sReal value;
       dGeomID parent_geom;
       dBodyID parent_body;
+      dReal filter_depth, filter_angle, filter_radius;
+      utils::Vector filter_sphere;
     };
 
     struct sensor_list_element {
@@ -90,14 +95,14 @@ namespace mars {
      */
     class NodePhysics : public interfaces::NodeInterface {
     public:
-      NodePhysics(interfaces::PhysicsInterface *world);
+      NodePhysics(std::shared_ptr<interfaces::PhysicsInterface> world);
       virtual ~NodePhysics(void);
       virtual bool createNode(interfaces::NodeData *node);
       virtual void getPosition(utils::Vector *pos) const;
       virtual const utils::Vector setPosition(const utils::Vector &pos, bool move_group);
       virtual void getRotation(utils::Quaternion *q) const;
       virtual const utils::Quaternion setRotation(const utils::Quaternion &q, bool move_group);
-      virtual void setWorldObject(interfaces::PhysicsInterface *world);
+      virtual void setWorldObject(std::shared_ptr<interfaces::PhysicsInterface> world);
       virtual void getLinearVelocity(utils::Vector *vel) const;
       virtual void getAngularVelocity(utils::Vector *vel) const;
       virtual void getForce(utils::Vector *f) const;
@@ -124,6 +129,8 @@ namespace mars {
       virtual void destroyNode(void);
       virtual void getMass(interfaces::sReal *mass, interfaces::sReal *inertia=0) const;
       virtual const utils::Vector getContactForce(void) const;
+      virtual void addContact(dJointID contactJointId, dContact contact, dJointFeedback* fb);
+      virtual std::vector<dJointFeedback*> addContacts(ContactsPhysics contacts, dWorldID world, dJointGroupID contactgroup);
       virtual interfaces::sReal getCollisionDepth(void) const;
       void addCompositeOffset(dReal x, dReal y, dReal z);
       ///return the body; this function is created to make it possible to get the 
@@ -135,7 +142,7 @@ namespace mars {
       dReal heightCallback(int x, int y);
 
     protected:
-      WorldPhysics *theWorld;
+      std::shared_ptr<WorldPhysics> theWorld;
       dBodyID nBody;
       dGeomID nGeom;
       dMass nMass;

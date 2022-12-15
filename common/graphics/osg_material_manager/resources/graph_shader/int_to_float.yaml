@@ -1,0 +1,6 @@
+params:
+  in:
+    int_value: {index: 0, type: int}
+  out:
+    value: {index: 1, type: float}
+source: /graph_shader/int_to_float.frag

@@ -198,7 +198,6 @@ namespace mars {
           }
         }
         { // handle windows
-          lightMap.clear();
           temp.clear();
           temp << "graphics";
           current = new QTreeWidgetItem(temp);
@@ -747,11 +746,12 @@ namespace mars {
         }
       }
       else if(editCategory == 6) {
-        control->graphics->editLight(currentLight["index"], name, value);
+        unsigned int index = currentLight["index"];
+        control->graphics->editLight(index, name, value);
         std::vector<interfaces::LightData*> simLights;
         control->graphics->getLights(&simLights);
         for(size_t i=0; i<simLights.size(); ++i) {
-          if(simLights[i]->index == (unsigned long)currentLight["index"]) {
+          if(simLights[i]->index == index) {
             configmaps::ConfigMap map;
             simLights[i]->toConfigMap(&map);
             lightMap[simLights[i]->name] = map;

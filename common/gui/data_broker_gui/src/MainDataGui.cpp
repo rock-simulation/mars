@@ -42,7 +42,7 @@ namespace mars {
       gui(NULL), cfg(NULL), dataBroker(NULL), dataWidget(NULL) {
 
       // setup GUI with default path
-      setupGUI("../resources/");
+      setupGUI(MARS_DEFAULT_RESOURCES_PATH);
     }
 
     void MainDataGui::setupGUI(std::string path) {
@@ -51,10 +51,11 @@ namespace mars {
 
       cfg = libManager->getLibraryAs<CFGManagerInterface>("cfg_manager");
       if(cfg) {
-        cfg_manager::cfgPropertyStruct r_path;
-        r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string("../resources"));
-        path = r_path.sValue;
+        path = cfg->getOrCreateProperty("Preferences", "resources_path",
+                                          "").sValue;
+	if(path == "") {
+	  path = MARS_DEFAULT_RESOURCES_PATH;
+	}
       } else {
         fprintf(stderr, "******* data_broker_gui: couldn't find cfg_manager\n");
       }

@@ -41,10 +41,13 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/PhysicsInterface.h>
 #include <mars/interfaces/graphics/draw_structs.h>
+#include <mars/interfaces/sim/MarsPluginTemplate.h>
 
 #include <vector>
 
 #include <ode/ode.h>
+
+#include "ContactsPhysics.hpp"
 
 namespace mars {
   namespace sim {
@@ -86,14 +89,19 @@ namespace mars {
     public:
       WorldPhysics(interfaces::ControlCenter *control);
       virtual ~WorldPhysics(void);
+      virtual void setPhysicsPlugins(std::vector<interfaces::pluginStruct> physicsPlugins);
       virtual void initTheWorld(void);
       virtual void freeTheWorld(void);
       virtual void stepTheWorld(void);
       virtual bool existsWorld(void) const;
-      virtual const utils::Vector getCenterOfMass(const std::vector<interfaces::NodeInterface*> &nodes)const;
+      virtual const utils::Vector getCenterOfMass(const std::vector<std::shared_ptr<interfaces::NodeInterface>> &nodes)const;
       virtual void update(std::vector<interfaces::draw_item> *drawItems);
       virtual int checkCollisions(void);
       virtual interfaces::sReal getVectorCollision(const utils::Vector &pos, const utils::Vector &ray) const;
+      virtual void getSphereCollision(const utils::Vector &pos,
+                                      const double r,
+                                      std::vector<utils::Vector> &contacts,
+                                      std::vector<double> &depths) const;
 
       // this functions are used by the other physical classes
       dWorldID getWorld(void) const;
@@ -106,6 +114,8 @@ namespace mars {
       int handleCollision(dGeomID theGeom);
       interfaces::sReal getCollisionDepth(dGeomID theGeom);
       mutable utils::Mutex iMutex;
+      dReal max_angular_speed;
+      dReal max_correcting_vel;
 
       static interfaces::PhysicsError error;
 
@@ -130,6 +140,15 @@ namespace mars {
       // this functions are for the collision implementation
       void nearCallback (dGeomID o1, dGeomID o2);
       static void callbackForward(void *data, dGeomID o1, dGeomID o2);
+
+      // Step the World auxiliar methods
+      void preStepChecks(void);
+      void clearPreviousStep(void);
+      void setContactsFromPlugins(void); 
+      void createFeedbackJoints( const std::vector<mars::sim::ContactsPhysics> & contacts); 
+      void draw_contacts(const mars::sim::ContactsPhysics & colContacts);
+      // List of physics plugins to be used as complements for ODE
+      std::vector<interfaces::pluginStruct> physics_plugins;
     };
 
   } // end of namespace sim

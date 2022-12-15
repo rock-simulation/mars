@@ -528,8 +528,8 @@ namespace mars {
        * \param id The id of the node to get the core node object.
        * \returns Returns a pointer to the corresponding node object.
        */
-      virtual sim::SimNode *getSimNode(NodeId id) = 0;
-      virtual const sim::SimNode *getSimNode(NodeId id) const = 0;
+      virtual std::shared_ptr<mars::sim::SimNode> getSimNode(NodeId id) = 0;
+//      virtual const sim::SimNode *getSimNode(NodeId id) const = 0;
 
       /**
        * \brief This function reloads all node from a temporally NodeData pool.
@@ -683,6 +683,7 @@ namespace mars {
        */
       virtual void setAngularDamping(NodeId id, sReal damping) = 0;
 
+      virtual void setLinearDamping(NodeId id, sReal damping) = 0;
       /**
        * \brief Adds a additional rotation to the orientation of a node.
        *
@@ -809,6 +810,8 @@ namespace mars {
        */
       virtual void positionNode(NodeId id, utils::Vector pos, unsigned long excludeJointId) = 0;
       virtual unsigned long getMaxGroupID() = 0;
+
+      virtual void setSingleNodePose(NodeId id, utils::Vector pos, utils::Quaternion q) = 0;
 
       virtual void printNodeMasses(bool onlysum) = 0;
 

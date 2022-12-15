@@ -57,7 +57,7 @@ namespace mars {
       virtual void getAngularVelocity(utils::Vector *vel) const = 0;
       virtual void getForce(utils::Vector *f) const = 0;
       virtual void getTorque(utils::Vector *t) const = 0;
-      virtual void setWorldObject(PhysicsInterface *world) = 0;
+      virtual void setWorldObject(std::shared_ptr<PhysicsInterface> world) = 0;
       virtual const utils::Vector rotateAtPoint(const utils::Vector &rotation_point,
                                          const utils::Quaternion &rotation,
                                          bool move_group) = 0;

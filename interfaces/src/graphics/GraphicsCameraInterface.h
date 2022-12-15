@@ -75,6 +75,7 @@ namespace mars {
                                    double *rw) = 0;
       virtual void changeCameraTypeToPerspective() = 0;
       virtual void changeCameraTypeToOrtho() = 0;
+      virtual void setOrthoH(double v) = 0;
 
       //  <! -- OUTDATED, USE setFrustum INSTEAD -->
       //  virtual void setLocalSettings(local_settings *local) = 0;

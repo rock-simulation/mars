@@ -65,7 +65,10 @@ namespace osg_material_manager {
     shadowSamples.iValue = 1;
     if(cfg) {
       resPath = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                         resPath.sValue, this);
+                                         "", this);
+      if(resPath.sValue == "") {
+	resPath.sValue = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+      }
       shadowSamples = cfg->getOrCreateProperty("Graphics",
                                                "shadowSamples",
                                                shadowSamples.iValue, this);
@@ -83,6 +86,7 @@ namespace osg_material_manager {
     defaultMaxNumNodeLights = 1;
     brightness = 1.0;
     noiseAmmount = 0.05;
+    shadowTechnique = "none";
   }
 
   OsgMaterialManager::~OsgMaterialManager(void) {
@@ -226,12 +230,16 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it == materialMap.end()) {
       OsgMaterial *m = new OsgMaterial(resPath.sValue+"/mars/osg_material_manager/resources");
+      m->no_update = true;
       m->setMaxNumLights(defaultMaxNumNodeLights);
       m->setShadowTextureSize(shadowTextureSize);
       m->setMaterial(map);
       m->setUseShader(useShader);
+      m->setUseShadow(useShadow);
+      m->setShadowTechnique(shadowTechnique);
       m->setNoiseImage(noiseImage.get());
       m->setShadowSamples(shadowSamples.iValue);
+      m->no_update = false;
       materialMap[name] = m;
       mainStateGroup->addChild(m);
     }
@@ -261,7 +269,7 @@ namespace osg_material_manager {
     it = materialMap.find(name);
     if(it != materialMap.end()) {
       MaterialNode *n = new MaterialNode();
-      n->setMaxNumLights(defaultMaxNumNodeLights);
+      n->setMaxNumLights(it->second->getMaxNumLights());
       n->createNodeState();
       n->setUseFog(useFog);
       n->setUseNoise(useNoise);
@@ -307,6 +315,10 @@ namespace osg_material_manager {
     for(; it!=materialMap.end(); ++it) {
       it->second->setUseShader(useShader);
     }
+  }
+
+  bool OsgMaterialManager::getUseShader() const {
+    return useShader;
   }
 
   void OsgMaterialManager::setShadowTextureSize(int size) {
@@ -359,7 +371,20 @@ namespace osg_material_manager {
     for(; it!=materialNodes.end(); ++it) {
       (*it)->setUseShadow(useShadow);
     }
+    std::map<std::string, osg::ref_ptr<OsgMaterial> >::iterator it2 = materialMap.begin();
+    for(; it2!=materialMap.end(); ++it2) {
+      it2->second->setUseShadow(useShadow);
+    }
   }
+
+  void OsgMaterialManager::setShadowTechnique(std::string v) {
+    shadowTechnique = v;
+    std::map<std::string, osg::ref_ptr<OsgMaterial> >::iterator it2 = materialMap.begin();
+    for(; it2!=materialMap.end(); ++it2) {
+      it2->second->setShadowTechnique(shadowTechnique);
+    }
+  }
+
 
   void OsgMaterialManager::setBrightness(float v) {
     brightness = v;

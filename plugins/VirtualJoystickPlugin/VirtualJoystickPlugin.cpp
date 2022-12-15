@@ -22,11 +22,15 @@ VirtualJoystickPlugin::VirtualJoystickPlugin(lib_manager::LibManager *theManager
   dataBroker = libManager->getLibraryAs<mars::data_broker::DataBrokerInterface>(std::string("data_broker"));
   dataPackage.add("values/x", 0.0);
   dataPackage.add("values/y", 0.0);
+  dataPackage.add("values/x2", 0.0);
+  dataPackage.add("values/y2", 0.0);
 
   cfg = libManager->getLibraryAs<mars::cfg_manager::CFGManagerInterface>(std::string("cfg_manager"));
   if(cfg) {
     cfg->getOrCreateProperty("VirtualJoystick", "x", leftValue);
     cfg->getOrCreateProperty("VirtualJoystick", "y", rightValue);
+    cfg->getOrCreateProperty("VirtualJoystick", "x2", xValue);
+    cfg->getOrCreateProperty("VirtualJoystick", "y2", yValue);
   }
 }
 
@@ -37,13 +41,17 @@ VirtualJoystickPlugin::~VirtualJoystickPlugin(void) {
   if(cfg) libManager->releaseLibrary(std::string("cfg_manager"));
 }
 
-void VirtualJoystickPlugin::newSpeed(double leftValue, double rightValue) {
+void VirtualJoystickPlugin::newSpeed(double leftValue, double rightValue, double xValue, double yValue) {
   this->leftValue  = leftValue;
   this->rightValue = rightValue;
+  this->xValue  = xValue;
+  this->yValue = yValue;
 
   if(dataBroker) {
     dataPackage.set(0, leftValue);
     dataPackage.set(1, rightValue);
+    dataPackage.set(2, xValue);
+    dataPackage.set(3, yValue);
     if(!dataPackageId) {
       dataPackageId = dataBroker->pushData("joystick", "values", dataPackage,
                                            NULL,
@@ -56,6 +64,8 @@ void VirtualJoystickPlugin::newSpeed(double leftValue, double rightValue) {
   if(cfg) {
     cfg->setProperty("VirtualJoystick", "x", leftValue);
     cfg->setProperty("VirtualJoystick", "y", rightValue);
+    cfg->setProperty("VirtualJoystick", "x2", xValue);
+    cfg->setProperty("VirtualJoystick", "y2", yValue);
   }
 }
 
@@ -75,7 +85,7 @@ void VirtualJoystickPlugin::menuAction(int action, bool checked) {
       gui->addDockWidget((void*)joystick);
       joystick->setMaxSpeed(12.0);
 
-      connect(joystick, SIGNAL(newSpeed(double, double)), this, SLOT(newSpeed(double, double)));
+      connect(joystick, SIGNAL(newSpeed(double, double, double, double)), this, SLOT(newSpeed(double, double, double, double)));
 
       connect(joystick, SIGNAL(hideSignal()), this, SLOT(hideWidget()));
       connect(joystick, SIGNAL(closeSignal()), this, SLOT(closeWidget()));

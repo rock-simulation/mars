@@ -33,6 +33,7 @@ namespace mars {
       void setLight(osg::Light *light);
       void setLight(osg::LightSource *ls);
       void applyState(osg::StateSet* state);
+      void removeState(osg::StateSet* state);
       void initIntern();
 
       /** Initialize the ShadowedScene and local cached data structures.*/

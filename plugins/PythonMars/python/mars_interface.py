@@ -21,6 +21,8 @@ def clearDict():
     iDict["configMotorValues"] = {}
     iDict["applyForce"] = {}
     iDict["applyTorque"] = {}
+    iDict["connectNodes"] = []
+    iDict["disconnectNodes"] = []
     iDict["request"] = []
     iDict["config"] = {}
     iDict["PointCloud"] = {}
@@ -47,6 +49,14 @@ def applyForce(name, value):
 def applyTorque(name, value):
     global iDict
     iDict["applyTorque"][name] = {"value": value}
+
+def connectNodes(name1, name2):
+    global iDict
+    iDict["connectNodes"].append([name1, name2])
+
+def disconnectNodes(name1, name2):
+    global iDict
+    iDict["disconnectNodes"].append([name1, name2])
 
 def setRunning(value):
     if value:
@@ -80,6 +90,10 @@ def requestMotor(name):
 def requestConfig(group, name):
     global iDict
     iDict["request"].append({"type": "Config", "group": group, "name": name})
+
+def requestDataBroker(group_name, package_name, data_name):
+    global iDict
+    iDict["request"].append({"type": "DataBroker", "g": group_name, "name": package_name, "d": data_name})
 
 def logMessage(s):
     global iDict
@@ -170,3 +184,17 @@ def editGraphics(key, value):
 
 def editGraphicsWindow(winid, key, value):
     edit("graphics", str(winid), key, value)
+
+def setNodePose(name, x, y, z, qx, qy, qz, qw):
+    if not "edit" in iDict:
+        iDict["edit"] = {"nodePose": {}}
+    elif not "nodePose" in iDict["edit"]:
+        iDict["edit"]["nodePose"] = {}
+    iDict["edit"]["nodePose"][name] = [x, y, z, qx, qy, qz, qw]
+
+def setSingleNodePose(name, x, y, z, qx, qy, qz, qw):
+    if not "edit" in iDict:
+        iDict["edit"] = {"nodePoseSingle": {}}
+    elif not "nodePoseSingle" in iDict["edit"]:
+        iDict["edit"]["nodePoseSingle"] = {}
+    iDict["edit"]["nodePoseSingle"][name] = [x, y, z, qx, qy, qz, qw]

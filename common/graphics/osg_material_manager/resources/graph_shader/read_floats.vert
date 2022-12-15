@@ -1,7 +1,7 @@
 void read_floats(sampler2D texture, float index,
                  vec2 resolution, float skip,
                  float offset, out vec2 values) {
-  float p = index*skip+offset;
+  float p = floor(index+0.5)*skip+offset;
   vec2 tex = vec2(floor(mod(p, resolution.x)), floor(p/resolution.x));
   float sx = 1./resolution.x;
   float sy = 1./resolution.y;

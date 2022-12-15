@@ -31,10 +31,11 @@ namespace osg_material_manager {
   using namespace std;
 
   using namespace mars::utils;
-  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options) : IShaderProvider(res_path) {
+  DRockGraphSP::DRockGraphSP(string res_path, ConfigMap model, ConfigMap options, string shadowTechnique) : IShaderProvider(res_path) {
     this->model = model;
     this->options = options;
     this->minVersion = 100;
+    this->shadowTechnique = shadowTechnique;
     parseGraph();
   }
 
@@ -115,6 +116,11 @@ namespace osg_material_manager {
     ConfigVector::iterator it;
     ConfigMap::iterator mit;
 
+    // first store options as const variables:
+    for(auto optIt: options) {
+      constants.insert((GLSLConstant) {"int", optIt.first, optIt.second.toString()});
+    }
+
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
@@ -126,6 +132,16 @@ namespace osg_material_manager {
     unsigned long id = 1;
     for (it = graph["nodes"].begin(); it != graph["nodes"].end(); ++it) {
       string function = (*it)["model"]["name"];
+      // replace abstract shadow node
+      if(function == "shadow") {
+        function = "shadow_"+shadowTechnique;
+        (*it)["model"]["name"] = function;
+      }
+      else if(function == "shadow_vert") {
+        function = "shadow_"+shadowTechnique+"_vert";
+        (*it)["model"]["name"] = function;
+        fprintf(stderr, "replace shadow_vert by: %s\n", function.c_str());
+      }
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
       (*it)["name"] = name;
       nodeMap[id] = (*it);
@@ -136,7 +152,9 @@ namespace osg_material_manager {
           function << nodeConfig[name]["loadName"];
         }
         if (type == "uniform") {
-          uniforms.insert((GLSLUniform) {function, name});
+          if(!options.hasKey(name)) {
+            uniforms.insert((GLSLUniform) {function, name});
+          }
         } else if (type == "varying") {
           varyings.insert((GLSLAttribute) {function, name});
         }
@@ -200,6 +218,8 @@ namespace osg_material_manager {
       }
       if (!filterMap.hasKey(nodeFunction)) {
         ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
+        // could handle shadow_map samples here
+
         parse_functionInfo(nodeFunction, functionInfo);
         stringstream call;
         call.clear();
@@ -221,6 +241,24 @@ namespace osg_material_manager {
               varName = "default_" + mit->first + "_for_" + nodeName;
               string varType = (mit->second)["type"];
               defaultVars.push_back(GLSLVariable {varType, varName, nodeConfig[nodeName]["inputs"][mit->first]});
+            }
+            else {
+              varName = "default_" + mit->first + "_for_" + nodeName;
+              string varType = (mit->second)["type"].toString();
+              string value = "1.0";
+              if(varType == "vec2") {
+                value = "vec2(0, 0)";
+              }
+              if(varType == "vec3") {
+                value = "vec2(0, 0, 0)";
+              }
+              if(varType == "vec4") {
+                value = "vec4(0, 0, 0, 1)";
+              }
+              else {
+                fprintf(stderr, "Shader ERROR: input not connected: node %s input %lu\n", nodeName.c_str(), incoming.size());
+              }
+              defaultVars.push_back(GLSLVariable {varType, varName, value});
             }
             incoming.push((PrioritizedLine) {varName, (int) functionInfo["params"]["in"][mit->first]["index"], 0});
           }
@@ -320,7 +358,9 @@ namespace osg_material_manager {
             s << "[" << num << "]";
             name.append(s.str());
           }
-          uniforms.insert((GLSLUniform) {type_name, name});
+          if(!options.hasKey(name)) {
+            uniforms.insert((GLSLUniform) {type_name, name});
+          }
         }
       }
     }

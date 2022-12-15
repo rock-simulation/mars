@@ -31,7 +31,7 @@ namespace osg_material_manager {
 
   class DRockGraphSP : public IShaderProvider {
   public:
-    DRockGraphSP(string res_path, ConfigMap graph, ConfigMap options);
+    DRockGraphSP(string res_path, ConfigMap graph, ConfigMap options, string shadowTechnique="none");
 
     int getMinVersion();
 
@@ -71,7 +71,7 @@ namespace osg_material_manager {
      * Contains resource path to all source code needed by the main function
      */
     map<string, string> source_files;
-
+    string shadowTechnique;
     int minVersion;
     set<GLSLUniform> uniforms;
     set<GLSLAttribute> varyings;

@@ -1,0 +1,4 @@
+params:
+  in:
+    viewPos: {index: 0, type: vec4}
+source: abstract

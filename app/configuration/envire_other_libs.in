@@ -1,0 +1,3 @@
+# additional list of libraries to be loaded after the core libraries have been loaded
+@ADDITIONAL_LIBS@
+envire_visual_debug

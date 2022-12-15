@@ -166,10 +166,10 @@ string(REGEX REPLACE " " "
 " ADDITIONAL_LIBS ${ADDITIONAL_LIBS})
 endif()
 
-configure_file(configuration/core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt.example @ONLY)
-configure_file(configuration/other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt.example @ONLY)
-configure_file(configuration/core_libs-nogui.in ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example @ONLY)
-install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt.example ${CMAKE_BINARY_DIR}/other_libs.txt.example ${CMAKE_BINARY_DIR}/core_libs-nogui.txt.example DESTINATION configuration/mars_default/)
+foreach (LIBSFILE core_libs other_libs core_libs-nogui envire_core_libs envire_other_libs envire_core_libs-nogui)
+  configure_file(configuration/${LIBSFILE}.in ${CMAKE_BINARY_DIR}/${LIBSFILE}.txt.example @ONLY)
+  install(FILES ${CMAKE_BINARY_DIR}/${LIBSFILE}.txt.example DESTINATION configuration/mars_default/)
+endforeach()
 
 install(FILES configuration/pypath.yml  DESTINATION configuration/mars_default/)
 install(DIRECTORY configuration/python DESTINATION configuration/mars_default/)

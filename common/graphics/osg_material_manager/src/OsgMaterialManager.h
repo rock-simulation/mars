@@ -83,6 +83,7 @@ namespace osg_material_manager {
 
     // setter for global states
     void setUseShader(bool v);
+    bool getUseShader() const;
     void setShadowTextureSize(int size);
     void setShadowScale(float v);
     void setDefaultMaxNumLights(int v);
@@ -90,6 +91,7 @@ namespace osg_material_manager {
     void setUseNoise(bool v);
     void setDrawLineLaser(bool v);
     void setUseShadow(bool v);
+    void setShadowTechnique(std::string v);
     void setBrightness(float v);
     void setNoiseAmmount(float v);
 
@@ -121,6 +123,7 @@ namespace osg_material_manager {
     // global MaterialNode properties
     bool useFog, useNoise, drawLineLaser, useShadow;
     float brightness, noiseAmmount;
+    std::string shadowTechnique;
 
     static std::vector<textureFileStruct> textureFiles;
     static std::vector<imageFileStruct> imageFiles;

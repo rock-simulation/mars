@@ -55,12 +55,14 @@ namespace mars {
       void getFilesToSave(std::vector<std::string> *fileList);
 
       std::string name;         // name of the motor
+      std::string jointName;    // Name of the joint to which the motor should be attached
       unsigned long index; // index number of the motor
       unsigned long jointIndex, jointIndex2; // index of the joint the motor moves
       int axis; // index of the joints axis the motor moves
       sReal maxSpeed; // maximum speed the motor can reach
       sReal maxEffort; // maximum force/torque [F/Nm] the motor can apply
       sReal maxAcceleration; // maximum acceleration the motor can produce
+      sReal minSpeed;
       MotorType type; // motor type
       sReal p;  // p part of the controller
       sReal i;  // i part of the controller

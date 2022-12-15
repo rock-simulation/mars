@@ -104,8 +104,11 @@ namespace osg_material_manager {
     void edit(const std::string &key, const std::string &value);
 
     void setMaxNumLights(int n);
+    int getMaxNumLights();
 
     void setUseShader(bool val);
+    void setUseShadow(bool val);
+    void setShadowTechnique(std::string val);
     void setNoiseImage(osg::Image *i);
     void setShadowScale(float v);
     void setShadowSamples(int v);
@@ -124,6 +127,7 @@ namespace osg_material_manager {
     int getNumInstances();
     double getInstancesWidth();
 
+    bool no_update;
   protected:
     std::vector<osg::ref_ptr<MaterialNode> > materialNodeVector;
 
@@ -135,6 +139,7 @@ namespace osg_material_manager {
     osg::ref_ptr<osg::Uniform> cosUniform;
     osg::ref_ptr<osg::Uniform> shadowScaleUniform;
 
+    int shadowSamples, useShadow;
     osg::ref_ptr<osg::Uniform> shadowSamplesUniform, invShadowSamplesUniform;
     osg::ref_ptr<osg::Uniform> invShadowTextureSizeUniform;
     osg::ref_ptr<osg::Uniform> envMapSpecularUniform;
@@ -159,6 +164,7 @@ namespace osg_material_manager {
     std::string name, resPath;
     configmaps::ConfigMap map, unitMap;
     std::string loadPath;
+    std::string shadowTechnique;
 
     osg::Vec4 getColor(std::string key);
     void setColor(std::string color, std::string key, std::string value);

@@ -79,15 +79,18 @@ namespace mars {
 
         resPath = ".";
         if(control->cfg) {
-          cfgProp = control->cfg->getOrCreateProperty("Graphics",
+          cfgProp = control->cfg->getOrCreateProperty("Preferences",
                                                       "resources_path",
-                                                      ".");
+                                                      "");
+	  if(cfgProp.sValue == "") {
+	    cfgProp.sValue = MARS_DEFAULT_RESOURCES_PATH;
+	  }
           resPath = cfgProp.sValue;
-          cfgProp = control->cfg->getOrCreateProperty("Scene",
-                                                      "skydome_path",
-                                                      "cubemap",
-                                                      this);
-          folder = cfgProp.sValue;
+          cfgPropPath = control->cfg->getOrCreateProperty("Scene",
+                                                          "skydome_path",
+                                                          "cubemap",
+                                                          this);
+          folder = cfgPropPath.sValue;
           cfgEnableSD = control->cfg->getOrCreateProperty("Scene",
                                                           "skydome_enabled",
                                                           false, this);
@@ -112,13 +115,15 @@ namespace mars {
           scene->addChild(posTransform);
         }
 
-        if(pathExists(resPath+"/Textures/"+folder)) {
-          folder = resPath+"/Textures/"+folder;
+        if(pathExists(resPath+"/mars/graphics/resources/Textures/"+folder)) {
+          folder = resPath+"/mars/graphics/resources/Textures/"+folder;
         }
-
-        if(!pathExists(meshPath)) {
-          LOG_ERROR("SkyDome: Mesh path not found: %s", meshPath.c_str());
-          meshPath = "";
+        LOG_INFO("SkyDome: init with folder: %s", folder.c_str());
+        if(meshPath != "") {
+          if(!pathExists(meshPath)) {
+            LOG_ERROR("SkyDome: Mesh path not found: %s", meshPath.c_str());
+            meshPath = "";
+          }
         }
 
         // todo: handle wrong path
@@ -249,12 +254,15 @@ namespace mars {
             updateProp = true;
           }
         }
-        else if(cfgProp.paramId == _property.paramId) {
-          folder = cfgProp.sValue = _property.sValue;
+        else if(cfgPropPath.paramId == _property.paramId) {
+          folder = cfgPropPath.sValue = _property.sValue;
+          LOG_INFO("SkyDome: try to switch to folder: %s", folder.c_str());
+
           if(pathExists(resPath + "/Textures/"+folder)) {
             folder = resPath + "/Textures/"+folder;
           }
           if(pathExists(folder)) {
+            LOG_INFO("SkyDome: switch to folder: %s", folder.c_str());
             _skyDome->setCubeMap(loadCubeMapTextures().get());
           }
         }

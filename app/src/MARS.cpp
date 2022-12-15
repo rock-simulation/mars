@@ -96,6 +96,29 @@ namespace mars {
 #endif //WIN32
     }
 
+    void MARS::releaseEnvireLibs()
+    {
+      // To release other core libraries
+      std::list<std::string> needRelease{"envire_mls", "envire_managers", "envire_smurf_loader", "envire_graphics", "envire_graph_loader"};
+      std::list<std::string> * allLibs = new std::list<std::string>();
+      libManager->getAllLibraryNames(allLibs);
+      std::list<std::string>::iterator iter;      
+      for(iter = allLibs->begin();
+        iter != allLibs->end(); iter++) 
+      {
+        lib_manager::LibInfo libInfo = libManager->getLibraryInfo(*iter);
+        if (std::find(needRelease.begin(), needRelease.end(), *iter) != needRelease.end())
+        {
+          while(libInfo.references >0)
+          {
+            libManager->releaseLibrary(*iter);
+            libInfo = libManager->getLibraryInfo(*iter);
+          }
+        }
+      }
+      delete allLibs;
+    }
+
     MARS::MARS(lib_manager::LibManager *theManager) : configDir(DEFAULT_CONFIG_DIR),
                    libManager(theManager),
                    marsGui(NULL), ownLibManager(false),
@@ -122,7 +145,7 @@ namespace mars {
       if(control->graphics) libManager->releaseLibrary("mars_graphics");
       libManager->releaseLibrary("main_gui");
       libManager->releaseLibrary("cfg_manager");
-
+      releaseEnvireLibs();
       if(ownLibManager) delete libManager;
 
 #ifdef WIN32
@@ -167,9 +190,11 @@ namespace mars {
         configPath = cfg->getOrCreateProperty("Config", "config_path",
                                               configDir);
         prefPath = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                            std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
-        prefPath.sValue = std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
-        cfg->setProperty(prefPath);
+                                            "");
+	if(prefPath.sValue == "") {
+	  prefPath.sValue = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+	}
+        //cfg->setProperty(prefPath);
         // load preferences
         std::string loadFile = configDir + "/mars_Preferences.yaml";
         cfg->loadConfig(loadFile.c_str());
@@ -182,10 +207,11 @@ namespace mars {
       coreConfigFile = configDir+"/core_libs.txt";
       plugin_config = fopen(coreConfigFile.c_str() , "r");
       if(plugin_config) {
+        fprintf(stderr, "MARS::loadCoreLibs: load core libs from core_libs.txt\n");
         fclose(plugin_config);
         libManager->loadConfigFile(coreConfigFile);
       } else {
-        fprintf(stderr, "Loading default core libraries...\n");
+        fprintf(stderr, "MARS::loadCoreLibs: Loading default core libraries...\n");
         libManager->loadLibrary("data_broker");
         libManager->loadLibrary("mars_sim");
         libManager->loadLibrary("mars_scene_loader");
@@ -203,7 +229,7 @@ namespace mars {
 
     void MARS::loadAdditionalLibs() {
       {
-        fprintf(stderr, "Loading default additional libraries...\n");
+        fprintf(stderr, "MARS::loadAdditionalLibs: Loading default additional libraries...\n");
         // loading errors will be silent for the following optional libraries
         if(!noGUI) {
           libManager->loadLibrary("log_console", NULL, true);
@@ -257,7 +283,9 @@ namespace mars {
           if(mainGui) {
             marsGraphics->initializeOSG(NULL);
             QWidget *widget = (QWidget*)marsGraphics->getQTWidget(1);
-            mainGui->mainWindow_p()->setCentralWidget(widget);
+            if (widget) {
+              mainGui->mainWindow_p()->setCentralWidget(widget);
+            }
           }
           else {
             marsGraphics->initializeOSG(NULL, false);

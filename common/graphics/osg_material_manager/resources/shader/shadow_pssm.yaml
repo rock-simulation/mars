@@ -1,0 +1,26 @@
+params:
+  - shadow
+uniforms:
+  int:
+    - {name: shadowSamples}
+  float:
+    - {name: invShadowSamples}
+    - {name: invShadowTextureSize}
+    - {name: zShadow0}
+    - {name: zShadow1}
+    - {name: zShadow2}
+  sampler2D:
+    - {name: NoiseMap}
+  sampler2DShadow:
+    - {name: shadowTexture0}
+    - {name: shadowTexture1}
+    - {name: shadowTexture2}
+mainVarDecs:
+  vec4:
+    - {name: shadow}
+snippets:
+  - source: /shader/test.snippet
+    priority: -1
+source: /shader/shadow_pssm.frag
+priority: 10
+name: shadow_pssm

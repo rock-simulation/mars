@@ -137,8 +137,12 @@ namespace mars {
        */
       unsigned long getMotor(const std::string &name);
 
+      unsigned long getSensor(const std::string &name);
+
       // returns the name of the motor with the given id
       std::string getMotor(long unsigned int id);
+
+      std::string getSensor(long unsigned int id);      
 
       std::vector<unsigned long> getControllerList();
 

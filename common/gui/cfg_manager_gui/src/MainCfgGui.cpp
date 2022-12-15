@@ -42,7 +42,7 @@ namespace mars {
       ignore_next = false;
 
       // setup GUI with default path
-      setupGUI("../resources/");
+      setupGUI(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH);
     }
 
     void MainCfgGui::setupGUI(std::string path) {
@@ -54,9 +54,11 @@ namespace mars {
         cfg->registerToCFG(dynamic_cast<CFGClient*>(this));
 
         cfgPropertyStruct r_path;
-        r_path = cfg->getOrCreateProperty("Preferences", "resources_path",
-                                          std::string(MARS_PREFERENCES_DEFAULT_RESOURCES_PATH));
-        path = r_path.sValue;
+        path = cfg->getOrCreateProperty("Preferences", "resources_path",
+                                          "").sValue;
+        if(path == "") {
+	  path = MARS_PREFERENCES_DEFAULT_RESOURCES_PATH;
+	}
       } else
         fprintf(stderr, "******* cfg_manager_gui: couldn't find cfg_manager\n");
 

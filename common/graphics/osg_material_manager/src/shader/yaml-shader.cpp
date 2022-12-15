@@ -102,7 +102,13 @@ namespace osg_material_manager {
               typeName = type;
               s << "";
             }
-            addUniform( (GLSLUniform) { typeName, (string)item["name"] + s.str() } );
+            std::string name = (string)item["name"] + s.str();
+            if(!map["mappings"].hasKey(name)) {
+              addUniform( (GLSLUniform) { typeName, name} );
+            }
+            else {
+              addConstant((GLSLConstant) { typeName, name,  map["mappings"][name].toString()} );
+            }
           }
         }
       }

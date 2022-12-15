@@ -1,0 +1,5 @@
+params:
+  - vViewPos
+source: /shader/shadow_pssm.vert
+priority: 10
+name: shadow_pssm_vert

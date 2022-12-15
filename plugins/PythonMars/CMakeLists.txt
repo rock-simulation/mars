@@ -48,6 +48,9 @@ set(HEADERS
 	src/PythonInterpreter.hpp
 )
 
+add_definitions(-DMARS_DEFAULT_RESOURCES_PATH=\"${CMAKE_INSTALL_PREFIX}/share\")
+
+
 if("$ENV{PYTHON}" STREQUAL "")
     set(PYTHON "python")
     message(STATUS "Using default python.")

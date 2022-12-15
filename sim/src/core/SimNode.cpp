@@ -153,7 +153,7 @@ namespace mars {
         control->dataBroker->unregisterSyncReceiver(this, "*", "*");
       }
       if (my_interface) {
-        delete my_interface;
+        my_interface.reset();
         my_interface = 0;
       }
       if (sNode.mesh.vertices) {
@@ -450,12 +450,12 @@ namespace mars {
       return sNode.ext;
     }
 
-    void SimNode::setInterface(NodeInterface* _interface) {
+    void SimNode::setInterface(std::shared_ptr<NodeInterface> _interface) {
       MutexLocker locker(&iMutex);
       my_interface = _interface;
     }
 
-    NodeInterface *SimNode::getInterface(void) const {
+    std::shared_ptr<NodeInterface> SimNode::getInterface(void) const {
       MutexLocker locker(&iMutex);
       return my_interface;
     }
@@ -803,6 +803,11 @@ namespace mars {
     void SimNode::setAngularDamping(sReal damping) {
       MutexLocker locker(&iMutex);
       sNode.angular_damping = damping;
+    }
+
+    void SimNode::setLinearDamping(sReal damping) {
+      MutexLocker locker(&iMutex);
+      sNode.linear_damping = damping;
     }
 
     void SimNode::addRotation(const Quaternion &q) {

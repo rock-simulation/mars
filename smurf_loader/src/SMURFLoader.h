@@ -29,9 +29,6 @@
   #warning "SMURFLoader.h"
 #endif
 
-#include <QtXml>
-#include <QDomNodeList>
-
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/LoadSceneInterface.h>
@@ -72,6 +69,9 @@ namespace mars {
       virtual bool loadFile(std::string filename, std::string tmpPath,
                             std::string robotname, void* args,
                             bool do_not_create=false);
+      virtual bool loadFile(std::string filename, std::string tmpPath,
+                            std::string robotname, utils::Vector pos, utils::Vector rot);
+
       virtual int saveFile(std::string filename, std::string tmpPath);
       //virtual void loadEntity(configmaps::ConfigMap* it, std::string path);
       virtual void loadEntity(configmaps::ConfigMap* it, std::string path,

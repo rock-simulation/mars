@@ -36,15 +36,15 @@ namespace mars {
       virtual ~JointInterface() {}
       // create the joint using the joint structure given as argument
       virtual bool createJoint(JointData *joint,
-                               const NodeInterface *node1, 
-                               const NodeInterface *i_node2) = 0; // physic interfaces for the node
+                               const std::shared_ptr<NodeInterface> node1, 
+                               const std::shared_ptr<NodeInterface> i_node2) = 0; // physic interfaces for the node
       virtual void getAnchor(utils::Vector *anchor) const = 0;
       virtual void setAnchor(const utils::Vector &anchor) = 0;
       virtual void setAxis(const utils::Vector &axis) = 0;
       virtual void setAxis2(const utils::Vector &axis) = 0;
       virtual void getAxis(utils::Vector *axis) const = 0;
       virtual void getAxis2(utils::Vector *axis) const = 0;
-      virtual void setWorldObject(PhysicsInterface *world) = 0;
+      virtual void setWorldObject(std::shared_ptr<PhysicsInterface> world) = 0;
       virtual void setForceLimit(sReal max_force) = 0;
       virtual void setForceLimit2(sReal max_force) = 0;
       virtual void setVelocity(sReal velocity) = 0;
@@ -72,10 +72,12 @@ namespace mars {
       virtual sReal getHighStop() const = 0;
       virtual sReal getLowStop2() const = 0;
       virtual sReal getHighStop2() const = 0;
+      virtual sReal getCFM() const = 0;
       virtual void setLowStop(sReal lowStop) = 0;
       virtual void setHighStop(sReal lowStop) = 0;
       virtual void setLowStop2(sReal lowStop) = 0;
       virtual void setHighStop2(sReal lowStop) = 0;
+      virtual void setCFM(sReal cfm) = 0;
     };
 
   } // end of namespace interfaces
