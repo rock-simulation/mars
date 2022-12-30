@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <JointFactoryInterface.h>
+#include "joints/JointFactoryInterface.h"
 
 namespace mars{
 namespace sim{

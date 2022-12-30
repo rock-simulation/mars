@@ -18,8 +18,13 @@
  *
  */
 
-#include <ODEJointFactory.h>
-#include <CoreODEJoints.h>
+#include "joints/ODEJointFactory.h"
+#include "joints/ODEHingeJoint.h"
+#include "joints/ODEHinge2Joint.h"
+#include "joints/ODESliderJoint.h"
+#include "joints/ODEBallJoint.h"
+#include "joints/ODEUniversalJoint.h"
+#include "joints/ODEFixedJoint.h"
 
 #include <memory>
 
@@ -31,7 +36,7 @@ using namespace ::mars::interfaces;
 ODEJointFactory& ODEJointFactory::Instance(){
   static ODEJointFactory instance;
   return instance;
-} 
+}
 
 ODEJointFactory::ODEJointFactory(){
 }
@@ -39,12 +44,12 @@ ODEJointFactory::ODEJointFactory(){
 ODEJointFactory::~ODEJointFactory(){
 }
 
-std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics, 
+std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics,
                                interfaces::JointData *jointData,
-                               const std::shared_ptr<interfaces::NodeInterface> node1, 
+                               const std::shared_ptr<interfaces::NodeInterface> node1,
                                const std::shared_ptr<interfaces::NodeInterface> node2){
 
-  std::shared_ptr<ODEJoint> newJoint; 
+  std::shared_ptr<ODEJoint> newJoint;
 
   switch(jointData->type) {
   case JOINT_TYPE_HINGE:
@@ -52,19 +57,19 @@ std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<int
     break;
   case JOINT_TYPE_HINGE2:
     newJoint = std::make_shared<ODEHinge2Joint>(worldPhysics, jointData, node1, node2);
-    break; 
+    break;
   case JOINT_TYPE_SLIDER:
     newJoint = std::make_shared<ODESliderJoint>(worldPhysics, jointData, node1, node2);
-    break; 
+    break;
   case JOINT_TYPE_BALL:
     newJoint = std::make_shared<ODEBallJoint>(worldPhysics, jointData, node1, node2);
-    break;  
+    break;
   case JOINT_TYPE_UNIVERSAL:
     newJoint = std::make_shared<ODEUniversalJoint>(worldPhysics, jointData, node1, node2);
-    break; 
+    break;
   case JOINT_TYPE_FIXED:
     newJoint = std::make_shared<ODEFixedJoint>(worldPhysics, jointData, node1, node2);
-    break;    
+    break;
   default:
     // no correct type is spezified, so no physically node will be created
     std::cout << "Unknown type of ODEJoint requested. No physical joint was created." << std::endl;

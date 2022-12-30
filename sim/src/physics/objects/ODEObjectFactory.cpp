@@ -18,8 +18,14 @@
  *
  */
 
-#include <ODEObjectFactory.h>
-#include <CoreODEObjects.h>
+#include "objects/ODEObjectFactory.h"
+#include "objects/ODEBox.h"
+#include "objects/ODECapsule.h"
+#include "objects/ODECylinder.h"
+#include "objects/ODEMesh.h"
+#include "objects/ODEPlane.h"
+#include "objects/ODESphere.h"
+#include "objects/ODEHeightField.h"
 
 #include <memory>
 
@@ -31,7 +37,7 @@ using namespace ::mars::interfaces;
 ODEObjectFactory& ODEObjectFactory::Instance(){
   static ODEObjectFactory instance;
   return instance;
-} 
+}
 
 ODEObjectFactory::ODEObjectFactory(){
 }
@@ -49,22 +55,22 @@ std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<Ph
     break;
   case NODE_TYPE_CAPSULE:
     newObject = std::make_shared<ODECapsule>(worldPhysics, nodeData);
-    break; 
+    break;
   case NODE_TYPE_CYLINDER:
     newObject = std::make_shared<ODECylinder>(worldPhysics, nodeData);
-    break; 
+    break;
   case NODE_TYPE_MESH:
     newObject = std::make_shared<ODEMesh>(worldPhysics, nodeData);
-    break;  
+    break;
   case NODE_TYPE_PLANE:
     newObject = std::make_shared<ODEPlane>(worldPhysics, nodeData);
-    break; 
+    break;
   case NODE_TYPE_SPHERE:
     newObject = std::make_shared<ODESphere>(worldPhysics, nodeData);
-    break;    
+    break;
   case NODE_TYPE_TERRAIN:
     newObject = std::make_shared<ODEHeightField>(worldPhysics, nodeData);
-    break; 
+    break;
   default:
     // no correct type is spezified, so no physically node will be created
     std::cout << "Unknown type of ODEObject requested. No physical node was created." << std::endl;

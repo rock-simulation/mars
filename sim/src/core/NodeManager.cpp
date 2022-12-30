@@ -29,7 +29,7 @@
 #include "SimJoint.h"
 #include "NodeManager.h"
 #include "JointManager.h"
-#include "PhysicsMapper.h"
+#include "objects/ODEObjectFactory.h"
 
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -46,9 +46,6 @@
 #include <stdexcept>
 
 #include <mars/utils/MutexLocker.h>
-
-#include <ODEObjectFactory.h>
-#include <CoreODEObjects.h>
 
 namespace mars {
   namespace sim {
@@ -249,7 +246,7 @@ namespace mars {
       // create the physical node data
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
-        std::shared_ptr<NodeInterface> newNodeInterface = ODEObjectFactory::Instance().createObject(control->sim->getPhysics(), nodeS);   
+        std::shared_ptr<NodeInterface> newNodeInterface = ODEObjectFactory::Instance().createObject(control->sim->getPhysics(), nodeS);
 
         if (newNodeInterface.get() == nullptr) {
           // if no node was created in physics
