@@ -47,44 +47,24 @@ ODEObjectFactory::~ODEObjectFactory(){
 
 std::shared_ptr<NodeInterface> ODEObjectFactory::createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData){
 
-  std::shared_ptr<ODEObject> newObject;
-
-  switch(nodeData->physicMode) {
-  case NODE_TYPE_BOX:
-    newObject = std::make_shared<ODEBox>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_CAPSULE:
-    newObject = std::make_shared<ODECapsule>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_CYLINDER:
-    newObject = std::make_shared<ODECylinder>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_MESH:
-    newObject = std::make_shared<ODEMesh>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_PLANE:
-    newObject = std::make_shared<ODEPlane>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_SPHERE:
-    newObject = std::make_shared<ODESphere>(worldPhysics, nodeData);
-    break;
-  case NODE_TYPE_TERRAIN:
-    newObject = std::make_shared<ODEHeightField>(worldPhysics, nodeData);
-    break;
-  default:
-    // no correct type is spezified, so no physically node will be created
-    std::cout << "Unknown type of ODEObject requested. No physical node was created." << std::endl;
-    return std::shared_ptr<NodeInterface>(nullptr);
-    break;
+  std::map<const std::string, instantiateObjectfPtr>::iterator it = availableObjects.find(nodeData->nodeType);
+  if(it == availableObjects.end()){
+    throw std::runtime_error("Could not load unknown Physics Object with name: \"" + nodeData->name + "\"" );
   }
 
+  std::shared_ptr<ODEObject> newObject = std::make_shared<ODEObject>(*(it->second(worldPhysics, nodeData)));
   if(newObject->isObjectCreated()){
     return newObject;
   }
   else{
+    std::cerr << "Failed to create Physics Object with name: \"" + nodeData->name + "\"" << std::endl;
     return std::shared_ptr<NodeInterface>(nullptr);
   }
-
 }
+
+void ODEObjectFactory::addObjectType(const std::string& type, instantiateObjectfPtr funcPtr){
+  availableObjects.insert(std::pair<const std::string, instantiateObjectfPtr>(type,funcPtr));
+}
+
 }
 }

@@ -37,6 +37,10 @@ namespace sim {
     if(terrain) free (terrain);
   }
 
+  ODEObject* ODEHeightField::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODEHeightField(world, nodeData);
+  }
+
   dReal heightfield_callback(void* pUserData, int x, int z ) {
     return ((ODEHeightField*)pUserData)->heightCallback(x, z);
   }

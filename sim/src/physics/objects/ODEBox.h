@@ -47,9 +47,10 @@ namespace sim {
     public:
       ODEBox(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual ~ODEBox(void);
+      static ODEObject* instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       //TODO createGeometry vs createCollision? nBody vs nCollision
       //     review header comment on ODEBox
-      virtual bool createODEGeometry(interfaces::NodeData *node) override;
+      virtual bool createODEGeometry(interfaces::NodeData *node) override;      
     };
 
 } // end of namespace sim

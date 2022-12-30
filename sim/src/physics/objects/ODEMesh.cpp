@@ -37,6 +37,10 @@ namespace sim {
     if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
   }
 
+  ODEObject* ODEMesh::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODEMesh(world, nodeData);
+  }
+
   void ODEMesh::destroyNode(void) {
     ODEObject::destroyNode();
     if(myVertices) free(myVertices);

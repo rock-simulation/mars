@@ -33,7 +33,9 @@ namespace sim {
 
   ODECylinder::~ODECylinder(void) {
   }
-
+  ODEObject* ODECylinder::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODECylinder(world, nodeData);
+  }
   bool ODECylinder::createODEGeometry(interfaces::NodeData *node){
     if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
       LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"

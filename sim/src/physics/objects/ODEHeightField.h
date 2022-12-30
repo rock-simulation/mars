@@ -47,6 +47,7 @@ namespace sim {
     public:
       ODEHeightField(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual ~ODEHeightField(void);
+      static ODEObject* instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual bool createODEGeometry(interfaces::NodeData *node) override;
       virtual void destroyNode(void) override;
       dReal heightCallback(int x, int y);

@@ -47,6 +47,7 @@ namespace sim {
     public:
       ODESphere(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual ~ODESphere(void);
+      static ODEObject* instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
       virtual bool createODEGeometry(interfaces::NodeData *node) override;
     };
 

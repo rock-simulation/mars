@@ -28,20 +28,26 @@
 #pragma once
 
 #include "objects/ObjectFactoryInterface.h"
+#include "objects/ODEObject.h"
 
 namespace mars{
 namespace sim{
 
 using namespace ::mars::interfaces;
 
+typedef ODEObject* (*instantiateObjectfPtr)(std::shared_ptr<PhysicsInterface>, NodeData *);
+
 class ODEObjectFactory : public ObjectFactoryInterface{
 public:
   static ODEObjectFactory& Instance();
   virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) override;
+  void addObjectType(const std::string& type, instantiateObjectfPtr funcPtr);
 
-protected:
+private:
   ODEObjectFactory();
   virtual ~ODEObjectFactory();    
+  std::map<const std::string, instantiateObjectfPtr> availableObjects;
+
 };
 
 }

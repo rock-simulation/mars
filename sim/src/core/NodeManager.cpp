@@ -30,6 +30,13 @@
 #include "NodeManager.h"
 #include "JointManager.h"
 #include "objects/ODEObjectFactory.h"
+#include "objects/ODEBox.h"
+#include "objects/ODECapsule.h"
+#include "objects/ODECylinder.h"
+#include "objects/ODEHeightField.h"
+#include "objects/ODEMesh.h"
+#include "objects/ODEPlane.h"
+#include "objects/ODESphere.h"
 
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -75,6 +82,13 @@ namespace mars {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
       }
+      ODEObjectFactory::Instance().addObjectType("box",      &ODEBox::instanciate);
+      ODEObjectFactory::Instance().addObjectType("capsule",  &ODECapsule::instanciate);
+      ODEObjectFactory::Instance().addObjectType("cylinder", &ODECylinder::instanciate);
+      ODEObjectFactory::Instance().addObjectType("terrain",  &ODEHeightField::instanciate);
+      ODEObjectFactory::Instance().addObjectType("mesh",     &ODEMesh::instanciate);
+      ODEObjectFactory::Instance().addObjectType("plane",    &ODEPlane::instanciate);
+      ODEObjectFactory::Instance().addObjectType("sphere",   &ODESphere::instanciate);
     }
 
     NodeManager::~NodeManager()

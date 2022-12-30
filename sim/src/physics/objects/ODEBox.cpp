@@ -34,6 +34,10 @@ namespace sim {
   ODEBox::~ODEBox(void) {
   }
 
+ ODEObject* ODEBox::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODEBox(world, nodeData);
+ }
+
   bool ODEBox::createODEGeometry(interfaces::NodeData *node){
     if (!node->inertia_set &&
         (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {

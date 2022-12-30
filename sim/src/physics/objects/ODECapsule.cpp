@@ -34,6 +34,10 @@ namespace sim {
   ODECapsule::~ODECapsule(void) {
   }
 
+  ODEObject* ODECapsule::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+      return new ODECapsule(world, nodeData);
+  }
+
   bool ODECapsule::createODEGeometry(interfaces::NodeData *node){
     if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
       LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"

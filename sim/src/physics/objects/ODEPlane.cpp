@@ -34,6 +34,10 @@ namespace sim {
   ODEPlane::~ODEPlane(void) {
   }
 
+  ODEObject* ODEPlane::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODEPlane(world, nodeData);
+  }
+
   bool ODEPlane::createODEGeometry(interfaces::NodeData *node){
     // build the ode representation
     nGeom = dCreatePlane(theWorld->getSpace(), 0, 0, 1, (dReal)node->pos.z());

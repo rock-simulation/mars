@@ -34,6 +34,10 @@ namespace sim {
   ODESphere::~ODESphere(void) {
   }
 
+  ODEObject* ODESphere::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData){
+    return new ODESphere(world, nodeData);
+  }
+
   /**
    * The method creates an ode shpere representation of the given node.
    *
