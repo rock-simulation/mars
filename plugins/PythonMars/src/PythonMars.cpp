@@ -87,6 +87,7 @@ namespace mars {
         updateGraphics = false;
         nextStep = false;
         updateTime = -1.0;
+        next_db_item_id = 0;
         if(control->graphics) {
           pf = new osg_points::PointsFactory();
           lf = new osg_lines::LinesFactory();
@@ -95,9 +96,9 @@ namespace mars {
         std::string resPath = control->cfg->getOrCreateProperty("Preferences",
                                                                 "resources_path",
                                                                 "").sValue;
-	if(resPath == "") {
-	  resPath = MARS_DEFAULT_RESOURCES_PATH;
-	}
+  if(resPath == "") {
+    resPath = MARS_DEFAULT_RESOURCES_PATH;
+  }
         resPath += "/PythonMars/python";
         PythonInterpreter::instance().addToPythonpath(resPath.c_str());
         pythonException = false;
@@ -382,6 +383,54 @@ namespace mars {
                 }
               }
             }
+            if(map["edit"].hasKey("nodePose")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodePose"])) {
+                std::string name = it.first;
+                unsigned long id;
+                if(nodeIDs.hasKey(name)) {
+                  id = nodeIDs[name];
+                }
+                else {
+                  id = control->nodes->getID(name);
+                  nodeIDs[name] = id;
+                }
+                if(id) {
+                  Vector v(it.second[0], it.second[1], it.second[2]);
+                  Quaternion q;
+                  q.x() = it.second[3];
+                  q.y() = it.second[4];
+                  q.z() = it.second[5];
+                  q.w() = it.second[6];
+                  NodeData my_node;
+                  my_node.index = id;
+                  my_node.pos = v;
+                  my_node.rot = q;
+                  control->nodes->editNode(&my_node, EDIT_NODE_POS | EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
+                }
+              }
+            }
+            if(map["edit"].hasKey("nodePoseSingle")) {
+              for(auto it: (ConfigMap&)(map["edit"]["nodePoseSingle"])) {
+                std::string name = it.first;
+                unsigned long id;
+                if(nodeIDs.hasKey(name)) {
+                  id = nodeIDs[name];
+                }
+                else {
+                  id = control->nodes->getID(name);
+                  nodeIDs[name] = id;
+                }
+                if(id) {
+                  Vector v(it.second[0], it.second[1], it.second[2]);
+                  Quaternion q;
+                  q.x() = it.second[3];
+                  q.y() = it.second[4];
+                  q.z() = it.second[5];
+                  q.w() = it.second[6];
+                  control->nodes->setSingleNodePose(id, v, q);
+                }
+              }
+            }
           }
 
           if(map.hasKey("connectNodes") && control->sim->isSimRunning()) {
@@ -610,6 +659,10 @@ namespace mars {
       void PythonMars::reset() {
         motorMap.clear();
         nodeMap.clear();
+        nodeIDs.clear();
+        control->dataBroker->unregisterTimedReceiver(this, "*", "*", "mars_sim/simTimer");
+        dbItems.clear();
+        next_db_item_id = 0;
         //plugin->reload();
         try {
           ConfigItem map;
@@ -685,6 +738,48 @@ namespace mars {
                 sendMap["Sensors"][name][i] = data[i];
               }
               if(num) free(data);
+            }
+
+            if(type == "DataBroker") {
+              if(!it->hasKey("g") || !it->hasKey("name") || !it->hasKey("d")) {
+                fprintf(stderr, "-------- PythonMars -- DataBroker: invalid dict!\n");
+                continue;
+              }
+              data_broker::DataInfo di;
+              data_broker::DataPackage dp;
+              std::string g, n, d;
+              g << (*it)["g"];
+              n << (*it)["name"];
+              d << (*it)["d"];
+              dbLock.lock();
+              if(dbItems.hasKey(g) && dbItems[g].hasKey(n) && dbItems[g][n].hasKey(d)) {
+                sendMap["DataBroker"][g][n][d] = dbItems[g][n][d];
+                dbLock.unlock();
+                continue;
+              }
+              dbLock.unlock();
+              // register receiver
+              di = control->dataBroker->getDataInfo(g, n);
+              if(di.dataId <= 0) {
+                fprintf(stderr, "-------- PythonMars -- DataBroker: no data id found!\n");
+                continue;
+              }
+              dp = control->dataBroker->getDataPackage(di.dataId);
+              long index = dp.getIndexByName(d);
+              if(index == -1) {
+                dbLock.lock();
+                dbItems["ids"][next_db_item_id]["g"] = g;
+                dbItems["ids"][next_db_item_id]["n"] = n;
+                dbItems["ids"][next_db_item_id]["d"] = d;
+                dbItems[g][n][d] = 0.0;
+                control->dataBroker->registerTimedReceiver(this, g, n,
+                                                           "mars_sim/simTimer",
+                                                           0, next_db_item_id);
+                ++next_db_item_id;
+                dbLock.unlock();
+                fprintf(stderr, "-------- PythonMars -- DataBroker: no data value index found!\n");
+                continue;
+              }
             }
 
             if(type == "Config") {
@@ -805,6 +900,31 @@ namespace mars {
       void PythonMars::receiveData(const data_broker::DataInfo& info,
                                     const data_broker::DataPackage& package,
                                     int id) {
+        dbLock.lock();
+        ConfigVector &v = dbItems["ids"];
+        for(size_t i=0; i<v.size(); ++i) {
+          if(i == id) {
+            std::string g = v[i]["g"];
+            std::string n = v[i]["n"];
+            std::string d = v[i]["d"];
+            long index;
+            if(!v[i].hasKey("index")) {
+              index = package.getIndexByName(d);
+              if(index == -1) {
+                break;
+              }
+              v[i]["index"] = (unsigned long)index;
+            }
+            else {
+              index = (unsigned long)v[i]["index"];
+            }
+            double v;
+            package.get(index, &v);
+            dbItems[g][n][d] = v;
+            break;
+          }
+        }
+        dbLock.unlock();
         // package.get("force1/x", force);
       }
 

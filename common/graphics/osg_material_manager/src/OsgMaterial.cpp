@@ -119,6 +119,12 @@ namespace osg_material_manager {
     //return;
     map = map_;
     material = new osg::Material();
+
+    if(map.hasKey("maxNumLights")) {
+      maxNumLights = map["maxNumLights"];
+      fprintf(stderr, "...+++ set maxNumLights: %d\n", maxNumLights);
+    }
+
     // reinit if the material is already created
     if(isInit) initMaterial();
   }
@@ -225,6 +231,7 @@ namespace osg_material_manager {
       }
     }
     useWorldTexCoords = map.get("useWorldTexCoords", false);
+
     updateShader(true);
 
     {
@@ -1006,9 +1013,16 @@ namespace osg_material_manager {
   }
 
   void OsgMaterial::setMaxNumLights(int n) {
+    if(map.hasKey("maxNumLights")) {
+      return;
+    }
     bool needUpdate = (maxNumLights != n);
     maxNumLights = n;
     if(needUpdate) updateShader(true);
+  }
+
+  int OsgMaterial::getMaxNumLights() {
+    return maxNumLights;
   }
 
   osg::Texture2D* OsgMaterial::loadTerrainTexture(std::string filename) {

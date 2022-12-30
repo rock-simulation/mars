@@ -96,7 +96,7 @@ namespace osg_terrain {
     else {
       node = osgDB::readNodeFile(file);
     }
-    node->setNodeMask(0xff | 0x1000);
+    node->setNodeMask(0xfffffff | 0x10000000);
 
     // handle bounding box
     boundCallback = new ShaderTerrain::BoundCallback();

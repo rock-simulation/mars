@@ -296,7 +296,7 @@ namespace osg_terrain {
       osg::ref_ptr<PlaneTransform> p = new PlaneTransform();
       p->zOffset = 0;
       osg::ref_ptr<osg::Node> node = createPlane();
-      node->setNodeMask(0xff | 0x1000);
+      node->setNodeMask(0xfffffff | 0x10000000);
       p->addChild(node.get());
 
       if(materialManager) {
@@ -328,7 +328,7 @@ namespace osg_terrain {
       tPosX = -width*0.5;
       tPosY = -height*0.5;
       p->setPosition(osg::Vec3(tPosX, tPosY, -25));
-      p->setNodeMask(0xff | 0x1000);
+      p->setNodeMask(0xfffffff | 0x10000000);
       p->addChild(geode.get());
       if(materialManager) {
         ConfigMap mMap = map["heightmap"]["material"];

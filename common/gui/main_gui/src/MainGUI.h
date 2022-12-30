@@ -1,3 +1,5 @@
+
+
 /*
  *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
  *
@@ -20,7 +22,7 @@
 
 /**
  * \file MainGUI.h
- * \author Malte Römmermann
+ * \author Malte RÃ¶mmermann
  * \author Vladimir Komsiyski
  */
 
@@ -30,14 +32,16 @@
 #ifdef _PRINT_HEADER_
   #warning "MainGUI.h"
 #endif
-
+#include <functional>
 #include "MenuInterface.h"
 #include "GuiInterface.h"
 #include "MyQMdiArea.h"
 #include "MyQMainWindow.h"
 
 #include <vector>
+#include <tuple>
 #include <QtGui>
+#include <QComboBox>
 
 namespace mars {
   namespace main_gui {
@@ -129,8 +133,46 @@ namespace mars {
        * \see LibInterface::getLibName(void)
        */
       const std::string getLibName() const;
+      /**
+       * \brief gets the label of Toolbar
+       */
+      QToolBar *getToolbar(const std::string label);
+      /**
+       * \brief adds a QComboBox to toolbar
+       * \param toolbar_label: label text of the QToolbar to add QComboBox to
+       * \param elements: elements strings to put into the QComboBox
+       * \param on_element_changed: callback function to be triggered when an element is selected from the QComboBox
+       */
+      void addComboBoxToToolbar(const std::string &toolbar_label,
+                                const std::vector<std::string> &elements,
+                                std::function<void(std::string)> on_element_changed);
+      /**
+       * \brief adds a LineEditText to toolbar
+       * \param toolbar_label: label QToolbar to add text field to
+       * \param label_text: label the text 
+       * \param default_text: set the default text
+       * \param on_text_changed: callback function to be triggered 
+       */
+      void addLineEditToToolbar(int id, const std::string &toolbar_label, 
+                                const std::string &label_text, const std::string &default_text,
+                                std::function<void(std::string)> on_text_changed);
+      /**
+       * \brief enable LineEditText to toolbar
+       * \param id: no of id which field should be enable
+       */
+      void enableToolbarLineEdit(std::vector<int> id);
+      /**
+       * \brief enable LineEditText to toolbar
+       * \param id: no of id which field should be disable during the text switch in 
+       */
+      void disableToolbarLineEdit(std::vector<int> id);
+       /**
+       * \brief  returns the text of the field with id no 
+       * \param id: id to get the text of the field
+       */
+      std::string getToolbarLineEditText(int id);
+    
       CREATE_MODULE_INFO();
-
 
     public slots:
 
@@ -138,14 +180,14 @@ namespace mars {
        * \brief Makes a widget dockable in the main window.
        * \see GuiInterface::addDockWidget(void*, int, int)
        */
-      void addDockWidget(void *window, int p=0, int a=0,
-                         bool possibleCentralWidget=false);
+      void addDockWidget(void *window, int p = 0, int a = 0,
+                         bool possibleCentralWidget = false);
 
       /**
        * \brief Removes a widget from the dockables.
        * \see GuiInterface::removeDockWidget(void*, int)
        */
-      void removeDockWidget(void *window, int p=0);
+      void removeDockWidget(void *window, int p = 0);
 
       /**
        * \brief Called when a menu item is selected. Calls the
@@ -158,7 +200,14 @@ namespace mars {
        * \brief Shows the standard qt about dialog
        */
       void aboutQt() const;
-
+      /**
+       * \brief
+       */
+      void on_toolbar_cb_changed(const QString &input);
+          /**
+       * \brief
+       */
+      void on_toolbar_le_text_changed(const QString &input);
 
     private:
       /**
@@ -199,6 +248,9 @@ namespace mars {
       std::vector<menuStruct> v_qmenu;
       std::vector<genericMenu> genericMenus;
 
+    private:
+      std::map<QComboBox *, std::function<void(std::string)>> toolbar_cb_callbacks;
+      std::vector< std::tuple< int, QLineEdit *, std::function<void(std::string)>>> toolbar_le_callbacks;
     }; // end class MainGUI
 
   } // end namespace main_gui

@@ -56,6 +56,9 @@ namespace sim {
         sense_contact_force = 1;
         value = 0;
         c_params.setZero();
+        filter_depth = -1.;
+        filter_angle = -1.;
+        filter_radius = -1.0;
       }
 
       geom_data(){
@@ -73,6 +76,8 @@ namespace sim {
       interfaces::sReal value;
       dGeomID parent_geom;
       dBodyID parent_body;
+      dReal filter_depth, filter_angle, filter_radius;
+      utils::Vector filter_sphere;
     };
 
     struct sensor_list_element {

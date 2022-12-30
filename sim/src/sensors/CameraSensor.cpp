@@ -577,7 +577,7 @@ namespace mars {
 
       if(config.show_cam) {
         cfg["show_cam"] = true;
-        cfg["show_cam"]["hud_idx"] = config.hud_pos;
+        cfg["hud_idx"] = config.hud_pos;
       }
 
       tmpCfg = cfg["position_offset"];

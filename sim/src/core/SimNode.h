@@ -156,6 +156,7 @@ namespace mars {
       void setLinearVelocity(const utils::Vector &vel);
       void setAngularVelocity(const utils::Vector &vel);
       void setAngularDamping(interfaces::sReal damping);
+      void setLinearDamping(interfaces::sReal damping);
       void setVisualRep(int val);
       void setContactMotion1(interfaces::sReal motion);
       void setMaterialName(const std::string &name) {sNode.material.name = name;}

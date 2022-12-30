@@ -36,6 +36,7 @@ namespace osg_animation {
     framesFactory = new osg_frames::FramesFactory();
     graphics = NULL;
     animation_index = 0;
+    speed_scale = 1.0;
     current_animation = "";
   }
 
@@ -47,10 +48,10 @@ namespace osg_animation {
     bone->init_pos.x() = map["pos"][0];
     bone->init_pos.y() = map["pos"][1];
     bone->init_pos.z() = map["pos"][2];
-    bone->init_q.w() = map["rot"][0];
-    bone->init_q.x() = map["rot"][1];
-    bone->init_q.y() = map["rot"][2];
-    bone->init_q.z() = map["rot"][3];
+    bone->init_q.w() = (double)map["rot"][0];
+    bone->init_q.x() = (double)map["rot"][1];
+    bone->init_q.y() = (double)map["rot"][2];
+    bone->init_q.z() = (double)map["rot"][3];
     bone->r_pos = bone->init_pos;
     bone->r_q = bone->init_q;
     bone->q.w() = 1.0;
@@ -126,13 +127,16 @@ namespace osg_animation {
     //current_animation = name;
   }
 
-  void AnimationP::playAnimation(std::string name, int repeat) {
+  void AnimationP::playAnimation(std::string name, int repeat, double speed_scale) {
     this->repeat = repeat;
-    if(animations.hasKey(name)) {
-      current_animation = name;
-      animation_index = 0;
-      loop = 0;
-      next_update_time = 0;
+    this->speed_scale = 1.0/speed_scale;
+    if(current_animation != name) {
+      if(animations.hasKey(name)) {
+        current_animation = name;
+        animation_index = 0;
+        loop = 0;
+        next_update_time = 0;
+      }
     }
   }
 
@@ -216,7 +220,7 @@ namespace osg_animation {
     invQ.x() *= -1;
     invQ.y() *= -1;
     invQ.z() *= -1;
-    osg::Quat dQ = q*invQ;
+    //osg::Quat dQ = q*invQ;
     //dQ.x() = dQ.y() = dQ.z() = 0.0;
     //dQ.w() = 1.0;
     osg::Matrixd m1;
@@ -273,7 +277,7 @@ namespace osg_animation {
   }
 
   void AnimationP::updatePose() {
-    static long numFile = 0;
+    //static long numFile = 0;
     static double t = 0.0;
     static bool init_vertex_weights = true;
     bool refresh = false;
@@ -311,15 +315,15 @@ namespace osg_animation {
       if(current_animation != "") {
         unsigned long t = mars::utils::getTime();
         if(next_update_time == 0) {
-          next_update_time = t+40;
+          next_update_time = t+40*speed_scale;
           refresh = true;
         }
         if(t >= next_update_time) {
           refresh = true;
-          next_update_time += 40;
+          next_update_time += 40*speed_scale;
           animation_index += 1;
           if(animation_index >= animations[current_animation][armature->name].size()) {
-            if(repeat == -1 or loop < repeat) {
+            if(repeat == -1 or static_cast<int>(loop) < repeat) {
               animation_index = 0;
               loop += 1;
             }
@@ -334,15 +338,16 @@ namespace osg_animation {
         if(refresh) {
           //fprintf(stderr, "animation_index: %lu of %s\n", animation_index, current_animation.c_str());
           for(auto it:(configmaps::ConfigMap)animations[current_animation]) {
-            Bone *b = boneMap[it.first];
+            //Bone *b = boneMap[it.first];
             //fprintf(stderr, "bone: %s\n", it.first.c_str());
             boneMap[it.first]->pos.x() = it.second[animation_index][0][0];
             boneMap[it.first]->pos.y() = it.second[animation_index][0][1];
             boneMap[it.first]->pos.z() = it.second[animation_index][0][2];
-            boneMap[it.first]->q.x() = it.second[animation_index][1][1];
-            boneMap[it.first]->q.y() = it.second[animation_index][1][2];
-            boneMap[it.first]->q.z() = it.second[animation_index][1][3];
-            boneMap[it.first]->q.w() = it.second[animation_index][1][0];
+            //TODO Suggestion: Add a templated method   
+            boneMap[it.first]->q.x() = (double)(it.second[animation_index][1][1]);
+            boneMap[it.first]->q.y() = (double)(it.second[animation_index][1][2]);
+            boneMap[it.first]->q.z() = (double)(it.second[animation_index][1][3]);
+            boneMap[it.first]->q.w() = (double)(it.second[animation_index][1][0]);
           }
         }
         // unsigned char *data = i->data();
@@ -396,6 +401,24 @@ namespace osg_animation {
     }
     t += 0.03;
     if(t>6.28) t-=6.28;
+  }
+
+  void AnimationP::getPose(const std::string &name, double *x, double *y, double *z, double *qx, double *qy, double *qz, double *qw) {
+    Bone *b = getBone(name, armature);
+    if(b) {
+      *x = b->pos.x();
+      *y = b->pos.y();
+      *z = b->pos.z();
+      *qx = b->q.x();
+      *qy = b->q.y();
+      *qz = b->q.z();
+      *qw = b->q.w();
+    }
+  }
+
+  bool AnimationP::hasBone(const std::string &name) {
+    Bone *b = getBone(name, armature);
+    return b!=NULL;
   }
 
   void AnimationP::printBone(Bone *bone, osg::Vec3d &parent_pos, osg::Quat &parent_q, int depth) {

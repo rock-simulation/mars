@@ -115,6 +115,7 @@ namespace mars {
       virtual void scaleReloadNodes(interfaces::sReal x, interfaces::sReal y, interfaces::sReal z);
       virtual void getNodeMass(interfaces::NodeId id, interfaces::sReal *mass, interfaces::sReal *inertia = 0) const;
       virtual void setAngularDamping(interfaces::NodeId id, interfaces::sReal damping);
+      virtual void setLinearDamping(interfaces::NodeId id, interfaces::sReal damping);
       virtual void addRotation(interfaces::NodeId id, const utils::Quaternion &q);
       virtual void setReloadQuaternion(interfaces::NodeId id, const utils::Quaternion &q);
       virtual void preGraphicsUpdate(void);
@@ -157,6 +158,7 @@ namespace mars {
                               unsigned long excludeJointId, bool includeConnected = true);
       virtual void positionNode(interfaces::NodeId id, utils::Vector pos,
                                 unsigned long excludeJointId);
+      virtual void setSingleNodePose(interfaces::NodeId id, utils::Vector pos, utils::Quaternion q);
       virtual unsigned long getMaxGroupID() { return maxGroupID; }
       virtual void edit(interfaces::NodeId id, const std::string &key,
                         const std::string &value);

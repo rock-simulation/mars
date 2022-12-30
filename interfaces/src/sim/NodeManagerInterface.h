@@ -683,6 +683,7 @@ namespace mars {
        */
       virtual void setAngularDamping(NodeId id, sReal damping) = 0;
 
+      virtual void setLinearDamping(NodeId id, sReal damping) = 0;
       /**
        * \brief Adds a additional rotation to the orientation of a node.
        *
@@ -809,6 +810,8 @@ namespace mars {
        */
       virtual void positionNode(NodeId id, utils::Vector pos, unsigned long excludeJointId) = 0;
       virtual unsigned long getMaxGroupID() = 0;
+
+      virtual void setSingleNodePose(NodeId id, utils::Vector pos, utils::Quaternion q) = 0;
 
       virtual void printNodeMasses(bool onlysum) = 0;
 

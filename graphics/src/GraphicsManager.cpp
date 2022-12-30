@@ -81,8 +81,8 @@ namespace mars {
     using namespace mars::interfaces;
     using namespace utils;
 
-    static int ReceivesShadowTraversalMask = 0x1000;
-    static int CastsShadowTraversalMask = 0x2000;
+    static int ReceivesShadowTraversalMask = 0x10000000;
+    static int CastsShadowTraversalMask = 0x20000000;
 
 
     GraphicsManager::GraphicsManager(lib_manager::LibManager *theManager,
@@ -2613,6 +2613,10 @@ namespace mars {
         if(key[key.size()-1] == 'g') clearColor.g = v;
         if(key[key.size()-1] == 'b') clearColor.b = v;
         win->setClearColor(clearColor);
+      }
+      else if(matchPattern("*/orthoH", key)) {
+        double v = atof(value.c_str());
+        cam->setOrthoH(v);
       }
       else if(matchPattern("*/position", key)) {
         double d = atof(value.c_str());
