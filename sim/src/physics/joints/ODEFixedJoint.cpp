@@ -37,6 +37,13 @@ namespace sim {
   ODEFixedJoint::~ODEFixedJoint(void) {
   }
 
+  ODEJoint* ODEFixedJoint::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                            interfaces::JointData *joint,
+                            const std::shared_ptr<interfaces::NodeInterface> node1,
+                            const std::shared_ptr<interfaces::NodeInterface> node2){
+    return new ODEFixedJoint(world, joint, node1, node2);                            
+  }
+
   bool ODEFixedJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
     if (body1 || body2){
       CPP_UNUSED(jointS);

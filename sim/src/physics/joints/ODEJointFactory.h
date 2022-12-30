@@ -28,11 +28,17 @@
 #pragma once
 
 #include "joints/JointFactoryInterface.h"
+#include "joints/ODEJoint.h"
 
 namespace mars{
 namespace sim{
 
 using namespace ::mars::interfaces;
+
+typedef ODEJoint* (*instantiateJointfPtr)(std::shared_ptr<interfaces::PhysicsInterface> world,
+                                  interfaces::JointData *joint,
+                                  const std::shared_ptr<interfaces::NodeInterface> node1,
+                                  const std::shared_ptr<interfaces::NodeInterface> node2); 
 
 class ODEJointFactory : public JointFactoryInterface{
 public:
@@ -41,10 +47,13 @@ public:
                                interfaces::JointData *joint,
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2) override;
+  void addJointType(const std::string& type, instantiateJointfPtr funcPtr);
 
 protected:
   ODEJointFactory();
-  virtual ~ODEJointFactory();    
+  virtual ~ODEJointFactory();  
+  std::map<const std::string, instantiateJointfPtr> availableJoints;
+  
 };
 
 }

@@ -37,6 +37,13 @@ namespace sim {
   ODESliderJoint::~ODESliderJoint(void) {
   }
 
+  ODEJoint* ODESliderJoint::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                            interfaces::JointData *joint,
+                            const std::shared_ptr<interfaces::NodeInterface> node1,
+                            const std::shared_ptr<interfaces::NodeInterface> node2){
+    return new ODESliderJoint(world, joint, node1, node2);                            
+  }
+
   bool ODESliderJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateSlider(theWorld->getWorld(),0);

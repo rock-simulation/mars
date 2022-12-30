@@ -37,6 +37,13 @@ namespace sim {
   ODEHingeJoint::~ODEHingeJoint(void) {
   }
 
+  ODEJoint* ODEHingeJoint::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                            interfaces::JointData *joint,
+                            const std::shared_ptr<interfaces::NodeInterface> node1,
+                            const std::shared_ptr<interfaces::NodeInterface> node2){
+    return new ODEHingeJoint(world, joint, node1, node2);                            
+  }
+
   bool ODEHingeJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateHinge(theWorld->getWorld(),0);

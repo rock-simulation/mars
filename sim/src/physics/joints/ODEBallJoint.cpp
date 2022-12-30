@@ -37,6 +37,13 @@ namespace sim {
   ODEBallJoint::~ODEBallJoint(void) {
   }
 
+  ODEJoint* ODEBallJoint::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                            interfaces::JointData *joint,
+                            const std::shared_ptr<interfaces::NodeInterface> node1,
+                            const std::shared_ptr<interfaces::NodeInterface> node2){
+    return new ODEBallJoint(world, joint, node1, node2);                            
+  }
+
   bool ODEBallJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
 
     jointId= dJointCreateBall(theWorld->getWorld(),0);

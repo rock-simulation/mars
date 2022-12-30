@@ -50,6 +50,10 @@ namespace sim {
                                const std::shared_ptr<interfaces::NodeInterface> node1,
                                const std::shared_ptr<interfaces::NodeInterface> node2);
       virtual ~ODEHinge2Joint(void);
+      static ODEJoint* instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                          interfaces::JointData *joint,
+                          const std::shared_ptr<interfaces::NodeInterface> node1,
+                          const std::shared_ptr<interfaces::NodeInterface> node2);      
       virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) override;
     };
 

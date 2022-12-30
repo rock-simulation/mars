@@ -37,6 +37,13 @@ namespace sim {
   ODEUniversalJoint::~ODEUniversalJoint(void) {
   }
 
+  ODEJoint* ODEUniversalJoint::instanciate(std::shared_ptr<interfaces::PhysicsInterface> world,
+                            interfaces::JointData *joint,
+                            const std::shared_ptr<interfaces::NodeInterface> node1,
+                            const std::shared_ptr<interfaces::NodeInterface> node2){
+    return new ODEUniversalJoint(world, joint, node1, node2);                            
+  }
+
   bool ODEUniversalJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2) {
     if (body1 || body2){
       jointId= dJointCreateUniversal(theWorld->getWorld(),0);

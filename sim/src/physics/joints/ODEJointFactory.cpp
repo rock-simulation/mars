@@ -48,42 +48,26 @@ std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<int
                                interfaces::JointData *jointData,
                                const std::shared_ptr<interfaces::NodeInterface> node1,
                                const std::shared_ptr<interfaces::NodeInterface> node2){
-
-  std::shared_ptr<ODEJoint> newJoint;
-
-  switch(jointData->type) {
-  case JOINT_TYPE_HINGE:
-    newJoint = std::make_shared<ODEHingeJoint>(worldPhysics, jointData, node1, node2);
-    break;
-  case JOINT_TYPE_HINGE2:
-    newJoint = std::make_shared<ODEHinge2Joint>(worldPhysics, jointData, node1, node2);
-    break;
-  case JOINT_TYPE_SLIDER:
-    newJoint = std::make_shared<ODESliderJoint>(worldPhysics, jointData, node1, node2);
-    break;
-  case JOINT_TYPE_BALL:
-    newJoint = std::make_shared<ODEBallJoint>(worldPhysics, jointData, node1, node2);
-    break;
-  case JOINT_TYPE_UNIVERSAL:
-    newJoint = std::make_shared<ODEUniversalJoint>(worldPhysics, jointData, node1, node2);
-    break;
-  case JOINT_TYPE_FIXED:
-    newJoint = std::make_shared<ODEFixedJoint>(worldPhysics, jointData, node1, node2);
-    break;
-  default:
-    // no correct type is spezified, so no physically node will be created
-    std::cout << "Unknown type of ODEJoint requested. No physical joint was created." << std::endl;
-    return std::shared_ptr<JointInterface>(nullptr);
-    break;
+  std::map<const std::string, instantiateJointfPtr>::iterator it = availableJoints.find(jointData->jointType);
+  if(it == availableJoints.end()){
+    throw std::runtime_error("Could not load unknown Physics Joint with name: \"" + jointData->name + "\"" );
   }
 
+  std::shared_ptr<ODEJoint> newJoint = std::make_shared<ODEJoint>(*(it->second(worldPhysics, jointData, node1, node2)));
   if(newJoint->isJointCreated()){
     return newJoint;
   }
   else{
+    std::cerr << "Failed to create Physics Joint with name: \"" + jointData->name + "\"" << std::endl;
     return std::shared_ptr<JointInterface>(nullptr);
   }
 
 }
+
+void ODEJointFactory::addJointType(const std::string& type, instantiateJointfPtr funcPtr){
+
+  availableJoints.insert(std::pair<const std::string, instantiateJointfPtr>(type, funcPtr));
+}
+
 }
 }

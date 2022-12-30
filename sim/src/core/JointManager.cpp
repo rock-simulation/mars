@@ -31,16 +31,24 @@
 #include "JointManager.h"
 #include "NodeManager.h"
 #include "joints/ODEJointFactory.h"
+#include "joints/ODEBallJoint.h"
+#include "joints/ODEFixedJoint.h"
+#include "joints/ODEHinge2Joint.h"
+#include "joints/ODEHingeJoint.h"
+#include "joints/ODESliderJoint.h"
+#include "joints/ODEUniversalJoint.h"
 
 #include <stdexcept>
 
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/utils.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/MutexLocker.h>
 #include <mars/interfaces/Logging.hpp>
 #include <mars/data_broker/DataBrokerInterface.h>
+
 
 namespace mars {
 namespace sim {
@@ -60,6 +68,13 @@ namespace sim {
     JointManager::JointManager(ControlCenter *c) {
       control = c;
       next_joint_id = 1;
+
+      ODEJointFactory::Instance().addJointType("ball",      &ODEBallJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("fixed",     &ODEFixedJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("hinge2",    &ODEHinge2Joint::instanciate);
+      ODEJointFactory::Instance().addJointType("hinge",     &ODEHingeJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("slider",    &ODESliderJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("universal", &ODEUniversalJoint::instanciate);
     }
 
     unsigned long JointManager::addJoint(JointData *jointS, bool reload) {
