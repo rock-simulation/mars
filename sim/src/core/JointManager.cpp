@@ -30,8 +30,7 @@
 #include "SimJoint.h"
 #include "JointManager.h"
 #include "NodeManager.h"
-//#include "PhysicsMapper.h"
-#include <ODEJointFactory.h>
+#include "joints/ODEJointFactory.h"
 
 #include <stdexcept>
 
@@ -107,7 +106,7 @@ namespace sim {
       }
 
       // create an interface object to the physics
-      newJointInterface = ODEJointFactory::Instance().createJoint(control->sim->getPhysics(), jointS, i_node1, i_node2);  
+      newJointInterface = ODEJointFactory::Instance().createJoint(control->sim->getPhysics(), jointS, i_node1, i_node2);
 
       // create the physical node data
       if (newJointInterface.get() == nullptr) {

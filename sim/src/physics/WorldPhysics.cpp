@@ -37,7 +37,7 @@
  */
 
 #include "WorldPhysics.h"
-#include "ODEObject.h"
+#include "objects/ODEObject.h"
 #include "SimNode.h"
 
 

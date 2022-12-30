@@ -86,17 +86,29 @@ set(SOURCES_H
        src/core/Simulator.h
        src/sensors/RotatingRaySensor.h
 
-       #src/physics/JointPhysics.h
-       src/physics/ODEObject.h
-       src/physics/ODEJoint.h
        src/physics/WorldPhysics.h
        src/physics/ContactsPhysics.hpp
-       src/physics/ODEObjectFactory.h
-       src/physics/ObjectFactoryInterface.h
-       src/physics/CoreODEObjects.h
-       src/physics/ODEJointFactory.h
-       src/physics/JointFactoryInterface.h
-       src/physics/CoreODEJoints.h
+
+       src/physics/objects/ODEObject.h
+       src/physics/objects/ODEObjectFactory.h
+       src/physics/objects/ObjectFactoryInterface.h
+       src/physics/objects/ODEBox.h
+       src/physics/objects/ODECapsule.h
+       src/physics/objects/ODECylinder.h
+       src/physics/objects/ODEHeightField.h
+       src/physics/objects/ODEMesh.h
+       src/physics/objects/ODEPlane.h
+       src/physics/objects/ODESphere.h
+
+       src/physics/joints/ODEJoint.h
+       src/physics/joints/ODEJointFactory.h
+       src/physics/joints/JointFactoryInterface.h
+       src/physics/joints/ODEBallJoint.h
+       src/physics/joints/ODEFixedJoint.h
+       src/physics/joints/ODEHinge2Joint.h
+       src/physics/joints/ODEHingeJoint.h
+       src/physics/joints/ODESliderJoint.h
+       src/physics/joints/ODEUniversalJoint.h
 
        src/sensors/CameraSensor.h
        src/sensors/IDListConfig.h
@@ -145,14 +157,26 @@ set(TARGET_SRC
        src/sensors/MultiLevelLaserRangeFinder.cpp
        src/sensors/RotatingRaySensor.cpp
 
-       #src/physics/JointPhysics.cpp
-       src/physics/ODEJoint.cpp
-       src/physics/ODEObject.cpp
+       src/physics/objects/ODEObject.cpp
+       src/physics/objects/ODEObjectFactory.cpp
+       src/physics/objects/ODEBox.cpp
+       src/physics/objects/ODECapsule.cpp
+       src/physics/objects/ODECylinder.cpp
+       src/physics/objects/ODEHeightField.cpp
+       src/physics/objects/ODEMesh.cpp
+       src/physics/objects/ODEPlane.cpp
+       src/physics/objects/ODESphere.cpp
+
+       src/physics/joints/ODEJoint.cpp
+       src/physics/joints/ODEJointFactory.cpp
+       src/physics/joints/ODEBallJoint.cpp
+       src/physics/joints/ODEFixedJoint.cpp
+       src/physics/joints/ODEHinge2Joint.cpp
+       src/physics/joints/ODEHingeJoint.cpp
+       src/physics/joints/ODESliderJoint.cpp
+       src/physics/joints/ODEUniversalJoint.cpp
+
        src/physics/WorldPhysics.cpp
-       src/physics/ODEObjectFactory.cpp
-       src/physics/CoreODEObjects.cpp
-       src/physics/ODEJointFactory.cpp
-       src/physics/CoreODEJoints.cpp
 
        src/sensors/CameraSensor.cpp
        src/sensors/Joint6DOFSensor.cpp

@@ -31,7 +31,7 @@
 #include <mars/utils/MutexLocker.h>
 
 #include "ODEJoint.h"
-#include "ODEObject.h"
+#include "objects/ODEObject.h"
 
 #include <cstdio>
 

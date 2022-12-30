@@ -19,30 +19,40 @@
  */
 
  /**
- * \file ODEObjectFactory.h
- * \author Muhammad Haider Khan Lodhi
- * \brief "ODEObjectFactory" implements ObjectFactoryInterface interface to create physical ode objects for the nodes.
+ * \file ODEBox.h
+ * \author Malte Roemmermann, Muhammad Haider Khan Lodhi
  *
  */
 
-#pragma once
+#ifndef ODE_BOX_H
+#define ODE_BOX_H
 
-#include <ObjectFactoryInterface.h>
+#ifdef _PRINT_HEADER_
+  #warning "ODEBox.h"
+#endif
 
-namespace mars{
-namespace sim{
+#include <mars/utils/MutexLocker.h>
+#include "ODEObject.h"
+#include <string>
 
-using namespace ::mars::interfaces;
+//TODO remove?
+#ifndef ODE11
+  #define dTriIndex int
+#endif
 
-class ODEObjectFactory : public ObjectFactoryInterface{
-public:
-  static ODEObjectFactory& Instance();
-  virtual std::shared_ptr<NodeInterface> createObject(std::shared_ptr<PhysicsInterface> worldPhysics, NodeData * nodeData) override;
+namespace mars {
+namespace sim {
 
-protected:
-  ODEObjectFactory();
-  virtual ~ODEObjectFactory();    
-};
+    class ODEBox : public ODEObject {
+    public:
+      ODEBox(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEBox(void);
+      //TODO createGeometry vs createCollision? nBody vs nCollision
+      //     review header comment on ODEBox
+      virtual bool createODEGeometry(interfaces::NodeData *node) override;
+    };
 
-}
-}
+} // end of namespace sim
+} // end of namespace mars
+
+#endif  // ODE_BOX_H
