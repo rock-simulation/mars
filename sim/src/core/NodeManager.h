@@ -56,7 +56,7 @@ namespace mars {
                   lib_manager::LibManager *theManager);
       virtual ~NodeManager();
       virtual interfaces::NodeId createPrimitiveNode(const std::string &name,
-                                                     interfaces::NodeType type,
+                                                     const std::string &type,
                                                      bool movable=false,
                                                      const utils::Vector &pos=utils::Vector::Zero(),
                                                      const utils::Vector &extension=utils::Vector::Identity(),

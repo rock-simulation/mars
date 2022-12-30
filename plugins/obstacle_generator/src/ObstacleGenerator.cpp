@@ -169,7 +169,7 @@ namespace mars {
             Vector boxsize(field_length, field_width, 1.0);
             Vector boxorientation(0, -params["incline_angle"], 0);
             NodeData box("incline", boxposition, eulerToQuaternion(boxorientation));
-            box.initPrimitive(NODE_TYPE_BOX, boxsize, 1.0);
+            box.initPrimitive("box", boxsize, 1.0);
             box.material.texturename = textures["ground"];
             if (textures["ground_bump"] != "") {
               box.material.bumpmap = textures["ground_bump"];
@@ -181,7 +181,7 @@ namespace mars {
             box.material.tex_scale = field_width/2.0;
             control->nodes->addNode(&box, false);
             oldNodeIDs.push_back(box.index);
-            // control->nodes->createPrimitiveNode("incline", NODE_TYPE_BOX,
+            // control->nodes->createPrimitiveNode("incline", "box",
                                            // false, boxposition, boxsize, 1.0, eulerToQuaternion(boxorientation), false));
             platform_length = 2.0 + params["field_distance"];
             platform_x_position = -1.0 + 0.5 * params["field_distance"];
@@ -195,7 +195,7 @@ namespace mars {
           Vector platformposition(platform_x_position, 0.0, -0.5 + params["ground_level"]);
           Vector platformorientation(0.0, 0.0, 0.0);
           NodeData platform("platform", platformposition, eulerToQuaternion(platformorientation));
-          platform.initPrimitive(NODE_TYPE_BOX, platformsize, 1.0);
+          platform.initPrimitive("box", platformsize, 1.0);
           platform.material.texturename = textures["ground"];
           if (textures["ground_bump"] != "") {
             platform.material.bumpmap = textures["ground_bump"];
@@ -315,10 +315,10 @@ namespace mars {
            }
            NodeData obstacle(name, position, orientation);
            if (bool_params["use_boxes"]) {
-               obstacle.initPrimitive(NODE_TYPE_BOX, size, 1.0);
+               obstacle.initPrimitive("box", size, 1.0);
            }
            else {
-               obstacle.initPrimitive(NODE_TYPE_CAPSULE, size, 1.0);
+               obstacle.initPrimitive("capsule", size, 1.0);
            }
            obstacle.material.texturename = textures["obstacle"];
            obstacle.material.diffuseFront = Color(1.0, 1.0, 1.0, 1.0);

@@ -96,7 +96,7 @@ namespace mars {
       interfaces::sReal getMass(void) const; ///< Returns the mass of the node.
       const interfaces::snmesh getMesh(void) const; ///< Returns the mesh of the node.
       const std::string getName(void) const; ///<
-      interfaces::NodeType getPhysicMode(void) const;
+      const std::string getNodeType(void) const;
       const utils::Vector getPosition(void) const;
       const utils::Vector getVisualPosition(void) const;
       const utils::Quaternion getRotation(void) const; ///< Returns the rotation of the node.
@@ -139,7 +139,7 @@ namespace mars {
       void setGraphicsID(unsigned long g_id);
       unsigned long getGraphicsID(void) const;
       void setGraphicsID2(unsigned long g_id);
-      void setPhysicMode(interfaces::NodeType mode); ///< Sets the physic mode of the node. See getPhysicMode for list of modes.
+      void setNodeType(const std::string &type); ///< Sets the physic mode of the node. See NodeManager for list of types.
       const utils::Vector setPosition(const utils::Vector &newPosition, bool move_group); ///< Sets the position of the node.
       void setPositionOffset(const utils::Vector &offset);
       const utils::Quaternion setRotation(const utils::Quaternion &rotation, bool move_all); ///< Sets the rotation of the node.

@@ -231,7 +231,7 @@ namespace sim {
         // then, if the geometry was sucsessfully build, we can create a
         // body for the node or add the node to an existing body
         if(node->movable) setProperties(node);
-        else if(node->physicMode != NODE_TYPE_PLANE) {
+        else if(node->nodeType != "plane") {
           dQuaternion tmp, t1, t2;
           tmp[1] = (dReal)node->rot.x();
           tmp[2] = (dReal)node->rot.y();
@@ -240,7 +240,7 @@ namespace sim {
           dGeomSetPosition(nGeom, (dReal)node->pos.x(),
                             (dReal)node->pos.y(), (dReal)node->pos.z());
           //TODO is this irrelevant as we are in ODEBox now? or is this still possible due to wrong parameter definition/ class selection
-          if(node->physicMode == NODE_TYPE_TERRAIN) {
+          if(node->nodeType == "terrain") {
             dGeomGetQuaternion(nGeom, t1);
             dQMultiply0(t2, tmp, t1);
             dNormalize4(t2);

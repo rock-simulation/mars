@@ -87,7 +87,7 @@ namespace mars {
 
 
 
-      virtual NodeId createPrimitiveNode(const std::string &name, NodeType type,
+      virtual NodeId createPrimitiveNode(const std::string &name, const std::string &type,
                                          bool movable=false,
                                          const utils::Vector &pos=utils::Vector::Zero(),
                                          const utils::Vector &extension=utils::Vector::Identity(),

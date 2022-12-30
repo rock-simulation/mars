@@ -52,7 +52,7 @@ namespace mars {
   namespace interfaces {
 
     using namespace mars::utils;
-
+    
     //access these strings only via toString(const NodeType&) and typeFromString(const std::string&).
     //synchronize this list with the enum NodeType in MARSDefs.h
     static const char* sTypeNames[NUMBER_OF_NODE_TYPES] = {
@@ -149,9 +149,11 @@ namespace mars {
 
       { // handle node type
         if((it = config->find("physicmode")) != config->end()) {
-          std::string typeName = (std::string)it->second;
+          nodeType = trim(config->get("physicmode", nodeType));
           try {
-            physicMode = typeFromString(trim(typeName));
+            //Here we can check whether the node factory has this node type or not
+            //If not then load it dynamically (if available)
+            //else just throw an exception
           } catch(...) {
             //throw SceneParseException("invalid physicmode for node", -1);
             LOG_ERROR("could not get type for node: %s", name.c_str());
@@ -163,7 +165,7 @@ namespace mars {
 
         if(filename == "PRIMITIVE") {
           if(origName.empty()) {
-            origName = toString(physicMode);
+            origName = nodeType;
           }
           /* this is a valid case
           else if(origName != toString(physicMode)) {
@@ -308,17 +310,15 @@ namespace mars {
       SET_VALUE("noPhysical", noPhysical, writeDefaults);
       SET_VALUE("movable", movable, writeDefaults);
 
-      if(writeDefaults || physicMode != defaultNode.physicMode) {
+      if(writeDefaults || nodeType != defaultNode.nodeType) {
         if(noPhysical) {
           try {
-            std::string tmp = toString(physicMode);
-            (*config)["physicmode"] = tmp;
+            (*config)["physicmode"] = nodeType;
           } catch (...) {
           }
         }
-        else {
-          std::string tmp = toString(physicMode);
-          (*config)["physicmode"] = tmp;
+        else {;
+          (*config)["physicmode"] = nodeType;
         }
       }
 
