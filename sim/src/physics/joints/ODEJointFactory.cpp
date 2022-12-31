@@ -25,6 +25,7 @@
 #include "joints/ODEBallJoint.h"
 #include "joints/ODEUniversalJoint.h"
 #include "joints/ODEFixedJoint.h"
+#include <mars/interfaces/utils.h>
 
 #include <memory>
 
@@ -48,7 +49,7 @@ std::shared_ptr<JointInterface> ODEJointFactory::createJoint(std::shared_ptr<int
                                interfaces::JointData *jointData,
                                const std::shared_ptr<interfaces::NodeInterface> node1,
                                const std::shared_ptr<interfaces::NodeInterface> node2){
-  std::map<const std::string, instantiateJointfPtr>::iterator it = availableJoints.find(jointData->jointType);
+  std::map<const std::string, instantiateJointfPtr>::iterator it = availableJoints.find(std::string(getJointTypeString(jointData->type)));
   if(it == availableJoints.end()){
     throw std::runtime_error("Could not load unknown Physics Joint with name: \"" + jointData->name + "\"" );
   }
