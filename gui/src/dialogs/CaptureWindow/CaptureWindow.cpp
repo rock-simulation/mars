@@ -20,7 +20,7 @@
 
 /**
  * \file CaptureWindow.cpp
- * \author Malte Römmermann
+ * \author Malte Rï¿½mmermann
  * \brief "CaptureWindow" provides some options to setup the camera of a 3d window
  **/
 
@@ -36,7 +36,7 @@ namespace mars {
     CaptureWindow::CaptureWindow(interfaces::ControlCenter* c,
                                  main_gui::GuiInterface *gui) :
       control(c), mainGui(gui) {
-  
+
       mainGui->addGenericMenuAction("../File/Export/Movie", 1,
                                     (main_gui::MenuInterface*)this, 0);
       myWidget = NULL;
@@ -48,7 +48,7 @@ namespace mars {
     CaptureWindow::~CaptureWindow() {
 
     }
-  
+
     void CaptureWindow::menuAction(int action, bool checked) {
       (void)checked;
       switch(action) {
@@ -81,73 +81,73 @@ namespace mars {
     }
 
     void CaptureWindow::timerEvent(QTimerEvent* event) {
-      (void)event;
-      std::vector<CaptureConfig*>::iterator iter;
-      std::vector<unsigned long>::iterator jter;
-      std::vector<unsigned long> ids;
-      myMutex.lock();
-      std::vector<CaptureConfig*> tmpList = cameras;
-      myMutex.unlock();
-      CaptureConfig *tmpCamera;
-      bool found;
-  
-      if(!init) {
-        if(control->graphics) {
-          init = true;
-          //control->graphics->addGraphicsUpdateInterface((GraphicsUpdateInterface*)this);
-        }
-      }
-      else {
-        control->graphics->getList3DWindowIDs(&ids);
-    
-        for(jter=ids.begin(); jter!=ids.end(); ++jter) {
-          found = false;
-          for(iter=tmpList.begin(); iter!=tmpList.end(); ++iter) {
-            if((*iter)->getWindowID() == (*jter)) {
-              found = true;
-              tmpList.erase(iter);
-              break;
-            }
-          }
-      
-          if(!found) {
-            tmpCamera = new CaptureConfig(control);
-            tmpCamera->setWindowID((*jter));
-            myMutex.lock(); 
-            cameras.push_back(tmpCamera);
-            myMutex.unlock();
-            if(myWidget)
-              myWidget->addCamera(tmpCamera);
-          }
-      
-          //ids.erase(jter);
-        }
-    
-        myMutex.lock();
-        std::vector<CaptureConfig*> tmpList2 = cameras;
-        myMutex.unlock();
-        tmpList.clear();
-        for(iter=tmpList2.begin(); iter!=tmpList2.end(); ++iter) {
-          found = false;
-          for(jter=ids.begin(); jter!=ids.end(); ++jter) {
-            if((*iter)->getWindowID() == (*jter)) {
-              found = true;
-              ids.erase(jter);
-              tmpList.push_back((*iter));
-              break;
-            }
-          }
-      
-          if(!found) {
-            if(myWidget)
-              myWidget->removeCamera((*iter));
-            delete (*iter);
-          }
-        }
-        myMutex.lock();
-        cameras = tmpList;
-        myMutex.unlock();
-      }
+      // (void)event;
+      // std::vector<CaptureConfig*>::iterator iter;
+      // std::vector<unsigned long>::iterator jter;
+      // std::vector<unsigned long> ids;
+      // myMutex.lock();
+      // std::vector<CaptureConfig*> tmpList = cameras;
+      // myMutex.unlock();
+      // CaptureConfig *tmpCamera;
+      // bool found;
+
+      // if(!init) {
+      //   if(control->graphics) {
+      //     init = true;
+      //     //control->graphics->addGraphicsUpdateInterface((GraphicsUpdateInterface*)this);
+      //   }
+      // }
+      // else {
+      //   control->graphics->getList3DWindowIDs(&ids);
+
+      //   for(jter=ids.begin(); jter!=ids.end(); ++jter) {
+      //     found = false;
+      //     for(iter=tmpList.begin(); iter!=tmpList.end(); ++iter) {
+      //       if((*iter)->getWindowID() == (*jter)) {
+      //         found = true;
+      //         tmpList.erase(iter);
+      //         break;
+      //       }
+      //     }
+
+      //     if(!found) {
+      //       tmpCamera = new CaptureConfig(control);
+      //       tmpCamera->setWindowID((*jter));
+      //       myMutex.lock();
+      //       cameras.push_back(tmpCamera);
+      //       myMutex.unlock();
+      //       if(myWidget)
+      //         myWidget->addCamera(tmpCamera);
+      //     }
+
+      //     //ids.erase(jter);
+      //   }
+
+      //   myMutex.lock();
+      //   std::vector<CaptureConfig*> tmpList2 = cameras;
+      //   myMutex.unlock();
+      //   tmpList.clear();
+      //   for(iter=tmpList2.begin(); iter!=tmpList2.end(); ++iter) {
+      //     found = false;
+      //     for(jter=ids.begin(); jter!=ids.end(); ++jter) {
+      //       if((*iter)->getWindowID() == (*jter)) {
+      //         found = true;
+      //         ids.erase(jter);
+      //         tmpList.push_back((*iter));
+      //         break;
+      //       }
+      //     }
+
+      //     if(!found) {
+      //       if(myWidget)
+      //         myWidget->removeCamera((*iter));
+      //       delete (*iter);
+      //     }
+      //   }
+      //   myMutex.lock();
+      //   cameras = tmpList;
+      //   myMutex.unlock();
+      // }
     }
 
     void CaptureWindow::preGraphicsUpdate(void) {

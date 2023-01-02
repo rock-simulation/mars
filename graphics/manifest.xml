@@ -16,5 +16,7 @@
     <depend package="tools/configmaps" />
     <depend package="external/osgQt" />
     <rosdep name="osg" />
+    <depend package="envire/envire_visualizer" />
+    <depend package="simulation/envire_managers" />
     <tags>needs_opt</tags>
 </package>

@@ -303,6 +303,7 @@ namespace mars {
     }
 
     void MenuWindow::menu_addWindow(){
+      std::cout << "MenuWindow::menu_addWindow" << std::endl;
       static int num = 1;
       //QWidget* newWidget = new QWidget();
 

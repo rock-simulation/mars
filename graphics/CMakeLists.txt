@@ -6,6 +6,8 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 
+add_definitions(-ggdb)
+
 CHECK_INCLUDE_FILE_CXX("tr1/functional" USE_TR1)
 if(${USE_TR1})
     ADD_DEFINITIONS(-DUSE_TR1)
@@ -20,7 +22,7 @@ define_module_info()
 setup_opencv()
 
 include_directories(
-      src 
+      src
       src/interfaces
       src/hud_elements
       src/draw_objects
@@ -74,6 +76,9 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   osg_terrain
                   osg_lines
                   osg_frames
+                  envire_visualizer_interface
+                  envire_visualizer
+                  envire_managers
 )
 
 include_directories(${PKGCONFIG_INCLUDE_DIRS})
@@ -89,7 +94,7 @@ set(HEADERS
            src/HUD.h
            src/PostDrawCallback.h
            src/QtOsgMixGraphicsWidget.h
-           
+
            src/shadow/ShadowMap.h
            src/shadow/ParallelSplitShadowMap.h
 )
@@ -102,7 +107,7 @@ set(HEADERS_2D
            src/2d_objects/HUDTerminal.h
            src/2d_objects/HUDTexture.h
            src/2d_objects/HUDOSGNode.h
-           
+
 )
 
 set(HEADERS_3D
@@ -135,7 +140,7 @@ set(QT_MOC_HEADERS
            src/QtOsgMixGraphicsWidget.h
 )
 
-set(SOURCES 
+set(SOURCES
            src/GraphicsCamera.cpp
            src/GraphicsManager.cpp
            #src/GraphicsViewer.cpp
@@ -144,13 +149,13 @@ set(SOURCES
            src/HUD.cpp
            src/QtOsgMixGraphicsWidget.cpp
            src/PostDrawCallback.cpp
-           
+
            src/wrapper/OSGDrawItem.cpp
            src/wrapper/OSGHudElementStruct.cpp
            src/wrapper/OSGLightStruct.cpp
            src/wrapper/OSGMaterialStruct.cpp
            src/wrapper/OSGNodeStruct.cpp
-           
+
            src/3d_objects/AxisPrimitive.cpp
            src/3d_objects/CapsuleDrawObject.cpp
            src/3d_objects/CoordsPrimitive.cpp
@@ -171,7 +176,7 @@ set(SOURCES
            src/2d_objects/HUDTexture.cpp
            src/2d_objects/HUDLines.cpp
            src/2d_objects/HUDOSGNode.cpp
-           
+
            src/shadow/ShadowMap.cpp
            src/shadow/ParallelSplitShadowMap.cpp
 )
@@ -199,11 +204,11 @@ if(APPLE)
 endif(APPLE)
 
 if(WIN32)
-  if(USE_VERTEX_BUFFER) 
+  if(USE_VERTEX_BUFFER)
     SET(WIN_LIBS glew32 opengl32)
   else(USE_VERTEX_BUFFER)
     SET(WIN_LIBS opengl32)
-  endif(USE_VERTEX_BUFFER) 
+  endif(USE_VERTEX_BUFFER)
   SET(WIN_LIBS ${WIN_LIBS} ${OSGQT_LIBRARIES})
 endif(WIN32)
 
@@ -211,7 +216,7 @@ if(OSGQT_FOUND)
   SET(EXTRA_LIBS ${OSGQT_LIBRARIES})
 endif()
 
-target_link_libraries(${PROJECT_NAME}         
+target_link_libraries(${PROJECT_NAME}
             ${QT_LIBRARIES}
             ${OPENSCENEGRAPH_LIBRARIES}
             ${PKGCONFIG_LIBRARIES}
@@ -243,7 +248,7 @@ install(FILES ${HEADERS_2D} DESTINATION include/mars/graphics/2d_objects)
 install(FILES ${HEADERS_3D} DESTINATION include/mars/graphics/3d_objects)
 install(FILES ${HEADERS_WRAPPER} DESTINATION include/mars/graphics/wrapper)
 
-# Prepare and install necessary files to support finding of the library 
+# Prepare and install necessary files to support finding of the library
 # using pkg-config
 configure_file(configuration/${PROJECT_NAME}.pc.in ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
 install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)

@@ -65,15 +65,15 @@ namespace mars {
     }
 
     void GraphicsTimer::timerEvent(void) {
-      if(sim->getAllowDraw() || !sim->getSyncGraphics()) {
+      /*if(sim->getAllowDraw() || !sim->getSyncGraphics()) {
         if(graphics) {
           graphics->draw();
         }
         else {
           sim->finishedDraw();
         }
-      }
+      }*/
     }
- 
+
   } // end of namespace app
 } // end of namespace mars

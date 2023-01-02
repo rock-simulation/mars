@@ -71,6 +71,8 @@
 
 #include "gui_helper_functions.h"
 
+#include <envire_visualizer/EnvireVisualizerInterface.hpp>
+
 namespace mars {
   namespace graphics {
 
@@ -317,6 +319,8 @@ namespace mars {
       void setShadowTechnique(std::string s);
 
     private:
+      std::shared_ptr<EnvireVisualizerInterface> visualisation;
+
       mars::interfaces::GraphicData graphicOptions;
 
       //pointer to outer space

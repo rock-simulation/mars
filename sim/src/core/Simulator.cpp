@@ -131,8 +131,8 @@ namespace mars {
       checkOptionalDependency("log_console");
 
       // physics plugins to pass to the physics engine
-      checkOptionalDependency("envire_mls"); 
-      checkOptionalDependency("envire_mls_tests"); 
+      checkOptionalDependency("envire_mls");
+      checkOptionalDependency("envire_mls_tests");
 
 
       getTimeMutex.lock();
@@ -226,7 +226,7 @@ namespace mars {
             LOG_DEBUG("Simulator: no console loaded. output to stdout!");
           }
         }
-      } 
+      }
       else if(libName == "envire_mls") {
         std::list<std::string>* libNames = new std::list<std::string>();
         libManager->getAllLibraryNames(libNames);
@@ -237,7 +237,7 @@ namespace mars {
           mars::interfaces::MarsPluginTemplate * envireMls = (
             dynamic_cast<mars::interfaces::MarsPluginTemplate*>(lib));
           LOG_DEBUG(
-            "The library %s has been detected. ", 
+            "The library %s has been detected. ",
             envireMls->getLibName().c_str());
           interfaces::pluginStruct envireMlsS;
           envireMlsS.name = "envire_mls";
@@ -256,7 +256,7 @@ namespace mars {
           mars::interfaces::MarsPluginTemplate * envireMlsTests = (
             dynamic_cast<mars::interfaces::MarsPluginTemplate*>(lib));
           LOG_DEBUG(
-            "The library %s has been detected. ", 
+            "The library %s has been detected. ",
             envireMlsTests->getLibName().c_str());
         }
       }
@@ -304,14 +304,14 @@ namespace mars {
       if (control->sensors == NULL) {
         control->sensors = new SensorManager(control);
         //fprintf(stderr, "ERROR: No MotorManager is defined!\n");
-      }      
+      }
       if (control->entities == NULL) {
         throw std::runtime_error("[Simulator] No Entity Manager!");
         //control->entities = new EntityManager(control);
       }
 
       control->controllers = new ControllerManager(control);
-      
+
 
       control->controllers->setDefaultPort(std_port);
       control->nodes->setVisualRep(0, cfgVisRep.iValue);
@@ -329,7 +329,7 @@ namespace mars {
       physics = PhysicsMapper::newWorldPhysics(control);
       if (physicsPlugins.size() > 0)
       {
-        physics -> setPhysicsPlugins(physicsPlugins); 
+        physics -> setPhysicsPlugins(physicsPlugins);
       }
       physics->initTheWorld();
       // the physics step_size is in seconds
@@ -672,8 +672,8 @@ namespace mars {
     }
 
     int Simulator::loadScene(const std::string &filename,
-                          const std::string &robotname, 
-                          utils::Vector pos, 
+                          const std::string &robotname,
+                          utils::Vector pos,
                           utils::Vector rot, bool threadsave, bool blocking, bool wasrunning)
     {
       if(!threadsave){
@@ -695,7 +695,7 @@ namespace mars {
       while(blocking && !filesToLoad.empty()){
           msleep(10);
       }
-      return 1;  
+      return 1;
 
     }
 
@@ -735,7 +735,7 @@ namespace mars {
       }
       sceneHasChanged(false);
       return 1;
-    }    
+    }
 
     int Simulator::loadScene_internal(const std::string &filename,
                              bool wasrunning, const std::string &robotname) {
@@ -1335,12 +1335,12 @@ namespace mars {
           {
             loadScene_internal(filesToLoad[i].filename, false,
                               filesToLoad[i].robotname);
-          } else 
+          } else
           {
             loadScene_internal(filesToLoad[i].filename,
                              filesToLoad[i].robotname,
                              filesToLoad[i].pos, filesToLoad[i].rot,
-                             false);           
+                             false);
           }
         }
         filesToLoad.clear();

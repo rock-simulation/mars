@@ -102,9 +102,9 @@ namespace mars {
       std::list<std::string> needRelease{"envire_mls", "envire_managers", "envire_smurf_loader", "envire_graphics", "envire_graph_loader"};
       std::list<std::string> * allLibs = new std::list<std::string>();
       libManager->getAllLibraryNames(allLibs);
-      std::list<std::string>::iterator iter;      
+      std::list<std::string>::iterator iter;
       for(iter = allLibs->begin();
-        iter != allLibs->end(); iter++) 
+        iter != allLibs->end(); iter++)
       {
         lib_manager::LibInfo libInfo = libManager->getLibraryInfo(*iter);
         if (std::find(needRelease.begin(), needRelease.end(), *iter) != needRelease.end())

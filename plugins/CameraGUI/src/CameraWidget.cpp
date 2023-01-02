@@ -54,6 +54,7 @@ namespace mars {
         main_gui::BaseWidget(parent, control->cfg, name),
         control(control), gui(gui) {
 
+        std::cout << "CameraWidget::CameraWidget" << std::endl;
 
         QVBoxLayout *vLayout = new QVBoxLayout();
         QHBoxLayout *hLayout = new QHBoxLayout();
