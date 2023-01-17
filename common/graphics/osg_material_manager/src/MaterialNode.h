@@ -33,7 +33,7 @@
 #endif
 
 #include <mars/utils/Vector.h>
-#include <mars/interfaces/LightData.h>
+#include <mars_interfaces/LightData.h>
 
 #include <vector>
 

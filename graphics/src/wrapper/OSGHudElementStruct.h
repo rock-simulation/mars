@@ -30,7 +30,7 @@
 
 #include "../2d_objects/HUDElement.h"
 
-#include <mars/interfaces/graphics/draw_structs.h>
+#include <mars_interfaces/graphics/draw_structs.h>
 
 #include <string>
 

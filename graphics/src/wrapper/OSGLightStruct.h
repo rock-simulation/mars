@@ -28,7 +28,7 @@
 #ifndef MARS_GRAPHICS_OSGLIGHTSTRUCT_H
 #define MARS_GRAPHICS_OSGLIGHTSTRUCT_H
 
-#include <mars/interfaces/LightData.h>
+#include <mars_interfaces/LightData.h>
 
 #include <osg/LightSource>
 #include <osg/ShapeDrawable>

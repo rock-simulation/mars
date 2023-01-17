@@ -34,7 +34,7 @@
 #include <osg/MatrixTransform>
 #include <osgViewer/GraphicsWindow>
 
-#include <mars/interfaces/MARSDefs.h>
+#include <mars_interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
 #include <mars/utils/Color.h>

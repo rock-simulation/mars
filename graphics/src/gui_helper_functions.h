@@ -35,11 +35,11 @@
 #include <vector>
 #include <sstream>
 
-#include <mars/interfaces/sim_common.h>
-#include <mars/interfaces/terrainStruct.h>
-#include <mars/interfaces/sim/LoadCenter.h>
+#include <mars_interfaces/sim_common.h>
+#include <mars_interfaces/terrainStruct.h>
+#include <mars_interfaces/sim/LoadCenter.h>
 
-#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars_interfaces/graphics/GraphicsManagerInterface.h>
 
 
 namespace mars {

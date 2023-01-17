@@ -33,7 +33,7 @@
 #include "MultiResHeightMapRenderer.h"
 #include "LoadDrawObject.h"
 #include <osg/Drawable>
-#include <mars/interfaces/terrainStruct.h>
+#include <mars_interfaces/terrainStruct.h>
 
 namespace mars {
   namespace graphics {

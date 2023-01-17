@@ -32,11 +32,11 @@
   #warning "DrawObject.h"
 #endif
 
-#include <mars/interfaces/MARSDefs.h>
+#include <mars_interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
-#include <mars/interfaces/LightData.h>
-#include <mars/interfaces/MaterialData.h>
+#include <mars_interfaces/LightData.h>
+#include <mars_interfaces/MaterialData.h>
 
 #include <string>
 #include <vector>

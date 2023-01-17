@@ -52,15 +52,15 @@
 
 #include <osgParticle/PrecipitationEffect>
 
-#include <mars/interfaces/MARSDefs.h>
+#include <mars_interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
-#include <mars/interfaces/core_objects_exchange.h>
-#include <mars/interfaces/GraphicData.h>
-#include <mars/interfaces/LightData.h>
-#include <mars/interfaces/MaterialData.h>
-#include <mars/interfaces/cameraStruct.h>
-#include <mars/interfaces/graphics/GraphicsEventInterface.h>
+#include <mars_interfaces/core_objects_exchange.h>
+#include <mars_interfaces/GraphicData.h>
+#include <mars_interfaces/LightData.h>
+#include <mars_interfaces/MaterialData.h>
+#include <mars_interfaces/cameraStruct.h>
+#include <mars_interfaces/graphics/GraphicsEventInterface.h>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
 

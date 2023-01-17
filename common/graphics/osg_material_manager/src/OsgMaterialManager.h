@@ -36,7 +36,7 @@
 #include <lib_manager/LibInterface.hpp>
 #include <mars/cfg_manager/CFGManagerInterface.h>
 #include <mars/cfg_manager/CFGClient.h>
-#include <mars/interfaces/LightData.h>
+#include <mars_interfaces/LightData.h>
 
 namespace osg_material_manager {
 
