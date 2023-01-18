@@ -58,6 +58,7 @@ namespace mars {
     private:
       std::list< osg::ref_ptr< osg::Geode > > loadGeodes(std::string filename,
                                                          std::string objname);
+        void checkBobj(std::string &filename);
     };
 
   } // end of namespace graphics

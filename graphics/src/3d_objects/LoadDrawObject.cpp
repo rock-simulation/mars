@@ -33,8 +33,10 @@
 
 #include <iostream>
 #include <cstdio>
+#include <mars/utils/misc.h>
 
 namespace mars {
+    using namespace utils;
   namespace graphics {
 
     using namespace std;
@@ -81,9 +83,63 @@ namespace mars {
       return loadGeodes(filename, (std::string)info_["origname"]);
     }
 
+      void LoadDrawObject::checkBobj(std::string &filename)
+      {
+          string tmpfilename, tmpfilename2;
+          tmpfilename = filename;
+          std::string suffix = getFilenameSuffix(filename);
+          if(suffix != ".bobj")
+          {
+              // turn our relative filename into an absolute filename
+              removeFilenameSuffix(&tmpfilename);
+              tmpfilename.append(".bobj");
+              // replace if that file exists
+              if (pathExists(tmpfilename))
+              {
+                  //fprintf(stderr, "Loading .bobj instead of %s for file: %s\n", suffix.c_str(), tmpfilename.c_str());
+                  filename = tmpfilename;
+              }
+              else {
+                  // check if bobj files are in parallel folder
+                  std::vector<std::string> arrayPath = explodeString('/', tmpfilename);
+                  tmpfilename = "";
+                  for(size_t i=0; i<arrayPath.size(); ++i)
+                  {
+                      if(i==0)
+                      {
+                          if(arrayPath[i] == "")
+                          {
+                              tmpfilename = "/";
+                          }
+                          else
+                          {
+                              tmpfilename = arrayPath[i];
+                          }
+                      }
+                      else if(i==arrayPath.size()-2)
+                      {
+                          tmpfilename = pathJoin(tmpfilename, "bobj");
+                      }
+                      else
+                      {
+                          tmpfilename = pathJoin(tmpfilename, arrayPath[i]);
+                      }
+                  }
+                  if (pathExists(tmpfilename))
+                  {
+                      //fprintf(stderr, "Loading .bobj instead of %s for file: %s\n", suffix.c_str(), tmpfilename.c_str());
+                      filename = tmpfilename;
+                  }
+              }
+          }
+      }
+
     std::list< osg::ref_ptr< osg::Geode > > LoadDrawObject::loadGeodes(std::string filename, std::string objname) {
       std::list< osg::ref_ptr< osg::Geode > > geodes;
       bool found = false;
+
+      // automatic load bobj if we find that
+      checkBobj(filename);
 
       if(filename.substr(filename.size()-5, 5) == ".bobj") {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readBobjFromFile(filename);
