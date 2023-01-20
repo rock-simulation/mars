@@ -193,6 +193,8 @@ namespace mars {
        */
       virtual void editNode(NodeData *nodeS, int changes) = 0;
 
+      virtual bool setAbsolutePose(std::string frame, utils::Vector position, utils::Quaternion orientation) {};
+
       /**
        * \brief This function is not implemented yet. To change a group of
        * a node it has to be removed and added again with a new group_id.

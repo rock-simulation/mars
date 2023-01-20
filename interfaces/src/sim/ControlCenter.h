@@ -58,13 +58,14 @@ namespace mars {
   namespace cfg_manager {
     class CFGManagerInterface;
   }
-  
+
   namespace data_broker {
     class DataBrokerInterface;
   }
 
   namespace interfaces {
     class ControlCenter;
+    class StorageManagerInterface;
     class NodeManagerInterface;
     class JointManagerInterface;
     class MotorManagerInterface;
@@ -84,6 +85,7 @@ namespace mars {
       ControlCenter(){
         sim = NULL;
         cfg = NULL;
+        storage = NULL;
         nodes  = NULL;
         joints = NULL;
         motors = NULL;
@@ -95,6 +97,7 @@ namespace mars {
       }
 
       cfg_manager::CFGManagerInterface *cfg;
+      StorageManagerInterface *storage;
       NodeManagerInterface *nodes;
       JointManagerInterface *joints;
       MotorManagerInterface *motors;
