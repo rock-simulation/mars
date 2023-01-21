@@ -164,6 +164,18 @@ namespace mars {
       virtual void edit(interfaces::NodeId id, const std::string &key,
                         const std::string &value);
 
+      virtual bool setAbsolutePose(std::string frame, utils::Vector position, utils::Quaternion orientation)
+      {
+        printf("not implemented : %s\n", __PRETTY_FUNCTION__);
+        return false;
+      }
+
+      virtual bool getAbsolutePose(std::string frame, utils::Vector &position, utils::Quaternion &orientation) const
+      {
+        printf("not implemented : %s\n", __PRETTY_FUNCTION__);
+        return false;
+      }
+
     private:
       interfaces::NodeId next_node_id;
       bool update_all_nodes;
