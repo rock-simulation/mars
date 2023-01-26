@@ -52,7 +52,7 @@ namespace osg_lines {
     virtual ~Lines() {}
 
     virtual void appendData(Vector v) = 0;
-    virtual void setData(std::list<Vector> points) = 0;
+    virtual void setData(const std::list<Vector> &points) = 0;
     virtual void drawStrip(bool strip=true) = 0;
     virtual void setColor(Color c) = 0;
     virtual void setLineWidth(double w) = 0;

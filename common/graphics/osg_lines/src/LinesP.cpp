@@ -91,8 +91,8 @@ namespace osg_lines {
     dirty();
   }
 
-  void LinesP::setData(std::list<Vector> p) {
-    std::list<Vector>::iterator it=p.begin();
+  void LinesP::setData(const std::list<Vector> &p) {
+    std::list<Vector>::const_iterator it=p.begin();
     origPoints->clear();
     points->clear();
     for(;it!=p.end(); ++it) {

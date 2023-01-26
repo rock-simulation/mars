@@ -48,7 +48,7 @@ namespace osg_lines {
 
     void appendData(Vector v);
     void clearData();
-    void setData(std::list<Vector> points);
+    void setData(const std::list<Vector> &points);
     void drawStrip(bool strip=true);
     void setColor(Color c);
     void setLineWidth(double w);
