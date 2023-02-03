@@ -1072,7 +1072,7 @@ namespace mars {
       // if we have an actual file name
       if (!tmpfilename.empty()) {
         suffix = getFilenameSuffix(tmpfilename);
-        if (suffix == ".obj" || suffix == ".OBJ" || suffix == ".stl" || suffix == ".STL") {
+        if (suffix == ".obj" || suffix == ".OBJ" || suffix == ".stl" || suffix == ".STL" || suffix == ".dae" || suffix == ".DAE") {
           // turn our relative filename into an absolute filename
           removeFilenameSuffix(&tmpfilename);
           tmpfilename.append(".bobj");
@@ -1090,6 +1090,10 @@ namespace mars {
             if (suffix == ".stl" || suffix == ".STL") {
               index = tmpfilename2.find("stl/");
               dirname = "stl/";
+            } else if (suffix == ".dae" || suffix == ".DAE")
+            {
+              index = tmpfilename2.find("dae/");
+              dirname = "dae/";
             } else if (tmpfilename2.find("mars_obj/") != string::npos) {
               index = tmpfilename2.find("mars_obj/");
               dirname = "mars_obj/";
