@@ -112,6 +112,12 @@ namespace mars {
           for (unsigned int i = 0; i < readGroup->getNumChildren(); ++i) {
             osg::ref_ptr<osg::Node> readNode = readGroup->getChild(i);
             if (objname == "" || readNode->getName() == objname) {
+                osg::ref_ptr<osg::Geode> geode = readNode->asGeode();
+                if (!geode.valid())
+                {
+                    std::cerr << "LoadDrawObject: no geode found " << filename << std::endl;
+                    return geodes;
+                }
               geodes.push_back(readNode->asGeode());
               found = true;
             }
