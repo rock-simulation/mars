@@ -942,8 +942,8 @@ namespace mars {
 
         // calulate the quaternion for the rotation of 90 degrees around the
         // x-axis
-        mars::utils::Quaternion offset =
-            mars::utils::eulerToQuaternion(mars::utils::Vector(90.0, 0.0, 0.0));
+        mars::utils::Quaternion offset = mars::utils::eulerToQuaternion(mars::utils::Vector(0.0, 0.0, 0.0));
+            //mars::utils::eulerToQuaternion(mars::utils::Vector(90.0, 0.0, 0.0));
 
         // set the orientation to the newly added transformation
         transformSTL->setAttitude(osg::Quat(offset.x(),

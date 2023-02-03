@@ -1136,7 +1136,7 @@ namespace mars {
         // add an additional rotation of -90.0 degree due to wrong definition
         // of which direction is up within .stl (for .stl -Y is up and in MARS
         // Z is up)
-        node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
+        //node.visual_offset_rot *= eulerToQuaternion(Vector(-90.0, 0.0, 0.0));
       }
 
 
