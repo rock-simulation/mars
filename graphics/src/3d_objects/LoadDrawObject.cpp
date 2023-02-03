@@ -55,7 +55,7 @@ namespace mars {
 
       if(info_.find("filePrefix") != info_.end()) {
         p = (std::string)info_["filePrefix"];
-        if(p[p.back()] != '/') {
+        if(p.back() != '/') {
           p += "/";
         }
       };
