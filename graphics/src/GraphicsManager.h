@@ -139,6 +139,7 @@ namespace mars {
 
       virtual unsigned long addDrawObject(const mars::interfaces::NodeData &snode,
                                           bool activated = true);
+      virtual unsigned long getDrawID(const std::string &name) const override;
       virtual void removeLayerFromDrawObjects(unsigned long window_id);
       virtual void removeDrawObject(unsigned long id);
       virtual void setDrawObjectPos(unsigned long id, const mars::utils::Vector &pos);

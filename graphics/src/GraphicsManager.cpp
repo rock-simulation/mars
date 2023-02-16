@@ -976,6 +976,18 @@ namespace mars {
       return id;
     }
 
+      unsigned long GraphicsManager::getDrawID(const std::string &name) const
+      {
+          for(auto &it: drawObjects_)
+          {
+              if(it.second->name() == name)
+              {
+                  return it.first;
+              }
+          }
+          return 0;
+      }
+
     void GraphicsManager::removeDrawObject(unsigned long id) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns == NULL) return;
