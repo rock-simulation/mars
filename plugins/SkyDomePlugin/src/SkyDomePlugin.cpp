@@ -30,8 +30,8 @@
 #include "SkyDomePlugin.h"
 #include <mars/data_broker/DataBrokerInterface.h>
 #include <mars/data_broker/DataPackage.h>
-#include <mars/interfaces/graphics/GraphicsManagerInterface.h>
-#include <mars/interfaces/sim/SimulatorInterface.h>
+#include <mars_interfaces/graphics/GraphicsManagerInterface.h>
+#include <mars_interfaces/sim/SimulatorInterface.h>
 #include <mars/utils/misc.h>
 #include <osg/TextureCubeMap>
 #include <osg/PositionAttitudeTransform>
@@ -70,8 +70,11 @@ namespace mars {
         : MarsPluginTemplateGUI(theManager, "SkyDomePlugin"), materialManager(0) {
       }
 
-      void SkyDomePlugin::init() {
-        if(!control->graphics) return;
+      void SkyDomePlugin::init() {          
+          if(!control->graphics) {
+              LOG_ERROR("SkyDomePlugin: no control->graphics!");
+              return;
+          }
         posTransform = new SkyTransform();
         posTransform->setCullingActive(false);
         updateProp = true;
