@@ -796,10 +796,12 @@ namespace mars {
         }
       }
 
+      mutex.lock();
       // Render a complete new frame.
       if(viewer) {
         viewer->frame();
       }
+      mutex.unlock();
       ++framecount;
       for(it=graphicsUpdateObjects.begin();
           it!=graphicsUpdateObjects.end(); ++it) {
@@ -1051,7 +1053,11 @@ namespace mars {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setQuaternion(q);
     }
-    void GraphicsManager::setDrawObjectScale(unsigned long id, const Vector &ext) {
+    void GraphicsManager::setDrawObjectScale(unsigned long id, const Vector &scale) {
+      OSGNodeStruct *ns = findDrawObject(id);
+      if(ns != NULL) ns->object()->setScale(scale);
+    }
+    void GraphicsManager::setDrawObjectScaledSize(unsigned long id, const Vector &ext) {
       OSGNodeStruct *ns = findDrawObject(id);
       if(ns != NULL) ns->object()->setScaledSize(ext);
     }
@@ -2715,6 +2721,14 @@ namespace mars {
         }
       }
     }
+
+      void GraphicsManager::lock() {
+          mutex.lock();
+      }
+
+      void GraphicsManager::unlock() {
+          mutex.unlock();
+      }
 
   } // end of namespace graphics
 } // end of namespace mars

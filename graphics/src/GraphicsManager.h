@@ -69,6 +69,8 @@
 #include <mars/osg_material_manager/OsgMaterial.h>
 #include <osg_frames/FramesFactory.hpp>
 
+#include <mars/utils/Mutex.h>
+
 #include "gui_helper_functions.h"
 
 namespace mars {
@@ -144,7 +146,8 @@ namespace mars {
       virtual void removeDrawObject(unsigned long id);
       virtual void setDrawObjectPos(unsigned long id, const mars::utils::Vector &pos);
       virtual void setDrawObjectRot(unsigned long id, const mars::utils::Quaternion &q);
-      virtual void setDrawObjectScale(unsigned long id, const mars::utils::Vector &ext);
+      virtual void setDrawObjectScale(unsigned long id, const mars::utils::Vector &scale);
+      virtual void setDrawObjectScaledSize(unsigned long id, const mars::utils::Vector &ext);
       virtual void setDrawObjectMaterial(unsigned long id,
                                          const mars::interfaces::MaterialData &material);
       virtual void addMaterial(const interfaces::MaterialData &material);
@@ -216,6 +219,8 @@ namespace mars {
 
       virtual void update(); //< updates graphics
       virtual void draw();
+      virtual void lock();
+      virtual void unlock();
 
       void setWidget(GraphicsWidget *widget);
       virtual void* getQTWidget(unsigned long id) const;
@@ -328,6 +333,8 @@ namespace mars {
       unsigned long next_draw_object_id;
       unsigned long next_window_id;
       unsigned long nextPreviewID;
+
+        utils::Mutex mutex;
 
       osg::ref_ptr<osgViewer::CompositeViewer> viewer;
 
