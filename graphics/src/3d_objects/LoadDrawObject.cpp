@@ -57,7 +57,7 @@ namespace mars {
 
       if(info_.find("filePrefix") != info_.end()) {
         p = (std::string)info_["filePrefix"];
-        if(p[p.back()] != '/') {
+        if(p.back() != '/') {
           p += "/";
         }
       };
@@ -154,7 +154,7 @@ namespace mars {
       else {
         osg::ref_ptr<osg::Node> loadedNode = GuiHelper::readNodeFromFile(filename);
         if(!loadedNode.valid()) {
-          std::cerr << "LoadDrawObject: no node loaded" << std::endl;
+            std::cerr << "LoadDrawObject: no node loaded: "<< filename << std::endl;
           return geodes; // TODO: error message
         }
         osg::ref_ptr<osg::Geode> readGeode = loadedNode->asGeode();
