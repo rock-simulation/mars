@@ -116,6 +116,35 @@ namespace mars {
 
       // first check if we have the cfg_manager lib
       framesFactory = new osg_frames::FramesFactory();
+      dataBroker = libManager->getLibraryAs<data_broker::DataBrokerInterface>("data_broker");
+      preTime = avgPreTime = 0;
+      updateTime = avgUpdateTime = 0;
+      lightTime = avgLightTime = 0;
+      materialTime = avgMaterialTime = 0;
+      frameTime = avgFrameTime = 0;
+      postTime = avgPostTime = 0;
+      avgTimeCount = 0;
+      dbPackageMapping.add("preTime", &avgPreTime);
+      dbPackageMapping.add("updateTime", &avgUpdateTime);
+      dbPackageMapping.add("lightTime", &avgLightTime);
+      dbPackageMapping.add("materialTime", &avgMaterialTime);
+      dbPackageMapping.add("frameTime", &avgFrameTime);
+      dbPackageMapping.add("postTime", &avgPostTime);
+
+      if(dataBroker)
+      {
+          std::string groupName, dataName;
+          groupName = "MarsGraphcis";
+          dataName = "debugTime";
+          // initialize the dataBroker Package
+          data_broker::DataPackage dbPackage;
+          dbPackageMapping.writePackage(&dbPackage);
+          dataBroker->pushData(groupName, dataName, dbPackage, NULL,
+                               data_broker::DATA_PACKAGE_READ_FLAG);
+          // register as producer
+          dataBroker->registerTimedProducer(this, groupName, dataName,
+                                            "_REALTIME_", 100);
+      }
     }
 
     GraphicsManager::~GraphicsManager() {
@@ -128,6 +157,15 @@ namespace mars {
       if(materialManager) libManager->releaseLibrary("osg_material_manager");
       //fprintf(stderr, "Delete mars_graphics\n");
       delete framesFactory;
+      if(dataBroker)
+      {
+          std::string groupName, dataName;
+          groupName = "MarsGraphics";
+          dataName = "debugTime";
+          dataBroker->unregisterTimedProducer(this, groupName, dataName,
+                                              "_REALTIME_");
+          libManager->releaseLibrary("data_broker");
+      }
     }
 
     void GraphicsManager::initializeOSG(void *data, bool createWindow) {
@@ -168,15 +206,15 @@ namespace mars {
                                dynamic_cast<cfg_manager::CFGClient*>(this));
           setMultisampling(multisamples.iValue);
 
-	  std::string s = cfg->getOrCreateProperty("Graphics", "resources_path",
-						   "",
-						   dynamic_cast<cfg_manager::CFGClient*>(this)).sValue;
-	  if(s != "") {
-	    resources_path.sValue = s;
-	  }
-	  else {
-	    resources_path.sValue = string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH);
-	  }
+    std::string s = cfg->getOrCreateProperty("Graphics", "resources_path",
+               "",
+               dynamic_cast<cfg_manager::CFGClient*>(this)).sValue;
+    if(s != "") {
+      resources_path.sValue = s;
+    }
+    else {
+      resources_path.sValue = string(MARS_GRAPHICS_DEFAULT_RESOURCES_PATH);
+    }
 
           noiseProp = cfg->getOrCreateProperty("Graphics", "useNoise",
                                                true, this);
@@ -594,14 +632,14 @@ namespace mars {
       if (graphicsWindows.size() > 0) {
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
                                                     next_window_id++, rtt,
-                                                    0, this);
+                                                    this);
         gw->initializeOSG(myQTWidget, graphicsWindows[0], width, height);
       }
       else {
 
         gw = QtOsgMixGraphicsWidget::createInstance(myQTWidget, scene.get(),
                                                     next_window_id++, 0,
-                                                    0, this);
+                                                    this);
 
         // this will open an osg widget without qt wrapping
         /*
@@ -734,19 +772,27 @@ namespace mars {
       }
     }
 
-    void GraphicsManager::draw() {
-      std::list<interfaces::GraphicsUpdateInterface*>::iterator it;
+      void GraphicsManager::draw() {
+          long myTime = utils::getTime();
+          long timeDiff;
+          std::list<interfaces::GraphicsUpdateInterface*>::iterator it;
       std::vector<GraphicsWidget*>::iterator iter;
 
       for(it=graphicsUpdateObjects.begin();
           it!=graphicsUpdateObjects.end(); ++it) {
         (*it)->preGraphicsUpdate();
       }
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      preTime += timeDiff;
 
       update();
       for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
         (*iter)->updateView();
       }
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      updateTime += timeDiff;
 
       vector<mars::interfaces::LightData*> lightList;
       vector<mars::interfaces::LightData*>::iterator lightIt;
@@ -785,6 +831,10 @@ namespace mars {
         }
       }
 
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      lightTime += timeDiff;
+
       if(materialManager) {
         materialManager->updateLights(lightList);
 
@@ -795,6 +845,9 @@ namespace mars {
           materialManager->setShadowScale(shadowMap->getTexScale());
         }
       }
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      materialTime += timeDiff;
 
       mutex.lock();
       // Render a complete new frame.
@@ -802,10 +855,32 @@ namespace mars {
         viewer->frame();
       }
       mutex.unlock();
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      frameTime += timeDiff;
       ++framecount;
       for(it=graphicsUpdateObjects.begin();
           it!=graphicsUpdateObjects.end(); ++it) {
         (*it)->postGraphicsUpdate();
+      }
+      timeDiff = getTimeDiff(myTime);
+      myTime += timeDiff;
+      postTime += timeDiff;
+      if(++avgTimeCount == 100)
+      {
+          avgPreTime = preTime / avgTimeCount;
+          avgUpdateTime = updateTime / avgTimeCount;
+          avgLightTime = lightTime / avgTimeCount;
+          avgMaterialTime = materialTime / avgTimeCount;
+          avgFrameTime = frameTime / avgTimeCount;
+          avgPostTime = postTime / avgTimeCount;
+          preTime = 0;
+          updateTime = 0;
+          lightTime = 0;
+          materialTime = 0;
+          frameTime = 0;
+          postTime = 0;
+          avgTimeCount = 0;
       }
     }
 
@@ -2728,6 +2803,13 @@ namespace mars {
 
       void GraphicsManager::unlock() {
           mutex.unlock();
+      }
+
+      void GraphicsManager::produceData(const data_broker::DataInfo &info,
+                                        data_broker::DataPackage *dbPackage,
+                                        int callbackParam)
+      {
+          dbPackageMapping.writePackage(dbPackage);
       }
 
   } // end of namespace graphics

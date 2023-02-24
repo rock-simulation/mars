@@ -68,6 +68,7 @@ pkg_check_modules(PKGCONFIG REQUIRED
                   lib_manager
                   mars_interfaces
                   cfg_manager
+                  data_broker
                   configmaps
                   mars_utils
                   osg_material_manager

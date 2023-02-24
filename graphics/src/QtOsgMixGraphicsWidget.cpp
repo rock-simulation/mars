@@ -55,12 +55,10 @@ namespace mars {
     QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::activeWindow = NULL;
     QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::eventInWindow = NULL;
 
-    using Qt::WindowFlags;
-
     QtOsgMixGraphicsWidget* QtOsgMixGraphicsWidget::createInstance(
                                                                    void *parent, osg::Group *scene, unsigned long id, bool rtt_widget,
-                                                                   Qt::WindowFlags f, GraphicsManager *gm) {
-      return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, f, gm);
+                                                                   GraphicsManager *gm) {
+      return new QtOsgMixGraphicsWidget(parent, scene, id, rtt_widget, gm);
     }
 
 

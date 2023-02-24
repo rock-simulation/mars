@@ -66,7 +66,7 @@ namespace mars {
     public:
       GraphicsWidget(void *parent, osg::Group *scene,
                      unsigned long id, bool hasRTTWidget = 0,
-                     int f=0, GraphicsManager *gm=0);
+                     GraphicsManager *gm=0);
       ~GraphicsWidget();
       void initializeOSG(void *data = 0, GraphicsWidget* shared = 0,
                          int width = 0, int height = 0, bool vsync = false);

@@ -71,6 +71,11 @@
 
 #include <mars/utils/Mutex.h>
 
+// DataBroker includes
+#include <mars/data_broker/ProducerInterface.h>
+#include <mars/data_broker/DataBrokerInterface.h>
+#include <mars/data_broker/DataPackageMapping.h>
+
 #include "gui_helper_functions.h"
 
 namespace mars {
@@ -105,7 +110,9 @@ namespace mars {
 
     class GraphicsManager : public interfaces::GraphicsManagerInterface,
                             public interfaces::GraphicsEventInterface,
-                            public cfg_manager::CFGClient {
+                            public cfg_manager::CFGClient,
+                            public data_broker::ProducerInterface
+    {
 
     public:
       GraphicsManager(lib_manager::LibManager *theManager, void *QTWidget = 0);
@@ -113,181 +120,181 @@ namespace mars {
 
       CREATE_MODULE_INFO();
 
-      virtual void initializeOSG(void *data, bool createWindow=true);
+      virtual void initializeOSG(void *data, bool createWindow=true) override;
 
-      virtual void* getWindowManager(int id=1); // get osgWidget WindowManager*
+      virtual void* getWindowManager(int id=1) override; // get osgWidget WindowManager*
 
-      virtual void reset(); ///< Resets scene.
+      virtual void reset() override; ///< Resets scene.
 
-      virtual void addGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
-      virtual void removeGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g);
+      virtual void addGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g) override;
+      virtual void removeGraphicsUpdateInterface(interfaces::GraphicsUpdateInterface *g) override;
 
-      virtual const mars::interfaces::GraphicData getGraphicOptions(void) const;
+      virtual const mars::interfaces::GraphicData getGraphicOptions(void) const override;
       virtual void setGraphicOptions(const mars::interfaces::GraphicData &options,
-                                     bool ignoreClearColor=false);
+                                     bool ignoreClearColor=false) override;
 
-      virtual void addDrawItems(interfaces::drawStruct *draw); ///< Adds drawStruct items to the graphics scene.
-      virtual void removeDrawItems(interfaces::DrawInterface *iface);
-      virtual void clearDrawItems(void);
+      virtual void addDrawItems(interfaces::drawStruct *draw) override; ///< Adds drawStruct items to the graphics scene.
+      virtual void removeDrawItems(interfaces::DrawInterface *iface) override;
+      virtual void clearDrawItems(void) override;
 
-      virtual void addLight(mars::interfaces::LightData &ls); ///< adds a light to the scene
-      virtual void removeLight(unsigned int index); ///< removes a light from the scene
+      virtual void addLight(mars::interfaces::LightData &ls) override; ///< adds a light to the scene
+      virtual void removeLight(unsigned int index) override; ///< removes a light from the scene
       virtual void editLight(unsigned long id, const std::string &key,
-                             const std::string &value);
-      virtual void updateLight(unsigned int index, bool recompileShader=false);
-      virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList);
-      virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const;
-      virtual int getLightCount(void) const;
+                             const std::string &value) override;
+      virtual void updateLight(unsigned int index, bool recompileShader=false) override;
+      virtual void getLights(std::vector<mars::interfaces::LightData*> *lightList) override;
+      virtual void getLights(std::vector<mars::interfaces::LightData> *lightList) const override;
+      virtual int getLightCount(void) const override;
 
       virtual unsigned long addDrawObject(const mars::interfaces::NodeData &snode,
-                                          bool activated = true);
+                                          bool activated = true) override;
       virtual unsigned long getDrawID(const std::string &name) const override;
-      virtual void removeLayerFromDrawObjects(unsigned long window_id);
-      virtual void removeDrawObject(unsigned long id);
-      virtual void setDrawObjectPos(unsigned long id, const mars::utils::Vector &pos);
-      virtual void setDrawObjectRot(unsigned long id, const mars::utils::Quaternion &q);
-      virtual void setDrawObjectScale(unsigned long id, const mars::utils::Vector &scale);
-      virtual void setDrawObjectScaledSize(unsigned long id, const mars::utils::Vector &ext);
+      virtual void removeLayerFromDrawObjects(unsigned long window_id) override;
+      virtual void removeDrawObject(unsigned long id) override;
+      virtual void setDrawObjectPos(unsigned long id, const mars::utils::Vector &pos) override;
+      virtual void setDrawObjectRot(unsigned long id, const mars::utils::Quaternion &q) override;
+      virtual void setDrawObjectScale(unsigned long id, const mars::utils::Vector &scale) override;
+      virtual void setDrawObjectScaledSize(unsigned long id, const mars::utils::Vector &ext) override;
       virtual void setDrawObjectMaterial(unsigned long id,
-                                         const mars::interfaces::MaterialData &material);
-      virtual void addMaterial(const interfaces::MaterialData &material);
-      virtual void setDrawObjectNodeMask(unsigned long id, unsigned int bits);
+                                         const mars::interfaces::MaterialData &material) override;
+      virtual void addMaterial(const interfaces::MaterialData &material) override;
+      virtual void setDrawObjectNodeMask(unsigned long id, unsigned int bits) override;
       // deprecated function
-      virtual void setBlending(unsigned long id, bool mode);
-      virtual void setBumpMap(unsigned long id, const std::string &bumpMap);
+      virtual void setBlending(unsigned long id, bool mode) override;
+      virtual void setBumpMap(unsigned long id, const std::string &bumpMap) override;
 
-      virtual void setDrawObjectSelected(unsigned long id, bool val);
-      virtual void setDrawObjectShow(unsigned long id, bool val);
-      virtual void setDrawObjectRBN(unsigned long id, int val);
-      virtual void setSelectable(unsigned long id, bool val);
+      virtual void setDrawObjectSelected(unsigned long id, bool val) override;
+      virtual void setDrawObjectShow(unsigned long id, bool val) override;
+      virtual void setDrawObjectRBN(unsigned long id, int val) override;
+      virtual void setSelectable(unsigned long id, bool val) override;
       virtual void exportDrawObject(unsigned long id,
-                                    const std::string &name) const;
-      virtual void deactivate3DWindow(unsigned long id);
-      virtual void activate3DWindow(unsigned long id);
+                                    const std::string &name) const override;
+      virtual void deactivate3DWindow(unsigned long id) override;
+      virtual void activate3DWindow(unsigned long id) override;
       /** \brief creates a preview node */
-      void preview(int action, bool resize, const std::vector<mars::interfaces::NodeData> &allNodes,
-                   unsigned int num = 0, const mars::interfaces::MaterialData *mat = 0);
+      virtual void preview(int action, bool resize, const std::vector<mars::interfaces::NodeData> &allNodes,
+                   unsigned int num = 0, const mars::interfaces::MaterialData *mat = 0) override;
       /**\brief removes a preview node */
-      void removePreviewNode(unsigned long id);
+      virtual void removePreviewNode(unsigned long id) override;
 
-      virtual void setTexture(unsigned long id, const std::string &filename);
+      virtual void setTexture(unsigned long id, const std::string &filename) override;
 
       /**\brief returns acutal camera information */
-      virtual void getCameraInfo(mars::interfaces::cameraStruct *cs) const;
+      virtual void getCameraInfo(mars::interfaces::cameraStruct *cs) const override;
       /**\brief sets the camera type */
-      virtual void setCamera(int type);
+      virtual void setCamera(int type) override;
 
       /**\brief returns the graphics scene */
-      void* getScene() const;
-      void* getScene2() const;
+      virtual void* getScene() const override;
+      virtual void* getScene2() const override;
       /**\brief save the scene in an "obj" file for rendering */
-      void saveScene(const std::string &filename) const;
-      void exportScene(const std::string &filename) const;
+      virtual void saveScene(const std::string &filename) const override;
+      virtual void exportScene(const std::string &filename) const override;
 
       /**\brief returns the global state set */
-      void* getStateSet() const;
+      virtual void* getStateSet() const override;
 
       /**\brief close existing joint axis  */
-      void closeAxis();
+      virtual void closeAxis() override;
       /**\brief draws 2 axis from first to second to third and 2 joint axis
          in the widget */
-      void drawAxis(const mars::utils::Vector &first,
-                    const mars::utils::Vector &second,
-                    const mars::utils::Vector &third,
-                    const mars::utils::Vector &axis1,
-                    const mars::utils::Vector &axis2);
+      virtual void drawAxis(const mars::utils::Vector &first,
+                            const mars::utils::Vector &second,
+                            const mars::utils::Vector &third,
+                            const mars::utils::Vector &axis1,
+                            const mars::utils::Vector &axis2) override;
 
       /**\brief adds the main coordination frame to the scene */
-      void showCoords();
+      virtual void showCoords() override;
       /**\brief adds a local coordination frame to the scene */
-      void showCoords(const mars::utils::Vector &pos,
+      virtual void showCoords(const mars::utils::Vector &pos,
                       const mars::utils::Quaternion &rot,
-                      const mars::utils::Vector &size);
+                      const mars::utils::Vector &size) override;
       /**\brief removes the main coordination frame from the scene */
-      void hideCoords();
+      virtual void hideCoords() override;
       /**\brief removes actual coordination frame from the scene*/
-      void hideCoords(const mars::utils::Vector &pos);
-      bool coordsVisible(void) const;
+      virtual void hideCoords(const mars::utils::Vector &pos) override;
+      virtual bool coordsVisible(void) const override;
 
-      void showGrid();
-      void hideGrid();
-      bool gridVisible(void) const;
+      virtual void showGrid() override;
+      virtual void hideGrid() override;
+      virtual bool gridVisible(void) const override;
 
-      void showClouds();
-      void hideClouds();
-      bool cloudsVisible(void) const;
+      virtual void showClouds() override;
+      virtual void hideClouds() override;
+      virtual bool cloudsVisible(void) const override;
 
-      virtual void update(); //< updates graphics
-      virtual void draw();
-      virtual void lock();
-      virtual void unlock();
+      virtual void update() override; //< updates graphics
+      virtual void draw() override;
+      virtual void lock() override;
+      virtual void unlock() override;
 
       void setWidget(GraphicsWidget *widget);
-      virtual void* getQTWidget(unsigned long id) const;
-      virtual void showQTWidget(unsigned long id);
+      virtual void* getQTWidget(unsigned long id) const override;
+      virtual void showQTWidget(unsigned long id) override;
 
       virtual unsigned long new3DWindow(void *myQTWidget = 0, bool rtt = 0,
-                                        int width = 0, int height = 0, const std::string &name=std::string(""));
-      virtual interfaces::GraphicsWindowInterface* get3DWindow(unsigned long id) const;
-      virtual void remove3DWindow(unsigned long id);
+                                        int width = 0, int height = 0, const std::string &name=std::string("")) override;
+      virtual interfaces::GraphicsWindowInterface* get3DWindow(unsigned long id) const override;
+      virtual void remove3DWindow(unsigned long id) override;
 
       /**
        * Return the first matching 3D windows with the given name, 0 otherwise
        */
-      virtual interfaces::GraphicsWindowInterface* get3DWindow(const std::string &name) const;
+      virtual interfaces::GraphicsWindowInterface* get3DWindow(const std::string &name) const override;
 
-      virtual void getList3DWindowIDs(std::vector<unsigned long> *ids) const;
-      virtual void setGrabFrames(bool value);
+      virtual void getList3DWindowIDs(std::vector<unsigned long> *ids) const override;
+      virtual void setGrabFrames(bool value) override;
       virtual void setGraphicsWindowGeometry(unsigned long id, int top,
-                                             int left, int width, int height);
+                                             int left, int width, int height) override;
       virtual void getGraphicsWindowGeometry(unsigned long id,
                                              int *top, int *left,
-                                             int *width, int *height) const;
-      virtual void setActiveWindow(unsigned long win_id);
+                                             int *width, int *height) const override;
+      virtual void setActiveWindow(unsigned long win_id) override;
       GraphicsWidget* getGraphicsWindow(unsigned long id) const;
 
       // HUD Interface:
-      virtual unsigned long addHUDElement(interfaces::hudElementStruct *new_hud_element);
-      void removeHUDElement(unsigned long id);
-      virtual void switchHUDElementVis(unsigned long id);
-      virtual void setHUDElementPos(unsigned long id, double x, double y);
+      virtual unsigned long addHUDElement(interfaces::hudElementStruct *new_hud_element) override;
+      void removeHUDElement(unsigned long id) override;
+      virtual void switchHUDElementVis(unsigned long id) override;
+      virtual void setHUDElementPos(unsigned long id, double x, double y) override;
       virtual void setHUDElementTexture(unsigned long id,
-                                        std::string texturename);
-      virtual void setHUDElementTextureData(unsigned long id, void* data);
+                                        std::string texturename) override;
+      virtual void setHUDElementTextureData(unsigned long id, void* data) override;
       virtual void setHUDElementTextureRTT(unsigned long id,
                                            unsigned long window_id,
-                                           bool depthComponent = false);
+                                           bool depthComponent = false) override;
       virtual void setHUDElementLabel(unsigned long id, std::string text,
-                                      double text_color[4]);
+                                      double text_color[4]) override;
       virtual void setHUDElementLines(unsigned long id, std::vector<double> *v,
-                                      double color[4]);
+                                      double color[4]) override;
 
-      virtual void addEventClient(interfaces::GraphicsEventClient* theClient);
-      virtual void removeEventClient(interfaces::GraphicsEventClient* theClient);
-      virtual void addGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler);
-      virtual void removeGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler);
-      virtual void emitKeyDownEvent(int key, unsigned int modKey, unsigned long win_id);
-      virtual void emitKeyUpEvent(int key, unsigned int modKey, unsigned long win_id);
-      virtual void emitQuitEvent(unsigned long win_id);
-      virtual void emitSetAppActive(unsigned long win_id);
-      virtual void emitNodeSelectionChange(unsigned long win_id, int mode);
-      virtual void showNormals(bool val);
-      virtual void showRain(bool val);
-      virtual void showSnow(bool val);
-      virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property);
-      virtual void emitGeometryChange(unsigned long win_id, int left, int top, int width, int height);
+      virtual void addEventClient(interfaces::GraphicsEventClient* theClient) override;
+      virtual void removeEventClient(interfaces::GraphicsEventClient* theClient) override;
+      virtual void addGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler) override;
+      virtual void removeGuiEventHandler(interfaces::GuiEventInterface *_guiEventHandler) override;
+      virtual void emitKeyDownEvent(int key, unsigned int modKey, unsigned long win_id) override;
+      virtual void emitKeyUpEvent(int key, unsigned int modKey, unsigned long win_id) override;
+      virtual void emitQuitEvent(unsigned long win_id) override;
+      virtual void emitSetAppActive(unsigned long win_id) override;
+      virtual void emitNodeSelectionChange(unsigned long win_id, int mode) override;
+      virtual void showNormals(bool val) override;
+      void showRain(bool val);
+      void showSnow(bool val);
+      virtual void cfgUpdateProperty(cfg_manager::cfgPropertyStruct _property) override;
+      virtual void emitGeometryChange(unsigned long win_id, int left, int top, int width, int height) override;
       // return the view of a window
-      virtual  void* getView(unsigned long id=1);
+      virtual  void* getView(unsigned long id=1) override;
       virtual void collideSphere(unsigned long id, mars::utils::Vector pos,
-                                 mars::interfaces::sReal radius);
-      virtual const mars::utils::Vector& getDrawObjectPosition(unsigned long id=0);
-      virtual const mars::utils::Quaternion& getDrawObjectQuaternion(unsigned long id=0);
+                                 mars::interfaces::sReal radius) override;
+      virtual const mars::utils::Vector& getDrawObjectPosition(unsigned long id=0) override;
+      virtual const mars::utils::Quaternion& getDrawObjectQuaternion(unsigned long id=0) override;
 
-      virtual mars::interfaces::LoadMeshInterface* getLoadMeshInterface(void);
-      virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void);
+      virtual mars::interfaces::LoadMeshInterface* getLoadMeshInterface(void) override;
+      virtual mars::interfaces::LoadHeightmapInterface* getLoadHeightmapInterface(void) override;
 
-      virtual void makeChild(unsigned long parentId, unsigned long childId);
-      virtual void attacheCamToNode(unsigned long winID, unsigned long drawID);
+      virtual void makeChild(unsigned long parentId, unsigned long childId) override;
+      virtual void attacheCamToNode(unsigned long winID, unsigned long drawID) override;
 
       /**
        * Sets the line laser
@@ -297,33 +304,47 @@ namespace mars {
        * @laser: Angle of the laser, as an direction-vector
        * @openingAngle: Opening angle of the laser; for complete laserLine, choose PI
        */
-      virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle);
+      virtual void setExperimentalLineLaser(utils::Vector pos, utils::Vector normal, utils::Vector color, utils::Vector laserAngle, float openingAngle) override;
 
-      virtual void addOSGNode(void* node);
-      virtual void removeOSGNode(void* node);
-      virtual unsigned long addHUDOSGNode(void* node);
+      virtual void addOSGNode(void* node) override;
+      virtual void removeOSGNode(void* node) override;
+      virtual unsigned long addHUDOSGNode(void* node) override;
 
       void removeGraphicsWidget(unsigned long id);
-      virtual bool isInitialized() const {return initialized;}
+      virtual bool isInitialized() const  override{return initialized;}
       osg_material_manager::MaterialNode* getMaterialNode(const std::string &name);
       void setDrawLineLaser(bool val);
       osg_material_manager::MaterialNode* getSharedStateGroup(unsigned long id);
       void setUseShadow(bool v);
       void setShadowSamples(int v);
-      virtual std::vector<interfaces::MaterialData> getMaterialList() const;
+      virtual std::vector<interfaces::MaterialData> getMaterialList() const override;
       virtual void editMaterial(std::string materialName, std::string key,
-                                std::string value);
-      virtual void setCameraDefaultView(int view);
+                                std::string value) override;
+      virtual void setCameraDefaultView(int view) override;
       inline void setActiveWindow(GraphicsWidget *g) {activeWindow = g;}
-      virtual void setDrawObjectBrightness(unsigned long id, double v);
-      virtual void edit(const std::string &key, const std::string &value);
-      void edit(unsigned long widgetID, const std::string &key,
-                const std::string &value);
+      virtual void setDrawObjectBrightness(unsigned long id, double v) override;
+      virtual void edit(const std::string &key, const std::string &value) override;
+      virtual void edit(unsigned long widgetID, const std::string &key,
+                        const std::string &value) override;
       osg::Vec3f getSelectedPos();
       void setShadowTechnique(std::string s);
 
+        // ## DataBroker callbacks ##
+        virtual void produceData(const data_broker::DataInfo &info,
+                                 data_broker::DataPackage *package,
+                                 int callbackParam) override;
+
     private:
-      mars::interfaces::GraphicData graphicOptions;
+        data_broker::DataBrokerInterface *dataBroker;
+        data_broker::DataPackageMapping dbPackageMapping;
+        double preTime, avgPreTime;
+        double updateTime, avgUpdateTime;
+        double lightTime, avgLightTime;
+        double materialTime, avgMaterialTime;
+        double frameTime, avgFrameTime;
+        double postTime, avgPostTime;
+        int avgTimeCount;
+        mars::interfaces::GraphicData graphicOptions;
 
       //pointer to outer space
       GraphicsWidget *osgWidget; //pointer to the QT OSG Widget

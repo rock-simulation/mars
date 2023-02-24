@@ -63,10 +63,9 @@ namespace mars {
 
     GraphicsWidget::GraphicsWidget(void *parent,
                                    osg::Group* scene, unsigned long id,
-                                   bool isRTTWidget, int f,
+                                   bool isRTTWidget,
                                    GraphicsManager *gm):
       _osgWidgetWindowManager(0), _osgWidgetWindowCnt(0), gm(gm), hasFocus(false) {
-      (void)f;
       (void)parent;
 
       widgetID = id;

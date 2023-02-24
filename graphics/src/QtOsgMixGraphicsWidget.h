@@ -46,9 +46,9 @@ namespace mars {
     public:
       QtOsgMixGraphicsWidget(void *parent, osg::Group *scene,
                              unsigned long id, bool rtt_widget = 0,
-                             Qt::WindowFlags f=0, GraphicsManager *gm = 0)
-        : QWidget((QWidget*) parent, f),
-        GraphicsWidget(parent, scene, id, rtt_widget, f, gm), childWidget(NULL) {}
+                             GraphicsManager *gm = 0)
+        : QWidget((QWidget*) parent),
+        GraphicsWidget(parent, scene, id, rtt_widget, gm), childWidget(NULL) {}
       // Prevent flicker on Windows Qt
       QPaintEngine* paintEngine () const { return 0; }
 
@@ -75,7 +75,6 @@ namespace mars {
                                                     osg::Group *scene,
                                                     unsigned long id,
                                                     bool rtt_widget = 0,
-                                                    Qt::WindowFlags f=0,
                                                     GraphicsManager *gm = 0);
 
     protected:
