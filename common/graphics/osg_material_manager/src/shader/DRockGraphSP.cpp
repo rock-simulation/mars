@@ -124,8 +124,17 @@ namespace osg_material_manager {
     // Making default values of nodes easily accessible
     for (it = graph["configuration"]["nodes"].begin(); it != graph["configuration"]["nodes"].end(); ++it) {
       std::string name = replaceString((std::string)(*it)["name"], "::", "_");
-      ConfigMap data = ConfigMap::fromYamlString((*it)["data"].getString());
+      ConfigMap data;
+      if((*it)["data"].isMap())
+      {
+          data = (*it)["data"];
+      }
+      else
+      {
+          data = ConfigMap::fromYamlString((*it)["data"].getString());
+      }
       nodeConfig[name] = data["data"];
+
     }
 
     // create node ids for tsort
