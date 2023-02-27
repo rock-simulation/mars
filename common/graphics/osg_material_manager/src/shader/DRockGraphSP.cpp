@@ -226,7 +226,15 @@ namespace osg_material_manager {
         }
       }
       if (!filterMap.hasKey(nodeFunction)) {
-        ConfigMap functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
+          ConfigMap functionInfo;
+          try {
+              functionInfo = ConfigMap::fromYamlFile(resPath + "/graph_shader/" + nodeFunction + ".yaml");
+          }
+          catch (...)
+          {
+              fprintf(stderr, "ERROR: \n%s\n", nodeMap.toYamlString().c_str());
+              throw std::runtime_error("load shader error");
+          }
         // could handle shadow_map samples here
 
         parse_functionInfo(nodeFunction, functionInfo);
