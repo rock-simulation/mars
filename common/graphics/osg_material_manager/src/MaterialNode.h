@@ -154,6 +154,7 @@ namespace osg_material_manager {
     double iWidth, iHeight, iLength;
     int renderBin;
     mars::utils::Vector lineLasePos, lineLaserNormal;
+      std::vector<std::string> filterLights;
   }; // end of class MaterialNode
 
 } // end of namespace osg_material_manager
