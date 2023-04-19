@@ -171,6 +171,12 @@ foreach (LIBSFILE core_libs other_libs core_libs-nogui envire_core_libs envire_o
   install(FILES ${CMAKE_BINARY_DIR}/${LIBSFILE}.txt.example DESTINATION configuration/mars_default/)
 endforeach()
 
+# install envire core lib and other lib as default
+configure_file(configuration/envire_core_libs.in ${CMAKE_BINARY_DIR}/core_libs.txt @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/core_libs.txt DESTINATION configuration/mars_default/)
+configure_file(configuration/envire_other_libs.in ${CMAKE_BINARY_DIR}/other_libs.txt @ONLY)
+install(FILES ${CMAKE_BINARY_DIR}/other_libs.txt DESTINATION configuration/mars_default/)
+
 install(FILES configuration/pypath.yml  DESTINATION configuration/mars_default/)
 install(DIRECTORY configuration/python DESTINATION configuration/mars_default/)
 
