@@ -808,6 +808,12 @@ namespace osg_material_manager {
         map2["mappings"]["numLights"] = s.str();
         YamlShader *plightVert = new YamlShader((string)map2["name"], args, map2, resPath);
         vertexShader->addShaderFunction(plightVert);
+        if(useShadow and shadowTechnique != "none") {
+          ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/shadow_"+shadowTechnique+"_vert.yaml");
+          map2["mappings"]["shadowSamples"] = shadowSamples;
+          YamlShader *shadowVert = new YamlShader((string)map2["name"], args, map2, resPath);
+          vertexShader->addShaderFunction(shadowVert);
+        }
       }
       if(map["shader"].hasKey("NormalMapVertex")) {
         ConfigMap map2 = ConfigMap::fromYamlFile(resPath+"/shader/bumpmapping_vert.yaml");
