@@ -26,7 +26,7 @@ namespace data_broker_plotter2 {
     name(_name), nextPlotId(1), updateMap(false), needReplot(false), inReceive(false), exit(false),
     threadRunning(false), simTime(0) {
 
-    setStyleSheet("background-color:#eeeeee;");
+      //setStyleSheet("background-color:#eeeeee;");
     configPath = cfg->getOrCreateProperty("Config", "config_path", string(".")).sValue;
     exportPath = configPath;
 
