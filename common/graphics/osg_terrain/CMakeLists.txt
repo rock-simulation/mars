@@ -5,8 +5,6 @@ cmake_minimum_required(VERSION 2.6)
 include(FindPkgConfig)
 include(CheckIncludeFileCXX)
 
-add_definitions(-std=c++11)
-
 find_package(lib_manager)
 lib_defaults()
 
@@ -23,7 +21,6 @@ if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
 else(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif(WIN32)
 
 set (CMAKE_REQUIRED_INCLUDES ${CMAKE_REQUIRED_INCLUDES} ${OPENSCENEGRAPH_INCLUDE_DIRS})

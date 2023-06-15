@@ -6,8 +6,6 @@ cmake_minimum_required(VERSION 2.6)
 
 #set(CMAKE_BUILD_TYPE Debug)
 
-add_definitions(-std=c++11)
-
 MACRO(CMAKE_USE_FULL_RPATH install_rpath)
     SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
     SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
