@@ -39,7 +39,15 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
-pkg_check_modules(OSGQT openscenegraph-osgQt5)
+set (QT_USE_QTOPENGL TRUE)
+setup_qt()
+
+if(USE_QT5)
+    pkg_check_modules(OSGQT openscenegraph-osgQt5)
+else(USE_QT5)
+    pkg_check_modules(OSGQT openscenegraph-osgQt)
+endif(USE_QT5)
+
 if(OSGQT_FOUND)
 find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
 
@@ -60,9 +68,6 @@ CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
-
-set (QT_USE_QTOPENGL TRUE)
-setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
                   lib_manager
