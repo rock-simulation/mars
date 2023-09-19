@@ -1,7 +1,7 @@
 prefix=@CMAKE_INSTALL_PREFIX@
 exec_prefix=@CMAKE_INSTALL_PREFIX@
 libdir=${prefix}/lib
-includedir=${prefix}/include/
+includedir=${prefix}/include
 
 Name: @PROJECT_NAME@
 Description: The DFKI Robot Simulator
@@ -9,5 +9,5 @@ Version: @PROJECT_VERSION@
 Libs: -L${libdir} -l@PROJECT_NAME@
 Requires.private: mars_utils mars_interfaces lib_manager data_broker cfg_manager ode 
 
-Cflags: -I${includedir}  -I${includedir}/mars_sim/ @ADD_INCLUDES@
+Cflags: -I${includedir}  -I${includedir}/mars/sim @ADD_INCLUDES@
 
