@@ -72,6 +72,7 @@ namespace mars {
         group_(0),
         posTransform_(0),
         scaleTransform_(0),
+        outlineEffect_(0),
         maxNumLights(1),
         g(g),
         sharedStateGroup(false),
@@ -108,8 +109,18 @@ namespace mars {
       posTransform_ = new osg::PositionAttitudeTransform();
       posTransform_->setPivotPoint(osg::Vec3(pivot_.x(), pivot_.y(), pivot_.z()));
       posTransform_->setPosition(osg::Vec3(0.0, 0.0, 0.0));
-      posTransform_->addChild(scaleTransform_.get());
       posTransform_->setNodeMask(nodeMask_);
+
+      #ifdef USE_OSGFX
+      outlineEffect_ = new osgFX::Outline;
+      outlineEffect_->setWidth(12);
+      outlineEffect_->setColor(osg::Vec4(0,0.75,0,1));
+      outlineEffect_->setEnabled(false);
+      outlineEffect_->addChild(scaleTransform_.get());      
+      posTransform_->addChild(outlineEffect_.get());
+      #else
+      posTransform_->addChild(scaleTransform_.get());
+      #endif
 
       group_ = new osg::Group;
       if(sharedID) {
@@ -278,7 +289,19 @@ namespace mars {
     
     void DrawObject::setSelected(bool val) {
       selected_ = val;
-      if(selectable_) {
+      if (selectable_) {
+        #ifdef USE_OSGFX
+        if (outlineEffect_ == 0) {
+          std::cerr << "No Outline effect created for id " << this->id_ << std::endl;
+        }
+
+        if (selected_ && showSelected) {
+          outlineEffect_->setEnabled(true);
+        } else {
+          outlineEffect_->setEnabled(false);
+        }
+
+        #else
         osg::PolygonMode *polyModeObj;
 
         osg::StateSet *state = group_->getOrCreateStateSet();
@@ -325,6 +348,7 @@ namespace mars {
           state->removeMode(GL_FOG);
 
         }
+        #endif
       }
       for(auto it:selectionChilds) {
         it->setSelected(val);
