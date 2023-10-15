@@ -905,6 +905,8 @@ namespace mars {
       if(config.hasKey("createFrame") and (bool)config["createFrame"] == true) {
         drawObject->object()->frame = framesFactory->createFrame();
         drawObject->object()->frame->setScale(scaleFramesProp.dValue);
+        osg::Node *node = (osg::Node*)drawObject->object()->frame->getOSGNode();
+        node->setNodeMask(1);
         if(showFramesProp.bValue) {
           scene->addChild((osg::PositionAttitudeTransform*)drawObject->object()->frame->getOSGNode());
         }
@@ -1424,6 +1426,7 @@ namespace mars {
       string resPath = resources_path.sValue;
 
       coords = new CoordsPrimitive(osgWidget, resPath);
+      coords->setNodeMask(1);
       scene->addChild(coords.get());
       show_coords = true;
     }
