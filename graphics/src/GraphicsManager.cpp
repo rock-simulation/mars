@@ -348,6 +348,7 @@ namespace mars {
         //effectNode->setScale(4);
         //scene->addChild(effectNode.get());
         grid = new GridPrimitive(osgWidget);
+        grid->setNodeMask(1);
         if(showGridProp.bValue) showGrid();
 
         show_coords = showCoordsProp.bValue;
@@ -501,6 +502,7 @@ namespace mars {
             font_path.append("/Fonts");
             osg::ref_ptr<osg::Group> osgNode = new OSGDrawItem(osgWidget, di,
                                                                font_path);
+            osgNode->setNodeMask(1);
             scene->addChild(osgNode.get());
 
             di.draw_state = DRAW_UNKNOWN;
