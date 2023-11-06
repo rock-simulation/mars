@@ -29,6 +29,8 @@
 #define GUI_ACTION_RESET_SCENE           3
 #define GUI_ACTION_NEW_SCENE             4
 #define GUI_ACTION_EXPORT_SCENE          5
+#define GUI_ACTION_EXPORT_STATE          6
+#define GUI_ACTION_IMPORT_STATE          7
 #define GUI_ACTION_SIM_START           101
 #define GUI_ACTION_SIM_PAUSE           102
 #define GUI_ACTION_SIM_STEP            103
