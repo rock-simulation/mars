@@ -37,6 +37,9 @@
 namespace osg_terrain {
   class PosTransform : public osg::Transform {
   public:
+
+    PosTransform(){}
+    virtual ~PosTransform(){}
     double zOffset;
     double x, y, z;
     bool overridePos;
@@ -46,6 +49,40 @@ namespace osg_terrain {
                                            osg::NodeVisitor* nv) const;
     virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,
                                            osg::NodeVisitor* nv) const;
+
+    virtual const char* libraryName() const {return "osg_terrain";}
+    virtual const char* className() const {return "PosTransform";}
+
+    void setZOffset(double value) {
+      zOffset = value;
+    }
+    double getZOffset() const {
+      return zOffset;
+    }
+    void setX(double value) {
+      x = value;
+    }
+    double getX() const {
+      return x;
+    }
+    void setY(double value) {
+      y = value;
+    }
+    double getY() const {
+      return y;
+    }
+    void setZ(double value) {
+      z = value;
+    }
+    double getZ() const {
+      return z;
+    }
+    void setOverridePos(bool value) {
+      overridePos = value;
+    }
+    bool getOverridePos() const {
+      return overridePos;
+    }
   };
 
   class ShaderTerrain : public osg::Group {
