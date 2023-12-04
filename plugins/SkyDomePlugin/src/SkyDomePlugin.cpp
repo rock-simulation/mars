@@ -40,11 +40,6 @@
 #include <osgDB/ReadFile>
 
 namespace mars {
-  namespace plugin {
-    namespace SkyDomePlugin {
-
-      using namespace mars::utils;
-      using namespace mars::interfaces;
 
       bool SkyTransform::computeLocalToWorldMatrix(osg::Matrix& matrix,
                                                    osg::NodeVisitor* nv) const  {
@@ -65,6 +60,12 @@ namespace mars {
         }
         return true;
       }
+
+  namespace plugin {
+    namespace SkyDomePlugin {
+
+      using namespace mars::utils;
+      using namespace mars::interfaces;
 
       SkyDomePlugin::SkyDomePlugin(lib_manager::LibManager *theManager)
         : MarsPluginTemplateGUI(theManager, "SkyDomePlugin"), materialManager(0) {
