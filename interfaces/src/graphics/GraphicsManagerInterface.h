@@ -187,9 +187,6 @@ namespace mars {
       virtual void getGraphicsWindowGeometry(unsigned long id, 
                                              int *top, int *left, 
                                              int *width, int *height) const = 0;
-
-      virtual void* getGraphicsWindow(unsigned long id) const = 0;
-
       virtual void setActiveWindow(unsigned long win_id) = 0;
       virtual void setDrawObjectSelected(unsigned long id, bool val) = 0;
       virtual void setDrawObjectShow(unsigned long id, bool val) = 0;
