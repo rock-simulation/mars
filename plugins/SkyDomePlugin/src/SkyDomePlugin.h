@@ -47,9 +47,6 @@
 
 namespace mars {
 
-  namespace plugin {
-    namespace SkyDomePlugin {
-
       class SkyTransform : public osg::Transform {
       public:
         SkyTransform(): s1(1.0), s2(1.0) {}
@@ -59,8 +56,26 @@ namespace mars {
         virtual bool computeWorldToLocalMatrix(osg::Matrix& matrix,
                                                osg::NodeVisitor* nv) const;
         double s1, s2;
+
+        virtual const char* libraryName() const {return "mars";}
+        virtual const char* className() const {return "SkyTransform";}
+
+        void setS1(double value) {
+          s1 = value;
+        }
+        double getS1() const {
+          return s1;
+        }
+        void setS2(double value) {
+          s2 = value;
+        }
+        double getS2() const {
+          return s2;
+        }
       };
 
+namespace plugin {
+   namespace SkyDomePlugin {
       // inherit from MarsPluginTemplateGUI for extending the gui
       class SkyDomePlugin: public mars::interfaces::MarsPluginTemplateGUI,
                            public mars::data_broker::ReceiverInterface,

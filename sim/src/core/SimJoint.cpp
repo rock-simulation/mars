@@ -409,6 +409,7 @@ namespace mars {
       obj->groupID = 0;
       obj->pos = anchor;
       obj->rot = angleAxisToQuaternion(position1*invert, axis1);
+      obj->value = position1;
     }
 
     const utils::Vector SimJoint::getForceVector(unsigned char axis_index) const {

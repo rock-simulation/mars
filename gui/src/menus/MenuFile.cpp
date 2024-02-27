@@ -29,11 +29,16 @@
 #include <mars/interfaces/sim/ControlCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/main_gui/GuiInterface.h>
+#include <mars/interfaces/sim/NodeManagerInterface.h>
+#include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/core_objects_exchange.h>
 #include <lib_manager/LibManager.hpp>
 #include <QtGui>
 
 #include <QMessageBox>
 #include <QFileDialog>
+
+#include <fstream>
 
 namespace mars {
   namespace gui {
@@ -76,6 +81,10 @@ namespace mars {
       mainGui->addGenericMenuAction("../File/Export/OSG-OBJ Model", GUI_ACTION_EXPORT_SCENE,
                                     (main_gui::MenuInterface*)this, 0);
 
+      mainGui->addGenericMenuAction("../File/Export/State", GUI_ACTION_EXPORT_STATE,
+                                    (main_gui::MenuInterface*)this, 0);
+      mainGui->addGenericMenuAction("../File/Import/State", GUI_ACTION_IMPORT_STATE,
+                                    (main_gui::MenuInterface*)this, 0);
     }
 
     MenuFile::~MenuFile() {
@@ -91,11 +100,78 @@ namespace mars {
       case GUI_ACTION_RESET_SCENE: menu_resetScene(); break;
       case GUI_ACTION_NEW_SCENE: menu_newScene(); break;
       case GUI_ACTION_EXPORT_SCENE: menu_exportScene(); break;
+      case GUI_ACTION_EXPORT_STATE: menu_exportState(); break;
+      case GUI_ACTION_IMPORT_STATE: menu_importState(); break;
       }
     }
 
     void MenuFile::menu_exportScene(void) {
       control->sim->exportScene();
+    }
+
+    void MenuFile::menu_exportState(void) {
+        std::vector<interfaces::core_objects_exchange> objectList;
+        std::vector<interfaces::core_objects_exchange>::iterator iter;
+        interfaces::NodeData theNode;
+        utils::Quaternion q;
+        utils::Vector pos;
+
+        QString fileName = QFileDialog::getSaveFileName(0, "Save State", ".", "MARS State Files (*.state)");
+
+        if (fileName.isEmpty())
+            return;
+
+        control->nodes->getListNodes(&objectList);
+
+        FILE *fileHandle = fopen(fileName.toStdString().c_str(), "w");
+
+        for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
+            theNode = control->nodes->getFullNode((*iter).index);
+            q = (*iter).rot * theNode.visual_offset_rot;
+
+            //pos = QVRotate((*iter).rot, theNode.visual_offset_pos);
+            pos = ((*iter).rot * theNode.visual_offset_pos);
+            pos += (*iter).pos;
+            fprintf(fileHandle, "n %s %g %g %g %g %g %g %g\n",
+                    (*iter).name.c_str(), pos.x(), pos.y(),
+                    pos.z(), q.w(), q.x(), q.y(), q.z());
+        }
+        control->motors->getListMotors(&objectList);
+        for(iter=objectList.begin(); iter!=objectList.end(); ++iter) {
+            fprintf(fileHandle, "m %s %g\n", (*iter).name.c_str(), (*iter).value);
+        }
+        fclose(fileHandle);
+    }
+
+      void MenuFile::menu_importState(void) {
+        QString fileName = QFileDialog::getOpenFileName(0, "Save State", ".", "MARS State Files (*.state)");
+
+        if (fileName.isEmpty())
+            return;
+
+        std::ifstream fileHandle(fileName.toStdString());
+        std::string line;
+        std::string c, name;
+        double x, y, z, qx, qy, qz, qw, v;
+        interfaces::NodeId id;
+        while(std::getline(fileHandle, line))
+        {
+            if(line[0] == 'n')
+            {
+                std::istringstream iss(line);
+                iss >> c >> name >> x >> y >> z >> qw >> qx >> qy >> qz;
+                id = control->nodes->getID(name);
+                control->nodes->setPosition(id, utils::Vector(x, y, z));
+                control->nodes->setRotation(id, utils::Quaternion(qw, qx, qy, qz));
+            }
+            else if(line[0] == 'm')
+            {
+                std::istringstream iss(line);
+                iss >> c >> name >> v;
+                id = control->motors->getID(name);
+                control->motors->setMotorValue(id, v);
+            }
+        }
     }
 
     void MenuFile::menu_resetScene(void) {

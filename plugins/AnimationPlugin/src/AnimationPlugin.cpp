@@ -136,6 +136,24 @@ namespace mars {
             control->nodes->setPosition(id, v);
             control->nodes->setRotation(id, q);
           }
+          id = control->nodes->getID("hand_l");
+          id2 = control->nodes->getID(it->getName());
+          if(id and id2 and it->hasBone("hand_l")) {
+            double x, y, z, qx, qy, qz, qw;
+            it->getPose("hand_l", &x, &y, &z, &qx, &qy, &qz, &qw);
+            Vector v(x, y, z);
+            Quaternion q;
+            q.x() = qx;
+            q.y() = qy;
+            q.z() = qz;
+            q.w() = qw;
+            Vector v2 = control->nodes->getPosition(id2);
+            Quaternion q2 = control->nodes->getRotation(id2);
+            v = q2*v + v2;
+            q = q2*q;
+            control->nodes->setPosition(id, v);
+            control->nodes->setRotation(id, q);
+          }
         }
       }
 

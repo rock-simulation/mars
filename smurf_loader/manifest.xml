@@ -19,6 +19,7 @@
 
     <rosdep name="boost" />
     <rosdep name="qt4" />
+    <rosdep name="zlib" />
 
     <tags>needs_opt</tags>
 </package>

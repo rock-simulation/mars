@@ -348,6 +348,7 @@ namespace mars {
         //effectNode->setScale(4);
         //scene->addChild(effectNode.get());
         grid = new GridPrimitive(osgWidget);
+        grid->setNodeMask(1);
         if(showGridProp.bValue) showGrid();
 
         show_coords = showCoordsProp.bValue;
@@ -501,6 +502,7 @@ namespace mars {
             font_path.append("/Fonts");
             osg::ref_ptr<osg::Group> osgNode = new OSGDrawItem(osgWidget, di,
                                                                font_path);
+            osgNode->setNodeMask(1);
             scene->addChild(osgNode.get());
 
             di.draw_state = DRAW_UNKNOWN;
@@ -905,6 +907,8 @@ namespace mars {
       if(config.hasKey("createFrame") and (bool)config["createFrame"] == true) {
         drawObject->object()->frame = framesFactory->createFrame();
         drawObject->object()->frame->setScale(scaleFramesProp.dValue);
+        osg::Node *node = (osg::Node*)drawObject->object()->frame->getOSGNode();
+        node->setNodeMask(1);
         if(showFramesProp.bValue) {
           scene->addChild((osg::PositionAttitudeTransform*)drawObject->object()->frame->getOSGNode());
         }
@@ -1424,6 +1428,7 @@ namespace mars {
       string resPath = resources_path.sValue;
 
       coords = new CoordsPrimitive(osgWidget, resPath);
+      coords->setNodeMask(1);
       scene->addChild(coords.get());
       show_coords = true;
     }

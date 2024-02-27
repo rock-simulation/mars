@@ -80,6 +80,8 @@ namespace mars {
       interfaces::ControlCenter *control;
 
       void menu_exportScene();
+      void menu_exportState();
+      void menu_importState();
       void menu_openPlugin();
       void menu_openSceneFile();
       void menu_saveSceneFile();
