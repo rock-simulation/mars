@@ -281,9 +281,11 @@ void MultiLevelLaserRangeFinder::update(std::vector<draw_item>* drawItems) {
 //     std::cout << "Update Called " << std::endl;
     
     //update distance images
+    // todo: pass measurement time to outside (Rock driver)
+    unsigned long time;
     for(std::vector<RaySubSensor>::iterator it = subSensors.begin(); it != subSensors.end();it++)
     {
-        it->gw->getRTTDepthData(it->distImage.data.data(), config.rttResolutionX, config.rttResolutionY);
+        it->gw->getRTTDepthData(it->distImage.data.data(), config.rttResolutionX, config.rttResolutionY, time);
     }
     
     const int width = config.rttResolutionX;

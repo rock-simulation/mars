@@ -28,6 +28,8 @@
 #include <cstring>
 #include <string>
 #include <osgDB/WriteFile>
+#include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
 
 #include "PostDrawCallback.h"
 
@@ -37,6 +39,7 @@ namespace mars {
 
     PostDrawCallback::PostDrawCallback(osg::Image* image) {
       _image = image;
+      _image_time = 0;
       _grab = false;
       _save_grab = false;
       image_id = (unsigned long*)malloc(sizeof(unsigned long));
@@ -56,6 +59,7 @@ namespace mars {
       (void) renderInfo;
       if(_grab) {
         pthread_mutex_lock(imageMutex);
+        _image_time = interfaces::ControlCenter::activeSim->getTime();
         if(_save_grab)
           _image->readPixels(0, 0 , _width, _height, GL_RGBA,
                              GL_UNSIGNED_BYTE);
@@ -87,7 +91,7 @@ namespace mars {
       _save_grab = grab;
     }
 
-    void PostDrawCallback::getImageData(void **data, int &width, int &height) {
+    void PostDrawCallback::getImageData(void **data, int &width, int &height, unsigned long &image_time) {
       pthread_mutex_lock(imageMutex);
       if(_image->valid()) {
         width = _image->s();
@@ -95,6 +99,7 @@ namespace mars {
         // allocating width*height*3byte
         *data = malloc(width*height*4);
         memcpy(*data, _image->data(), width*height*4);
+        image_time = _image_time;
       }
       pthread_mutex_unlock(imageMutex);
     }

@@ -1181,5 +1181,8 @@ namespace mars {
       offsetRot.w() = rw;
     }
 
+    bool GraphicsCamera::isActive() {
+      return mainCamera->getNodeMask() != 0;
+    }
   } // end of namespace graphics
 } // end of namespace mars

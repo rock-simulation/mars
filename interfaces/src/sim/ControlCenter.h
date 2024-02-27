@@ -107,6 +107,7 @@ namespace mars {
       LoadCenter *loadCenter;
 
       static data_broker::DataBrokerInterface *theDataBroker;
+      static SimulatorInterface *activeSim;
     };
 
   } // end of namespace interfaces

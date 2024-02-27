@@ -138,6 +138,7 @@ namespace mars {
                                  double rw);
       virtual double getMoveSpeed() {return (double)moveSpeed;}
       virtual void setMoveSpeed(double s) {moveSpeed = (float)s;}
+      bool isActive();
 
     private:
       void calcEyeSep(void);

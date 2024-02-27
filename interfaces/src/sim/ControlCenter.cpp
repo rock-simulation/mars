@@ -38,6 +38,7 @@ namespace mars {
 
   namespace interfaces {
     data_broker::DataBrokerInterface *ControlCenter::theDataBroker = NULL;
+    SimulatorInterface *ControlCenter::activeSim = NULL;
   }
 
 } // end of namespace mars

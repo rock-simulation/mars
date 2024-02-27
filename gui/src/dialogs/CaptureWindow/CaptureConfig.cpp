@@ -120,7 +120,8 @@ namespace mars {
       while(capture) {
         if(gw) {
           data = 0;
-          gw->getImageData(&data, width, height);
+          unsigned long time;
+          gw->getImageData(&data, width, height, time);
           if(data) {
             newImage.data = data;
             newImage.width = width;

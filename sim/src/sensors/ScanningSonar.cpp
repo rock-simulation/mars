@@ -216,7 +216,9 @@ namespace mars {
       double *res = (*data);
       int width, height;
       float *img_data;
-      gw->getRTTDepthData(&img_data, width, height);
+      // todo: pass time to outside (Rock driver)
+      unsigned long time;
+      gw->getRTTDepthData(&img_data, width, height, time);
 
 
       res[0] = bearing;

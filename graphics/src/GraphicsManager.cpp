@@ -28,6 +28,8 @@
 #include "GraphicsManager.h"
 #include "config.h"
 #include <mars/utils/misc.h>
+#include <mars/interfaces/sim/ControlCenter.h>
+#include <mars/interfaces/sim/SimulatorInterface.h>
 
 //#include <osgUtil/Optimizer>
 
@@ -800,6 +802,11 @@ namespace mars {
 
       // Render a complete new frame.
       if(viewer) {
+        std::vector<GraphicsWidget*>::const_iterator iter;
+        unsigned long time = ControlCenter::activeSim->getTime();
+        for(iter=graphicsWindows.begin(); iter!=graphicsWindows.end(); iter++) {
+            (*iter)->setFrameTime(time);
+        }
         viewer->frame();
       }
       ++framecount;

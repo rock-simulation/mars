@@ -1100,37 +1100,38 @@ namespace mars {
       hasFocus = false;
     }
 
-    void GraphicsWidget::getImageData(char* buffer, int& width, int& height)
+    void GraphicsWidget::getImageData(char* buffer, int& width, int& height, unsigned long &time)
     {
       if(isRTTWidget) {
         osg::Image *image = rttImage;
         width = image->s();
         height = image->t();
         memcpy(buffer, image->data(), width*height*4);
+        time = frame_time;
       }
       else
       {
         //slow but works...
         void *data;
-        postDrawCallback->getImageData(&data, width, height);
+        postDrawCallback->getImageData(&data, width, height, time);
         memcpy(buffer, data, width*height*4);
         free(data);
       }
     }
 
-    void GraphicsWidget::getImageData(void **data, int &width, int &height) {
+    void GraphicsWidget::getImageData(void **data, int &width, int &height, unsigned long &time) {
       if(isRTTWidget) {
         width = rttImage->s();
         height = rttImage->t();
         *data = malloc(width*height*4);
-        getImageData((char *) *data, width, height);
+        getImageData((char *) *data, width, height, time);
       }
       else {
-        postDrawCallback->getImageData(data, width, height);
+        postDrawCallback->getImageData(data, width, height, time);
       }
     }
 
-    void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height)
+    void GraphicsWidget::getRTTDepthData(float* buffer, int& width, int& height, unsigned long &time)
     {
       if(isRTTWidget) {
         GLuint* data2 = (GLuint *)rttDepthImage->data();
@@ -1153,17 +1154,18 @@ namespace mars {
               buffer[d++] = Zn*Zf/(Zf-dv*(Zf-Zn));
           }
         }
+        time = frame_time;
       } else {
         throw std::runtime_error("Depth image not supported on non RTT Widges");
       }
     }
 
-    void GraphicsWidget::getRTTDepthData(float **data, int &width, int &height) {
+    void GraphicsWidget::getRTTDepthData(float **data, int &width, int &height, unsigned long &time) {
       if(isRTTWidget) {
         width = rttDepthImage->s();
         height = rttDepthImage->t();
         *data = (float*)malloc(width*height*sizeof(float));
-        getRTTDepthData(*data, width, height);
+        getRTTDepthData(*data, width, height, time);
       } else {
         throw std::runtime_error("Depth image not supported on non RTT Widges");
       }
@@ -1802,5 +1804,12 @@ namespace mars {
         myHUD->setViewOffsets(x1, x2, y1, y2);
       }
     }
+
+    void GraphicsWidget::setFrameTime(unsigned long time) {
+      if(graphicsCamera->isActive()) {
+        frame_time = time;
+      }
+    }
+
   } // end of namespace graphics
 } // end of namespace mars

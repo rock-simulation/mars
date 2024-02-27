@@ -183,8 +183,8 @@ namespace mars {
        * @param width returns the width of the image
        * @param height returns the height of the image
        * */
-      virtual void getImageData(char *buffer, int &width, int &height);
-      virtual void getImageData(void **data, int &width, int &height);
+      virtual void getImageData(char *buffer, int &width, int &height, unsigned long &time);
+      virtual void getImageData(void **data, int &width, int &height, unsigned long &time);
 
       /**
        * This function copies the depth image in the given buffer.
@@ -195,8 +195,8 @@ namespace mars {
        * @param width returns the width of the image
        * @param height returns the height of the image
        * */
-      virtual void getRTTDepthData(float *buffer, int &width, int &height);
-      virtual void getRTTDepthData(float **data, int &width, int &height);
+      virtual void getRTTDepthData(float *buffer, int &width, int &height, unsigned long &time);
+      virtual void getRTTDepthData(float **data, int &width, int &height, unsigned long &time);
 
       virtual osg::Group* getScene(){
         return scene;
@@ -211,10 +211,12 @@ namespace mars {
       virtual void setupDistortion(double factor);
       void grabFocus();
       void unsetFocus();
+      void setFrameTime(unsigned long time);
 
     protected:
       // the widget size
       int widgetWidth, widgetHeight, widgetX, widgetY;
+      unsigned long frame_time;
 
       // protected for osg reference counter
 

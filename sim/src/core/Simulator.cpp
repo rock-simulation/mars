@@ -110,13 +110,13 @@ namespace mars {
       arg_ortho  = 0;
 
       Simulator::activeSimulator = this; // set this Simulator object to the active one
-
       gravity = Vector(0.0, 0.0, -9.81); // set gravity to earth conditions
 
       // build the factories
       control = new ControlCenter();
       control->loadCenter = new LoadCenter();
       control->sim = (SimulatorInterface*)this;
+      ControlCenter::activeSim = control->sim;
       control->cfg = 0;//defaultCFG;
       dbSimTimePackage.add("simTime", 0.);
       dbSimDebugPackage.add("simUpdate", 0.);

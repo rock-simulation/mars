@@ -142,6 +142,7 @@ namespace mars {
       void deactivateRendering();
       void activateRendering();
       unsigned long getWindowID() const {return cam_window_id;}
+      unsigned long getImageTime() const {return image_time;}
 
     private:
       CameraConfigStruct config;
@@ -157,6 +158,7 @@ namespace mars {
       utils::Mutex mutex;
       int renderCam;
       unsigned long draw_id;
+      mutable unsigned long image_time;
   };
 
   } // end of namespace sim

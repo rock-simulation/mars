@@ -42,10 +42,11 @@ namespace mars {
       void setGrab(bool grab);
       void setSaveGrab(bool grab);
 
-      void getImageData(void **data, int &width, int &height);
+      void getImageData(void **data, int &width, int &height, unsigned long &image_time);
 
     private:
       osg::Image* _image;
+      mutable unsigned long _image_time;
       int _width;
       int _height;
       bool _grab, _save_grab;

@@ -61,6 +61,7 @@ namespace mars {
       logicalCamera(id,name,config.width,config.height,1,false, true)
     {
       renderCam = 2;
+      image_time = 0;
       this->attached_node = config.attached_node;
       draw_id = control->nodes->getDrawID(attached_node);
       std::vector<unsigned long>::iterator iter;
@@ -150,7 +151,7 @@ namespace mars {
         assert(buffer.size() == (config.width * config.height));
         int width;
         int height;
-        gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height);
+        gw->getImageData(reinterpret_cast<char *>(buffer.data()), width, height, image_time);
 
         assert(config.width == width);
         assert(config.height == height);
@@ -161,7 +162,7 @@ namespace mars {
         assert(buffer.size() == (config.width * config.height));
         int width;
         int height;
-        gw->getRTTDepthData(reinterpret_cast<float *>(buffer.data()), width, height);
+        gw->getRTTDepthData(reinterpret_cast<float *>(buffer.data()), width, height, image_time);
 
         assert(config.width == width);
         assert(config.height == height);
@@ -291,7 +292,7 @@ namespace mars {
         else*/
         {
           unsigned char *buffer;
-          gw->getImageData((void**)&buffer, width, height);
+          gw->getImageData((void**)&buffer, width, height, image_time);
           unsigned int size = width*height;
           if(size == 0) return 0;
           *data = (sReal*)calloc(size*4, sizeof(sReal));
@@ -323,11 +324,11 @@ namespace mars {
       cameraStruct cam_info;
       gc->getCameraInfo(&cam_info);
       unsigned char *buffer;
-      gw->getImageData((void**)&buffer, width, height);
+      gw->getImageData((void**)&buffer, width, height, image_time);
       unsigned int size = width*height;
       if(size == 0) return;
       float *buffer2;
-      gw->getRTTDepthData((float**)&buffer2, width, height);
+      gw->getRTTDepthData((float**)&buffer2, width, height, image_time);
       unsigned int size2 = width*height;
       if(size2 == 0) {
         free(buffer);
