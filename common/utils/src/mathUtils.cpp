@@ -282,6 +282,13 @@ namespace mars {
       (*item)["z"] = v->z();
     }
 
+    ConfigItem vectorToConfigItem(Vector& v)
+    {
+      ConfigItem result;
+      vectorToConfigItem(&result, &v);
+      return result;
+    }
+
     bool quaternionFromConfigItem(ConfigItem *item, Quaternion *q) {
       q->w() = (*item)["w"];
       q->x() = (*item)["x"];
@@ -295,6 +302,13 @@ namespace mars {
       (*item)["x"] = q->x();
       (*item)["y"] = q->y();
       (*item)["z"] = q->z();
+    }
+
+    ConfigItem quaternionToConfigItem(Quaternion& q)
+    {
+      ConfigItem result;
+      quaternionToConfigItem(&result, &q);
+      return result;
     }
 
     void inertiaTensorToConfigItem(ConfigItem *item, double *inertia) {

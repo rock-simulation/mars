@@ -119,9 +119,11 @@ namespace mars {
 
     bool vectorFromConfigItem(ConfigItem *item, Vector *v);
     void vectorToConfigItem(ConfigItem *item, Vector *v);
+    ConfigItem vectorToConfigItem(Vector& v);
 
     bool quaternionFromConfigItem(ConfigItem *item, Quaternion *q);
     void quaternionToConfigItem(ConfigItem *item, Quaternion *q);
+    ConfigItem quaternionToConfigItem(Quaternion& q);
 
     template <typename T>
     Quaternion quaternionFromMembers(T q) {
