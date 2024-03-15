@@ -37,9 +37,9 @@
 #include <mars_interfaces/sim/MarsPluginTemplateGUI.h>
 #include <mars_interfaces/MARSDefs.h>
 #include <mars/data_broker/ReceiverInterface.h>
-#include <mars/cfg_manager/CFGManagerInterface.h>
-#include <mars/osg_material_manager/OsgMaterialManager.h>
-#include <mars/osg_material_manager/MaterialNode.h>
+#include <cfg_manager/CFGManagerInterface.h>
+#include <osg_material_manager/OsgMaterialManager.h>
+#include <osg_material_manager/MaterialNode.h>
 
 #include <string>
 

@@ -28,11 +28,11 @@
 
 
 #include "SkyDomePlugin.h"
-#include <mars/data_broker/DataBrokerInterface.h>
-#include <mars/data_broker/DataPackage.h>
+#include <data_broker/DataBrokerInterface.h>
+#include <data_broker/DataPackage.h>
 #include <mars_interfaces/graphics/GraphicsManagerInterface.h>
 #include <mars_interfaces/sim/SimulatorInterface.h>
-#include <mars/utils/misc.h>
+#include <mars_utils/misc.h>
 #include <osg/TextureCubeMap>
 #include <osg/PositionAttitudeTransform>
 #include <osg/Group>
