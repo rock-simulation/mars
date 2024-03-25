@@ -71,7 +71,7 @@ namespace mars {
         groupID = 0;
         index = 0;
         filename = "PRIMITIVE";
-        physicMode = NODE_TYPE_UNDEFINED;
+        nodeType = "";
         pos.setZero();
         pivot.setZero();
         rot.setIdentity();
@@ -133,14 +133,14 @@ namespace mars {
        * @param extents extents of the object
        * @param mass the mass of the object
        */
-      void initPrimitive( NodeType type, const utils::Vector& extents, sReal mass )
+      void initPrimitive(const std::string type, const utils::Vector& extents, sReal mass )
       {
-        physicMode = type;
+        nodeType = type;
         ext = extents;
         this->mass = mass;
         filename = "PRIMITIVE";
 
-        origName = toString(type);
+        origName = type;
       }
 
       bool fromConfigMap(configmaps::ConfigMap *config, std::string filenamePrefix,
@@ -189,18 +189,11 @@ namespace mars {
       unsigned long index;
 
       /**
-       * This value holds the physical representation of a node. Valid values are:
-       * - NODE_TYPE_MESH
-       * - NODE_TYPE_BOX
-       * - NODE_TYPE_SPHERE
-       * - NODE_TYPE_CAPSULE
-       * - NODE_TYPE_CYLINDER
-       * - NODE_TYPE_PLANE
-       * - NODE_TYPE_TERRAIN
-       * .
-       * \verbatim Default value: NODE_TYPE_UNDEFINED \endverbatim
+       * @brief The node type name as string
+       * 
        */
-      NodeType physicMode;
+
+      std::string nodeType;
 
       /**
        * The position of the node.
@@ -249,7 +242,7 @@ namespace mars {
 
       /**
        * The size of the node. The ext vector is interpreted depending of the
-       * physicMode of the node:
+       * type of the node:
        * - mesh: ext defines the bounding box of the mesh
        * - box: ext defines the size in x, y, and z
        * - sphere: ext.x defines the radius
@@ -266,7 +259,7 @@ namespace mars {
       /**
        * The mesh struct stores the poly information for a physical representation
        * of a mesh. This struct is automatically derived from the visual node
-       *  by the simulation if the physicMode is set to NODE_TYPE_MESH.
+       *  by the simulation if the type is set to mesh.
        * \verbatim Default value: see snmesh \endverbatim \sa snmesh
        */
       snmesh mesh;
@@ -307,7 +300,7 @@ namespace mars {
 
 
       /**
-       * If the physicMode is set to NODE_TYPE_TERRAIN, this pointer stores
+       * If the node type is set to terrain, this pointer stores
        * all information to create a physical representation of a height map.
        * \verbatim Default value: 0 \endverbatim \sa terrainStruct
        */
@@ -355,7 +348,7 @@ namespace mars {
       contact_params c_params;
 
       /**
-       * Generally the inertia of the physical body is calculated by the physicMode
+       * Generally the inertia of the physical body is calculated by the node type
        * and the mass of a node. In case of a mesh the inertia is calculated for
        * a box with the size given by NodeData::extent. If this boolean is set to
        * \c true, the inertia array (NodeData::inertia) is used instead.

@@ -30,21 +30,28 @@
 #include "SimJoint.h"
 #include "JointManager.h"
 #include "NodeManager.h"
-#include "PhysicsMapper.h"
-
+#include "joints/ODEJointFactory.h"
+#include "joints/ODEBallJoint.h"
+#include "joints/ODEFixedJoint.h"
+#include "joints/ODEHinge2Joint.h"
+#include "joints/ODEHingeJoint.h"
+#include "joints/ODESliderJoint.h"
+#include "joints/ODEUniversalJoint.h"
 
 #include <stdexcept>
 
 #include <mars/interfaces/sim/SimulatorInterface.h>
 #include <mars/interfaces/sim/MotorManagerInterface.h>
+#include <mars/interfaces/utils.h>
 #include <mars/utils/misc.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/utils/MutexLocker.h>
 #include <mars/interfaces/Logging.hpp>
 #include <mars/data_broker/DataBrokerInterface.h>
 
+
 namespace mars {
-  namespace sim {
+namespace sim {
 
     using namespace utils;
     using namespace interfaces;
@@ -61,6 +68,13 @@ namespace mars {
     JointManager::JointManager(ControlCenter *c) {
       control = c;
       next_joint_id = 1;
+
+      ODEJointFactory::Instance().addJointType("ball",      &ODEBallJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("fixed",     &ODEFixedJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("hinge2",    &ODEHinge2Joint::instanciate);
+      ODEJointFactory::Instance().addJointType("hinge",     &ODEHingeJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("slider",    &ODESliderJoint::instanciate);
+      ODEJointFactory::Instance().addJointType("universal", &ODEUniversalJoint::instanciate);
     }
 
     unsigned long JointManager::addJoint(JointData *jointS, bool reload) {
@@ -84,8 +98,6 @@ namespace mars {
         return 0;
       }
 
-      // create an interface object to the physics
-      newJointInterface = PhysicsMapper::newJointPhysics(control->sim->getPhysics());
       // reset the anchor
       //if node index is 0, the node connects to the environment.
       node1 = control->nodes->getSimNode(jointS->nodeIndex1);
@@ -108,8 +120,19 @@ namespace mars {
         jointS->anchor = (node1->getPosition() + node2->getPosition()) / 2.;
       }
 
+      // create an interface object to the physics
+      newJointInterface = ODEJointFactory::Instance().createJoint(control->sim->getPhysics(), jointS, i_node1, i_node2);
+
       // create the physical node data
-      if (newJointInterface->createJoint(jointS, i_node1, i_node2)) {
+      if (newJointInterface.get() == nullptr) {
+        LOG_ERROR("JointManager::addJoint: No joint was created in physics.");
+        // if no node was created in physics
+        // delete the objects
+        newJointInterface.reset();
+        // and return false
+        return 0;
+      }
+      else {
         // put all data to the correct place
         iMutex.lock();
         // set the next free id
@@ -132,7 +155,7 @@ namespace mars {
               next_joint_id = des_id + 1;
           }
         }
-	std::shared_ptr<SimJoint> newJoint = std::make_shared<SimJoint>(control, *jointS);
+	      std::shared_ptr<SimJoint> newJoint = std::make_shared<SimJoint>(control, *jointS);
         newJoint->setAttachedNodes(node1, node2);
         //    newJoint->setSJoint(*jointS);
         newJoint->setPhysicalJoint(newJointInterface);
@@ -140,13 +163,6 @@ namespace mars {
         iMutex.unlock();
         control->sim->sceneHasChanged(false);
         return jointS->index;
-      } else {
-        std::cerr << "JointManager: Could not create new joint (JointInterface::createJoint() returned false)." << std::endl;
-        // if no node was created in physics
-        // delete the objects
-        newJointInterface.reset();
-        // and return false
-        return 0;
       }
     }
 
@@ -587,5 +603,5 @@ namespace mars {
       }
     }
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars

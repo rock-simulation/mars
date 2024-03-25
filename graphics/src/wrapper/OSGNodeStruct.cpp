@@ -82,51 +82,47 @@ namespace mars {
       }
       if (filename.compare("PRIMITIVE") == 0) {
         Vector vizSize = node.ext;
-        switch(NodeData::typeFromString(origname.c_str())) {
-        case mars::interfaces::NODE_TYPE_BOX: {
+        if (origname == "box") {
           drawObject_ = new CubeDrawObject(g);
-          break;
         }
-        case mars::interfaces::NODE_TYPE_SPHERE: {
+        else if (origname == "sphere"){
           vizSize.x() *= 2;
           vizSize.y() = vizSize.z() = vizSize.x();
           drawObject_ = new SphereDrawObject(g);
-          break;
         }
-        case mars::interfaces::NODE_TYPE_REFERENCE: {
+        else if (origname == "reference"){
 #warning add here an coordinate system item
           //For now until we have an real coordinate system
           drawObject_ = new SphereDrawObject(g);
-          break;
         }
-        case mars::interfaces::NODE_TYPE_MESH:
-        case mars::interfaces::NODE_TYPE_CYLINDER: 
+        else if (origname == "mesh"){
+
+        }
+        else if (origname == "cylinder"){
           vizSize.x() *= 2;
           vizSize.z() = vizSize.y();
           vizSize.y() = vizSize.x();
           drawObject_ = new CylinderDrawObject(g, 1, 1);
-          break;
-        case mars::interfaces::NODE_TYPE_CAPSULE: {
+        }
+        else if (origname == "capsule"){
           vizSize.x() *= 2;
           vizSize.z() = vizSize.y();
           vizSize.y() = vizSize.x();
           drawObject_ = new CapsuleDrawObject(g);
-          break;
         }
-        case mars::interfaces::NODE_TYPE_PLANE: {
+        else if (origname == "plane"){
           drawObject_ = new PlaneDrawObject(g, vizSize);
-          break;
         }
-        case mars::interfaces::NODE_TYPE_EMPTY: {
+        else if (origname == "empty"){
           drawObject_ = new EmptyDrawObject(g);
-          break;
         }
-        default:
-          fprintf(stderr,"Cannot find primitive type: %i(%s), at %s:%i\n",
-                  NodeData::typeFromString(origname.c_str()),
+        else {
+          fprintf(stderr,"Cannot find primitive type: %s(%s), at %s:%i\n",
+                  node.nodeType.c_str(),
                   origname.c_str(), __FILE__, __LINE__);
           throw std::runtime_error("unknown primitive type");
         }
+
         if(map.find("maxNumLights") != map.end()) {
           drawObject_->setMaxNumLights(map["maxNumLights"]);
         }

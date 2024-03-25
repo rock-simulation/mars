@@ -82,7 +82,7 @@ namespace mars {
       std::stringstream s;
       s.str(""); s << config.name << "_fixed_joint";
       NodeData ns_fixed( s.str(),position,orientation);
-      ns_fixed.initPrimitive(NODE_TYPE_CYLINDER,config.extension,0);
+      ns_fixed.initPrimitive("cylinder",config.extension,0);
       ns_fixed.movable = true;
       ns_fixed.noPhysical = false;
       ns_fixed.c_params.coll_bitmask = 0;
@@ -90,7 +90,7 @@ namespace mars {
 
       s.str(""); s << config.name << "_play_joint";
       NodeData ns_play(s.str(), config.position + (orientation * Vector(0, 0, config.extension[2])), orientation);
-      ns_play.initPrimitive(NODE_TYPE_CYLINDER,config.extension,0);
+      ns_play.initPrimitive("cylinder",config.extension,0);
       ns_play.movable = true;
       ns_play.noPhysical = false;
       ns_play.c_params.coll_bitmask = 0;

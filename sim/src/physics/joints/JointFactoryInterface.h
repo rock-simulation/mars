@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2022, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,31 +19,27 @@
  */
 
  /**
- * \file PhysicsMapper.h
- * \author Malte Roemmermann
- * \brief "PhysicsMapper" connects the implemented interface classes to
- * the interface objects that are handled in the core layer.
+ * \file JointFactoryInterface.h
+ * \author Muhammad Haider Khan Lodhi
+ * \brief "ObjectFactoryInterface" is an interface to create physical ode objects for the nodes.
  *
  */
 
-#ifndef PHYSICS_MAPPER_H
-#define PHYSICS_MAPPER_H
-
-#ifdef _PRINT_HEADER_
-  #warning "PhysicsMapper.h"
-#endif
-
+#pragma once
 #include "WorldPhysics.h"
+#include <mars/interfaces/sim/JointInterface.h>
 
-namespace mars {
-  namespace sim {
+namespace mars{
+namespace sim{
 
-    class PhysicsMapper {
-    public:
-      static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
-    };
+using namespace ::mars::interfaces;
 
-  } // end of namespace sim
-} // end of namespace mars
-
-#endif  // PHYSICS_MAPPER_H
+class JointFactoryInterface{
+public:
+  virtual std::shared_ptr<JointInterface> createJoint(std::shared_ptr<interfaces::PhysicsInterface> worldPhysics,
+                               interfaces::JointData *joint,
+                               const std::shared_ptr<interfaces::NodeInterface> node1, 
+                               const std::shared_ptr<interfaces::NodeInterface> node2) = 0;
+};
+}
+}

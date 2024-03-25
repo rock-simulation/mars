@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2022, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,17 +19,17 @@
  */
 
  /**
- * \file NodePhysics.h
- * \author Malte Roemmermann
- * \brief "NodePhysics" implements the physical ode stuff for the nodes.
+ * \file ODEObject.h
+ * \author Malte Roemmermann, Leon Danter, Muhammad Haider Khan Lodhi
+ * \brief "ODEObject" implements an ODEObject as parent of ode objects.
  *
  */
 
-#ifndef NODE_PHYSICS_H
-#define NODE_PHYSICS_H
+#ifndef ODE_OBJECT_H
+#define ODE_OBJECT_H
 
 #ifdef _PRINT_HEADER_
-  #warning "NodePhysics.h"
+  #warning "ODEObject.h"
 #endif
 
 #include "WorldPhysics.h"
@@ -40,8 +40,9 @@
   #define dTriIndex int
 #endif
 
+//TODO move struct descriptions to seperate file!
 namespace mars {
-  namespace sim {
+namespace sim {
 
     /*
      * we need a data structure to handle different collision parameter
@@ -93,11 +94,15 @@ namespace mars {
      * The class that implements the NodeInterface interface.
      *
      */
-    class NodePhysics : public interfaces::NodeInterface {
+
+    class ODEObject : public interfaces::NodeInterface {
     public:
-      NodePhysics(std::shared_ptr<interfaces::PhysicsInterface> world);
-      virtual ~NodePhysics(void);
-      virtual bool createNode(interfaces::NodeData *node);
+      ODEObject(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEObject(void);
+
+      virtual bool createNode(interfaces::NodeData *node) override;
+      virtual bool changeNode(interfaces::NodeData *node) override;
+      virtual bool createODEGeometry(interfaces::NodeData *node);       
       virtual void getPosition(utils::Vector *pos) const;
       virtual const utils::Vector setPosition(const utils::Vector &pos, bool move_group);
       virtual void getRotation(utils::Quaternion *q) const;
@@ -110,7 +115,6 @@ namespace mars {
       virtual const utils::Vector rotateAtPoint(const utils::Vector &rotation_point,
                                                 const utils::Quaternion &rotation, 
                                                 bool move_group);
-      virtual bool changeNode(interfaces::NodeData *node);
       virtual void setLinearVelocity(const utils::Vector &velocity);
       virtual void setAngularVelocity(const utils::Vector &velocity);
       virtual void setForce(const utils::Vector &f);
@@ -139,33 +143,24 @@ namespace mars {
       dMass getODEMass(void) const;
       void addMassToCompositeBody(dBodyID theBody, dMass *bodyMass);
       void getAbsMass(dMass *pMass) const;
-      dReal heightCallback(int x, int y);
+      bool isObjectCreated();
 
     protected:
       std::shared_ptr<WorldPhysics> theWorld;
       dBodyID nBody;
       dGeomID nGeom;
       dMass nMass;
-      dVector3 *myVertices;
-      dTriIndex *myIndices;
-      dTriMeshDataID myTriMeshData;
       bool composite;
       geom_data node_data;
-      interfaces::terrainStruct *terrain;
-      dReal *height_data;
       std::vector<sensor_list_element> sensor_list;
-      bool createMesh(interfaces::NodeData *node);
-      bool createBox(interfaces::NodeData *node);
-      bool createSphere(interfaces::NodeData *node);
-      bool createCapsule(interfaces::NodeData *node);
-      bool createCylinder(interfaces::NodeData *node);
-      bool createPlane(interfaces::NodeData *node);
-      bool createHeightfield(interfaces::NodeData *node);
       void setProperties(interfaces::NodeData *node);
       void setInertiaMass(interfaces::NodeData *node);
+      
+    private:  
+      bool object_created;
     };
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
 
 #endif  // NODE_PHYSICS_H

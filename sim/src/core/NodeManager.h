@@ -54,10 +54,9 @@ namespace mars {
     public:
       NodeManager(interfaces::ControlCenter *c,
                   lib_manager::LibManager *theManager);
-      virtual ~NodeManager(){}
-
+      virtual ~NodeManager();
       virtual interfaces::NodeId createPrimitiveNode(const std::string &name,
-                                                     interfaces::NodeType type,
+                                                     const std::string &type,
                                                      bool movable=false,
                                                      const utils::Vector &pos=utils::Vector::Zero(),
                                                      const utils::Vector &extension=utils::Vector::Identity(),
@@ -165,6 +164,7 @@ namespace mars {
                         const std::string &value);
 
     private:
+
       interfaces::NodeId next_node_id;
       bool update_all_nodes;
       int visual_rep;

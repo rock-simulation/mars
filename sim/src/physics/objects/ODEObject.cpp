@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2022, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -18,31 +18,14 @@
  *
  */
 
-/**
- * \file NodePhysics.h
- * \author Malte Roemmermann
- * \brief "NodePhysics" implements the physical ode stuff for the nodes.
- *
- *
- * ToDo:
- *       - Heightfield representation (valentin)
- *       - support for different spaces (later)
- *       - add impulse forces and velocities of nodes (later)
- *       - set an offset to the position (???)
- *       - set an offset to the rotation (???)
- *       - maybe some methods to support different sensors (???)
- *       - rotateAtPoint for composite and not move group ***
- *
- */
-
-#include "NodePhysics.h"
+//TODO cleanup includes
+#include "ODEObject.h"
 #include "../sensors/RotatingRaySensor.h"
 
 #include <mars/interfaces/Logging.hpp>
 #include <mars/utils/MutexLocker.h>
 #include <mars/utils/mathUtils.h>
 #include <mars/interfaces/sensor_bases.h>
-#include <mars/interfaces/terrainStruct.h>
 #include <cmath>
 #include <set>
 
@@ -50,9 +33,11 @@
 
 #include <ode/odemath.h>
 
+#include <iostream>
+
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
     using namespace utils;
     using namespace interfaces;
@@ -71,19 +56,15 @@ namespace mars {
      *     - the class should have saved the pointer to the physics implementation
      *     - the body and geom should be initialized to 0
      */
-    NodePhysics::NodePhysics(std::shared_ptr<PhysicsInterface> world) {
-      // At this moment we have not much things to do here. ^_^
+    ODEObject::ODEObject(std::shared_ptr<PhysicsInterface> world, NodeData * nodeData) {
       theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
       nBody = 0;
       nGeom = 0;
-      myVertices = 0;
-      myIndices = 0;
-      myTriMeshData = 0;
       composite = false;
       //node_data.num_ground_collisions = 0;
-      node_data.setZero();
-      height_data = 0;
+      node_data.setZero();      
       dMassSetZero(&nMass);
+      object_created = false;
     }
 
     /**
@@ -97,17 +78,13 @@ namespace mars {
      *
      * are the geom and the body realy all thing to take care of?
      */
-    NodePhysics::~NodePhysics(void) {
+    ODEObject::~ODEObject(void) {
       std::vector<sensor_list_element>::iterator iter;
       MutexLocker locker(&(theWorld->iMutex));
 
       if(nBody) theWorld->destroyBody(nBody, this);
 
       if(nGeom) dGeomDestroy(nGeom);
-
-      if(myVertices) free(myVertices);
-      if(myIndices) free(myIndices);
-      if(height_data) free(height_data);
 
       // TODO: how does this loop work? why doesn't it run forever?
       for(iter = sensor_list.begin(); iter != sensor_list.end();) {
@@ -118,27 +95,123 @@ namespace mars {
         dGeomDestroy((*iter).geom);
         sensor_list.erase(iter);
       }
-      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
     }
 
-    dReal heightfield_callback(void* pUserData, int x, int z ) {
-      return ((NodePhysics*)pUserData)->heightCallback(x, z);
+    bool ODEObject::isObjectCreated(){
+      return object_created;
     }
 
     /**
-     * \brief The method creates an ode node, which properties are given by
-     * the NodeData param node.
+     * \brief The method copies the position of the node at the adress
+     * of the pointer pos.
      *
      * pre:
-     *     - Node sturct should point to a correct object
-     *     - we should have a pointer to the physics implementation
-     *     - a physically world should have been created to insert a node
+     *     - the physical representation of the node should be availbe
+     *     - the node should have an body (should be movable)
+     *     - the position pointer param should point to a correct position struct
      *
      * post:
-     *     - a physical node should be created in the world
-     *     - the node properties should be set
+     *     - if the node is physically availbe and is set to be movable
+     *       the struct of the position pointer should be filled with
+     *       the physical position of the node
+     *     - otherwise the position should be set to zero
      */
-    bool NodePhysics::createNode(NodeData* node) {
+
+    bool ODEObject::createODEGeometry(interfaces::NodeData *node){
+      std::cout << "ODEObject: using default createODEGeometry func. Did you forget to override it?." << std::endl;
+      LOG_WARN("ODEObject: using default createODEGeometry func. Did you forget to override it?.");
+      return true;
+    }
+
+    bool ODEObject::changeNode(interfaces::NodeData* node) {
+      dReal pos[3] = {node->pos.x(), node->pos.y(), node->pos.z()};
+      dQuaternion rotation;
+      rotation[1] = node->rot.x();
+      rotation[2] = node->rot.y();
+      rotation[3] = node->rot.z();
+      rotation[0] = node->rot.w();
+      const dReal *tpos;
+#ifdef _VERIFY_WORLD_
+      sRotation euler = utils::quaternionTosRotation(node->rot);
+      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
+              node->index, node->pos.x(), node->pos.y(),
+              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
+              node->mass, node->density);
+#endif
+      MutexLocker locker(&(theWorld->iMutex));
+
+      if(nGeom && theWorld && theWorld->existsWorld()) {
+        if(composite) {
+          dGeomGetQuaternion(nGeom, rotation);
+          tpos = dGeomGetPosition(nGeom);
+          pos[0] = tpos[0];
+          pos[1] = tpos[1];
+          pos[2] = tpos[2];
+        }
+        // deferre destruction of geom until after the successful creation of 
+        // a new geom
+        dGeomID tmpGeomId = nGeom;
+        // first we create a ode geometry for the node
+        bool success = false;
+        success = createODEGeometry(node);
+        if(!success) {
+          fprintf(stderr, "creation of body geometry failed.\n");
+          return 0;
+        }
+        if(nBody) {
+          theWorld->destroyBody(nBody, this);
+          nBody = NULL;
+        }
+        dGeomDestroy(tmpGeomId);
+        // now the geom is rebuild and we have to reconnect it to the body
+        // and reset the mass of the body
+        if(!node->movable) {
+          dGeomSetBody(nGeom, nBody);
+          dGeomSetQuaternion(nGeom, rotation);
+          dGeomSetPosition(nGeom, (dReal)node->pos.x(),
+                           (dReal)node->pos.y(), (dReal)node->pos.z());
+        }
+        else {
+          bool body_created = false;
+          if(node->groupID) {
+            body_created = theWorld->getCompositeBody(node->groupID, &nBody, this);
+            composite = true;
+          }
+          else {
+            composite = false;
+            if(!nBody) nBody = dBodyCreate(theWorld->getWorld());
+          }
+          if(nBody) {
+            dGeomSetBody(nGeom, nBody);
+            if(!composite) {
+              dBodySetMass(nBody, &nMass);
+              dGeomSetQuaternion(nGeom, rotation);
+              dGeomSetPosition(nGeom, pos[0], pos[1], pos[2]);
+            }
+            else {
+              // if the geom is part of a composite object
+              // we have to translate and rotate the geom mass
+              if(body_created) {
+                dBodySetMass(nBody, &nMass);
+                dBodySetPosition(nBody, pos[0], pos[1], pos[2]);
+                dBodySetQuaternion(nBody, rotation);
+              }
+              else {
+                dGeomSetOffsetWorldQuaternion(nGeom, rotation);
+                dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
+                theWorld->resetCompositeMass(nBody);
+              }
+            }
+          }
+        }
+        dGeomSetData(nGeom, &node_data);
+        locker.unlock();
+        setContactParams(node->c_params);
+      }
+      return 1;
+    }
+    
+    bool ODEObject::createNode(interfaces::NodeData* node) {
 #ifdef _VERIFY_WORLD_
       sRotation euler = utils::quaternionTosRotation(node->rot);
       fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
@@ -149,35 +222,7 @@ namespace mars {
       MutexLocker locker(&(theWorld->iMutex));
       if(theWorld && theWorld->existsWorld()) {
         bool ret;
-        //LOG_DEBUG("physicMode %d", node->physicMode);
-        // first we create a ode geometry for the node
-        switch(node->physicMode) {
-        case NODE_TYPE_MESH:
-          ret = createMesh(node);
-          break;
-        case NODE_TYPE_BOX:
-          ret = createBox(node);
-          break;
-        case NODE_TYPE_SPHERE:
-          ret = createSphere(node);
-          break;
-        case NODE_TYPE_CAPSULE:
-          ret = createCapsule(node);
-          break;
-        case NODE_TYPE_CYLINDER:
-          ret = createCylinder(node);
-          break;
-        case NODE_TYPE_PLANE:
-          ret = createPlane(node);
-          break;
-        case NODE_TYPE_TERRAIN:
-          ret = createHeightfield(node);
-          break;
-        default:
-          // no correct type is spezified, so no physically node will be created
-          return 0;
-          break;
-        }
+        ret = createODEGeometry(node); 
         if(ret == 0) {
           // Error createing the physical Node
           return 0;
@@ -186,15 +231,16 @@ namespace mars {
         // then, if the geometry was sucsessfully build, we can create a
         // body for the node or add the node to an existing body
         if(node->movable) setProperties(node);
-        else if(node->physicMode != NODE_TYPE_PLANE) {
+        else if(node->nodeType != "plane") {
           dQuaternion tmp, t1, t2;
           tmp[1] = (dReal)node->rot.x();
           tmp[2] = (dReal)node->rot.y();
           tmp[3] = (dReal)node->rot.z();
           tmp[0] = (dReal)node->rot.w();
           dGeomSetPosition(nGeom, (dReal)node->pos.x(),
-                           (dReal)node->pos.y(), (dReal)node->pos.z());
-          if(node->physicMode == NODE_TYPE_TERRAIN) {
+                            (dReal)node->pos.y(), (dReal)node->pos.z());
+          //TODO is this irrelevant as we are in ODEBox now? or is this still possible due to wrong parameter definition/ class selection
+          if(node->nodeType == "terrain") {
             dGeomGetQuaternion(nGeom, t1);
             dQMultiply0(t2, tmp, t1);
             dNormalize4(t2);
@@ -219,28 +265,15 @@ namespace mars {
         dGeomSetData(nGeom, &node_data);
         locker.unlock();
         setContactParams(node->c_params);
+        object_created = true;
         return 1;
       }
-      LOG_WARN("NodePhysics: tried to create a Node without there being a world.");
+      LOG_WARN("ODEBox: tried to create a Box without there being a world.");
       return 0;
     }
 
-    /**
-     * \brief The method copies the position of the node at the adress
-     * of the pointer pos.
-     *
-     * pre:
-     *     - the physical representation of the node should be availbe
-     *     - the node should have an body (should be movable)
-     *     - the position pointer param should point to a correct position struct
-     *
-     * post:
-     *     - if the node is physically availbe and is set to be movable
-     *       the struct of the position pointer should be filled with
-     *       the physical position of the node
-     *     - otherwise the position should be set to zero
-     */
-    void NodePhysics::getPosition(Vector* pos) const {
+
+    void ODEObject::getPosition(Vector* pos) const {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) {
         const dReal* tmp = dGeomGetPosition(nGeom);
@@ -286,7 +319,7 @@ namespace mars {
      *       set the position of the corresponding body to the given parameter
      *     - otherwise, we have to do nothing
      */
-    const Vector NodePhysics::setPosition(const Vector &pos, bool move_group) {
+    const Vector ODEObject::setPosition(const Vector &pos, bool move_group) {
       const dReal *tpos;
       const dReal *tpos2;
       dReal npos[3];
@@ -368,7 +401,7 @@ namespace mars {
      *       of the node
      *     - otherwise a standard return of zero rotation should be set
      */
-    void NodePhysics::getRotation(Quaternion* q) const {
+    void ODEObject::getRotation(Quaternion* q) const {
       dQuaternion tmp;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -402,7 +435,7 @@ namespace mars {
      *       velocity of the node
      *     - otherwise a standard return of zero velocity should be set
      */
-    void NodePhysics::getLinearVelocity(Vector* vel) const {
+    void ODEObject::getLinearVelocity(Vector* vel) const {
       const dReal *tmp;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -434,7 +467,7 @@ namespace mars {
      *       velocity of the node
      *     - otherwise a standard return of zero velocity should be set
      */
-    void NodePhysics::getAngularVelocity(Vector* vel) const {
+    void ODEObject::getAngularVelocity(Vector* vel) const {
       const dReal *tmp;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -466,7 +499,7 @@ namespace mars {
      *       force of the node
      *     - otherwise a standard return of zero force should be set
      */
-    void NodePhysics::getForce(Vector* f) const {
+    void ODEObject::getForce(Vector* f) const {
       const dReal *tmp;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -498,7 +531,7 @@ namespace mars {
      *       of the node
      *     - otherwise a standard return of zero torque should be set
      */
-    void NodePhysics::getTorque(Vector *t) const {
+    void ODEObject::getTorque(Vector *t) const {
       const dReal *tmp;
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -523,7 +556,7 @@ namespace mars {
      * If we need it, the pre and post conditions are like them in the set
      * position method.
      */
-    const Quaternion NodePhysics::setRotation(const Quaternion &q, bool move_group) {
+    const Quaternion ODEObject::setRotation(const Quaternion &q, bool move_group) {
       dQuaternion tmp, tmp2, tmp3, tmp4, tmp5;
       const dReal *brot, *bpos, *gpos;
       Quaternion q2;
@@ -601,7 +634,7 @@ namespace mars {
      *
      * I don't think that we need this function.
      */
-    void NodePhysics::setWorldObject(std::shared_ptr<PhysicsInterface>  world) {
+    void ODEObject::setWorldObject(std::shared_ptr<PhysicsInterface>  world) {
       theWorld = std::dynamic_pointer_cast<WorldPhysics>(world);
     }
 
@@ -611,264 +644,8 @@ namespace mars {
      * body from joint physics
      *TO DO : test if the Node has a body
      */
-    dBodyID NodePhysics::getBody() const {
+    dBodyID ODEObject::getBody() const {
       return nBody;
-    }
-
-    /**
-     * \brief The method creates an ode mesh representation of the given node.
-     *
-     *
-     */
-    bool NodePhysics::createMesh(NodeData* node) {
-      int i;
-
-      if (!node->inertia_set && 
-          (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {
-        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                  "  Mesh Nodes must have ext.x(), ext.y(), and ext.z() > 0.\n"
-                  "  Current values are: x=%g; y=%g, z=%g",
-                  node->name.c_str(), node->index,
-                  node->ext.x(), node->ext.y(), node->ext.z());
-        return false;
-      }
-
-      myVertices = (dVector3*)calloc(node->mesh.vertexcount, sizeof(dVector3));
-      myIndices = (dTriIndex*)calloc(node->mesh.indexcount, sizeof(dTriIndex));
-      //LOG_DEBUG("%d %d", node->mesh.vertexcount, node->mesh.indexcount);
-      // first we have to copy the mesh data to prevent errors in case
-      // of double to float conversion
-      dReal minx, miny, minz, maxx, maxy, maxz;
-      for(i=0; i<node->mesh.vertexcount; i++) {
-        myVertices[i][0] = (dReal)node->mesh.vertices[i][0];
-        myVertices[i][1] = (dReal)node->mesh.vertices[i][1];
-        myVertices[i][2] = (dReal)node->mesh.vertices[i][2];
-        if(i==0) {
-          minx = myVertices[i][0];
-          maxx = myVertices[i][0];
-          miny = myVertices[i][1];
-          maxy = myVertices[i][1];
-          minz = myVertices[i][2];
-          maxz = myVertices[i][2];
-        }
-        else {
-          if(minx > myVertices[i][0]) minx = myVertices[i][0];
-          if(maxx < myVertices[i][0]) maxx = myVertices[i][0];
-          if(miny > myVertices[i][1]) miny = myVertices[i][1];
-          if(maxy < myVertices[i][1]) maxy = myVertices[i][1];
-          if(minz > myVertices[i][2]) minz = myVertices[i][2];
-          if(maxz < myVertices[i][2]) maxz = myVertices[i][2];
-        }
-      }
-      // rescale
-      dReal sx = node->ext.x()/(maxx-minx);
-      dReal sy = node->ext.y()/(maxy-miny);
-      dReal sz = node->ext.z()/(maxz-minz);
-      for(i=0; i<node->mesh.vertexcount; i++) {
-        myVertices[i][0] *= sx;
-        myVertices[i][1] *= sy;
-        myVertices[i][2] *= sz;
-      }
-      for(i=0; i<node->mesh.indexcount; i++) {
-        myIndices[i] = (dTriIndex)node->mesh.indices[i];
-      }
-
-      // then we can build the ode representation
-      myTriMeshData = dGeomTriMeshDataCreate();
-      dGeomTriMeshDataBuildSimple(myTriMeshData, (dReal*)myVertices,
-                                  node->mesh.vertexcount,
-                                  myIndices, node->mesh.indexcount);
-      nGeom = dCreateTriMesh(theWorld->getSpace(), myTriMeshData, 0, 0, 0);
-
-      // at this moment we set the mass properties as the mass of the
-      // bounding box if no mass and inertia is set by the user
-      if(node->inertia_set) {
-        setInertiaMass(node);
-      }
-      else if(node->density > 0) {
-        dMassSetBox(&nMass, (dReal)node->density, (dReal)node->ext.x(),
-                    (dReal)node->ext.y(),(dReal)node->ext.z());
-      }
-      else if(node->mass > 0) {
-        dMassSetBoxTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x(),
-                         (dReal)node->ext.y(),(dReal)node->ext.z());
-      }
-      return true;
-    }
-
-    /**
-     * The method creates an ode box representation of the given node.
-     *
-     */
-    bool NodePhysics::createBox(NodeData* node) {
-      if (!node->inertia_set && 
-          (node->ext.x() <= 0 || node->ext.y() <= 0 || node->ext.z() <= 0)) {
-        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                  "  Box Nodes must have ext.x(), ext.y(), and ext.z() > 0.\n"
-                  "  Current values are: x=%g; y=%g, z=%g",
-                  node->name.c_str(), node->index,
-                  node->ext.x(), node->ext.y(), node->ext.z());
-        return false;
-      }
-
-      // build the ode representation
-      nGeom = dCreateBox(theWorld->getSpace(), (dReal)(node->ext.x()),
-                         (dReal)(node->ext.y()), (dReal)(node->ext.z()));
-
-      // create the mass object for the box
-      if(node->inertia_set) {
-        setInertiaMass(node);
-      }
-      else if(node->density > 0) {
-        dMassSetBox(&nMass, (dReal)(node->density), (dReal)(node->ext.x()),
-                    (dReal)(node->ext.y()),(dReal)(node->ext.z()));
-      }
-      else if(node->mass > 0) {
-        dReal tempMass =(dReal)(node->mass);
-        dMassSetBoxTotal(&nMass, tempMass, (dReal)(node->ext.x()),
-                         (dReal)(node->ext.y()),(dReal)(node->ext.z()));
-      }
-      return true;
-    }
-
-    /**
-     * The method creates an ode shpere representation of the given node.
-     *
-     */
-    bool NodePhysics::createSphere(NodeData* node) {
-      if (!node->inertia_set && node->ext.x() <= 0) {
-        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                  "  Sphere Nodes must have ext.x() > 0.\n"
-                  "  Current value is: x=%g",
-                  node->name.c_str(), node->index, node->ext.x());
-        return false;
-      }
-
-      // build the ode representation
-      nGeom = dCreateSphere(theWorld->getSpace(), (dReal)node->ext.x());
-
-      // create the mass object for the sphere
-      if(node->inertia_set) {
-        setInertiaMass(node);
-      }
-      else if(node->density > 0) {
-        dMassSetSphere(&nMass, (dReal)node->density, (dReal)node->ext.x());
-      }
-      else if(node->mass > 0) {
-        dMassSetSphereTotal(&nMass, (dReal)node->mass, (dReal)node->ext.x());
-      }
-      return true;
-    }
-
-    /**
-     * The method creates an ode capsule representation of the given node.
-     *
-     */
-    bool NodePhysics::createCapsule(NodeData* node) {
-      if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
-        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                  "  Capsule Nodes must have ext.x() and ext.y() > 0.\n"
-                  "  Current values are: x=%g; y=%g",
-                  node->name.c_str(), node->index,
-                  node->ext.x(), node->ext.y());
-        return false;
-      }
-
-      // build the ode representation
-      nGeom = dCreateCapsule(theWorld->getSpace(), (dReal)node->ext.x(),
-                             (dReal)node->ext.y());
-
-      // create the mass object for the capsule
-      if(node->inertia_set) {
-        setInertiaMass(node);
-      }
-      else if(node->density > 0) {
-        dMassSetCapsule(&nMass, (dReal)node->density, 3, (dReal)node->ext.x(),
-                        (dReal)node->ext.y());
-      }
-      else if(node->mass > 0) {
-        dMassSetCapsuleTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
-                             (dReal)node->ext.y());
-      }
-      return true;
-    }
-
-    /**
-     * The method creates an ode cylinder representation of the given node.
-     *
-     */
-    bool NodePhysics::createCylinder(NodeData* node) {
-      if (!node->inertia_set && (node->ext.x() <= 0 || node->ext.y() <= 0)) {
-        LOG_ERROR("Cannot create Node \"%s\" (id=%lu):\n"
-                  "  Cylinder Nodes must have ext.x() and ext.y() > 0.\n"
-                  "  Current values are: x=%g; y=%g",
-                  node->name.c_str(), node->index,
-                  node->ext.x(), node->ext.y());
-        return false;
-      }
-
-      // build the ode representation
-      nGeom = dCreateCylinder(theWorld->getSpace(), (dReal)node->ext.x(),
-                              (dReal)node->ext.y());
-
-      // create the mass object for the cylinder
-      if(node->inertia_set) {
-        setInertiaMass(node);
-      }
-      else if(node->density > 0) {
-        dMassSetCylinder(&nMass, (dReal)node->density, 3, (dReal)node->ext.x(),
-                         (dReal)node->ext.y());
-      }
-      else if(node->mass > 0) {
-        dMassSetCylinderTotal(&nMass, (dReal)node->mass, 3, (dReal)node->ext.x(),
-                              (dReal)node->ext.y());
-      }
-      return true;
-    }
-
-    /**
-     * The method creates an ode plane
-     *
-     */
-    bool NodePhysics::createPlane(NodeData* node) {
-
-      // build the ode representation
-      nGeom = dCreatePlane(theWorld->getSpace(), 0, 0, 1, (dReal)node->pos.z());
-      return true;
-    }
-
-    bool NodePhysics::createHeightfield(NodeData* node) {
-      dMatrix3 R;
-      unsigned long size;
-      int x, y;
-      terrain = node->terrain;
-      size = terrain->width*terrain->height;
-      if(!height_data) height_data = (dReal*)calloc(size, sizeof(dReal));
-      for(x=0; x<terrain->height; x++) {
-        for(y=0; y<terrain->width; y++) {
-          height_data[(terrain->height-(x+1))*terrain->width+y] = (dReal)terrain->pixelData[x*terrain->width+y];
-        }
-      }
-      // build the ode representation
-      dHeightfieldDataID heightid = dGeomHeightfieldDataCreate();
-
-      // Create an finite heightfield.
-      dGeomHeightfieldDataBuildCallback(heightid, this, heightfield_callback,
-                                        terrain->targetWidth,
-                                        terrain->targetHeight,
-                                        terrain->width, terrain->height,
-                                        REAL(1.0), REAL( 0.0 ),
-                                        REAL(1.0), 0);
-      // Give some very bounds which, while conservative,
-      // makes AABB computation more accurate than +/-INF.
-      dGeomHeightfieldDataSetBounds(heightid, REAL(-terrain->scale*2.0),
-                                    REAL(terrain->scale*2.0));
-      //dGeomHeightfieldDataSetBounds(heightid, -terrain->scale, terrain->scale);
-      nGeom = dCreateHeightfield(theWorld->getSpace(), heightid, 1);
-      dRSetIdentity(R);
-      dRFromAxisAndAngle(R, 1, 0, 0, M_PI/2);
-      dGeomSetRotation(nGeom, R);
-      return true;
     }
 
     /**
@@ -876,7 +653,7 @@ namespace mars {
      * the posistion, the rotation, the movability and the coposite group number
      *
      */
-    void NodePhysics::setProperties(NodeData* node) {
+    void ODEObject::setProperties(NodeData* node) {
       bool body_created = 1;
       dQuaternion tmp;
 
@@ -937,7 +714,7 @@ namespace mars {
      *
      * post:
      */
-    const Vector NodePhysics::rotateAtPoint(const Vector &rotation_point,
+    const Vector ODEObject::rotateAtPoint(const Vector &rotation_point,
                                             const Quaternion &rotation,
                                             bool move_group) {
       dQuaternion tmp, tmp2, tmp3;
@@ -1022,128 +799,6 @@ namespace mars {
     }
 
     /**
-     * \brief This function rebuilds the geom (type, size and mass) of a node
-     *
-     *
-     * pre:
-     *     - the world should be exist
-     *     - a geom should be exist
-     *
-     * post:
-     *     - the geom should be rebuild with the new properties
-     */
-    bool NodePhysics::changeNode(NodeData* node) {
-      dReal pos[3] = {node->pos.x(), node->pos.y(), node->pos.z()};
-      dQuaternion rotation;
-      rotation[1] = node->rot.x();
-      rotation[2] = node->rot.y();
-      rotation[3] = node->rot.z();
-      rotation[0] = node->rot.w();
-      const dReal *tpos;
-#ifdef _VERIFY_WORLD_
-      sRotation euler = utils::quaternionTosRotation(node->rot);
-      fprintf(stderr, "node %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f  ;  %.4f  ;  %.4f\n",
-              node->index, node->pos.x(), node->pos.y(),
-              node->pos.z(), euler.alpha, euler.beta, euler.gamma,
-              node->mass, node->density);
-#endif
-      MutexLocker locker(&(theWorld->iMutex));
-
-      if(nGeom && theWorld && theWorld->existsWorld()) {
-        if(composite) {
-          dGeomGetQuaternion(nGeom, rotation);
-          tpos = dGeomGetPosition(nGeom);
-          pos[0] = tpos[0];
-          pos[1] = tpos[1];
-          pos[2] = tpos[2];
-        }
-        // deferre destruction of geom until after the successful creation of 
-        // a new geom
-        dGeomID tmpGeomId = nGeom;
-        // first we create a ode geometry for the node
-        bool success = false;
-        switch(node->physicMode) {
-        case NODE_TYPE_MESH:
-          success = createMesh(node);
-          break;
-        case NODE_TYPE_BOX:
-          success = createBox(node);
-          break;
-        case NODE_TYPE_SPHERE:
-          success = createSphere(node);
-          break;
-        case NODE_TYPE_CAPSULE:
-          success = createCapsule(node);
-          break;
-        case NODE_TYPE_CYLINDER:
-          success = createCylinder(node);
-          break;
-        case NODE_TYPE_PLANE:
-          success = createPlane(node);
-          break;
-        default:
-          // no correct type is spezified, so no physically node will be created
-          success = false;
-          break;
-        }
-        if(!success) {
-          fprintf(stderr, "creation of body geometry failed.\n");
-          return 0;
-        }
-        if(nBody) {
-          theWorld->destroyBody(nBody, this);
-          nBody = NULL;
-        }
-        dGeomDestroy(tmpGeomId);
-        // now the geom is rebuild and we have to reconnect it to the body
-        // and reset the mass of the body
-        if(!node->movable) {
-          dGeomSetBody(nGeom, nBody);
-          dGeomSetQuaternion(nGeom, rotation);
-          dGeomSetPosition(nGeom, (dReal)node->pos.x(),
-                           (dReal)node->pos.y(), (dReal)node->pos.z());
-        }
-        else {
-          bool body_created = false;
-          if(node->groupID) {
-            body_created = theWorld->getCompositeBody(node->groupID, &nBody, this);
-            composite = true;
-          }
-          else {
-            composite = false;
-            if(!nBody) nBody = dBodyCreate(theWorld->getWorld());
-          }
-          if(nBody) {
-            dGeomSetBody(nGeom, nBody);
-            if(!composite) {
-              dBodySetMass(nBody, &nMass);
-              dGeomSetQuaternion(nGeom, rotation);
-              dGeomSetPosition(nGeom, pos[0], pos[1], pos[2]);
-            }
-            else {
-              // if the geom is part of a composite object
-              // we have to translate and rotate the geom mass
-              if(body_created) {
-                dBodySetMass(nBody, &nMass);
-                dBodySetPosition(nBody, pos[0], pos[1], pos[2]);
-                dBodySetQuaternion(nBody, rotation);
-              }
-              else {
-                dGeomSetOffsetWorldQuaternion(nGeom, rotation);
-                dGeomSetOffsetWorldPosition(nGeom, pos[0], pos[1], pos[2]);
-                theWorld->resetCompositeMass(nBody);
-              }
-            }
-          }
-        }
-        dGeomSetData(nGeom, &node_data);
-        locker.unlock();
-        setContactParams(node->c_params);
-      }
-      return 1;
-    }
-
-    /**
      * \brief returns the ode mass object
      *
      *
@@ -1151,7 +806,7 @@ namespace mars {
      *
      * post:
      */
-    dMass NodePhysics::getODEMass(void) const {
+    dMass ODEObject::getODEMass(void) const {
       return nMass;
     }
 
@@ -1164,7 +819,7 @@ namespace mars {
      * post:
      *      - the linear velocity of the body should be set
      */
-    void NodePhysics::setLinearVelocity(const Vector &velocity) {
+    void ODEObject::setLinearVelocity(const Vector &velocity) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) dBodySetLinearVel(nBody, (dReal)velocity.x(),
                                   (dReal)velocity.y(), (dReal)velocity.z());
@@ -1179,7 +834,7 @@ namespace mars {
      * post:
      *      - the angular velocity of the body should be set
      */
-    void NodePhysics::setAngularVelocity(const Vector &velocity) {
+    void ODEObject::setAngularVelocity(const Vector &velocity) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) dBodySetAngularVel(nBody, (dReal)velocity.x(),
                                    (dReal)velocity.y(), (dReal)velocity.z());
@@ -1194,7 +849,7 @@ namespace mars {
      * post:
      *      - the force of the body should be set
      */
-    void NodePhysics::setForce(const Vector &f) {
+    void ODEObject::setForce(const Vector &f) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) dBodySetForce(nBody, (dReal)f.x(),
                               (dReal)f.y(), (dReal)f.z());
@@ -1209,7 +864,7 @@ namespace mars {
      * post:
      *      - the torque of the body should be set
      */
-    void NodePhysics::setTorque(const Vector &t) {
+    void ODEObject::setTorque(const Vector &t) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) dBodySetTorque(nBody, (dReal)t.x(),
                                (dReal)t.y(), (dReal)t.z());
@@ -1224,7 +879,7 @@ namespace mars {
      * post:
      *      - the force should be added to the body
      */
-    void NodePhysics::addForce(const Vector &f, const Vector &p) {
+    void ODEObject::addForce(const Vector &f, const Vector &p) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) {
         dBodyAddForceAtPos(nBody, 
@@ -1241,7 +896,7 @@ namespace mars {
      * post:
      *      - the force should be added to the body
      */
-    void NodePhysics::addForce(const Vector &f) {
+    void ODEObject::addForce(const Vector &f) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) {
         dBodyAddForce(nBody, (dReal)f.x(), (dReal)f.y(), (dReal)f.z());
@@ -1257,19 +912,19 @@ namespace mars {
      * post:
      *      - the torque should be added to the body
      */
-    void NodePhysics::addTorque(const Vector &t) {
+    void ODEObject::addTorque(const Vector &t) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) dBodyAddTorque(nBody, (dReal)t.x(), (dReal)t.y(), (dReal)t.z());
     }
 
-    bool NodePhysics::getGroundContact(void) const {
+    bool ODEObject::getGroundContact(void) const {
       if(nGeom) {
         return node_data.num_ground_collisions;
       }
       return false;
     }
 
-    void NodePhysics::getContactPoints(std::vector<Vector> *contact_points) const {
+    void ODEObject::getContactPoints(std::vector<Vector> *contact_points) const {
       contact_points->clear();
       if(nGeom) {
         std::vector<Vector>::const_iterator iter;
@@ -1281,7 +936,7 @@ namespace mars {
       }
     }
 
-    void NodePhysics::getContactIDs(std::list<interfaces::NodeId> *ids) const {
+    void ODEObject::getContactIDs(std::list<interfaces::NodeId> *ids) const {
       ids->clear();
       if(nGeom) {
         *ids = node_data.contact_ids;
@@ -1289,7 +944,7 @@ namespace mars {
     }
 
 
-    sReal NodePhysics::getGroundContactForce(void) const {
+    sReal ODEObject::getGroundContactForce(void) const {
       std::vector<dJointFeedback*>::const_iterator iter;
       dReal force[3] = {0,0,0};
 
@@ -1311,7 +966,7 @@ namespace mars {
       return dLENGTH(force);
     }
 
-    const Vector NodePhysics::getContactForce(void) const {
+    const Vector ODEObject::getContactForce(void) const {
       std::vector<dJointFeedback*>::const_iterator iter;
       dReal force[3] = {0,0,0};
 
@@ -1333,7 +988,7 @@ namespace mars {
       return Vector(force[0], force[1], force[2]);
     }
 
-    void NodePhysics::addCompositeOffset(dReal x, dReal y, dReal z) {
+    void ODEObject::addCompositeOffset(dReal x, dReal y, dReal z) {
       // no lock because physics internal functions get locked elsewhere
       const dReal *gpos;
 
@@ -1341,7 +996,7 @@ namespace mars {
       dGeomSetOffsetWorldPosition(nGeom, gpos[0]+x, gpos[1]+y, gpos[2]+z);
     }
 
-    void NodePhysics::addMassToCompositeBody(dBodyID theBody, dMass *bodyMass) {
+    void ODEObject::addMassToCompositeBody(dBodyID theBody, dMass *bodyMass) {
       // no lock because physics internal functions get locked elsewhere
       const dReal *rotation, *pos, *brot;
       dReal tpos[3];
@@ -1367,7 +1022,7 @@ namespace mars {
       dMassTranslate(bodyMass, -bodyMass->c[0], -bodyMass->c[1], -bodyMass->c[2]);
     }
 
-    void NodePhysics::getAbsMass(dMass *tMass) const {
+    void ODEObject::getAbsMass(dMass *tMass) const {
       // no lock because physics internal functions get locked elsewhere
       const dReal *pos = dGeomGetPosition(nGeom);
       const dReal *rot = dGeomGetRotation(nGeom);
@@ -1377,12 +1032,7 @@ namespace mars {
       dMassTranslate(tMass, pos[0], pos[1], pos[2]);
     }
 
-    dReal NodePhysics::heightCallback(int x, int y) {
-
-      return (dReal)height_data[(y*terrain->width)+x]*terrain->scale;
-    }
-
-    void NodePhysics::setContactParams(contact_params& c_params) {
+    void ODEObject::setContactParams(contact_params& c_params) {
       MutexLocker locker(&(theWorld->iMutex));
       node_data.c_params = c_params;
       if(nGeom) {
@@ -1406,7 +1056,7 @@ namespace mars {
      *     - the memory for the sensor data has to be allocated
      *     - the physical elements for the sensor had to be created
      */
-    void NodePhysics::addSensor(BaseSensor* sensor) {
+    void ODEObject::addSensor(BaseSensor* sensor) {
       MutexLocker locker(&(theWorld->iMutex));
       int i;
       geom_data* gd;
@@ -1587,7 +1237,7 @@ namespace mars {
       }
     }
 
-    void NodePhysics::removeSensor(BaseSensor *sensor) {
+    void ODEObject::removeSensor(BaseSensor *sensor) {
       MutexLocker locker(&(theWorld->iMutex));
       std::vector<sensor_list_element>::iterator iter;
       for (iter = sensor_list.begin(); iter != sensor_list.end(); ) {
@@ -1608,7 +1258,7 @@ namespace mars {
      *
      * post:
      */
-    void NodePhysics::handleSensorData(bool physics_thread) {
+    void ODEObject::handleSensorData(bool physics_thread) {
       if(!physics_thread) return;
       MutexLocker locker(&(theWorld->iMutex));
       std::vector<sensor_list_element>::iterator iter;
@@ -1735,28 +1385,19 @@ namespace mars {
      *
      * post:
      */
-    void NodePhysics::destroyNode(void) {
+    void ODEObject::destroyNode(void) {
       MutexLocker locker(&(theWorld->iMutex));
       if(nBody) theWorld->destroyBody(nBody, this);
-
       if(nGeom) dGeomDestroy(nGeom);
-
-      if(myVertices) free(myVertices);
-      if(myIndices) free(myIndices);
-      if(myTriMeshData) dGeomTriMeshDataDestroy(myTriMeshData);
-
       nBody = 0;
       nGeom = 0;
-      myVertices = 0;
-      myIndices = 0;
-      myTriMeshData = 0;
       composite = false;
       //node_data.num_ground_collisions = 0;
       node_data.setZero();
-      height_data = 0;
+      std::cout << "Destroyed Parent" << std::endl;
     }
 
-    void NodePhysics::setInertiaMass(NodeData* node) {
+    void ODEObject::setInertiaMass(NodeData* node) {
 
       dMassSetZero(&nMass);
       nMass.mass = (dReal)node->mass;
@@ -1776,7 +1417,7 @@ namespace mars {
       nMass.I[11] = 0.0;
     }
 
-    void NodePhysics::getMass(sReal *mass, sReal *inertia) const {
+    void ODEObject::getMass(sReal *mass, sReal *inertia) const {
       if(mass) *mass = nMass.mass;
       if(inertia) {
         inertia[0] = nMass.I[0];
@@ -1791,7 +1432,7 @@ namespace mars {
       }
     }
 
-    std::vector<dJointFeedback*> NodePhysics::addContacts(ContactsPhysics contacts, dWorldID world, dJointGroupID contactgroup){
+    std::vector<dJointFeedback*> ODEObject::addContacts(ContactsPhysics contacts, dWorldID world, dJointGroupID contactgroup){
       dVector3 v;
       //dMatrix3 R;
       dReal dot;
@@ -1822,8 +1463,8 @@ namespace mars {
         // Otherwise use a parameter for this
         if(contactsPtr->operator[](i).geom.depth > 0.001)
         {
-          LOG_DEBUG("[NodePhysics::createContacts]:The colision detected might have too large depth, reducing it to the maxmimum allowed");
-          std::cout << "[NodePhysics::createContacts]: Depth " << contactsPtr->operator[](i).geom.depth << std::endl;
+          LOG_DEBUG("[ODEObject::createContacts]:The colision detected might have too large depth, reducing it to the maxmimum allowed");
+          std::cout << "[ODEObject::createContacts]: Depth " << contactsPtr->operator[](i).geom.depth << std::endl;
           contactsPtr->operator[](i).geom.depth = 0.001; 
         }
         */
@@ -1843,7 +1484,7 @@ namespace mars {
           {
             LOG_WARN("Catched a nan in the feedback forces, won't be used");
           }
-          LOG_DEBUG("[NodePhysics::addContacts] Contacts were added to the node %s", nodeName.c_str());
+          LOG_DEBUG("[ODEObject::addContacts] Contacts were added to the node %s", nodeName.c_str());
         #endif
         fbs.push_back(fb);
         addContact(c, contactsPtr->operator[](i), fb); 
@@ -1851,7 +1492,7 @@ namespace mars {
       return fbs;
     }
 
-    void NodePhysics::addContact(dJointID contactJointId, dContact contact, dJointFeedback* fb){
+    void ODEObject::addContact(dJointID contactJointId, dContact contact, dJointFeedback* fb){
       Vector contact_point;
       dJointAttach(contactJointId, nBody, 0);
       node_data.num_ground_collisions ++; 
@@ -1865,12 +1506,12 @@ namespace mars {
     }
 
 
-    sReal NodePhysics::getCollisionDepth(void) const {
+    sReal ODEObject::getCollisionDepth(void) const {
       if(nGeom && theWorld) {
         return theWorld->getCollisionDepth(nGeom);
       }
       return 0.0;
     }
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011, 2012, DFKI GmbH Robotics Innovation Center
+ *  Copyright 2022, DFKI GmbH Robotics Innovation Center
  *
  *  This file is part of the MARS simulation framework.
  *
@@ -19,31 +19,39 @@
  */
 
  /**
- * \file PhysicsMapper.h
- * \author Malte Roemmermann
- * \brief "PhysicsMapper" connects the implemented interface classes to
- * the interface objects that are handled in the core layer.
+ * \file ODEPlane.h
+ * \author Malte Roemmermann, Muhammad Haider Khan Lodhi
  *
  */
 
-#ifndef PHYSICS_MAPPER_H
-#define PHYSICS_MAPPER_H
+#ifndef ODE_PLANE_H
+#define ODE_PLANE_H
 
 #ifdef _PRINT_HEADER_
-  #warning "PhysicsMapper.h"
+  #warning "ODEPlane.h"
 #endif
 
-#include "WorldPhysics.h"
+#include <mars/utils/MutexLocker.h>
+#include "ODEObject.h"
+#include <string>
+
+//TODO remove?
+#ifndef ODE11
+  #define dTriIndex int
+#endif
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
-    class PhysicsMapper {
+    class ODEPlane : public ODEObject {
     public:
-      static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
+      ODEPlane(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual ~ODEPlane(void);
+      static ODEObject* instanciate(std::shared_ptr<interfaces::PhysicsInterface> world, interfaces::NodeData * nodeData);
+      virtual bool createODEGeometry(interfaces::NodeData *node) override;
     };
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
 
-#endif  // PHYSICS_MAPPER_H
+#endif  // ODE_PLANE_H

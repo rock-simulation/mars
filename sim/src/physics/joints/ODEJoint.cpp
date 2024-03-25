@@ -19,24 +19,24 @@
  */
 
 /*
- *  \file JointPhysics.h
+ *  \file ODEJoint.h
  *  \autor Larbi Abdenebaoui
- *  \brief "JointPhysics" declares the physics for the joint using ode 
+ *  \brief "ODEJoint" declares the physics for the joint using ode 
  *
- *  core "SimJoint" and the physics "JointPhysics"
- *  SimJoint ------> JointInterface(i_Joint) ------------>	JointPhysics
+ *  core "SimJoint" and the physics "ODEJoint"
+ *  SimJoint ------> JointInterface(i_Joint) ------------>	ODEJoint
  *  
  */
 
 #include <mars/utils/MutexLocker.h>
 
-#include "JointPhysics.h"
-#include "NodePhysics.h"
+#include "ODEJoint.h"
+#include "objects/ODEObject.h"
 
 #include <cstdio>
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
     using namespace utils;
     using namespace interfaces;
@@ -45,7 +45,7 @@ namespace mars {
      * \brief the constructor of the Joint physics 
      *   initialize the attributes of the object 
      */
-    JointPhysics::JointPhysics(std::shared_ptr<PhysicsInterface> world){
+    ODEJoint::ODEJoint(std::shared_ptr<PhysicsInterface> world){
       theWorld = std::static_pointer_cast<WorldPhysics>(world);
       jointId = ball_motor = 0;
       jointCFM = 0.0;
@@ -55,6 +55,7 @@ namespace mars {
       spring = 0;
       body1 = 0;
       body2 = 0;
+      joint_created = false;
     }
 
     /**
@@ -66,7 +67,7 @@ namespace mars {
      * post:
      *     - all physical representation of the joint should be cleared
      */
-    JointPhysics::~JointPhysics(void) {
+    ODEJoint::~ODEJoint(void) {
       MutexLocker locker(&(theWorld->iMutex));
       if (jointId) {
         dJointDestroy(jointId);
@@ -74,7 +75,7 @@ namespace mars {
     }
 
 
-    void JointPhysics::calculateCfmErp(const JointData *jointS) {
+    void ODEJoint::calculateCfmErp(const JointData *jointS) {
         // how to set erp and cfm
         // ERP = h kp / (h kp + kd)
         // CFM = 1 / (h kp + kd)
@@ -103,11 +104,15 @@ namespace mars {
         cfm2 = (cfm2>0)?1/cfm2:0.000000000001;
     }
 
+    bool ODEJoint::isJointCreated(){
+      return joint_created;
+    }
+
     /**
      * \brief create the joint with the informations giving from jointS 
      * 
      */
-    bool JointPhysics::createJoint(JointData *jointS, const std::shared_ptr<NodeInterface> node1,
+    bool ODEJoint::createJoint(interfaces::JointData *jointS, const std::shared_ptr<NodeInterface> node1,
                                    const std::shared_ptr<NodeInterface> node2) {
 #ifdef _VERIFY_WORLD_
       fprintf(stderr, "joint %d  ;  %d  ;  %d  ;  %.4f, %.4f, %.4f  ;  %.4f, %.4f, %.4f\n",
@@ -119,8 +124,8 @@ namespace mars {
       if ( theWorld && theWorld->existsWorld() ) {
         //get the bodies from the interfaces nodes
         //here we have to make some verifications
-        const std::shared_ptr<NodePhysics> n1 = std::dynamic_pointer_cast<NodePhysics>(node1);
-        const std::shared_ptr<NodePhysics> n2 = std::dynamic_pointer_cast<NodePhysics>(node2);
+        const std::shared_ptr<ODEObject> n1 = std::dynamic_pointer_cast<ODEObject>(node1);
+        const std::shared_ptr<ODEObject> n2 = std::dynamic_pointer_cast<ODEObject>(node2);
         dBodyID b1 = 0, b2 = 0;
 
         calculateCfmErp(jointS);
@@ -133,46 +138,32 @@ namespace mars {
         if(n2) b2 = n2->getBody();
         body1 = b1;
         body2 = b2;
-        switch(jointS->type) {
-        case  JOINT_TYPE_HINGE:
-          createHinge(jointS, b1, b2);
-          break;
-        case JOINT_TYPE_HINGE2:
-          if(b1 || b2) createHinge2(jointS, b1, b2);
-          else return 0;
-          break;
-        case JOINT_TYPE_SLIDER:
-          createSlider(jointS, b1, b2);
-          break;
-        case JOINT_TYPE_BALL:
-          createBall(jointS, b1, b2);
-          break;
-        case JOINT_TYPE_UNIVERSAL:
-          if(b1 || b2) createUniversal(jointS, b1, b2);
-          else return 0;
-          break;
-        case JOINT_TYPE_FIXED:
-          if(b1 || b2) createFixed(jointS, b1, b2);
-          else return 0;
-          break;
-        default:
-          // Invalid type. No physically node will be created.
-          std::cerr << __FILE__":" << __LINE__<< " invalid joint type for joint \""
-                    << jointS->name << "\". No joint created." << std::endl;
+
+        bool ret;
+        ret = createODEJoint(jointS, body1, body2);
+        if(ret == 0) {
+          // Error createing the joint         
           return 0;
-          break;
         }
+
         // we have created a joint. To get the information
         // of the forces the joint attached to the bodies
         // we need to set a feedback pointer for the joint (ode stuff)
         dJointSetFeedback(jointId, &feedback);
+        joint_created = true;
         return 1;
       }
       return 0;
     }
 
+    bool ODEJoint::createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2){
+      std::cout << "ODEJoint: using default createODEJoint func. Did you forget to override it?." << std::endl;
+      LOG_WARN("ODEObject: using default createODEJoint func. Did you forget to override it?.");
+      return 0;
+    }
+
     ///get the anchor of the joint
-    void JointPhysics::getAnchor(Vector* anchor) const {
+    void ODEJoint::getAnchor(Vector* anchor) const {
       dReal pos[4] = {0,0,0,0};
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -202,7 +193,7 @@ namespace mars {
     }
 
     // the next force and velocity methods are only in a beta state
-    void JointPhysics::setForceLimit(sReal max_force) {
+    void ODEJoint::setForceLimit(sReal max_force) {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -221,7 +212,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::setForceLimit2(sReal max_force) {
+    void ODEJoint::setForceLimit2(sReal max_force) {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -238,7 +229,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::setVelocity(sReal velocity) {
+    void ODEJoint::setVelocity(sReal velocity) {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -257,7 +248,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::setVelocity2(sReal velocity) {
+    void ODEJoint::setVelocity2(sReal velocity) {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -274,7 +265,7 @@ namespace mars {
       }
     }
 
-    sReal JointPhysics::getPosition(void) const {
+    sReal ODEJoint::getPosition(void) const {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -294,7 +285,7 @@ namespace mars {
       return 0;
     }
 
-    sReal JointPhysics::getPosition2(void) const {
+    sReal ODEJoint::getPosition2(void) const {
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -305,219 +296,8 @@ namespace mars {
       return 0;
     }
 
-
-
-    /**
-     * \brief Creates a hinge joint in the physical environment
-     *
-     * We get a problem here. There two different way how a hinge joint
-     * can be used. First is can be used only as joint. So we should set
-     * the low and height stop to zero and use the stopcfm and stoperp values
-     * to simulate the spring-damping properties of the joint. The second case
-     * is, to use the hinge to simulate a motor. I don't know how the ode
-     * behavior will look like, if we set the same parameter and use the
-     * force and velocity params to simulate a motor.
-     *
-     */
-    void JointPhysics::createHinge(JointData *jointS, dBodyID body1,
-                                   dBodyID body2){
-
-      jointId= dJointCreateHinge(theWorld->getWorld(),0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetHingeAnchor(jointId, jointS->anchor.x(), jointS->anchor.y(),
-                           jointS->anchor.z()); 
-      dJointSetHingeAxis(jointId, jointS->axis1.x(), jointS->axis1.y(),
-                         jointS->axis1.z());
-    
-      if(damping>0.00000001) {
-        dJointSetHingeParam(jointId, dParamFMax, damping);
-        dJointSetHingeParam(jointId, dParamVel, 0);
-      }
-      if(spring > 0.00000001) {
-        dJointSetHingeParam(jointId, dParamLoStop, lo1);
-        dJointSetHingeParam(jointId, dParamHiStop, hi1);
-        dJointSetHingeParam(jointId, dParamStopCFM, cfm1);
-        dJointSetHingeParam(jointId, dParamStopERP, erp1);
-        //dJointSetHingeParam(jointId, dParamCFM, cfm);
-        //dJointSetHingeParam(jointId, dParamFudgeFactor, 1);
-      }
-      else if(lo1 != 0) {
-        dJointSetHingeParam(jointId, dParamLoStop, lo1);
-        dJointSetHingeParam(jointId, dParamHiStop, hi1);    
-      }
-      if(jointCFM > 0) {
-        dJointSetHingeParam(jointId, dParamCFM, jointCFM);
-      }
-      // good value for the SpaceClimber robot
-      //dJointSetHingeParam(jointId, dParamCFM, 0.03);
-      //dJointSetHingeParam(jointId, dParamCFM, 0.018);
-      //dJointSetHingeParam(jointId, dParamCFM, 0.09);
-    }
-
-    /**
-     * \brief Creates a hinge2 joint in the physical environment
-     *
-     * pre:
-     *     - body1 and body2 should be aviable
-     *
-     * post:
-     *     - a hinge2 joint should be created and connected to the bodies
-     */
-    void JointPhysics::createHinge2(JointData *jointS, dBodyID body1,
-                                    dBodyID body2){
-
-      jointId= dJointCreateHinge2(theWorld->getWorld(),0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetHinge2Anchor(jointId, jointS->anchor.x(), jointS->anchor.y(),
-                            jointS->anchor.z()); 
-      dJointSetHinge2Axis1(jointId, jointS->axis1.x(), jointS->axis1.y(),
-                           jointS->axis1.z());
-      dJointSetHinge2Axis2(jointId, jointS->axis2.x(), jointS->axis2.y(),
-                           jointS->axis2.z());
-  
-      if(damping>0.00000001) {
-        dJointSetHinge2Param(jointId, dParamFMax, damping);
-        dJointSetHinge2Param(jointId, dParamVel, 0);
-        dJointSetHinge2Param(jointId, dParamFMax2, damping);
-        dJointSetHinge2Param(jointId, dParamVel2, 0);
-      }
-      if(spring > 0.00000001) {
-        dJointSetHinge2Param(jointId, dParamLoStop, lo1);
-        dJointSetHinge2Param(jointId, dParamHiStop, hi1);
-        dJointSetHinge2Param(jointId, dParamLoStop2, lo2);
-        dJointSetHinge2Param(jointId, dParamHiStop2, hi2);
-        dJointSetHinge2Param(jointId, dParamStopCFM, cfm1);
-        dJointSetHinge2Param(jointId, dParamStopERP, erp1);
-        dJointSetHinge2Param(jointId, dParamStopCFM2, cfm2);
-        dJointSetHinge2Param(jointId, dParamStopERP2, erp2);
-        dJointSetHinge2Param(jointId, dParamCFM, cfm);
-      }
-      if(jointCFM > 0) {
-        dJointSetHinge2Param(jointId, dParamCFM, jointCFM);
-      }
-    }
-
-    void JointPhysics::createSlider(JointData *jointS, dBodyID body1,
-                                    dBodyID body2){
-      jointId= dJointCreateSlider(theWorld->getWorld(),0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetSliderAxis(jointId, jointS->axis1.x(), jointS->axis1.y(),
-                          jointS->axis1.z());
-  
-      if(spring > 0.00000001) {
-        dJointSetSliderParam(jointId, dParamLoStop, lo1);
-        dJointSetSliderParam(jointId, dParamHiStop, hi1);
-        dJointSetSliderParam(jointId, dParamStopCFM, cfm1);
-        dJointSetSliderParam(jointId, dParamStopERP, erp1);
-      }
-      else if(damping > 0.00000001) {
-        dJointSetSliderParam(jointId, dParamFMax, damping);
-        dJointSetSliderParam(jointId, dParamVel, 0);
-      }
-      else if(lo1 != 0) {
-        dJointSetSliderParam(jointId, dParamLoStop, lo1);
-        dJointSetSliderParam(jointId, dParamHiStop, hi1);
-      }
-      if(jointCFM > 0) {
-        dJointSetSliderParam(jointId, dParamCFM, jointCFM);
-      }
-      //dJointSetSliderParam(jointId, dParamCFM, cfm);
-    }
-
-    void JointPhysics::createBall(JointData *jointS, dBodyID body1,
-                                  dBodyID body2){
-      jointId= dJointCreateBall(theWorld->getWorld(),0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetBallAnchor(jointId, jointS->anchor.x(), jointS->anchor.y(),
-                          jointS->anchor.z()); 
-      dJointSetBallParam(jointId, dParamCFM, cfm1);
-      dJointSetBallParam(jointId, dParamERP, erp1);
-      /*
-        ball_motor = dJointCreateAMotor(theWorld->getWorld(), 0);
-        dJointAttach(ball_motor, body1, body2);
-        dJointSetAMotorNumAxes(ball_motor, 3);
-        dJointSetAMotorAxis(ball_motor, 0, 1, 1,0,0);
-        dJointSetAMotorAxis(ball_motor, 2, 2, 0,1,0);
-  
-        if(damping > 0.00000001) {
-        dJointSetAMotorParam(ball_motor, dParamVel, 0);
-        dJointSetAMotorParam(ball_motor, dParamVel2, 0);
-        dJointSetAMotorParam(ball_motor, dParamVel3, 0);
-        dJointSetAMotorParam(ball_motor, dParamFMax, damping);
-        dJointSetAMotorParam(ball_motor, dParamFMax2, damping);
-        dJointSetAMotorParam(ball_motor, dParamFMax3, damping);
-        }
-        else if(spring > 0.00000001) {
-        dJointSetAMotorParam(ball_motor, dParamLoStop, lo2);
-        dJointSetAMotorParam(ball_motor, dParamLoStop2, lo2);
-        dJointSetAMotorParam(ball_motor, dParamLoStop3, lo2);
-        dJointSetAMotorParam(ball_motor, dParamHiStop, hi1);
-        dJointSetAMotorParam(ball_motor, dParamHiStop2, hi2);
-        dJointSetAMotorParam(ball_motor, dParamHiStop3, hi2);
-        dJointSetAMotorParam(ball_motor, dParamCFM, cfm1);
-        dJointSetAMotorParam(ball_motor, dParamCFM2, cfm2);
-        dJointSetAMotorParam(ball_motor, dParamCFM3, cfm2);
-        dJointSetAMotorParam(ball_motor, dParamERP, erp1);
-        dJointSetAMotorParam(ball_motor, dParamERP2, erp2);
-        dJointSetAMotorParam(ball_motor, dParamERP3, erp2);
-        }
-        dJointSetAMotorMode (ball_motor, dAMotorEuler);
-      */
-    }
-
-    /**
-     * \brief Creates a universal joint in the physical environment
-     *
-     * pre:
-     *     - body1 and body2 should be aviable
-     *
-     * post:
-     *     - a universal joint should be created and connected to the bodies
-     */
-    void JointPhysics::createUniversal(JointData *jointS, dBodyID body1,
-                                       dBodyID body2){
-
-      jointId= dJointCreateUniversal(theWorld->getWorld(),0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetUniversalAnchor(jointId, jointS->anchor.x(), jointS->anchor.y(),
-                               jointS->anchor.z()); 
-      dJointSetUniversalAxis1(jointId, jointS->axis1.x(), jointS->axis1.y(),
-                              jointS->axis1.z());
-      dJointSetUniversalAxis2(jointId, jointS->axis2.x(), jointS->axis2.y(),
-                              jointS->axis2.z());
-  
-      if(damping>0.00000001) {
-        dJointSetUniversalParam(jointId, dParamFMax, damping);
-        dJointSetUniversalParam(jointId, dParamVel, 0);
-        dJointSetUniversalParam(jointId, dParamFMax2, damping);
-        dJointSetUniversalParam(jointId, dParamVel2, 0);
-      }
-      if(spring > 0.00000001) {
-        dJointSetUniversalParam(jointId, dParamLoStop, lo1);
-        dJointSetUniversalParam(jointId, dParamHiStop, hi1);
-        dJointSetUniversalParam(jointId, dParamLoStop2, lo2);
-        dJointSetUniversalParam(jointId, dParamHiStop2, hi2);
-        dJointSetUniversalParam(jointId, dParamStopCFM, cfm1);
-        dJointSetUniversalParam(jointId, dParamStopERP, erp1);
-        dJointSetUniversalParam(jointId, dParamStopCFM2, cfm2);
-        dJointSetUniversalParam(jointId, dParamStopERP2, erp2);
-        dJointSetUniversalParam(jointId, dParamCFM, cfm);
-      }
-      if(lo1 > 0.0001 || lo1 < -0.0001)
-        dJointSetUniversalParam(jointId, dParamLoStop, lo1);
-      if(lo2 > 0.0001 || lo2 < -0.0001)
-        dJointSetUniversalParam(jointId, dParamHiStop, hi1);
-      if(hi1 > 0.0001 || hi1 < -0.0001)
-        dJointSetUniversalParam(jointId, dParamLoStop2, lo2);
-      if(hi2 > 0.0001 || hi2 < -0.0001)
-        dJointSetUniversalParam(jointId, dParamHiStop2, hi2);
-      if(jointCFM > 0) {
-        dJointSetUniversalParam(jointId, dParamCFM, jointCFM);
-      }
-    }
-
     /// set the anchor i.e. the position where the joint is created of the joint 
-    void JointPhysics::setAnchor(const Vector &anchor){
+    void ODEJoint::setAnchor(const Vector &anchor){
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -550,7 +330,7 @@ namespace mars {
      *
      * post:
      */
-    void JointPhysics::setAxis(const Vector &axis){
+    void ODEJoint::setAxis(const Vector &axis){
       MutexLocker locker(&(theWorld->iMutex));
 
       switch(joint_type) {
@@ -582,7 +362,7 @@ namespace mars {
      *
      * post:
      */
-    void JointPhysics::setAxis2(const Vector &axis){
+    void ODEJoint::setAxis2(const Vector &axis){
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
@@ -615,7 +395,7 @@ namespace mars {
      * post:
      *     - the given axis struct should be filled with correct values
      */
-    void JointPhysics::getAxis(Vector* axis) const {
+    void ODEJoint::getAxis(Vector* axis) const {
       dReal pos[4] = {0,0,0,0};
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -653,7 +433,7 @@ namespace mars {
      * post:
      *     - the given axis struct should be filled with correct values
      */
-    void JointPhysics::getAxis2(Vector* axis) const {
+    void ODEJoint::getAxis2(Vector* axis) const {
       dReal pos[4] = {0,0,0,0};
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -683,11 +463,11 @@ namespace mars {
     }
 
     ///set the world informations
-    void JointPhysics::setWorldObject(std::shared_ptr<PhysicsInterface>  world){
+    void ODEJoint::setWorldObject(std::shared_ptr<PhysicsInterface>  world){
       theWorld = std::static_pointer_cast<WorldPhysics>(world);
     }
 
-    void JointPhysics::setJointAsMotor(int axis) {
+    void ODEJoint::setJointAsMotor(int axis) {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
         // todo: need to handle the distinction whether to set or not to
@@ -730,7 +510,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::unsetJointAsMotor(int axis) {
+    void ODEJoint::unsetJointAsMotor(int axis) {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
@@ -773,7 +553,7 @@ namespace mars {
      * post:
      *
      */
-    void JointPhysics::getForce1(Vector *f) const {
+    void ODEJoint::getForce1(Vector *f) const {
       f->x() = (sReal)feedback.f1[0];
       f->y() = (sReal)feedback.f1[1];
       f->z() = (sReal)feedback.f1[2];
@@ -788,7 +568,7 @@ namespace mars {
      * post:
      *
      */
-    void JointPhysics::getForce2(Vector *f) const {
+    void ODEJoint::getForce2(Vector *f) const {
       f->x() = (sReal)feedback.f2[0];
       f->y() = (sReal)feedback.f2[1];
       f->z() = (sReal)feedback.f2[2];
@@ -803,7 +583,7 @@ namespace mars {
      * post:
      *
      */
-    void JointPhysics::getTorque1(Vector *t) const {
+    void ODEJoint::getTorque1(Vector *t) const {
       t->x() = (sReal)feedback.t1[0];
       t->y() = (sReal)feedback.t1[1];
       t->z() = (sReal)feedback.t1[2];
@@ -818,7 +598,7 @@ namespace mars {
      * post:
      *
      */
-    void JointPhysics::getTorque2(Vector *t) const {
+    void ODEJoint::getTorque2(Vector *t) const {
       t->x() = (sReal)feedback.t2[0];
       t->y() = (sReal)feedback.t2[1];
       t->z() = (sReal)feedback.t2[2];
@@ -835,7 +615,7 @@ namespace mars {
      * post:
      *
      */
-    void JointPhysics::reattacheJoint(void) {
+    void ODEJoint::reattacheJoint(void) {
       dReal pos[4] = {0,0,0,0};
       MutexLocker locker(&(theWorld->iMutex));
 
@@ -893,13 +673,13 @@ namespace mars {
      *     normal[1] *= dot*radius;
      *     normal[2] *= dot*radius;
      */
-    void JointPhysics::getAxisTorque(Vector *t) const {
+    void ODEJoint::getAxisTorque(Vector *t) const {
       t->x() = axis1_torque.x();
       t->y() = axis1_torque.y();
       t->z() = axis1_torque.z();
     }
 
-    void JointPhysics::getAxis2Torque(Vector *t) const {
+    void ODEJoint::getAxis2Torque(Vector *t) const {
       t->x() = axis2_torque.x();
       t->y() = axis2_torque.y();
       t->z() = axis2_torque.z();
@@ -910,7 +690,7 @@ namespace mars {
      * we can return it.
      *
      */
-    void JointPhysics::update(void) {
+    void ODEJoint::update(void) {
       const dReal *b1_pos, *b2_pos;
       dReal anchor[4], axis[4], axis2[4];
       int calc1 = 0, calc2 = 0;
@@ -1064,38 +844,13 @@ namespace mars {
       }
     }
 
-    void JointPhysics::getJointLoad(Vector *t) const {
+    void ODEJoint::getJointLoad(Vector *t) const {
       t->x() = joint_load.x();
       t->y() = joint_load.y();
       t->z() = joint_load.z();
     }
 
-
-    /**
-     * \brief Creates a fixed joint in the physical environment. For
-     * static fixed objects a same group id is prefered, the fixed
-     * joint should only be used to dynamically connect and unconnect nodes.
-     *
-     * pre:
-     *     - body1 and/or body2 should be aviable
-     *
-     * post:
-     *     - a fixed joint should be created and connected to the bodies
-     */
-    void JointPhysics::createFixed(JointData *jointS, dBodyID body1,
-                                   dBodyID body2){
-      CPP_UNUSED(jointS);
-      jointId = dJointCreateFixed(theWorld->getWorld(), 0);
-      dJointAttach(jointId, body1, body2);
-      dJointSetFixed(jointId);
-      // used for the integration study of the SpaceClimber
-      //dJointSetFixedParam(jointId, dParamCFM, cfm1);//0.0002);
-      //dJointSetFixedParam(jointId, dParamERP, erp1);//0.0002);
-      //dJointSetFixedParam(jointId, dParamCFM, 0.001);
-    }
-
-
-    sReal JointPhysics::getVelocity(void) const {
+    sReal ODEJoint::getVelocity(void) const {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
@@ -1120,7 +875,7 @@ namespace mars {
       return 0;
     }
 
-    sReal JointPhysics::getVelocity2(void) const {
+    sReal ODEJoint::getVelocity2(void) const {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
@@ -1143,7 +898,7 @@ namespace mars {
       return 0;
     }
 
-    void JointPhysics::setTorque(sReal torque) {
+    void ODEJoint::setTorque(sReal torque) {
       MutexLocker locker(&(theWorld->iMutex));
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
@@ -1166,7 +921,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::setTorque2(sReal torque) {
+    void ODEJoint::setTorque2(sReal torque) {
       CPP_UNUSED(torque);
       switch(joint_type) {
       case  JOINT_TYPE_HINGE:
@@ -1186,7 +941,7 @@ namespace mars {
       }
     }
 
-    void JointPhysics::changeStepSize(const JointData &jointS) {
+    void ODEJoint::changeStepSize(const JointData &jointS) {
       MutexLocker locker(&(theWorld->iMutex));
       if(theWorld && theWorld->existsWorld()) {
         calculateCfmErp(&jointS);
@@ -1295,11 +1050,11 @@ namespace mars {
       }
     }
 
-    sReal JointPhysics::getMotorTorque(void) const {
+    sReal ODEJoint::getMotorTorque(void) const {
       return motor_torque;
     }
 
-    interfaces::sReal JointPhysics::getLowStop() const {
+    interfaces::sReal ODEJoint::getLowStop() const {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         return dJointGetHingeParam(jointId, dParamLoStop);
@@ -1309,12 +1064,12 @@ namespace mars {
         return dJointGetSliderParam(jointId, dParamLoStop);
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: lowstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: lowstop for type %d not implemented yet\n", joint_type);
         return 0.;
       }
     }
 
-    interfaces::sReal JointPhysics::getHighStop() const {
+    interfaces::sReal ODEJoint::getHighStop() const {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         return dJointGetHingeParam(jointId, dParamHiStop);
@@ -1324,34 +1079,34 @@ namespace mars {
         return dJointGetSliderParam(jointId, dParamHiStop);
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         return 0.;
       }
     }
 
-    interfaces::sReal JointPhysics::getLowStop2() const {
+    interfaces::sReal ODEJoint::getLowStop2() const {
       switch(joint_type) {
       case JOINT_TYPE_HINGE2:
         return dJointGetHinge2Param(jointId, dParamLoStop2);
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: lowstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: lowstop for type %d not implemented yet\n", joint_type);
         return 0.;
       }
     }
 
-    interfaces::sReal JointPhysics::getHighStop2() const {
+    interfaces::sReal ODEJoint::getHighStop2() const {
       switch(joint_type) {
       case JOINT_TYPE_HINGE2:
         return dJointGetHinge2Param(jointId, dParamHiStop2);
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         return 0.;
       }
     }
 
-    interfaces::sReal JointPhysics::getCFM() const {
+    interfaces::sReal ODEJoint::getCFM() const {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         return dJointGetHingeParam(jointId, dParamCFM);
@@ -1361,12 +1116,12 @@ namespace mars {
         return dJointGetSliderParam(jointId, dParamCFM);
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: cfm for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: cfm for type %d not implemented yet\n", joint_type);
         return 0.;
       }
     }
 
-    void JointPhysics::setLowStop(interfaces::sReal lowStop) {
+    void ODEJoint::setLowStop(interfaces::sReal lowStop) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         dJointSetHingeParam(jointId, dParamLoStop, lowStop);
@@ -1379,12 +1134,12 @@ namespace mars {
         break;
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         break;
       }
     }
 
-    void JointPhysics::setHighStop(interfaces::sReal highStop) {
+    void ODEJoint::setHighStop(interfaces::sReal highStop) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         dJointSetHingeParam(jointId, dParamHiStop, highStop);
@@ -1397,36 +1152,36 @@ namespace mars {
         break;
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         break;
       }
     }
 
-    void JointPhysics::setLowStop2(interfaces::sReal lowStop) {
+    void ODEJoint::setLowStop2(interfaces::sReal lowStop) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE2:
         dJointSetHinge2Param(jointId, dParamLoStop, lowStop);
         break;
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         break;
       }
     }
 
-    void JointPhysics::setHighStop2(interfaces::sReal highStop) {
+    void ODEJoint::setHighStop2(interfaces::sReal highStop) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE2:
         dJointSetHinge2Param(jointId, dParamHiStop2, highStop);
         break;
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: highstop for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: highstop for type %d not implemented yet\n", joint_type);
         break;
       }
     }
 
-    void JointPhysics::setCFM(interfaces::sReal cfm) {
+    void ODEJoint::setCFM(interfaces::sReal cfm) {
       switch(joint_type) {
       case JOINT_TYPE_HINGE:
         dJointSetHingeParam(jointId, dParamCFM, cfm);
@@ -1439,10 +1194,10 @@ namespace mars {
         break;
       default:
         // not implemented yes
-        fprintf(stderr, "mars::sim::JointPhysics: cfm for type %d not implemented yet\n", joint_type);
+        fprintf(stderr, "mars::sim::ODEJoint: cfm for type %d not implemented yet\n", joint_type);
         break;
       }
     }
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars

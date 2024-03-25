@@ -29,7 +29,14 @@
 #include "SimJoint.h"
 #include "NodeManager.h"
 #include "JointManager.h"
-#include "PhysicsMapper.h"
+#include "objects/ODEObjectFactory.h"
+#include "objects/ODEBox.h"
+#include "objects/ODECapsule.h"
+#include "objects/ODECylinder.h"
+#include "objects/ODEHeightField.h"
+#include "objects/ODEMesh.h"
+#include "objects/ODEPlane.h"
+#include "objects/ODESphere.h"
 
 #include <mars/interfaces/sim/LoadCenter.h>
 #include <mars/interfaces/sim/SimulatorInterface.h>
@@ -75,11 +82,21 @@ namespace mars {
         GraphicsUpdateInterface *gui = static_cast<GraphicsUpdateInterface*>(this);
         control->graphics->addGraphicsUpdateInterface(gui);
       }
+      ODEObjectFactory::Instance().addObjectType("box",      &ODEBox::instanciate);
+      ODEObjectFactory::Instance().addObjectType("capsule",  &ODECapsule::instanciate);
+      ODEObjectFactory::Instance().addObjectType("cylinder", &ODECylinder::instanciate);
+      ODEObjectFactory::Instance().addObjectType("terrain",  &ODEHeightField::instanciate);
+      ODEObjectFactory::Instance().addObjectType("mesh",     &ODEMesh::instanciate);
+      ODEObjectFactory::Instance().addObjectType("plane",    &ODEPlane::instanciate);
+      ODEObjectFactory::Instance().addObjectType("sphere",   &ODESphere::instanciate);
     }
 
+    NodeManager::~NodeManager()
+    {
+    }
 
     NodeId NodeManager::createPrimitiveNode(const std::string &name,
-                                            NodeType type,
+                                            const std::string &type,
                                             bool moveable,
                                             const Vector &pos,
                                             const Vector &extension,
@@ -115,7 +132,7 @@ namespace mars {
       if (!reload) {
         iMutex.lock();
         NodeData reloadNode = *nodeS;
-        if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
+        if((nodeS->nodeType == "terrain") && nodeS->terrain ) {
           if(!control->loadCenter) {
             LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
             iMutex.unlock();
@@ -166,7 +183,7 @@ namespace mars {
       }
 
       // convert obj to ode mesh
-      if((nodeS->physicMode == NODE_TYPE_MESH) && (nodeS->terrain == 0) ) {
+      if((nodeS->nodeType == "mesh") && (nodeS->terrain == 0) ) {
         if(!control->loadCenter) {
           LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
           return INVALID_ID;
@@ -186,7 +203,7 @@ namespace mars {
         }
         control->loadCenter->loadMesh->getPhysicsFromMesh(nodeS);
       }
-      if((nodeS->physicMode == NODE_TYPE_TERRAIN) && nodeS->terrain ) {
+      if((nodeS->nodeType == "terrain") && nodeS->terrain ) {
         if(!nodeS->terrain->pixelData) {
           if(!control->loadCenter) {
             LOG_ERROR("NodeManager:: loadCenter is missing, can not create Node");
@@ -243,8 +260,9 @@ namespace mars {
       // create the physical node data
       if(! (nodeS->noPhysical)){
         // create an interface object to the physics
-        std::shared_ptr<NodeInterface> newNodeInterface = PhysicsMapper::newNodePhysics(control->sim->getPhysics());
-        if (!newNodeInterface->createNode(nodeS)) {
+        std::shared_ptr<NodeInterface> newNodeInterface = ODEObjectFactory::Instance().createObject(control->sim->getPhysics(), nodeS);
+
+        if (newNodeInterface.get() == nullptr) {
           // if no node was created in physics
           // delete the objects
           newNode.reset();
@@ -253,6 +271,7 @@ namespace mars {
           LOG_ERROR("NodeManager::addNode: No node was created in physics.");
           return INVALID_ID;
         }
+
         // put all data to the correct place
         //      newNode->setSNode(*nodeS);
         newNode->setInterface(newNodeInterface);
@@ -289,14 +308,12 @@ namespace mars {
           physicalRep.visual_offset_rot = Quaternion::Identity();
           physicalRep.visual_size = Vector(0.0, 0.0, 0.0);
           physicalRep.map["sharedDrawID"] = 0lu;
-          physicalRep.map["visualType"] = NodeData::toString(nodeS->physicMode);
-          if(nodeS->physicMode != NODE_TYPE_TERRAIN) {
-            if(nodeS->physicMode != NODE_TYPE_MESH) {
+          physicalRep.map["visualType"] = nodeS->nodeType;
+          if(nodeS->nodeType != "terrain") {
+            if(nodeS->nodeType != "mesh") {
               physicalRep.filename = "PRIMITIVE";
               //physicalRep.filename = nodeS->filename;
-              if(nodeS->physicMode > 0 && nodeS->physicMode < NUMBER_OF_NODE_TYPES){
-                physicalRep.origName = NodeData::toString(nodeS->physicMode);
-              }
+              physicalRep.origName = nodeS->nodeType;
             }
             if(loadGraphics) {
               id = control->graphics->addDrawObject(physicalRep,
@@ -367,7 +384,7 @@ namespace mars {
       newNode.movable = false;
       newNode.groupID = 0;
       newNode.relative_id = 0;
-      newNode.physicMode = NODE_TYPE_TERRAIN;
+      newNode.nodeType = "terrain";
       newNode.pos = Vector(0.0, 0.0, 0.0);
       newNode.rot = eulerToQuaternion(trot);
       newNode.density = 1;
@@ -1981,7 +1998,7 @@ namespace mars {
         Vector scale;
         if(sNode.filename == "PRIMITIVE") {
           scale = nodeS->ext;
-          if(sNode.physicMode == NODE_TYPE_SPHERE) {
+          if(sNode.nodeType == "sphere") {
             scale.x() *= 2;
             scale.y() = scale.z() = scale.x();
           }

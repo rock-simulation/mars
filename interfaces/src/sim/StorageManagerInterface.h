@@ -18,32 +18,37 @@
  *
  */
 
- /**
- * \file PhysicsMapper.h
- * \author Malte Roemmermann
- * \brief "PhysicsMapper" connects the implemented interface classes to
- * the interface objects that are handled in the core layer.
+/**
+ * \file StorageManagerInterface.h
+ * \author  \n
+ * \brief 
  *
+ * \version
+ * \date 
  */
 
-#ifndef PHYSICS_MAPPER_H
-#define PHYSICS_MAPPER_H
+#ifndef STORAGE_MANAGER_INTERFACE_H
+#define STORAGE_MANAGER_INTERFACE_H
 
 #ifdef _PRINT_HEADER_
-  #warning "PhysicsMapper.h"
+  #warning "StorageManagerInterface.h"
 #endif
 
-#include "WorldPhysics.h"
 
 namespace mars {
-  namespace sim {
+  namespace interfaces {
 
-    class PhysicsMapper {
+    /**
+     * \author  \n
+     * \brief 
+     *
+     */
+    class StorageManagerInterface {
     public:
-      static std::shared_ptr<interfaces::PhysicsInterface> newWorldPhysics(interfaces::ControlCenter *control);
+
     };
 
-  } // end of namespace sim
+  } // end of namespace interfaces
 } // end of namespace mars
 
-#endif  // PHYSICS_MAPPER_H
+#endif  // STORAGE_MANAGER_INTERFACE_H

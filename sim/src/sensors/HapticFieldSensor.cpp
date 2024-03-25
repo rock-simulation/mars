@@ -71,7 +71,7 @@ namespace mars {
       forces.resize(config.cols*config.rows, 0.0);
       weights.resize(config.cols*config.rows, 1.0);
 
-      //control->nodes->addNodeSensor(this); //register sensor with NodePhysics
+      //control->nodes->addNodeSensor(this); //register sensor with ODEObject
 
       // register with DataBroker
       std::string groupName, dataName;

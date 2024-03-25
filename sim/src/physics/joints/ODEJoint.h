@@ -18,11 +18,11 @@
  *
  */
  
-#ifndef JOINT_PHYSICS_H
-#define JOINT_PHYSICS_H
+#ifndef ODE_JOINT_H
+#define ODE_JOINT_H
 
 #ifdef _PRINT_HEADER_
-  #warning "JointPhysics.h"
+  #warning "ODEJoint.h"
 #endif
 
 #include "WorldPhysics.h"
@@ -31,19 +31,21 @@
 #include <mars/interfaces/sim/NodeInterface.h>
 
 namespace mars {
-  namespace sim {
+namespace sim {
 
-    class JointPhysics:	public interfaces::JointInterface {
+    class ODEJoint:	public interfaces::JointInterface {
     public:
       ///the constructor 
-      JointPhysics(std::shared_ptr<interfaces::PhysicsInterface> world);
+      ODEJoint(std::shared_ptr<interfaces::PhysicsInterface> world);
       ///the destructor
-      virtual ~JointPhysics(void);
+      virtual ~ODEJoint(void);
       ///create Joint getting as argument the JointData which give the 
       ///joint informations.
       virtual bool createJoint(interfaces::JointData *joint,
                                const std::shared_ptr<interfaces::NodeInterface> node1, 
                                const std::shared_ptr<interfaces::NodeInterface> node2);
+      virtual bool createODEJoint(interfaces::JointData *jointS, dBodyID body1, dBodyID body2);       
+                               
       ///get the anchor of the joint
       virtual void getAnchor(utils::Vector* anchor) const;
       /// set the anchor i.e. the position where the joint is created of the joint 
@@ -88,8 +90,9 @@ namespace mars {
       virtual void setLowStop2(interfaces::sReal lowStop2);
       virtual void setHighStop2(interfaces::sReal highStop2);
       virtual void setCFM(interfaces::sReal cfm);
+      bool isJointCreated();  
 
-    private:
+    protected:
       std::shared_ptr<WorldPhysics> theWorld;
       dJointID jointId, ball_motor;
       dJointFeedback feedback;
@@ -100,25 +103,13 @@ namespace mars {
       dReal damping, spring, jointCFM;
       utils::Vector axis1_torque, axis2_torque, joint_load;
       dReal motor_torque;
-
-      void calculateCfmErp(const interfaces::JointData *jointS);
-
-      ///create a joint from type Hing
-      void createHinge(interfaces::JointData* jointS,
-                       dBodyID body1, dBodyID body2);
-      void createHinge2(interfaces::JointData* jointS,
-                        dBodyID body1, dBodyID body2);
-      void createSlider(interfaces::JointData* jointS,
-                        dBodyID body1, dBodyID body2);
-      void createBall(interfaces::JointData* jointS,
-                      dBodyID body1, dBodyID body2);
-      void createUniversal(interfaces::JointData* jointS,
-                           dBodyID body1, dBodyID body2);
-      void createFixed(interfaces::JointData* jointS,
-                       dBodyID body1, dBodyID body2);
+      void calculateCfmErp(const interfaces::JointData *jointS);  
+      
+    private:  
+      bool joint_created;  
     };
 
-  } // end of namespace sim
+} // end of namespace sim
 } // end of namespace mars
 
-#endif     
+#endif // ODE_JOINT_H    

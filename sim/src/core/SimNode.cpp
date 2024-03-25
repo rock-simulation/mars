@@ -373,14 +373,14 @@ namespace mars {
       return sNode.mesh;
     }
 
-    void SimNode::setPhysicMode(NodeType mode) {
+    void SimNode::setNodeType(const std::string &type) {
       MutexLocker locker(&iMutex);
-      sNode.physicMode = mode;
+      sNode.nodeType = type;
     }
 
-    NodeType SimNode::getPhysicMode() const {
+    const std::string SimNode::getNodeType() const {
       MutexLocker locker(&iMutex);
-      return sNode.physicMode;
+      return sNode.nodeType;
     }
 
     void SimNode::setMovable(bool movable) {
@@ -472,7 +472,7 @@ namespace mars {
       this->sNode.origName = sNode.origName.c_str();
       this->sNode.filename = sNode.filename.c_str();
       this->sNode.groupID = sNode.groupID;
-      this->sNode.physicMode = sNode.physicMode;
+      this->sNode.nodeType = sNode.nodeType;
       this->sNode.movable = sNode.movable;
       this->sNode.noPhysical = sNode.noPhysical;
       this->sNode.density = sNode.density;

@@ -52,7 +52,7 @@
 namespace mars {
   namespace sim {
 
-    class NodePhysics;
+    class ODEObject;
 
     /**
      * The struct is used to handle some sensors in the physical
@@ -78,7 +78,7 @@ namespace mars {
       dBodyID body;
       int comp_group;
       unsigned int connected_geoms;
-      std::vector<NodePhysics*> comp_nodes;
+      std::vector<ODEObject*> comp_nodes;
     };
 
     /**
@@ -106,8 +106,8 @@ namespace mars {
       // this functions are used by the other physical classes
       dWorldID getWorld(void) const;
       dSpaceID getSpace(void) const;
-      bool getCompositeBody(int comp_group, dBodyID *body, NodePhysics *node);
-      void destroyBody(dBodyID theBody, NodePhysics *node);
+      bool getCompositeBody(int comp_group, dBodyID *body, ODEObject *node);
+      void destroyBody(dBodyID theBody, ODEObject *node);
       dReal getWorldStep(void);
       void resetCompositeMass(dBodyID theBody);
       void moveCompositeMassCenter(dBodyID theBody, dReal x, dReal y, dReal z);
