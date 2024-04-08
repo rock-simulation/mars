@@ -38,7 +38,7 @@
 #include "TerrainDrawObject.h"
 #include "../GraphicsManager.h"
 
-#include <mars/utils/misc.h>
+#include <mars_utils/misc.h>
 #include <mars/osg_terrain/ShaderTerrain.hpp>
 
 #include <osg/ComputeBoundsVisitor>

@@ -31,9 +31,9 @@
 #include "GraphicsWidget.h"
 
 #include <mars_interfaces/MARSDefs.h>
-#include <mars/utils/Vector.h>
-#include <mars/utils/Color.h>
-#include <mars/utils/mathUtils.h>
+#include <mars_utils/Vector.h>
+#include <mars_utils/Color.h>
+#include <mars_utils/mathUtils.h>
 #include <mars_interfaces/graphics/draw_structs.h>
 
 #include <string>

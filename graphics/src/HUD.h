@@ -35,9 +35,9 @@
 #include <osgViewer/GraphicsWindow>
 
 #include <mars_interfaces/MARSDefs.h>
-#include <mars/utils/Vector.h>
-#include <mars/utils/Quaternion.h>
-#include <mars/utils/Color.h>
+#include <mars_utils/Vector.h>
+#include <mars_utils/Quaternion.h>
+#include <mars_utils/Color.h>
 
 #include "2d_objects/HUDElement.h"
 

@@ -36,7 +36,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include <mars/utils/mathUtils.h>
+#include <mars_utils/mathUtils.h>
 
 namespace mars {
   namespace graphics {
