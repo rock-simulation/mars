@@ -28,7 +28,7 @@
 #ifndef MARS_GRAPHICS_AXISPRIMITIVE_H
 #define MARS_GRAPHICS_AXISPRIMITIVE_H
 
-#include <mars/utils/Vector.h>
+#include <mars_utils/Vector.h>
 
 #include <osg/Group>
 

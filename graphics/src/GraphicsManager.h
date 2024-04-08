@@ -53,8 +53,8 @@
 #include <osgParticle/PrecipitationEffect>
 
 #include <mars_interfaces/MARSDefs.h>
-#include <mars/utils/Vector.h>
-#include <mars/utils/Quaternion.h>
+#include <mars_utils/Vector.h>
+#include <mars_utils/Quaternion.h>
 #include <mars_interfaces/core_objects_exchange.h>
 #include <mars_interfaces/GraphicData.h>
 #include <mars_interfaces/LightData.h>
@@ -69,7 +69,7 @@
 #include <mars/osg_material_manager/OsgMaterial.h>
 #include <osg_frames/FramesFactory.hpp>
 
-#include <mars/utils/Mutex.h>
+#include <mars_utils/Mutex.h>
 
 // DataBroker includes
 #include <mars/data_broker/ProducerInterface.h>

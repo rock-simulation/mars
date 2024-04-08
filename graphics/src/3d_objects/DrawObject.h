@@ -33,8 +33,8 @@
 #endif
 
 #include <mars_interfaces/MARSDefs.h>
-#include <mars/utils/Vector.h>
-#include <mars/utils/Quaternion.h>
+#include <mars_utils/Vector.h>
+#include <mars_utils/Quaternion.h>
 #include <mars_interfaces/LightData.h>
 #include <mars_interfaces/MaterialData.h>
 

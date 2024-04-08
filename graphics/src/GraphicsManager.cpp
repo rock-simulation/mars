@@ -27,7 +27,7 @@
 
 #include "GraphicsManager.h"
 #include "config.h"
-#include <mars/utils/misc.h>
+#include <mars_utils/misc.h>
 
 //#include <osgUtil/Optimizer>
 
@@ -40,7 +40,7 @@
 #include <osgParticle/SmokeTrailEffect>
 #include <osgParticle/FireEffect>
 
-#include <mars/utils/misc.h>
+#include <mars_utils/misc.h>
 
 #include "3d_objects/GridPrimitive.h"
 #include "3d_objects/DrawObject.h"
