@@ -12,6 +12,7 @@
     <depend package="simulation/mars/common/utils" />
 
     <depend package="opencv" />
-    <rosdep name="qt4" />
+    <depend package="qt4" optional="1"/>
+    <depend package="qt5" optional="1"/>
     <tags>needs_opt</tags>
 </package>

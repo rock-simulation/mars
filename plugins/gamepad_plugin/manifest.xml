@@ -9,5 +9,6 @@
     <depend package="simulation/mars/common/gui/main_gui" />
     <depend package="simulation/mars/interfaces" />
     <tags>needs_opt</tags>
-    <rosdep name="qt4" />
+    <depend package="qt4" optional="1"/>
+    <depend package="qt5" optional="1"/>
 </package>

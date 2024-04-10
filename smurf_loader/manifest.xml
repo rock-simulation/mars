@@ -17,8 +17,9 @@
     <depend package="control/urdfdom" />
     <depend package="control/urdfdom_headers" />
 
+    <depend package="qt4" optional="1"/>
+    <depend package="qt5" optional="1"/>
     <rosdep name="boost" />
-    <rosdep name="qt4" />
     <rosdep name="zlib" />
 
     <tags>needs_opt</tags>
