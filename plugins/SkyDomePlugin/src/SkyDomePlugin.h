@@ -36,7 +36,7 @@
 // set define if you want to extend the gui
 #include <mars_interfaces/sim/MarsPluginTemplateGUI.h>
 #include <mars_interfaces/MARSDefs.h>
-#include <mars/data_broker/ReceiverInterface.h>
+#include <data_broker/ReceiverInterface.h>
 #include <cfg_manager/CFGManagerInterface.h>
 #include <osg_material_manager/OsgMaterialManager.h>
 #include <osg_material_manager/MaterialNode.h>
