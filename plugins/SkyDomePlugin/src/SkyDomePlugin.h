@@ -38,8 +38,8 @@
 #include <mars_interfaces/MARSDefs.h>
 #include <data_broker/ReceiverInterface.h>
 #include <cfg_manager/CFGManagerInterface.h>
-#include <osg_material_manager/OsgMaterialManager.h>
-#include <osg_material_manager/MaterialNode.h>
+#include <osg_material_manager/OsgMaterialManager.hpp>
+#include <osg_material_manager/MaterialNode.hpp>
 
 #include <string>
 
