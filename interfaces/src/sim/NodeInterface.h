@@ -81,6 +81,7 @@ namespace mars {
       virtual void getMass(sReal *mass, sReal *inertia=0) const = 0;
       virtual const utils::Vector getContactForce(void) const = 0;
       virtual sReal getCollisionDepth(void) const = 0;
+      virtual void addContact(utils::Vector &point, utils::Vector &normal, sReal depth, contact_params &c_params_other) = 0;
     };
 
   } // end of namespace interfaces

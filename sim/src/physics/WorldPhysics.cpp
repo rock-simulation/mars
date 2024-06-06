@@ -1231,5 +1231,62 @@ namespace mars {
       dGeomDestroy(theGeom);
     }
 
+    void WorldPhysics::addContact(dBodyID b1, Vector &point, Vector &normal, sReal depth,
+                                  contact_params &cp1, contact_params &cp2) {
+      dContact contact;
+
+      contact.geom.pos[0] = point.x();
+      contact.geom.pos[1] = point.y();
+      contact.geom.pos[2] = point.z();
+      contact.geom.normal[0] = normal.x();
+      contact.geom.normal[1] = normal.y();
+      contact.geom.normal[2] = normal.z();
+      contact.geom.depth = depth;
+
+      // reduced contact handling: friction direction is ignored
+      contact.surface.mode = dContactSoftERP | dContactSoftCFM;
+      contact.surface.soft_cfm = (cp1.cfm +
+                                  cp2.cfm)/2;
+      contact.surface.soft_erp = (cp1.erp +
+                                  cp2.erp)/2;
+        // then check if one of the geoms want to use the pyramid approximation
+        if(cp1.approx_pyramid ||
+           cp2.approx_pyramid)
+            contact.surface.mode |= dContactApprox1;
+
+        // Then check the friction for both directions
+        contact.surface.mu = (cp1.friction1 +
+                                 cp2.friction1)/2;
+        contact.surface.mu2 = (cp1.friction2 +
+                                  cp2.friction2)/2;
+
+        if(contact.surface.mu != contact.surface.mu2)
+            contact.surface.mode |= dContactMu2;
+
+        if(cp1.rolling_friction > EPSILON ||
+           cp2.rolling_friction > EPSILON) {
+            contact.surface.mode |= dContactRolling;
+            contact.surface.rho = cp1.rolling_friction + cp2.rolling_friction;
+            // fprintf(stderr, "set rolling friction to: %g\n", contact.surface.rho);
+            if(cp1.rolling_friction2 > EPSILON ||
+               cp2.rolling_friction2 > EPSILON) {
+                contact.surface.rho2 = cp1.rolling_friction2 + cp2.rolling_friction2;
+            }
+            else {
+                contact.surface.rho2 = cp1.rolling_friction + cp2.rolling_friction;
+            }
+            if(cp1.spinning_friction > EPSILON ||
+               cp2.spinning_friction > EPSILON) {
+                contact.surface.rhoN = cp1.spinning_friction + cp2.spinning_friction;
+            }
+            else {
+                contact.surface.rhoN = 0.0;
+            }
+        }
+        dJointID joint=dJointCreateContact(world, contactgroup, &contact);
+        dJointAttach(joint, b1, 0);
+    }
+
+
   } // end of namespace sim
 } // end of namespace mars

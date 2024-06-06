@@ -194,6 +194,8 @@ namespace mars {
       interfaces::NodeId getParentID() {return sNode.relative_id;}
       void setCullMask(int mask);
       void setBrightness(double v);
+      void addContact(utils::Vector &point, utils::Vector &normal,
+                      interfaces::sReal depth, interfaces::contact_params &c_params_other);
 
     private:
       interfaces::ControlCenter *control;

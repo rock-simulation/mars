@@ -140,6 +140,8 @@ namespace mars {
       void addMassToCompositeBody(dBodyID theBody, dMass *bodyMass);
       void getAbsMass(dMass *pMass) const;
       dReal heightCallback(int x, int y);
+      virtual void addContact(utils::Vector &point, utils::Vector &normal,
+                              interfaces::sReal depth, interfaces::contact_params &c_params_other);
 
     protected:
       std::shared_ptr<WorldPhysics> theWorld;

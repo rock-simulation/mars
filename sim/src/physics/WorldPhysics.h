@@ -102,7 +102,8 @@ namespace mars {
                                       const double r,
                                       std::vector<utils::Vector> &contacts,
                                       std::vector<double> &depths) const;
-
+      void addContact(dBodyID b1, utils::Vector &point, utils::Vector &normal, interfaces::sReal depth,
+                      interfaces::contact_params &cp1, interfaces::contact_params &cp2);
       // this functions are used by the other physical classes
       dWorldID getWorld(void) const;
       dSpaceID getSpace(void) const;

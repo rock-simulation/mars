@@ -1864,6 +1864,11 @@ namespace mars {
       node_data.node1 = true;
     }
 
+    void NodePhysics::addContact(Vector &point, Vector &normal, sReal depth, contact_params &c_params_other) {
+      if(nBody && theWorld) {
+        theWorld->addContact(nBody, point, normal, depth, node_data.c_params, c_params_other);
+      }
+    }
 
     sReal NodePhysics::getCollisionDepth(void) const {
       if(nGeom && theWorld) {

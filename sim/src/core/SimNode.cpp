@@ -928,5 +928,12 @@ namespace mars {
       fRotation.w() = value;
     }
 
+    void SimNode::addContact(utils::Vector &point, utils::Vector &normal,
+                             sReal depth, interfaces::contact_params &c_params_other) {
+      if(my_interface) {
+        my_interface->addContact(point, normal, depth, c_params_other);
+      }
+    }
+
   } // end of namespace sim
 } // end of namespace mars

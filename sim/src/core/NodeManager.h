@@ -163,6 +163,8 @@ namespace mars {
       virtual unsigned long getMaxGroupID() { return maxGroupID; }
       virtual void edit(interfaces::NodeId id, const std::string &key,
                         const std::string &value);
+      virtual void addContact(interfaces::NodeId id, utils::Vector &point, utils::Vector &normal,
+                              interfaces::sReal depth, interfaces::contact_params &c_params_other);
 
     private:
       interfaces::NodeId next_node_id;

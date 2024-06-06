@@ -823,7 +823,10 @@ namespace mars {
        */
       virtual void edit(NodeId id, const std::string &key,
                         const std::string &value) = 0;
-    };
+
+      virtual void addContact(NodeId id, utils::Vector &point, utils::Vector &normal,
+                              sReal depth, contact_params &c_params_other) = 0;
+};
 
   } // end of namespace interfaces
 } // end of namespace mars

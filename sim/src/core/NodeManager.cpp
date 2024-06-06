@@ -2011,5 +2011,13 @@ namespace mars {
       nodesToUpdate[sNode.index] = editedNode;
     }
 
+    void NodeManager::addContact(NodeId id, Vector &point, Vector &normal,
+                                 sReal depth, contact_params &c_params_other) {
+      MutexLocker locker(&iMutex);
+      NodeMap::const_iterator iter = simNodes.find(id);
+      if(iter != simNodes.end())
+        iter->second->addContact(point, normal, depth, c_params_other);
+    }
+
   } // end of namespace sim
 } // end of namespace mars
