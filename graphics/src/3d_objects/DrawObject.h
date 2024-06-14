@@ -32,6 +32,8 @@
   #warning "DrawObject.h"
 #endif
 
+#define USE_OSGFX
+
 #include <mars/interfaces/MARSDefs.h>
 #include <mars/utils/Vector.h>
 #include <mars/utils/Quaternion.h>
@@ -50,6 +52,9 @@
 #include <osg/Geode>
 #include <osg/LOD>
 #include <osg/Program>
+#ifdef USE_OSGFX
+#include <osgFX/Outline>
+#endif
 
 #include <mars/osg_material_manager/OsgMaterial.h>
 #include <mars/osg_material_manager/MaterialNode.h>
@@ -168,6 +173,9 @@ namespace mars {
       osg::ref_ptr<osg::LOD> lod;
       osg::ref_ptr<osg::PositionAttitudeTransform> posTransform_;
       osg::ref_ptr<osg::MatrixTransform> scaleTransform_;
+      #ifdef USE_OSGFX
+      osg::ref_ptr<osgFX::Outline> outlineEffect_;
+      #endif
       std::vector<DrawObject*> selectionChilds;
       mars::utils::Vector position_, pivot_, geometrySize_, scaledSize_;
       mars::utils::Quaternion quaternion_;
