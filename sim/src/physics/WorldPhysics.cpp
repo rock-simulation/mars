@@ -427,6 +427,12 @@ namespace mars {
         if (create_contacts){
           setContactsFromPlugins();
         }
+        // add external contacts
+        for(auto it=externalContacts.begin(); it!=externalContacts.end(); ++it) {
+          dJointID joint=dJointCreateContact(world, contactgroup, &(it->contact));
+          dJointAttach(joint, it->body, 0);
+        }
+        externalContacts.clear();
 
         dSpaceCollide(space,this, &WorldPhysics::callbackForward);
 
@@ -1283,8 +1289,7 @@ namespace mars {
                 contact.surface.rhoN = 0.0;
             }
         }
-        dJointID joint=dJointCreateContact(world, contactgroup, &contact);
-        dJointAttach(joint, b1, 0);
+        externalContacts.push_back({b1, contact});
     }
 
 

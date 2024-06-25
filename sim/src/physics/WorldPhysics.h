@@ -81,6 +81,11 @@ namespace mars {
       std::vector<NodePhysics*> comp_nodes;
     };
 
+      struct external_contact {
+          dBodyID body;
+          dContact contact;
+      };
+
     /**
      * Declaration of the physical class, that implements the
      * physics interface.
@@ -135,6 +140,7 @@ namespace mars {
       std::vector<interfaces::draw_item> draw_intern;
       std::vector<interfaces::draw_item> draw_extern;
       std::vector<dJointFeedback*> contact_feedback_list;
+      std::vector<external_contact> externalContacts;
       bool create_contacts, log_contacts;
       int num_contacts;
       int ray_collision;
