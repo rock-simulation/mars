@@ -39,16 +39,18 @@ if(USE_VERTEX_BUFFER)
     ADD_DEFINITIONS(-DUSE_VERTEX_BUFFER)
 endif()
 
-pkg_check_modules(OSGQT openscenegraph-osgQt5)
-if(OSGQT_FOUND)
-find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
+set (QT_USE_QTOPENGL TRUE)
+setup_qt()
 
-include_directories(${OSGQT_INCLUDE_DIRS})
-link_directories(${OSGQT_LIBRARY_DIRS})
-add_definitions(${OSGQT_CFLAGS_OTHER})  #cflags without -I
-
+if (PREFERE_QT4)
+    find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
 else()
-find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil osgQt)
+    pkg_check_modules(OSGQT openscenegraph-osgQt5)
+    find_package(OpenSceneGraph REQUIRED osgManipulator osgViewer osgFX osgShadow osgParticle osgTerrain osgDB osgGA osgWidget osgText osgUtil)
+
+    include_directories(${OSGQT_INCLUDE_DIRS})
+    link_directories(${OSGQT_LIBRARY_DIRS})
+    add_definitions(${OSGQT_CFLAGS_OTHER})  #cflags without -I
 endif()
 
 include_directories(${OPENSCENEGRAPH_INCLUDE_DIRS})
@@ -60,9 +62,6 @@ CHECK_INCLUDE_FILE_CXX("osg/Version" HAVE_OSG_VERSION_H)
 if(${HAVE_OSG_VERSION_H})
     ADD_DEFINITIONS(-DHAVE_OSG_VERSION_H)
 endif()
-
-set (QT_USE_QTOPENGL TRUE)
-setup_qt()
 
 pkg_check_modules(PKGCONFIG REQUIRED
                   lib_manager
