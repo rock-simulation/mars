@@ -343,6 +343,7 @@ namespace mars {
 
     void SimEntity::setInitialPose(bool reset, configmaps::ConfigMap* pPoseCfg/*=nullptr*/) {
       if(control && (config.find("rootNode") != config.end())) {
+          LOG_DEBUG("SimEntity::setInitialPose root node: %s", ((std::string)config["rootNode"]).c_str());
         NodeId id = getNode((std::string)config["rootNode"]);
         if (!control->nodes->exists(id)) {
           fprintf(stderr, "ERROR: Did not find node id %lu in setInitialPose()\n", id);
@@ -353,6 +354,7 @@ namespace mars {
         utils::Vector tmpV;
         configmaps::ConfigMap cfg = config;
         if (pPoseCfg != nullptr) {
+          LOG_DEBUG("SimEntity::setInitialPose apply gPoseCfg: %s", ((std::string)config["rootNode"]).c_str());
           if (pPoseCfg->hasKey("rotation")) cfg["rotation"] = (*pPoseCfg)["rotation"];
           if (pPoseCfg->hasKey("position")) cfg["position"] = (*pPoseCfg)["position"];
           cfg["anchor"] = pPoseCfg->get("anchor", (std::string) "none");
@@ -369,6 +371,7 @@ namespace mars {
           parentname << cfg["parent"];
         }
         if (!parentname.empty() && parentname != "world") {
+            LOG_DEBUG("SimEntity::setInitialPose set parent: %s -> %s", ((std::string)config["rootNode"]).c_str(), parentname.c_str());
           std::string entityname, linkname;
           unsigned int splitsignpos = parentname.find("::");
           if (splitsignpos >= 0) {
@@ -389,6 +392,7 @@ namespace mars {
             fprintf(stderr, "No valid parent specified by parent: '%s'\n", parentname.c_str());
         }
         if(cfg.find("position") != cfg.end()) {
+            LOG_DEBUG("SimEntity::setInitialPose set position: %s", ((std::string)config["rootNode"]).c_str());
           rootNode.pos.x() = cfg["position"][0];
           rootNode.pos.y() = cfg["position"][1];
           rootNode.pos.z() = cfg["position"][2];
@@ -423,6 +427,7 @@ namespace mars {
           jointIds.erase(anchorJointId);
         }
 
+        LOG_DEBUG("SimEntity: apply position");
         control->nodes->editNode(&rootNode, EDIT_NODE_POS | EDIT_NODE_MOVE_ALL);
         control->nodes->editNode(&rootNode, EDIT_NODE_ROT | EDIT_NODE_MOVE_ALL);
 

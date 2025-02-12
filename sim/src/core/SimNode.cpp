@@ -219,7 +219,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       bool update = false;
       Vector diff;
-
+      LOG_DEBUG("SimNode::setPosition %s", sNode.name.c_str());
       if(sNode.pos != newPosition) {
         update = true;
         diff = newPosition-sNode.pos;
@@ -229,6 +229,7 @@ namespace mars {
       if (my_interface && update) {
         if (sNode.movable) {
           Vector p = my_interface->setPosition(sNode.pos, move_group);
+          LOG_DEBUG("return diff: %g %g %g %d", p.x(), p.y(), p.z(), move_group);
           return p;
         }
         else {
@@ -238,6 +239,7 @@ namespace mars {
           }
         }
       }
+      LOG_DEBUG("return diff 2: %g %g %g", diff.x(), diff.y(), diff.z());
       return diff;
     }
 
@@ -654,6 +656,7 @@ namespace mars {
       MutexLocker locker(&iMutex);
       //rot = *rotation;
       if (my_interface) {
+      LOG_DEBUG("SimNode::rotateAtPoint %s", sNode.name.c_str());
         sNode.pos = my_interface->rotateAtPoint(rotation_point,
                                                 rotation, move_group);
         my_interface->getRotation(&sNode.rot);

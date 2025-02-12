@@ -33,6 +33,8 @@
 #include <sstream>
 #include <iostream>
 #include <cassert>
+#include "Logging.hpp"
+#include "sim/ControlCenter.h"
 
 namespace mars {
   namespace interfaces {
@@ -43,6 +45,7 @@ namespace mars {
     void getAbsFromRel(const NodeData &node1, NodeData* node2){
       node2->pos = node1.pos + node1.rot * node2->pos;
       node2->rot = node1.rot * node2->rot;
+      LOG_DEBUG("get abs from relative for %s: %g %g %g", node2->name.c_str(), node2->pos.x(), node2->pos.y(), node2->pos.z());
     }
 
     void getRelFromAbs(const NodeData &node1, NodeData *node2){
