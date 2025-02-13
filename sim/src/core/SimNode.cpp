@@ -218,7 +218,7 @@ namespace mars {
                                       bool move_group) {
       MutexLocker locker(&iMutex);
       bool update = false;
-      Vector diff;
+      Vector diff(0,0,0);
 
       if(sNode.pos != newPosition) {
         update = true;
