@@ -758,9 +758,15 @@ namespace mars {
       utils::Vector* pos, utils::Quaternion* rot)
     {
       if ((map.hasKey("position"))) {
-	pos->x() = map["position"][0];
-	pos->y() = map["position"][1];
-	pos->z() = map["position"][2];
+        if(map["position"].isVector()) {
+          pos->x() = map["position"][0];
+          pos->y() = map["position"][1];
+          pos->z() = map["position"][2];
+        } else {
+          pos->x() = map["position"]["x"];
+          pos->y() = map["position"]["y"];
+          pos->z() = map["position"]["z"];
+        }
       }
       if ((map.hasKey("rotation"))) {
 	Vector tmpV;
@@ -778,10 +784,17 @@ namespace mars {
 	  *rot = utils::eulerToQuaternion(tmpV);
 	  break;
 	case 4:
-	  rot->x() = (sReal)map["rotation"][1];
-	  rot->y() = (sReal)map["rotation"][2];
-	  rot->z() = (sReal)map["rotation"][3];
-	  rot->w() = (sReal)map["rotation"][0];
+    if(map["rotation"].isVector()) {
+      rot->x() = (sReal)map["rotation"][1];
+      rot->y() = (sReal)map["rotation"][2];
+      rot->z() = (sReal)map["rotation"][3];
+      rot->w() = (sReal)map["rotation"][0];
+    } else {
+      rot->x() = (sReal)map["rotation"]["x"];
+      rot->y() = (sReal)map["rotation"]["y"];
+      rot->z() = (sReal)map["rotation"]["z"];
+      rot->w() = (sReal)map["rotation"]["w"];
+    }
 	  break;
 	}
       }
