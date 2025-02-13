@@ -389,9 +389,15 @@ namespace mars {
             fprintf(stderr, "No valid parent specified by parent: '%s'\n", parentname.c_str());
         }
         if(cfg.find("position") != cfg.end()) {
-          rootNode.pos.x() = cfg["position"][0];
-          rootNode.pos.y() = cfg["position"][1];
-          rootNode.pos.z() = cfg["position"][2];
+          if(cfg["position"].isVector()) {
+            rootNode.pos.x() = cfg["position"][0];
+            rootNode.pos.y() = cfg["position"][1];
+            rootNode.pos.z() = cfg["position"][2];
+          } else {
+            rootNode.pos.x() = cfg["position"]["x"];
+            rootNode.pos.y() = cfg["position"]["y"];
+            rootNode.pos.z() = cfg["position"]["z"];
+          }
         }
         if(cfg.find("rotation") != cfg.end()) {
           // check if euler angles or quaternion is provided; rotate around z
@@ -407,11 +413,20 @@ namespace mars {
             tmpV[2] = cfg["rotation"][2];
             tmpQ = utils::eulerToQuaternion(tmpV);
             break;
-          case 4: tmpQ.x() = (sReal)cfg["rotation"][1];
-            tmpQ.y() = (sReal)cfg["rotation"][2];
-            tmpQ.z() = (sReal)cfg["rotation"][3];
-            tmpQ.w() = (sReal)cfg["rotation"][0];
+          case 4: {
+            if(cfg["rotation"].isVector()) {
+              tmpQ.x() = (sReal)cfg["rotation"][1];
+              tmpQ.y() = (sReal)cfg["rotation"][2];
+              tmpQ.z() = (sReal)cfg["rotation"][3];
+              tmpQ.w() = (sReal)cfg["rotation"][0];
+            } else {
+              tmpQ.x() = (sReal)cfg["rotation"]["x"];
+              tmpQ.y() = (sReal)cfg["rotation"]["y"];
+              tmpQ.z() = (sReal)cfg["rotation"]["z"];
+              tmpQ.w() = (sReal)cfg["rotation"]["w"];
+            }
             break;
+          }
           }
           rootNode.rot = tmpQ;
         }
