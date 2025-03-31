@@ -116,6 +116,7 @@ namespace mars {
       isoMinHeight = 2;
       isoMaxHeight = 20;
       logTrackingRotation = false;
+      mainCamera->setComputeNearFarMode(osg::CullSettings::DO_NOT_COMPUTE_NEAR_FAR);
     }
 
     GraphicsCamera::~GraphicsCamera(void) {
