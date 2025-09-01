@@ -3,6 +3,7 @@
       
    </description>
    <maintainer>Malte Langosz/malte.langosz@dfki.de</maintainer>
+   <depend package="pkg-config" />
    <depend package="osg" />
    <tags>needs_opt</tags>
 </package>
